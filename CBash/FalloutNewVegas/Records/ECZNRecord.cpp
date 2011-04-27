@@ -80,10 +80,7 @@ bool ECZNRecord::IsNeverResets()
 void ECZNRecord::IsNeverResets(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNeverResets;
-    else
-        Dummy->flags &= ~fIsNeverResets;
+    Dummy->flags = value ? (Dummy->flags | fIsNeverResets) : (Dummy->flags & ~fIsNeverResets);
     }
 
 bool ECZNRecord::IsMatchPCBelowMinLevel()
@@ -95,10 +92,7 @@ bool ECZNRecord::IsMatchPCBelowMinLevel()
 void ECZNRecord::IsMatchPCBelowMinLevel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMatchPCBelowMinLevel;
-    else
-        Dummy->flags &= ~fIsMatchPCBelowMinLevel;
+    Dummy->flags = value ? (Dummy->flags | fIsMatchPCBelowMinLevel) : (Dummy->flags & ~fIsMatchPCBelowMinLevel);
     }
 
 bool ECZNRecord::IsFlagMask(UINT8 Mask, bool Exact)

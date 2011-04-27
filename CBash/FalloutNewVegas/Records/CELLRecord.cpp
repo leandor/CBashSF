@@ -33,10 +33,7 @@ bool CELLRecord::CELLLTMP::IsAmbientInherited()
 void CELLRecord::CELLLTMP::IsAmbientInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAmbientInherited;
-    else
-        Dummy->flags &= ~fIsAmbientInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsAmbientInherited) : (Dummy->flags & ~fIsAmbientInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsDirectionalColorInherited()
@@ -48,10 +45,7 @@ bool CELLRecord::CELLLTMP::IsDirectionalColorInherited()
 void CELLRecord::CELLLTMP::IsDirectionalColorInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDirectionalColorInherited;
-    else
-        Dummy->flags &= ~fIsDirectionalColorInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsDirectionalColorInherited) : (Dummy->flags & ~fIsDirectionalColorInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsFogColorInherited()
@@ -63,10 +57,7 @@ bool CELLRecord::CELLLTMP::IsFogColorInherited()
 void CELLRecord::CELLLTMP::IsFogColorInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogColorInherited;
-    else
-        Dummy->flags &= ~fIsFogColorInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsFogColorInherited) : (Dummy->flags & ~fIsFogColorInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsFogNearInherited()
@@ -78,10 +69,7 @@ bool CELLRecord::CELLLTMP::IsFogNearInherited()
 void CELLRecord::CELLLTMP::IsFogNearInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogNearInherited;
-    else
-        Dummy->flags &= ~fIsFogNearInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsFogNearInherited) : (Dummy->flags & ~fIsFogNearInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsFogFarInherited()
@@ -93,10 +81,7 @@ bool CELLRecord::CELLLTMP::IsFogFarInherited()
 void CELLRecord::CELLLTMP::IsFogFarInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogFarInherited;
-    else
-        Dummy->flags &= ~fIsFogFarInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsFogFarInherited) : (Dummy->flags & ~fIsFogFarInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsDirectionalRotationInherited()
@@ -108,10 +93,7 @@ bool CELLRecord::CELLLTMP::IsDirectionalRotationInherited()
 void CELLRecord::CELLLTMP::IsDirectionalRotationInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDirectionalRotationInherited;
-    else
-        Dummy->flags &= ~fIsDirectionalRotationInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsDirectionalRotationInherited) : (Dummy->flags & ~fIsDirectionalRotationInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsDirectionalFadeInherited()
@@ -123,10 +105,7 @@ bool CELLRecord::CELLLTMP::IsDirectionalFadeInherited()
 void CELLRecord::CELLLTMP::IsDirectionalFadeInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDirectionalFadeInherited;
-    else
-        Dummy->flags &= ~fIsDirectionalFadeInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsDirectionalFadeInherited) : (Dummy->flags & ~fIsDirectionalFadeInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsFogClipInherited()
@@ -138,10 +117,7 @@ bool CELLRecord::CELLLTMP::IsFogClipInherited()
 void CELLRecord::CELLLTMP::IsFogClipInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogClipInherited;
-    else
-        Dummy->flags &= ~fIsFogClipInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsFogClipInherited) : (Dummy->flags & ~fIsFogClipInherited);
     }
 
 bool CELLRecord::CELLLTMP::IsFogPowerInherited()
@@ -153,10 +129,7 @@ bool CELLRecord::CELLLTMP::IsFogPowerInherited()
 void CELLRecord::CELLLTMP::IsFogPowerInherited(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogPowerInherited;
-    else
-        Dummy->flags &= ~fIsFogPowerInherited;
+    Dummy->flags = value ? (Dummy->flags | fIsFogPowerInherited) : (Dummy->flags & ~fIsFogPowerInherited);
     }
 
 bool CELLRecord::CELLLTMP::Is0FlagMask(UINT8 Mask, bool Exact)
@@ -270,10 +243,7 @@ bool CELLRecord::IsInterior()
 void CELLRecord::IsInterior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsInterior;
-    else
-        Dummy->flags &= ~fIsInterior;
+    Dummy->flags = value ? (Dummy->flags | fIsInterior) : (Dummy->flags & ~fIsInterior);
     }
 
 bool CELLRecord::HasWater()
@@ -285,10 +255,7 @@ bool CELLRecord::HasWater()
 void CELLRecord::HasWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fHasWater;
-    else
-        Dummy->flags &= ~fHasWater;
+    Dummy->flags = value ? (Dummy->flags | fHasWater) : (Dummy->flags & ~fHasWater);
     }
 
 bool CELLRecord::InvertFastTravel()
@@ -300,10 +267,7 @@ bool CELLRecord::InvertFastTravel()
 void CELLRecord::InvertFastTravel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fInvertFastTravel;
-    else
-        Dummy->flags &= ~fInvertFastTravel;
+    Dummy->flags = value ? (Dummy->flags | fInvertFastTravel) : (Dummy->flags & ~fInvertFastTravel);
     }
 
 bool CELLRecord::ForceHideLand()
@@ -315,10 +279,7 @@ bool CELLRecord::ForceHideLand()
 void CELLRecord::ForceHideLand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fForceHideLand;
-    else
-        Dummy->flags &= ~fForceHideLand;
+    Dummy->flags = value ? (Dummy->flags | fForceHideLand) : (Dummy->flags & ~fForceHideLand);
     }
 
 bool CELLRecord::IsOblivionInterior()
@@ -330,10 +291,7 @@ bool CELLRecord::IsOblivionInterior()
 void CELLRecord::IsOblivionInterior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOblivionInterior;
-    else
-        Dummy->flags &= ~fIsOblivionInterior;
+    Dummy->flags = value ? (Dummy->flags | fIsOblivionInterior) : (Dummy->flags & ~fIsOblivionInterior);
     }
 
 bool CELLRecord::PublicPlace()
@@ -345,10 +303,7 @@ bool CELLRecord::PublicPlace()
 void CELLRecord::PublicPlace(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fPublicPlace;
-    else
-        Dummy->flags &= ~fPublicPlace;
+    Dummy->flags = value ? (Dummy->flags | fPublicPlace) : (Dummy->flags & ~fPublicPlace);
     }
 
 bool CELLRecord::HandChanged()
@@ -360,10 +315,7 @@ bool CELLRecord::HandChanged()
 void CELLRecord::HandChanged(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fHandChanged;
-    else
-        Dummy->flags &= ~fHandChanged;
+    Dummy->flags = value ? (Dummy->flags | fHandChanged) : (Dummy->flags & ~fHandChanged);
     }
 
 bool CELLRecord::BehaveLikeExterior()
@@ -375,10 +327,7 @@ bool CELLRecord::BehaveLikeExterior()
 void CELLRecord::BehaveLikeExterior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fBehaveLikeExterior;
-    else
-        Dummy->flags &= ~fBehaveLikeExterior;
+    Dummy->flags = value ? (Dummy->flags | fBehaveLikeExterior) : (Dummy->flags & ~fBehaveLikeExterior);
     }
 
 bool CELLRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -402,10 +351,7 @@ bool CELLRecord::IsQuad1ForceHidden()
 void CELLRecord::IsQuad1ForceHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsQuad1ForceHidden;
-    else
-        Dummy->flags &= ~fIsQuad1ForceHidden;
+    Dummy->flags = value ? (Dummy->flags | fIsQuad1ForceHidden) : (Dummy->flags & ~fIsQuad1ForceHidden);
     }
 
 bool CELLRecord::IsQuad2ForceHidden()
@@ -417,10 +363,7 @@ bool CELLRecord::IsQuad2ForceHidden()
 void CELLRecord::IsQuad2ForceHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsQuad2ForceHidden;
-    else
-        Dummy->flags &= ~fIsQuad2ForceHidden;
+    Dummy->flags = value ? (Dummy->flags | fIsQuad2ForceHidden) : (Dummy->flags & ~fIsQuad2ForceHidden);
     }
 
 bool CELLRecord::IsQuad3ForceHidden()
@@ -432,10 +375,7 @@ bool CELLRecord::IsQuad3ForceHidden()
 void CELLRecord::IsQuad3ForceHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsQuad3ForceHidden;
-    else
-        Dummy->flags &= ~fIsQuad3ForceHidden;
+    Dummy->flags = value ? (Dummy->flags | fIsQuad3ForceHidden) : (Dummy->flags & ~fIsQuad3ForceHidden);
     }
 
 bool CELLRecord::IsQuad4ForceHidden()
@@ -447,10 +387,7 @@ bool CELLRecord::IsQuad4ForceHidden()
 void CELLRecord::IsQuad4ForceHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsQuad4ForceHidden;
-    else
-        Dummy->flags &= ~fIsQuad4ForceHidden;
+    Dummy->flags = value ? (Dummy->flags | fIsQuad4ForceHidden) : (Dummy->flags & ~fIsQuad4ForceHidden);
     }
 
 bool CELLRecord::IsHiddenFlagMask(UINT8 Mask, bool Exact)

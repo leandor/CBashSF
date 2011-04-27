@@ -58,7 +58,7 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
         case 8: //xezn Encounter Zone
             return FORMID_FIELD;
@@ -169,7 +169,7 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
+        case 7: //full
             return FULL.value;
         case 8: //xezn Encounter Zone
             return XEZN.IsLoaded() ? &XEZN->value8 : NULL;
@@ -275,7 +275,7 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
+        case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 8: //xezn Encounter Zone
@@ -439,7 +439,7 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
+        case 7: //full
             FULL.Unload();
             return;
         case 8: //xezn Encounter Zone

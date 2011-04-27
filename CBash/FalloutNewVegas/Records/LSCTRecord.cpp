@@ -78,10 +78,7 @@ bool LSCTRecord::IsNone()
 void LSCTRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool LSCTRecord::IsXPProgress()
@@ -93,10 +90,7 @@ bool LSCTRecord::IsXPProgress()
 void LSCTRecord::IsXPProgress(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eXPProgress;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eXPProgress : eDummyDefault;
     }
 
 bool LSCTRecord::IsObjective()
@@ -108,10 +102,7 @@ bool LSCTRecord::IsObjective()
 void LSCTRecord::IsObjective(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eObjective;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eObjective : eDummyDefault;
     }
 
 bool LSCTRecord::IsTip()
@@ -123,10 +114,7 @@ bool LSCTRecord::IsTip()
 void LSCTRecord::IsTip(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTip;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTip : eDummyDefault;
     }
 
 bool LSCTRecord::IsStats()
@@ -138,10 +126,7 @@ bool LSCTRecord::IsStats()
 void LSCTRecord::IsStats(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStats;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStats : eDummyDefault;
     }
 
 bool LSCTRecord::IsType(UINT32 Type, bool Exact)

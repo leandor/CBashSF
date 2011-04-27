@@ -153,10 +153,7 @@ bool ACRERecord::IsOppositeParent()
 void ACRERecord::IsOppositeParent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOppositeParent;
-    else
-        Dummy->flags &= ~fIsOppositeParent;
+    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
     }
 
 bool ACRERecord::IsPopIn()
@@ -168,10 +165,7 @@ bool ACRERecord::IsPopIn()
 void ACRERecord::IsPopIn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPopIn;
-    else
-        Dummy->flags &= ~fIsPopIn;
+    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
     }
 
 bool ACRERecord::IsFlagMask(UINT8 Mask, bool Exact)

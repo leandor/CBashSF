@@ -33,10 +33,7 @@ bool NAVMRecord::NAVMNVTR::IsTriangle0External()
 void NAVMRecord::NAVMNVTR::IsTriangle0External(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTriangle0External;
-    else
-        Dummy->flags &= ~fIsTriangle0External;
+    Dummy->flags = value ? (Dummy->flags | fIsTriangle0External) : (Dummy->flags & ~fIsTriangle0External);
     }
 
 bool NAVMRecord::NAVMNVTR::IsTriangle1External()
@@ -48,10 +45,7 @@ bool NAVMRecord::NAVMNVTR::IsTriangle1External()
 void NAVMRecord::NAVMNVTR::IsTriangle1External(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTriangle1External;
-    else
-        Dummy->flags &= ~fIsTriangle1External;
+    Dummy->flags = value ? (Dummy->flags | fIsTriangle1External) : (Dummy->flags & ~fIsTriangle1External);
     }
 
 bool NAVMRecord::NAVMNVTR::IsTriangle2External()
@@ -63,10 +57,7 @@ bool NAVMRecord::NAVMNVTR::IsTriangle2External()
 void NAVMRecord::NAVMNVTR::IsTriangle2External(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTriangle2External;
-    else
-        Dummy->flags &= ~fIsTriangle2External;
+    Dummy->flags = value ? (Dummy->flags | fIsTriangle2External) : (Dummy->flags & ~fIsTriangle2External);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown4()
@@ -78,10 +69,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown4()
 void NAVMRecord::NAVMNVTR::IsUnknown4(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown4;
-    else
-        Dummy->flags &= ~fIsUnknown4;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown4) : (Dummy->flags & ~fIsUnknown4);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown5()
@@ -93,10 +81,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown5()
 void NAVMRecord::NAVMNVTR::IsUnknown5(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown5;
-    else
-        Dummy->flags &= ~fIsUnknown5;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown5) : (Dummy->flags & ~fIsUnknown5);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown6()
@@ -108,10 +93,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown6()
 void NAVMRecord::NAVMNVTR::IsUnknown6(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown6;
-    else
-        Dummy->flags &= ~fIsUnknown6;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown6) : (Dummy->flags & ~fIsUnknown6);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown7()
@@ -123,10 +105,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown7()
 void NAVMRecord::NAVMNVTR::IsUnknown7(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown7;
-    else
-        Dummy->flags &= ~fIsUnknown7;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown7) : (Dummy->flags & ~fIsUnknown7);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown8()
@@ -138,10 +117,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown8()
 void NAVMRecord::NAVMNVTR::IsUnknown8(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown8;
-    else
-        Dummy->flags &= ~fIsUnknown8;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown8) : (Dummy->flags & ~fIsUnknown8);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown9()
@@ -153,10 +129,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown9()
 void NAVMRecord::NAVMNVTR::IsUnknown9(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown9;
-    else
-        Dummy->flags &= ~fIsUnknown9;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown9) : (Dummy->flags & ~fIsUnknown9);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown10()
@@ -168,10 +141,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown10()
 void NAVMRecord::NAVMNVTR::IsUnknown10(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown10;
-    else
-        Dummy->flags &= ~fIsUnknown10;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown10) : (Dummy->flags & ~fIsUnknown10);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown11()
@@ -183,10 +153,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown11()
 void NAVMRecord::NAVMNVTR::IsUnknown11(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown11;
-    else
-        Dummy->flags &= ~fIsUnknown11;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown11) : (Dummy->flags & ~fIsUnknown11);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown12()
@@ -198,10 +165,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown12()
 void NAVMRecord::NAVMNVTR::IsUnknown12(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown12;
-    else
-        Dummy->flags &= ~fIsUnknown12;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown12) : (Dummy->flags & ~fIsUnknown12);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown13()
@@ -213,10 +177,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown13()
 void NAVMRecord::NAVMNVTR::IsUnknown13(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown13;
-    else
-        Dummy->flags &= ~fIsUnknown13;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown13) : (Dummy->flags & ~fIsUnknown13);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown14()
@@ -228,10 +189,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown14()
 void NAVMRecord::NAVMNVTR::IsUnknown14(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown14;
-    else
-        Dummy->flags &= ~fIsUnknown14;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown14) : (Dummy->flags & ~fIsUnknown14);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown15()
@@ -243,10 +201,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown15()
 void NAVMRecord::NAVMNVTR::IsUnknown15(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown15;
-    else
-        Dummy->flags &= ~fIsUnknown15;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown15) : (Dummy->flags & ~fIsUnknown15);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown16()
@@ -258,10 +213,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown16()
 void NAVMRecord::NAVMNVTR::IsUnknown16(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown16;
-    else
-        Dummy->flags &= ~fIsUnknown16;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown16) : (Dummy->flags & ~fIsUnknown16);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown17()
@@ -273,10 +225,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown17()
 void NAVMRecord::NAVMNVTR::IsUnknown17(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown17;
-    else
-        Dummy->flags &= ~fIsUnknown17;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown17) : (Dummy->flags & ~fIsUnknown17);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown18()
@@ -288,10 +237,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown18()
 void NAVMRecord::NAVMNVTR::IsUnknown18(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown18;
-    else
-        Dummy->flags &= ~fIsUnknown18;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown18) : (Dummy->flags & ~fIsUnknown18);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown19()
@@ -303,10 +249,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown19()
 void NAVMRecord::NAVMNVTR::IsUnknown19(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown19;
-    else
-        Dummy->flags &= ~fIsUnknown19;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown19) : (Dummy->flags & ~fIsUnknown19);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown20()
@@ -318,10 +261,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown20()
 void NAVMRecord::NAVMNVTR::IsUnknown20(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown20;
-    else
-        Dummy->flags &= ~fIsUnknown20;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown20) : (Dummy->flags & ~fIsUnknown20);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown21()
@@ -333,10 +273,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown21()
 void NAVMRecord::NAVMNVTR::IsUnknown21(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown21;
-    else
-        Dummy->flags &= ~fIsUnknown21;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown21) : (Dummy->flags & ~fIsUnknown21);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown22()
@@ -348,10 +285,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown22()
 void NAVMRecord::NAVMNVTR::IsUnknown22(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown22;
-    else
-        Dummy->flags &= ~fIsUnknown22;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown22) : (Dummy->flags & ~fIsUnknown22);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown23()
@@ -363,10 +297,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown23()
 void NAVMRecord::NAVMNVTR::IsUnknown23(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown23;
-    else
-        Dummy->flags &= ~fIsUnknown23;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown23) : (Dummy->flags & ~fIsUnknown23);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown24()
@@ -378,10 +309,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown24()
 void NAVMRecord::NAVMNVTR::IsUnknown24(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown24;
-    else
-        Dummy->flags &= ~fIsUnknown24;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown24) : (Dummy->flags & ~fIsUnknown24);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown25()
@@ -393,10 +321,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown25()
 void NAVMRecord::NAVMNVTR::IsUnknown25(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown25;
-    else
-        Dummy->flags &= ~fIsUnknown25;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown25) : (Dummy->flags & ~fIsUnknown25);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown26()
@@ -408,10 +333,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown26()
 void NAVMRecord::NAVMNVTR::IsUnknown26(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown26;
-    else
-        Dummy->flags &= ~fIsUnknown26;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown26) : (Dummy->flags & ~fIsUnknown26);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown27()
@@ -423,10 +345,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown27()
 void NAVMRecord::NAVMNVTR::IsUnknown27(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown27;
-    else
-        Dummy->flags &= ~fIsUnknown27;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown27) : (Dummy->flags & ~fIsUnknown27);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown28()
@@ -438,10 +357,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown28()
 void NAVMRecord::NAVMNVTR::IsUnknown28(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown28;
-    else
-        Dummy->flags &= ~fIsUnknown28;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown28) : (Dummy->flags & ~fIsUnknown28);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown29()
@@ -453,10 +369,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown29()
 void NAVMRecord::NAVMNVTR::IsUnknown29(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown29;
-    else
-        Dummy->flags &= ~fIsUnknown29;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown29) : (Dummy->flags & ~fIsUnknown29);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown30()
@@ -468,10 +381,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown30()
 void NAVMRecord::NAVMNVTR::IsUnknown30(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown30;
-    else
-        Dummy->flags &= ~fIsUnknown30;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown30) : (Dummy->flags & ~fIsUnknown30);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown31()
@@ -483,10 +393,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown31()
 void NAVMRecord::NAVMNVTR::IsUnknown31(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown31;
-    else
-        Dummy->flags &= ~fIsUnknown31;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown31) : (Dummy->flags & ~fIsUnknown31);
     }
 
 bool NAVMRecord::NAVMNVTR::IsUnknown32()
@@ -498,10 +405,7 @@ bool NAVMRecord::NAVMNVTR::IsUnknown32()
 void NAVMRecord::NAVMNVTR::IsUnknown32(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown32;
-    else
-        Dummy->flags &= ~fIsUnknown32;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown32) : (Dummy->flags & ~fIsUnknown32);
     }
 
 bool NAVMRecord::NAVMNVTR::IsFlagMask(UINT32 Mask, bool Exact)

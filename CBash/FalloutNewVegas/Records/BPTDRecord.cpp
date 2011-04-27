@@ -33,10 +33,7 @@ bool BPTDRecord::BPTDPart::IsSeverable()
 void BPTDRecord::BPTDPart::IsSeverable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSeverable;
-    else
-        Dummy->flags &= ~fIsSeverable;
+    Dummy->flags = value ? (Dummy->flags | fIsSeverable) : (Dummy->flags & ~fIsSeverable);
     }
 
 bool BPTDRecord::BPTDPart::IsIKData()
@@ -48,10 +45,7 @@ bool BPTDRecord::BPTDPart::IsIKData()
 void BPTDRecord::BPTDPart::IsIKData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIKData;
-    else
-        Dummy->flags &= ~fIsIKData;
+    Dummy->flags = value ? (Dummy->flags | fIsIKData) : (Dummy->flags & ~fIsIKData);
     }
 
 bool BPTDRecord::BPTDPart::IsIKDataBipedData()
@@ -63,10 +57,7 @@ bool BPTDRecord::BPTDPart::IsIKDataBipedData()
 void BPTDRecord::BPTDPart::IsIKDataBipedData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIKDataBipedData;
-    else
-        Dummy->flags &= ~fIsIKDataBipedData;
+    Dummy->flags = value ? (Dummy->flags | fIsIKDataBipedData) : (Dummy->flags & ~fIsIKDataBipedData);
     }
 
 bool BPTDRecord::BPTDPart::IsExplodable()
@@ -78,10 +69,7 @@ bool BPTDRecord::BPTDPart::IsExplodable()
 void BPTDRecord::BPTDPart::IsExplodable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsExplodable;
-    else
-        Dummy->flags &= ~fIsExplodable;
+    Dummy->flags = value ? (Dummy->flags | fIsExplodable) : (Dummy->flags & ~fIsExplodable);
     }
 
 bool BPTDRecord::BPTDPart::IsIKDataIsHead()
@@ -93,10 +81,7 @@ bool BPTDRecord::BPTDPart::IsIKDataIsHead()
 void BPTDRecord::BPTDPart::IsIKDataIsHead(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIKDataIsHead;
-    else
-        Dummy->flags &= ~fIsIKDataIsHead;
+    Dummy->flags = value ? (Dummy->flags | fIsIKDataIsHead) : (Dummy->flags & ~fIsIKDataIsHead);
     }
 
 bool BPTDRecord::BPTDPart::IsIKDataHeadTracking()
@@ -108,10 +93,7 @@ bool BPTDRecord::BPTDPart::IsIKDataHeadTracking()
 void BPTDRecord::BPTDPart::IsIKDataHeadTracking(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIKDataHeadTracking;
-    else
-        Dummy->flags &= ~fIsIKDataHeadTracking;
+    Dummy->flags = value ? (Dummy->flags | fIsIKDataHeadTracking) : (Dummy->flags & ~fIsIKDataHeadTracking);
     }
 
 bool BPTDRecord::BPTDPart::IsAbsoluteHitChance()
@@ -123,10 +105,7 @@ bool BPTDRecord::BPTDPart::IsAbsoluteHitChance()
 void BPTDRecord::BPTDPart::IsAbsoluteHitChance(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAbsoluteHitChance;
-    else
-        Dummy->flags &= ~fIsAbsoluteHitChance;
+    Dummy->flags = value ? (Dummy->flags | fIsAbsoluteHitChance) : (Dummy->flags & ~fIsAbsoluteHitChance);
     }
 
 bool BPTDRecord::BPTDPart::IsFlagMask(UINT8 Mask, bool Exact)
@@ -150,10 +129,7 @@ bool BPTDRecord::BPTDPart::IsTorso()
 void BPTDRecord::BPTDPart::IsTorso(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTorso;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTorso : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsHead1()
@@ -165,10 +141,7 @@ bool BPTDRecord::BPTDPart::IsHead1()
 void BPTDRecord::BPTDPart::IsHead1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHead1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHead1 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsHead2()
@@ -180,10 +153,7 @@ bool BPTDRecord::BPTDPart::IsHead2()
 void BPTDRecord::BPTDPart::IsHead2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHead2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHead2 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsLeftArm1()
@@ -195,10 +165,7 @@ bool BPTDRecord::BPTDPart::IsLeftArm1()
 void BPTDRecord::BPTDPart::IsLeftArm1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftArm1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftArm1 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsLeftArm2()
@@ -210,10 +177,7 @@ bool BPTDRecord::BPTDPart::IsLeftArm2()
 void BPTDRecord::BPTDPart::IsLeftArm2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftArm2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftArm2 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsRightArm1()
@@ -225,10 +189,7 @@ bool BPTDRecord::BPTDPart::IsRightArm1()
 void BPTDRecord::BPTDPart::IsRightArm1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightArm1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightArm1 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsRightArm2()
@@ -240,10 +201,7 @@ bool BPTDRecord::BPTDPart::IsRightArm2()
 void BPTDRecord::BPTDPart::IsRightArm2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightArm2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightArm2 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsLeftLeg1()
@@ -255,10 +213,7 @@ bool BPTDRecord::BPTDPart::IsLeftLeg1()
 void BPTDRecord::BPTDPart::IsLeftLeg1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftLeg1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftLeg1 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsLeftLeg2()
@@ -270,10 +225,7 @@ bool BPTDRecord::BPTDPart::IsLeftLeg2()
 void BPTDRecord::BPTDPart::IsLeftLeg2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftLeg2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftLeg2 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsLeftLeg3()
@@ -285,10 +237,7 @@ bool BPTDRecord::BPTDPart::IsLeftLeg3()
 void BPTDRecord::BPTDPart::IsLeftLeg3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftLeg3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftLeg3 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsRightLeg1()
@@ -300,10 +249,7 @@ bool BPTDRecord::BPTDPart::IsRightLeg1()
 void BPTDRecord::BPTDPart::IsRightLeg1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightLeg1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightLeg1 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsRightLeg2()
@@ -315,10 +261,7 @@ bool BPTDRecord::BPTDPart::IsRightLeg2()
 void BPTDRecord::BPTDPart::IsRightLeg2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightLeg2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightLeg2 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsRightLeg3()
@@ -330,10 +273,7 @@ bool BPTDRecord::BPTDPart::IsRightLeg3()
 void BPTDRecord::BPTDPart::IsRightLeg3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightLeg3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightLeg3 : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsBrain()
@@ -345,10 +285,7 @@ bool BPTDRecord::BPTDPart::IsBrain()
 void BPTDRecord::BPTDPart::IsBrain(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBrain;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBrain : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsWeapon()
@@ -360,10 +297,7 @@ bool BPTDRecord::BPTDPart::IsWeapon()
 void BPTDRecord::BPTDPart::IsWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWeapon : eDummyDefault;
     }
 
 bool BPTDRecord::BPTDPart::IsType(UINT8 Type, bool Exact)

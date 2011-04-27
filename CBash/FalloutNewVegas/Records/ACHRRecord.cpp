@@ -140,10 +140,7 @@ bool ACHRRecord::IsOppositeParent()
 void ACHRRecord::IsOppositeParent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOppositeParent;
-    else
-        Dummy->flags &= ~fIsOppositeParent;
+    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
     }
 
 bool ACHRRecord::IsPopIn()
@@ -155,10 +152,7 @@ bool ACHRRecord::IsPopIn()
 void ACHRRecord::IsPopIn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPopIn;
-    else
-        Dummy->flags &= ~fIsPopIn;
+    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
     }
 
 bool ACHRRecord::IsFlagMask(UINT8 Mask, bool Exact)

@@ -96,10 +96,7 @@ bool SOUNRecord::IsRandomFrequencyShift()
 
 void SOUNRecord::IsRandomFrequencyShift(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsRandomFrequencyShift;
-    else
-        SNDX.value.flags &= ~fIsRandomFrequencyShift;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsRandomFrequencyShift) : (SNDX.value.flags & ~fIsRandomFrequencyShift);
     }
 
 bool SOUNRecord::IsPlayAtRandom()
@@ -109,10 +106,7 @@ bool SOUNRecord::IsPlayAtRandom()
 
 void SOUNRecord::IsPlayAtRandom(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsPlayAtRandom;
-    else
-        SNDX.value.flags &= ~fIsPlayAtRandom;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsPlayAtRandom) : (SNDX.value.flags & ~fIsPlayAtRandom);
     }
 
 bool SOUNRecord::IsEnvironmentIgnored()
@@ -122,10 +116,7 @@ bool SOUNRecord::IsEnvironmentIgnored()
 
 void SOUNRecord::IsEnvironmentIgnored(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsEnvironmentIgnored;
-    else
-        SNDX.value.flags &= ~fIsEnvironmentIgnored;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsEnvironmentIgnored) : (SNDX.value.flags & ~fIsEnvironmentIgnored);
     }
 
 bool SOUNRecord::IsRandomLocation()
@@ -135,10 +126,7 @@ bool SOUNRecord::IsRandomLocation()
 
 void SOUNRecord::IsRandomLocation(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsRandomLocation;
-    else
-        SNDX.value.flags &= ~fIsRandomLocation;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsRandomLocation) : (SNDX.value.flags & ~fIsRandomLocation);
     }
 
 bool SOUNRecord::IsLoop()
@@ -148,10 +136,7 @@ bool SOUNRecord::IsLoop()
 
 void SOUNRecord::IsLoop(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsLoop;
-    else
-        SNDX.value.flags &= ~fIsLoop;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsLoop) : (SNDX.value.flags & ~fIsLoop);
     }
 
 bool SOUNRecord::IsMenuSound()
@@ -161,10 +146,7 @@ bool SOUNRecord::IsMenuSound()
 
 void SOUNRecord::IsMenuSound(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIsMenuSound;
-    else
-        SNDX.value.flags &= ~fIsMenuSound;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIsMenuSound) : (SNDX.value.flags & ~fIsMenuSound);
     }
 
 bool SOUNRecord::Is2D()
@@ -174,10 +156,7 @@ bool SOUNRecord::Is2D()
 
 void SOUNRecord::Is2D(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIs2D;
-    else
-        SNDX.value.flags &= ~fIs2D;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIs2D) : (SNDX.value.flags & ~fIs2D);
     }
 
 bool SOUNRecord::Is360LFE()
@@ -187,10 +166,7 @@ bool SOUNRecord::Is360LFE()
 
 void SOUNRecord::Is360LFE(bool value)
     {
-    if(value)
-        SNDX.value.flags |= fIs360LFE;
-    else
-        SNDX.value.flags &= ~fIs360LFE;
+    SNDX.value.flags = value ? (SNDX.value.flags | fIs360LFE) : (SNDX.value.flags & ~fIs360LFE);
     }
 
 bool SOUNRecord::IsFlagMask(unsigned short Mask, bool Exact)

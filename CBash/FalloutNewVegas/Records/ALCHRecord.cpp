@@ -128,10 +128,7 @@ bool ALCHRecord::IsNone()
 void ALCHRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool ALCHRecord::IsBigGuns()
@@ -143,10 +140,7 @@ bool ALCHRecord::IsBigGuns()
 void ALCHRecord::IsBigGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBigGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBigGuns : eDummyDefault;
     }
 
 bool ALCHRecord::IsEnergyWeapons()
@@ -158,10 +152,7 @@ bool ALCHRecord::IsEnergyWeapons()
 void ALCHRecord::IsEnergyWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEnergyWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
     }
 
 bool ALCHRecord::IsSmallGuns()
@@ -173,10 +164,7 @@ bool ALCHRecord::IsSmallGuns()
 void ALCHRecord::IsSmallGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSmallGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSmallGuns : eDummyDefault;
     }
 
 bool ALCHRecord::IsMeleeWeapons()
@@ -188,10 +176,7 @@ bool ALCHRecord::IsMeleeWeapons()
 void ALCHRecord::IsMeleeWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMeleeWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
     }
 
 bool ALCHRecord::IsUnarmedWeapon()
@@ -203,10 +188,7 @@ bool ALCHRecord::IsUnarmedWeapon()
 void ALCHRecord::IsUnarmedWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnarmedWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
     }
 
 bool ALCHRecord::IsThrownWeapons()
@@ -218,10 +200,7 @@ bool ALCHRecord::IsThrownWeapons()
 void ALCHRecord::IsThrownWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eThrownWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
     }
 
 bool ALCHRecord::IsMine()
@@ -233,10 +212,7 @@ bool ALCHRecord::IsMine()
 void ALCHRecord::IsMine(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMine;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMine : eDummyDefault;
     }
 
 bool ALCHRecord::IsBodyWear()
@@ -248,10 +224,7 @@ bool ALCHRecord::IsBodyWear()
 void ALCHRecord::IsBodyWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBodyWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBodyWear : eDummyDefault;
     }
 
 bool ALCHRecord::IsHeadWear()
@@ -263,10 +236,7 @@ bool ALCHRecord::IsHeadWear()
 void ALCHRecord::IsHeadWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeadWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeadWear : eDummyDefault;
     }
 
 bool ALCHRecord::IsHandWear()
@@ -278,10 +248,7 @@ bool ALCHRecord::IsHandWear()
 void ALCHRecord::IsHandWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHandWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHandWear : eDummyDefault;
     }
 
 bool ALCHRecord::IsChems()
@@ -293,10 +260,7 @@ bool ALCHRecord::IsChems()
 void ALCHRecord::IsChems(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eChems;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eChems : eDummyDefault;
     }
 
 bool ALCHRecord::IsStimpack()
@@ -308,10 +272,7 @@ bool ALCHRecord::IsStimpack()
 void ALCHRecord::IsStimpack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStimpack;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStimpack : eDummyDefault;
     }
 
 bool ALCHRecord::IsFood()
@@ -323,10 +284,7 @@ bool ALCHRecord::IsFood()
 void ALCHRecord::IsFood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFood : eDummyDefault;
     }
 
 bool ALCHRecord::IsAlcohol()
@@ -338,10 +296,7 @@ bool ALCHRecord::IsAlcohol()
 void ALCHRecord::IsAlcohol(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAlcohol;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAlcohol : eDummyDefault;
     }
 
 bool ALCHRecord::IsEquipmentType(UINT32 Type, bool Exact)

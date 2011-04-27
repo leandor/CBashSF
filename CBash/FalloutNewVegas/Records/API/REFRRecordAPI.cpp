@@ -134,7 +134,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UINT32_FIELD;
         case 32: //fnam Flags
             return UINT8_FIELD;
-        case 33: //full Name
+        case 33: //full
             return STRING_FIELD;
         case 34: //tnam TNAM ,, Struct
             return UINT8_FIELD;
@@ -578,7 +578,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return XTEL.IsLoaded() ? &XTEL->value31 : NULL;
         case 32: //fnam Flags
             return XMRK.IsLoaded() ? &XMRK->FNAM->value32 : NULL;
-        case 33: //full Name
+        case 33: //full
             return FULLReq.value;
         case 34: //tnam TNAM ,, Struct
             return TNAM.IsLoaded() ? &TNAM->value34 : NULL;
@@ -952,7 +952,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XMRK->FNAM.Load();
             XMRK->FNAM->value32 = *(UINT8 *)FieldValue;
             break;
-        case 33: //full Name
+        case 33: //full
             FULLReq.Copy((STRING)FieldValue);
             break;
         case 34: //tnam TNAM ,, Struct
@@ -1588,7 +1588,7 @@ void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
             if(XMRK.IsLoaded())
                 XMRK->FNAM.Unload();
             return;
-        case 33: //full Name
+        case 33: //full
             FULLReq.Unload();
             return;
         case 34: //tnam TNAM ,, Struct

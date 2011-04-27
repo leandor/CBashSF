@@ -993,6 +993,104 @@ struct GENPATROL
     bool operator !=(const GENPATROL &other) const;
     };
 
+struct FNVXNAM
+    {
+    FORMID  faction;
+    SINT32  mod;
+    UINT32  groupReactionType;
+
+    enum groupReactionTypes
+        {
+        eNeutral = 0,
+        eEnemy,
+        eAlly,
+        eFriend,
+        };
+
+    FNVXNAM();
+    ~FNVXNAM();
+
+    bool   IsNeutral();
+    void   IsNeutral(bool value);
+    bool   IsEnemy();
+    void   IsEnemy(bool value);
+    bool   IsAlly();
+    void   IsAlly(bool value);
+    bool   IsFriend();
+    void   IsFriend(bool value);
+    bool   IsType(UINT32 Type);
+    void   SetType(UINT32 Type);
+
+    bool operator ==(const FNVXNAM &other) const;
+    bool operator !=(const FNVXNAM &other) const;
+    };
+
+struct FNVMODS //Alternate Texture
+    {
+    STRING  name; //3D Name
+    FORMID  texture; //New Texture
+    SINT32  index; //3D Index
+
+    FNVMODS();
+    ~FNVMODS();
+
+    bool operator ==(const FNVMODS &other) const;
+    bool operator !=(const FNVMODS &other) const;
+    };
+
+struct FNVAlternateTextures
+    {
+    std::vector<FNVMODS *> MODS; //Alternate Textures
+
+    FNVAlternateTextures();
+    ~FNVAlternateTextures();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+
+    bool operator ==(const FNVAlternateTextures &other) const;
+    bool operator !=(const FNVAlternateTextures &other) const;
+    };
+
+struct FNVMODEL
+    {
+    StringRecord MODL; //Model Filename
+    OptSimpleSubRecord<FLOAT32> MODB; //Bound Radius (Unknown?)
+    RawRecord MODT; //Texture Files Hashes
+    FNVAlternateTextures Textures; //Alternate Textures
+    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
+
+    enum moddFlags
+        {
+        fIsHead      = 0x01,
+        fIsTorso     = 0x02,
+        fIsRightHand = 0x04,
+        fIsLeftHand  = 0x08
+        };
+
+    FNVMODEL();
+    ~FNVMODEL();
+
+    bool   IsHead();
+    void   IsHead(bool value);
+    bool   IsTorso();
+    void   IsTorso(bool value);
+    bool   IsRightHand();
+    void   IsRightHand(bool value);
+    bool   IsLeftHand();
+    void   IsLeftHand(bool value);
+    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+    void   SetFlagMask(UINT8 Mask);
+
+    bool operator ==(const FNVMODEL &other) const;
+    bool operator !=(const FNVMODEL &other) const;
+    };
+
 //Unfilled
 struct FNVXOWN
     {
@@ -1014,50 +1112,6 @@ struct FNVXLOC
 
     bool operator ==(const FNVXLOC &other) const;
     bool operator !=(const FNVXLOC &other) const;
-    };
-
-struct FNVMODS //Alternate Texture
-    {
-    STRING  name; //3D Name
-    FORMID  texture; //New Texture
-    SINT32  index; //3D Index
-
-    FNVMODS();
-    ~FNVMODS();
-
-    bool operator ==(const FNVMODS &other) const;
-    bool operator !=(const FNVMODS &other) const;
-    };
-
-struct FNVMODEL
-    {
-    StringRecord MODL; //Model Filename
-    OptSimpleSubRecord<FLOAT32> MODB; //Bound Radius (Unknown?)
-    RawRecord MODT; //Texture Files Hashes
-    std::vector<FNVMODS *> MODS; //Alternate Textures
-    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
-
-    enum moddFlags
-        {
-        fIsHead      = 0x00000001,
-        fIsTorso     = 0x00000002,
-        fIsRightHand = 0x00000004,
-        fIsLeftHand  = 0x00000008
-        };
-
-    bool   IsHead();
-    void   IsHead(bool value);
-    bool   IsTorso();
-    void   IsTorso(bool value);
-    bool   IsRightHand();
-    void   IsRightHand(bool value);
-    bool   IsLeftHand();
-    void   IsLeftHand(bool value);
-    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-    void   SetFlagMask(UINT8 Mask);
-
-    bool operator ==(const GENMODEL &other) const;
-    bool operator !=(const GENMODEL &other) const;
     };
 
 struct FNVBIPEDMODEL
@@ -1440,36 +1494,4 @@ struct FNVLIGHT
 
     bool operator ==(const FNVLIGHT &other) const;
     bool operator !=(const FNVLIGHT &other) const;
-    };
-
-struct FNVXNAM
-    {
-    FORMID  faction;
-    SINT32  mod;
-    UINT32  groupReactionType;
-
-    enum groupReactionTypes
-        {
-        eNeutral = 0,
-        eEnemy,
-        eAlly,
-        eFriend,
-        };
-
-    FNVXNAM();
-    ~FNVXNAM();
-
-    bool   IsNeutral();
-    void   IsNeutral(bool value);
-    bool   IsEnemy();
-    void   IsEnemy(bool value);
-    bool   IsAlly();
-    void   IsAlly(bool value);
-    bool   IsFriend();
-    void   IsFriend(bool value);
-    bool   IsType(UINT32 Type);
-    void   SetType(UINT32 Type);
-
-    bool operator ==(const FNVXNAM &other) const;
-    bool operator !=(const FNVXNAM &other) const;
     };

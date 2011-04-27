@@ -91,10 +91,7 @@ bool DIALRecord::IsTopic()
 void DIALRecord::IsTopic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTopic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTopic : eDummyDefault;
     }
 
 bool DIALRecord::IsConversation()
@@ -106,10 +103,7 @@ bool DIALRecord::IsConversation()
 void DIALRecord::IsConversation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eConversation;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eConversation : eDummyDefault;
     }
 
 bool DIALRecord::IsCombat()
@@ -121,10 +115,7 @@ bool DIALRecord::IsCombat()
 void DIALRecord::IsCombat(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCombat;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCombat : eDummyDefault;
     }
 
 bool DIALRecord::IsPersuasion()
@@ -136,10 +127,7 @@ bool DIALRecord::IsPersuasion()
 void DIALRecord::IsPersuasion(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePersuasion;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePersuasion : eDummyDefault;
     }
 
 bool DIALRecord::IsDetection()
@@ -151,10 +139,7 @@ bool DIALRecord::IsDetection()
 void DIALRecord::IsDetection(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDetection;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDetection : eDummyDefault;
     }
 
 bool DIALRecord::IsService()
@@ -166,10 +151,7 @@ bool DIALRecord::IsService()
 void DIALRecord::IsService(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eService;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eService : eDummyDefault;
     }
 
 bool DIALRecord::IsMisc()
@@ -181,10 +163,7 @@ bool DIALRecord::IsMisc()
 void DIALRecord::IsMisc(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMisc;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMisc : eDummyDefault;
     }
 
 bool DIALRecord::IsRadio()
@@ -196,10 +175,7 @@ bool DIALRecord::IsRadio()
 void DIALRecord::IsRadio(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRadio;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRadio : eDummyDefault;
     }
 
 bool DIALRecord::IsType(UINT8 Type, bool Exact)
@@ -223,10 +199,7 @@ bool DIALRecord::IsRumors()
 void DIALRecord::IsRumors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRumors;
-    else
-        Dummy->flags &= ~fIsRumors;
+    Dummy->flags = value ? (Dummy->flags | fIsRumors) : (Dummy->flags & ~fIsRumors);
     }
 
 bool DIALRecord::IsTopLevel()
@@ -238,10 +211,7 @@ bool DIALRecord::IsTopLevel()
 void DIALRecord::IsTopLevel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTopLevel;
-    else
-        Dummy->flags &= ~fIsTopLevel;
+    Dummy->flags = value ? (Dummy->flags | fIsTopLevel) : (Dummy->flags & ~fIsTopLevel);
     }
 
 bool DIALRecord::IsFlagMask(UINT8 Mask, bool Exact)

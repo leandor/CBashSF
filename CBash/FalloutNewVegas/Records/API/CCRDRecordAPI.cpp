@@ -64,37 +64,55 @@ UINT32 CCRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return SINT16_FIELD;
         case 9: //boundZ
             return SINT16_FIELD;
-        case 10: //full Name
+        case 10: //full
             return STRING_FIELD;
-        case 11: //modl Model Filename
-            return STRING_FIELD;
-        case 12: //modb_p Unknown
+        case 11: //modPath
+            return ISTRING_FIELD;
+        case 12: //modb
+            return FLOAT32_FIELD;
+        case 13: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODB.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 13: //modt_p Texture Files Hashes
-            switch(WhichAttribute)
+        case 14: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODT.GetSize();
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //mods Alternate Textures
-            return STRING_FIELD;
-        case 15: //mods Alternate Textures
-            return FORMID_FIELD;
-        case 16: //mods Alternate Textures
-            return SINT32_FIELD;
-        case 17: //modd FaceGen Model Flags
+
+        case 17: //modelFlags
             return UINT8_FIELD;
         case 18: //iconPath
             return ISTRING_FIELD;
@@ -145,14 +163,13 @@ void * CCRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return OBND.IsLoaded() ? &OBND->y : NULL;
         case 9: //boundZ
             return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //full Name
+        case 10: //full
             return FULL.value;
-        case 11: //modl Model Filename
+        case 11: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 12: //modb_p Unknown
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
-            return NULL;
-        case 13: //modt_p Texture Files Hashes
+        case 12: //modb
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
+        case 13: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
@@ -161,7 +178,7 @@ void * CCRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
         case 16: //mods Alternate Textures
             return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
-        case 17: //modd FaceGen Model Flags
+        case 17: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value17 : NULL;
         case 18: //iconPath
             return ICON.value;
@@ -227,18 +244,18 @@ bool CCRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             OBND.Load();
             OBND->z = *(SINT16 *)FieldValue;
             break;
-        case 10: //full Name
+        case 10: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 11: //modl Model Filename
+        case 11: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 12: //modb_p Unknown
+        case 12: //modb
             MODL.Load();
-            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //modt_p Texture Files Hashes
+        case 13: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -256,7 +273,7 @@ bool CCRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value16 = *(SINT32 *)FieldValue;
             break;
-        case 17: //modd FaceGen Model Flags
+        case 17: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value17 = *(UINT8 *)FieldValue;
@@ -338,18 +355,18 @@ void CCRDRecord::DeleteField(FIELD_IDENTIFIERS)
             if(OBND.IsLoaded())
                 OBND->z = defaultOBND.z;
             return;
-        case 10: //full Name
+        case 10: //full
             FULL.Unload();
             return;
-        case 11: //modl Model Filename
+        case 11: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 12: //modb_p Unknown
+        case 12: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 13: //modt_p Texture Files Hashes
+        case 13: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -365,7 +382,7 @@ void CCRDRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 17: //modd FaceGen Model Flags
+        case 17: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

@@ -16,7 +16,9 @@ def printRecord(record):
             rec = getattr(record, attr)
             if RecIndent: print " " * (RecIndent - 1),
             print attr + " " * (msize - len(attr)), ":",
-            if 'flag' in attr.lower():
+            if rec is None:
+                print rec
+            elif 'flag' in attr.lower() or 'service' in attr.lower():
                 print hex(rec)
                 for x in range(32):
                     z = pow(2, x)
@@ -70,7 +72,10 @@ def regressionTests():
     assertTXST(Current, newMod)
     assertMICN(Current, newMod)
     assertGLOB(Current, newMod)
-##    newMod.save()
+    assertCLAS(Current, newMod)
+    assertFACT(Current, newMod)
+    assertHDPT(Current, newMod)
+    newMod.save()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -684,6 +689,502 @@ def assertGLOB(Current, newMod):
     assert record.value == 12000.0
 
     print "GLOB:Finished testing"
+
+def assertCLAS(Current, newMod):
+    record = Current.LoadOrderMods[0].CLAS[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x17A636)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [8, 92, 57, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LegionaryBadAss'
+    assert record.eid == 'LegionaryBAdAss'
+    
+    assert record.full == 'Legate'
+    assert record.full != 'LegAte'
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.tagSkills1 == 38
+    assert record.tagSkills2 == 41
+    assert record.tagSkills3 == 45
+    assert record.tagSkills4 == -1
+    assert record.flags == 0x0L
+    assert record.services == 0x0L
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.strength == 9
+    assert record.perception == 8
+    assert record.endurance == 8
+    assert record.charisma == 7
+    assert record.intelligence == 6
+    assert record.agility == 7
+    assert record.luck == 7
+    
+    nrecord = newMod.create_CLAS()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = 'WarTest'
+    
+    nrecord.full = 'WarLegate'
+    nrecord.description = 'WarDesc'
+    nrecord.iconPath = 'WarPath'
+    nrecord.smallIconPath = 'WarSPath'
+    nrecord.tagSkills1 = 1
+    nrecord.tagSkills2 = 2
+    nrecord.tagSkills3 = 3
+    nrecord.tagSkills4 = 4
+    nrecord.flags = 5
+    nrecord.services = 6
+    nrecord.trainSkill = 7
+    nrecord.trainLevel = 8
+    nrecord.strength = 9
+    nrecord.perception = 10
+    nrecord.endurance = 11
+    nrecord.charisma = 12
+    nrecord.intelligence = 13
+    nrecord.agility = 14
+    nrecord.luck = 15
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x001008)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'WarLegate'
+    assert nrecord.full != 'WArLegate'
+    assert nrecord.description == 'WarDesc'
+    assert nrecord.description != 'WArDesc'
+    assert nrecord.iconPath == 'WarPath'
+    assert nrecord.iconPath == 'WArPath'
+    assert nrecord.smallIconPath == 'WarSPath'
+    assert nrecord.smallIconPath == 'WArSPath'
+    assert nrecord.tagSkills1 == 1
+    assert nrecord.tagSkills2 == 2
+    assert nrecord.tagSkills3 == 3
+    assert nrecord.tagSkills4 == 4
+    assert nrecord.flags == 5
+    assert nrecord.services == 6
+    assert nrecord.trainSkill == 7
+    assert nrecord.trainLevel == 8
+    assert nrecord.strength == 9
+    assert nrecord.perception == 10
+    assert nrecord.endurance == 11
+    assert nrecord.charisma == 12
+    assert nrecord.intelligence == 13
+    assert nrecord.agility == 14
+    assert nrecord.luck == 15
+
+    record = Current.LoadOrderMods[0].CLAS[0]
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x17A636)
+    assert newrecord.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.versionControl1 == [8, 92, 57, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'LegionaryBadAss'
+    assert newrecord.eid == 'LegionaryBAdAss'
+    
+    assert newrecord.full == 'Legate'
+    assert newrecord.full != 'LegAte'
+    assert newrecord.description == None
+    assert newrecord.iconPath == None
+    assert newrecord.smallIconPath == None
+    assert newrecord.tagSkills1 == 38
+    assert newrecord.tagSkills2 == 41
+    assert newrecord.tagSkills3 == 45
+    assert newrecord.tagSkills4 == -1
+    assert newrecord.flags == 0x0L
+    assert newrecord.services == 0x0L
+    assert newrecord.trainSkill == 0
+    assert newrecord.trainLevel == 0
+    assert newrecord.strength == 9
+    assert newrecord.perception == 8
+    assert newrecord.endurance == 8
+    assert newrecord.charisma == 7
+    assert newrecord.intelligence == 6
+    assert newrecord.agility == 7
+    assert newrecord.luck == 7
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = 'WarLegate'
+    newrecord.description = 'WarDesc'
+    newrecord.iconPath = 'WarPath'
+    newrecord.smallIconPath = 'WarSPath'
+    newrecord.tagSkills1 = 1
+    newrecord.tagSkills2 = 2
+    newrecord.tagSkills3 = 3
+    newrecord.tagSkills4 = 4
+    newrecord.flags = 5
+    newrecord.services = 6
+    newrecord.trainSkill = 7
+    newrecord.trainLevel = 8
+    newrecord.strength = 9
+    newrecord.perception = 10
+    newrecord.endurance = 11
+    newrecord.charisma = 12
+    newrecord.intelligence = 13
+    newrecord.agility = 14
+    newrecord.luck = 15
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x17A636)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'WarLegate'
+    assert newrecord.full != 'WArLegate'
+    assert newrecord.description == 'WarDesc'
+    assert newrecord.description != 'WArDesc'
+    assert newrecord.iconPath == 'WarPath'
+    assert newrecord.iconPath == 'WArPath'
+    assert newrecord.smallIconPath == 'WarSPath'
+    assert newrecord.smallIconPath == 'WArSPath'
+    assert newrecord.tagSkills1 == 1
+    assert newrecord.tagSkills2 == 2
+    assert newrecord.tagSkills3 == 3
+    assert newrecord.tagSkills4 == 4
+    assert newrecord.flags == 5
+    assert newrecord.services == 6
+    assert newrecord.trainSkill == 7
+    assert newrecord.trainLevel == 8
+    assert newrecord.strength == 9
+    assert newrecord.perception == 10
+    assert newrecord.endurance == 11
+    assert newrecord.charisma == 12
+    assert newrecord.intelligence == 13
+    assert newrecord.agility == 14
+    assert newrecord.luck == 15
+
+    assert record.fid == ('FalloutNV.esm', 0x17A636)
+    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [8, 92, 57, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LegionaryBadAss'
+    assert record.eid == 'LegionaryBAdAss'
+    
+    assert record.full == 'Legate'
+    assert record.full != 'LegAte'
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.tagSkills1 == 38
+    assert record.tagSkills2 == 41
+    assert record.tagSkills3 == 45
+    assert record.tagSkills4 == -1
+    assert record.flags == 0x0L
+    assert record.services == 0x0L
+    assert record.trainSkill == 0
+    assert record.trainLevel == 0
+    assert record.strength == 9
+    assert record.perception == 8
+    assert record.endurance == 8
+    assert record.charisma == 7
+    assert record.intelligence == 6
+    assert record.agility == 7
+    assert record.luck == 7
+
+    print "CLAS:Finished testing"
+
+def assertFACT(Current, newMod):
+    record = Current.LoadOrderMods[0].LookupRecord(0x1D3FE)
+
+    assert record.fid == ('FalloutNV.esm', 0x01D3FE)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 92, 2, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [7, 0]
+    assert record.eid == 'BrotherhoodSteelFaction'
+    assert record.eid == 'BrOtherhoodSteelFaction'
+    
+    assert record.full == 'Brotherhood of Steel'
+    assert record.full != 'Brotherhood Of Steel'
+    assert record.relations_list == [(('FalloutNV.esm', 1264455), -100, 1L), (('FalloutNV.esm', 1530450), 0, 1L),
+                                     (('FalloutNV.esm', 111268), 0, 1L), (('FalloutNV.esm', 266421), 0, 2L),
+                                     (('FalloutNV.esm', 1469262), 0, 2L), (('FalloutNV.esm', 103314), 0,2L),
+                                     (('FalloutNV.esm', 591630), 0, 3L), (('FalloutNV.esm', 559885), 0, 2L),
+                                     (('FalloutNV.esm', 96729), 0, 3L), (('FalloutNV.esm', 96747), 0, 3L),
+                                     (('FalloutNV.esm', 1317537), 0, 2L), (('FalloutNV.esm', 1355838), 0, 2L),
+                                     (('FalloutNV.esm',197906), 0, 2L), (('FalloutNV.esm', 673511), 0, 0L),
+                                     (('FalloutNV.esm', 119275), -100, 0L), (('FalloutNV.esm', 119806),100, 2L)]
+    assert record.flags == 0x100
+    assert record.crimeGoldMultiplier == None
+    assert record.ranks_list == [(0, 'Squire', None, None), (1, 'Knight', None, None), (2, 'Knight Sergeant', None, None),
+                                 (3, 'Knight Captain', None, None), (4, 'Paladin', None, None),
+                                 (5, 'Star Paladin', None, None), (6, 'Sentinel', None, None), (7, 'Elder', None, None)]
+    assert record.reputation == ('FalloutNV.esm', 0x11E662)
+
+    nrecord = newMod.create_FACT()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = 'WarTest'
+    
+    nrecord.full = 'WarBrotherhood of Steel'
+    nrecord.relations_list = [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    nrecord.flags = 4
+    nrecord.crimeGoldMultiplier = 5.0
+    nrecord.ranks_list = [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
+    nrecord.reputation = ('FalloutNV.esm', 6)
+
+    assert nrecord.fid == ('RegressionTests.esp', 0x001009)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'WarBrotherhood of Steel'
+    assert nrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    assert nrecord.flags == 4
+    assert nrecord.crimeGoldMultiplier == 5.0
+    assert nrecord.ranks_list == [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
+    assert nrecord.reputation == ('FalloutNV.esm', 6)
+
+    record = Current.LoadOrderMods[0].LookupRecord(0x1D3FE)
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x01D3FE)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [10, 92, 2, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [7, 0]
+    assert newrecord.eid == 'BrotherhoodSteelFaction'
+    assert newrecord.eid == 'BrOtherhoodSteelFaction'
+    
+    assert newrecord.full == 'Brotherhood of Steel'
+    assert newrecord.full != 'Brotherhood Of Steel'
+    assert newrecord.relations_list == [(('FalloutNV.esm', 1264455), -100, 1L), (('FalloutNV.esm', 1530450), 0, 1L),
+                                     (('FalloutNV.esm', 111268), 0, 1L), (('FalloutNV.esm', 266421), 0, 2L),
+                                     (('FalloutNV.esm', 1469262), 0, 2L), (('FalloutNV.esm', 103314), 0,2L),
+                                     (('FalloutNV.esm', 591630), 0, 3L), (('FalloutNV.esm', 559885), 0, 2L),
+                                     (('FalloutNV.esm', 96729), 0, 3L), (('FalloutNV.esm', 96747), 0, 3L),
+                                     (('FalloutNV.esm', 1317537), 0, 2L), (('FalloutNV.esm', 1355838), 0, 2L),
+                                     (('FalloutNV.esm',197906), 0, 2L), (('FalloutNV.esm', 673511), 0, 0L),
+                                     (('FalloutNV.esm', 119275), -100, 0L), (('FalloutNV.esm', 119806),100, 2L)]
+    assert newrecord.flags == 0x100
+    assert newrecord.crimeGoldMultiplier == None
+    assert newrecord.ranks_list == [(0, 'Squire', None, None), (1, 'Knight', None, None), (2, 'Knight Sergeant', None, None),
+                                 (3, 'Knight Captain', None, None), (4, 'Paladin', None, None),
+                                 (5, 'Star Paladin', None, None), (6, 'Sentinel', None, None), (7, 'Elder', None, None)]
+    assert newrecord.reputation == ('FalloutNV.esm', 0x11E662)
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = 'WarBrotherhood of Steel'
+    newrecord.relations_list = [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    newrecord.flags = 4
+    newrecord.crimeGoldMultiplier = 5.0
+    newrecord.ranks_list = [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
+    newrecord.reputation = ('FalloutNV.esm', 6)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x01D3FE)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'WarBrotherhood of Steel'
+    assert newrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    assert newrecord.flags == 4
+    assert newrecord.crimeGoldMultiplier == 5.0
+    assert newrecord.ranks_list == [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
+    assert newrecord.reputation == ('FalloutNV.esm', 6)
+
+    assert record.fid == ('FalloutNV.esm', 0x01D3FE)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 92, 2, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [7, 0]
+    assert record.eid == 'BrotherhoodSteelFaction'
+    assert record.eid == 'BrOtherhoodSteelFaction'
+    
+    assert record.full == 'Brotherhood of Steel'
+    assert record.full != 'Brotherhood Of Steel'
+    assert record.relations_list == [(('FalloutNV.esm', 1264455), -100, 1L), (('FalloutNV.esm', 1530450), 0, 1L),
+                                     (('FalloutNV.esm', 111268), 0, 1L), (('FalloutNV.esm', 266421), 0, 2L),
+                                     (('FalloutNV.esm', 1469262), 0, 2L), (('FalloutNV.esm', 103314), 0,2L),
+                                     (('FalloutNV.esm', 591630), 0, 3L), (('FalloutNV.esm', 559885), 0, 2L),
+                                     (('FalloutNV.esm', 96729), 0, 3L), (('FalloutNV.esm', 96747), 0, 3L),
+                                     (('FalloutNV.esm', 1317537), 0, 2L), (('FalloutNV.esm', 1355838), 0, 2L),
+                                     (('FalloutNV.esm',197906), 0, 2L), (('FalloutNV.esm', 673511), 0, 0L),
+                                     (('FalloutNV.esm', 119275), -100, 0L), (('FalloutNV.esm', 119806),100, 2L)]
+    assert record.flags == 0x100
+    assert record.crimeGoldMultiplier == None
+    assert record.ranks_list == [(0, 'Squire', None, None), (1, 'Knight', None, None), (2, 'Knight Sergeant', None, None),
+                                 (3, 'Knight Captain', None, None), (4, 'Paladin', None, None),
+                                 (5, 'Star Paladin', None, None), (6, 'Sentinel', None, None), (7, 'Elder', None, None)]
+    assert record.reputation == ('FalloutNV.esm', 0x11E662)
+
+    print "FACT:Finished testing"
+
+def assertHDPT(Current, newMod):
+    record = Current.LoadOrderMods[0].LookupRecord(0x0BCBEF)
+
+    assert record.fid == ('FalloutNV.esm', 0x0BCBEF)
+    assert record.flags1 == 0x80000000
+    assert record.versionControl1 == [5, 66, 39, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [3, 0]
+    assert record.eid == r'BeardMustacheCurlyFull'
+    assert record.eid == r'BeArdMustacheCurlyFull'
+    
+    assert record.full == r'The Comrade'
+    assert record.full != r'ThE Comrade'
+    assert record.modPath == r'Characters\Hair\BeardMustacheCurly.nif'
+    assert record.modPath == r'ChAracters\Hair\BeardMustacheCurly.nif'
+    assert record.modb == 0.0
+    assert record.modt_p == [238, 236, 12, 98, 148, 160, 189, 156, 110, 108, 12, 98, 153, 160, 189, 156, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 14, 98, 22, 68, 125, 197, 110, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 14, 98, 22, 68, 125, 197, 115, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 15, 98, 19, 164, 241, 216, 108, 104, 15, 98, 24, 164, 241, 216, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert record.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert record.modelFlags == 0x0
+    assert record.flags == 0x1
+    assert record.parts == []
+    
+    nrecord = newMod.create_HDPT()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = r'WarThe Comrade'
+    nrecord.modPath = r'War\Hair\BeardMustacheCurly.nif'
+    nrecord.modb = 1.2
+    nrecord.modt_p = None
+    nrecord.altTextures_list = [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    nrecord.modelFlags = 0x01
+    nrecord.flags = 0x2
+    nrecord.parts = [('FalloutNV.esm', 653606)]
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x00100A)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == r'WarThe Comrade'
+    assert nrecord.full != r'WArThe Comrade'
+    assert nrecord.modPath == r'War\Hair\BeardMustacheCurly.nif'
+    assert nrecord.modPath == r'WAr\Hair\BeardMustacheCurly.nif'
+    assert nrecord.modb == 1.2
+    assert nrecord.modt_p == []
+    assert nrecord.altTextures_list == [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert nrecord.modelFlags == 0x01
+    assert nrecord.flags == 0x2
+    assert nrecord.parts == [('FalloutNV.esm', 653606)]
+
+    record = Current.LoadOrderMods[0].LookupRecord(0x0BCBEF)
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x0BCBEF)
+    assert newrecord.flags1 == 0x80000000
+    assert newrecord.versionControl1 == [5, 66, 39, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [3, 0]
+    assert newrecord.eid == r'BeardMustacheCurlyFull'
+    assert newrecord.eid == r'BeArdMustacheCurlyFull'
+    
+    assert newrecord.full == r'The Comrade'
+    assert newrecord.full != r'ThE Comrade'
+    assert newrecord.modPath == r'Characters\Hair\BeardMustacheCurly.nif'
+    assert newrecord.modPath == r'ChAracters\Hair\BeardMustacheCurly.nif'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == [238, 236, 12, 98, 148, 160, 189, 156, 110, 108, 12, 98, 153, 160, 189, 156, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 14, 98, 22, 68, 125, 197, 110, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 14, 98, 22, 68, 125, 197, 115, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 15, 98, 19, 164, 241, 216, 108, 104, 15, 98, 24, 164, 241, 216, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert newrecord.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.flags == 0x1
+    assert newrecord.parts == []
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = r'WarThe Comrade'
+    newrecord.modPath = r'War\Hair\BeardMustacheCurly.nif'
+    newrecord.modb = 1.2
+    newrecord.modt_p = None
+    newrecord.altTextures_list = [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    newrecord.modelFlags = 0x01
+    newrecord.flags = 0x2
+    newrecord.parts = [('FalloutNV.esm', 653606)]
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x0BCBEF)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == r'WarThe Comrade'
+    assert newrecord.full != r'WArThe Comrade'
+    assert newrecord.modPath == r'War\Hair\BeardMustacheCurly.nif'
+    assert newrecord.modPath == r'WAr\Hair\BeardMustacheCurly.nif'
+    assert newrecord.modb == 1.2
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert newrecord.modelFlags == 0x01
+    assert newrecord.flags == 0x2
+    assert newrecord.parts == [('FalloutNV.esm', 653606)]
+
+    assert record.fid == ('FalloutNV.esm', 0x0BCBEF)
+    assert record.flags1 == 0x80000000
+    assert record.versionControl1 == [5, 66, 39, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [3, 0]
+    assert record.eid == r'BeardMustacheCurlyFull'
+    assert record.eid == r'BeArdMustacheCurlyFull'
+    
+    assert record.full == r'The Comrade'
+    assert record.full != r'ThE Comrade'
+    assert record.modPath == r'Characters\Hair\BeardMustacheCurly.nif'
+    assert record.modPath == r'ChAracters\Hair\BeardMustacheCurly.nif'
+    assert record.modb == 0.0
+    assert record.modt_p == [238, 236, 12, 98, 148, 160, 189, 156, 110, 108, 12, 98, 153, 160, 189, 156, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 14, 98, 22, 68, 125, 197, 110, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 14, 98, 22, 68, 125, 197, 115, 95, 14, 98, 27, 68, 125, 197, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 15, 98, 19, 164, 241, 216, 108, 104, 15, 98, 24, 164, 241, 216, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert record.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert record.modelFlags == 0x0
+    assert record.flags == 0x1
+    assert record.parts == []
+
+    print "HDPT:Finished testing"
 
 from timeit import Timer
 

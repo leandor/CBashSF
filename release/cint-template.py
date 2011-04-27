@@ -1544,6 +1544,22 @@ class Relation(ListComponent):
     FORMID_LISTMACRO(faction, self._FieldID, 1)
     SINT32_LISTMACRO(mod, self._FieldID, 2)
     exportattrs = copyattrs = ['faction', 'mod']
+    
+class FNVRelation(ListComponent):
+    FORMID_LISTMACRO(faction, self._FieldID, 1)
+    SINT32_LISTMACRO(mod, self._FieldID, 2)
+    UINT32_TYPE_LISTMACRO(groupReactionType, self._FieldID, 3)
+    BasicTypeMACRO(IsNeutral, groupReactionType, 0, IsEnemy)
+    BasicTypeMACRO(IsEnemy, groupReactionType, 1, IsNeutral)
+    BasicTypeMACRO(IsAlly, groupReactionType, 2, IsNeutral)
+    BasicTypeMACRO(IsFriend, groupReactionType, 3, IsNeutral)
+    exportattrs = copyattrs = ['faction', 'mod', 'groupReactionType']
+
+class FNVAltTexture(ListComponent):
+    STRING_LISTMACRO(name, self._FieldID, 1)
+    FORMID_LISTMACRO(texture, self._FieldID, 2)
+    SINT32_LISTMACRO(index, self._FieldID, 3)
+    exportattrs = copyattrs = ['name', 'texture', 'index']
 
 class PGRP(ListComponent):
     FLOAT32_LISTMACRO(x, self._FieldID, 1)
@@ -1909,7 +1925,102 @@ class FnvGLOBRecord(FnvBaseRecord):
     _Type = 'GLOB'
     CHAR_MACRO(format, 7)
     FLOAT32_MACRO(value, 8)
+    
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['format', 'value']
+
+class FnvCLASRecord(FnvBaseRecord):
+    _Type = 'CLAS'
+    STRING_MACRO(full, 7)
+    STRING_MACRO(description, 8)
+    ISTRING_MACRO(iconPath, 9)
+    ISTRING_MACRO(smallIconPath, 10)
+    SINT32_MACRO(tagSkills1, 11)
+    SINT32_MACRO(tagSkills2, 12)
+    SINT32_MACRO(tagSkills3, 13)
+    SINT32_MACRO(tagSkills4, 14)
+    UINT32_FLAG_MACRO(flags, 15)
+    UINT32_FLAG_MACRO(services, 16)
+    SINT8_MACRO(trainSkill, 17)
+    UINT8_MACRO(trainLevel, 18)
+    UINT8_ARRAY_MACRO(unused1, 19, 2)
+    UINT8_MACRO(strength, 20)
+    UINT8_MACRO(perception, 21)
+    UINT8_MACRO(endurance, 22)
+    UINT8_MACRO(charisma, 23)
+    UINT8_MACRO(intelligence, 24)
+    UINT8_MACRO(agility, 25)
+    UINT8_MACRO(luck, 26)
+    
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
+    BasicFlagMACRO(IsGuard, flags, 0x00000002)
+    
+    BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
+    BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
+    BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
+    BasicFlagMACRO(IsServicesBooks, services, 0x00000008)
+    BasicFlagMACRO(IsServicesFood, services, 0x00000010)
+    BasicFlagMACRO(IsServicesChems, services, 0x00000020)
+    BasicFlagMACRO(IsServicesStimpacks, services, 0x00000040)
+    BasicFlagMACRO(IsServicesLights, services, 0x00000080)
+    BasicFlagMACRO(IsServicesMiscItems, services, 0x00000400)
+    BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
+    BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
+    BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                                         'tagSkills1', 'tagSkills2', 'tagSkills3',
+                                                         'tagSkills4', 'flags', 'services',
+                                                         'trainSkill', 'trainLevel', 'strength',
+                                                         'perception', 'endurance', 'charisma',
+                                                         'intelligence', 'agility', 'luck']
+
+class FnvFACTRecord(FnvBaseRecord):
+    _Type = 'FACT'
+    class Rank(ListComponent):
+        SINT32_LISTMACRO(rank, 12, 1)
+        STRING_LISTMACRO(male, 12, 2)
+        STRING_LISTMACRO(female, 12, 3)
+        ISTRING_LISTMACRO(insigniaPath, 12, 4)
+        exportattrs = copyattrs = ['rank', 'male', 'female', 'insigniaPath']
+
+    STRING_MACRO(full, 7)
+
+    LIST_MACRO(relations, 8, FNVRelation)
+    UINT16_FLAG_MACRO(flags, 9)
+    UINT8_ARRAY_MACRO(unused1, 10, 2)
+    FLOAT32_MACRO(crimeGoldMultiplier, 11)
+
+    LIST_MACRO(ranks, 12, self.Rank)
+    FORMID_MACRO(reputation, 13)
+    
+    BasicFlagMACRO(IsHiddenFromPC, flags, 0x0001)
+    BasicFlagMACRO(IsEvil, flags, 0x0002)
+    BasicFlagMACRO(IsSpecialCombat, flags, 0x0004)
+    BasicFlagMACRO(IsTrackCrime, flags, 0x0100)
+    BasicFlagMACRO(IsAllowSell, flags, 0x0200)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'relations_list', 'flags',
+                                        'crimeGoldMultiplier', 'ranks_list', 'reputation']
+
+class FnvHDPTRecord(FnvBaseRecord):
+    _Type = 'HDPT'
+    STRING_MACRO(full, 7)
+    ISTRING_MACRO(modPath, 8)
+    FLOAT32_MACRO(modb, 9)
+    UINT8_ARRAY_MACRO(modt_p, 10)
+    LIST_MACRO(altTextures, 11, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    FORMID_ARRAY_MACRO(parts, 14)
+    
+    BasicFlagMACRO(IsPlayable, flags, 0x01)
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
+                                                         'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'flags', 'parts']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5048,7 +5159,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
-                        ('GLOB',FnvGLOBRecord),])
+                        ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
+                        ('HDPT',FnvHDPTRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5392,6 +5504,9 @@ class FnvModFile(object):
     FnvModRecordsMACRO(TXST)
     FnvModRecordsMACRO(MICN)
     FnvModRecordsMACRO(GLOB)
+    FnvModRecordsMACRO(CLAS)
+    FnvModRecordsMACRO(FACT)
+    FnvModRecordsMACRO(HDPT)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

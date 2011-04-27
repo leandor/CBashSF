@@ -291,7 +291,7 @@ SINT32 CLMTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(Weathers.size())
         SaveHandler.writeSubRecord('TSLW', &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
     //else
-    //    SaveHandler.writeSubRecord('TSLW', NULL, 0);
+    //    SaveHandler.writeSubRecordHeader('TSLW', 0);
 
     if(FNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());

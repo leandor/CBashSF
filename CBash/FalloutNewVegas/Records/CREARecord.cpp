@@ -34,10 +34,7 @@ bool CREARecord::CREASoundType::IsLeftFoot()
 void CREARecord::CREASoundType::IsLeftFoot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftFoot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftFoot : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsRightFoot()
@@ -49,10 +46,7 @@ bool CREARecord::CREASoundType::IsRightFoot()
 void CREARecord::CREASoundType::IsRightFoot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightFoot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightFoot : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsLeftBackFoot()
@@ -64,10 +58,7 @@ bool CREARecord::CREASoundType::IsLeftBackFoot()
 void CREARecord::CREASoundType::IsLeftBackFoot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLeftBackFoot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLeftBackFoot : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsRightBackFoot()
@@ -79,10 +70,7 @@ bool CREARecord::CREASoundType::IsRightBackFoot()
 void CREARecord::CREASoundType::IsRightBackFoot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRightBackFoot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRightBackFoot : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsIdle()
@@ -94,10 +82,7 @@ bool CREARecord::CREASoundType::IsIdle()
 void CREARecord::CREASoundType::IsIdle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eIdle;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eIdle : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAware()
@@ -109,10 +94,7 @@ bool CREARecord::CREASoundType::IsAware()
 void CREARecord::CREASoundType::IsAware(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAware;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAware : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAttack()
@@ -124,10 +106,7 @@ bool CREARecord::CREASoundType::IsAttack()
 void CREARecord::CREASoundType::IsAttack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsHit()
@@ -139,10 +118,7 @@ bool CREARecord::CREASoundType::IsHit()
 void CREARecord::CREASoundType::IsHit(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHit;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHit : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsDeath()
@@ -154,10 +130,7 @@ bool CREARecord::CREASoundType::IsDeath()
 void CREARecord::CREASoundType::IsDeath(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDeath;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDeath : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsWeapon()
@@ -169,10 +142,7 @@ bool CREARecord::CREASoundType::IsWeapon()
 void CREARecord::CREASoundType::IsWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWeapon : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsMovementLoop()
@@ -184,10 +154,7 @@ bool CREARecord::CREASoundType::IsMovementLoop()
 void CREARecord::CREASoundType::IsMovementLoop(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMovementLoop;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMovementLoop : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsConsciousLoop()
@@ -199,10 +166,7 @@ bool CREARecord::CREASoundType::IsConsciousLoop()
 void CREARecord::CREASoundType::IsConsciousLoop(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eConsciousLoop;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eConsciousLoop : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary1()
@@ -214,10 +178,7 @@ bool CREARecord::CREASoundType::IsAuxiliary1()
 void CREARecord::CREASoundType::IsAuxiliary1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary1 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary2()
@@ -229,10 +190,7 @@ bool CREARecord::CREASoundType::IsAuxiliary2()
 void CREARecord::CREASoundType::IsAuxiliary2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary2 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary3()
@@ -244,10 +202,7 @@ bool CREARecord::CREASoundType::IsAuxiliary3()
 void CREARecord::CREASoundType::IsAuxiliary3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary3 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary4()
@@ -259,10 +214,7 @@ bool CREARecord::CREASoundType::IsAuxiliary4()
 void CREARecord::CREASoundType::IsAuxiliary4(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary4;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary4 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary5()
@@ -274,10 +226,7 @@ bool CREARecord::CREASoundType::IsAuxiliary5()
 void CREARecord::CREASoundType::IsAuxiliary5(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary5;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary5 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary6()
@@ -289,10 +238,7 @@ bool CREARecord::CREASoundType::IsAuxiliary6()
 void CREARecord::CREASoundType::IsAuxiliary6(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary6;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary6 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary7()
@@ -304,10 +250,7 @@ bool CREARecord::CREASoundType::IsAuxiliary7()
 void CREARecord::CREASoundType::IsAuxiliary7(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary7;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary7 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsAuxiliary8()
@@ -319,10 +262,7 @@ bool CREARecord::CREASoundType::IsAuxiliary8()
 void CREARecord::CREASoundType::IsAuxiliary8(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuxiliary8;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuxiliary8 : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsJump()
@@ -334,10 +274,7 @@ bool CREARecord::CREASoundType::IsJump()
 void CREARecord::CREASoundType::IsJump(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eJump;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eJump : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsPlayRandomLoop()
@@ -349,10 +286,7 @@ bool CREARecord::CREASoundType::IsPlayRandomLoop()
 void CREARecord::CREASoundType::IsPlayRandomLoop(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlayRandomLoop;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlayRandomLoop : eDummyDefault;
     }
 
 bool CREARecord::CREASoundType::IsType(UINT32 Type, bool Exact)
@@ -508,10 +442,7 @@ bool CREARecord::IsBiped()
 void CREARecord::IsBiped(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBiped;
-    else
-        Dummy->flags &= ~fIsBiped;
+    Dummy->flags = value ? (Dummy->flags | fIsBiped) : (Dummy->flags & ~fIsBiped);
     }
 
 bool CREARecord::IsEssential()
@@ -523,10 +454,7 @@ bool CREARecord::IsEssential()
 void CREARecord::IsEssential(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEssential;
-    else
-        Dummy->flags &= ~fIsEssential;
+    Dummy->flags = value ? (Dummy->flags | fIsEssential) : (Dummy->flags & ~fIsEssential);
     }
 
 bool CREARecord::IsWeaponAndShield()
@@ -538,10 +466,7 @@ bool CREARecord::IsWeaponAndShield()
 void CREARecord::IsWeaponAndShield(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsWeaponAndShield;
-    else
-        Dummy->flags &= ~fIsWeaponAndShield;
+    Dummy->flags = value ? (Dummy->flags | fIsWeaponAndShield) : (Dummy->flags & ~fIsWeaponAndShield);
     }
 
 bool CREARecord::IsRespawn()
@@ -553,10 +478,7 @@ bool CREARecord::IsRespawn()
 void CREARecord::IsRespawn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRespawn;
-    else
-        Dummy->flags &= ~fIsRespawn;
+    Dummy->flags = value ? (Dummy->flags | fIsRespawn) : (Dummy->flags & ~fIsRespawn);
     }
 
 bool CREARecord::IsSwims()
@@ -568,10 +490,7 @@ bool CREARecord::IsSwims()
 void CREARecord::IsSwims(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSwims;
-    else
-        Dummy->flags &= ~fIsSwims;
+    Dummy->flags = value ? (Dummy->flags | fIsSwims) : (Dummy->flags & ~fIsSwims);
     }
 
 bool CREARecord::IsFlies()
@@ -583,10 +502,7 @@ bool CREARecord::IsFlies()
 void CREARecord::IsFlies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFlies;
-    else
-        Dummy->flags &= ~fIsFlies;
+    Dummy->flags = value ? (Dummy->flags | fIsFlies) : (Dummy->flags & ~fIsFlies);
     }
 
 bool CREARecord::IsWalks()
@@ -598,10 +514,7 @@ bool CREARecord::IsWalks()
 void CREARecord::IsWalks(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsWalks;
-    else
-        Dummy->flags &= ~fIsWalks;
+    Dummy->flags = value ? (Dummy->flags | fIsWalks) : (Dummy->flags & ~fIsWalks);
     }
 
 bool CREARecord::IsPCLevelOffset()
@@ -613,10 +526,7 @@ bool CREARecord::IsPCLevelOffset()
 void CREARecord::IsPCLevelOffset(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPCLevelOffset;
-    else
-        Dummy->flags &= ~fIsPCLevelOffset;
+    Dummy->flags = value ? (Dummy->flags | fIsPCLevelOffset) : (Dummy->flags & ~fIsPCLevelOffset);
     }
 
 bool CREARecord::IsUnknown1()
@@ -628,10 +538,7 @@ bool CREARecord::IsUnknown1()
 void CREARecord::IsUnknown1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown1;
-    else
-        Dummy->flags &= ~fIsUnknown1;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown1) : (Dummy->flags & ~fIsUnknown1);
     }
 
 bool CREARecord::IsNoLowLevel()
@@ -643,10 +550,7 @@ bool CREARecord::IsNoLowLevel()
 void CREARecord::IsNoLowLevel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoLowLevel;
-    else
-        Dummy->flags &= ~fIsNoLowLevel;
+    Dummy->flags = value ? (Dummy->flags | fIsNoLowLevel) : (Dummy->flags & ~fIsNoLowLevel);
     }
 
 bool CREARecord::IsNoBloodSpray()
@@ -658,10 +562,7 @@ bool CREARecord::IsNoBloodSpray()
 void CREARecord::IsNoBloodSpray(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoBloodSpray;
-    else
-        Dummy->flags &= ~fIsNoBloodSpray;
+    Dummy->flags = value ? (Dummy->flags | fIsNoBloodSpray) : (Dummy->flags & ~fIsNoBloodSpray);
     }
 
 bool CREARecord::IsNoBloodDecal()
@@ -673,10 +574,7 @@ bool CREARecord::IsNoBloodDecal()
 void CREARecord::IsNoBloodDecal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoBloodDecal;
-    else
-        Dummy->flags &= ~fIsNoBloodDecal;
+    Dummy->flags = value ? (Dummy->flags | fIsNoBloodDecal) : (Dummy->flags & ~fIsNoBloodDecal);
     }
 
 bool CREARecord::IsNoHead()
@@ -688,10 +586,7 @@ bool CREARecord::IsNoHead()
 void CREARecord::IsNoHead(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoHead;
-    else
-        Dummy->flags &= ~fIsNoHead;
+    Dummy->flags = value ? (Dummy->flags | fIsNoHead) : (Dummy->flags & ~fIsNoHead);
     }
 
 bool CREARecord::IsNoRightArm()
@@ -703,10 +598,7 @@ bool CREARecord::IsNoRightArm()
 void CREARecord::IsNoRightArm(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoRightArm;
-    else
-        Dummy->flags &= ~fIsNoRightArm;
+    Dummy->flags = value ? (Dummy->flags | fIsNoRightArm) : (Dummy->flags & ~fIsNoRightArm);
     }
 
 bool CREARecord::IsNoLeftArm()
@@ -718,10 +610,7 @@ bool CREARecord::IsNoLeftArm()
 void CREARecord::IsNoLeftArm(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoLeftArm;
-    else
-        Dummy->flags &= ~fIsNoLeftArm;
+    Dummy->flags = value ? (Dummy->flags | fIsNoLeftArm) : (Dummy->flags & ~fIsNoLeftArm);
     }
 
 bool CREARecord::IsNoCombatInWater()
@@ -733,10 +622,7 @@ bool CREARecord::IsNoCombatInWater()
 void CREARecord::IsNoCombatInWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoCombatInWater;
-    else
-        Dummy->flags &= ~fIsNoCombatInWater;
+    Dummy->flags = value ? (Dummy->flags | fIsNoCombatInWater) : (Dummy->flags & ~fIsNoCombatInWater);
     }
 
 bool CREARecord::IsNoShadow()
@@ -748,10 +634,7 @@ bool CREARecord::IsNoShadow()
 void CREARecord::IsNoShadow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoShadow;
-    else
-        Dummy->flags &= ~fIsNoShadow;
+    Dummy->flags = value ? (Dummy->flags | fIsNoShadow) : (Dummy->flags & ~fIsNoShadow);
     }
 
 bool CREARecord::IsNoVATSMelee()
@@ -763,10 +646,7 @@ bool CREARecord::IsNoVATSMelee()
 void CREARecord::IsNoVATSMelee(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoVATSMelee;
-    else
-        Dummy->flags &= ~fIsNoVATSMelee;
+    Dummy->flags = value ? (Dummy->flags | fIsNoVATSMelee) : (Dummy->flags & ~fIsNoVATSMelee);
     }
 
 bool CREARecord::IsAllowPCDialogue()
@@ -778,10 +658,7 @@ bool CREARecord::IsAllowPCDialogue()
 void CREARecord::IsAllowPCDialogue(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAllowPCDialogue;
-    else
-        Dummy->flags &= ~fIsAllowPCDialogue;
+    Dummy->flags = value ? (Dummy->flags | fIsAllowPCDialogue) : (Dummy->flags & ~fIsAllowPCDialogue);
     }
 
 bool CREARecord::IsCantOpenDoors()
@@ -793,10 +670,7 @@ bool CREARecord::IsCantOpenDoors()
 void CREARecord::IsCantOpenDoors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsCantOpenDoors;
-    else
-        Dummy->flags &= ~fIsCantOpenDoors;
+    Dummy->flags = value ? (Dummy->flags | fIsCantOpenDoors) : (Dummy->flags & ~fIsCantOpenDoors);
     }
 
 bool CREARecord::IsImmobile()
@@ -808,10 +682,7 @@ bool CREARecord::IsImmobile()
 void CREARecord::IsImmobile(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsImmobile;
-    else
-        Dummy->flags &= ~fIsImmobile;
+    Dummy->flags = value ? (Dummy->flags | fIsImmobile) : (Dummy->flags & ~fIsImmobile);
     }
 
 bool CREARecord::IsTiltFrontBack()
@@ -823,10 +694,7 @@ bool CREARecord::IsTiltFrontBack()
 void CREARecord::IsTiltFrontBack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTiltFrontBack;
-    else
-        Dummy->flags &= ~fIsTiltFrontBack;
+    Dummy->flags = value ? (Dummy->flags | fIsTiltFrontBack) : (Dummy->flags & ~fIsTiltFrontBack);
     }
 
 bool CREARecord::IsTiltLeftRight()
@@ -838,10 +706,7 @@ bool CREARecord::IsTiltLeftRight()
 void CREARecord::IsTiltLeftRight(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTiltLeftRight;
-    else
-        Dummy->flags &= ~fIsTiltLeftRight;
+    Dummy->flags = value ? (Dummy->flags | fIsTiltLeftRight) : (Dummy->flags & ~fIsTiltLeftRight);
     }
 
 bool CREARecord::IsNoKnockdowns()
@@ -853,10 +718,7 @@ bool CREARecord::IsNoKnockdowns()
 void CREARecord::IsNoKnockdowns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoKnockdowns;
-    else
-        Dummy->flags &= ~fIsNoKnockdowns;
+    Dummy->flags = value ? (Dummy->flags | fIsNoKnockdowns) : (Dummy->flags & ~fIsNoKnockdowns);
     }
 
 bool CREARecord::IsNotPushable()
@@ -868,10 +730,7 @@ bool CREARecord::IsNotPushable()
 void CREARecord::IsNotPushable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNotPushable;
-    else
-        Dummy->flags &= ~fIsNotPushable;
+    Dummy->flags = value ? (Dummy->flags | fIsNotPushable) : (Dummy->flags & ~fIsNotPushable);
     }
 
 bool CREARecord::IsAllowPickpocket()
@@ -883,10 +742,7 @@ bool CREARecord::IsAllowPickpocket()
 void CREARecord::IsAllowPickpocket(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAllowPickpocket;
-    else
-        Dummy->flags &= ~fIsAllowPickpocket;
+    Dummy->flags = value ? (Dummy->flags | fIsAllowPickpocket) : (Dummy->flags & ~fIsAllowPickpocket);
     }
 
 bool CREARecord::IsGhost()
@@ -898,10 +754,7 @@ bool CREARecord::IsGhost()
 void CREARecord::IsGhost(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsGhost;
-    else
-        Dummy->flags &= ~fIsGhost;
+    Dummy->flags = value ? (Dummy->flags | fIsGhost) : (Dummy->flags & ~fIsGhost);
     }
 
 bool CREARecord::IsNoHeadTracking()
@@ -913,10 +766,7 @@ bool CREARecord::IsNoHeadTracking()
 void CREARecord::IsNoHeadTracking(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoHeadTracking;
-    else
-        Dummy->flags &= ~fIsNoHeadTracking;
+    Dummy->flags = value ? (Dummy->flags | fIsNoHeadTracking) : (Dummy->flags & ~fIsNoHeadTracking);
     }
 
 bool CREARecord::IsInvulnerable()
@@ -928,10 +778,7 @@ bool CREARecord::IsInvulnerable()
 void CREARecord::IsInvulnerable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsInvulnerable;
-    else
-        Dummy->flags &= ~fIsInvulnerable;
+    Dummy->flags = value ? (Dummy->flags | fIsInvulnerable) : (Dummy->flags & ~fIsInvulnerable);
     }
 
 bool CREARecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -955,10 +802,7 @@ bool CREARecord::IsUseTraits()
 void CREARecord::IsUseTraits(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseTraits;
-    else
-        Dummy->flags &= ~fIsUseTraits;
+    Dummy->flags = value ? (Dummy->flags | fIsUseTraits) : (Dummy->flags & ~fIsUseTraits);
     }
 
 bool CREARecord::IsUseStats()
@@ -970,10 +814,7 @@ bool CREARecord::IsUseStats()
 void CREARecord::IsUseStats(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseStats;
-    else
-        Dummy->flags &= ~fIsUseStats;
+    Dummy->flags = value ? (Dummy->flags | fIsUseStats) : (Dummy->flags & ~fIsUseStats);
     }
 
 bool CREARecord::IsUseFactions()
@@ -985,10 +826,7 @@ bool CREARecord::IsUseFactions()
 void CREARecord::IsUseFactions(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseFactions;
-    else
-        Dummy->flags &= ~fIsUseFactions;
+    Dummy->flags = value ? (Dummy->flags | fIsUseFactions) : (Dummy->flags & ~fIsUseFactions);
     }
 
 bool CREARecord::IsUseAEList()
@@ -1000,10 +838,7 @@ bool CREARecord::IsUseAEList()
 void CREARecord::IsUseAEList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAEList;
-    else
-        Dummy->flags &= ~fIsUseAEList;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAEList) : (Dummy->flags & ~fIsUseAEList);
     }
 
 bool CREARecord::IsUseAIData()
@@ -1015,10 +850,7 @@ bool CREARecord::IsUseAIData()
 void CREARecord::IsUseAIData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAIData;
-    else
-        Dummy->flags &= ~fIsUseAIData;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAIData) : (Dummy->flags & ~fIsUseAIData);
     }
 
 bool CREARecord::IsUseAIPackages()
@@ -1030,10 +862,7 @@ bool CREARecord::IsUseAIPackages()
 void CREARecord::IsUseAIPackages(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAIPackages;
-    else
-        Dummy->flags &= ~fIsUseAIPackages;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAIPackages) : (Dummy->flags & ~fIsUseAIPackages);
     }
 
 bool CREARecord::IsUseModelAnim()
@@ -1045,10 +874,7 @@ bool CREARecord::IsUseModelAnim()
 void CREARecord::IsUseModelAnim(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseModelAnim;
-    else
-        Dummy->flags &= ~fIsUseModelAnim;
+    Dummy->flags = value ? (Dummy->flags | fIsUseModelAnim) : (Dummy->flags & ~fIsUseModelAnim);
     }
 
 bool CREARecord::IsUseBaseData()
@@ -1060,10 +886,7 @@ bool CREARecord::IsUseBaseData()
 void CREARecord::IsUseBaseData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseBaseData;
-    else
-        Dummy->flags &= ~fIsUseBaseData;
+    Dummy->flags = value ? (Dummy->flags | fIsUseBaseData) : (Dummy->flags & ~fIsUseBaseData);
     }
 
 bool CREARecord::IsUseInventory()
@@ -1075,10 +898,7 @@ bool CREARecord::IsUseInventory()
 void CREARecord::IsUseInventory(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseInventory;
-    else
-        Dummy->flags &= ~fIsUseInventory;
+    Dummy->flags = value ? (Dummy->flags | fIsUseInventory) : (Dummy->flags & ~fIsUseInventory);
     }
 
 bool CREARecord::IsUseScript()
@@ -1090,10 +910,7 @@ bool CREARecord::IsUseScript()
 void CREARecord::IsUseScript(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseScript;
-    else
-        Dummy->flags &= ~fIsUseScript;
+    Dummy->flags = value ? (Dummy->flags | fIsUseScript) : (Dummy->flags & ~fIsUseScript);
     }
 
 bool CREARecord::IsTemplateFlagMask(UINT8 Mask, bool Exact)
@@ -1117,10 +934,7 @@ bool CREARecord::IsAggroRadiusBehavior()
 void CREARecord::IsAggroRadiusBehavior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAggroRadiusBehavior;
-    else
-        Dummy->flags &= ~fIsAggroRadiusBehavior;
+    Dummy->flags = value ? (Dummy->flags | fIsAggroRadiusBehavior) : (Dummy->flags & ~fIsAggroRadiusBehavior);
     }
 
 bool CREARecord::IsAggroFlagMask(UINT8 Mask, bool Exact)
@@ -1144,10 +958,7 @@ bool CREARecord::IsAnimal()
 void CREARecord::IsAnimal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAnimal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAnimal : eDummyDefault;
     }
 
 bool CREARecord::IsMutatedAnimal()
@@ -1159,10 +970,7 @@ bool CREARecord::IsMutatedAnimal()
 void CREARecord::IsMutatedAnimal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMutatedAnimal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMutatedAnimal : eDummyDefault;
     }
 
 bool CREARecord::IsMutatedInsect()
@@ -1174,10 +982,7 @@ bool CREARecord::IsMutatedInsect()
 void CREARecord::IsMutatedInsect(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMutatedInsect;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMutatedInsect : eDummyDefault;
     }
 
 bool CREARecord::IsAbomination()
@@ -1189,10 +994,7 @@ bool CREARecord::IsAbomination()
 void CREARecord::IsAbomination(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAbomination;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAbomination : eDummyDefault;
     }
 
 bool CREARecord::IsSuperMutant()
@@ -1204,10 +1006,7 @@ bool CREARecord::IsSuperMutant()
 void CREARecord::IsSuperMutant(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSuperMutant;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSuperMutant : eDummyDefault;
     }
 
 bool CREARecord::IsFeralGhoul()
@@ -1219,10 +1018,7 @@ bool CREARecord::IsFeralGhoul()
 void CREARecord::IsFeralGhoul(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFeralGhoul;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFeralGhoul : eDummyDefault;
     }
 
 bool CREARecord::IsRobot()
@@ -1234,10 +1030,7 @@ bool CREARecord::IsRobot()
 void CREARecord::IsRobot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRobot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRobot : eDummyDefault;
     }
 
 bool CREARecord::IsGiant()
@@ -1249,10 +1042,7 @@ bool CREARecord::IsGiant()
 void CREARecord::IsGiant(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGiant;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGiant : eDummyDefault;
     }
 
 bool CREARecord::IsType(UINT8 Type, bool Exact)
@@ -1276,10 +1066,7 @@ bool CREARecord::IsAttackLeft()
 void CREARecord::IsAttackLeft(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeft;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeft : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftUp()
@@ -1291,10 +1078,7 @@ bool CREARecord::IsAttackLeftUp()
 void CREARecord::IsAttackLeftUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftDown()
@@ -1306,10 +1090,7 @@ bool CREARecord::IsAttackLeftDown()
 void CREARecord::IsAttackLeftDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftIS()
@@ -1321,10 +1102,7 @@ bool CREARecord::IsAttackLeftIS()
 void CREARecord::IsAttackLeftIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftIS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftISUp()
@@ -1336,10 +1114,7 @@ bool CREARecord::IsAttackLeftISUp()
 void CREARecord::IsAttackLeftISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftISDown()
@@ -1351,10 +1126,7 @@ bool CREARecord::IsAttackLeftISDown()
 void CREARecord::IsAttackLeftISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRight()
@@ -1366,10 +1138,7 @@ bool CREARecord::IsAttackRight()
 void CREARecord::IsAttackRight(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRight;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRight : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightUp()
@@ -1381,10 +1150,7 @@ bool CREARecord::IsAttackRightUp()
 void CREARecord::IsAttackRightUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightDown()
@@ -1396,10 +1162,7 @@ bool CREARecord::IsAttackRightDown()
 void CREARecord::IsAttackRightDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightIS()
@@ -1411,10 +1174,7 @@ bool CREARecord::IsAttackRightIS()
 void CREARecord::IsAttackRightIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightIS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightISUp()
@@ -1426,10 +1186,7 @@ bool CREARecord::IsAttackRightISUp()
 void CREARecord::IsAttackRightISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightISDown()
@@ -1441,10 +1198,7 @@ bool CREARecord::IsAttackRightISDown()
 void CREARecord::IsAttackRightISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3()
@@ -1456,10 +1210,7 @@ bool CREARecord::IsAttack3()
 void CREARecord::IsAttack3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3Up()
@@ -1471,10 +1222,7 @@ bool CREARecord::IsAttack3Up()
 void CREARecord::IsAttack3Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3Down()
@@ -1486,10 +1234,7 @@ bool CREARecord::IsAttack3Down()
 void CREARecord::IsAttack3Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3IS()
@@ -1501,10 +1246,7 @@ bool CREARecord::IsAttack3IS()
 void CREARecord::IsAttack3IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3ISUp()
@@ -1516,10 +1258,7 @@ bool CREARecord::IsAttack3ISUp()
 void CREARecord::IsAttack3ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack3ISDown()
@@ -1531,10 +1270,7 @@ bool CREARecord::IsAttack3ISDown()
 void CREARecord::IsAttack3ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack3ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack3ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4()
@@ -1546,10 +1282,7 @@ bool CREARecord::IsAttack4()
 void CREARecord::IsAttack4(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4Up()
@@ -1561,10 +1294,7 @@ bool CREARecord::IsAttack4Up()
 void CREARecord::IsAttack4Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4Down()
@@ -1576,10 +1306,7 @@ bool CREARecord::IsAttack4Down()
 void CREARecord::IsAttack4Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4IS()
@@ -1591,10 +1318,7 @@ bool CREARecord::IsAttack4IS()
 void CREARecord::IsAttack4IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4ISUp()
@@ -1606,10 +1330,7 @@ bool CREARecord::IsAttack4ISUp()
 void CREARecord::IsAttack4ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack4ISDown()
@@ -1621,10 +1342,7 @@ bool CREARecord::IsAttack4ISDown()
 void CREARecord::IsAttack4ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack4ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack4ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5()
@@ -1636,10 +1354,7 @@ bool CREARecord::IsAttack5()
 void CREARecord::IsAttack5(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5Up()
@@ -1651,10 +1366,7 @@ bool CREARecord::IsAttack5Up()
 void CREARecord::IsAttack5Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5Down()
@@ -1666,10 +1378,7 @@ bool CREARecord::IsAttack5Down()
 void CREARecord::IsAttack5Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5IS()
@@ -1681,10 +1390,7 @@ bool CREARecord::IsAttack5IS()
 void CREARecord::IsAttack5IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5ISUp()
@@ -1696,10 +1402,7 @@ bool CREARecord::IsAttack5ISUp()
 void CREARecord::IsAttack5ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack5ISDown()
@@ -1711,10 +1414,7 @@ bool CREARecord::IsAttack5ISDown()
 void CREARecord::IsAttack5ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack5ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack5ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6()
@@ -1726,10 +1426,7 @@ bool CREARecord::IsAttack6()
 void CREARecord::IsAttack6(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6Up()
@@ -1741,10 +1438,7 @@ bool CREARecord::IsAttack6Up()
 void CREARecord::IsAttack6Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6Down()
@@ -1756,10 +1450,7 @@ bool CREARecord::IsAttack6Down()
 void CREARecord::IsAttack6Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6IS()
@@ -1771,10 +1462,7 @@ bool CREARecord::IsAttack6IS()
 void CREARecord::IsAttack6IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6ISUp()
@@ -1786,10 +1474,7 @@ bool CREARecord::IsAttack6ISUp()
 void CREARecord::IsAttack6ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack6ISDown()
@@ -1801,10 +1486,7 @@ bool CREARecord::IsAttack6ISDown()
 void CREARecord::IsAttack6ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack6ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack6ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7()
@@ -1816,10 +1498,7 @@ bool CREARecord::IsAttack7()
 void CREARecord::IsAttack7(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7Up()
@@ -1831,10 +1510,7 @@ bool CREARecord::IsAttack7Up()
 void CREARecord::IsAttack7Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7Down()
@@ -1846,10 +1522,7 @@ bool CREARecord::IsAttack7Down()
 void CREARecord::IsAttack7Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7IS()
@@ -1861,10 +1534,7 @@ bool CREARecord::IsAttack7IS()
 void CREARecord::IsAttack7IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7ISUp()
@@ -1876,10 +1546,7 @@ bool CREARecord::IsAttack7ISUp()
 void CREARecord::IsAttack7ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack7ISDown()
@@ -1891,10 +1558,7 @@ bool CREARecord::IsAttack7ISDown()
 void CREARecord::IsAttack7ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack7ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack7ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8()
@@ -1906,10 +1570,7 @@ bool CREARecord::IsAttack8()
 void CREARecord::IsAttack8(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8 : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8Up()
@@ -1921,10 +1582,7 @@ bool CREARecord::IsAttack8Up()
 void CREARecord::IsAttack8Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8Down()
@@ -1936,10 +1594,7 @@ bool CREARecord::IsAttack8Down()
 void CREARecord::IsAttack8Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8IS()
@@ -1951,10 +1606,7 @@ bool CREARecord::IsAttack8IS()
 void CREARecord::IsAttack8IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8ISUp()
@@ -1966,10 +1618,7 @@ bool CREARecord::IsAttack8ISUp()
 void CREARecord::IsAttack8ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttack8ISDown()
@@ -1981,10 +1630,7 @@ bool CREARecord::IsAttack8ISDown()
 void CREARecord::IsAttack8ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttack8ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttack8ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoop()
@@ -1996,10 +1642,7 @@ bool CREARecord::IsAttackLoop()
 void CREARecord::IsAttackLoop(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoop;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoop : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoopUp()
@@ -2011,10 +1654,7 @@ bool CREARecord::IsAttackLoopUp()
 void CREARecord::IsAttackLoopUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoopUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoopUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoopDown()
@@ -2026,10 +1666,7 @@ bool CREARecord::IsAttackLoopDown()
 void CREARecord::IsAttackLoopDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoopDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoopDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoopIS()
@@ -2041,10 +1678,7 @@ bool CREARecord::IsAttackLoopIS()
 void CREARecord::IsAttackLoopIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoopIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoopIS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoopISUp()
@@ -2056,10 +1690,7 @@ bool CREARecord::IsAttackLoopISUp()
 void CREARecord::IsAttackLoopISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoopISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoopISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLoopISDown()
@@ -2071,10 +1702,7 @@ bool CREARecord::IsAttackLoopISDown()
 void CREARecord::IsAttackLoopISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLoopISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLoopISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin()
@@ -2086,10 +1714,7 @@ bool CREARecord::IsAttackSpin()
 void CREARecord::IsAttackSpin(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpinUp()
@@ -2101,10 +1726,7 @@ bool CREARecord::IsAttackSpinUp()
 void CREARecord::IsAttackSpinUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpinUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpinUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpinDown()
@@ -2116,10 +1738,7 @@ bool CREARecord::IsAttackSpinDown()
 void CREARecord::IsAttackSpinDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpinDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpinDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpinIS()
@@ -2131,10 +1750,7 @@ bool CREARecord::IsAttackSpinIS()
 void CREARecord::IsAttackSpinIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpinIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpinIS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpinISUp()
@@ -2146,10 +1762,7 @@ bool CREARecord::IsAttackSpinISUp()
 void CREARecord::IsAttackSpinISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpinISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpinISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpinISDown()
@@ -2161,10 +1774,7 @@ bool CREARecord::IsAttackSpinISDown()
 void CREARecord::IsAttackSpinISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpinISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpinISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2()
@@ -2176,10 +1786,7 @@ bool CREARecord::IsAttackSpin2()
 void CREARecord::IsAttackSpin2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2 : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2Up()
@@ -2191,10 +1798,7 @@ bool CREARecord::IsAttackSpin2Up()
 void CREARecord::IsAttackSpin2Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2Down()
@@ -2206,10 +1810,7 @@ bool CREARecord::IsAttackSpin2Down()
 void CREARecord::IsAttackSpin2Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2IS()
@@ -2221,10 +1822,7 @@ bool CREARecord::IsAttackSpin2IS()
 void CREARecord::IsAttackSpin2IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2ISUp()
@@ -2236,10 +1834,7 @@ bool CREARecord::IsAttackSpin2ISUp()
 void CREARecord::IsAttackSpin2ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackSpin2ISDown()
@@ -2251,10 +1846,7 @@ bool CREARecord::IsAttackSpin2ISDown()
 void CREARecord::IsAttackSpin2ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackSpin2ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackSpin2ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackPower()
@@ -2266,10 +1858,7 @@ bool CREARecord::IsAttackPower()
 void CREARecord::IsAttackPower(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackPower;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackPower : eDummyDefault;
     }
 
 bool CREARecord::IsAttackForwardPower()
@@ -2281,10 +1870,7 @@ bool CREARecord::IsAttackForwardPower()
 void CREARecord::IsAttackForwardPower(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackForwardPower;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackForwardPower : eDummyDefault;
     }
 
 bool CREARecord::IsAttackBackPower()
@@ -2296,10 +1882,7 @@ bool CREARecord::IsAttackBackPower()
 void CREARecord::IsAttackBackPower(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackBackPower;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackBackPower : eDummyDefault;
     }
 
 bool CREARecord::IsAttackLeftPower()
@@ -2311,10 +1894,7 @@ bool CREARecord::IsAttackLeftPower()
 void CREARecord::IsAttackLeftPower(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackLeftPower;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackLeftPower : eDummyDefault;
     }
 
 bool CREARecord::IsAttackRightPower()
@@ -2326,10 +1906,7 @@ bool CREARecord::IsAttackRightPower()
 void CREARecord::IsAttackRightPower(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackRightPower;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackRightPower : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine()
@@ -2341,10 +1918,7 @@ bool CREARecord::IsPlaceMine()
 void CREARecord::IsPlaceMine(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMineUp()
@@ -2356,10 +1930,7 @@ bool CREARecord::IsPlaceMineUp()
 void CREARecord::IsPlaceMineUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMineUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMineUp : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMineDown()
@@ -2371,10 +1942,7 @@ bool CREARecord::IsPlaceMineDown()
 void CREARecord::IsPlaceMineDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMineDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMineDown : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMineIS()
@@ -2386,10 +1954,7 @@ bool CREARecord::IsPlaceMineIS()
 void CREARecord::IsPlaceMineIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMineIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMineIS : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMineISUp()
@@ -2401,10 +1966,7 @@ bool CREARecord::IsPlaceMineISUp()
 void CREARecord::IsPlaceMineISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMineISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMineISUp : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMineISDown()
@@ -2416,10 +1978,7 @@ bool CREARecord::IsPlaceMineISDown()
 void CREARecord::IsPlaceMineISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMineISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMineISDown : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2()
@@ -2431,10 +1990,7 @@ bool CREARecord::IsPlaceMine2()
 void CREARecord::IsPlaceMine2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2 : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2Up()
@@ -2446,10 +2002,7 @@ bool CREARecord::IsPlaceMine2Up()
 void CREARecord::IsPlaceMine2Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2Up : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2Down()
@@ -2461,10 +2014,7 @@ bool CREARecord::IsPlaceMine2Down()
 void CREARecord::IsPlaceMine2Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2Down : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2IS()
@@ -2476,10 +2026,7 @@ bool CREARecord::IsPlaceMine2IS()
 void CREARecord::IsPlaceMine2IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2IS : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2ISUp()
@@ -2491,10 +2038,7 @@ bool CREARecord::IsPlaceMine2ISUp()
 void CREARecord::IsPlaceMine2ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsPlaceMine2ISDown()
@@ -2506,10 +2050,7 @@ bool CREARecord::IsPlaceMine2ISDown()
 void CREARecord::IsPlaceMine2ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlaceMine2ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlaceMine2ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow()
@@ -2521,10 +2062,7 @@ bool CREARecord::IsAttackThrow()
 void CREARecord::IsAttackThrow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrowUp()
@@ -2536,10 +2074,7 @@ bool CREARecord::IsAttackThrowUp()
 void CREARecord::IsAttackThrowUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrowUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrowUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrowDown()
@@ -2551,10 +2086,7 @@ bool CREARecord::IsAttackThrowDown()
 void CREARecord::IsAttackThrowDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrowDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrowDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrowIS()
@@ -2566,10 +2098,7 @@ bool CREARecord::IsAttackThrowIS()
 void CREARecord::IsAttackThrowIS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrowIS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrowIS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrowISUp()
@@ -2581,10 +2110,7 @@ bool CREARecord::IsAttackThrowISUp()
 void CREARecord::IsAttackThrowISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrowISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrowISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrowISDown()
@@ -2596,10 +2122,7 @@ bool CREARecord::IsAttackThrowISDown()
 void CREARecord::IsAttackThrowISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrowISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrowISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2()
@@ -2611,10 +2134,7 @@ bool CREARecord::IsAttackThrow2()
 void CREARecord::IsAttackThrow2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2 : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2Up()
@@ -2626,10 +2146,7 @@ bool CREARecord::IsAttackThrow2Up()
 void CREARecord::IsAttackThrow2Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2Down()
@@ -2641,10 +2158,7 @@ bool CREARecord::IsAttackThrow2Down()
 void CREARecord::IsAttackThrow2Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2IS()
@@ -2656,10 +2170,7 @@ bool CREARecord::IsAttackThrow2IS()
 void CREARecord::IsAttackThrow2IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2ISUp()
@@ -2671,10 +2182,7 @@ bool CREARecord::IsAttackThrow2ISUp()
 void CREARecord::IsAttackThrow2ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow2ISDown()
@@ -2686,10 +2194,7 @@ bool CREARecord::IsAttackThrow2ISDown()
 void CREARecord::IsAttackThrow2ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow2ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow2ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3()
@@ -2701,10 +2206,7 @@ bool CREARecord::IsAttackThrow3()
 void CREARecord::IsAttackThrow3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3 : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3Up()
@@ -2716,10 +2218,7 @@ bool CREARecord::IsAttackThrow3Up()
 void CREARecord::IsAttackThrow3Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3Down()
@@ -2731,10 +2230,7 @@ bool CREARecord::IsAttackThrow3Down()
 void CREARecord::IsAttackThrow3Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3IS()
@@ -2746,10 +2242,7 @@ bool CREARecord::IsAttackThrow3IS()
 void CREARecord::IsAttackThrow3IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3ISUp()
@@ -2761,10 +2254,7 @@ bool CREARecord::IsAttackThrow3ISUp()
 void CREARecord::IsAttackThrow3ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow3ISDown()
@@ -2776,10 +2266,7 @@ bool CREARecord::IsAttackThrow3ISDown()
 void CREARecord::IsAttackThrow3ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow3ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow3ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4()
@@ -2791,10 +2278,7 @@ bool CREARecord::IsAttackThrow4()
 void CREARecord::IsAttackThrow4(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4 : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4Up()
@@ -2806,10 +2290,7 @@ bool CREARecord::IsAttackThrow4Up()
 void CREARecord::IsAttackThrow4Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4Down()
@@ -2821,10 +2302,7 @@ bool CREARecord::IsAttackThrow4Down()
 void CREARecord::IsAttackThrow4Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4IS()
@@ -2836,10 +2314,7 @@ bool CREARecord::IsAttackThrow4IS()
 void CREARecord::IsAttackThrow4IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4ISUp()
@@ -2851,10 +2326,7 @@ bool CREARecord::IsAttackThrow4ISUp()
 void CREARecord::IsAttackThrow4ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow4ISDown()
@@ -2866,10 +2338,7 @@ bool CREARecord::IsAttackThrow4ISDown()
 void CREARecord::IsAttackThrow4ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow4ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow4ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5()
@@ -2881,10 +2350,7 @@ bool CREARecord::IsAttackThrow5()
 void CREARecord::IsAttackThrow5(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5 : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5Up()
@@ -2896,10 +2362,7 @@ bool CREARecord::IsAttackThrow5Up()
 void CREARecord::IsAttackThrow5Up(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5Up;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5Up : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5Down()
@@ -2911,10 +2374,7 @@ bool CREARecord::IsAttackThrow5Down()
 void CREARecord::IsAttackThrow5Down(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5Down;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5Down : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5IS()
@@ -2926,10 +2386,7 @@ bool CREARecord::IsAttackThrow5IS()
 void CREARecord::IsAttackThrow5IS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5IS;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5IS : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5ISUp()
@@ -2941,10 +2398,7 @@ bool CREARecord::IsAttackThrow5ISUp()
 void CREARecord::IsAttackThrow5ISUp(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5ISUp;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5ISUp : eDummyDefault;
     }
 
 bool CREARecord::IsAttackThrow5ISDown()
@@ -2956,10 +2410,7 @@ bool CREARecord::IsAttackThrow5ISDown()
 void CREARecord::IsAttackThrow5ISDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttackThrow5ISDown;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttackThrow5ISDown : eDummyDefault;
     }
 
 bool CREARecord::IsPipBoy()
@@ -2971,10 +2422,7 @@ bool CREARecord::IsPipBoy()
 void CREARecord::IsPipBoy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePipBoy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePipBoy : eDummyDefault;
     }
 
 bool CREARecord::IsPipBoyChild()
@@ -2986,10 +2434,7 @@ bool CREARecord::IsPipBoyChild()
 void CREARecord::IsPipBoyChild(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePipBoyChild;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePipBoyChild : eDummyDefault;
     }
 
 bool CREARecord::IsANY()
@@ -3001,10 +2446,7 @@ bool CREARecord::IsANY()
 void CREARecord::IsANY(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eANY;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eANY : eDummyDefault;
     }
 
 bool CREARecord::IsAttackAnimType(UINT8 Type, bool Exact)
@@ -3028,10 +2470,7 @@ bool CREARecord::IsLoud()
 void CREARecord::IsLoud(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLoud;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLoud : eDummyDefault;
     }
 
 bool CREARecord::IsNormal()
@@ -3043,10 +2482,7 @@ bool CREARecord::IsNormal()
 void CREARecord::IsNormal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNormal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNormal : eDummyDefault;
     }
 
 bool CREARecord::IsSilent()
@@ -3058,10 +2494,7 @@ bool CREARecord::IsSilent()
 void CREARecord::IsSilent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSilent;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSilent : eDummyDefault;
     }
 
 bool CREARecord::IsSoundLevelType(UINT8 Type, bool Exact)
@@ -3085,10 +2518,7 @@ bool CREARecord::IsUnaggressive()
 void CREARecord::IsUnaggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnaggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnaggressive : eDummyDefault;
     }
 
 bool CREARecord::IsAggressive()
@@ -3100,10 +2530,7 @@ bool CREARecord::IsAggressive()
 void CREARecord::IsAggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAggressive : eDummyDefault;
     }
 
 bool CREARecord::IsVeryAggressive()
@@ -3115,10 +2542,7 @@ bool CREARecord::IsVeryAggressive()
 void CREARecord::IsVeryAggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryAggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryAggressive : eDummyDefault;
     }
 
 bool CREARecord::IsFrenzied()
@@ -3130,10 +2554,7 @@ bool CREARecord::IsFrenzied()
 void CREARecord::IsFrenzied(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFrenzied;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFrenzied : eDummyDefault;
     }
 
 bool CREARecord::IsAggressionType(UINT8 Type, bool Exact)
@@ -3157,10 +2578,7 @@ bool CREARecord::IsCowardly()
 void CREARecord::IsCowardly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCowardly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCowardly : eDummyDefault;
     }
 
 bool CREARecord::IsCautious()
@@ -3172,10 +2590,7 @@ bool CREARecord::IsCautious()
 void CREARecord::IsCautious(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCautious;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCautious : eDummyDefault;
     }
 
 bool CREARecord::IsAverage()
@@ -3187,10 +2602,7 @@ bool CREARecord::IsAverage()
 void CREARecord::IsAverage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAverage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAverage : eDummyDefault;
     }
 
 bool CREARecord::IsBrave()
@@ -3202,10 +2614,7 @@ bool CREARecord::IsBrave()
 void CREARecord::IsBrave(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBrave;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBrave : eDummyDefault;
     }
 
 bool CREARecord::IsFoolhardy()
@@ -3217,10 +2626,7 @@ bool CREARecord::IsFoolhardy()
 void CREARecord::IsFoolhardy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFoolhardy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFoolhardy : eDummyDefault;
     }
 
 bool CREARecord::IsConfidenceType(UINT8 Type, bool Exact)
@@ -3244,10 +2650,7 @@ bool CREARecord::IsNeutral()
 void CREARecord::IsNeutral(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNeutral;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNeutral : eDummyDefault;
     }
 
 bool CREARecord::IsAfraid()
@@ -3259,10 +2662,7 @@ bool CREARecord::IsAfraid()
 void CREARecord::IsAfraid(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAfraid;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAfraid : eDummyDefault;
     }
 
 bool CREARecord::IsAnnoyed()
@@ -3274,10 +2674,7 @@ bool CREARecord::IsAnnoyed()
 void CREARecord::IsAnnoyed(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAnnoyed;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAnnoyed : eDummyDefault;
     }
 
 bool CREARecord::IsCocky()
@@ -3289,10 +2686,7 @@ bool CREARecord::IsCocky()
 void CREARecord::IsCocky(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCocky;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCocky : eDummyDefault;
     }
 
 bool CREARecord::IsDrugged()
@@ -3304,10 +2698,7 @@ bool CREARecord::IsDrugged()
 void CREARecord::IsDrugged(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDrugged;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDrugged : eDummyDefault;
     }
 
 bool CREARecord::IsPleasant()
@@ -3319,10 +2710,7 @@ bool CREARecord::IsPleasant()
 void CREARecord::IsPleasant(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePleasant;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePleasant : eDummyDefault;
     }
 
 bool CREARecord::IsAngry()
@@ -3334,10 +2722,7 @@ bool CREARecord::IsAngry()
 void CREARecord::IsAngry(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAngry;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAngry : eDummyDefault;
     }
 
 bool CREARecord::IsSad()
@@ -3349,10 +2734,7 @@ bool CREARecord::IsSad()
 void CREARecord::IsSad(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSad;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSad : eDummyDefault;
     }
 
 bool CREARecord::IsMoodType(UINT8 Type, bool Exact)
@@ -3376,10 +2758,7 @@ bool CREARecord::IsHelpsNobody()
 void CREARecord::IsHelpsNobody(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsNobody;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsNobody : eDummyDefault;
     }
 
 bool CREARecord::IsHelpsAllies()
@@ -3391,10 +2770,7 @@ bool CREARecord::IsHelpsAllies()
 void CREARecord::IsHelpsAllies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsAllies;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsAllies : eDummyDefault;
     }
 
 bool CREARecord::IsHelpsFriendsAndAllies()
@@ -3406,10 +2782,7 @@ bool CREARecord::IsHelpsFriendsAndAllies()
 void CREARecord::IsHelpsFriendsAndAllies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsFriendsAndAllies;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsFriendsAndAllies : eDummyDefault;
     }
 
 bool CREARecord::IsAssistanceType(UINT8 Type, bool Exact)
@@ -3433,10 +2806,7 @@ bool CREARecord::IsStone()
 void CREARecord::IsStone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStone : eDummyDefault;
     }
 
 bool CREARecord::IsDirt()
@@ -3448,10 +2818,7 @@ bool CREARecord::IsDirt()
 void CREARecord::IsDirt(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDirt;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDirt : eDummyDefault;
     }
 
 bool CREARecord::IsGrass()
@@ -3463,10 +2830,7 @@ bool CREARecord::IsGrass()
 void CREARecord::IsGrass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGrass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGrass : eDummyDefault;
     }
 
 bool CREARecord::IsGlass()
@@ -3478,10 +2842,7 @@ bool CREARecord::IsGlass()
 void CREARecord::IsGlass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGlass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGlass : eDummyDefault;
     }
 
 bool CREARecord::IsMetal()
@@ -3493,10 +2854,7 @@ bool CREARecord::IsMetal()
 void CREARecord::IsMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMetal : eDummyDefault;
     }
 
 bool CREARecord::IsWood()
@@ -3508,10 +2866,7 @@ bool CREARecord::IsWood()
 void CREARecord::IsWood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWood : eDummyDefault;
     }
 
 bool CREARecord::IsOrganic()
@@ -3523,10 +2878,7 @@ bool CREARecord::IsOrganic()
 void CREARecord::IsOrganic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganic : eDummyDefault;
     }
 
 bool CREARecord::IsCloth()
@@ -3538,10 +2890,7 @@ bool CREARecord::IsCloth()
 void CREARecord::IsCloth(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCloth;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCloth : eDummyDefault;
     }
 
 bool CREARecord::IsWater()
@@ -3553,10 +2902,7 @@ bool CREARecord::IsWater()
 void CREARecord::IsWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWater;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWater : eDummyDefault;
     }
 
 bool CREARecord::IsHollowMetal()
@@ -3568,10 +2914,7 @@ bool CREARecord::IsHollowMetal()
 void CREARecord::IsHollowMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHollowMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHollowMetal : eDummyDefault;
     }
 
 bool CREARecord::IsOrganicBug()
@@ -3583,10 +2926,7 @@ bool CREARecord::IsOrganicBug()
 void CREARecord::IsOrganicBug(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganicBug;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganicBug : eDummyDefault;
     }
 
 bool CREARecord::IsOrganicGlow()
@@ -3598,10 +2938,7 @@ bool CREARecord::IsOrganicGlow()
 void CREARecord::IsOrganicGlow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganicGlow;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganicGlow : eDummyDefault;
     }
 
 bool CREARecord::IsImpactType(UINT8 Type, bool Exact)

@@ -151,10 +151,7 @@ bool ARMORecord::IsHead()
 void ARMORecord::IsHead(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHead;
-    else
-        Dummy->flags &= ~fIsHead;
+    Dummy->flags = value ? (Dummy->flags | fIsHead) : (Dummy->flags & ~fIsHead);
     }
 
 bool ARMORecord::IsHair()
@@ -166,10 +163,7 @@ bool ARMORecord::IsHair()
 void ARMORecord::IsHair(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHair;
-    else
-        Dummy->flags &= ~fIsHair;
+    Dummy->flags = value ? (Dummy->flags | fIsHair) : (Dummy->flags & ~fIsHair);
     }
 
 bool ARMORecord::IsUpperBody()
@@ -181,10 +175,7 @@ bool ARMORecord::IsUpperBody()
 void ARMORecord::IsUpperBody(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUpperBody;
-    else
-        Dummy->flags &= ~fIsUpperBody;
+    Dummy->flags = value ? (Dummy->flags | fIsUpperBody) : (Dummy->flags & ~fIsUpperBody);
     }
 
 bool ARMORecord::IsLeftHand()
@@ -196,10 +187,7 @@ bool ARMORecord::IsLeftHand()
 void ARMORecord::IsLeftHand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsLeftHand;
-    else
-        Dummy->flags &= ~fIsLeftHand;
+    Dummy->flags = value ? (Dummy->flags | fIsLeftHand) : (Dummy->flags & ~fIsLeftHand);
     }
 
 bool ARMORecord::IsRightHand()
@@ -211,10 +199,7 @@ bool ARMORecord::IsRightHand()
 void ARMORecord::IsRightHand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRightHand;
-    else
-        Dummy->flags &= ~fIsRightHand;
+    Dummy->flags = value ? (Dummy->flags | fIsRightHand) : (Dummy->flags & ~fIsRightHand);
     }
 
 bool ARMORecord::IsWeapon()
@@ -226,10 +211,7 @@ bool ARMORecord::IsWeapon()
 void ARMORecord::IsWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsWeapon;
-    else
-        Dummy->flags &= ~fIsWeapon;
+    Dummy->flags = value ? (Dummy->flags | fIsWeapon) : (Dummy->flags & ~fIsWeapon);
     }
 
 bool ARMORecord::IsPipBoy()
@@ -241,10 +223,7 @@ bool ARMORecord::IsPipBoy()
 void ARMORecord::IsPipBoy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPipBoy;
-    else
-        Dummy->flags &= ~fIsPipBoy;
+    Dummy->flags = value ? (Dummy->flags | fIsPipBoy) : (Dummy->flags & ~fIsPipBoy);
     }
 
 bool ARMORecord::IsBackpack()
@@ -256,10 +235,7 @@ bool ARMORecord::IsBackpack()
 void ARMORecord::IsBackpack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBackpack;
-    else
-        Dummy->flags &= ~fIsBackpack;
+    Dummy->flags = value ? (Dummy->flags | fIsBackpack) : (Dummy->flags & ~fIsBackpack);
     }
 
 bool ARMORecord::IsNecklace()
@@ -271,10 +247,7 @@ bool ARMORecord::IsNecklace()
 void ARMORecord::IsNecklace(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNecklace;
-    else
-        Dummy->flags &= ~fIsNecklace;
+    Dummy->flags = value ? (Dummy->flags | fIsNecklace) : (Dummy->flags & ~fIsNecklace);
     }
 
 bool ARMORecord::IsHeadband()
@@ -286,10 +259,7 @@ bool ARMORecord::IsHeadband()
 void ARMORecord::IsHeadband(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHeadband;
-    else
-        Dummy->flags &= ~fIsHeadband;
+    Dummy->flags = value ? (Dummy->flags | fIsHeadband) : (Dummy->flags & ~fIsHeadband);
     }
 
 bool ARMORecord::IsHat()
@@ -301,10 +271,7 @@ bool ARMORecord::IsHat()
 void ARMORecord::IsHat(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHat;
-    else
-        Dummy->flags &= ~fIsHat;
+    Dummy->flags = value ? (Dummy->flags | fIsHat) : (Dummy->flags & ~fIsHat);
     }
 
 bool ARMORecord::IsEyeGlasses()
@@ -316,10 +283,7 @@ bool ARMORecord::IsEyeGlasses()
 void ARMORecord::IsEyeGlasses(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEyeGlasses;
-    else
-        Dummy->flags &= ~fIsEyeGlasses;
+    Dummy->flags = value ? (Dummy->flags | fIsEyeGlasses) : (Dummy->flags & ~fIsEyeGlasses);
     }
 
 bool ARMORecord::IsNoseRing()
@@ -331,10 +295,7 @@ bool ARMORecord::IsNoseRing()
 void ARMORecord::IsNoseRing(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoseRing;
-    else
-        Dummy->flags &= ~fIsNoseRing;
+    Dummy->flags = value ? (Dummy->flags | fIsNoseRing) : (Dummy->flags & ~fIsNoseRing);
     }
 
 bool ARMORecord::IsEarrings()
@@ -346,10 +307,7 @@ bool ARMORecord::IsEarrings()
 void ARMORecord::IsEarrings(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEarrings;
-    else
-        Dummy->flags &= ~fIsEarrings;
+    Dummy->flags = value ? (Dummy->flags | fIsEarrings) : (Dummy->flags & ~fIsEarrings);
     }
 
 bool ARMORecord::IsMask()
@@ -361,10 +319,7 @@ bool ARMORecord::IsMask()
 void ARMORecord::IsMask(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMask;
-    else
-        Dummy->flags &= ~fIsMask;
+    Dummy->flags = value ? (Dummy->flags | fIsMask) : (Dummy->flags & ~fIsMask);
     }
 
 bool ARMORecord::IsChoker()
@@ -376,10 +331,7 @@ bool ARMORecord::IsChoker()
 void ARMORecord::IsChoker(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsChoker;
-    else
-        Dummy->flags &= ~fIsChoker;
+    Dummy->flags = value ? (Dummy->flags | fIsChoker) : (Dummy->flags & ~fIsChoker);
     }
 
 bool ARMORecord::IsMouthObject()
@@ -391,10 +343,7 @@ bool ARMORecord::IsMouthObject()
 void ARMORecord::IsMouthObject(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMouthObject;
-    else
-        Dummy->flags &= ~fIsMouthObject;
+    Dummy->flags = value ? (Dummy->flags | fIsMouthObject) : (Dummy->flags & ~fIsMouthObject);
     }
 
 bool ARMORecord::IsBodyAddon1()
@@ -406,10 +355,7 @@ bool ARMORecord::IsBodyAddon1()
 void ARMORecord::IsBodyAddon1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBodyAddon1;
-    else
-        Dummy->flags &= ~fIsBodyAddon1;
+    Dummy->flags = value ? (Dummy->flags | fIsBodyAddon1) : (Dummy->flags & ~fIsBodyAddon1);
     }
 
 bool ARMORecord::IsBodyAddon2()
@@ -421,10 +367,7 @@ bool ARMORecord::IsBodyAddon2()
 void ARMORecord::IsBodyAddon2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBodyAddon2;
-    else
-        Dummy->flags &= ~fIsBodyAddon2;
+    Dummy->flags = value ? (Dummy->flags | fIsBodyAddon2) : (Dummy->flags & ~fIsBodyAddon2);
     }
 
 bool ARMORecord::IsBodyAddon3()
@@ -436,10 +379,7 @@ bool ARMORecord::IsBodyAddon3()
 void ARMORecord::IsBodyAddon3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBodyAddon3;
-    else
-        Dummy->flags &= ~fIsBodyAddon3;
+    Dummy->flags = value ? (Dummy->flags | fIsBodyAddon3) : (Dummy->flags & ~fIsBodyAddon3);
     }
 
 bool ARMORecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -463,10 +403,7 @@ bool ARMORecord::IsUnknown1()
 void ARMORecord::IsUnknown1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown1;
-    else
-        Dummy->flags &= ~fIsUnknown1;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown1) : (Dummy->flags & ~fIsUnknown1);
     }
 
 bool ARMORecord::IsUnknown2()
@@ -478,10 +415,7 @@ bool ARMORecord::IsUnknown2()
 void ARMORecord::IsUnknown2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown2;
-    else
-        Dummy->flags &= ~fIsUnknown2;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown2) : (Dummy->flags & ~fIsUnknown2);
     }
 
 bool ARMORecord::IsHasBackpack()
@@ -493,10 +427,7 @@ bool ARMORecord::IsHasBackpack()
 void ARMORecord::IsHasBackpack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHasBackpack;
-    else
-        Dummy->flags &= ~fIsHasBackpack;
+    Dummy->flags = value ? (Dummy->flags | fIsHasBackpack) : (Dummy->flags & ~fIsHasBackpack);
     }
 
 bool ARMORecord::IsMedium()
@@ -508,10 +439,7 @@ bool ARMORecord::IsMedium()
 void ARMORecord::IsMedium(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMedium;
-    else
-        Dummy->flags &= ~fIsMedium;
+    Dummy->flags = value ? (Dummy->flags | fIsMedium) : (Dummy->flags & ~fIsMedium);
     }
 
 bool ARMORecord::IsUnknown3()
@@ -523,10 +451,7 @@ bool ARMORecord::IsUnknown3()
 void ARMORecord::IsUnknown3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown3;
-    else
-        Dummy->flags &= ~fIsUnknown3;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown3) : (Dummy->flags & ~fIsUnknown3);
     }
 
 bool ARMORecord::IsPowerArmor()
@@ -538,10 +463,7 @@ bool ARMORecord::IsPowerArmor()
 void ARMORecord::IsPowerArmor(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPowerArmor;
-    else
-        Dummy->flags &= ~fIsPowerArmor;
+    Dummy->flags = value ? (Dummy->flags | fIsPowerArmor) : (Dummy->flags & ~fIsPowerArmor);
     }
 
 bool ARMORecord::IsNonPlayable()
@@ -553,10 +475,7 @@ bool ARMORecord::IsNonPlayable()
 void ARMORecord::IsNonPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNonPlayable;
-    else
-        Dummy->flags &= ~fIsNonPlayable;
+    Dummy->flags = value ? (Dummy->flags | fIsNonPlayable) : (Dummy->flags & ~fIsNonPlayable);
     }
 
 bool ARMORecord::IsHeavy()
@@ -568,10 +487,7 @@ bool ARMORecord::IsHeavy()
 void ARMORecord::IsHeavy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHeavy;
-    else
-        Dummy->flags &= ~fIsHeavy;
+    Dummy->flags = value ? (Dummy->flags | fIsHeavy) : (Dummy->flags & ~fIsHeavy);
     }
 
 bool ARMORecord::IsExtraFlagMask(UINT8 Mask, bool Exact)
@@ -595,10 +511,7 @@ bool ARMORecord::IsNone()
 void ARMORecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool ARMORecord::IsBigGuns()
@@ -610,10 +523,7 @@ bool ARMORecord::IsBigGuns()
 void ARMORecord::IsBigGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBigGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBigGuns : eDummyDefault;
     }
 
 bool ARMORecord::IsEnergyWeapons()
@@ -625,10 +535,7 @@ bool ARMORecord::IsEnergyWeapons()
 void ARMORecord::IsEnergyWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEnergyWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
     }
 
 bool ARMORecord::IsSmallGuns()
@@ -640,10 +547,7 @@ bool ARMORecord::IsSmallGuns()
 void ARMORecord::IsSmallGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSmallGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSmallGuns : eDummyDefault;
     }
 
 bool ARMORecord::IsMeleeWeapons()
@@ -655,10 +559,7 @@ bool ARMORecord::IsMeleeWeapons()
 void ARMORecord::IsMeleeWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMeleeWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
     }
 
 bool ARMORecord::IsUnarmedWeapon()
@@ -670,10 +571,7 @@ bool ARMORecord::IsUnarmedWeapon()
 void ARMORecord::IsUnarmedWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnarmedWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
     }
 
 bool ARMORecord::IsThrownWeapons()
@@ -685,10 +583,7 @@ bool ARMORecord::IsThrownWeapons()
 void ARMORecord::IsThrownWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eThrownWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
     }
 
 bool ARMORecord::IsMine()
@@ -700,10 +595,7 @@ bool ARMORecord::IsMine()
 void ARMORecord::IsMine(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMine;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMine : eDummyDefault;
     }
 
 bool ARMORecord::IsBodyWear()
@@ -715,10 +607,7 @@ bool ARMORecord::IsBodyWear()
 void ARMORecord::IsBodyWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBodyWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBodyWear : eDummyDefault;
     }
 
 bool ARMORecord::IsHeadWear()
@@ -730,10 +619,7 @@ bool ARMORecord::IsHeadWear()
 void ARMORecord::IsHeadWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeadWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeadWear : eDummyDefault;
     }
 
 bool ARMORecord::IsHandWear()
@@ -745,10 +631,7 @@ bool ARMORecord::IsHandWear()
 void ARMORecord::IsHandWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHandWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHandWear : eDummyDefault;
     }
 
 bool ARMORecord::IsChems()
@@ -760,10 +643,7 @@ bool ARMORecord::IsChems()
 void ARMORecord::IsChems(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eChems;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eChems : eDummyDefault;
     }
 
 bool ARMORecord::IsStimpack()
@@ -775,10 +655,7 @@ bool ARMORecord::IsStimpack()
 void ARMORecord::IsStimpack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStimpack;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStimpack : eDummyDefault;
     }
 
 bool ARMORecord::IsFood()
@@ -790,10 +667,7 @@ bool ARMORecord::IsFood()
 void ARMORecord::IsFood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFood : eDummyDefault;
     }
 
 bool ARMORecord::IsAlcohol()
@@ -805,10 +679,7 @@ bool ARMORecord::IsAlcohol()
 void ARMORecord::IsAlcohol(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAlcohol;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAlcohol : eDummyDefault;
     }
 
 bool ARMORecord::IsEquipmentType(UINT32 Type, bool Exact)
@@ -832,10 +703,7 @@ bool ARMORecord::IsModulatesVoice()
 void ARMORecord::IsModulatesVoice(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsModulatesVoice;
-    else
-        Dummy->flags &= ~fIsModulatesVoice;
+    Dummy->flags = value ? (Dummy->flags | fIsModulatesVoice) : (Dummy->flags & ~fIsModulatesVoice);
     }
 
 bool ARMORecord::IsDNAMFlagMask(UINT16 Mask, bool Exact)

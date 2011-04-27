@@ -60,7 +60,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //scri Script
             return FORMID_FIELD;
-        case 8: //full Name
+        case 8: //full
             return STRING_FIELD;
         case 9: //iconPath
             return ISTRING_FIELD;
@@ -235,7 +235,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //scri Script
             return SCRI.IsLoaded() ? &SCRI->value7 : NULL;
-        case 8: //full Name
+        case 8: //full
             return FULL.value;
         case 9: //iconPath
             return ICON.value;
@@ -358,7 +358,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SCRI.Load();
             SCRI->value7 = *(FORMID *)FieldValue;
             return true;
-        case 8: //full Name
+        case 8: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 9: //iconPath
@@ -593,7 +593,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //scri Script
             SCRI.Unload();
             return;
-        case 8: //full Name
+        case 8: //full
             FULL.Unload();
             return;
         case 9: //iconPath

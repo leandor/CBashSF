@@ -66,7 +66,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return SINT32_FIELD;
         case 10: //qstr Quest
             return FORMID_FIELD;
-        case 11: //full Name
+        case 11: //full
             return STRING_FIELD;
         case 12: //pnam Priority
             return FLOAT32_FIELD;
@@ -107,7 +107,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return INFX.IsLoaded() ? &INFX->value9 : NULL;
         case 10: //qstr Quest
             return QSTR.IsLoaded() ? &QSTR->value10 : NULL;
-        case 11: //full Name
+        case 11: //full
             return FULL.value;
         case 12: //pnam Priority
             return PNAM.IsLoaded() ? &PNAM->value12 : NULL;
@@ -165,7 +165,7 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             QSTR.Load();
             QSTR->value10 = *(FORMID *)FieldValue;
             return true;
-        case 11: //full Name
+        case 11: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 12: //pnam Priority
@@ -221,7 +221,7 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
         case 10: //qstr Quest
             QSTR.Unload();
             return;
-        case 11: //full Name
+        case 11: //full
             FULL.Unload();
             return;
         case 12: //pnam Priority

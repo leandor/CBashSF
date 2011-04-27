@@ -82,6 +82,9 @@ class CLASRecord : public Record
         void   IsPlayable(bool value);
         bool   IsGuard();
         void   IsGuard(bool value);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
+
         bool   IsServicesWeapons();
         void   IsServicesWeapons(bool value);
         bool   IsServicesArmor();
@@ -110,8 +113,6 @@ class CLASRecord : public Record
         void   IsServicesRecharge(bool value);
         bool   IsServicesRepair();
         void   IsServicesRepair(bool value);
-        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
-        void   SetFlagMask(UINT32 Mask);
         bool   IsServicesFlagMask(UINT32 Mask, bool Exact=false);
         void   SetServicesFlagMask(UINT32 Mask);
 

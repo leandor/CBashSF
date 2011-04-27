@@ -33,10 +33,7 @@ bool TERMRecord::TERMMenu::IsAddNote()
 void TERMRecord::TERMMenu::IsAddNote(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAddNote;
-    else
-        Dummy->flags &= ~fIsAddNote;
+    Dummy->flags = value ? (Dummy->flags | fIsAddNote) : (Dummy->flags & ~fIsAddNote);
     }
 
 bool TERMRecord::TERMMenu::IsForceRedraw()
@@ -48,10 +45,7 @@ bool TERMRecord::TERMMenu::IsForceRedraw()
 void TERMRecord::TERMMenu::IsForceRedraw(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsForceRedraw;
-    else
-        Dummy->flags &= ~fIsForceRedraw;
+    Dummy->flags = value ? (Dummy->flags | fIsForceRedraw) : (Dummy->flags & ~fIsForceRedraw);
     }
 
 bool TERMRecord::TERMMenu::IsFlagMask(UINT8 Mask, bool Exact)
@@ -73,10 +67,7 @@ bool TERMRecord::TERMMenu::IsScriptEnabled()
 
 void TERMRecord::TERMMenu::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool TERMRecord::TERMMenu::IsScriptFlagMask(UINT16 Mask, bool Exact)
@@ -209,10 +200,7 @@ bool TERMRecord::IsLeveled()
 void TERMRecord::IsLeveled(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsLeveled;
-    else
-        Dummy->flags &= ~fIsLeveled;
+    Dummy->flags = value ? (Dummy->flags | fIsLeveled) : (Dummy->flags & ~fIsLeveled);
     }
 
 bool TERMRecord::IsUnlocked()
@@ -224,10 +212,7 @@ bool TERMRecord::IsUnlocked()
 void TERMRecord::IsUnlocked(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnlocked;
-    else
-        Dummy->flags &= ~fIsUnlocked;
+    Dummy->flags = value ? (Dummy->flags | fIsUnlocked) : (Dummy->flags & ~fIsUnlocked);
     }
 
 bool TERMRecord::IsAlternateColors()
@@ -239,10 +224,7 @@ bool TERMRecord::IsAlternateColors()
 void TERMRecord::IsAlternateColors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAlternateColors;
-    else
-        Dummy->flags &= ~fIsAlternateColors;
+    Dummy->flags = value ? (Dummy->flags | fIsAlternateColors) : (Dummy->flags & ~fIsAlternateColors);
     }
 
 bool TERMRecord::IsHideWelcomeTextWhenDisplayingImage()
@@ -254,10 +236,7 @@ bool TERMRecord::IsHideWelcomeTextWhenDisplayingImage()
 void TERMRecord::IsHideWelcomeTextWhenDisplayingImage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHideWelcomeTextWhenDisplayingImage;
-    else
-        Dummy->flags &= ~fIsHideWelcomeTextWhenDisplayingImage;
+    Dummy->flags = value ? (Dummy->flags | fIsHideWelcomeTextWhenDisplayingImage) : (Dummy->flags & ~fIsHideWelcomeTextWhenDisplayingImage);
     }
 
 bool TERMRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -281,10 +260,7 @@ bool TERMRecord::IsVeryEasy()
 void TERMRecord::IsVeryEasy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryEasy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryEasy : eDummyDefault;
     }
 
 bool TERMRecord::IsEasy()
@@ -296,10 +272,7 @@ bool TERMRecord::IsEasy()
 void TERMRecord::IsEasy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEasy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEasy : eDummyDefault;
     }
 
 bool TERMRecord::IsAverage()
@@ -311,10 +284,7 @@ bool TERMRecord::IsAverage()
 void TERMRecord::IsAverage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAverage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAverage : eDummyDefault;
     }
 
 bool TERMRecord::IsHard()
@@ -326,10 +296,7 @@ bool TERMRecord::IsHard()
 void TERMRecord::IsHard(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHard;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHard : eDummyDefault;
     }
 
 bool TERMRecord::IsVeryHard()
@@ -341,10 +308,7 @@ bool TERMRecord::IsVeryHard()
 void TERMRecord::IsVeryHard(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryHard;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryHard : eDummyDefault;
     }
 
 bool TERMRecord::IsRequiresKey()
@@ -356,10 +320,7 @@ bool TERMRecord::IsRequiresKey()
 void TERMRecord::IsRequiresKey(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRequiresKey;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRequiresKey : eDummyDefault;
     }
 
 bool TERMRecord::IsLockType(UINT8 Type, bool Exact)
@@ -383,10 +344,7 @@ bool TERMRecord::IsServer1()
 void TERMRecord::IsServer1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer1 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer2()
@@ -398,10 +356,7 @@ bool TERMRecord::IsServer2()
 void TERMRecord::IsServer2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer2 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer3()
@@ -413,10 +368,7 @@ bool TERMRecord::IsServer3()
 void TERMRecord::IsServer3(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer3;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer3 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer4()
@@ -428,10 +380,7 @@ bool TERMRecord::IsServer4()
 void TERMRecord::IsServer4(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer4;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer4 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer5()
@@ -443,10 +392,7 @@ bool TERMRecord::IsServer5()
 void TERMRecord::IsServer5(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer5;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer5 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer6()
@@ -458,10 +404,7 @@ bool TERMRecord::IsServer6()
 void TERMRecord::IsServer6(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer6;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer6 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer7()
@@ -473,10 +416,7 @@ bool TERMRecord::IsServer7()
 void TERMRecord::IsServer7(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer7;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer7 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer8()
@@ -488,10 +428,7 @@ bool TERMRecord::IsServer8()
 void TERMRecord::IsServer8(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer8;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer8 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer9()
@@ -503,10 +440,7 @@ bool TERMRecord::IsServer9()
 void TERMRecord::IsServer9(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer9;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer9 : eDummyDefault;
     }
 
 bool TERMRecord::IsServer10()
@@ -518,10 +452,7 @@ bool TERMRecord::IsServer10()
 void TERMRecord::IsServer10(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eServer10;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eServer10 : eDummyDefault;
     }
 
 bool TERMRecord::IsServerType(UINT8 Type, bool Exact)

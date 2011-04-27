@@ -106,10 +106,7 @@ bool LTEXRecord::IsStone()
 void LTEXRecord::IsStone(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eStone;
-    else
-        HNAM.value.types = eCloth;
+    HNAM.value.types = value ? eStone : eCloth;
     }
 
 bool LTEXRecord::IsCloth()
@@ -121,10 +118,7 @@ bool LTEXRecord::IsCloth()
 void LTEXRecord::IsCloth(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eCloth;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eCloth : eStone;
     }
 
 bool LTEXRecord::IsDirt()
@@ -136,10 +130,7 @@ bool LTEXRecord::IsDirt()
 void LTEXRecord::IsDirt(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eDirt;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eDirt : eStone;
     }
 
 bool LTEXRecord::IsGlass()
@@ -151,10 +142,7 @@ bool LTEXRecord::IsGlass()
 void LTEXRecord::IsGlass(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eGlass;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eGlass : eStone;
     }
 
 bool LTEXRecord::IsGrass()
@@ -166,10 +154,7 @@ bool LTEXRecord::IsGrass()
 void LTEXRecord::IsGrass(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eGrass;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eGrass : eStone;
     }
 
 bool LTEXRecord::IsMetal()
@@ -181,10 +166,7 @@ bool LTEXRecord::IsMetal()
 void LTEXRecord::IsMetal(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eMetal;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eMetal : eStone;
     }
 
 bool LTEXRecord::IsOrganic()
@@ -196,10 +178,7 @@ bool LTEXRecord::IsOrganic()
 void LTEXRecord::IsOrganic(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eOrganic;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eOrganic : eStone;
     }
 
 bool LTEXRecord::IsSkin()
@@ -211,10 +190,7 @@ bool LTEXRecord::IsSkin()
 void LTEXRecord::IsSkin(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eSkin;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eSkin : eStone;
     }
 
 bool LTEXRecord::IsWater()
@@ -226,10 +202,7 @@ bool LTEXRecord::IsWater()
 void LTEXRecord::IsWater(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eWater;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eWater : eStone;
     }
 
 bool LTEXRecord::IsWood()
@@ -241,10 +214,7 @@ bool LTEXRecord::IsWood()
 void LTEXRecord::IsWood(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eWood;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eWood : eStone;
     }
 
 bool LTEXRecord::IsHeavyStone()
@@ -256,10 +226,7 @@ bool LTEXRecord::IsHeavyStone()
 void LTEXRecord::IsHeavyStone(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eHeavyStone;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eHeavyStone : eStone;
     }
 
 bool LTEXRecord::IsHeavyMetal()
@@ -271,10 +238,7 @@ bool LTEXRecord::IsHeavyMetal()
 void LTEXRecord::IsHeavyMetal(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eHeavyMetal;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eHeavyMetal : eStone;
     }
 
 bool LTEXRecord::IsHeavyWood()
@@ -286,10 +250,7 @@ bool LTEXRecord::IsHeavyWood()
 void LTEXRecord::IsHeavyWood(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eHeavyWood;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eHeavyWood : eStone;
     }
 
 bool LTEXRecord::IsChain()
@@ -301,10 +262,7 @@ bool LTEXRecord::IsChain()
 void LTEXRecord::IsChain(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eChain;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eChain : eStone;
     }
 
 bool LTEXRecord::IsSnow()
@@ -316,10 +274,7 @@ bool LTEXRecord::IsSnow()
 void LTEXRecord::IsSnow(bool value)
     {
     HNAM.Load();
-    if(value)
-        HNAM.value.types = eSnow;
-    else
-        HNAM.value.types = eStone;
+    HNAM.value.types = value ? eSnow : eStone;
     }
 
 bool LTEXRecord::IsType(UINT8 Type)

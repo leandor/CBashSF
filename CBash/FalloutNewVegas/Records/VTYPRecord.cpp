@@ -78,10 +78,7 @@ bool VTYPRecord::IsAllowDefaultDialog()
 void VTYPRecord::IsAllowDefaultDialog(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAllowDefaultDialog;
-    else
-        Dummy->flags &= ~fIsAllowDefaultDialog;
+    Dummy->flags = value ? (Dummy->flags | fIsAllowDefaultDialog) : (Dummy->flags & ~fIsAllowDefaultDialog);
     }
 
 bool VTYPRecord::IsFemale()
@@ -93,10 +90,7 @@ bool VTYPRecord::IsFemale()
 void VTYPRecord::IsFemale(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFemale;
-    else
-        Dummy->flags &= ~fIsFemale;
+    Dummy->flags = value ? (Dummy->flags | fIsFemale) : (Dummy->flags & ~fIsFemale);
     }
 
 bool VTYPRecord::IsFlagMask(UINT8 Mask, bool Exact)

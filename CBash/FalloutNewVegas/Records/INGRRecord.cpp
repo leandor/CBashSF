@@ -109,10 +109,7 @@ bool INGRRecord::IsNone()
 void INGRRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool INGRRecord::IsBigGuns()
@@ -124,10 +121,7 @@ bool INGRRecord::IsBigGuns()
 void INGRRecord::IsBigGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBigGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBigGuns : eDummyDefault;
     }
 
 bool INGRRecord::IsEnergyWeapons()
@@ -139,10 +133,7 @@ bool INGRRecord::IsEnergyWeapons()
 void INGRRecord::IsEnergyWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEnergyWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
     }
 
 bool INGRRecord::IsSmallGuns()
@@ -154,10 +145,7 @@ bool INGRRecord::IsSmallGuns()
 void INGRRecord::IsSmallGuns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSmallGuns;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSmallGuns : eDummyDefault;
     }
 
 bool INGRRecord::IsMeleeWeapons()
@@ -169,10 +157,7 @@ bool INGRRecord::IsMeleeWeapons()
 void INGRRecord::IsMeleeWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMeleeWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
     }
 
 bool INGRRecord::IsUnarmedWeapon()
@@ -184,10 +169,7 @@ bool INGRRecord::IsUnarmedWeapon()
 void INGRRecord::IsUnarmedWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnarmedWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
     }
 
 bool INGRRecord::IsThrownWeapons()
@@ -199,10 +181,7 @@ bool INGRRecord::IsThrownWeapons()
 void INGRRecord::IsThrownWeapons(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eThrownWeapons;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
     }
 
 bool INGRRecord::IsMine()
@@ -214,10 +193,7 @@ bool INGRRecord::IsMine()
 void INGRRecord::IsMine(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMine;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMine : eDummyDefault;
     }
 
 bool INGRRecord::IsBodyWear()
@@ -229,10 +205,7 @@ bool INGRRecord::IsBodyWear()
 void INGRRecord::IsBodyWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBodyWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBodyWear : eDummyDefault;
     }
 
 bool INGRRecord::IsHeadWear()
@@ -244,10 +217,7 @@ bool INGRRecord::IsHeadWear()
 void INGRRecord::IsHeadWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeadWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeadWear : eDummyDefault;
     }
 
 bool INGRRecord::IsHandWear()
@@ -259,10 +229,7 @@ bool INGRRecord::IsHandWear()
 void INGRRecord::IsHandWear(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHandWear;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHandWear : eDummyDefault;
     }
 
 bool INGRRecord::IsChems()
@@ -274,10 +241,7 @@ bool INGRRecord::IsChems()
 void INGRRecord::IsChems(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eChems;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eChems : eDummyDefault;
     }
 
 bool INGRRecord::IsStimpack()
@@ -289,10 +253,7 @@ bool INGRRecord::IsStimpack()
 void INGRRecord::IsStimpack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStimpack;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStimpack : eDummyDefault;
     }
 
 bool INGRRecord::IsFood()
@@ -304,10 +265,7 @@ bool INGRRecord::IsFood()
 void INGRRecord::IsFood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFood : eDummyDefault;
     }
 
 bool INGRRecord::IsAlcohol()
@@ -319,10 +277,7 @@ bool INGRRecord::IsAlcohol()
 void INGRRecord::IsAlcohol(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAlcohol;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAlcohol : eDummyDefault;
     }
 
 bool INGRRecord::IsEquipmentType(UINT32 Type, bool Exact)

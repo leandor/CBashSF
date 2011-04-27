@@ -864,7 +864,7 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
-        SaveHandler.writeSubRecord('ZFFK', NULL, cSize);
+        SaveHandler.writeSubRecordHeader('ZFFK', cSize);
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());

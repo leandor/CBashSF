@@ -269,6 +269,7 @@ class _FileHandler
         unsigned char *getBuffer(UINT32 _Offset);
         UINT32 getBufferSize();
         UINT32 write(const void *_SrcBuf, UINT32 _MaxCharCount);
+        void   writeSubRecordHeader(UINT32 _Type, UINT32 _MaxCharCount);
         void   writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount);
         UINT32 writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount);
         UINT32 UnusedCache();

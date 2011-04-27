@@ -29,11 +29,8 @@ class FACTRecord : public Record
     private:
         struct FACTRNAM
             {
-            SINT32  RNAM;
+            ReqSimpleSubRecord<SINT32> RNAM; //Rank#
             StringRecord MNAM, FNAM, INAM;
-
-            FACTRNAM();
-            ~FACTRNAM();
 
             bool operator ==(const FACTRNAM &other) const;
             bool operator !=(const FACTRNAM &other) const;
@@ -46,13 +43,15 @@ class FACTRecord : public Record
             fIsSpecialCombat = 0x00000004
             };
 
+        friend bool sortRNAM(FACTRNAM *lhs, FACTRNAM *rhs);
+
     public:
         StringRecord EDID;
         StringRecord FULL;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
         ReqSimpleSubRecord<UINT8> DATA;
         SemiOptSimpleSubRecord<FLOAT32, 1, 0> CNAM; // crimeGoldMultiplier
-        std::vector<ReqSubRecord<FACTRNAM> *> RNAM;
+        std::vector<FACTRNAM *> RNAM;
 
         FACTRecord(unsigned char *_recData=NULL);
         FACTRecord(FACTRecord *srcRecord);

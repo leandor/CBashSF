@@ -92,10 +92,7 @@ bool CAMSRecord::IsPosFollowsLocation()
 void CAMSRecord::IsPosFollowsLocation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPosFollowsLocation;
-    else
-        Dummy->flags &= ~fIsPosFollowsLocation;
+    Dummy->flags = value ? (Dummy->flags | fIsPosFollowsLocation) : (Dummy->flags & ~fIsPosFollowsLocation);
     }
 
 bool CAMSRecord::IsPosFollowsTarget()
@@ -107,10 +104,7 @@ bool CAMSRecord::IsPosFollowsTarget()
 void CAMSRecord::IsPosFollowsTarget(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPosFollowsTarget;
-    else
-        Dummy->flags &= ~fIsPosFollowsTarget;
+    Dummy->flags = value ? (Dummy->flags | fIsPosFollowsTarget) : (Dummy->flags & ~fIsPosFollowsTarget);
     }
 
 bool CAMSRecord::IsDontFollowBone()
@@ -122,10 +116,7 @@ bool CAMSRecord::IsDontFollowBone()
 void CAMSRecord::IsDontFollowBone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDontFollowBone;
-    else
-        Dummy->flags &= ~fIsDontFollowBone;
+    Dummy->flags = value ? (Dummy->flags | fIsDontFollowBone) : (Dummy->flags & ~fIsDontFollowBone);
     }
 
 bool CAMSRecord::IsFirstPersonCamera()
@@ -137,10 +128,7 @@ bool CAMSRecord::IsFirstPersonCamera()
 void CAMSRecord::IsFirstPersonCamera(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFirstPersonCamera;
-    else
-        Dummy->flags &= ~fIsFirstPersonCamera;
+    Dummy->flags = value ? (Dummy->flags | fIsFirstPersonCamera) : (Dummy->flags & ~fIsFirstPersonCamera);
     }
 
 bool CAMSRecord::IsNoTracer()
@@ -152,10 +140,7 @@ bool CAMSRecord::IsNoTracer()
 void CAMSRecord::IsNoTracer(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoTracer;
-    else
-        Dummy->flags &= ~fIsNoTracer;
+    Dummy->flags = value ? (Dummy->flags | fIsNoTracer) : (Dummy->flags & ~fIsNoTracer);
     }
 
 bool CAMSRecord::IsStartAtTimeZero()
@@ -167,10 +152,7 @@ bool CAMSRecord::IsStartAtTimeZero()
 void CAMSRecord::IsStartAtTimeZero(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsStartAtTimeZero;
-    else
-        Dummy->flags &= ~fIsStartAtTimeZero;
+    Dummy->flags = value ? (Dummy->flags | fIsStartAtTimeZero) : (Dummy->flags & ~fIsStartAtTimeZero);
     }
 
 bool CAMSRecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -194,10 +176,7 @@ bool CAMSRecord::IsActionShoot()
 void CAMSRecord::IsActionShoot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eShoot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eShoot : eDummyDefault;
     }
 
 bool CAMSRecord::IsActionFly()
@@ -209,10 +188,7 @@ bool CAMSRecord::IsActionFly()
 void CAMSRecord::IsActionFly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFly : eDummyDefault;
     }
 
 bool CAMSRecord::IsActionHit()
@@ -224,10 +200,7 @@ bool CAMSRecord::IsActionHit()
 void CAMSRecord::IsActionHit(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHit;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHit : eDummyDefault;
     }
 
 bool CAMSRecord::IsActionZoom()
@@ -239,10 +212,7 @@ bool CAMSRecord::IsActionZoom()
 void CAMSRecord::IsActionZoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eZoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eZoom : eDummyDefault;
     }
 
 bool CAMSRecord::IsActionType(UINT32 Type, bool Exact)
@@ -266,10 +236,7 @@ bool CAMSRecord::IsLocationAttacker()
 void CAMSRecord::IsLocationAttacker(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttacker;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttacker : eDummyDefault;
     }
 
 bool CAMSRecord::IsLocationProjectile()
@@ -281,10 +248,7 @@ bool CAMSRecord::IsLocationProjectile()
 void CAMSRecord::IsLocationProjectile(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eProjectile;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eProjectile : eDummyDefault;
     }
 
 bool CAMSRecord::IsLocationTarget()
@@ -296,10 +260,7 @@ bool CAMSRecord::IsLocationTarget()
 void CAMSRecord::IsLocationTarget(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTarget;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTarget : eDummyDefault;
     }
 
 bool CAMSRecord::IsLocationType(UINT32 Type, bool Exact)
@@ -323,10 +284,7 @@ bool CAMSRecord::IsTargetAttacker()
 void CAMSRecord::IsTargetAttacker(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAttacker;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAttacker : eDummyDefault;
     }
 
 bool CAMSRecord::IsTargetProjectile()
@@ -338,10 +296,7 @@ bool CAMSRecord::IsTargetProjectile()
 void CAMSRecord::IsTargetProjectile(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eProjectile;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eProjectile : eDummyDefault;
     }
 
 bool CAMSRecord::IsTargetTarget()
@@ -353,10 +308,7 @@ bool CAMSRecord::IsTargetTarget()
 void CAMSRecord::IsTargetTarget(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTarget;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTarget : eDummyDefault;
     }
 
 bool CAMSRecord::IsTargetType(UINT32 Type, bool Exact)

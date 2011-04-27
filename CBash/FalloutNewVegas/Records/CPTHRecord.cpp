@@ -87,10 +87,7 @@ bool CPTHRecord::IsDefault()
 void CPTHRecord::IsDefault(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDefault;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDefault : eDummyDefault;
     }
 
 bool CPTHRecord::IsDisable()
@@ -102,10 +99,7 @@ bool CPTHRecord::IsDisable()
 void CPTHRecord::IsDisable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDisable;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDisable : eDummyDefault;
     }
 
 bool CPTHRecord::IsShotList()
@@ -117,10 +111,7 @@ bool CPTHRecord::IsShotList()
 void CPTHRecord::IsShotList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eShotList;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eShotList : eDummyDefault;
     }
 
 bool CPTHRecord::IsType(UINT8 Type, bool Exact)

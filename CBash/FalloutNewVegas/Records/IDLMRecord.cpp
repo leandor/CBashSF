@@ -84,10 +84,7 @@ bool IDLMRecord::IsRunInSequence()
 void IDLMRecord::IsRunInSequence(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRunInSequence;
-    else
-        Dummy->flags &= ~fIsRunInSequence;
+    Dummy->flags = value ? (Dummy->flags | fIsRunInSequence) : (Dummy->flags & ~fIsRunInSequence);
     }
 
 bool IDLMRecord::IsDoOnce()
@@ -99,10 +96,7 @@ bool IDLMRecord::IsDoOnce()
 void IDLMRecord::IsDoOnce(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDoOnce;
-    else
-        Dummy->flags &= ~fIsDoOnce;
+    Dummy->flags = value ? (Dummy->flags | fIsDoOnce) : (Dummy->flags & ~fIsDoOnce);
     }
 
 bool IDLMRecord::Is0FlagMask(UINT8 Mask, bool Exact)

@@ -1326,7 +1326,7 @@ SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
             if(NIFZ[p].IsLoaded())
                 cSize += NIFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
-        SaveHandler.writeSubRecord('ZFIN', NULL, cSize);
+        SaveHandler.writeSubRecordHeader('ZFIN', cSize);
         for(UINT32 p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
                 SaveHandler.write(NIFZ[p].value, NIFZ[p].GetSize());
@@ -1367,7 +1367,7 @@ SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
-        SaveHandler.writeSubRecord('ZFFK', NULL, cSize);
+        SaveHandler.writeSubRecordHeader('ZFFK', cSize);
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());

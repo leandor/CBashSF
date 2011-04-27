@@ -78,10 +78,7 @@ bool IMGSRecord::IsSaturation()
 void IMGSRecord::IsSaturation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSaturation;
-    else
-        Dummy->flags &= ~fIsSaturation;
+    Dummy->flags = value ? (Dummy->flags | fIsSaturation) : (Dummy->flags & ~fIsSaturation);
     }
 
 bool IMGSRecord::IsContrast()
@@ -93,10 +90,7 @@ bool IMGSRecord::IsContrast()
 void IMGSRecord::IsContrast(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsContrast;
-    else
-        Dummy->flags &= ~fIsContrast;
+    Dummy->flags = value ? (Dummy->flags | fIsContrast) : (Dummy->flags & ~fIsContrast);
     }
 
 bool IMGSRecord::IsTint()
@@ -108,10 +102,7 @@ bool IMGSRecord::IsTint()
 void IMGSRecord::IsTint(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTint;
-    else
-        Dummy->flags &= ~fIsTint;
+    Dummy->flags = value ? (Dummy->flags | fIsTint) : (Dummy->flags & ~fIsTint);
     }
 
 bool IMGSRecord::IsBrightness()
@@ -123,10 +114,7 @@ bool IMGSRecord::IsBrightness()
 void IMGSRecord::IsBrightness(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBrightness;
-    else
-        Dummy->flags &= ~fIsBrightness;
+    Dummy->flags = value ? (Dummy->flags | fIsBrightness) : (Dummy->flags & ~fIsBrightness);
     }
 
 bool IMGSRecord::IsFlagMask(UINT8 Mask, bool Exact)

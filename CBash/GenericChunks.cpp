@@ -256,10 +256,7 @@ bool FNVMINSCRIPT::IsScriptEnabled()
 
 void FNVMINSCRIPT::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool FNVMINSCRIPT::IsScriptFlagMask(UINT16 Mask, bool Exact)
@@ -459,10 +456,7 @@ bool GENEffect::IsHostile()
 void GENEffect::IsHostile(bool value)
     {
     if(!SCIT.IsLoaded()) return;
-    if(value)
-        SCIT->flags |= fIsHostile;
-    else
-        SCIT->flags &= ~fIsHostile;
+    SCIT->flags = value ? (SCIT->flags | fIsHostile) : (SCIT->flags & ~fIsHostile);
     }
 
 bool GENEffect::IsFlagMask(UINT8 Mask, bool Exact)
@@ -487,10 +481,7 @@ bool GENEffect::IsRangeSelf()
 
 void GENEffect::IsRangeSelf(bool value)
     {
-    if(value)
-        EFIT.value.rangeType = eRangeSelf;
-    else
-        EFIT.value.rangeType = eRangeTouch;
+    EFIT.value.rangeType = value ? eRangeSelf : eRangeTouch;
     }
 
 bool GENEffect::IsRangeTouch()
@@ -500,10 +491,7 @@ bool GENEffect::IsRangeTouch()
 
 void GENEffect::IsRangeTouch(bool value)
     {
-    if(value)
-        EFIT.value.rangeType = eRangeTouch;
-    else
-        EFIT.value.rangeType = eRangeSelf;
+    EFIT.value.rangeType = value ? eRangeTouch : eRangeSelf;
     }
 
 bool GENEffect::IsRangeTarget()
@@ -513,10 +501,7 @@ bool GENEffect::IsRangeTarget()
 
 void GENEffect::IsRangeTarget(bool value)
     {
-    if(value)
-        EFIT.value.rangeType = eRangeTarget;
-    else
-        EFIT.value.rangeType = eRangeSelf;
+    EFIT.value.rangeType = value ? eRangeTarget : eRangeSelf;
     }
 
 bool GENEffect::IsRange(UINT32 Mask)
@@ -538,10 +523,7 @@ bool GENEffect::OBME_IsUsingHostileOverride()
 void GENEffect::OBME_IsUsingHostileOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingHostileOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingHostileOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingHostileOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingHostileOverride);
     }
 
 bool GENEffect::OBME_IsUsingRecoversOverride()
@@ -553,10 +535,7 @@ bool GENEffect::OBME_IsUsingRecoversOverride()
 void GENEffect::OBME_IsUsingRecoversOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingRecoversOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingRecoversOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingRecoversOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingRecoversOverride);
     }
 
 bool GENEffect::OBME_IsUsingParamFlagAOverride()
@@ -568,10 +547,7 @@ bool GENEffect::OBME_IsUsingParamFlagAOverride()
 void GENEffect::OBME_IsUsingParamFlagAOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingParamFlagAOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingParamFlagAOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingParamFlagAOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingParamFlagAOverride);
     }
 
 bool GENEffect::OBME_IsUsingBeneficialOverride()
@@ -583,10 +559,7 @@ bool GENEffect::OBME_IsUsingBeneficialOverride()
 void GENEffect::OBME_IsUsingBeneficialOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingBeneficialOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingBeneficialOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingBeneficialOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingBeneficialOverride);
     }
 
 bool GENEffect::OBME_IsUsingEFIXParamOverride()
@@ -598,10 +571,7 @@ bool GENEffect::OBME_IsUsingEFIXParamOverride()
 void GENEffect::OBME_IsUsingEFIXParamOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingEFIXParamOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingEFIXParamOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingEFIXParamOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingEFIXParamOverride);
     }
 
 bool GENEffect::OBME_IsUsingSchoolOverride()
@@ -613,10 +583,7 @@ bool GENEffect::OBME_IsUsingSchoolOverride()
 void GENEffect::OBME_IsUsingSchoolOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingSchoolOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingSchoolOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingSchoolOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingSchoolOverride);
     }
 
 bool GENEffect::OBME_IsUsingNameOverride()
@@ -628,10 +595,7 @@ bool GENEffect::OBME_IsUsingNameOverride()
 void GENEffect::OBME_IsUsingNameOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingNameOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingNameOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingNameOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingNameOverride);
     }
 
 bool GENEffect::OBME_IsUsingVFXCodeOverride()
@@ -643,10 +607,7 @@ bool GENEffect::OBME_IsUsingVFXCodeOverride()
 void GENEffect::OBME_IsUsingVFXCodeOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingVFXCodeOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingVFXCodeOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingVFXCodeOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingVFXCodeOverride);
     }
 
 bool GENEffect::OBME_IsUsingBaseCostOverride()
@@ -658,10 +619,7 @@ bool GENEffect::OBME_IsUsingBaseCostOverride()
 void GENEffect::OBME_IsUsingBaseCostOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingBaseCostOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingBaseCostOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingBaseCostOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingBaseCostOverride);
     }
 
 bool GENEffect::OBME_IsUsingResistAVOverride()
@@ -673,10 +631,7 @@ bool GENEffect::OBME_IsUsingResistAVOverride()
 void GENEffect::OBME_IsUsingResistAVOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingResistAVOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingResistAVOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingResistAVOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingResistAVOverride);
     }
 
 bool GENEffect::OBME_IsUsingFXPersistsOverride()
@@ -688,10 +643,7 @@ bool GENEffect::OBME_IsUsingFXPersistsOverride()
 void GENEffect::OBME_IsUsingFXPersistsOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingFXPersistsOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingFXPersistsOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingFXPersistsOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingFXPersistsOverride);
     }
 
 bool GENEffect::OBME_IsUsingIconOverride()
@@ -703,10 +655,7 @@ bool GENEffect::OBME_IsUsingIconOverride()
 void GENEffect::OBME_IsUsingIconOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingIconOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingIconOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingIconOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingIconOverride);
     }
 
 bool GENEffect::OBME_IsUsingDoesntTeachOverride()
@@ -718,10 +667,7 @@ bool GENEffect::OBME_IsUsingDoesntTeachOverride()
 void GENEffect::OBME_IsUsingDoesntTeachOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingDoesntTeachOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingDoesntTeachOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingDoesntTeachOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingDoesntTeachOverride);
     }
 
 bool GENEffect::OBME_IsUsingUnknownFOverride()
@@ -733,10 +679,7 @@ bool GENEffect::OBME_IsUsingUnknownFOverride()
 void GENEffect::OBME_IsUsingUnknownFOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingUnknownFOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingUnknownFOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingUnknownFOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingUnknownFOverride);
     }
 
 bool GENEffect::OBME_IsUsingNoRecastOverride()
@@ -748,10 +691,7 @@ bool GENEffect::OBME_IsUsingNoRecastOverride()
 void GENEffect::OBME_IsUsingNoRecastOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingNoRecastOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingNoRecastOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingNoRecastOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingNoRecastOverride);
     }
 
 bool GENEffect::OBME_IsUsingParamFlagBOverride()
@@ -763,10 +703,7 @@ bool GENEffect::OBME_IsUsingParamFlagBOverride()
 void GENEffect::OBME_IsUsingParamFlagBOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingParamFlagBOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingParamFlagBOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingParamFlagBOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingParamFlagBOverride);
     }
 
 bool GENEffect::OBME_IsUsingMagnitudeIsRangeOverride()
@@ -778,10 +715,7 @@ bool GENEffect::OBME_IsUsingMagnitudeIsRangeOverride()
 void GENEffect::OBME_IsUsingMagnitudeIsRangeOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingMagnitudeIsRangeOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingMagnitudeIsRangeOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingMagnitudeIsRangeOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingMagnitudeIsRangeOverride);
     }
 
 bool GENEffect::OBME_IsUsingAtomicResistanceOverride()
@@ -793,10 +727,7 @@ bool GENEffect::OBME_IsUsingAtomicResistanceOverride()
 void GENEffect::OBME_IsUsingAtomicResistanceOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingAtomicResistanceOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingAtomicResistanceOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingAtomicResistanceOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingAtomicResistanceOverride);
     }
 
 bool GENEffect::OBME_IsUsingParamFlagCOverride()
@@ -808,10 +739,7 @@ bool GENEffect::OBME_IsUsingParamFlagCOverride()
 void GENEffect::OBME_IsUsingParamFlagCOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingParamFlagCOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingParamFlagCOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingParamFlagCOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingParamFlagCOverride);
     }
 
 bool GENEffect::OBME_IsUsingParamFlagDOverride()
@@ -823,10 +751,7 @@ bool GENEffect::OBME_IsUsingParamFlagDOverride()
 void GENEffect::OBME_IsUsingParamFlagDOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingParamFlagDOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingParamFlagDOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingParamFlagDOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingParamFlagDOverride);
     }
 
 bool GENEffect::OBME_IsUsingDisabledOverride()
@@ -838,10 +763,7 @@ bool GENEffect::OBME_IsUsingDisabledOverride()
 void GENEffect::OBME_IsUsingDisabledOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingDisabledOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingDisabledOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingDisabledOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingDisabledOverride);
     }
 
 bool GENEffect::OBME_IsUsingUnknownOOverride()
@@ -853,10 +775,7 @@ bool GENEffect::OBME_IsUsingUnknownOOverride()
 void GENEffect::OBME_IsUsingUnknownOOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingUnknownOOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingUnknownOOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingUnknownOOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingUnknownOOverride);
     }
 
 bool GENEffect::OBME_IsUsingNoHitEffectOverride()
@@ -868,10 +787,7 @@ bool GENEffect::OBME_IsUsingNoHitEffectOverride()
 void GENEffect::OBME_IsUsingNoHitEffectOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingNoHitEffectOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingNoHitEffectOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingNoHitEffectOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingNoHitEffectOverride);
     }
 
 bool GENEffect::OBME_IsUsingPersistOnDeathOverride()
@@ -883,10 +799,7 @@ bool GENEffect::OBME_IsUsingPersistOnDeathOverride()
 void GENEffect::OBME_IsUsingPersistOnDeathOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingPersistOnDeathOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingPersistOnDeathOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingPersistOnDeathOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingPersistOnDeathOverride);
     }
 
 bool GENEffect::OBME_IsUsingExplodesWithForceOverride()
@@ -898,10 +811,7 @@ bool GENEffect::OBME_IsUsingExplodesWithForceOverride()
 void GENEffect::OBME_IsUsingExplodesWithForceOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingExplodesWithForceOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingExplodesWithForceOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingExplodesWithForceOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingExplodesWithForceOverride);
     }
 
 bool GENEffect::OBME_IsUsingHiddenOverride()
@@ -913,10 +823,7 @@ bool GENEffect::OBME_IsUsingHiddenOverride()
 void GENEffect::OBME_IsUsingHiddenOverride(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixOverrides |= fOBME_IsUsingHiddenOverride;
-    else
-        OBME->EFIX->efixOverrides &= ~fOBME_IsUsingHiddenOverride;
+    OBME->EFIX->efixOverrides = value ? (OBME->EFIX->efixOverrides | fOBME_IsUsingHiddenOverride) : (OBME->EFIX->efixOverrides & ~fOBME_IsUsingHiddenOverride);
     }
 
 bool GENEffect::OBME_IsOverrideFlagMask(UINT32 Mask, bool Exact)
@@ -949,10 +856,7 @@ bool GENEffect::OBME_IsHostile()
 void GENEffect::OBME_IsHostile(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsHostile;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsHostile;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsHostile) : (OBME->EFIX->efixFlags & ~fOBME_IsHostile);
     }
 
 bool GENEffect::OBME_IsRecovers()
@@ -964,10 +868,7 @@ bool GENEffect::OBME_IsRecovers()
 void GENEffect::OBME_IsRecovers(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsRecovers;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsRecovers;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsRecovers) : (OBME->EFIX->efixFlags & ~fOBME_IsRecovers);
     }
 
 bool GENEffect::OBME_IsParamFlagA()
@@ -979,10 +880,7 @@ bool GENEffect::OBME_IsParamFlagA()
 void GENEffect::OBME_IsParamFlagA(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsParamFlagA;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsParamFlagA;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsParamFlagA) : (OBME->EFIX->efixFlags & ~fOBME_IsParamFlagA);
     }
 
 bool GENEffect::OBME_IsBeneficial()
@@ -994,10 +892,7 @@ bool GENEffect::OBME_IsBeneficial()
 void GENEffect::OBME_IsBeneficial(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsBeneficial;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsBeneficial;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsBeneficial) : (OBME->EFIX->efixFlags & ~fOBME_IsBeneficial);
     }
 
 bool GENEffect::OBME_IsFXPersists()
@@ -1009,10 +904,7 @@ bool GENEffect::OBME_IsFXPersists()
 void GENEffect::OBME_IsFXPersists(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsFXPersists;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsFXPersists;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsFXPersists) : (OBME->EFIX->efixFlags & ~fOBME_IsFXPersists);
     }
 
 bool GENEffect::OBME_IsUnknownF()
@@ -1024,10 +916,7 @@ bool GENEffect::OBME_IsUnknownF()
 void GENEffect::OBME_IsUnknownF(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsUnknownF;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsUnknownF;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsUnknownF) : (OBME->EFIX->efixFlags & ~fOBME_IsUnknownF);
     }
 
 bool GENEffect::OBME_IsNoRecast()
@@ -1039,10 +928,7 @@ bool GENEffect::OBME_IsNoRecast()
 void GENEffect::OBME_IsNoRecast(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsNoRecast;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsNoRecast;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsNoRecast) : (OBME->EFIX->efixFlags & ~fOBME_IsNoRecast);
     }
 
 bool GENEffect::OBME_IsParamFlagB()
@@ -1054,10 +940,7 @@ bool GENEffect::OBME_IsParamFlagB()
 void GENEffect::OBME_IsParamFlagB(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsParamFlagB;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsParamFlagB;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsParamFlagB) : (OBME->EFIX->efixFlags & ~fOBME_IsParamFlagB);
     }
 
 bool GENEffect::OBME_IsMagnitudeIsRange()
@@ -1069,10 +952,7 @@ bool GENEffect::OBME_IsMagnitudeIsRange()
 void GENEffect::OBME_IsMagnitudeIsRange(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsMagnitudeIsRange;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsMagnitudeIsRange;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsMagnitudeIsRange) : (OBME->EFIX->efixFlags & ~fOBME_IsMagnitudeIsRange);
     }
 
 bool GENEffect::OBME_IsAtomicResistance()
@@ -1084,10 +964,7 @@ bool GENEffect::OBME_IsAtomicResistance()
 void GENEffect::OBME_IsAtomicResistance(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsAtomicResistance;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsAtomicResistance;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsAtomicResistance) : (OBME->EFIX->efixFlags & ~fOBME_IsAtomicResistance);
     }
 
 bool GENEffect::OBME_IsParamFlagC()
@@ -1099,10 +976,7 @@ bool GENEffect::OBME_IsParamFlagC()
 void GENEffect::OBME_IsParamFlagC(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsParamFlagC;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsParamFlagC;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsParamFlagC) : (OBME->EFIX->efixFlags & ~fOBME_IsParamFlagC);
     }
 
 bool GENEffect::OBME_IsParamFlagD()
@@ -1114,10 +988,7 @@ bool GENEffect::OBME_IsParamFlagD()
 void GENEffect::OBME_IsParamFlagD(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsParamFlagD;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsParamFlagD;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsParamFlagD) : (OBME->EFIX->efixFlags & ~fOBME_IsParamFlagD);
     }
 
 bool GENEffect::OBME_IsDisabled()
@@ -1129,10 +1000,7 @@ bool GENEffect::OBME_IsDisabled()
 void GENEffect::OBME_IsDisabled(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsDisabled;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsDisabled;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsDisabled) : (OBME->EFIX->efixFlags & ~fOBME_IsDisabled);
     }
 
 bool GENEffect::OBME_IsUnknownO()
@@ -1144,10 +1012,7 @@ bool GENEffect::OBME_IsUnknownO()
 void GENEffect::OBME_IsUnknownO(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsUnknownO;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsUnknownO;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsUnknownO) : (OBME->EFIX->efixFlags & ~fOBME_IsUnknownO);
     }
 
 bool GENEffect::OBME_IsNoHitEffect()
@@ -1159,10 +1024,7 @@ bool GENEffect::OBME_IsNoHitEffect()
 void GENEffect::OBME_IsNoHitEffect(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsNoHitEffect;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsNoHitEffect;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsNoHitEffect) : (OBME->EFIX->efixFlags & ~fOBME_IsNoHitEffect);
     }
 
 bool GENEffect::OBME_IsPersistOnDeath()
@@ -1174,10 +1036,7 @@ bool GENEffect::OBME_IsPersistOnDeath()
 void GENEffect::OBME_IsPersistOnDeath(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsPersistOnDeath;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsPersistOnDeath;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsPersistOnDeath) : (OBME->EFIX->efixFlags & ~fOBME_IsPersistOnDeath);
     }
 
 bool GENEffect::OBME_IsExplodesWithForce()
@@ -1189,10 +1048,7 @@ bool GENEffect::OBME_IsExplodesWithForce()
 void GENEffect::OBME_IsExplodesWithForce(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsExplodesWithForce;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsExplodesWithForce;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsExplodesWithForce) : (OBME->EFIX->efixFlags & ~fOBME_IsExplodesWithForce);
     }
 
 bool GENEffect::OBME_IsHidden()
@@ -1204,10 +1060,7 @@ bool GENEffect::OBME_IsHidden()
 void GENEffect::OBME_IsHidden(bool value)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return;
-    if(value)
-        OBME->EFIX->efixFlags |= fOBME_IsHidden;
-    else
-        OBME->EFIX->efixFlags &= ~fOBME_IsHidden;
+    OBME->EFIX->efixFlags = value ? (OBME->EFIX->efixFlags | fOBME_IsHidden) : (OBME->EFIX->efixFlags & ~fOBME_IsHidden);
     }
 
 bool GENEffect::OBME_IsFlagMask(UINT32 Mask, bool Exact)
@@ -1558,10 +1411,7 @@ bool GENCTDA::IsOr()
 
 void GENCTDA::IsOr(bool value)
     {
-    if(value)
-        operType |= fIsOr;
-    else
-        operType &= ~fIsOr;
+    operType = value ? (operType | fIsOr) : (operType & ~fIsOr);
     }
 
 bool GENCTDA::IsRunOnTarget()
@@ -1571,10 +1421,7 @@ bool GENCTDA::IsRunOnTarget()
 
 void GENCTDA::IsRunOnTarget(bool value)
     {
-    if(value)
-        operType |= fIsRunOnTarget;
-    else
-        operType &= ~fIsRunOnTarget;
+    operType = value ? (operType | fIsRunOnTarget) : (operType & ~fIsRunOnTarget);
     }
 
 bool GENCTDA::IsUseGlobal()
@@ -1584,10 +1431,7 @@ bool GENCTDA::IsUseGlobal()
 
 void GENCTDA::IsUseGlobal(bool value)
     {
-    if(value)
-        operType |= fIsUseGlobal;
-    else
-        operType &= ~fIsUseGlobal;
+    operType = value ? (operType | fIsUseGlobal) : (operType & ~fIsUseGlobal);
     }
 
 bool GENCTDA::IsFlagMask(UINT8 Mask, bool Exact)
@@ -1998,10 +1842,7 @@ bool GENPATROL::IsScriptEnabled()
 
 void GENPATROL::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool GENPATROL::IsScriptFlagMask(UINT16 Mask, bool Exact)
@@ -2050,15 +1891,17 @@ bool GENPATROL::operator !=(const GENPATROL &other) const
     return !(*this == other);
     }
 
-bool GENXCLP::operator ==(const GENXCLP &other) const
+FNVXNAM::FNVXNAM():
+    faction(0),
+    mod(0),
+    groupReactionType(0)
     {
-    return (start == other.start &&
-            end == other.end);
+    //
     }
 
-bool GENXCLP::operator !=(const GENXCLP &other) const
+FNVXNAM::~FNVXNAM()
     {
-    return !(*this == other);
+    //
     }
 
 bool FNVXNAM::IsNeutral()
@@ -2068,10 +1911,7 @@ bool FNVXNAM::IsNeutral()
 
 void FNVXNAM::IsNeutral(bool value)
     {
-    if(value)
-        groupReactionType = eNeutral;
-    else
-        groupReactionType = eEnemy;
+    groupReactionType = value ? eNeutral : eEnemy;
     }
 
 bool FNVXNAM::IsEnemy()
@@ -2081,10 +1921,7 @@ bool FNVXNAM::IsEnemy()
 
 void FNVXNAM::IsEnemy(bool value)
     {
-    if(value)
-        groupReactionType = eEnemy;
-    else
-        groupReactionType = eNeutral;
+    groupReactionType = value ? eEnemy : eNeutral;
     }
 
 bool FNVXNAM::IsAlly()
@@ -2094,10 +1931,7 @@ bool FNVXNAM::IsAlly()
 
 void FNVXNAM::IsAlly(bool value)
     {
-    if(value)
-        groupReactionType = eAlly;
-    else
-        groupReactionType = eNeutral;
+    groupReactionType = value ? eAlly : eNeutral;
     }
 
 bool FNVXNAM::IsFriend()
@@ -2107,10 +1941,7 @@ bool FNVXNAM::IsFriend()
 
 void FNVXNAM::IsFriend(bool value)
     {
-    if(value)
-        groupReactionType = eFriend;
-    else
-        groupReactionType = eNeutral;
+    groupReactionType = value ? eFriend : eNeutral;
     }
 
 bool FNVXNAM::IsType(UINT32 Type)
@@ -2121,4 +1952,229 @@ bool FNVXNAM::IsType(UINT32 Type)
 void FNVXNAM::SetType(UINT32 Type)
     {
     groupReactionType = Type;
+    }
+
+bool FNVXNAM::operator ==(const FNVXNAM &other) const
+    {
+    return (faction == other.faction &&
+            mod == other.mod &&
+            groupReactionType == other.groupReactionType);
+    }
+
+bool FNVXNAM::operator !=(const FNVXNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVMODS::FNVMODS():
+    name(NULL),
+    texture(0),
+    index(0)
+    {
+    //
+    }
+
+FNVMODS::~FNVMODS()
+    {
+    delete []name;
+    }
+
+bool FNVMODS::operator ==(const FNVMODS &other) const
+    {
+    return (texture == other.texture &&
+            index == other.index &&
+            _stricmp(name, other.name) == 0);
+    }
+
+bool FNVMODS::operator !=(const FNVMODS &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVAlternateTextures::FNVAlternateTextures()
+    {
+    //
+    }
+
+FNVAlternateTextures::~FNVAlternateTextures()
+    {
+    Unload();
+    }
+
+UINT32 FNVAlternateTextures::GetSize() const
+    {
+    if(MODS.size())
+        {
+        UINT32 cSize = 4; // num elements field
+        for(UINT32 x = 0; x < MODS.size(); ++x)
+            {
+            cSize += 12; // string size, New Texture, 3D Index fields
+            if(MODS[x]->name != NULL)
+                cSize += (UINT32)strlen(MODS[x]->name);
+            }
+        return cSize;
+        }
+    return 0;
+    }
+
+bool FNVAlternateTextures::IsLoaded() const
+    {
+    return (MODS.size() != 0);
+    }
+
+void FNVAlternateTextures::Load()
+    {
+    //
+    }
+
+void FNVAlternateTextures::Unload()
+    {
+    for(UINT32 x = 0; x < MODS.size(); ++x)
+        delete MODS[x];
+    MODS.clear();
+    }
+
+bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(MODS.size() != 0)
+        {
+        curPos += subSize;
+        return false;
+        }
+    UINT32 numElements = 0;
+    UINT32 sizeString = 0;
+    memcpy(&numElements, buffer + curPos, 4);
+    curPos += 4;
+    for(UINT32 x = 0; x < numElements; ++x)
+        {
+        MODS.push_back(new FNVMODS);
+        memcpy(&sizeString, buffer + curPos, 4);
+        curPos += 4;
+        if(sizeString > 0)
+            {
+            MODS.back()->name = new char[sizeString + 1];
+            MODS.back()->name[sizeString] = 0x00;
+            memcpy(MODS.back()->name, buffer + curPos, sizeString);
+            curPos += sizeString;
+            }
+        memcpy(&MODS.back()->texture, buffer + curPos, 4);
+        curPos += 4;
+        memcpy(&MODS.back()->index, buffer + curPos, 4);
+        curPos += 4;
+        }
+    return true;
+    }
+
+bool FNVAlternateTextures::operator ==(const FNVAlternateTextures &other) const
+    {
+    if(MODS.size() == other.MODS.size())
+        {
+        //Not sure if record order matters on alternate textures, so equality testing is a guess
+        //Fix-up later
+        for(UINT32 x = 0; x < MODS.size(); ++x)
+            if(*MODS[x] != *other.MODS[x])
+                return false;
+        return true;
+        }
+    return false;
+    }
+
+bool FNVAlternateTextures::operator !=(const FNVAlternateTextures &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVMODEL::FNVMODEL()
+    {
+    //
+    }
+
+FNVMODEL::~FNVMODEL()
+    {
+    //
+    }
+
+bool FNVMODEL::IsHead()
+    {
+    if(!MODD.IsLoaded()) return false;
+    return (MODD.value & fIsHead) != 0;
+    }
+
+void FNVMODEL::IsHead(bool value)
+    {
+    if(!MODD.IsLoaded()) return;
+    MODD.value = value ? (MODD.value | fIsHead) : (MODD.value & ~fIsHead);
+    }
+
+bool FNVMODEL::IsTorso()
+    {
+    if(!MODD.IsLoaded()) return false;
+    return (MODD.value & fIsTorso) != 0;
+    }
+
+void FNVMODEL::IsTorso(bool value)
+    {
+    if(!MODD.IsLoaded()) return;
+    MODD.value = value ? (MODD.value | fIsTorso) : (MODD.value & ~fIsTorso);
+    }
+
+bool FNVMODEL::IsRightHand()
+    {
+    if(!MODD.IsLoaded()) return false;
+    return (MODD.value & fIsRightHand) != 0;
+    }
+
+void FNVMODEL::IsRightHand(bool value)
+    {
+    if(!MODD.IsLoaded()) return;
+    MODD.value = value ? (MODD.value | fIsRightHand) : (MODD.value & ~fIsRightHand);
+    }
+
+bool FNVMODEL::IsLeftHand()
+    {
+    if(!MODD.IsLoaded()) return false;
+    return (MODD.value & fIsLeftHand) != 0;
+    }
+
+void FNVMODEL::IsLeftHand(bool value)
+    {
+    if(!MODD.IsLoaded()) return;
+    MODD.value = value ? (MODD.value | fIsLeftHand) : (MODD.value & ~fIsLeftHand);
+    }
+
+bool FNVMODEL::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!MODD.IsLoaded()) return false;
+    return Exact ? ((MODD.value & Mask) == Mask) : ((MODD.value & Mask) != 0);
+    }
+
+void FNVMODEL::SetFlagMask(UINT8 Mask)
+    {
+    MODD.Load();
+    MODD.value = Mask;
+    }
+
+bool FNVMODEL::operator ==(const FNVMODEL &other) const
+    {
+    return (MODB == other.MODB &&
+            MODD == other.MODD &&
+            MODL.equalsi(other.MODL) &&
+            MODT == other.MODT &&
+            Textures == other.Textures);
+    }
+
+bool FNVMODEL::operator !=(const FNVMODEL &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXCLP::operator ==(const GENXCLP &other) const
+    {
+    return (start == other.start &&
+            end == other.end);
+    }
+
+bool GENXCLP::operator !=(const GENXCLP &other) const
+    {
+    return !(*this == other);
     }

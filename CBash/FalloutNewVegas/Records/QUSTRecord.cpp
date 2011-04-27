@@ -109,10 +109,7 @@ bool QUSTRecord::IsScriptEnabled()
 
 void QUSTRecord::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool QUSTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)

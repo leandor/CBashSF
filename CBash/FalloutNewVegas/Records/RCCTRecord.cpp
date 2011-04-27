@@ -79,10 +79,7 @@ bool RCCTRecord::IsSubcategory()
 void RCCTRecord::IsSubcategory(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSubcategory;
-    else
-        Dummy->flags &= ~fIsSubcategory;
+    Dummy->flags = value ? (Dummy->flags | fIsSubcategory) : (Dummy->flags & ~fIsSubcategory);
     }
 
 bool RCCTRecord::IsFlagMask(UINT8 Mask, bool Exact)

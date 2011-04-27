@@ -125,6 +125,16 @@ void CLASRecord::IsGuard(bool value)
     DATA.value.flags = value ? (DATA.value.flags | fIsGuard) : (DATA.value.flags & ~fIsGuard);
     }
 
+bool CLASRecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void CLASRecord::SetFlagMask(UINT32 Mask)
+    {
+    DATA.value.flags = Mask;
+    }
+
 bool CLASRecord::IsServicesWeapons()
     {
     return (DATA.value.services & fWeapons) != 0;
@@ -263,16 +273,6 @@ bool CLASRecord::IsServicesRepair()
 void CLASRecord::IsServicesRepair(bool value)
     {
     DATA.value.services = value ? (DATA.value.services | fRepair) : (DATA.value.services & ~fRepair);
-    }
-
-bool CLASRecord::IsFlagMask(UINT32 Mask, bool Exact)
-    {
-    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
-    }
-
-void CLASRecord::SetFlagMask(UINT32 Mask)
-    {
-    DATA.value.flags = Mask;
     }
 
 bool CLASRecord::IsServicesFlagMask(UINT32 Mask, bool Exact)

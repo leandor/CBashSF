@@ -31,10 +31,7 @@ bool PACKRecord::PACKSCRI::IsScriptEnabled()
 
 void PACKRecord::PACKSCRI::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool PACKRecord::PACKSCRI::IsScriptFlagMask(UINT16 Mask, bool Exact)

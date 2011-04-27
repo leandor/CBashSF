@@ -460,10 +460,7 @@ bool WTHRRecord::IsUnk1()
 
 void WTHRRecord::IsUnk1(bool value)
     {
-    if(value)
-        DATA.value.weatherType |= fUnk1;
-    else
-        DATA.value.weatherType &= ~fUnk1;
+    DATA.value.weatherType = value ? (DATA.value.weatherType | fUnk1) : (DATA.value.weatherType & ~fUnk1);
     }
 
 bool WTHRRecord::IsUnk2()
@@ -473,10 +470,7 @@ bool WTHRRecord::IsUnk2()
 
 void WTHRRecord::IsUnk2(bool value)
     {
-    if(value)
-        DATA.value.weatherType |= fUnk2;
-    else
-        DATA.value.weatherType &= ~fUnk2;
+    DATA.value.weatherType = value ? (DATA.value.weatherType | fUnk2) : (DATA.value.weatherType & ~fUnk2);
     }
 
 bool WTHRRecord::IsType(UINT8 Type)

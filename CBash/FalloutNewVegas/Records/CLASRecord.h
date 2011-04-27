@@ -83,14 +83,12 @@ class CLASRecord : public FNVRecord //Class
         StringRecord DESC; //Description
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSubRecord<CLASDATA> DATA; //Data
-        OptSubRecord<CLASATTR> ATTR; //Attributes
+        ReqSubRecord<CLASDATA> DATA; //Data
+        ReqSubRecord<CLASATTR> ATTR; //Attributes
 
         CLASRecord(unsigned char *_recData=NULL);
         CLASRecord(CLASRecord *srcRecord);
         ~CLASRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsPlayable();
         void   IsPlayable(bool value);

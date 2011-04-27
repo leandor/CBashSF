@@ -58,9 +58,9 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
-        case 8: //desc Description
+        case 8: //description
             return STRING_FIELD;
         case 9: //xnam Relation
             return FORMID_FIELD;
@@ -116,35 +116,24 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 27: //indx Index
             return UINT32_FIELD;
-        case 28: //modl Model Filename
-            return STRING_FIELD;
-        case 29: //modb_p Unknown
+        case 28: //modPath
+            return ISTRING_FIELD;
+        case 29: //modb
+            return FLOAT32_FIELD;
+        case 30: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODB.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 30: //modt_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODT.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
         case 31: //mods Alternate Textures
             return ISTRING_FIELD;
-        case 32: //mods Alternate Textures
-            return FORMID_FIELD;
-        case 33: //mods Alternate Textures
-            return SINT32_FIELD;
-        case 34: //modd FaceGen Model Flags
+
+        case 34: //modelFlags
             return UINT8_FIELD;
         case 35: //iconPath
             return ISTRING_FIELD;
@@ -217,9 +206,9 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
+        case 7: //full
             return FULLReq.value;
-        case 8: //desc Description
+        case 8: //description
             return DESCReq.value;
         case 9: //xnam Relation
             return XNAMs.IsLoaded() ? &XNAMs->value9 : NULL;
@@ -261,12 +250,11 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 27: //indx Index
             return INDX.IsLoaded() ? &INDX->value27 : NULL;
-        case 28: //modl Model Filename
+        case 28: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 29: //modb_p Unknown
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
-            return NULL;
-        case 30: //modt_p Texture Files Hashes
+        case 29: //modb
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
+        case 30: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 31: //mods Alternate Textures
@@ -275,7 +263,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value32 : NULL;
         case 33: //mods Alternate Textures
             return MODL.IsLoaded() ? &MODL->MODS->value33 : NULL;
-        case 34: //modd FaceGen Model Flags
+        case 34: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value34 : NULL;
         case 35: //iconPath
             return ICON.value;
@@ -329,10 +317,10 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
+        case 7: //full
             FULLReq.Copy((STRING)FieldValue);
             break;
-        case 8: //desc Description
+        case 8: //description
             DESCReq.Copy((STRING)FieldValue);
             break;
         case 9: //xnam Relation
@@ -407,15 +395,15 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             INDX.Load();
             INDX->value27 = *(UINT32 *)FieldValue;
             break;
-        case 28: //modl Model Filename
+        case 28: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 29: //modb_p Unknown
+        case 29: //modb
             MODL.Load();
-            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 30: //modt_p Texture Files Hashes
+        case 30: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -433,7 +421,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value33 = *(SINT32 *)FieldValue;
             break;
-        case 34: //modd FaceGen Model Flags
+        case 34: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value34 = *(UINT8 *)FieldValue;
@@ -489,10 +477,10 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
+        case 7: //full
             FULLReq.Unload();
             return;
-        case 8: //desc Description
+        case 8: //description
             DESCReq.Unload();
             return;
         case 9: //xnam Relation
@@ -549,15 +537,15 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
         case 27: //indx Index
             INDX.Unload();
             return;
-        case 28: //modl Model Filename
+        case 28: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 29: //modb_p Unknown
+        case 29: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 30: //modt_p Texture Files Hashes
+        case 30: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -573,7 +561,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 34: //modd FaceGen Model Flags
+        case 34: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

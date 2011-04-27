@@ -64,7 +64,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return SINT16_FIELD;
         case 9: //boundZ
             return SINT16_FIELD;
-        case 10: //full Name
+        case 10: //full
             return STRING_FIELD;
         case 11: //bmdt Biped Data
             return UINT32_FIELD;
@@ -80,15 +80,15 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //modl Model Filename
+        case 14: //modPath
             return ISTRING_FIELD;
-        case 15: //modt_p Texture Files Hashes
+        case 15: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODT.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -98,7 +98,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FORMID_FIELD;
         case 18: //mods Alternate Texture
             return SINT32_FIELD;
-        case 19: //modd FaceGen Model Flags
+        case 19: //modelFlags
             return UINT8_FIELD;
         case 20: //mod2 Model Filename
             return ISTRING_FIELD;
@@ -215,7 +215,7 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return OBND.IsLoaded() ? &OBND->y : NULL;
         case 9: //boundZ
             return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //full Name
+        case 10: //full
             return FULL.value;
         case 11: //bmdt Biped Data
             return BMDT.IsLoaded() ? &BMDT->value11 : NULL;
@@ -224,9 +224,9 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //bmdt_p Biped Data
             *FieldValues = BMDT.IsLoaded() ? &BMDT->value13[0] : NULL;
             return NULL;
-        case 14: //modl Model Filename
+        case 14: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 15: //modt_p Texture Files Hashes
+        case 15: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 16: //mods Alternate Texture
@@ -235,7 +235,7 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value17 : NULL;
         case 18: //mods Alternate Texture
             return MODL.IsLoaded() ? &MODL->MODS->value18 : NULL;
-        case 19: //modd FaceGen Model Flags
+        case 19: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value19 : NULL;
         case 20: //mod2 Model Filename
             return MOD2.IsLoaded() ? MOD2->MOD2.value : NULL;
@@ -339,7 +339,7 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             OBND.Load();
             OBND->z = *(SINT16 *)FieldValue;
             break;
-        case 10: //full Name
+        case 10: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 11: //bmdt Biped Data
@@ -358,11 +358,11 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             BMDT->value13[1] = ((UINT8 *)FieldValue)[1];
             BMDT->value13[2] = ((UINT8 *)FieldValue)[2];
             break;
-        case 14: //modl Model Filename
+        case 14: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 15: //modt_p Texture Files Hashes
+        case 15: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -380,7 +380,7 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value18 = *(SINT32 *)FieldValue;
             break;
-        case 19: //modd FaceGen Model Flags
+        case 19: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value19 = *(UINT8 *)FieldValue;
@@ -533,7 +533,7 @@ void ARMARecord::DeleteField(FIELD_IDENTIFIERS)
             if(OBND.IsLoaded())
                 OBND->z = defaultOBND.z;
             return;
-        case 10: //full Name
+        case 10: //full
             FULL.Unload();
             return;
         case 11: //bmdt Biped Data
@@ -545,11 +545,11 @@ void ARMARecord::DeleteField(FIELD_IDENTIFIERS)
         case 13: //bmdt_p Biped Data
             BMDT.Unload();
             return;
-        case 14: //modl Model Filename
+        case 14: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 15: //modt_p Texture Files Hashes
+        case 15: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -565,7 +565,7 @@ void ARMARecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 19: //modd FaceGen Model Flags
+        case 19: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

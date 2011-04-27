@@ -148,10 +148,7 @@ bool PMISRecord::IsOppositeParent()
 void PMISRecord::IsOppositeParent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOppositeParent;
-    else
-        Dummy->flags &= ~fIsOppositeParent;
+    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
     }
 
 bool PMISRecord::IsPopIn()
@@ -163,10 +160,7 @@ bool PMISRecord::IsPopIn()
 void PMISRecord::IsPopIn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPopIn;
-    else
-        Dummy->flags &= ~fIsPopIn;
+    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
     }
 
 bool PMISRecord::IsFlagMask(UINT8 Mask, bool Exact)

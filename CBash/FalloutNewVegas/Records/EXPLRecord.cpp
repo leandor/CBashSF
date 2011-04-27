@@ -102,10 +102,7 @@ bool EXPLRecord::IsUnknown1()
 void EXPLRecord::IsUnknown1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown1;
-    else
-        Dummy->flags &= ~fIsUnknown1;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown1) : (Dummy->flags & ~fIsUnknown1);
     }
 
 bool EXPLRecord::IsAlwaysUsesWorldOrientation()
@@ -117,10 +114,7 @@ bool EXPLRecord::IsAlwaysUsesWorldOrientation()
 void EXPLRecord::IsAlwaysUsesWorldOrientation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAlwaysUsesWorldOrientation;
-    else
-        Dummy->flags &= ~fIsAlwaysUsesWorldOrientation;
+    Dummy->flags = value ? (Dummy->flags | fIsAlwaysUsesWorldOrientation) : (Dummy->flags & ~fIsAlwaysUsesWorldOrientation);
     }
 
 bool EXPLRecord::IsAlwaysKnockDown()
@@ -132,10 +126,7 @@ bool EXPLRecord::IsAlwaysKnockDown()
 void EXPLRecord::IsAlwaysKnockDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAlwaysKnockDown;
-    else
-        Dummy->flags &= ~fIsAlwaysKnockDown;
+    Dummy->flags = value ? (Dummy->flags | fIsAlwaysKnockDown) : (Dummy->flags & ~fIsAlwaysKnockDown);
     }
 
 bool EXPLRecord::IsFormulaKnockDown()
@@ -147,10 +138,7 @@ bool EXPLRecord::IsFormulaKnockDown()
 void EXPLRecord::IsFormulaKnockDown(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFormulaKnockDown;
-    else
-        Dummy->flags &= ~fIsFormulaKnockDown;
+    Dummy->flags = value ? (Dummy->flags | fIsFormulaKnockDown) : (Dummy->flags & ~fIsFormulaKnockDown);
     }
 
 bool EXPLRecord::IsIgnoreLOS()
@@ -162,10 +150,7 @@ bool EXPLRecord::IsIgnoreLOS()
 void EXPLRecord::IsIgnoreLOS(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreLOS;
-    else
-        Dummy->flags &= ~fIsIgnoreLOS;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreLOS) : (Dummy->flags & ~fIsIgnoreLOS);
     }
 
 bool EXPLRecord::IsPushExplosionSourceRefOnly()
@@ -177,10 +162,7 @@ bool EXPLRecord::IsPushExplosionSourceRefOnly()
 void EXPLRecord::IsPushExplosionSourceRefOnly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPushExplosionSourceRefOnly;
-    else
-        Dummy->flags &= ~fIsPushExplosionSourceRefOnly;
+    Dummy->flags = value ? (Dummy->flags | fIsPushExplosionSourceRefOnly) : (Dummy->flags & ~fIsPushExplosionSourceRefOnly);
     }
 
 bool EXPLRecord::IsIgnoreImageSpaceSwap()
@@ -192,10 +174,7 @@ bool EXPLRecord::IsIgnoreImageSpaceSwap()
 void EXPLRecord::IsIgnoreImageSpaceSwap(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreImageSpaceSwap;
-    else
-        Dummy->flags &= ~fIsIgnoreImageSpaceSwap;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreImageSpaceSwap) : (Dummy->flags & ~fIsIgnoreImageSpaceSwap);
     }
 
 bool EXPLRecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -219,10 +198,7 @@ bool EXPLRecord::IsLoud()
 void EXPLRecord::IsLoud(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLoud;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLoud : eDummyDefault;
     }
 
 bool EXPLRecord::IsNormal()
@@ -234,10 +210,7 @@ bool EXPLRecord::IsNormal()
 void EXPLRecord::IsNormal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNormal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNormal : eDummyDefault;
     }
 
 bool EXPLRecord::IsSilent()
@@ -249,10 +222,7 @@ bool EXPLRecord::IsSilent()
 void EXPLRecord::IsSilent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSilent;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSilent : eDummyDefault;
     }
 
 bool EXPLRecord::IsSoundLevelType(UINT8 Type, bool Exact)

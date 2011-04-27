@@ -24,6 +24,74 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+CLASRecord::CLASDATA::CLASDATA():
+    flags(0),
+    services(0),
+    trainSkill(0),
+    trainLevel(0)
+    {
+    tagSkills[0] = 0;
+    tagSkills[1] = 0;
+    tagSkills[2] = 0;
+    tagSkills[3] = 0;
+    memset(&unused1, 0x00, 2);
+    }
+
+CLASRecord::CLASDATA::~CLASDATA()
+    {
+    //
+    }
+
+bool CLASRecord::CLASDATA::operator ==(const CLASDATA &other) const
+    {
+    return (tagSkills[0] == other.tagSkills[0] &&
+            tagSkills[1] == other.tagSkills[1] &&
+            tagSkills[2] == other.tagSkills[2] &&
+            tagSkills[3] == other.tagSkills[3] &&
+            flags == other.flags &&
+            services == other.services &&
+            trainSkill == other.trainSkill &&
+            trainLevel == other.trainLevel);
+    }
+
+bool CLASRecord::CLASDATA::operator !=(const CLASDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+CLASRecord::CLASATTR::CLASATTR():
+    strength(0),
+    perception(0),
+    endurance(0),
+    charisma(0),
+    intelligence(0),
+    agility(0),
+    luck(0)
+    {
+    //
+    }
+
+CLASRecord::CLASATTR::~CLASATTR()
+    {
+    //
+    }
+
+bool CLASRecord::CLASATTR::operator ==(const CLASATTR &other) const
+    {
+    return (strength == other.strength &&
+            perception == other.perception &&
+            endurance == other.endurance &&
+            charisma == other.charisma &&
+            intelligence == other.intelligence &&
+            agility == other.agility &&
+            luck == other.luck);
+    }
+
+bool CLASRecord::CLASATTR::operator !=(const CLASATTR &other) const
+    {
+    return !(*this == other);
+    }
+
 CLASRecord::CLASRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -65,262 +133,174 @@ CLASRecord::~CLASRecord()
     //
     }
 
-bool CLASRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 bool CLASRecord::IsPlayable()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPlayable) != 0;
+    return (DATA.value.flags & fIsPlayable) != 0;
     }
 
 void CLASRecord::IsPlayable(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPlayable;
-    else
-        Dummy->flags &= ~fIsPlayable;
+    DATA.value.flags = value ? (DATA.value.flags | fIsPlayable) : (DATA.value.flags & ~fIsPlayable);
     }
 
 bool CLASRecord::IsGuard()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsGuard) != 0;
+    return (DATA.value.flags & fIsGuard) != 0;
     }
 
 void CLASRecord::IsGuard(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsGuard;
-    else
-        Dummy->flags &= ~fIsGuard;
+    DATA.value.flags = value ? (DATA.value.flags | fIsGuard) : (DATA.value.flags & ~fIsGuard);
     }
 
 bool CLASRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
     }
 
 void CLASRecord::SetFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value.flags = Mask;
     }
 
 bool CLASRecord::IsServicesWeapons()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesWeapons) != 0;
+    return (DATA.value.services & fIsServicesWeapons) != 0;
     }
 
 void CLASRecord::IsServicesWeapons(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesWeapons;
-    else
-        Dummy->flags &= ~fIsServicesWeapons;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesWeapons) : (DATA.value.services & ~fIsServicesWeapons);
     }
 
 bool CLASRecord::IsServicesArmor()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesArmor) != 0;
+    return (DATA.value.services & fIsServicesArmor) != 0;
     }
 
 void CLASRecord::IsServicesArmor(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesArmor;
-    else
-        Dummy->flags &= ~fIsServicesArmor;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesArmor) : (DATA.value.services & ~fIsServicesArmor);
     }
 
 bool CLASRecord::IsServicesClothing()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesClothing) != 0;
+    return (DATA.value.services & fIsServicesClothing) != 0;
     }
 
 void CLASRecord::IsServicesClothing(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesClothing;
-    else
-        Dummy->flags &= ~fIsServicesClothing;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesClothing) : (DATA.value.services & ~fIsServicesClothing);
     }
 
 bool CLASRecord::IsServicesBooks()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesBooks) != 0;
+    return (DATA.value.services & fIsServicesBooks) != 0;
     }
 
 void CLASRecord::IsServicesBooks(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesBooks;
-    else
-        Dummy->flags &= ~fIsServicesBooks;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesBooks) : (DATA.value.services & ~fIsServicesBooks);
     }
 
 bool CLASRecord::IsServicesFood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesFood) != 0;
+    return (DATA.value.services & fIsServicesFood) != 0;
     }
 
 void CLASRecord::IsServicesFood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesFood;
-    else
-        Dummy->flags &= ~fIsServicesFood;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesFood) : (DATA.value.services & ~fIsServicesFood);
     }
 
 bool CLASRecord::IsServicesChems()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesChems) != 0;
+    return (DATA.value.services & fIsServicesChems) != 0;
     }
 
 void CLASRecord::IsServicesChems(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesChems;
-    else
-        Dummy->flags &= ~fIsServicesChems;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesChems) : (DATA.value.services & ~fIsServicesChems);
     }
 
 bool CLASRecord::IsServicesStimpacks()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesStimpacks) != 0;
+    return (DATA.value.services & fIsServicesStimpacks) != 0;
     }
 
 void CLASRecord::IsServicesStimpacks(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesStimpacks;
-    else
-        Dummy->flags &= ~fIsServicesStimpacks;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesStimpacks) : (DATA.value.services & ~fIsServicesStimpacks);
     }
 
 bool CLASRecord::IsServicesLights()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesLights) != 0;
+    return (DATA.value.services & fIsServicesLights) != 0;
     }
 
 void CLASRecord::IsServicesLights(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesLights;
-    else
-        Dummy->flags &= ~fIsServicesLights;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesLights) : (DATA.value.services & ~fIsServicesLights);
     }
 
 bool CLASRecord::IsServicesMiscItems()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesMiscItems) != 0;
+    return (DATA.value.services & fIsServicesMiscItems) != 0;
     }
 
 void CLASRecord::IsServicesMiscItems(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesMiscItems;
-    else
-        Dummy->flags &= ~fIsServicesMiscItems;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesMiscItems) : (DATA.value.services & ~fIsServicesMiscItems);
     }
 
 bool CLASRecord::IsServicesPotions()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesPotions) != 0;
+    return (DATA.value.services & fIsServicesPotions) != 0;
     }
 
 void CLASRecord::IsServicesPotions(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesPotions;
-    else
-        Dummy->flags &= ~fIsServicesPotions;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesPotions) : (DATA.value.services & ~fIsServicesPotions);
     }
 
 bool CLASRecord::IsServicesTraining()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesTraining) != 0;
+    return (DATA.value.services & fIsServicesTraining) != 0;
     }
 
 void CLASRecord::IsServicesTraining(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesTraining;
-    else
-        Dummy->flags &= ~fIsServicesTraining;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesTraining) : (DATA.value.services & ~fIsServicesTraining);
     }
 
 bool CLASRecord::IsServicesRecharge()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesRecharge) != 0;
+    return (DATA.value.services & fIsServicesRecharge) != 0;
     }
 
 void CLASRecord::IsServicesRecharge(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesRecharge;
-    else
-        Dummy->flags &= ~fIsServicesRecharge;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesRecharge) : (DATA.value.services & ~fIsServicesRecharge);
     }
 
 bool CLASRecord::IsServicesRepair()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsServicesRepair) != 0;
+    return (DATA.value.services & fIsServicesRepair) != 0;
     }
 
 void CLASRecord::IsServicesRepair(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsServicesRepair;
-    else
-        Dummy->flags &= ~fIsServicesRepair;
+    DATA.value.services = value ? (DATA.value.services | fIsServicesRepair) : (DATA.value.services & ~fIsServicesRepair);
     }
 
 bool CLASRecord::IsServicesFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value.services & Mask) == Mask) : ((DATA.value.services & Mask) != 0);
     }
 
 void CLASRecord::SetServicesFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value.services = Mask;
     }
 
 UINT32 CLASRecord::GetSize(bool forceCalc)
@@ -351,6 +331,7 @@ UINT32 CLASRecord::GetSize(bool forceCalc)
         if(cSize > 65535) cSize += 10;
         TotSize += cSize += 6;
         }
+    else TotSize += 7;
 
     if(ICON.IsLoaded())
         {
@@ -366,11 +347,9 @@ UINT32 CLASRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
+    TotSize += DATA.GetSize() + 6;
 
-    if(ATTR.IsLoaded())
-        TotSize += ATTR.GetSize() + 6;
+    TotSize += ATTR.GetSize() + 6;
 
     return TotSize;
     }
@@ -456,6 +435,8 @@ SINT32 CLASRecord::Unload()
 
 SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
     {
+    char null = 0;
+
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
@@ -464,6 +445,8 @@ SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
 
     if(DESC.IsLoaded())
         SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+    else
+        SaveHandler.writeSubRecord('CSED', &null, 1);
 
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
@@ -471,11 +454,9 @@ SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
     if(MICO.IsLoaded())
         SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
 
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
 
-    if(ATTR.IsLoaded())
-        SaveHandler.writeSubRecord('RTTA', ATTR.value, ATTR.GetSize());
+    SaveHandler.writeSubRecord('RTTA', &ATTR.value, ATTR.GetSize());
 
     return -1;
     }

@@ -85,10 +85,7 @@ bool SOUNRecord::IsRandomFrequencyShift()
 void SOUNRecord::IsRandomFrequencyShift(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRandomFrequencyShift;
-    else
-        Dummy->flags &= ~fIsRandomFrequencyShift;
+    Dummy->flags = value ? (Dummy->flags | fIsRandomFrequencyShift) : (Dummy->flags & ~fIsRandomFrequencyShift);
     }
 
 bool SOUNRecord::IsPlayAtRandom()
@@ -100,10 +97,7 @@ bool SOUNRecord::IsPlayAtRandom()
 void SOUNRecord::IsPlayAtRandom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPlayAtRandom;
-    else
-        Dummy->flags &= ~fIsPlayAtRandom;
+    Dummy->flags = value ? (Dummy->flags | fIsPlayAtRandom) : (Dummy->flags & ~fIsPlayAtRandom);
     }
 
 bool SOUNRecord::IsEnvironmentIgnored()
@@ -115,10 +109,7 @@ bool SOUNRecord::IsEnvironmentIgnored()
 void SOUNRecord::IsEnvironmentIgnored(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEnvironmentIgnored;
-    else
-        Dummy->flags &= ~fIsEnvironmentIgnored;
+    Dummy->flags = value ? (Dummy->flags | fIsEnvironmentIgnored) : (Dummy->flags & ~fIsEnvironmentIgnored);
     }
 
 bool SOUNRecord::IsRandomLocation()
@@ -130,10 +121,7 @@ bool SOUNRecord::IsRandomLocation()
 void SOUNRecord::IsRandomLocation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRandomLocation;
-    else
-        Dummy->flags &= ~fIsRandomLocation;
+    Dummy->flags = value ? (Dummy->flags | fIsRandomLocation) : (Dummy->flags & ~fIsRandomLocation);
     }
 
 bool SOUNRecord::IsLoop()
@@ -145,10 +133,7 @@ bool SOUNRecord::IsLoop()
 void SOUNRecord::IsLoop(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsLoop;
-    else
-        Dummy->flags &= ~fIsLoop;
+    Dummy->flags = value ? (Dummy->flags | fIsLoop) : (Dummy->flags & ~fIsLoop);
     }
 
 bool SOUNRecord::IsMenuSound()
@@ -160,10 +145,7 @@ bool SOUNRecord::IsMenuSound()
 void SOUNRecord::IsMenuSound(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMenuSound;
-    else
-        Dummy->flags &= ~fIsMenuSound;
+    Dummy->flags = value ? (Dummy->flags | fIsMenuSound) : (Dummy->flags & ~fIsMenuSound);
     }
 
 bool SOUNRecord::Is2D()
@@ -175,10 +157,7 @@ bool SOUNRecord::Is2D()
 void SOUNRecord::Is2D(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIs2D;
-    else
-        Dummy->flags &= ~fIs2D;
+    Dummy->flags = value ? (Dummy->flags | fIs2D) : (Dummy->flags & ~fIs2D);
     }
 
 bool SOUNRecord::Is360LFE()
@@ -190,10 +169,7 @@ bool SOUNRecord::Is360LFE()
 void SOUNRecord::Is360LFE(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIs360LFE;
-    else
-        Dummy->flags &= ~fIs360LFE;
+    Dummy->flags = value ? (Dummy->flags | fIs360LFE) : (Dummy->flags & ~fIs360LFE);
     }
 
 bool SOUNRecord::IsDialogueSound()
@@ -205,10 +181,7 @@ bool SOUNRecord::IsDialogueSound()
 void SOUNRecord::IsDialogueSound(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDialogueSound;
-    else
-        Dummy->flags &= ~fIsDialogueSound;
+    Dummy->flags = value ? (Dummy->flags | fIsDialogueSound) : (Dummy->flags & ~fIsDialogueSound);
     }
 
 bool SOUNRecord::IsEnvelopeFast()
@@ -220,10 +193,7 @@ bool SOUNRecord::IsEnvelopeFast()
 void SOUNRecord::IsEnvelopeFast(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEnvelopeFast;
-    else
-        Dummy->flags &= ~fIsEnvelopeFast;
+    Dummy->flags = value ? (Dummy->flags | fIsEnvelopeFast) : (Dummy->flags & ~fIsEnvelopeFast);
     }
 
 bool SOUNRecord::IsEnvelopeSlow()
@@ -235,10 +205,7 @@ bool SOUNRecord::IsEnvelopeSlow()
 void SOUNRecord::IsEnvelopeSlow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEnvelopeSlow;
-    else
-        Dummy->flags &= ~fIsEnvelopeSlow;
+    Dummy->flags = value ? (Dummy->flags | fIsEnvelopeSlow) : (Dummy->flags & ~fIsEnvelopeSlow);
     }
 
 bool SOUNRecord::Is2DRadius()
@@ -250,10 +217,7 @@ bool SOUNRecord::Is2DRadius()
 void SOUNRecord::Is2DRadius(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIs2DRadius;
-    else
-        Dummy->flags &= ~fIs2DRadius;
+    Dummy->flags = value ? (Dummy->flags | fIs2DRadius) : (Dummy->flags & ~fIs2DRadius);
     }
 
 bool SOUNRecord::IsMuteWhenSubmerged()
@@ -265,10 +229,7 @@ bool SOUNRecord::IsMuteWhenSubmerged()
 void SOUNRecord::IsMuteWhenSubmerged(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMuteWhenSubmerged;
-    else
-        Dummy->flags &= ~fIsMuteWhenSubmerged;
+    Dummy->flags = value ? (Dummy->flags | fIsMuteWhenSubmerged) : (Dummy->flags & ~fIsMuteWhenSubmerged);
     }
 
 bool SOUNRecord::IsFlagMask(UINT32 Mask, bool Exact)

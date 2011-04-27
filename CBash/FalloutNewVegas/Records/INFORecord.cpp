@@ -138,10 +138,7 @@ bool INFORecord::IsGoodbye()
 void INFORecord::IsGoodbye(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsGoodbye;
-    else
-        Dummy->flags &= ~fIsGoodbye;
+    Dummy->flags = value ? (Dummy->flags | fIsGoodbye) : (Dummy->flags & ~fIsGoodbye);
     }
 
 bool INFORecord::IsRandom()
@@ -153,10 +150,7 @@ bool INFORecord::IsRandom()
 void INFORecord::IsRandom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRandom;
-    else
-        Dummy->flags &= ~fIsRandom;
+    Dummy->flags = value ? (Dummy->flags | fIsRandom) : (Dummy->flags & ~fIsRandom);
     }
 
 bool INFORecord::IsSayOnce()
@@ -168,10 +162,7 @@ bool INFORecord::IsSayOnce()
 void INFORecord::IsSayOnce(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSayOnce;
-    else
-        Dummy->flags &= ~fIsSayOnce;
+    Dummy->flags = value ? (Dummy->flags | fIsSayOnce) : (Dummy->flags & ~fIsSayOnce);
     }
 
 bool INFORecord::IsRunImmediately()
@@ -183,10 +174,7 @@ bool INFORecord::IsRunImmediately()
 void INFORecord::IsRunImmediately(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRunImmediately;
-    else
-        Dummy->flags &= ~fIsRunImmediately;
+    Dummy->flags = value ? (Dummy->flags | fIsRunImmediately) : (Dummy->flags & ~fIsRunImmediately);
     }
 
 bool INFORecord::IsInfoRefusal()
@@ -198,10 +186,7 @@ bool INFORecord::IsInfoRefusal()
 void INFORecord::IsInfoRefusal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsInfoRefusal;
-    else
-        Dummy->flags &= ~fIsInfoRefusal;
+    Dummy->flags = value ? (Dummy->flags | fIsInfoRefusal) : (Dummy->flags & ~fIsInfoRefusal);
     }
 
 bool INFORecord::IsRandomEnd()
@@ -213,10 +198,7 @@ bool INFORecord::IsRandomEnd()
 void INFORecord::IsRandomEnd(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRandomEnd;
-    else
-        Dummy->flags &= ~fIsRandomEnd;
+    Dummy->flags = value ? (Dummy->flags | fIsRandomEnd) : (Dummy->flags & ~fIsRandomEnd);
     }
 
 bool INFORecord::IsRunForRumors()
@@ -228,10 +210,7 @@ bool INFORecord::IsRunForRumors()
 void INFORecord::IsRunForRumors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRunForRumors;
-    else
-        Dummy->flags &= ~fIsRunForRumors;
+    Dummy->flags = value ? (Dummy->flags | fIsRunForRumors) : (Dummy->flags & ~fIsRunForRumors);
     }
 
 bool INFORecord::IsSpeechChallenge()
@@ -243,10 +222,7 @@ bool INFORecord::IsSpeechChallenge()
 void INFORecord::IsSpeechChallenge(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSpeechChallenge;
-    else
-        Dummy->flags &= ~fIsSpeechChallenge;
+    Dummy->flags = value ? (Dummy->flags | fIsSpeechChallenge) : (Dummy->flags & ~fIsSpeechChallenge);
     }
 
 bool INFORecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -270,10 +246,7 @@ bool INFORecord::IsSayOnceADay()
 void INFORecord::IsSayOnceADay(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSayOnceADay;
-    else
-        Dummy->flags &= ~fIsSayOnceADay;
+    Dummy->flags = value ? (Dummy->flags | fIsSayOnceADay) : (Dummy->flags & ~fIsSayOnceADay);
     }
 
 bool INFORecord::IsAlwaysDarken()
@@ -285,10 +258,7 @@ bool INFORecord::IsAlwaysDarken()
 void INFORecord::IsAlwaysDarken(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAlwaysDarken;
-    else
-        Dummy->flags &= ~fIsAlwaysDarken;
+    Dummy->flags = value ? (Dummy->flags | fIsAlwaysDarken) : (Dummy->flags & ~fIsAlwaysDarken);
     }
 
 bool INFORecord::IsExtraFlagMask(UINT8 Mask, bool Exact)
@@ -312,10 +282,7 @@ bool INFORecord::IsTopic()
 void INFORecord::IsTopic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTopic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTopic : eDummyDefault;
     }
 
 bool INFORecord::IsConversation()
@@ -327,10 +294,7 @@ bool INFORecord::IsConversation()
 void INFORecord::IsConversation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eConversation;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eConversation : eDummyDefault;
     }
 
 bool INFORecord::IsCombat()
@@ -342,10 +306,7 @@ bool INFORecord::IsCombat()
 void INFORecord::IsCombat(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCombat;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCombat : eDummyDefault;
     }
 
 bool INFORecord::IsPersuasion()
@@ -357,10 +318,7 @@ bool INFORecord::IsPersuasion()
 void INFORecord::IsPersuasion(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePersuasion;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePersuasion : eDummyDefault;
     }
 
 bool INFORecord::IsDetection()
@@ -372,10 +330,7 @@ bool INFORecord::IsDetection()
 void INFORecord::IsDetection(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDetection;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDetection : eDummyDefault;
     }
 
 bool INFORecord::IsService()
@@ -387,10 +342,7 @@ bool INFORecord::IsService()
 void INFORecord::IsService(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eService;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eService : eDummyDefault;
     }
 
 bool INFORecord::IsMisc()
@@ -402,10 +354,7 @@ bool INFORecord::IsMisc()
 void INFORecord::IsMisc(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMisc;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMisc : eDummyDefault;
     }
 
 bool INFORecord::IsRadio()
@@ -417,10 +366,7 @@ bool INFORecord::IsRadio()
 void INFORecord::IsRadio(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRadio;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRadio : eDummyDefault;
     }
 
 bool INFORecord::IsDialogType(UINT16 Type, bool Exact)
@@ -444,10 +390,7 @@ bool INFORecord::IsTarget()
 void INFORecord::IsTarget(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTarget;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTarget : eDummyDefault;
     }
 
 bool INFORecord::IsSelf()
@@ -459,10 +402,7 @@ bool INFORecord::IsSelf()
 void INFORecord::IsSelf(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSelf;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSelf : eDummyDefault;
     }
 
 bool INFORecord::IsEither()
@@ -474,10 +414,7 @@ bool INFORecord::IsEither()
 void INFORecord::IsEither(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEither;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEither : eDummyDefault;
     }
 
 bool INFORecord::IsSpeakerType(UINT8 Type, bool Exact)
@@ -501,10 +438,7 @@ bool INFORecord::IsNone()
 void INFORecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool INFORecord::IsVeryEasy()
@@ -516,10 +450,7 @@ bool INFORecord::IsVeryEasy()
 void INFORecord::IsVeryEasy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryEasy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryEasy : eDummyDefault;
     }
 
 bool INFORecord::IsEasy()
@@ -531,10 +462,7 @@ bool INFORecord::IsEasy()
 void INFORecord::IsEasy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEasy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEasy : eDummyDefault;
     }
 
 bool INFORecord::IsAverage()
@@ -546,10 +474,7 @@ bool INFORecord::IsAverage()
 void INFORecord::IsAverage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAverage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAverage : eDummyDefault;
     }
 
 bool INFORecord::IsHard()
@@ -561,10 +486,7 @@ bool INFORecord::IsHard()
 void INFORecord::IsHard(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHard;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHard : eDummyDefault;
     }
 
 bool INFORecord::IsVeryHard()
@@ -576,10 +498,7 @@ bool INFORecord::IsVeryHard()
 void INFORecord::IsVeryHard(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryHard;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryHard : eDummyDefault;
     }
 
 bool INFORecord::IsDifficultyType(UINT8 Type, bool Exact)

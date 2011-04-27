@@ -99,10 +99,7 @@ bool IPCTRecord::IsNoDecalData()
 void IPCTRecord::IsNoDecalData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoDecalData;
-    else
-        Dummy->flags &= ~fIsNoDecalData;
+    Dummy->flags = value ? (Dummy->flags | fIsNoDecalData) : (Dummy->flags & ~fIsNoDecalData);
     }
 
 bool IPCTRecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -126,10 +123,7 @@ bool IPCTRecord::IsLoud()
 void IPCTRecord::IsLoud(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLoud;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLoud : eDummyDefault;
     }
 
 bool IPCTRecord::IsNormal()
@@ -141,10 +135,7 @@ bool IPCTRecord::IsNormal()
 void IPCTRecord::IsNormal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNormal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNormal : eDummyDefault;
     }
 
 bool IPCTRecord::IsSilent()
@@ -156,10 +147,7 @@ bool IPCTRecord::IsSilent()
 void IPCTRecord::IsSilent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSilent;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSilent : eDummyDefault;
     }
 
 bool IPCTRecord::IsObjectParallax()

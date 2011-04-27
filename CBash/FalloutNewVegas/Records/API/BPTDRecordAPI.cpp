@@ -58,35 +58,24 @@ UINT32 BPTDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //modl Model Filename
-            return STRING_FIELD;
-        case 8: //modb_p Unknown
+        case 7: //modPath
+            return ISTRING_FIELD;
+        case 8: //modb
+            return FLOAT32_FIELD;
+        case 9: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODB.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 9: //modt_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODT.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
         case 10: //mods Alternate Textures
             return ISTRING_FIELD;
-        case 11: //mods Alternate Textures
-            return FORMID_FIELD;
-        case 12: //mods Alternate Textures
-            return SINT32_FIELD;
-        case 13: //modd FaceGen Model Flags
+
+        case 13: //modelFlags
             return UINT8_FIELD;
         case 14: //bptn Part Name
             return ISTRING_FIELD;
@@ -199,12 +188,11 @@ void * BPTDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //modl Model Filename
+        case 7: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 8: //modb_p Unknown
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
-            return NULL;
-        case 9: //modt_p Texture Files Hashes
+        case 8: //modb
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
+        case 9: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 10: //mods Alternate Textures
@@ -213,7 +201,7 @@ void * BPTDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value11 : NULL;
         case 12: //mods Alternate Textures
             return MODL.IsLoaded() ? &MODL->MODS->value12 : NULL;
-        case 13: //modd FaceGen Model Flags
+        case 13: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value13 : NULL;
         case 14: //bptn Part Name
             return BPTN.value;
@@ -321,15 +309,15 @@ bool BPTDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //modl Model Filename
+        case 7: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 8: //modb_p Unknown
+        case 8: //modb
             MODL.Load();
-            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 9: //modt_p Texture Files Hashes
+        case 9: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -347,7 +335,7 @@ bool BPTDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value12 = *(SINT32 *)FieldValue;
             break;
-        case 13: //modd FaceGen Model Flags
+        case 13: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value13 = *(UINT8 *)FieldValue;
@@ -516,15 +504,15 @@ void BPTDRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //modl Model Filename
+        case 7: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 8: //modb_p Unknown
+        case 8: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 9: //modt_p Texture Files Hashes
+        case 9: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -540,7 +528,7 @@ void BPTDRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 13: //modd FaceGen Model Flags
+        case 13: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

@@ -141,13 +141,13 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    return &RNAM[ListIndex]->value.RNAM;
+                    return &RNAM[ListIndex]->RNAM.value;
                 case 2: //male
-                    return RNAM[ListIndex]->value.MNAM.value;
+                    return RNAM[ListIndex]->MNAM.value;
                 case 3: //female
-                    return RNAM[ListIndex]->value.FNAM.value;
+                    return RNAM[ListIndex]->FNAM.value;
                 case 4: //insigniaPath
-                    return RNAM[ListIndex]->value.INAM.value;
+                    return RNAM[ListIndex]->INAM.value;
                 default:
                     return NULL;
                 }
@@ -218,7 +218,7 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 ArraySize -= (UINT32)RNAM.size();
                 while((SINT32)ArraySize > 0)
                     {
-                    RNAM.push_back(new ReqSubRecord<FACTRNAM>);
+                    RNAM.push_back(new FACTRNAM);
                     --ArraySize;
                     }
                 while((SINT32)ArraySize < 0)
@@ -236,16 +236,16 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    RNAM[ListIndex]->value.RNAM = *(SINT32 *)FieldValue;
+                    RNAM[ListIndex]->RNAM.value = *(SINT32 *)FieldValue;
                     break;
                 case 2: //male
-                    RNAM[ListIndex]->value.MNAM.Copy((STRING)FieldValue);
+                    RNAM[ListIndex]->MNAM.Copy((STRING)FieldValue);
                     break;
                 case 3: //female
-                    RNAM[ListIndex]->value.FNAM.Copy((STRING)FieldValue);
+                    RNAM[ListIndex]->FNAM.Copy((STRING)FieldValue);
                     break;
                 case 4: //insigniaPath
-                    RNAM[ListIndex]->value.INAM.Copy((STRING)FieldValue);
+                    RNAM[ListIndex]->INAM.Copy((STRING)FieldValue);
                     break;
                 default:
                     break;
@@ -320,16 +320,16 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    RNAM[ListIndex]->value.RNAM = defaultRNAM.RNAM;
+                    RNAM[ListIndex]->RNAM.value = defaultRNAM.RNAM.value;
                     return;
                 case 2: //male
-                    RNAM[ListIndex]->value.MNAM.Unload();
+                    RNAM[ListIndex]->MNAM.Unload();
                     return;
                 case 3: //female
-                    RNAM[ListIndex]->value.FNAM.Unload();
+                    RNAM[ListIndex]->FNAM.Unload();
                     return;
                 case 4: //insigniaPath
-                    RNAM[ListIndex]->value.INAM.Unload();
+                    RNAM[ListIndex]->INAM.Unload();
                     return;
                 default:
                     return;

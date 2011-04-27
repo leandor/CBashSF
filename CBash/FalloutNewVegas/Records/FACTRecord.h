@@ -28,13 +28,22 @@ namespace FNV
 class FACTRecord : public FNVRecord //Faction
     {
     private:
+        struct FACTDATA
+            {
+            UINT16  flags;
+            UINT8   unused1[2];
+
+            FACTDATA();
+            ~FACTDATA();
+
+            bool operator ==(const FACTDATA &other) const;
+            bool operator !=(const FACTDATA &other) const;
+            };
+
         struct FACTRNAM // Rank
             {
-            SINT32  RNAM; //Rank#
+            ReqSimpleSubRecord<SINT32> RNAM; //Rank#
             StringRecord MNAM, FNAM, INAM; // Male, Female, Insignia (Unused)
-
-            FACTRNAM();
-            ~FACTRNAM();
 
             bool operator ==(const FACTRNAM &other) const;
             bool operator !=(const FACTRNAM &other) const;
@@ -46,17 +55,18 @@ class FACTRecord : public FNVRecord //Faction
             fIsEvil          = 0x0002,
             fIsSpecialCombat = 0x0004,
             fIsTrackCrime    = 0x0100,
-            fIsAllowSell     = 0x0200,
-            fIsSpecialCombat = 0x0400
+            fIsAllowSell     = 0x0200
             };
+
+        friend bool sortRNAM(FACTRNAM *lhs, FACTRNAM *rhs);
 
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         std::vector<ReqSubRecord<FNVXNAM> *> XNAM;  //Relations
-        OptSimpleSubRecord<UINT16> DATA; //Data
-        OptSimpleSubRecord<FLOAT32> CNAM; //Unused
-        std::vector<ReqSubRecord<FACTRNAM> *> RNAM; // Ranks
+        ReqSubRecord<FACTDATA> DATA; //Data
+        SemiOptSimpleSubRecord<FLOAT32, 1, 0> CNAM; //Unused
+        std::vector<FACTRNAM *> RNAM; // Ranks
         OptSimpleSubRecord<FORMID> WMI1; //Reputation
 
         FACTRecord(unsigned char *_recData=NULL);
@@ -75,8 +85,6 @@ class FACTRecord : public FNVRecord //Faction
         void   IsTrackCrime(bool value);
         bool   IsAllowSell();
         void   IsAllowSell(bool value);
-        bool   IsSpecialCombat();
-        void   IsSpecialCombat(bool value);
         bool   IsFlagMask(UINT16 Mask, bool Exact=false);
         void   SetFlagMask(UINT16 Mask);
 

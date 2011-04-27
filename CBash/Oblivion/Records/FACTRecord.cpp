@@ -22,15 +22,9 @@ GPL License and Copyright Notice ============================================
 #include "..\..\Common.h"
 #include "FACTRecord.h"
 
-FACTRecord::FACTRNAM::FACTRNAM():
-    RNAM(0)
+bool sortRNAM(FACTRecord::FACTRNAM *lhs, FACTRecord::FACTRNAM *rhs)
     {
-    //
-    }
-
-FACTRecord::FACTRNAM::~FACTRNAM()
-    {
-    //
+    return lhs->RNAM.value < rhs->RNAM.value;
     }
 
 bool FACTRecord::FACTRNAM::operator ==(const FACTRNAM &other) const
@@ -87,7 +81,7 @@ FACTRecord::FACTRecord(FACTRecord *srcRecord):
     RNAM.resize(srcRecord->RNAM.size());
     for(UINT32 x = 0; x < srcRecord->RNAM.size(); x++)
         {
-        RNAM[x] = new ReqSubRecord<FACTRNAM>;
+        RNAM[x] = new FACTRNAM;
         *RNAM[x] = *srcRecord->RNAM[x];
         }
     }
@@ -184,25 +178,25 @@ UINT32 FACTRecord::GetSize(bool forceCalc)
 
     for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        TotSize += sizeof(RNAM[p]->value.RNAM) + 6;
+        TotSize += RNAM[p]->RNAM.GetSize() + 6;
 
-        if(RNAM[p]->value.MNAM.IsLoaded())
+        if(RNAM[p]->MNAM.IsLoaded())
             {
-            cSize = RNAM[p]->value.MNAM.GetSize();
+            cSize = RNAM[p]->MNAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
 
-        if(RNAM[p]->value.FNAM.IsLoaded())
+        if(RNAM[p]->FNAM.IsLoaded())
             {
-            cSize = RNAM[p]->value.FNAM.GetSize();
+            cSize = RNAM[p]->FNAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
 
-        if(RNAM[p]->value.INAM.IsLoaded())
+        if(RNAM[p]->INAM.IsLoaded())
             {
-            cSize = RNAM[p]->value.INAM.GetSize();
+            cSize = RNAM[p]->INAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
@@ -226,8 +220,6 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
-    ReqSubRecord<GENXNAM> *newXNAM = NULL;
-    ReqSubRecord<FACTRNAM> *newRNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -252,9 +244,8 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case 'MANX':
-                newXNAM = new ReqSubRecord<GENXNAM>;
-                newXNAM->Read(buffer, subSize, curPos);
-                XNAM.push_back(newXNAM);
+                XNAM.push_back(new ReqSubRecord<GENXNAM>);
+                XNAM.back()->Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -263,33 +254,23 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 CNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANR':
-                newRNAM = new ReqSubRecord<FACTRNAM>;
-                newRNAM->Read(buffer, subSize, curPos);
-                RNAM.push_back(newRNAM);
+                RNAM.push_back(new FACTRNAM);
+                RNAM.back()->RNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANM':
-                if(newRNAM == NULL)
-                    {
-                    newRNAM = new ReqSubRecord<FACTRNAM>;
-                    RNAM.push_back(newRNAM);
-                    }
-                newRNAM->value.MNAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->MNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANF':
-                if(newRNAM == NULL)
-                    {
-                    newRNAM = new ReqSubRecord<FACTRNAM>;
-                    RNAM.push_back(newRNAM);
-                    }
-                newRNAM->value.FNAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->FNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANI':
-                if(newRNAM == NULL)
-                    {
-                    newRNAM = new ReqSubRecord<FACTRNAM>;
-                    RNAM.push_back(newRNAM);
-                    }
-                newRNAM->value.INAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->INAM.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -338,16 +319,16 @@ SINT32 FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(CNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
 
+    std::sort(RNAM.begin(), RNAM.end(), sortRNAM);
     for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        if(RNAM[p]->IsLoaded())
-            SaveHandler.writeSubRecord('MANR', &RNAM[p]->value.RNAM, sizeof(RNAM[p]->value.RNAM));
-        if(RNAM[p]->value.MNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANM', RNAM[p]->value.MNAM.value, RNAM[p]->value.MNAM.GetSize());
-        if(RNAM[p]->value.FNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANF', RNAM[p]->value.FNAM.value, RNAM[p]->value.FNAM.GetSize());
-        if(RNAM[p]->value.INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', RNAM[p]->value.INAM.value, RNAM[p]->value.INAM.GetSize());
+        SaveHandler.writeSubRecord('MANR', &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
+        if(RNAM[p]->MNAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANM', RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
+        if(RNAM[p]->FNAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANF', RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
+        if(RNAM[p]->INAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANI', RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
         }
     return -1;
     }

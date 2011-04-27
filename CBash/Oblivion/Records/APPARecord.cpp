@@ -110,10 +110,7 @@ bool APPARecord::IsMortarPestle()
 
 void APPARecord::IsMortarPestle(bool value)
     {
-    if(value)
-        DATA.value.apparatus = eMortarPestle;
-    else
-        DATA.value.apparatus = eAlembic;
+    DATA.value.apparatus = value ? eMortarPestle : eAlembic;
     }
 
 bool APPARecord::IsAlembic()
@@ -123,10 +120,7 @@ bool APPARecord::IsAlembic()
 
 void APPARecord::IsAlembic(bool value)
     {
-    if(value)
-        DATA.value.apparatus = eAlembic;
-    else
-        DATA.value.apparatus = eMortarPestle;
+    DATA.value.apparatus = value ? eAlembic : eMortarPestle;
     }
 
 bool APPARecord::IsCalcinator()
@@ -136,10 +130,7 @@ bool APPARecord::IsCalcinator()
 
 void APPARecord::IsCalcinator(bool value)
     {
-    if(value)
-        DATA.value.apparatus = eCalcinator;
-    else
-        DATA.value.apparatus = eMortarPestle;
+    DATA.value.apparatus = value ? eCalcinator : eMortarPestle;
     }
 
 bool APPARecord::IsRetort()
@@ -149,10 +140,7 @@ bool APPARecord::IsRetort()
 
 void APPARecord::IsRetort(bool value)
     {
-    if(value)
-        DATA.value.apparatus = eRetort;
-    else
-        DATA.value.apparatus = eMortarPestle;
+    DATA.value.apparatus = value ? eRetort : eMortarPestle;
     }
 
 bool APPARecord::IsType(UINT8 Type)

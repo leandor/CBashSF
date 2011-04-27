@@ -490,7 +490,7 @@ SINT32 SGSTRecord::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
             }
     if(Effects.size() && OBME.IsLoaded())
-        SaveHandler.writeSubRecord('XXFE', NULL, 0);
+        SaveHandler.writeSubRecordHeader('XXFE', 0);
     if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
         SaveHandler.writeSubRecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
     if(DATA.IsLoaded())

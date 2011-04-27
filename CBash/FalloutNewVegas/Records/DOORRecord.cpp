@@ -114,10 +114,7 @@ bool DOORRecord::IsAutomatic()
 void DOORRecord::IsAutomatic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAutomatic;
-    else
-        Dummy->flags &= ~fIsAutomatic;
+    Dummy->flags = value ? (Dummy->flags | fIsAutomatic) : (Dummy->flags & ~fIsAutomatic);
     }
 
 bool DOORRecord::IsHidden()
@@ -129,10 +126,7 @@ bool DOORRecord::IsHidden()
 void DOORRecord::IsHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHidden;
-    else
-        Dummy->flags &= ~fIsHidden;
+    Dummy->flags = value ? (Dummy->flags | fIsHidden) : (Dummy->flags & ~fIsHidden);
     }
 
 bool DOORRecord::IsMinimalUse()
@@ -144,10 +138,7 @@ bool DOORRecord::IsMinimalUse()
 void DOORRecord::IsMinimalUse(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMinimalUse;
-    else
-        Dummy->flags &= ~fIsMinimalUse;
+    Dummy->flags = value ? (Dummy->flags | fIsMinimalUse) : (Dummy->flags & ~fIsMinimalUse);
     }
 
 bool DOORRecord::IsSlidingDoor()
@@ -159,10 +150,7 @@ bool DOORRecord::IsSlidingDoor()
 void DOORRecord::IsSlidingDoor(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSlidingDoor;
-    else
-        Dummy->flags &= ~fIsSlidingDoor;
+    Dummy->flags = value ? (Dummy->flags | fIsSlidingDoor) : (Dummy->flags & ~fIsSlidingDoor);
     }
 
 bool DOORRecord::IsFlagMask(UINT8 Mask, bool Exact)

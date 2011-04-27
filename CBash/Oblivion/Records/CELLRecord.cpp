@@ -589,7 +589,7 @@ SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
     if(XCLR.size())
         SaveHandler.writeSubRecord('RLCX', &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
     //else
-    //    SaveHandler.writeSubRecord('RLCX', NULL, 0);
+    //    SaveHandler.writeSubRecordHeader('RLCX', 0);
 
     if(XCLC.IsLoaded() && !IsInterior())
         SaveHandler.writeSubRecord('CLCX', XCLC.value, XCLC.GetSize());

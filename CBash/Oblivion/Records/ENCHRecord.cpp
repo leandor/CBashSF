@@ -209,10 +209,7 @@ bool ENCHRecord::IsScroll()
 
 void ENCHRecord::IsScroll(bool value)
     {
-    if(value)
-        ENIT.value.itemType = eScroll;
-    else
-        ENIT.value.itemType = eStaff;
+    ENIT.value.itemType = value ? eScroll : eStaff;
     }
 
 bool ENCHRecord::IsStaff()
@@ -222,10 +219,7 @@ bool ENCHRecord::IsStaff()
 
 void ENCHRecord::IsStaff(bool value)
     {
-    if(value)
-        ENIT.value.itemType = eStaff;
-    else
-        ENIT.value.itemType = eScroll;
+    ENIT.value.itemType = value ? eStaff : eScroll;
     }
 
 bool ENCHRecord::IsWeapon()
@@ -235,10 +229,7 @@ bool ENCHRecord::IsWeapon()
 
 void ENCHRecord::IsWeapon(bool value)
     {
-    if(value)
-        ENIT.value.itemType = eWeapon;
-    else
-        ENIT.value.itemType = eScroll;
+    ENIT.value.itemType = value ? eWeapon : eScroll;
     }
 
 bool ENCHRecord::IsApparel()
@@ -248,10 +239,7 @@ bool ENCHRecord::IsApparel()
 
 void ENCHRecord::IsApparel(bool value)
     {
-    if(value)
-        ENIT.value.itemType = eApparel;
-    else
-        ENIT.value.itemType = eScroll;
+    ENIT.value.itemType = value ? eApparel : eScroll;
     }
 
 bool ENCHRecord::IsType(UINT32 Type)
@@ -500,7 +488,7 @@ SINT32 ENCHRecord::WriteRecord(_FileHandler &SaveHandler)
                 SaveHandler.writeSubRecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
             }
     if(Effects.size() && OBME.IsLoaded())
-        SaveHandler.writeSubRecord('XXFE', NULL, 0);
+        SaveHandler.writeSubRecordHeader('XXFE', 0);
     if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
         SaveHandler.writeSubRecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
     return -1;

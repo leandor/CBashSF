@@ -219,10 +219,7 @@ bool REFRRecord::IsOppositeParent()
 void REFRRecord::IsOppositeParent(bool value)
     {
     if(!XESP.IsLoaded()) return;
-    if(value)
-        XESP->flags |= fIsOppositeParent;
-    else
-        XESP->flags &= ~fIsOppositeParent;
+    XESP->flags = value ? (XESP->flags | fIsOppositeParent) : (XESP->flags & ~fIsOppositeParent);
     }
 
 bool REFRRecord::IsParentFlagMask(UINT8 Mask, bool Exact)
@@ -246,10 +243,7 @@ bool REFRRecord::IsVisible()
 void REFRRecord::IsVisible(bool value)
     {
     if(!Marker.IsLoaded()) return;
-    if(value)
-        Marker->FNAM.value |= fVisible;
-    else
-        Marker->FNAM.value &= ~fVisible;
+    Marker->FNAM.value = value ? (Marker->FNAM.value | fVisible) : (Marker->FNAM.value & ~fVisible);
     }
 
 bool REFRRecord::IsCanTravelTo()
@@ -261,10 +255,7 @@ bool REFRRecord::IsCanTravelTo()
 void REFRRecord::IsCanTravelTo(bool value)
     {
     if(!Marker.IsLoaded()) return;
-    if(value)
-        Marker->FNAM.value |= fCanTravelTo;
-    else
-        Marker->FNAM.value &= ~fCanTravelTo;
+    Marker->FNAM.value = value ? (Marker->FNAM.value | fCanTravelTo) : (Marker->FNAM.value & ~fCanTravelTo);
     }
 
 bool REFRRecord::IsMapFlagMask(UINT8 Mask, bool Exact)
@@ -286,10 +277,7 @@ bool REFRRecord::IsUseDefault()
 
 void REFRRecord::IsUseDefault(bool value)
     {
-    if(value)
-        XACT.value |= fUseDefault;
-    else
-        XACT.value &= ~fUseDefault;
+    XACT.value = value ? (XACT.value | fUseDefault) : (XACT.value & ~fUseDefault);
     }
 
 bool REFRRecord::IsActivate()
@@ -299,10 +287,7 @@ bool REFRRecord::IsActivate()
 
 void REFRRecord::IsActivate(bool value)
     {
-    if(value)
-        XACT.value |= fActivate;
-    else
-        XACT.value &= ~fActivate;
+    XACT.value = value ? (XACT.value | fActivate) : (XACT.value & ~fActivate);
     }
 
 bool REFRRecord::IsOpen()
@@ -312,10 +297,7 @@ bool REFRRecord::IsOpen()
 
 void REFRRecord::IsOpen(bool value)
     {
-    if(value)
-        XACT.value |= fOpen;
-    else
-        XACT.value &= ~fOpen;
+    XACT.value = value ? (XACT.value | fOpen) : (XACT.value & ~fOpen);
     }
 
 bool REFRRecord::IsOpenByDefault()
@@ -325,10 +307,7 @@ bool REFRRecord::IsOpenByDefault()
 
 void REFRRecord::IsOpenByDefault(bool value)
     {
-    if(value)
-        XACT.value |= fOpenByDefault;
-    else
-        XACT.value &= ~fOpenByDefault;
+    XACT.value = value ? (XACT.value | fOpenByDefault) : (XACT.value & ~fOpenByDefault);
     }
 
 bool REFRRecord::IsActionFlagMask(UINT32 Mask, bool Exact)
@@ -350,10 +329,7 @@ bool REFRRecord::IsLeveledLock()
 void REFRRecord::IsLeveledLock(bool value)
     {
     if(!XLOC.IsLoaded()) return;
-    if(value)
-        XLOC->flags |= fLeveledLock;
-    else
-        XLOC->flags &= ~fLeveledLock;
+    XLOC->flags = value ? (XLOC->flags | fLeveledLock) : (XLOC->flags & ~fLeveledLock);
     }
 
 bool REFRRecord::IsLockFlagMask(UINT8 Mask, bool Exact)
@@ -1056,7 +1032,7 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
     if(Marker.IsLoaded())
         {
-        SaveHandler.writeSubRecord('KRMX', NULL, 0);
+        SaveHandler.writeSubRecordHeader('KRMX', 0);
         if(Marker->FNAM.IsLoaded())
             SaveHandler.writeSubRecord('MANF', &Marker->FNAM.value, Marker->FNAM.GetSize());
         if(Marker->FULL.IsLoaded())
@@ -1066,7 +1042,7 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     if(IsOpenByDefault()) //ONAM
-        SaveHandler.writeSubRecord('MANO', NULL, 0);
+        SaveHandler.writeSubRecordHeader('MANO', 0);
 
     if(XSCL.IsLoaded())
         SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());

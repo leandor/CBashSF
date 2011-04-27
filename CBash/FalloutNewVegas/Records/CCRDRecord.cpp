@@ -115,10 +115,7 @@ bool CCRDRecord::IsNone()
 void CCRDRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool CCRDRecord::IsHearts()
@@ -130,10 +127,7 @@ bool CCRDRecord::IsHearts()
 void CCRDRecord::IsHearts(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHearts;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHearts : eDummyDefault;
     }
 
 bool CCRDRecord::IsSpades()
@@ -145,10 +139,7 @@ bool CCRDRecord::IsSpades()
 void CCRDRecord::IsSpades(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSpades;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSpades : eDummyDefault;
     }
 
 bool CCRDRecord::IsDiamonds()
@@ -160,10 +151,7 @@ bool CCRDRecord::IsDiamonds()
 void CCRDRecord::IsDiamonds(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDiamonds;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDiamonds : eDummyDefault;
     }
 
 bool CCRDRecord::IsClubs()
@@ -175,10 +163,7 @@ bool CCRDRecord::IsClubs()
 void CCRDRecord::IsClubs(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eClubs;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eClubs : eDummyDefault;
     }
 
 bool CCRDRecord::IsJoker()
@@ -190,10 +175,7 @@ bool CCRDRecord::IsJoker()
 void CCRDRecord::IsJoker(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eJoker;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eJoker : eDummyDefault;
     }
 
 bool CCRDRecord::IsType(UINT32 Type, bool Exact)

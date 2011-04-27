@@ -93,10 +93,7 @@ bool STATRecord::IsNone()
 void STATRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool STATRecord::IsBushA()
@@ -108,10 +105,7 @@ bool STATRecord::IsBushA()
 void STATRecord::IsBushA(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushA;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushA : eDummyDefault;
     }
 
 bool STATRecord::IsBushB()
@@ -123,10 +117,7 @@ bool STATRecord::IsBushB()
 void STATRecord::IsBushB(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushB;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushB : eDummyDefault;
     }
 
 bool STATRecord::IsBushC()
@@ -138,10 +129,7 @@ bool STATRecord::IsBushC()
 void STATRecord::IsBushC(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushC;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushC : eDummyDefault;
     }
 
 bool STATRecord::IsBushD()
@@ -153,10 +141,7 @@ bool STATRecord::IsBushD()
 void STATRecord::IsBushD(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushD;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushD : eDummyDefault;
     }
 
 bool STATRecord::IsBushE()
@@ -168,10 +153,7 @@ bool STATRecord::IsBushE()
 void STATRecord::IsBushE(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushE;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushE : eDummyDefault;
     }
 
 bool STATRecord::IsBushF()
@@ -183,10 +165,7 @@ bool STATRecord::IsBushF()
 void STATRecord::IsBushF(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushF;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushF : eDummyDefault;
     }
 
 bool STATRecord::IsBushG()
@@ -198,10 +177,7 @@ bool STATRecord::IsBushG()
 void STATRecord::IsBushG(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushG;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushG : eDummyDefault;
     }
 
 bool STATRecord::IsBushH()
@@ -213,10 +189,7 @@ bool STATRecord::IsBushH()
 void STATRecord::IsBushH(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushH;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushH : eDummyDefault;
     }
 
 bool STATRecord::IsBushI()
@@ -228,10 +201,7 @@ bool STATRecord::IsBushI()
 void STATRecord::IsBushI(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushI;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushI : eDummyDefault;
     }
 
 bool STATRecord::IsBushJ()
@@ -243,10 +213,7 @@ bool STATRecord::IsBushJ()
 void STATRecord::IsBushJ(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBushJ;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBushJ : eDummyDefault;
     }
 
 bool STATRecord::IsType(SINT8 Type, bool Exact)

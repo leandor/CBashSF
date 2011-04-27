@@ -62,7 +62,7 @@ UINT32 LSCRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 8: //smallIconPath
             return ISTRING_FIELD;
-        case 9: //desc Description
+        case 9: //description
             return STRING_FIELD;
         case 10: //lnam LNAM ,, Struct
             return FORMID_FIELD;
@@ -101,7 +101,7 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 8: //smallIconPath
             return MICO.value;
-        case 9: //desc Description
+        case 9: //description
             return DESCReq.value;
         case 10: //lnam LNAM ,, Struct
             return LNAM.IsLoaded() ? &LNAM->value10 : NULL;
@@ -151,7 +151,7 @@ bool LSCRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 9: //desc Description
+        case 9: //description
             DESCReq.Copy((STRING)FieldValue);
             break;
         case 10: //lnam LNAM ,, Struct
@@ -206,7 +206,7 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //smallIconPath
             MICO.Unload();
             return;
-        case 9: //desc Description
+        case 9: //description
             DESCReq.Unload();
             return;
         case 10: //lnam LNAM ,, Struct

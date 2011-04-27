@@ -24,6 +24,45 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool sortRNAM(FACTRecord::FACTRNAM *lhs, FACTRecord::FACTRNAM *rhs)
+    {
+    return lhs->RNAM.value < rhs->RNAM.value;
+    }
+
+FACTRecord::FACTDATA::FACTDATA():
+    flags(0)
+    {
+    memset(&unused1, 0x00, 2);
+    }
+
+FACTRecord::FACTDATA::~FACTDATA()
+    {
+    //
+    }
+
+bool FACTRecord::FACTDATA::operator ==(const FACTDATA &other) const
+    {
+    return (flags == other.flags);
+    }
+
+bool FACTRecord::FACTDATA::operator !=(const FACTDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FACTRecord::FACTRNAM::operator ==(const FACTRNAM &other) const
+    {
+    return (RNAM == other.RNAM &&
+            MNAM.equals(other.MNAM) &&
+            FNAM.equals(other.FNAM) &&
+            INAM.equalsi(other.INAM));
+    }
+
+bool FACTRecord::FACTRNAM::operator !=(const FACTRNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 FACTRecord::FACTRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,16 +91,24 @@ FACTRecord::FACTRecord(FACTRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    XNAM = srcRecord->XNAM;
+
+    XNAM.clear();
+    XNAM.resize(srcRecord->XNAM.size());
+    for(UINT32 x = 0; x < srcRecord->XNAM.size(); x++)
+        {
+        XNAM[x] = new ReqSubRecord<FNVXNAM>;
+        *XNAM[x] = *srcRecord->XNAM[x];
+        }
+
     DATA = srcRecord->DATA;
     CNAM = srcRecord->CNAM;
-    if(srcRecord->RNAM.IsLoaded())
+
+    RNAM.clear();
+    RNAM.resize(srcRecord->RNAM.size());
+    for(UINT32 x = 0; x < srcRecord->RNAM.size(); x++)
         {
-        RNAM.Load();
-        RNAM->RNAM = srcRecord->RNAM->RNAM;
-        RNAM->MNAM = srcRecord->RNAM->MNAM;
-        RNAM->FNAM = srcRecord->RNAM->FNAM;
-        RNAM->INAM = srcRecord->RNAM->INAM;
+        RNAM[x] = new FACTRNAM;
+        *RNAM[x] = *srcRecord->RNAM[x];
         }
     WMI1 = srcRecord->WMI1;
     return;
@@ -69,7 +116,10 @@ FACTRecord::FACTRecord(FACTRecord *srcRecord):
 
 FACTRecord::~FACTRecord()
     {
-    //
+    for(UINT32 x = 0; x < XNAM.size(); x++)
+        delete XNAM[x];
+    for(UINT32 x = 0; x < RNAM.size(); x++)
+        delete RNAM[x];
     }
 
 bool FACTRecord::VisitFormIDs(FormIDOp &op)
@@ -77,114 +127,72 @@ bool FACTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    //if(XNAM.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XNAM->value);
+    for(UINT32 x = 0; x < XNAM.size(); x++)
+        op.Accept(XNAM[x]->value.faction);
     if(WMI1.IsLoaded())
-        op.Accept(WMI1->value);
+        op.Accept(WMI1.value);
 
     return op.Stop();
     }
 
 bool FACTRecord::IsHiddenFromPC()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHiddenFromPC) != 0;
+    return (DATA.value.flags & fIsHiddenFromPC) != 0;
     }
 
 void FACTRecord::IsHiddenFromPC(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHiddenFromPC;
-    else
-        Dummy->flags &= ~fIsHiddenFromPC;
+    DATA.value.flags = value ? (DATA.value.flags | fIsHiddenFromPC) : (DATA.value.flags & ~fIsHiddenFromPC);
     }
 
 bool FACTRecord::IsEvil()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEvil) != 0;
+    return (DATA.value.flags & fIsEvil) != 0;
     }
 
 void FACTRecord::IsEvil(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEvil;
-    else
-        Dummy->flags &= ~fIsEvil;
+    DATA.value.flags = value ? (DATA.value.flags | fIsEvil) : (DATA.value.flags & ~fIsEvil);
     }
 
 bool FACTRecord::IsSpecialCombat()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsSpecialCombat) != 0;
+    return (DATA.value.flags & fIsSpecialCombat) != 0;
     }
 
 void FACTRecord::IsSpecialCombat(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSpecialCombat;
-    else
-        Dummy->flags &= ~fIsSpecialCombat;
+    DATA.value.flags = value ? (DATA.value.flags | fIsSpecialCombat) : (DATA.value.flags & ~fIsSpecialCombat);
     }
 
 bool FACTRecord::IsTrackCrime()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsTrackCrime) != 0;
+    return (DATA.value.flags & fIsTrackCrime) != 0;
     }
 
 void FACTRecord::IsTrackCrime(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTrackCrime;
-    else
-        Dummy->flags &= ~fIsTrackCrime;
+    DATA.value.flags = value ? (DATA.value.flags | fIsTrackCrime) : (DATA.value.flags & ~fIsTrackCrime);
     }
 
 bool FACTRecord::IsAllowSell()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAllowSell) != 0;
+    return (DATA.value.flags & fIsAllowSell) != 0;
     }
 
 void FACTRecord::IsAllowSell(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAllowSell;
-    else
-        Dummy->flags &= ~fIsAllowSell;
-    }
-
-bool FACTRecord::IsSpecialCombat()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsSpecialCombat) != 0;
-    }
-
-void FACTRecord::IsSpecialCombat(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSpecialCombat;
-    else
-        Dummy->flags &= ~fIsSpecialCombat;
+    DATA.value.flags = value ? (DATA.value.flags | fIsAllowSell) : (DATA.value.flags & ~fIsAllowSell);
     }
 
 bool FACTRecord::IsFlagMask(UINT16 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
     }
 
 void FACTRecord::SetFlagMask(UINT16 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value.flags = Mask;
     }
 
 UINT32 FACTRecord::GetSize(bool forceCalc)
@@ -209,34 +217,35 @@ UINT32 FACTRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(XNAM.IsLoaded())
-        TotSize += XNAM.GetSize() + 6;
+    for(UINT32 p = 0; p < XNAM.size(); p++)
+        TotSize += XNAM[p]->GetSize() + 6;
 
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
+    TotSize += DATA.GetSize() + 6;
 
     if(CNAM.IsLoaded())
         TotSize += CNAM.GetSize() + 6;
 
-    if(RNAM.IsLoaded())
+    for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        if(RNAM->RNAM.IsLoaded())
-            TotSize += RNAM->RNAM.GetSize() + 6;
-        if(RNAM->MNAM.IsLoaded())
+        TotSize += RNAM[p]->RNAM.GetSize() + 6;
+
+        if(RNAM[p]->MNAM.IsLoaded())
             {
-            cSize = RNAM->MNAM.GetSize();
+            cSize = RNAM[p]->MNAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
-        if(RNAM->FNAM.IsLoaded())
+
+        if(RNAM[p]->FNAM.IsLoaded())
             {
-            cSize = RNAM->FNAM.GetSize();
+            cSize = RNAM[p]->FNAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
-        if(RNAM->INAM.IsLoaded())
+
+        if(RNAM[p]->INAM.IsLoaded())
             {
-            cSize = RNAM->INAM.GetSize();
+            cSize = RNAM[p]->INAM.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
@@ -287,7 +296,8 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 FULL.Read(buffer, subSize, curPos);
                 break;
             case 'MANX':
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.push_back(new ReqSubRecord<FNVXNAM>);
+                XNAM.back()->Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -296,20 +306,23 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 CNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANR':
-                RNAM.Load();
-                RNAM->RNAM.Read(buffer, subSize, curPos);
+                RNAM.push_back(new FACTRNAM);
+                RNAM.back()->RNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANM':
-                RNAM.Load();
-                RNAM->MNAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->MNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANF':
-                RNAM.Load();
-                RNAM->FNAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->FNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANI':
-                RNAM.Load();
-                RNAM->INAM.Read(buffer, subSize, curPos);
+                if(RNAM.size() == 0)
+                    RNAM.push_back(new FACTRNAM);
+                RNAM.back()->INAM.Read(buffer, subSize, curPos);
                 break;
             case '1IMW':
                 WMI1.Read(buffer, subSize, curPos);
@@ -332,10 +345,18 @@ SINT32 FACTRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();
-    XNAM.Unload();
+
+    for(UINT32 x = 0; x < XNAM.size(); x++)
+        delete XNAM[x];
+    XNAM.clear();
+
     DATA.Unload();
     CNAM.Unload();
-    RNAM.Unload();
+
+    for(UINT32 x = 0; x < RNAM.size(); x++)
+        delete RNAM[x];
+    RNAM.clear();
+
     WMI1.Unload();
     return 1;
     }
@@ -348,46 +369,60 @@ SINT32 FACTRecord::WriteRecord(_FileHandler &SaveHandler)
     if(FULL.IsLoaded())
         SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
 
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
+    for(UINT32 p = 0; p < XNAM.size(); p++)
+        if(XNAM[p]->IsLoaded())
+            SaveHandler.writeSubRecord('MANX', &XNAM[p]->value, XNAM[p]->GetSize());
 
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
 
     if(CNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
 
-    if(RNAM.IsLoaded())
+    std::sort(RNAM.begin(), RNAM.end(), sortRNAM);
+    for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        if(RNAM->RNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANR', RNAM->RNAM.value, RNAM->RNAM.GetSize());
-
-        if(RNAM->MNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANM', RNAM->MNAM.value, RNAM->MNAM.GetSize());
-
-        if(RNAM->FNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANF', RNAM->FNAM.value, RNAM->FNAM.GetSize());
-
-        if(RNAM->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', RNAM->INAM.value, RNAM->INAM.GetSize());
-
+        SaveHandler.writeSubRecord('MANR', &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
+        if(RNAM[p]->MNAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANM', RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
+        if(RNAM[p]->FNAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANF', RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
+        if(RNAM[p]->INAM.IsLoaded())
+            SaveHandler.writeSubRecord('MANI', RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
         }
 
     if(WMI1.IsLoaded())
-        SaveHandler.writeSubRecord('1IMW', WMI1.value, WMI1.GetSize());
+        SaveHandler.writeSubRecord('1IMW', &WMI1.value, WMI1.GetSize());
 
     return -1;
     }
 
 bool FACTRecord::operator ==(const FACTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            FULL.equals(other.FULL) &&
-            XNAM == other.XNAM &&
-            DATA == other.DATA &&
-            CNAM == other.CNAM &&
-            RNAM == other.RNAM &&
-            WMI1 == other.WMI1);
+    if(EDID.equalsi(other.EDID) &&
+        FULL.equals(other.FULL) &&
+        DATA == other.DATA &&
+        CNAM == other.CNAM &&
+        WMI1 == other.WMI1 &&
+        XNAM.size() == other.XNAM.size() &&
+        RNAM.size() == other.RNAM.size())
+        {
+        //Not sure if record order matters on relations, so equality testing is a guess
+        //Fix-up later
+        for(UINT32 x = 0; x < XNAM.size(); ++x)
+            if(*XNAM[x] != *other.XNAM[x])
+                return false;
+
+        //Record order doesn't matter on faction ranks, so equality testing isn't easy
+        //Instead, they're keyed by faction rank (RNAM.value.RNAM)
+        //The proper solution would be to see if each rank matches the other
+        //But they're usually ordered, so the lazy approach is to not bother
+        //Fix-up later
+        for(UINT32 x = 0; x < RNAM.size(); ++x)
+            if(*RNAM[x] != *other.RNAM[x])
+                return false;
+        return true;
+        }
+    return false;
     }
 
 bool FACTRecord::operator !=(const FACTRecord &other) const

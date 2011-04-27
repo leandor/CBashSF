@@ -973,7 +973,7 @@ SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
             if(Areas[p]->RPLD.size())
                 SaveHandler.writeSubRecord('DLPR', &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
             //else
-            //    SaveHandler.writeSubRecord('DLPR', NULL, 0);
+            //    SaveHandler.writeSubRecordHeader('DLPR', 0);
             }
     if(Entries.size())
         for(UINT32 p = 0; p < Entries.size(); p++)
@@ -986,13 +986,13 @@ SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(Entries[p]->RDOT.size())
                         SaveHandler.writeSubRecord('TODR', &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
                     else
-                        SaveHandler.writeSubRecord('TODR', NULL, 0);
+                        SaveHandler.writeSubRecordHeader('TODR', 0);
                     break;
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
                         SaveHandler.writeSubRecord('TWDR', &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
                     //else
-                    //    SaveHandler.writeSubRecord('TWDR', NULL, 0);
+                    //    SaveHandler.writeSubRecordHeader('TWDR', 0);
                     break;
                 case eREGNMap:
                     if(Entries[p]->RDMP.IsLoaded())
@@ -1006,7 +1006,7 @@ SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(Entries[p]->RDGS.size())
                         SaveHandler.writeSubRecord('SGDR', &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
                     //else
-                    //    SaveHandler.writeSubRecord('SGDR', NULL, 0);
+                    //    SaveHandler.writeSubRecordHeader('SGDR', 0);
                     break;
                 case eREGNSounds:
                     if(Entries[p]->RDMD.IsLoaded())
@@ -1014,7 +1014,7 @@ SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(Entries[p]->RDSD.size())
                         SaveHandler.writeSubRecord('DSDR', &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
                     else
-                        SaveHandler.writeSubRecord('DSDR', NULL, 0);
+                        SaveHandler.writeSubRecordHeader('DSDR', 0);
                     break;
                 default:
                     printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);

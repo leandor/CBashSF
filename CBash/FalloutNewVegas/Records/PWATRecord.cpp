@@ -92,10 +92,7 @@ bool PWATRecord::IsReflects()
 void PWATRecord::IsReflects(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflects;
-    else
-        Dummy->flags &= ~fIsReflects;
+    Dummy->flags = value ? (Dummy->flags | fIsReflects) : (Dummy->flags & ~fIsReflects);
     }
 
 bool PWATRecord::IsReflectsActors()
@@ -107,10 +104,7 @@ bool PWATRecord::IsReflectsActors()
 void PWATRecord::IsReflectsActors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsActors;
-    else
-        Dummy->flags &= ~fIsReflectsActors;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsActors) : (Dummy->flags & ~fIsReflectsActors);
     }
 
 bool PWATRecord::IsReflectsLand()
@@ -122,10 +116,7 @@ bool PWATRecord::IsReflectsLand()
 void PWATRecord::IsReflectsLand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsLand;
-    else
-        Dummy->flags &= ~fIsReflectsLand;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsLand) : (Dummy->flags & ~fIsReflectsLand);
     }
 
 bool PWATRecord::IsReflectsLODLand()
@@ -137,10 +128,7 @@ bool PWATRecord::IsReflectsLODLand()
 void PWATRecord::IsReflectsLODLand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsLODLand;
-    else
-        Dummy->flags &= ~fIsReflectsLODLand;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsLODLand) : (Dummy->flags & ~fIsReflectsLODLand);
     }
 
 bool PWATRecord::IsReflectsLODBuildings()
@@ -152,10 +140,7 @@ bool PWATRecord::IsReflectsLODBuildings()
 void PWATRecord::IsReflectsLODBuildings(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsLODBuildings;
-    else
-        Dummy->flags &= ~fIsReflectsLODBuildings;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsLODBuildings) : (Dummy->flags & ~fIsReflectsLODBuildings);
     }
 
 bool PWATRecord::IsReflectsTrees()
@@ -167,10 +152,7 @@ bool PWATRecord::IsReflectsTrees()
 void PWATRecord::IsReflectsTrees(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsTrees;
-    else
-        Dummy->flags &= ~fIsReflectsTrees;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsTrees) : (Dummy->flags & ~fIsReflectsTrees);
     }
 
 bool PWATRecord::IsReflectsSky()
@@ -182,10 +164,7 @@ bool PWATRecord::IsReflectsSky()
 void PWATRecord::IsReflectsSky(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsSky;
-    else
-        Dummy->flags &= ~fIsReflectsSky;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsSky) : (Dummy->flags & ~fIsReflectsSky);
     }
 
 bool PWATRecord::IsReflectsDynamicObjects()
@@ -197,10 +176,7 @@ bool PWATRecord::IsReflectsDynamicObjects()
 void PWATRecord::IsReflectsDynamicObjects(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsDynamicObjects;
-    else
-        Dummy->flags &= ~fIsReflectsDynamicObjects;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsDynamicObjects) : (Dummy->flags & ~fIsReflectsDynamicObjects);
     }
 
 bool PWATRecord::IsReflectsDeadBodies()
@@ -212,10 +188,7 @@ bool PWATRecord::IsReflectsDeadBodies()
 void PWATRecord::IsReflectsDeadBodies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsReflectsDeadBodies;
-    else
-        Dummy->flags &= ~fIsReflectsDeadBodies;
+    Dummy->flags = value ? (Dummy->flags | fIsReflectsDeadBodies) : (Dummy->flags & ~fIsReflectsDeadBodies);
     }
 
 bool PWATRecord::IsRefracts()
@@ -227,10 +200,7 @@ bool PWATRecord::IsRefracts()
 void PWATRecord::IsRefracts(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRefracts;
-    else
-        Dummy->flags &= ~fIsRefracts;
+    Dummy->flags = value ? (Dummy->flags | fIsRefracts) : (Dummy->flags & ~fIsRefracts);
     }
 
 bool PWATRecord::IsRefractsActors()
@@ -242,10 +212,7 @@ bool PWATRecord::IsRefractsActors()
 void PWATRecord::IsRefractsActors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRefractsActors;
-    else
-        Dummy->flags &= ~fIsRefractsActors;
+    Dummy->flags = value ? (Dummy->flags | fIsRefractsActors) : (Dummy->flags & ~fIsRefractsActors);
     }
 
 bool PWATRecord::IsRefractsDeadBodies()
@@ -257,10 +224,7 @@ bool PWATRecord::IsRefractsDeadBodies()
 void PWATRecord::IsRefractsDeadBodies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRefractsDeadBodies;
-    else
-        Dummy->flags &= ~fIsRefractsDeadBodies;
+    Dummy->flags = value ? (Dummy->flags | fIsRefractsDeadBodies) : (Dummy->flags & ~fIsRefractsDeadBodies);
     }
 
 bool PWATRecord::IsRefractsDynamicObjects()
@@ -272,10 +236,7 @@ bool PWATRecord::IsRefractsDynamicObjects()
 void PWATRecord::IsRefractsDynamicObjects(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRefractsDynamicObjects;
-    else
-        Dummy->flags &= ~fIsRefractsDynamicObjects;
+    Dummy->flags = value ? (Dummy->flags | fIsRefractsDynamicObjects) : (Dummy->flags & ~fIsRefractsDynamicObjects);
     }
 
 bool PWATRecord::IsRefractsDeadBodies()
@@ -287,10 +248,7 @@ bool PWATRecord::IsRefractsDeadBodies()
 void PWATRecord::IsRefractsDeadBodies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRefractsDeadBodies;
-    else
-        Dummy->flags &= ~fIsRefractsDeadBodies;
+    Dummy->flags = value ? (Dummy->flags | fIsRefractsDeadBodies) : (Dummy->flags & ~fIsRefractsDeadBodies);
     }
 
 bool PWATRecord::IsSilhouetteReflections()
@@ -302,10 +260,7 @@ bool PWATRecord::IsSilhouetteReflections()
 void PWATRecord::IsSilhouetteReflections(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSilhouetteReflections;
-    else
-        Dummy->flags &= ~fIsSilhouetteReflections;
+    Dummy->flags = value ? (Dummy->flags | fIsSilhouetteReflections) : (Dummy->flags & ~fIsSilhouetteReflections);
     }
 
 bool PWATRecord::IsDepth()
@@ -317,10 +272,7 @@ bool PWATRecord::IsDepth()
 void PWATRecord::IsDepth(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDepth;
-    else
-        Dummy->flags &= ~fIsDepth;
+    Dummy->flags = value ? (Dummy->flags | fIsDepth) : (Dummy->flags & ~fIsDepth);
     }
 
 bool PWATRecord::IsObjectTextureCoordinates()
@@ -332,10 +284,7 @@ bool PWATRecord::IsObjectTextureCoordinates()
 void PWATRecord::IsObjectTextureCoordinates(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsObjectTextureCoordinates;
-    else
-        Dummy->flags &= ~fIsObjectTextureCoordinates;
+    Dummy->flags = value ? (Dummy->flags | fIsObjectTextureCoordinates) : (Dummy->flags & ~fIsObjectTextureCoordinates);
     }
 
 bool PWATRecord::IsNoUnderwaterFog()
@@ -347,10 +296,7 @@ bool PWATRecord::IsNoUnderwaterFog()
 void PWATRecord::IsNoUnderwaterFog(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoUnderwaterFog;
-    else
-        Dummy->flags &= ~fIsNoUnderwaterFog;
+    Dummy->flags = value ? (Dummy->flags | fIsNoUnderwaterFog) : (Dummy->flags & ~fIsNoUnderwaterFog);
     }
 
 bool PWATRecord::IsFlagMask(UINT32 Mask, bool Exact)

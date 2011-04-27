@@ -109,10 +109,7 @@ bool MSETRecord::IsDayOuter()
 void MSETRecord::IsDayOuter(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDayOuter;
-    else
-        Dummy->flags &= ~fIsDayOuter;
+    Dummy->flags = value ? (Dummy->flags | fIsDayOuter) : (Dummy->flags & ~fIsDayOuter);
     }
 
 bool MSETRecord::IsDayMiddle()
@@ -124,10 +121,7 @@ bool MSETRecord::IsDayMiddle()
 void MSETRecord::IsDayMiddle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDayMiddle;
-    else
-        Dummy->flags &= ~fIsDayMiddle;
+    Dummy->flags = value ? (Dummy->flags | fIsDayMiddle) : (Dummy->flags & ~fIsDayMiddle);
     }
 
 bool MSETRecord::IsDayInner()
@@ -139,10 +133,7 @@ bool MSETRecord::IsDayInner()
 void MSETRecord::IsDayInner(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDayInner;
-    else
-        Dummy->flags &= ~fIsDayInner;
+    Dummy->flags = value ? (Dummy->flags | fIsDayInner) : (Dummy->flags & ~fIsDayInner);
     }
 
 bool MSETRecord::IsNightOuter()
@@ -154,10 +145,7 @@ bool MSETRecord::IsNightOuter()
 void MSETRecord::IsNightOuter(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNightOuter;
-    else
-        Dummy->flags &= ~fIsNightOuter;
+    Dummy->flags = value ? (Dummy->flags | fIsNightOuter) : (Dummy->flags & ~fIsNightOuter);
     }
 
 bool MSETRecord::IsNightMiddle()
@@ -169,10 +157,7 @@ bool MSETRecord::IsNightMiddle()
 void MSETRecord::IsNightMiddle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNightMiddle;
-    else
-        Dummy->flags &= ~fIsNightMiddle;
+    Dummy->flags = value ? (Dummy->flags | fIsNightMiddle) : (Dummy->flags & ~fIsNightMiddle);
     }
 
 bool MSETRecord::IsNightInner()
@@ -184,10 +169,7 @@ bool MSETRecord::IsNightInner()
 void MSETRecord::IsNightInner(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNightInner;
-    else
-        Dummy->flags &= ~fIsNightInner;
+    Dummy->flags = value ? (Dummy->flags | fIsNightInner) : (Dummy->flags & ~fIsNightInner);
     }
 
 bool MSETRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -211,10 +193,7 @@ bool MSETRecord::IsNone()
 void MSETRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool MSETRecord::IsBattle()
@@ -226,10 +205,7 @@ bool MSETRecord::IsBattle()
 void MSETRecord::IsBattle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBattle;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBattle : eDummyDefault;
     }
 
 bool MSETRecord::IsLocation()
@@ -241,10 +217,7 @@ bool MSETRecord::IsLocation()
 void MSETRecord::IsLocation(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLocation;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLocation : eDummyDefault;
     }
 
 bool MSETRecord::IsDungeon()
@@ -256,10 +229,7 @@ bool MSETRecord::IsDungeon()
 void MSETRecord::IsDungeon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDungeon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDungeon : eDummyDefault;
     }
 
 bool MSETRecord::IsIncidential()
@@ -271,10 +241,7 @@ bool MSETRecord::IsIncidential()
 void MSETRecord::IsIncidential(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eIncidential;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eIncidential : eDummyDefault;
     }
 
 bool MSETRecord::IsType(UINT32 Type, bool Exact)

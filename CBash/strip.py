@@ -26,7 +26,12 @@ def spacer(line, maxsize):
         pos = line.find('=')
         return line[:pos] + ' ' * (maxsize - pos) + line[pos:]
     return line
-
+for infile in glob.glob('*.cpp~'):
+    os.remove(infile)
+for infile in glob.glob('*.h~'):
+    os.remove(infile)
+for infile in glob.glob('*.bak'):
+    os.remove(infile)
 for infile in glob.glob('*.cpp'):
     f = open(infile)
     contents = f.readlines()

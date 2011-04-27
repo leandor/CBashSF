@@ -290,7 +290,7 @@ SINT32 TREERecord::WriteRecord(_FileHandler &SaveHandler)
     if(SNAM.size())
         SaveHandler.writeSubRecord('MANS', &SNAM[0], (UINT32)SNAM.size() * sizeof(UINT32));
     //else
-    //    SaveHandler.writeSubRecord('MANS', NULL, 0);
+    //    SaveHandler.writeSubRecordHeader('MANS', 0);
     if(CNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
     if(BNAM.IsLoaded())

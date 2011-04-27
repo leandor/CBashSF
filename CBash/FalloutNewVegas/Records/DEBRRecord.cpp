@@ -33,10 +33,7 @@ bool DEBRRecord::DEBRModel::IsHasCollisionData()
 void DEBRRecord::DEBRModel::IsHasCollisionData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHasCollisionData;
-    else
-        Dummy->flags &= ~fIsHasCollisionData;
+    Dummy->flags = value ? (Dummy->flags | fIsHasCollisionData) : (Dummy->flags & ~fIsHasCollisionData);
     }
 
 bool DEBRRecord::DEBRModel::IsFlagMask(UINT8 Mask, bool Exact)

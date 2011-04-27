@@ -80,10 +80,7 @@ bool EYESRecord::IsPlayable()
 void EYESRecord::IsPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPlayable;
-    else
-        Dummy->flags &= ~fIsPlayable;
+    Dummy->flags = value ? (Dummy->flags | fIsPlayable) : (Dummy->flags & ~fIsPlayable);
     }
 
 bool EYESRecord::IsNotMale()
@@ -95,10 +92,7 @@ bool EYESRecord::IsNotMale()
 void EYESRecord::IsNotMale(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNotMale;
-    else
-        Dummy->flags &= ~fIsNotMale;
+    Dummy->flags = value ? (Dummy->flags | fIsNotMale) : (Dummy->flags & ~fIsNotMale);
     }
 
 bool EYESRecord::IsNotFemale()
@@ -110,10 +104,7 @@ bool EYESRecord::IsNotFemale()
 void EYESRecord::IsNotFemale(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNotFemale;
-    else
-        Dummy->flags &= ~fIsNotFemale;
+    Dummy->flags = value ? (Dummy->flags | fIsNotFemale) : (Dummy->flags & ~fIsNotFemale);
     }
 
 bool EYESRecord::IsFlagMask(UINT8 Mask, bool Exact)

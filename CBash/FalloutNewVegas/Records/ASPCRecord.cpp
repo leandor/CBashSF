@@ -87,10 +87,7 @@ bool ASPCRecord::IsNone()
 void ASPCRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool ASPCRecord::IsDefault()
@@ -102,10 +99,7 @@ bool ASPCRecord::IsDefault()
 void ASPCRecord::IsDefault(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDefault;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDefault : eDummyDefault;
     }
 
 bool ASPCRecord::IsGeneric()
@@ -117,10 +111,7 @@ bool ASPCRecord::IsGeneric()
 void ASPCRecord::IsGeneric(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGeneric;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGeneric : eDummyDefault;
     }
 
 bool ASPCRecord::IsPaddedCell()
@@ -132,10 +123,7 @@ bool ASPCRecord::IsPaddedCell()
 void ASPCRecord::IsPaddedCell(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePaddedCell;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePaddedCell : eDummyDefault;
     }
 
 bool ASPCRecord::IsRoom()
@@ -147,10 +135,7 @@ bool ASPCRecord::IsRoom()
 void ASPCRecord::IsRoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRoom : eDummyDefault;
     }
 
 bool ASPCRecord::IsBathroom()
@@ -162,10 +147,7 @@ bool ASPCRecord::IsBathroom()
 void ASPCRecord::IsBathroom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBathroom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBathroom : eDummyDefault;
     }
 
 bool ASPCRecord::IsLivingroom()
@@ -177,10 +159,7 @@ bool ASPCRecord::IsLivingroom()
 void ASPCRecord::IsLivingroom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLivingroom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLivingroom : eDummyDefault;
     }
 
 bool ASPCRecord::IsStoneRoom()
@@ -192,10 +171,7 @@ bool ASPCRecord::IsStoneRoom()
 void ASPCRecord::IsStoneRoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStoneRoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStoneRoom : eDummyDefault;
     }
 
 bool ASPCRecord::IsAuditorium()
@@ -207,10 +183,7 @@ bool ASPCRecord::IsAuditorium()
 void ASPCRecord::IsAuditorium(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAuditorium;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAuditorium : eDummyDefault;
     }
 
 bool ASPCRecord::IsConcerthall()
@@ -222,10 +195,7 @@ bool ASPCRecord::IsConcerthall()
 void ASPCRecord::IsConcerthall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eConcerthall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eConcerthall : eDummyDefault;
     }
 
 bool ASPCRecord::IsCave()
@@ -237,10 +207,7 @@ bool ASPCRecord::IsCave()
 void ASPCRecord::IsCave(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCave;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCave : eDummyDefault;
     }
 
 bool ASPCRecord::IsArena()
@@ -252,10 +219,7 @@ bool ASPCRecord::IsArena()
 void ASPCRecord::IsArena(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eArena;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eArena : eDummyDefault;
     }
 
 bool ASPCRecord::IsHangar()
@@ -267,10 +231,7 @@ bool ASPCRecord::IsHangar()
 void ASPCRecord::IsHangar(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHangar;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHangar : eDummyDefault;
     }
 
 bool ASPCRecord::IsCarpetedHallway()
@@ -282,10 +243,7 @@ bool ASPCRecord::IsCarpetedHallway()
 void ASPCRecord::IsCarpetedHallway(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCarpetedHallway;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCarpetedHallway : eDummyDefault;
     }
 
 bool ASPCRecord::IsHallway()
@@ -297,10 +255,7 @@ bool ASPCRecord::IsHallway()
 void ASPCRecord::IsHallway(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHallway;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHallway : eDummyDefault;
     }
 
 bool ASPCRecord::IsStoneCorridor()
@@ -312,10 +267,7 @@ bool ASPCRecord::IsStoneCorridor()
 void ASPCRecord::IsStoneCorridor(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStoneCorridor;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStoneCorridor : eDummyDefault;
     }
 
 bool ASPCRecord::IsAlley()
@@ -327,10 +279,7 @@ bool ASPCRecord::IsAlley()
 void ASPCRecord::IsAlley(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAlley;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAlley : eDummyDefault;
     }
 
 bool ASPCRecord::IsForest()
@@ -342,10 +291,7 @@ bool ASPCRecord::IsForest()
 void ASPCRecord::IsForest(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eForest;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eForest : eDummyDefault;
     }
 
 bool ASPCRecord::IsCity()
@@ -357,10 +303,7 @@ bool ASPCRecord::IsCity()
 void ASPCRecord::IsCity(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCity;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCity : eDummyDefault;
     }
 
 bool ASPCRecord::IsMountains()
@@ -372,10 +315,7 @@ bool ASPCRecord::IsMountains()
 void ASPCRecord::IsMountains(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMountains;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMountains : eDummyDefault;
     }
 
 bool ASPCRecord::IsQuarry()
@@ -387,10 +327,7 @@ bool ASPCRecord::IsQuarry()
 void ASPCRecord::IsQuarry(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eQuarry;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eQuarry : eDummyDefault;
     }
 
 bool ASPCRecord::IsPlain()
@@ -402,10 +339,7 @@ bool ASPCRecord::IsPlain()
 void ASPCRecord::IsPlain(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlain;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlain : eDummyDefault;
     }
 
 bool ASPCRecord::IsParkinglot()
@@ -417,10 +351,7 @@ bool ASPCRecord::IsParkinglot()
 void ASPCRecord::IsParkinglot(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eParkinglot;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eParkinglot : eDummyDefault;
     }
 
 bool ASPCRecord::IsSewerpipe()
@@ -432,10 +363,7 @@ bool ASPCRecord::IsSewerpipe()
 void ASPCRecord::IsSewerpipe(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSewerpipe;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSewerpipe : eDummyDefault;
     }
 
 bool ASPCRecord::IsUnderwater()
@@ -447,10 +375,7 @@ bool ASPCRecord::IsUnderwater()
 void ASPCRecord::IsUnderwater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnderwater;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnderwater : eDummyDefault;
     }
 
 bool ASPCRecord::IsSmallRoom()
@@ -462,10 +387,7 @@ bool ASPCRecord::IsSmallRoom()
 void ASPCRecord::IsSmallRoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSmallRoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSmallRoom : eDummyDefault;
     }
 
 bool ASPCRecord::IsMediumRoom()
@@ -477,10 +399,7 @@ bool ASPCRecord::IsMediumRoom()
 void ASPCRecord::IsMediumRoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMediumRoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMediumRoom : eDummyDefault;
     }
 
 bool ASPCRecord::IsLargeRoom()
@@ -492,10 +411,7 @@ bool ASPCRecord::IsLargeRoom()
 void ASPCRecord::IsLargeRoom(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLargeRoom;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLargeRoom : eDummyDefault;
     }
 
 bool ASPCRecord::IsMediumHall()
@@ -507,10 +423,7 @@ bool ASPCRecord::IsMediumHall()
 void ASPCRecord::IsMediumHall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMediumHall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMediumHall : eDummyDefault;
     }
 
 bool ASPCRecord::IsLargeHall()
@@ -522,10 +435,7 @@ bool ASPCRecord::IsLargeHall()
 void ASPCRecord::IsLargeHall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLargeHall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLargeHall : eDummyDefault;
     }
 
 bool ASPCRecord::IsPlate()
@@ -537,10 +447,7 @@ bool ASPCRecord::IsPlate()
 void ASPCRecord::IsPlate(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlate;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlate : eDummyDefault;
     }
 
 bool ASPCRecord::IsnvironmentType(UINT32 Type, bool Exact)
@@ -564,10 +471,7 @@ bool ASPCRecord::IsIsExterior()
 void ASPCRecord::IsIsExterior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eIsExterior;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eIsExterior : eDummyDefault;
     }
 
 bool ASPCRecord::IsIsInterior()
@@ -579,10 +483,7 @@ bool ASPCRecord::IsIsInterior()
 void ASPCRecord::IsIsInterior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eIsInterior;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eIsInterior : eDummyDefault;
     }
 
 bool ASPCRecord::IsSpaceType(UINT32 Type, bool Exact)

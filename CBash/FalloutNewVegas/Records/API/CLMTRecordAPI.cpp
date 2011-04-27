@@ -68,35 +68,53 @@ UINT32 CLMTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 11: //gnam Sun Glare Texture
             return ISTRING_FIELD;
-        case 12: //modl Model Filename
-            return STRING_FIELD;
-        case 13: //modb_p Unknown
+        case 12: //modPath
+            return ISTRING_FIELD;
+        case 13: //modb
+            return FLOAT32_FIELD;
+        case 14: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODB.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //modt_p Texture Files Hashes
-            switch(WhichAttribute)
+        case 15: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODT.GetSize();
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 15: //mods Alternate Textures
-            return STRING_FIELD;
-        case 16: //mods Alternate Textures
-            return FORMID_FIELD;
-        case 17: //mods Alternate Textures
-            return SINT32_FIELD;
-        case 18: //modd FaceGen Model Flags
+
+        case 18: //modelFlags
             return UINT8_FIELD;
         case 19: //tnam TNAM ,, Struct
             return UINT8_FIELD;
@@ -143,12 +161,11 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return FNAM.value;
         case 11: //gnam Sun Glare Texture
             return GNAM.value;
-        case 12: //modl Model Filename
+        case 12: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 13: //modb_p Unknown
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
-            return NULL;
-        case 14: //modt_p Texture Files Hashes
+        case 13: //modb
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
+        case 14: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 15: //mods Alternate Textures
@@ -157,7 +174,7 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
         case 17: //mods Alternate Textures
             return MODL.IsLoaded() ? &MODL->MODS->value17 : NULL;
-        case 18: //modd FaceGen Model Flags
+        case 18: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value18 : NULL;
         case 19: //tnam TNAM ,, Struct
             return TNAM.IsLoaded() ? &TNAM->value19 : NULL;
@@ -221,15 +238,15 @@ bool CLMTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 11: //gnam Sun Glare Texture
             GNAM.Copy((STRING)FieldValue);
             break;
-        case 12: //modl Model Filename
+        case 12: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 13: //modb_p Unknown
+        case 13: //modb
             MODL.Load();
-            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 14: //modt_p Texture Files Hashes
+        case 14: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -247,7 +264,7 @@ bool CLMTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value17 = *(SINT32 *)FieldValue;
             break;
-        case 18: //modd FaceGen Model Flags
+        case 18: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value18 = *(UINT8 *)FieldValue;
@@ -317,15 +334,15 @@ void CLMTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 11: //gnam Sun Glare Texture
             GNAM.Unload();
             return;
-        case 12: //modl Model Filename
+        case 12: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 13: //modb_p Unknown
+        case 13: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 14: //modt_p Texture Files Hashes
+        case 14: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -341,7 +358,7 @@ void CLMTRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 18: //modd FaceGen Model Flags
+        case 18: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

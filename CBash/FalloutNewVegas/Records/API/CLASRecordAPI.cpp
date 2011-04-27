@@ -58,25 +58,31 @@ UINT32 CLASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
-        case 8: //desc Description
+        case 8: //description
             return STRING_FIELD;
         case 9: //iconPath
             return ISTRING_FIELD;
         case 10: //smallIconPath
             return ISTRING_FIELD;
-        case 11: //data DATA ,, Struct
-            return UNPARSED_FIELD;
-        case 12: //data DATA ,, Struct
-            return UINT32_FIELD;
-        case 13: //data DATA ,, Struct
-            return UINT32_FIELD;
-        case 14: //data DATA ,, Struct
+        case 11: //tagSkills1
+            return SINT32_FIELD;
+        case 12: //tagSkills2
+            return SINT32_FIELD;
+        case 13: //tagSkills3
+            return SINT32_FIELD;
+        case 14: //tagSkills4
+            return SINT32_FIELD;
+        case 15: //flags
+            return UINT32_FLAG_FIELD;
+        case 16: //services
+            return UINT32_FLAG_FIELD;
+        case 17: //trainSkill
             return SINT8_FIELD;
-        case 15: //data DATA ,, Struct
+        case 18: //trainLevel
             return UINT8_FIELD;
-        case 16: //data_p DATA ,, Struct
+        case 19: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -86,8 +92,20 @@ UINT32 CLASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 17: //attr Attributes
-            return UNPARSED_FIELD;
+        case 20: //strength
+            return UINT8_FIELD;
+        case 21: //perception
+            return UINT8_FIELD;
+        case 22: //endurance
+            return UINT8_FIELD;
+        case 23: //charisma
+            return UINT8_FIELD;
+        case 24: //intelligence
+            return UINT8_FIELD;
+        case 25: //agility
+            return UINT8_FIELD;
+        case 26: //luck
+            return UINT8_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -111,29 +129,47 @@ void * CLASRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
-            return FULLReq.value;
-        case 8: //desc Description
-            return DESCReq.value;
+        case 7: //full
+            return FULL.value;
+        case 8: //description
+            return DESC.value;
         case 9: //iconPath
             return ICON.value;
         case 10: //smallIconPath
             return MICO.value;
-        case 11: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD11;
-        case 12: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value12 : NULL;
-        case 13: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value13 : NULL;
-        case 14: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
-        case 15: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value15 : NULL;
-        case 16: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value16[0] : NULL;
+        case 11: //tagSkills1
+            return &DATA.value.tagSkills[0];
+        case 12: //tagSkills2
+            return &DATA.value.tagSkills[1];
+        case 13: //tagSkills3
+            return &DATA.value.tagSkills[2];
+        case 14: //tagSkills4
+            return &DATA.value.tagSkills[3];
+        case 15: //flags
+            return &DATA.value.flags;
+        case 16: //services
+            return &DATA.value.services;
+        case 17: //trainSkill
+            return &DATA.value.trainSkill;
+        case 18: //trainLevel
+            return &DATA.value.trainLevel;
+        case 19: //unused1
+            *FieldValues = &DATA.value.unused1[0];
             return NULL;
-        case 17: //attr Attributes
-            return UNPARSEDGET_FIELD17;
+        case 20: //strength
+            return &ATTR.value.strength;
+        case 21: //perception
+            return &ATTR.value.perception;
+        case 22: //endurance
+            return &ATTR.value.endurance;
+        case 23: //charisma
+            return &ATTR.value.charisma;
+        case 24: //intelligence
+            return &ATTR.value.intelligence;
+        case 25: //agility
+            return &ATTR.value.agility;
+        case 26: //luck
+            return &ATTR.value.luck;
         default:
             return NULL;
         }
@@ -166,11 +202,11 @@ bool CLASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
-            FULLReq.Copy((STRING)FieldValue);
+        case 7: //full
+            FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //desc Description
-            DESCReq.Copy((STRING)FieldValue);
+        case 8: //description
+            DESC.Copy((STRING)FieldValue);
             break;
         case 9: //iconPath
             ICON.Copy((STRING)FieldValue);
@@ -178,33 +214,57 @@ bool CLASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 10: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 11: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD11;
-        case 12: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value12 = *(UINT32 *)FieldValue;
+        case 11: //tagSkills1
+            DATA.value.tagSkills[0] = *(SINT32 *)FieldValue;
             break;
-        case 13: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value13 = *(UINT32 *)FieldValue;
+        case 12: //tagSkills2
+            DATA.value.tagSkills[1] = *(SINT32 *)FieldValue;
             break;
-        case 14: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value14 = *(SINT8 *)FieldValue;
+        case 13: //tagSkills3
+            DATA.value.tagSkills[2] = *(SINT32 *)FieldValue;
             break;
-        case 15: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value15 = *(UINT8 *)FieldValue;
+        case 14: //tagSkills4
+            DATA.value.tagSkills[3] = *(SINT32 *)FieldValue;
             break;
-        case 16: //data_p DATA ,, Struct
+        case 15: //flags
+            SetFlagMask(*(UINT32 *)FieldValue);
+            break;
+        case 16: //services
+            SetServicesFlagMask(*(UINT32 *)FieldValue);
+            break;
+        case 17: //trainSkill
+            DATA.value.trainSkill = *(SINT8 *)FieldValue;
+            break;
+        case 18: //trainLevel
+            DATA.value.trainLevel = *(UINT8 *)FieldValue;
+            break;
+        case 19: //unused1
             if(ArraySize != 2)
                 break;
-            DATA.Load();
-            DATA->value16[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value16[1] = ((UINT8 *)FieldValue)[1];
+            DATA.value.unused1[0] = ((UINT8 *)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 17: //attr Attributes
-            return UNPARSEDGET_FIELD17;
+        case 20: //strength
+            ATTR.value.strength = *(UINT8 *)FieldValue;
+            break;
+        case 21: //perception
+            ATTR.value.perception = *(UINT8 *)FieldValue;
+            break;
+        case 22: //endurance
+            ATTR.value.endurance = *(UINT8 *)FieldValue;
+            break;
+        case 23: //charisma
+            ATTR.value.charisma = *(UINT8 *)FieldValue;
+            break;
+        case 24: //intelligence
+            ATTR.value.intelligence = *(UINT8 *)FieldValue;
+            break;
+        case 25: //agility
+            ATTR.value.agility = *(UINT8 *)FieldValue;
+            break;
+        case 26: //luck
+            ATTR.value.luck = *(UINT8 *)FieldValue;
+            break;
         default:
             break;
         }
@@ -213,6 +273,9 @@ bool CLASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void CLASRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    CLASDATA defaultDATA;
+    CLASATTR defaultATTR;
+
     switch(FieldID)
         {
         case 1: //flags1
@@ -231,11 +294,11 @@ void CLASRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
-            FULLReq.Unload();
+        case 7: //full
+            FULL.Unload();
             return;
-        case 8: //desc Description
-            DESCReq.Unload();
+        case 8: //description
+            DESC.Unload();
             return;
         case 9: //iconPath
             ICON.Unload();
@@ -243,25 +306,55 @@ void CLASRecord::DeleteField(FIELD_IDENTIFIERS)
         case 10: //smallIconPath
             MICO.Unload();
             return;
-        case 11: //data DATA ,, Struct
-            return UNPARSEDDEL_FIELD11;
-        case 12: //data DATA ,, Struct
-            DATA.Unload();
+        case 11: //tagSkills1
+            DATA.value.tagSkills[0] = defaultDATA.tagSkills[0];
             return;
-        case 13: //data DATA ,, Struct
-            DATA.Unload();
+        case 12: //tagSkills2
+            DATA.value.tagSkills[1] = defaultDATA.tagSkills[1];
             return;
-        case 14: //data DATA ,, Struct
-            DATA.Unload();
+        case 13: //tagSkills3
+            DATA.value.tagSkills[2] = defaultDATA.tagSkills[2];
             return;
-        case 15: //data DATA ,, Struct
-            DATA.Unload();
+        case 14: //tagSkills4
+            DATA.value.tagSkills[3] = defaultDATA.tagSkills[3];
             return;
-        case 16: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 15: //flags
+            SetFlagMask(defaultDATA.flags);
             return;
-        case 17: //attr Attributes
-            return UNPARSEDDEL_FIELD17;
+        case 16: //services
+            SetServicesFlagMask(defaultDATA.services);
+            return;
+        case 17: //trainSkill
+            DATA.value.trainSkill = defaultDATA.trainSkill;
+            return;
+        case 18: //trainLevel
+            DATA.value.trainLevel = defaultDATA.trainLevel;
+            return;
+        case 19: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            return;
+        case 20: //strength
+            ATTR.value.strength = defaultATTR.strength;
+            return;
+        case 21: //perception
+            ATTR.value.perception = defaultATTR.perception;
+            return;
+        case 22: //endurance
+            ATTR.value.endurance = defaultATTR.endurance;
+            return;
+        case 23: //charisma
+            ATTR.value.charisma = defaultATTR.charisma;
+            return;
+        case 24: //intelligence
+            ATTR.value.intelligence = defaultATTR.intelligence;
+            return;
+        case 25: //agility
+            ATTR.value.agility = defaultATTR.agility;
+            return;
+        case 26: //luck
+            ATTR.value.luck = defaultATTR.luck;
+            return;
         default:
             return;
         }

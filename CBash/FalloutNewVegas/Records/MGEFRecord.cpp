@@ -95,10 +95,7 @@ bool MGEFRecord::IsHostile()
 void MGEFRecord::IsHostile(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHostile;
-    else
-        Dummy->flags &= ~fIsHostile;
+    Dummy->flags = value ? (Dummy->flags | fIsHostile) : (Dummy->flags & ~fIsHostile);
     }
 
 bool MGEFRecord::IsRecover()
@@ -110,10 +107,7 @@ bool MGEFRecord::IsRecover()
 void MGEFRecord::IsRecover(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRecover;
-    else
-        Dummy->flags &= ~fIsRecover;
+    Dummy->flags = value ? (Dummy->flags | fIsRecover) : (Dummy->flags & ~fIsRecover);
     }
 
 bool MGEFRecord::IsDetrimental()
@@ -125,10 +119,7 @@ bool MGEFRecord::IsDetrimental()
 void MGEFRecord::IsDetrimental(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDetrimental;
-    else
-        Dummy->flags &= ~fIsDetrimental;
+    Dummy->flags = value ? (Dummy->flags | fIsDetrimental) : (Dummy->flags & ~fIsDetrimental);
     }
 
 bool MGEFRecord::IsSelf()
@@ -140,10 +131,7 @@ bool MGEFRecord::IsSelf()
 void MGEFRecord::IsSelf(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSelf;
-    else
-        Dummy->flags &= ~fIsSelf;
+    Dummy->flags = value ? (Dummy->flags | fIsSelf) : (Dummy->flags & ~fIsSelf);
     }
 
 bool MGEFRecord::IsTouch()
@@ -155,10 +143,7 @@ bool MGEFRecord::IsTouch()
 void MGEFRecord::IsTouch(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTouch;
-    else
-        Dummy->flags &= ~fIsTouch;
+    Dummy->flags = value ? (Dummy->flags | fIsTouch) : (Dummy->flags & ~fIsTouch);
     }
 
 bool MGEFRecord::IsTarget()
@@ -170,10 +155,7 @@ bool MGEFRecord::IsTarget()
 void MGEFRecord::IsTarget(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsTarget;
-    else
-        Dummy->flags &= ~fIsTarget;
+    Dummy->flags = value ? (Dummy->flags | fIsTarget) : (Dummy->flags & ~fIsTarget);
     }
 
 bool MGEFRecord::IsNoDuration()
@@ -185,10 +167,7 @@ bool MGEFRecord::IsNoDuration()
 void MGEFRecord::IsNoDuration(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoDuration;
-    else
-        Dummy->flags &= ~fIsNoDuration;
+    Dummy->flags = value ? (Dummy->flags | fIsNoDuration) : (Dummy->flags & ~fIsNoDuration);
     }
 
 bool MGEFRecord::IsNoMagnitude()
@@ -200,10 +179,7 @@ bool MGEFRecord::IsNoMagnitude()
 void MGEFRecord::IsNoMagnitude(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoMagnitude;
-    else
-        Dummy->flags &= ~fIsNoMagnitude;
+    Dummy->flags = value ? (Dummy->flags | fIsNoMagnitude) : (Dummy->flags & ~fIsNoMagnitude);
     }
 
 bool MGEFRecord::IsNoArea()
@@ -215,10 +191,7 @@ bool MGEFRecord::IsNoArea()
 void MGEFRecord::IsNoArea(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoArea;
-    else
-        Dummy->flags &= ~fIsNoArea;
+    Dummy->flags = value ? (Dummy->flags | fIsNoArea) : (Dummy->flags & ~fIsNoArea);
     }
 
 bool MGEFRecord::IsFXPersist()
@@ -230,10 +203,7 @@ bool MGEFRecord::IsFXPersist()
 void MGEFRecord::IsFXPersist(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFXPersist;
-    else
-        Dummy->flags &= ~fIsFXPersist;
+    Dummy->flags = value ? (Dummy->flags | fIsFXPersist) : (Dummy->flags & ~fIsFXPersist);
     }
 
 bool MGEFRecord::IsGoryVisuals()
@@ -245,10 +215,7 @@ bool MGEFRecord::IsGoryVisuals()
 void MGEFRecord::IsGoryVisuals(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsGoryVisuals;
-    else
-        Dummy->flags &= ~fIsGoryVisuals;
+    Dummy->flags = value ? (Dummy->flags | fIsGoryVisuals) : (Dummy->flags & ~fIsGoryVisuals);
     }
 
 bool MGEFRecord::IsDisplayNameOnly()
@@ -260,10 +227,7 @@ bool MGEFRecord::IsDisplayNameOnly()
 void MGEFRecord::IsDisplayNameOnly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDisplayNameOnly;
-    else
-        Dummy->flags &= ~fIsDisplayNameOnly;
+    Dummy->flags = value ? (Dummy->flags | fIsDisplayNameOnly) : (Dummy->flags & ~fIsDisplayNameOnly);
     }
 
 bool MGEFRecord::IsRadioBroadcast()
@@ -275,10 +239,7 @@ bool MGEFRecord::IsRadioBroadcast()
 void MGEFRecord::IsRadioBroadcast(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRadioBroadcast;
-    else
-        Dummy->flags &= ~fIsRadioBroadcast;
+    Dummy->flags = value ? (Dummy->flags | fIsRadioBroadcast) : (Dummy->flags & ~fIsRadioBroadcast);
     }
 
 bool MGEFRecord::IsUseSkill()
@@ -290,10 +251,7 @@ bool MGEFRecord::IsUseSkill()
 void MGEFRecord::IsUseSkill(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseSkill;
-    else
-        Dummy->flags &= ~fIsUseSkill;
+    Dummy->flags = value ? (Dummy->flags | fIsUseSkill) : (Dummy->flags & ~fIsUseSkill);
     }
 
 bool MGEFRecord::IsUseAttr()
@@ -305,10 +263,7 @@ bool MGEFRecord::IsUseAttr()
 void MGEFRecord::IsUseAttr(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAttr;
-    else
-        Dummy->flags &= ~fIsUseAttr;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAttr) : (Dummy->flags & ~fIsUseAttr);
     }
 
 bool MGEFRecord::IsPainless()
@@ -320,10 +275,7 @@ bool MGEFRecord::IsPainless()
 void MGEFRecord::IsPainless(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPainless;
-    else
-        Dummy->flags &= ~fIsPainless;
+    Dummy->flags = value ? (Dummy->flags | fIsPainless) : (Dummy->flags & ~fIsPainless);
     }
 
 bool MGEFRecord::IsSprayType()
@@ -335,10 +287,7 @@ bool MGEFRecord::IsSprayType()
 void MGEFRecord::IsSprayType(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsSprayType;
-    else
-        Dummy->flags &= ~fIsSprayType;
+    Dummy->flags = value ? (Dummy->flags | fIsSprayType) : (Dummy->flags & ~fIsSprayType);
     }
 
 bool MGEFRecord::IsBoltType()
@@ -350,10 +299,7 @@ bool MGEFRecord::IsBoltType()
 void MGEFRecord::IsBoltType(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsBoltType;
-    else
-        Dummy->flags &= ~fIsBoltType;
+    Dummy->flags = value ? (Dummy->flags | fIsBoltType) : (Dummy->flags & ~fIsBoltType);
     }
 
 bool MGEFRecord::IsFogType()
@@ -365,10 +311,7 @@ bool MGEFRecord::IsFogType()
 void MGEFRecord::IsFogType(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFogType;
-    else
-        Dummy->flags &= ~fIsFogType;
+    Dummy->flags = value ? (Dummy->flags | fIsFogType) : (Dummy->flags & ~fIsFogType);
     }
 
 bool MGEFRecord::IsNoHitEffect()
@@ -380,10 +323,7 @@ bool MGEFRecord::IsNoHitEffect()
 void MGEFRecord::IsNoHitEffect(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoHitEffect;
-    else
-        Dummy->flags &= ~fIsNoHitEffect;
+    Dummy->flags = value ? (Dummy->flags | fIsNoHitEffect) : (Dummy->flags & ~fIsNoHitEffect);
     }
 
 bool MGEFRecord::IsPersistOnDeath()
@@ -395,10 +335,7 @@ bool MGEFRecord::IsPersistOnDeath()
 void MGEFRecord::IsPersistOnDeath(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPersistOnDeath;
-    else
-        Dummy->flags &= ~fIsPersistOnDeath;
+    Dummy->flags = value ? (Dummy->flags | fIsPersistOnDeath) : (Dummy->flags & ~fIsPersistOnDeath);
     }
 
 bool MGEFRecord::IsUnknown1()
@@ -410,10 +347,7 @@ bool MGEFRecord::IsUnknown1()
 void MGEFRecord::IsUnknown1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUnknown1;
-    else
-        Dummy->flags &= ~fIsUnknown1;
+    Dummy->flags = value ? (Dummy->flags | fIsUnknown1) : (Dummy->flags & ~fIsUnknown1);
     }
 
 bool MGEFRecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -437,10 +371,7 @@ bool MGEFRecord::IsValueModifier()
 void MGEFRecord::IsValueModifier(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eValueModifier;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eValueModifier : eDummyDefault;
     }
 
 bool MGEFRecord::IsScript()
@@ -452,10 +383,7 @@ bool MGEFRecord::IsScript()
 void MGEFRecord::IsScript(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eScript;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eScript : eDummyDefault;
     }
 
 bool MGEFRecord::IsDispel()
@@ -467,10 +395,7 @@ bool MGEFRecord::IsDispel()
 void MGEFRecord::IsDispel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDispel;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDispel : eDummyDefault;
     }
 
 bool MGEFRecord::IsCureDisease()
@@ -482,10 +407,7 @@ bool MGEFRecord::IsCureDisease()
 void MGEFRecord::IsCureDisease(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCureDisease;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCureDisease : eDummyDefault;
     }
 
 bool MGEFRecord::IsInvisibility()
@@ -497,10 +419,7 @@ bool MGEFRecord::IsInvisibility()
 void MGEFRecord::IsInvisibility(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eInvisibility;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eInvisibility : eDummyDefault;
     }
 
 bool MGEFRecord::IsChameleon()
@@ -512,10 +431,7 @@ bool MGEFRecord::IsChameleon()
 void MGEFRecord::IsChameleon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eChameleon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eChameleon : eDummyDefault;
     }
 
 bool MGEFRecord::IsLight()
@@ -527,10 +443,7 @@ bool MGEFRecord::IsLight()
 void MGEFRecord::IsLight(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLight;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLight : eDummyDefault;
     }
 
 bool MGEFRecord::IsLock()
@@ -542,10 +455,7 @@ bool MGEFRecord::IsLock()
 void MGEFRecord::IsLock(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLock;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLock : eDummyDefault;
     }
 
 bool MGEFRecord::IsOpen()
@@ -557,10 +467,7 @@ bool MGEFRecord::IsOpen()
 void MGEFRecord::IsOpen(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOpen;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOpen : eDummyDefault;
     }
 
 bool MGEFRecord::IsBoundItem()
@@ -572,10 +479,7 @@ bool MGEFRecord::IsBoundItem()
 void MGEFRecord::IsBoundItem(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBoundItem;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBoundItem : eDummyDefault;
     }
 
 bool MGEFRecord::IsSummonCreature()
@@ -587,10 +491,7 @@ bool MGEFRecord::IsSummonCreature()
 void MGEFRecord::IsSummonCreature(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSummonCreature;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSummonCreature : eDummyDefault;
     }
 
 bool MGEFRecord::IsParalysis()
@@ -602,10 +503,7 @@ bool MGEFRecord::IsParalysis()
 void MGEFRecord::IsParalysis(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eParalysis;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eParalysis : eDummyDefault;
     }
 
 bool MGEFRecord::IsCureParalysis()
@@ -617,10 +515,7 @@ bool MGEFRecord::IsCureParalysis()
 void MGEFRecord::IsCureParalysis(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCureParalysis;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCureParalysis : eDummyDefault;
     }
 
 bool MGEFRecord::IsCureAddiction()
@@ -632,10 +527,7 @@ bool MGEFRecord::IsCureAddiction()
 void MGEFRecord::IsCureAddiction(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCureAddiction;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCureAddiction : eDummyDefault;
     }
 
 bool MGEFRecord::IsCurePoison()
@@ -647,10 +539,7 @@ bool MGEFRecord::IsCurePoison()
 void MGEFRecord::IsCurePoison(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCurePoison;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCurePoison : eDummyDefault;
     }
 
 bool MGEFRecord::IsConcussion()
@@ -662,10 +551,7 @@ bool MGEFRecord::IsConcussion()
 void MGEFRecord::IsConcussion(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eConcussion;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eConcussion : eDummyDefault;
     }
 
 bool MGEFRecord::IsValueAndParts()
@@ -677,10 +563,7 @@ bool MGEFRecord::IsValueAndParts()
 void MGEFRecord::IsValueAndParts(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eValueAndParts;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eValueAndParts : eDummyDefault;
     }
 
 bool MGEFRecord::IsLimbCondition()
@@ -692,10 +575,7 @@ bool MGEFRecord::IsLimbCondition()
 void MGEFRecord::IsLimbCondition(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLimbCondition;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLimbCondition : eDummyDefault;
     }
 
 bool MGEFRecord::IsTurbo()
@@ -707,10 +587,7 @@ bool MGEFRecord::IsTurbo()
 void MGEFRecord::IsTurbo(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTurbo;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTurbo : eDummyDefault;
     }
 
 bool MGEFRecord::IsType(UINT32 Type, bool Exact)

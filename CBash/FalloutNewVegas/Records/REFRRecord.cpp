@@ -223,10 +223,7 @@ bool REFRRecord::IsNoAlarm()
 void REFRRecord::IsNoAlarm(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoAlarm;
-    else
-        Dummy->flags &= ~fIsNoAlarm;
+    Dummy->flags = value ? (Dummy->flags | fIsNoAlarm) : (Dummy->flags & ~fIsNoAlarm);
     }
 
 bool REFRRecord::Is0FlagMask(UINT8 Mask, bool Exact)
@@ -250,10 +247,7 @@ bool REFRRecord::IsVisible()
 void REFRRecord::IsVisible(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsVisible;
-    else
-        Dummy->flags &= ~fIsVisible;
+    Dummy->flags = value ? (Dummy->flags | fIsVisible) : (Dummy->flags & ~fIsVisible);
     }
 
 bool REFRRecord::IsCanTravelTo()
@@ -265,10 +259,7 @@ bool REFRRecord::IsCanTravelTo()
 void REFRRecord::IsCanTravelTo(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsCanTravelTo;
-    else
-        Dummy->flags &= ~fIsCanTravelTo;
+    Dummy->flags = value ? (Dummy->flags | fIsCanTravelTo) : (Dummy->flags & ~fIsCanTravelTo);
     }
 
 bool REFRRecord::Is1FlagMask(UINT8 Mask, bool Exact)
@@ -292,10 +283,7 @@ bool REFRRecord::IsUseDefault()
 void REFRRecord::IsUseDefault(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseDefault;
-    else
-        Dummy->flags &= ~fIsUseDefault;
+    Dummy->flags = value ? (Dummy->flags | fIsUseDefault) : (Dummy->flags & ~fIsUseDefault);
     }
 
 bool REFRRecord::IsActivate()
@@ -307,10 +295,7 @@ bool REFRRecord::IsActivate()
 void REFRRecord::IsActivate(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsActivate;
-    else
-        Dummy->flags &= ~fIsActivate;
+    Dummy->flags = value ? (Dummy->flags | fIsActivate) : (Dummy->flags & ~fIsActivate);
     }
 
 bool REFRRecord::IsOpen()
@@ -322,10 +307,7 @@ bool REFRRecord::IsOpen()
 void REFRRecord::IsOpen(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOpen;
-    else
-        Dummy->flags &= ~fIsOpen;
+    Dummy->flags = value ? (Dummy->flags | fIsOpen) : (Dummy->flags & ~fIsOpen);
     }
 
 bool REFRRecord::IsOpenByDefault()
@@ -337,10 +319,7 @@ bool REFRRecord::IsOpenByDefault()
 void REFRRecord::IsOpenByDefault(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOpenByDefault;
-    else
-        Dummy->flags &= ~fIsOpenByDefault;
+    Dummy->flags = value ? (Dummy->flags | fIsOpenByDefault) : (Dummy->flags & ~fIsOpenByDefault);
     }
 
 bool REFRRecord::Is3FlagMask(UINT8 Mask, bool Exact)
@@ -364,10 +343,7 @@ bool REFRRecord::IsNone()
 void REFRRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool REFRRecord::IsBox()
@@ -379,10 +355,7 @@ bool REFRRecord::IsBox()
 void REFRRecord::IsBox(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBox;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBox : eDummyDefault;
     }
 
 bool REFRRecord::IsSphere()
@@ -394,10 +367,7 @@ bool REFRRecord::IsSphere()
 void REFRRecord::IsSphere(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSphere;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSphere : eDummyDefault;
     }
 
 bool REFRRecord::IsPortalBox()
@@ -409,10 +379,7 @@ bool REFRRecord::IsPortalBox()
 void REFRRecord::IsPortalBox(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePortalBox;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePortalBox : eDummyDefault;
     }
 
 bool REFRRecord::Is0Type(UINT8 Type, bool Exact)
@@ -436,10 +403,7 @@ bool REFRRecord::IsUnidentified()
 void REFRRecord::IsUnidentified(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnidentified;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnidentified : eDummyDefault;
     }
 
 bool REFRRecord::IsStatic()
@@ -451,10 +415,7 @@ bool REFRRecord::IsStatic()
 void REFRRecord::IsStatic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStatic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStatic : eDummyDefault;
     }
 
 bool REFRRecord::IsAnimStatic()
@@ -466,10 +427,7 @@ bool REFRRecord::IsAnimStatic()
 void REFRRecord::IsAnimStatic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAnimStatic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAnimStatic : eDummyDefault;
     }
 
 bool REFRRecord::IsTransparent()
@@ -481,10 +439,7 @@ bool REFRRecord::IsTransparent()
 void REFRRecord::IsTransparent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTransparent;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTransparent : eDummyDefault;
     }
 
 bool REFRRecord::IsClutter()
@@ -496,10 +451,7 @@ bool REFRRecord::IsClutter()
 void REFRRecord::IsClutter(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eClutter;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eClutter : eDummyDefault;
     }
 
 bool REFRRecord::IsWeapon()
@@ -511,10 +463,7 @@ bool REFRRecord::IsWeapon()
 void REFRRecord::IsWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWeapon : eDummyDefault;
     }
 
 bool REFRRecord::IsProjectile()
@@ -526,10 +475,7 @@ bool REFRRecord::IsProjectile()
 void REFRRecord::IsProjectile(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eProjectile;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eProjectile : eDummyDefault;
     }
 
 bool REFRRecord::IsSpell()
@@ -541,10 +487,7 @@ bool REFRRecord::IsSpell()
 void REFRRecord::IsSpell(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSpell;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSpell : eDummyDefault;
     }
 
 bool REFRRecord::IsBiped()
@@ -556,10 +499,7 @@ bool REFRRecord::IsBiped()
 void REFRRecord::IsBiped(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBiped;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBiped : eDummyDefault;
     }
 
 bool REFRRecord::IsTrees()
@@ -571,10 +511,7 @@ bool REFRRecord::IsTrees()
 void REFRRecord::IsTrees(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTrees;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTrees : eDummyDefault;
     }
 
 bool REFRRecord::IsProps()
@@ -586,10 +523,7 @@ bool REFRRecord::IsProps()
 void REFRRecord::IsProps(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eProps;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eProps : eDummyDefault;
     }
 
 bool REFRRecord::IsWater()
@@ -601,10 +535,7 @@ bool REFRRecord::IsWater()
 void REFRRecord::IsWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWater;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWater : eDummyDefault;
     }
 
 bool REFRRecord::IsTrigger()
@@ -616,10 +547,7 @@ bool REFRRecord::IsTrigger()
 void REFRRecord::IsTrigger(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTrigger;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTrigger : eDummyDefault;
     }
 
 bool REFRRecord::IsTerrain()
@@ -631,10 +559,7 @@ bool REFRRecord::IsTerrain()
 void REFRRecord::IsTerrain(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTerrain;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTerrain : eDummyDefault;
     }
 
 bool REFRRecord::IsTrap()
@@ -646,10 +571,7 @@ bool REFRRecord::IsTrap()
 void REFRRecord::IsTrap(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTrap;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTrap : eDummyDefault;
     }
 
 bool REFRRecord::IsNonCollidable()
@@ -661,10 +583,7 @@ bool REFRRecord::IsNonCollidable()
 void REFRRecord::IsNonCollidable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNonCollidable;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNonCollidable : eDummyDefault;
     }
 
 bool REFRRecord::IsCloudTrap()
@@ -676,10 +595,7 @@ bool REFRRecord::IsCloudTrap()
 void REFRRecord::IsCloudTrap(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCloudTrap;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCloudTrap : eDummyDefault;
     }
 
 bool REFRRecord::IsGround()
@@ -691,10 +607,7 @@ bool REFRRecord::IsGround()
 void REFRRecord::IsGround(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGround;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGround : eDummyDefault;
     }
 
 bool REFRRecord::IsPortal()
@@ -706,10 +619,7 @@ bool REFRRecord::IsPortal()
 void REFRRecord::IsPortal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePortal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePortal : eDummyDefault;
     }
 
 bool REFRRecord::IsDebrisSmall()
@@ -721,10 +631,7 @@ bool REFRRecord::IsDebrisSmall()
 void REFRRecord::IsDebrisSmall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDebrisSmall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDebrisSmall : eDummyDefault;
     }
 
 bool REFRRecord::IsDebrisLarge()
@@ -736,10 +643,7 @@ bool REFRRecord::IsDebrisLarge()
 void REFRRecord::IsDebrisLarge(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDebrisLarge;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDebrisLarge : eDummyDefault;
     }
 
 bool REFRRecord::IsAcousticSpace()
@@ -751,10 +655,7 @@ bool REFRRecord::IsAcousticSpace()
 void REFRRecord::IsAcousticSpace(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAcousticSpace;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAcousticSpace : eDummyDefault;
     }
 
 bool REFRRecord::IsActorZone()
@@ -766,10 +667,7 @@ bool REFRRecord::IsActorZone()
 void REFRRecord::IsActorZone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eActorZone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eActorZone : eDummyDefault;
     }
 
 bool REFRRecord::IsProjectileZone()
@@ -781,10 +679,7 @@ bool REFRRecord::IsProjectileZone()
 void REFRRecord::IsProjectileZone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eProjectileZone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eProjectileZone : eDummyDefault;
     }
 
 bool REFRRecord::IsGasTrap()
@@ -796,10 +691,7 @@ bool REFRRecord::IsGasTrap()
 void REFRRecord::IsGasTrap(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGasTrap;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGasTrap : eDummyDefault;
     }
 
 bool REFRRecord::IsShellCasing()
@@ -811,10 +703,7 @@ bool REFRRecord::IsShellCasing()
 void REFRRecord::IsShellCasing(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eShellCasing;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eShellCasing : eDummyDefault;
     }
 
 bool REFRRecord::IsTransparentSmall()
@@ -826,10 +715,7 @@ bool REFRRecord::IsTransparentSmall()
 void REFRRecord::IsTransparentSmall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTransparentSmall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTransparentSmall : eDummyDefault;
     }
 
 bool REFRRecord::IsInvisibleWall()
@@ -841,10 +727,7 @@ bool REFRRecord::IsInvisibleWall()
 void REFRRecord::IsInvisibleWall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eInvisibleWall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eInvisibleWall : eDummyDefault;
     }
 
 bool REFRRecord::IsTransparentSmallAnim()
@@ -856,10 +739,7 @@ bool REFRRecord::IsTransparentSmallAnim()
 void REFRRecord::IsTransparentSmallAnim(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTransparentSmallAnim;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTransparentSmallAnim : eDummyDefault;
     }
 
 bool REFRRecord::IsDeadBip()
@@ -871,10 +751,7 @@ bool REFRRecord::IsDeadBip()
 void REFRRecord::IsDeadBip(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDeadBip;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDeadBip : eDummyDefault;
     }
 
 bool REFRRecord::IsCharController()
@@ -886,10 +763,7 @@ bool REFRRecord::IsCharController()
 void REFRRecord::IsCharController(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCharController;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCharController : eDummyDefault;
     }
 
 bool REFRRecord::IsAvoidBox()
@@ -901,10 +775,7 @@ bool REFRRecord::IsAvoidBox()
 void REFRRecord::IsAvoidBox(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAvoidBox;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAvoidBox : eDummyDefault;
     }
 
 bool REFRRecord::IsCollisionBox()
@@ -916,10 +787,7 @@ bool REFRRecord::IsCollisionBox()
 void REFRRecord::IsCollisionBox(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCollisionBox;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCollisionBox : eDummyDefault;
     }
 
 bool REFRRecord::IsCameraSphere()
@@ -931,10 +799,7 @@ bool REFRRecord::IsCameraSphere()
 void REFRRecord::IsCameraSphere(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCameraSphere;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCameraSphere : eDummyDefault;
     }
 
 bool REFRRecord::IsDoorDetection()
@@ -946,10 +811,7 @@ bool REFRRecord::IsDoorDetection()
 void REFRRecord::IsDoorDetection(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDoorDetection;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDoorDetection : eDummyDefault;
     }
 
 bool REFRRecord::IsCameraPick()
@@ -961,10 +823,7 @@ bool REFRRecord::IsCameraPick()
 void REFRRecord::IsCameraPick(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCameraPick;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCameraPick : eDummyDefault;
     }
 
 bool REFRRecord::IsItemPick()
@@ -976,10 +835,7 @@ bool REFRRecord::IsItemPick()
 void REFRRecord::IsItemPick(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eItemPick;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eItemPick : eDummyDefault;
     }
 
 bool REFRRecord::IsLineOfSight()
@@ -991,10 +847,7 @@ bool REFRRecord::IsLineOfSight()
 void REFRRecord::IsLineOfSight(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLineOfSight;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLineOfSight : eDummyDefault;
     }
 
 bool REFRRecord::IsPathPick()
@@ -1006,10 +859,7 @@ bool REFRRecord::IsPathPick()
 void REFRRecord::IsPathPick(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePathPick;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePathPick : eDummyDefault;
     }
 
 bool REFRRecord::IsCustomPick1()
@@ -1021,10 +871,7 @@ bool REFRRecord::IsCustomPick1()
 void REFRRecord::IsCustomPick1(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCustomPick1;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCustomPick1 : eDummyDefault;
     }
 
 bool REFRRecord::IsCustomPick2()
@@ -1036,10 +883,7 @@ bool REFRRecord::IsCustomPick2()
 void REFRRecord::IsCustomPick2(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCustomPick2;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCustomPick2 : eDummyDefault;
     }
 
 bool REFRRecord::IsSpellExplosion()
@@ -1051,10 +895,7 @@ bool REFRRecord::IsSpellExplosion()
 void REFRRecord::IsSpellExplosion(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSpellExplosion;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSpellExplosion : eDummyDefault;
     }
 
 bool REFRRecord::IsDroppingPick()
@@ -1066,10 +907,7 @@ bool REFRRecord::IsDroppingPick()
 void REFRRecord::IsDroppingPick(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDroppingPick;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDroppingPick : eDummyDefault;
     }
 
 bool REFRRecord::Is1Type(UINT8 Type, bool Exact)
@@ -1093,10 +931,7 @@ bool REFRRecord::IsMarkerNone()
 void REFRRecord::IsMarkerNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMarkerNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMarkerNone : eDummyDefault;
     }
 
 bool REFRRecord::IsCity()
@@ -1108,10 +943,7 @@ bool REFRRecord::IsCity()
 void REFRRecord::IsCity(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCity;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCity : eDummyDefault;
     }
 
 bool REFRRecord::IsSettlement()
@@ -1123,10 +955,7 @@ bool REFRRecord::IsSettlement()
 void REFRRecord::IsSettlement(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSettlement;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSettlement : eDummyDefault;
     }
 
 bool REFRRecord::IsEncampment()
@@ -1138,10 +967,7 @@ bool REFRRecord::IsEncampment()
 void REFRRecord::IsEncampment(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEncampment;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEncampment : eDummyDefault;
     }
 
 bool REFRRecord::IsNaturalLandmark()
@@ -1153,10 +979,7 @@ bool REFRRecord::IsNaturalLandmark()
 void REFRRecord::IsNaturalLandmark(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNaturalLandmark;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNaturalLandmark : eDummyDefault;
     }
 
 bool REFRRecord::IsCave()
@@ -1168,10 +991,7 @@ bool REFRRecord::IsCave()
 void REFRRecord::IsCave(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCave;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCave : eDummyDefault;
     }
 
 bool REFRRecord::IsFactory()
@@ -1183,10 +1003,7 @@ bool REFRRecord::IsFactory()
 void REFRRecord::IsFactory(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFactory;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFactory : eDummyDefault;
     }
 
 bool REFRRecord::IsMonument()
@@ -1198,10 +1015,7 @@ bool REFRRecord::IsMonument()
 void REFRRecord::IsMonument(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMonument;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMonument : eDummyDefault;
     }
 
 bool REFRRecord::IsMilitary()
@@ -1213,10 +1027,7 @@ bool REFRRecord::IsMilitary()
 void REFRRecord::IsMilitary(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMilitary;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMilitary : eDummyDefault;
     }
 
 bool REFRRecord::IsOffice()
@@ -1228,10 +1039,7 @@ bool REFRRecord::IsOffice()
 void REFRRecord::IsOffice(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOffice;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOffice : eDummyDefault;
     }
 
 bool REFRRecord::IsTownRuins()
@@ -1243,10 +1051,7 @@ bool REFRRecord::IsTownRuins()
 void REFRRecord::IsTownRuins(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTownRuins;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTownRuins : eDummyDefault;
     }
 
 bool REFRRecord::IsUrbanRuins()
@@ -1258,10 +1063,7 @@ bool REFRRecord::IsUrbanRuins()
 void REFRRecord::IsUrbanRuins(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUrbanRuins;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUrbanRuins : eDummyDefault;
     }
 
 bool REFRRecord::IsSewerRuins()
@@ -1273,10 +1075,7 @@ bool REFRRecord::IsSewerRuins()
 void REFRRecord::IsSewerRuins(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSewerRuins;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSewerRuins : eDummyDefault;
     }
 
 bool REFRRecord::IsMetro()
@@ -1288,10 +1087,7 @@ bool REFRRecord::IsMetro()
 void REFRRecord::IsMetro(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMetro;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMetro : eDummyDefault;
     }
 
 bool REFRRecord::IsVault()
@@ -1303,10 +1099,7 @@ bool REFRRecord::IsVault()
 void REFRRecord::IsVault(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVault;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVault : eDummyDefault;
     }
 
 bool REFRRecord::Is2Type(UINT8 Type, bool Exact)
@@ -1330,10 +1123,7 @@ bool REFRRecord::IsRadius()
 void REFRRecord::IsRadius(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRadius;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRadius : eDummyDefault;
     }
 
 bool REFRRecord::IsEverywhere()
@@ -1345,10 +1135,7 @@ bool REFRRecord::IsEverywhere()
 void REFRRecord::IsEverywhere(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEverywhere;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEverywhere : eDummyDefault;
     }
 
 bool REFRRecord::IsWorldAndLinkedInteriors()
@@ -1360,10 +1147,7 @@ bool REFRRecord::IsWorldAndLinkedInteriors()
 void REFRRecord::IsWorldAndLinkedInteriors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWorldAndLinkedInteriors;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWorldAndLinkedInteriors : eDummyDefault;
     }
 
 bool REFRRecord::IsLinkedInteriors()
@@ -1375,10 +1159,7 @@ bool REFRRecord::IsLinkedInteriors()
 void REFRRecord::IsLinkedInteriors(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLinkedInteriors;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLinkedInteriors : eDummyDefault;
     }
 
 bool REFRRecord::IsCurrentCellOnly()
@@ -1390,10 +1171,7 @@ bool REFRRecord::IsCurrentCellOnly()
 void REFRRecord::IsCurrentCellOnly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCurrentCellOnly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCurrentCellOnly : eDummyDefault;
     }
 
 bool REFRRecord::Is3Type(UINT8 Type, bool Exact)
@@ -1417,10 +1195,7 @@ bool REFRRecord::IsReflection()
 void REFRRecord::IsReflection(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eReflection;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eReflection : eDummyDefault;
     }
 
 bool REFRRecord::IsRefraction()
@@ -1432,10 +1207,7 @@ bool REFRRecord::IsRefraction()
 void REFRRecord::IsRefraction(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRefraction;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRefraction : eDummyDefault;
     }
 
 bool REFRRecord::Is4Type(UINT8 Type, bool Exact)
@@ -1459,10 +1231,7 @@ bool REFRRecord::IsOppositeParent()
 void REFRRecord::IsOppositeParent(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsOppositeParent;
-    else
-        Dummy->flags &= ~fIsOppositeParent;
+    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
     }
 
 bool REFRRecord::IsPopIn()
@@ -1474,10 +1243,7 @@ bool REFRRecord::IsPopIn()
 void REFRRecord::IsPopIn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPopIn;
-    else
-        Dummy->flags &= ~fIsPopIn;
+    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
     }
 
 bool REFRRecord::IsFlagMask(UINT8 Mask, bool Exact)

@@ -238,22 +238,22 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgCLAS:
             case 'SALC':
-                //ReadHandler.read(&CLAS.stamp, 4);
-                //ReadHandler.read(&CLAS.unknown, 4);
-                //CLAS.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&CLAS.stamp, 4);
+                ReadHandler.read(&CLAS.unknown, 4);
+                CLAS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             case eIgFACT:
             case 'TCAF':
-                //ReadHandler.read(&FACT.stamp, 4);
-                //ReadHandler.read(&FACT.unknown, 4);
-                //FACT.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&FACT.stamp, 4);
+                ReadHandler.read(&FACT.unknown, 4);
+                FACT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             case eIgHDPT:
             case 'TPDH':
-                //ReadHandler.read(&HDPT.stamp, 4);
-                //ReadHandler.read(&HDPT.unknown, 4);
-                //HDPT.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&HDPT.stamp, 4);
+                ReadHandler.read(&HDPT.unknown, 4);
+                HDPT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             case eIgHAIR:
             case 'RIAH':
                 //ReadHandler.read(&HAIR.stamp, 4);
@@ -857,11 +857,11 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'BOLG':
             return (UINT32)GLOB.Records.size();
         case 'SALC':
-            //return (UINT32)CLAS.Records.size();
+            return (UINT32)CLAS.Records.size();
         case 'TCAF':
-            //return (UINT32)FACT.Records.size();
+            return (UINT32)FACT.Records.size();
         case 'TPDH':
-            //return (UINT32)HDPT.Records.size();
+            return (UINT32)HDPT.Records.size();
         case 'RIAH':
             //return (UINT32)HAIR.Records.size();
         case 'SEYE':
@@ -1098,17 +1098,17 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = GLOB.Records.back();
             break;
         case 'SALC':
-            //CLAS.Records.push_back(new FNV::CLASRecord((FNV::CLASRecord *)SourceRecord));
-            //newRecord = CLAS.Records.back();
-            //break;
+            CLAS.Records.push_back(new FNV::CLASRecord((FNV::CLASRecord *)SourceRecord));
+            newRecord = CLAS.Records.back();
+            break;
         case 'TCAF':
-            //FACT.Records.push_back(new FNV::FACTRecord((FNV::FACTRecord *)SourceRecord));
-            //newRecord = FACT.Records.back();
-            //break;
+            FACT.Records.push_back(new FNV::FACTRecord((FNV::FACTRecord *)SourceRecord));
+            newRecord = FACT.Records.back();
+            break;
         case 'TPDH':
-            //HDPT.Records.push_back(new FNV::HDPTRecord((FNV::HDPTRecord *)SourceRecord));
-            //newRecord = HDPT.Records.back();
-            //break;
+            HDPT.Records.push_back(new FNV::HDPTRecord((FNV::HDPTRecord *)SourceRecord));
+            newRecord = HDPT.Records.back();
+            break;
         case 'RIAH':
             //HAIR.Records.push_back(new FNV::HAIRRecord((FNV::HAIRRecord *)SourceRecord));
             //newRecord = HAIR.Records.back();
@@ -1517,10 +1517,10 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(GMST.VisitRecords(NULL, checker, false)) continue;
         if(TXST.VisitRecords(NULL, checker, false)) continue;
         if(MICN.VisitRecords(NULL, checker, false)) continue;
-        //if(GLOB.VisitRecords(NULL, checker, false)) continue;
-        //if(CLAS.VisitRecords(NULL, checker, false)) continue;
-        //if(FACT.VisitRecords(NULL, checker, false)) continue;
-        //if(HDPT.VisitRecords(NULL, checker, false)) continue;
+        if(GLOB.VisitRecords(NULL, checker, false)) continue;
+        if(CLAS.VisitRecords(NULL, checker, false)) continue;
+        if(FACT.VisitRecords(NULL, checker, false)) continue;
+        if(HDPT.VisitRecords(NULL, checker, false)) continue;
         //if(HAIR.VisitRecords(NULL, checker, false)) continue;
         //if(EYES.VisitRecords(NULL, checker, false)) continue;
         //if(RACE.VisitRecords(NULL, checker, false)) continue;
@@ -1654,9 +1654,9 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += TXST.WriteGRUP('TSXT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += MICN.WriteGRUP('NCIM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += GLOB.WriteGRUP('BOLG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += HDPT.WriteGRUP('TPDH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HDPT.WriteGRUP('TPDH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += RACE.WriteGRUP('ECAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1774,10 +1774,10 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     GMST.VisitRecords(NULL, op, true);
     TXST.VisitRecords(NULL, op, true);
     MICN.VisitRecords(NULL, op, true);
-    //GLOB.VisitRecords(NULL, op, true);
-    //CLAS.VisitRecords(NULL, op, true);
-    //FACT.VisitRecords(NULL, op, true);
-    //HDPT.VisitRecords(NULL, op, true);
+    GLOB.VisitRecords(NULL, op, true);
+    CLAS.VisitRecords(NULL, op, true);
+    FACT.VisitRecords(NULL, op, true);
+    HDPT.VisitRecords(NULL, op, true);
     //HAIR.VisitRecords(NULL, op, true);
     //EYES.VisitRecords(NULL, op, true);
     //RACE.VisitRecords(NULL, op, true);
@@ -1904,14 +1904,14 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             GLOB.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'SALC':
-            //CLAS.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            CLAS.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TCAF':
-            //FACT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            FACT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TPDH':
-            //HDPT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            HDPT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'RIAH':
             //HAIR.VisitRecords(RecordType, op, DeepVisit);
             //break;

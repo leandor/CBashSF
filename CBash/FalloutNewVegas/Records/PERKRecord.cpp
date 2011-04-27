@@ -33,10 +33,7 @@ bool PERKRecord::PERKEffect::IsRunImmediately()
 void PERKRecord::PERKEffect::IsRunImmediately(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRunImmediately;
-    else
-        Dummy->flags &= ~fIsRunImmediately;
+    Dummy->flags = value ? (Dummy->flags | fIsRunImmediately) : (Dummy->flags & ~fIsRunImmediately);
     }
 
 bool PERKRecord::PERKEffect::IsFlagMask(UINT16 Mask, bool Exact)
@@ -58,10 +55,7 @@ bool PERKRecord::PERKEffect::IsScriptEnabled()
 
 void PERKRecord::PERKEffect::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool PERKRecord::PERKEffect::IsScriptFlagMask(UINT16 Mask, bool Exact)
@@ -169,10 +163,7 @@ bool PERKRecord::IsNotTrait()
 void PERKRecord::IsNotTrait(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNotTrait;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNotTrait : eDummyDefault;
     }
 
 bool PERKRecord::IsTrait()
@@ -184,10 +175,7 @@ bool PERKRecord::IsTrait()
 void PERKRecord::IsTrait(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eTrait;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eTrait : eDummyDefault;
     }
 
 bool PERKRecord::IsTraitType(UINT8 Type, bool Exact)
@@ -211,10 +199,7 @@ bool PERKRecord::IsNotPlayable()
 void PERKRecord::IsNotPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNotPlayable;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNotPlayable : eDummyDefault;
     }
 
 bool PERKRecord::IsPlayable()
@@ -226,10 +211,7 @@ bool PERKRecord::IsPlayable()
 void PERKRecord::IsPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePlayable;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePlayable : eDummyDefault;
     }
 
 bool PERKRecord::IsPlayableType(UINT8 Type, bool Exact)
@@ -253,10 +235,7 @@ bool PERKRecord::IsNotHidden()
 void PERKRecord::IsNotHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNotHidden;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNotHidden : eDummyDefault;
     }
 
 bool PERKRecord::IsHidden()
@@ -268,10 +247,7 @@ bool PERKRecord::IsHidden()
 void PERKRecord::IsHidden(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHidden;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHidden : eDummyDefault;
     }
 
 bool PERKRecord::IsHiddenType(UINT8 Type, bool Exact)
@@ -295,10 +271,7 @@ bool PERKRecord::IsQuestStage()
 void PERKRecord::IsQuestStage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eQuestStage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eQuestStage : eDummyDefault;
     }
 
 bool PERKRecord::IsAbility()
@@ -310,10 +283,7 @@ bool PERKRecord::IsAbility()
 void PERKRecord::IsAbility(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAbility;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAbility : eDummyDefault;
     }
 
 bool PERKRecord::IsEntryPoint()
@@ -325,10 +295,7 @@ bool PERKRecord::IsEntryPoint()
 void PERKRecord::IsEntryPoint(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eEntryPoint;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eEntryPoint : eDummyDefault;
     }
 
 bool PERKRecord::IsType(UINT8 Type, bool Exact)

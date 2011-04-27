@@ -30,8 +30,9 @@ class HDPTRecord : public FNVRecord //Head Part
     private:
         enum flagsFlags
             {
-            fIsPlayable = 0x00000001
+            fIsPlayable = 0x01
             };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name

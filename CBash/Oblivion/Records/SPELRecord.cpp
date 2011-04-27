@@ -193,10 +193,7 @@ bool SPELRecord::IsManualCost()
 
 void SPELRecord::IsManualCost(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsManualCost;
-    else
-        SPIT.value.flags &= ~fIsManualCost;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsManualCost) : (SPIT.value.flags & ~fIsManualCost);
     }
 
 bool SPELRecord::IsStartSpell()
@@ -206,10 +203,7 @@ bool SPELRecord::IsStartSpell()
 
 void SPELRecord::IsStartSpell(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsStartSpell;
-    else
-        SPIT.value.flags &= ~fIsStartSpell;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsStartSpell) : (SPIT.value.flags & ~fIsStartSpell);
     }
 
 bool SPELRecord::IsSilenceImmune()
@@ -219,10 +213,7 @@ bool SPELRecord::IsSilenceImmune()
 
 void SPELRecord::IsSilenceImmune(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsSilenceImmune;
-    else
-        SPIT.value.flags &= ~fIsSilenceImmune;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsSilenceImmune) : (SPIT.value.flags & ~fIsSilenceImmune);
     }
 
 bool SPELRecord::IsAreaEffectIgnoresLOS()
@@ -232,10 +223,7 @@ bool SPELRecord::IsAreaEffectIgnoresLOS()
 
 void SPELRecord::IsAreaEffectIgnoresLOS(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsAreaEffectIgnoresLOS;
-    else
-        SPIT.value.flags &= ~fIsAreaEffectIgnoresLOS;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsAreaEffectIgnoresLOS) : (SPIT.value.flags & ~fIsAreaEffectIgnoresLOS);
     }
 
 bool SPELRecord::IsAEIgnoresLOS()
@@ -245,10 +233,7 @@ bool SPELRecord::IsAEIgnoresLOS()
 
 void SPELRecord::IsAEIgnoresLOS(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsAreaEffectIgnoresLOS;
-    else
-        SPIT.value.flags &= ~fIsAreaEffectIgnoresLOS;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsAreaEffectIgnoresLOS) : (SPIT.value.flags & ~fIsAreaEffectIgnoresLOS);
     }
 
 bool SPELRecord::IsScriptAlwaysApplies()
@@ -258,10 +243,7 @@ bool SPELRecord::IsScriptAlwaysApplies()
 
 void SPELRecord::IsScriptAlwaysApplies(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsScriptAlwaysApplies;
-    else
-        SPIT.value.flags &= ~fIsScriptAlwaysApplies;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsScriptAlwaysApplies) : (SPIT.value.flags & ~fIsScriptAlwaysApplies);
     }
 
 bool SPELRecord::IsDisallowAbsorbReflect()
@@ -271,10 +253,7 @@ bool SPELRecord::IsDisallowAbsorbReflect()
 
 void SPELRecord::IsDisallowAbsorbReflect(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsDisallowAbsorbReflect;
-    else
-        SPIT.value.flags &= ~fIsDisallowAbsorbReflect;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsDisallowAbsorbReflect) : (SPIT.value.flags & ~fIsDisallowAbsorbReflect);
     }
 
 bool SPELRecord::IsDisallowAbsorb()
@@ -284,10 +263,7 @@ bool SPELRecord::IsDisallowAbsorb()
 
 void SPELRecord::IsDisallowAbsorb(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsDisallowAbsorbReflect;
-    else
-        SPIT.value.flags &= ~fIsDisallowAbsorbReflect;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsDisallowAbsorbReflect) : (SPIT.value.flags & ~fIsDisallowAbsorbReflect);
     }
 
 bool SPELRecord::IsDisallowReflect()
@@ -297,10 +273,7 @@ bool SPELRecord::IsDisallowReflect()
 
 void SPELRecord::IsDisallowReflect(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsDisallowAbsorbReflect;
-    else
-        SPIT.value.flags &= ~fIsDisallowAbsorbReflect;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsDisallowAbsorbReflect) : (SPIT.value.flags & ~fIsDisallowAbsorbReflect);
     }
 
 bool SPELRecord::IsTouchExplodesWOTarget()
@@ -310,10 +283,7 @@ bool SPELRecord::IsTouchExplodesWOTarget()
 
 void SPELRecord::IsTouchExplodesWOTarget(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsTouchExplodesWOTarget;
-    else
-        SPIT.value.flags &= ~fIsTouchExplodesWOTarget;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsTouchExplodesWOTarget) : (SPIT.value.flags & ~fIsTouchExplodesWOTarget);
     }
 
 bool SPELRecord::IsTouchExplodes()
@@ -323,10 +293,7 @@ bool SPELRecord::IsTouchExplodes()
 
 void SPELRecord::IsTouchExplodes(bool value)
     {
-    if(value)
-        SPIT.value.flags |= fIsTouchExplodesWOTarget;
-    else
-        SPIT.value.flags &= ~fIsTouchExplodesWOTarget;
+    SPIT.value.flags = value ? (SPIT.value.flags | fIsTouchExplodesWOTarget) : (SPIT.value.flags & ~fIsTouchExplodesWOTarget);
     }
 
 bool SPELRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -743,7 +710,7 @@ SINT32 SPELRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
         }
     if(Effects.size() && OBME.IsLoaded())
-        SaveHandler.writeSubRecord('XXFE', NULL, 0);
+        SaveHandler.writeSubRecordHeader('XXFE', 0);
     if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
         SaveHandler.writeSubRecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
     return -1;

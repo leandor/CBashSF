@@ -132,10 +132,7 @@ bool RACERecord::IsPlayable()
 void RACERecord::IsPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPlayable;
-    else
-        Dummy->flags &= ~fIsPlayable;
+    Dummy->flags = value ? (Dummy->flags | fIsPlayable) : (Dummy->flags & ~fIsPlayable);
     }
 
 bool RACERecord::IsChild()
@@ -147,10 +144,7 @@ bool RACERecord::IsChild()
 void RACERecord::IsChild(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsChild;
-    else
-        Dummy->flags &= ~fIsChild;
+    Dummy->flags = value ? (Dummy->flags | fIsChild) : (Dummy->flags & ~fIsChild);
     }
 
 bool RACERecord::IsFlagMask(UINT32 Mask, bool Exact)

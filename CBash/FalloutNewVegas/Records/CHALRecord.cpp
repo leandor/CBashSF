@@ -89,10 +89,7 @@ bool CHALRecord::IsStartDisabled()
 void CHALRecord::IsStartDisabled(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsStartDisabled;
-    else
-        Dummy->flags &= ~fIsStartDisabled;
+    Dummy->flags = value ? (Dummy->flags | fIsStartDisabled) : (Dummy->flags & ~fIsStartDisabled);
     }
 
 bool CHALRecord::IsRecurring()
@@ -104,10 +101,7 @@ bool CHALRecord::IsRecurring()
 void CHALRecord::IsRecurring(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRecurring;
-    else
-        Dummy->flags &= ~fIsRecurring;
+    Dummy->flags = value ? (Dummy->flags | fIsRecurring) : (Dummy->flags & ~fIsRecurring);
     }
 
 bool CHALRecord::IsShowZeroProgress()
@@ -119,10 +113,7 @@ bool CHALRecord::IsShowZeroProgress()
 void CHALRecord::IsShowZeroProgress(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsShowZeroProgress;
-    else
-        Dummy->flags &= ~fIsShowZeroProgress;
+    Dummy->flags = value ? (Dummy->flags | fIsShowZeroProgress) : (Dummy->flags & ~fIsShowZeroProgress);
     }
 
 bool CHALRecord::Is0FlagMask(UINT8 Mask, bool Exact)
@@ -146,10 +137,7 @@ bool CHALRecord::IsKillFromList()
 void CHALRecord::IsKillFromList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eKillFromList;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eKillFromList : eDummyDefault;
     }
 
 bool CHALRecord::IsKillFormID()
@@ -161,10 +149,7 @@ bool CHALRecord::IsKillFormID()
 void CHALRecord::IsKillFormID(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eKillFormID;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eKillFormID : eDummyDefault;
     }
 
 bool CHALRecord::IsKillInCategory()
@@ -176,10 +161,7 @@ bool CHALRecord::IsKillInCategory()
 void CHALRecord::IsKillInCategory(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eKillInCategory;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eKillInCategory : eDummyDefault;
     }
 
 bool CHALRecord::IsHitEnemy()
@@ -191,10 +173,7 @@ bool CHALRecord::IsHitEnemy()
 void CHALRecord::IsHitEnemy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHitEnemy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHitEnemy : eDummyDefault;
     }
 
 bool CHALRecord::IsDiscoverMapMarker()
@@ -206,10 +185,7 @@ bool CHALRecord::IsDiscoverMapMarker()
 void CHALRecord::IsDiscoverMapMarker(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDiscoverMapMarker;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDiscoverMapMarker : eDummyDefault;
     }
 
 bool CHALRecord::IsUseItem()
@@ -221,10 +197,7 @@ bool CHALRecord::IsUseItem()
 void CHALRecord::IsUseItem(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUseItem;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUseItem : eDummyDefault;
     }
 
 bool CHALRecord::IsGetItem()
@@ -236,10 +209,7 @@ bool CHALRecord::IsGetItem()
 void CHALRecord::IsGetItem(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGetItem;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGetItem : eDummyDefault;
     }
 
 bool CHALRecord::IsUseSkill()
@@ -251,10 +221,7 @@ bool CHALRecord::IsUseSkill()
 void CHALRecord::IsUseSkill(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUseSkill;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUseSkill : eDummyDefault;
     }
 
 bool CHALRecord::IsDoDamage()
@@ -266,10 +233,7 @@ bool CHALRecord::IsDoDamage()
 void CHALRecord::IsDoDamage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDoDamage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDoDamage : eDummyDefault;
     }
 
 bool CHALRecord::IsUseItemFromList()
@@ -281,10 +245,7 @@ bool CHALRecord::IsUseItemFromList()
 void CHALRecord::IsUseItemFromList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUseItemFromList;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUseItemFromList : eDummyDefault;
     }
 
 bool CHALRecord::IsGetItemFromList()
@@ -296,10 +257,7 @@ bool CHALRecord::IsGetItemFromList()
 void CHALRecord::IsGetItemFromList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGetItemFromList;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGetItemFromList : eDummyDefault;
     }
 
 bool CHALRecord::IsMiscStat()
@@ -311,10 +269,7 @@ bool CHALRecord::IsMiscStat()
 void CHALRecord::IsMiscStat(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMiscStat;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMiscStat : eDummyDefault;
     }
 
 bool CHALRecord::Is0Type(UINT8 Type, bool Exact)

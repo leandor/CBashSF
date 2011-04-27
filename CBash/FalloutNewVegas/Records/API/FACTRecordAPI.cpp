@@ -58,19 +58,39 @@ UINT32 FACTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
-        case 8: //xnam Relation
-            return FORMID_FIELD;
-        case 9: //xnam Relation
-            return SINT32_FIELD;
-        case 10: //xnam Relation
-            return UINT32_FIELD;
-        case 11: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 12: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 13: //data_p DATA ,, Struct
+        case 8: //relations
+            if(ListFieldID == 0) //relations
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)XNAM.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= XNAM.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    return FORMID_FIELD;
+                case 2: //mod
+                    return SINT32_FIELD;
+                case 3: //groupReactionType
+                    return UINT32_TYPE_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 9: //flags
+            return UINT16_FLAG_FIELD;
+        case 10: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -80,17 +100,39 @@ UINT32 FACTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //cnam Unused
+        case 11: //crimeGoldMultiplier
             return FLOAT32_FIELD;
-        case 15: //rnam Rank#
-            return SINT32_FIELD;
-        case 16: //mnam Male
-            return ISTRING_FIELD;
-        case 17: //fnam Female
-            return ISTRING_FIELD;
-        case 18: //inam Insignia (Unused)
-            return ISTRING_FIELD;
-        case 19: //wmi1 Reputation
+        case 12: //ranks
+            if(ListFieldID == 0) //ranks
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)RNAM.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= RNAM.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //rank
+                    return SINT32_FIELD;
+                case 2: //male
+                    return STRING_FIELD;
+                case 3: //female
+                    return STRING_FIELD;
+                case 4: //insigniaPath
+                    return ISTRING_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 13: //reputation
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -115,33 +157,49 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
+        case 7: //full
             return FULL.value;
-        case 8: //xnam Relation
-            return XNAMs.IsLoaded() ? &XNAMs->value8 : NULL;
-        case 9: //xnam Relation
-            return XNAMs.IsLoaded() ? &XNAMs->value9 : NULL;
-        case 10: //xnam Relation
-            return XNAMs.IsLoaded() ? &XNAMs->value10 : NULL;
-        case 11: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value11 : NULL;
-        case 12: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value12 : NULL;
-        case 13: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value13[0] : NULL;
+        case 8: //relations
+            if(ListIndex >= XNAM.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    return &XNAM[ListIndex]->value.faction;
+                case 2: //mod
+                    return &XNAM[ListIndex]->value.mod;
+                case 3: //groupReactionType
+                    return &XNAM[ListIndex]->value.groupReactionType;
+                default:
+                    return NULL;
+                }
+        case 9: //flags
+            return &DATA.value.flags;
+        case 10: //unused1
+            *FieldValues = &DATA.value.unused1[0];
             return NULL;
-        case 14: //cnam Unused
-            return CNAM.IsLoaded() ? &CNAM->value14 : NULL;
-        case 15: //rnam Rank#
-            return RNAM.IsLoaded() ? &RNAM->RNAM->value15 : NULL;
-        case 16: //mnam Male
-            return RNAM.IsLoaded() ? RNAM->MNAM.value : NULL;
-        case 17: //fnam Female
-            return RNAM.IsLoaded() ? RNAM->FNAM.value : NULL;
-        case 18: //inam Insignia (Unused)
-            return RNAM.IsLoaded() ? RNAM->INAM.value : NULL;
-        case 19: //wmi1 Reputation
-            return WMI1.IsLoaded() ? &WMI1->value19 : NULL;
+        case 11: ///crimeGoldMultiplier
+            return CNAM.value;
+        case 12: //ranks
+            if(ListIndex >= RNAM.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //rank
+                    return &RNAM[ListIndex]->RNAM.value;
+                case 2: //male
+                    return RNAM[ListIndex]->MNAM.value;
+                case 3: //female
+                    return RNAM[ListIndex]->FNAM.value;
+                case 4: //insigniaPath
+                    return RNAM[ListIndex]->INAM.value;
+                default:
+                    return NULL;
+                }
+        case 13: //reputation
+            return WMI1.IsLoaded() ? &WMI1.value : NULL;
         default:
             return NULL;
         }
@@ -174,60 +232,99 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
+        case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //xnam Relation
-            XNAMs.Load();
-            XNAMs->value8 = *(FORMID *)FieldValue;
-            return true;
-        case 9: //xnam Relation
-            XNAMs.Load();
-            XNAMs->value9 = *(SINT32 *)FieldValue;
+        case 8: //relations
+            if(ListFieldID == 0) //relationsSize
+                {
+                ArraySize -= (UINT32)XNAM.size();
+                while((SINT32)ArraySize > 0)
+                    {
+                    XNAM.push_back(new ReqSubRecord<FNVXNAM>);
+                    --ArraySize;
+                    }
+                while((SINT32)ArraySize < 0)
+                    {
+                    delete XNAM.back();
+                    XNAM.pop_back();
+                    ++ArraySize;
+                    }
+                return false;
+                }
+
+            if(ListIndex >= XNAM.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    XNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //mod
+                    XNAM[ListIndex]->value.mod = *(SINT32 *)FieldValue;
+                    break;
+                case 3: //groupReactionType
+                    XNAM[ListIndex]->value.SetType(*(UINT32 *)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 10: //xnam Relation
-            XNAMs.Load();
-            XNAMs->value10 = *(UINT32 *)FieldValue;
+        case 9: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 11: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value11 = *(UINT8 *)FieldValue;
-            break;
-        case 12: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value12 = *(UINT8 *)FieldValue;
-            break;
-        case 13: //data_p DATA ,, Struct
+        case 10: //unused1
             if(ArraySize != 2)
                 break;
-            DATA.Load();
-            DATA->value13[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value13[1] = ((UINT8 *)FieldValue)[1];
+            DATA.value.unused1[0] = ((UINT8 *)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 14: //cnam Unused
+        case 11: //crimeGoldMultiplier
             CNAM.Load();
-            CNAM->value14 = *(FLOAT32 *)FieldValue;
+            *CNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 15: //rnam Rank#
-            RNAM.Load();
-            RNAM->RNAM.Load();
-            RNAM->RNAM->value15 = *(SINT32 *)FieldValue;
+        case 12: //ranks
+            if(ListFieldID == 0) //ranksSize
+                {
+                ArraySize -= (UINT32)RNAM.size();
+                while((SINT32)ArraySize > 0)
+                    {
+                    RNAM.push_back(new FACTRNAM);
+                    --ArraySize;
+                    }
+                while((SINT32)ArraySize < 0)
+                    {
+                    delete RNAM.back();
+                    RNAM.pop_back();
+                    ++ArraySize;
+                    }
+                return false;
+                }
+
+            if(ListIndex >= RNAM.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //rank
+                    RNAM[ListIndex]->RNAM.value = *(SINT32 *)FieldValue;
+                    break;
+                case 2: //male
+                    RNAM[ListIndex]->MNAM.Copy((STRING)FieldValue);
+                    break;
+                case 3: //female
+                    RNAM[ListIndex]->FNAM.Copy((STRING)FieldValue);
+                    break;
+                case 4: //insigniaPath
+                    RNAM[ListIndex]->INAM.Copy((STRING)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 16: //mnam Male
-            RNAM.Load();
-            RNAM->MNAM.Copy((STRING)FieldValue);
-            break;
-        case 17: //fnam Female
-            RNAM.Load();
-            RNAM->FNAM.Copy((STRING)FieldValue);
-            break;
-        case 18: //inam Insignia (Unused)
-            RNAM.Load();
-            RNAM->INAM.Copy((STRING)FieldValue);
-            break;
-        case 19: //wmi1 Reputation
-            WMI1.Load();
-            WMI1->value19 = *(FORMID *)FieldValue;
+        case 13: //reputation
+            WMI1.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -237,6 +334,10 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVXNAM defaultXNAM;
+    FACTDATA defaultDATA;
+    FACTRNAM defaultRNAM;
+
     switch(FieldID)
         {
         case 1: //flags1
@@ -255,47 +356,75 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
+        case 7: //full
             FULL.Unload();
             return;
-        case 8: //xnam Relation
-            XNAMs.Unload();
+        case 8: //relations
+            if(ListFieldID == 0) //relations
+                {
+                for(UINT32 x = 0; x < (UINT32)XNAM.size(); x++)
+                    delete XNAM[x];
+                XNAM.clear();
+                return;
+                }
+
+            if(ListIndex >= XNAM.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    XNAM[ListIndex]->value.faction = defaultXNAM.faction;
+                    return;
+                case 2: //mod
+                    XNAM[ListIndex]->value.mod = defaultXNAM.mod;
+                    return;
+                case 3: //groupReactionType
+                    XNAM[ListIndex]->value.groupReactionType = defaultXNAM.groupReactionType;
+                    return;
+                default:
+                    return;
+                }
+        case 9: //flags
+            DATA.value.flags = defaultDATA.flags;
             return;
-        case 9: //xnam Relation
-            XNAMs.Unload();
+        case 10: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
             return;
-        case 10: //xnam Relation
-            XNAMs.Unload();
-            return;
-        case 11: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 12: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 13: //data_p DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 14: //cnam Unused
+        case 11: //crimeGoldMultiplier
             CNAM.Unload();
             return;
-        case 15: //rnam Rank#
-            if(RNAM.IsLoaded())
-                RNAM->RNAM.Unload();
-            return;
-        case 16: //mnam Male
-            if(RNAM.IsLoaded())
-                RNAM->MNAM.Unload();
-            return;
-        case 17: //fnam Female
-            if(RNAM.IsLoaded())
-                RNAM->FNAM.Unload();
-            return;
-        case 18: //inam Insignia (Unused)
-            if(RNAM.IsLoaded())
-                RNAM->INAM.Unload();
-            return;
-        case 19: //wmi1 Reputation
+        case 12: //ranks
+            if(ListFieldID == 0) //ranks
+                {
+                for(UINT32 x = 0; x < (UINT32)RNAM.size(); x++)
+                    delete RNAM[x];
+                RNAM.clear();
+                return;
+                }
+
+            if(ListIndex >= RNAM.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //rank
+                    RNAM[ListIndex]->RNAM.value = defaultRNAM.RNAM.value;
+                    return;
+                case 2: //male
+                    RNAM[ListIndex]->MNAM.Unload();
+                    return;
+                case 3: //female
+                    RNAM[ListIndex]->FNAM.Unload();
+                    return;
+                case 4: //insigniaPath
+                    RNAM[ListIndex]->INAM.Unload();
+                    return;
+                default:
+                    return;
+                }
+        case 13: //reputation
             WMI1.Unload();
             return;
         default:

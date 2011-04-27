@@ -90,10 +90,7 @@ bool ENCHRecord::IsNoAutoCalc()
 void ENCHRecord::IsNoAutoCalc(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoAutoCalc;
-    else
-        Dummy->flags &= ~fIsNoAutoCalc;
+    Dummy->flags = value ? (Dummy->flags | fIsNoAutoCalc) : (Dummy->flags & ~fIsNoAutoCalc);
     }
 
 bool ENCHRecord::IsHideEffect()
@@ -105,10 +102,7 @@ bool ENCHRecord::IsHideEffect()
 void ENCHRecord::IsHideEffect(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsHideEffect;
-    else
-        Dummy->flags &= ~fIsHideEffect;
+    Dummy->flags = value ? (Dummy->flags | fIsHideEffect) : (Dummy->flags & ~fIsHideEffect);
     }
 
 bool ENCHRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -132,10 +126,7 @@ bool ENCHRecord::IsWeapon()
 void ENCHRecord::IsWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWeapon;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWeapon : eDummyDefault;
     }
 
 bool ENCHRecord::IsApparel()
@@ -147,10 +138,7 @@ bool ENCHRecord::IsApparel()
 void ENCHRecord::IsApparel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eApparel;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eApparel : eDummyDefault;
     }
 
 bool ENCHRecord::IsType(UINT32 Type, bool Exact)

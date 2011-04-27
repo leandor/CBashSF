@@ -164,10 +164,7 @@ bool NPC_Record::IsFemale()
 void NPC_Record::IsFemale(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFemale;
-    else
-        Dummy->flags &= ~fIsFemale;
+    Dummy->flags = value ? (Dummy->flags | fIsFemale) : (Dummy->flags & ~fIsFemale);
     }
 
 bool NPC_Record::IsEssential()
@@ -179,10 +176,7 @@ bool NPC_Record::IsEssential()
 void NPC_Record::IsEssential(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsEssential;
-    else
-        Dummy->flags &= ~fIsEssential;
+    Dummy->flags = value ? (Dummy->flags | fIsEssential) : (Dummy->flags & ~fIsEssential);
     }
 
 bool NPC_Record::IsCharGenFacePreset()
@@ -194,10 +188,7 @@ bool NPC_Record::IsCharGenFacePreset()
 void NPC_Record::IsCharGenFacePreset(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsCharGenFacePreset;
-    else
-        Dummy->flags &= ~fIsCharGenFacePreset;
+    Dummy->flags = value ? (Dummy->flags | fIsCharGenFacePreset) : (Dummy->flags & ~fIsCharGenFacePreset);
     }
 
 bool NPC_Record::IsRespawn()
@@ -209,10 +200,7 @@ bool NPC_Record::IsRespawn()
 void NPC_Record::IsRespawn(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsRespawn;
-    else
-        Dummy->flags &= ~fIsRespawn;
+    Dummy->flags = value ? (Dummy->flags | fIsRespawn) : (Dummy->flags & ~fIsRespawn);
     }
 
 bool NPC_Record::IsAutoCalcStats()
@@ -224,10 +212,7 @@ bool NPC_Record::IsAutoCalcStats()
 void NPC_Record::IsAutoCalcStats(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAutoCalcStats;
-    else
-        Dummy->flags &= ~fIsAutoCalcStats;
+    Dummy->flags = value ? (Dummy->flags | fIsAutoCalcStats) : (Dummy->flags & ~fIsAutoCalcStats);
     }
 
 bool NPC_Record::IsPCLevelOffset()
@@ -239,10 +224,7 @@ bool NPC_Record::IsPCLevelOffset()
 void NPC_Record::IsPCLevelOffset(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsPCLevelOffset;
-    else
-        Dummy->flags &= ~fIsPCLevelOffset;
+    Dummy->flags = value ? (Dummy->flags | fIsPCLevelOffset) : (Dummy->flags & ~fIsPCLevelOffset);
     }
 
 bool NPC_Record::IsUseTemplate()
@@ -254,10 +236,7 @@ bool NPC_Record::IsUseTemplate()
 void NPC_Record::IsUseTemplate(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseTemplate;
-    else
-        Dummy->flags &= ~fIsUseTemplate;
+    Dummy->flags = value ? (Dummy->flags | fIsUseTemplate) : (Dummy->flags & ~fIsUseTemplate);
     }
 
 bool NPC_Record::IsNoLowLevel()
@@ -269,10 +248,7 @@ bool NPC_Record::IsNoLowLevel()
 void NPC_Record::IsNoLowLevel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoLowLevel;
-    else
-        Dummy->flags &= ~fIsNoLowLevel;
+    Dummy->flags = value ? (Dummy->flags | fIsNoLowLevel) : (Dummy->flags & ~fIsNoLowLevel);
     }
 
 bool NPC_Record::IsNoBloodSpray()
@@ -284,10 +260,7 @@ bool NPC_Record::IsNoBloodSpray()
 void NPC_Record::IsNoBloodSpray(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoBloodSpray;
-    else
-        Dummy->flags &= ~fIsNoBloodSpray;
+    Dummy->flags = value ? (Dummy->flags | fIsNoBloodSpray) : (Dummy->flags & ~fIsNoBloodSpray);
     }
 
 bool NPC_Record::IsNoBloodDecal()
@@ -299,10 +272,7 @@ bool NPC_Record::IsNoBloodDecal()
 void NPC_Record::IsNoBloodDecal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoBloodDecal;
-    else
-        Dummy->flags &= ~fIsNoBloodDecal;
+    Dummy->flags = value ? (Dummy->flags | fIsNoBloodDecal) : (Dummy->flags & ~fIsNoBloodDecal);
     }
 
 bool NPC_Record::IsNoVATSMelee()
@@ -314,10 +284,7 @@ bool NPC_Record::IsNoVATSMelee()
 void NPC_Record::IsNoVATSMelee(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoVATSMelee;
-    else
-        Dummy->flags &= ~fIsNoVATSMelee;
+    Dummy->flags = value ? (Dummy->flags | fIsNoVATSMelee) : (Dummy->flags & ~fIsNoVATSMelee);
     }
 
 bool NPC_Record::IsCanBeAllRaces()
@@ -329,10 +296,7 @@ bool NPC_Record::IsCanBeAllRaces()
 void NPC_Record::IsCanBeAllRaces(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsCanBeAllRaces;
-    else
-        Dummy->flags &= ~fIsCanBeAllRaces;
+    Dummy->flags = value ? (Dummy->flags | fIsCanBeAllRaces) : (Dummy->flags & ~fIsCanBeAllRaces);
     }
 
 bool NPC_Record::IsAutoCalcService()
@@ -344,10 +308,7 @@ bool NPC_Record::IsAutoCalcService()
 void NPC_Record::IsAutoCalcService(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAutoCalcService;
-    else
-        Dummy->flags &= ~fIsAutoCalcService;
+    Dummy->flags = value ? (Dummy->flags | fIsAutoCalcService) : (Dummy->flags & ~fIsAutoCalcService);
     }
 
 bool NPC_Record::IsNoKnockdowns()
@@ -359,10 +320,7 @@ bool NPC_Record::IsNoKnockdowns()
 void NPC_Record::IsNoKnockdowns(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoKnockdowns;
-    else
-        Dummy->flags &= ~fIsNoKnockdowns;
+    Dummy->flags = value ? (Dummy->flags | fIsNoKnockdowns) : (Dummy->flags & ~fIsNoKnockdowns);
     }
 
 bool NPC_Record::IsNotPushable()
@@ -374,10 +332,7 @@ bool NPC_Record::IsNotPushable()
 void NPC_Record::IsNotPushable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNotPushable;
-    else
-        Dummy->flags &= ~fIsNotPushable;
+    Dummy->flags = value ? (Dummy->flags | fIsNotPushable) : (Dummy->flags & ~fIsNotPushable);
     }
 
 bool NPC_Record::IsNoHeadTracking()
@@ -389,10 +344,7 @@ bool NPC_Record::IsNoHeadTracking()
 void NPC_Record::IsNoHeadTracking(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoHeadTracking;
-    else
-        Dummy->flags &= ~fIsNoHeadTracking;
+    Dummy->flags = value ? (Dummy->flags | fIsNoHeadTracking) : (Dummy->flags & ~fIsNoHeadTracking);
     }
 
 bool NPC_Record::IsFlagMask(UINT8 Mask, bool Exact)
@@ -416,10 +368,7 @@ bool NPC_Record::IsUseTraits()
 void NPC_Record::IsUseTraits(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseTraits;
-    else
-        Dummy->flags &= ~fIsUseTraits;
+    Dummy->flags = value ? (Dummy->flags | fIsUseTraits) : (Dummy->flags & ~fIsUseTraits);
     }
 
 bool NPC_Record::IsUseStats()
@@ -431,10 +380,7 @@ bool NPC_Record::IsUseStats()
 void NPC_Record::IsUseStats(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseStats;
-    else
-        Dummy->flags &= ~fIsUseStats;
+    Dummy->flags = value ? (Dummy->flags | fIsUseStats) : (Dummy->flags & ~fIsUseStats);
     }
 
 bool NPC_Record::IsUseFactions()
@@ -446,10 +392,7 @@ bool NPC_Record::IsUseFactions()
 void NPC_Record::IsUseFactions(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseFactions;
-    else
-        Dummy->flags &= ~fIsUseFactions;
+    Dummy->flags = value ? (Dummy->flags | fIsUseFactions) : (Dummy->flags & ~fIsUseFactions);
     }
 
 bool NPC_Record::IsUseAEList()
@@ -461,10 +404,7 @@ bool NPC_Record::IsUseAEList()
 void NPC_Record::IsUseAEList(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAEList;
-    else
-        Dummy->flags &= ~fIsUseAEList;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAEList) : (Dummy->flags & ~fIsUseAEList);
     }
 
 bool NPC_Record::IsUseAIData()
@@ -476,10 +416,7 @@ bool NPC_Record::IsUseAIData()
 void NPC_Record::IsUseAIData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAIData;
-    else
-        Dummy->flags &= ~fIsUseAIData;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAIData) : (Dummy->flags & ~fIsUseAIData);
     }
 
 bool NPC_Record::IsUseAIPackages()
@@ -491,10 +428,7 @@ bool NPC_Record::IsUseAIPackages()
 void NPC_Record::IsUseAIPackages(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseAIPackages;
-    else
-        Dummy->flags &= ~fIsUseAIPackages;
+    Dummy->flags = value ? (Dummy->flags | fIsUseAIPackages) : (Dummy->flags & ~fIsUseAIPackages);
     }
 
 bool NPC_Record::IsUseModelAnim()
@@ -506,10 +440,7 @@ bool NPC_Record::IsUseModelAnim()
 void NPC_Record::IsUseModelAnim(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseModelAnim;
-    else
-        Dummy->flags &= ~fIsUseModelAnim;
+    Dummy->flags = value ? (Dummy->flags | fIsUseModelAnim) : (Dummy->flags & ~fIsUseModelAnim);
     }
 
 bool NPC_Record::IsUseBaseData()
@@ -521,10 +452,7 @@ bool NPC_Record::IsUseBaseData()
 void NPC_Record::IsUseBaseData(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseBaseData;
-    else
-        Dummy->flags &= ~fIsUseBaseData;
+    Dummy->flags = value ? (Dummy->flags | fIsUseBaseData) : (Dummy->flags & ~fIsUseBaseData);
     }
 
 bool NPC_Record::IsUseInventory()
@@ -536,10 +464,7 @@ bool NPC_Record::IsUseInventory()
 void NPC_Record::IsUseInventory(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseInventory;
-    else
-        Dummy->flags &= ~fIsUseInventory;
+    Dummy->flags = value ? (Dummy->flags | fIsUseInventory) : (Dummy->flags & ~fIsUseInventory);
     }
 
 bool NPC_Record::IsUseScript()
@@ -551,10 +476,7 @@ bool NPC_Record::IsUseScript()
 void NPC_Record::IsUseScript(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseScript;
-    else
-        Dummy->flags &= ~fIsUseScript;
+    Dummy->flags = value ? (Dummy->flags | fIsUseScript) : (Dummy->flags & ~fIsUseScript);
     }
 
 bool NPC_Record::IsTemplateFlagMask(UINT8 Mask, bool Exact)
@@ -578,10 +500,7 @@ bool NPC_Record::IsAggroRadiusBehavior()
 void NPC_Record::IsAggroRadiusBehavior(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsAggroRadiusBehavior;
-    else
-        Dummy->flags &= ~fIsAggroRadiusBehavior;
+    Dummy->flags = value ? (Dummy->flags | fIsAggroRadiusBehavior) : (Dummy->flags & ~fIsAggroRadiusBehavior);
     }
 
 bool NPC_Record::IsAggroFlagMask(UINT8 Mask, bool Exact)
@@ -605,10 +524,7 @@ bool NPC_Record::IsUnaggressive()
 void NPC_Record::IsUnaggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eUnaggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eUnaggressive : eDummyDefault;
     }
 
 bool NPC_Record::IsAggressive()
@@ -620,10 +536,7 @@ bool NPC_Record::IsAggressive()
 void NPC_Record::IsAggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAggressive : eDummyDefault;
     }
 
 bool NPC_Record::IsVeryAggressive()
@@ -635,10 +548,7 @@ bool NPC_Record::IsVeryAggressive()
 void NPC_Record::IsVeryAggressive(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVeryAggressive;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVeryAggressive : eDummyDefault;
     }
 
 bool NPC_Record::IsFrenzied()
@@ -650,10 +560,7 @@ bool NPC_Record::IsFrenzied()
 void NPC_Record::IsFrenzied(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFrenzied;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFrenzied : eDummyDefault;
     }
 
 bool NPC_Record::IsAggressionType(UINT8 Type, bool Exact)
@@ -677,10 +584,7 @@ bool NPC_Record::IsCowardly()
 void NPC_Record::IsCowardly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCowardly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCowardly : eDummyDefault;
     }
 
 bool NPC_Record::IsCautious()
@@ -692,10 +596,7 @@ bool NPC_Record::IsCautious()
 void NPC_Record::IsCautious(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCautious;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCautious : eDummyDefault;
     }
 
 bool NPC_Record::IsAverage()
@@ -707,10 +608,7 @@ bool NPC_Record::IsAverage()
 void NPC_Record::IsAverage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAverage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAverage : eDummyDefault;
     }
 
 bool NPC_Record::IsBrave()
@@ -722,10 +620,7 @@ bool NPC_Record::IsBrave()
 void NPC_Record::IsBrave(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBrave;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBrave : eDummyDefault;
     }
 
 bool NPC_Record::IsFoolhardy()
@@ -737,10 +632,7 @@ bool NPC_Record::IsFoolhardy()
 void NPC_Record::IsFoolhardy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFoolhardy;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFoolhardy : eDummyDefault;
     }
 
 bool NPC_Record::IsConfidenceType(UINT8 Type, bool Exact)
@@ -764,10 +656,7 @@ bool NPC_Record::IsNeutral()
 void NPC_Record::IsNeutral(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNeutral;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNeutral : eDummyDefault;
     }
 
 bool NPC_Record::IsAfraid()
@@ -779,10 +668,7 @@ bool NPC_Record::IsAfraid()
 void NPC_Record::IsAfraid(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAfraid;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAfraid : eDummyDefault;
     }
 
 bool NPC_Record::IsAnnoyed()
@@ -794,10 +680,7 @@ bool NPC_Record::IsAnnoyed()
 void NPC_Record::IsAnnoyed(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAnnoyed;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAnnoyed : eDummyDefault;
     }
 
 bool NPC_Record::IsCocky()
@@ -809,10 +692,7 @@ bool NPC_Record::IsCocky()
 void NPC_Record::IsCocky(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCocky;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCocky : eDummyDefault;
     }
 
 bool NPC_Record::IsDrugged()
@@ -824,10 +704,7 @@ bool NPC_Record::IsDrugged()
 void NPC_Record::IsDrugged(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDrugged;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDrugged : eDummyDefault;
     }
 
 bool NPC_Record::IsPleasant()
@@ -839,10 +716,7 @@ bool NPC_Record::IsPleasant()
 void NPC_Record::IsPleasant(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePleasant;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePleasant : eDummyDefault;
     }
 
 bool NPC_Record::IsAngry()
@@ -854,10 +728,7 @@ bool NPC_Record::IsAngry()
 void NPC_Record::IsAngry(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAngry;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAngry : eDummyDefault;
     }
 
 bool NPC_Record::IsSad()
@@ -869,10 +740,7 @@ bool NPC_Record::IsSad()
 void NPC_Record::IsSad(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSad;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSad : eDummyDefault;
     }
 
 bool NPC_Record::IsMoodType(UINT8 Type, bool Exact)
@@ -896,10 +764,7 @@ bool NPC_Record::IsHelpsNobody()
 void NPC_Record::IsHelpsNobody(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsNobody;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsNobody : eDummyDefault;
     }
 
 bool NPC_Record::IsHelpsAllies()
@@ -911,10 +776,7 @@ bool NPC_Record::IsHelpsAllies()
 void NPC_Record::IsHelpsAllies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsAllies;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsAllies : eDummyDefault;
     }
 
 bool NPC_Record::IsHelpsFriendsAndAllies()
@@ -926,10 +788,7 @@ bool NPC_Record::IsHelpsFriendsAndAllies()
 void NPC_Record::IsHelpsFriendsAndAllies(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHelpsFriendsAndAllies;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHelpsFriendsAndAllies : eDummyDefault;
     }
 
 bool NPC_Record::IsAssistanceType(UINT8 Type, bool Exact)
@@ -953,10 +812,7 @@ bool NPC_Record::IsStone()
 void NPC_Record::IsStone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStone : eDummyDefault;
     }
 
 bool NPC_Record::IsDirt()
@@ -968,10 +824,7 @@ bool NPC_Record::IsDirt()
 void NPC_Record::IsDirt(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDirt;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDirt : eDummyDefault;
     }
 
 bool NPC_Record::IsGrass()
@@ -983,10 +836,7 @@ bool NPC_Record::IsGrass()
 void NPC_Record::IsGrass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGrass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGrass : eDummyDefault;
     }
 
 bool NPC_Record::IsGlass()
@@ -998,10 +848,7 @@ bool NPC_Record::IsGlass()
 void NPC_Record::IsGlass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGlass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGlass : eDummyDefault;
     }
 
 bool NPC_Record::IsMetal()
@@ -1013,10 +860,7 @@ bool NPC_Record::IsMetal()
 void NPC_Record::IsMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMetal : eDummyDefault;
     }
 
 bool NPC_Record::IsWood()
@@ -1028,10 +872,7 @@ bool NPC_Record::IsWood()
 void NPC_Record::IsWood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWood : eDummyDefault;
     }
 
 bool NPC_Record::IsOrganic()
@@ -1043,10 +884,7 @@ bool NPC_Record::IsOrganic()
 void NPC_Record::IsOrganic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganic : eDummyDefault;
     }
 
 bool NPC_Record::IsCloth()
@@ -1058,10 +896,7 @@ bool NPC_Record::IsCloth()
 void NPC_Record::IsCloth(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCloth;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCloth : eDummyDefault;
     }
 
 bool NPC_Record::IsWater()
@@ -1073,10 +908,7 @@ bool NPC_Record::IsWater()
 void NPC_Record::IsWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWater;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWater : eDummyDefault;
     }
 
 bool NPC_Record::IsHollowMetal()
@@ -1088,10 +920,7 @@ bool NPC_Record::IsHollowMetal()
 void NPC_Record::IsHollowMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHollowMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHollowMetal : eDummyDefault;
     }
 
 bool NPC_Record::IsOrganicBug()
@@ -1103,10 +932,7 @@ bool NPC_Record::IsOrganicBug()
 void NPC_Record::IsOrganicBug(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganicBug;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganicBug : eDummyDefault;
     }
 
 bool NPC_Record::IsOrganicGlow()
@@ -1118,10 +944,7 @@ bool NPC_Record::IsOrganicGlow()
 void NPC_Record::IsOrganicGlow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganicGlow;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganicGlow : eDummyDefault;
     }
 
 bool NPC_Record::IsImpactType(UINT8 Type, bool Exact)

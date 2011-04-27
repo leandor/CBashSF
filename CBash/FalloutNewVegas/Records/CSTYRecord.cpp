@@ -80,10 +80,7 @@ bool CSTYRecord::IsUseChanceForAttack()
 void CSTYRecord::IsUseChanceForAttack(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsUseChanceForAttack;
-    else
-        Dummy->flags &= ~fIsUseChanceForAttack;
+    Dummy->flags = value ? (Dummy->flags | fIsUseChanceForAttack) : (Dummy->flags & ~fIsUseChanceForAttack);
     }
 
 bool CSTYRecord::IsMeleeAlertOK()
@@ -95,10 +92,7 @@ bool CSTYRecord::IsMeleeAlertOK()
 void CSTYRecord::IsMeleeAlertOK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsMeleeAlertOK;
-    else
-        Dummy->flags &= ~fIsMeleeAlertOK;
+    Dummy->flags = value ? (Dummy->flags | fIsMeleeAlertOK) : (Dummy->flags & ~fIsMeleeAlertOK);
     }
 
 bool CSTYRecord::IsFleeForSurvival()
@@ -110,10 +104,7 @@ bool CSTYRecord::IsFleeForSurvival()
 void CSTYRecord::IsFleeForSurvival(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsFleeForSurvival;
-    else
-        Dummy->flags &= ~fIsFleeForSurvival;
+    Dummy->flags = value ? (Dummy->flags | fIsFleeForSurvival) : (Dummy->flags & ~fIsFleeForSurvival);
     }
 
 bool CSTYRecord::IsIgnoreThreats()
@@ -125,10 +116,7 @@ bool CSTYRecord::IsIgnoreThreats()
 void CSTYRecord::IsIgnoreThreats(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreThreats;
-    else
-        Dummy->flags &= ~fIsIgnoreThreats;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreThreats) : (Dummy->flags & ~fIsIgnoreThreats);
     }
 
 bool CSTYRecord::IsIgnoreDamagingSelf=()
@@ -140,10 +128,7 @@ bool CSTYRecord::IsIgnoreDamagingSelf=()
 void CSTYRecord::IsIgnoreDamagingSelf=(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreDamagingSelf=;
-    else
-        Dummy->flags &= ~fIsIgnoreDamagingSelf=;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingSelf=) : (Dummy->flags & ~fIsIgnoreDamagingSelf=);
     }
 
 bool CSTYRecord::IsIgnoreDamagingGroup=()
@@ -155,10 +140,7 @@ bool CSTYRecord::IsIgnoreDamagingGroup=()
 void CSTYRecord::IsIgnoreDamagingGroup=(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreDamagingGroup=;
-    else
-        Dummy->flags &= ~fIsIgnoreDamagingGroup=;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingGroup=) : (Dummy->flags & ~fIsIgnoreDamagingGroup=);
     }
 
 bool CSTYRecord::IsIgnoreDamagingSpectator()
@@ -170,10 +152,7 @@ bool CSTYRecord::IsIgnoreDamagingSpectator()
 void CSTYRecord::IsIgnoreDamagingSpectator(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsIgnoreDamagingSpectator;
-    else
-        Dummy->flags &= ~fIsIgnoreDamagingSpectator;
+    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingSpectator) : (Dummy->flags & ~fIsIgnoreDamagingSpectator);
     }
 
 bool CSTYRecord::IsNoUseStealthboy()
@@ -185,10 +164,7 @@ bool CSTYRecord::IsNoUseStealthboy()
 void CSTYRecord::IsNoUseStealthboy(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoUseStealthboy;
-    else
-        Dummy->flags &= ~fIsNoUseStealthboy;
+    Dummy->flags = value ? (Dummy->flags | fIsNoUseStealthboy) : (Dummy->flags & ~fIsNoUseStealthboy);
     }
 
 bool CSTYRecord::IsFlagMask(UINT16 Mask, bool Exact)
@@ -212,10 +188,7 @@ bool CSTYRecord::IsNone()
 void CSTYRecord::IsNone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNone : eDummyDefault;
     }
 
 bool CSTYRecord::IsMeleeOnly()
@@ -227,10 +200,7 @@ bool CSTYRecord::IsMeleeOnly()
 void CSTYRecord::IsMeleeOnly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMeleeOnly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMeleeOnly : eDummyDefault;
     }
 
 bool CSTYRecord::IsRangedOnly()
@@ -242,10 +212,7 @@ bool CSTYRecord::IsRangedOnly()
 void CSTYRecord::IsRangedOnly(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRangedOnly;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRangedOnly : eDummyDefault;
     }
 
 bool CSTYRecord::IsType(UINT32 Type, bool Exact)

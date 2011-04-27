@@ -388,10 +388,7 @@ bool QUSTRecord::IsStartEnabled()
 
 void QUSTRecord::IsStartEnabled(bool value)
     {
-    if(value)
-        DATA.value.flags |= fIsStartEnabled;
-    else
-        DATA.value.flags &= ~fIsStartEnabled;
+    DATA.value.flags = value ? (DATA.value.flags | fIsStartEnabled) : (DATA.value.flags & ~fIsStartEnabled);
     }
 
 bool QUSTRecord::IsRepeatedTopics()
@@ -401,10 +398,7 @@ bool QUSTRecord::IsRepeatedTopics()
 
 void QUSTRecord::IsRepeatedTopics(bool value)
     {
-    if(value)
-        DATA.value.flags |= fIsRepeatedTopics;
-    else
-        DATA.value.flags &= ~fIsRepeatedTopics;
+    DATA.value.flags = value ? (DATA.value.flags | fIsRepeatedTopics) : (DATA.value.flags & ~fIsRepeatedTopics);
     }
 
 bool QUSTRecord::IsRepeatedStages()
@@ -414,10 +408,7 @@ bool QUSTRecord::IsRepeatedStages()
 
 void QUSTRecord::IsRepeatedStages(bool value)
     {
-    if(value)
-        DATA.value.flags |= fIsRepeatedStages;
-    else
-        DATA.value.flags &= ~fIsRepeatedStages;
+    DATA.value.flags = value ? (DATA.value.flags | fIsRepeatedStages) : (DATA.value.flags & ~fIsRepeatedStages);
     }
 
 bool QUSTRecord::IsFlagMask(UINT8 Mask, bool Exact)

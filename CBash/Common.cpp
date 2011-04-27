@@ -325,6 +325,26 @@ UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
     return _BufPos;
     }
 
+void _FileHandler::writeSubRecordHeader(UINT32 _Type, UINT32 _MaxCharCount)
+    {
+    if(_MaxCharCount <= 65535)
+        {
+        write(&_Type, 4);
+        write(&_MaxCharCount, 2);
+        }
+    else //Requires XXXX SubRecord
+        {
+        UINT32 _Temp = 4;
+        write("XXXX", 4);
+        write(&_Temp, 2);
+        write(&_MaxCharCount, 4);
+        write(&_Type, 4);
+        _Temp = 0;
+        write(&_Temp, 2);
+        }
+    return;
+    }
+
 void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount)
     {
     if(_MaxCharCount <= 65535)

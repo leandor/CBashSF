@@ -89,10 +89,7 @@ bool RGDLRecord::IsDisableOnMove()
 void RGDLRecord::IsDisableOnMove(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDisableOnMove;
-    else
-        Dummy->flags &= ~fIsDisableOnMove;
+    Dummy->flags = value ? (Dummy->flags | fIsDisableOnMove) : (Dummy->flags & ~fIsDisableOnMove);
     }
 
 bool RGDLRecord::IsFlagMask(UINT8 Mask, bool Exact)
@@ -116,10 +113,7 @@ bool RGDLRecord::IsNoFeedback()
 void RGDLRecord::IsNoFeedback(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNoFeedback;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNoFeedback : eDummyDefault;
     }
 
 bool RGDLRecord::IsFeedback()
@@ -131,10 +125,7 @@ bool RGDLRecord::IsFeedback()
 void RGDLRecord::IsFeedback(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFeedback;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFeedback : eDummyDefault;
     }
 
 bool RGDLRecord::IsFeedbackType(UINT8 Type, bool Exact)
@@ -158,10 +149,7 @@ bool RGDLRecord::IsNoFootIK()
 void RGDLRecord::IsNoFootIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNoFootIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNoFootIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsFootIK()
@@ -173,10 +161,7 @@ bool RGDLRecord::IsFootIK()
 void RGDLRecord::IsFootIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFootIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFootIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsFootType(UINT8 Type, bool Exact)
@@ -200,10 +185,7 @@ bool RGDLRecord::IsNoLookIK()
 void RGDLRecord::IsNoLookIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNoLookIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNoLookIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsLookIK()
@@ -215,10 +197,7 @@ bool RGDLRecord::IsLookIK()
 void RGDLRecord::IsLookIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLookIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLookIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsLookType(UINT8 Type, bool Exact)
@@ -242,10 +221,7 @@ bool RGDLRecord::IsNoGrabIK()
 void RGDLRecord::IsNoGrabIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNoGrabIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNoGrabIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsGrabIK()
@@ -257,10 +233,7 @@ bool RGDLRecord::IsGrabIK()
 void RGDLRecord::IsGrabIK(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGrabIK;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGrabIK : eDummyDefault;
     }
 
 bool RGDLRecord::IsGrabType(UINT8 Type, bool Exact)
@@ -284,10 +257,7 @@ bool RGDLRecord::IsNoMatchPose()
 void RGDLRecord::IsNoMatchPose(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eNoMatchPose;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eNoMatchPose : eDummyDefault;
     }
 
 bool RGDLRecord::IsMatchPose()
@@ -299,10 +269,7 @@ bool RGDLRecord::IsMatchPose()
 void RGDLRecord::IsMatchPose(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMatchPose;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMatchPose : eDummyDefault;
     }
 
 bool RGDLRecord::IsMatchType(UINT8 Type, bool Exact)

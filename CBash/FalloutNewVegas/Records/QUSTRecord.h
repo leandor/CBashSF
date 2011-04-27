@@ -52,7 +52,7 @@ class QUSTRecord : public FNVRecord //Quest
             enum entriesFlags
                 {
                 fIsCompletes = 0x00000001,
-                fIsFailed = 0x00000002
+                fIsFailed    = 0x00000002
                 };
 
             QUSTEntry();

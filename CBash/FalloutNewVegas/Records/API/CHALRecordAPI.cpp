@@ -58,11 +58,11 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
         case 8: //scri Script
             return FORMID_FIELD;
-        case 9: //desc Description
+        case 9: //description
             return STRING_FIELD;
         case 10: //data DATA ,, Struct
             return UINT32_FIELD;
@@ -129,11 +129,11 @@ void * CHALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
+        case 7: //full
             return FULL.value;
         case 8: //scri Script
             return SCRI.IsLoaded() ? &SCRI->value8 : NULL;
-        case 9: //desc Description
+        case 9: //description
             return DESC.value;
         case 10: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value10 : NULL;
@@ -188,14 +188,14 @@ bool CHALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
+        case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 8: //scri Script
             SCRI.Load();
             SCRI->value8 = *(FORMID *)FieldValue;
             return true;
-        case 9: //desc Description
+        case 9: //description
             DESC.Copy((STRING)FieldValue);
             break;
         case 10: //data DATA ,, Struct
@@ -271,13 +271,13 @@ void CHALRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
+        case 7: //full
             FULL.Unload();
             return;
         case 8: //scri Script
             SCRI.Unload();
             return;
-        case 9: //desc Description
+        case 9: //description
             DESC.Unload();
             return;
         case 10: //data DATA ,, Struct

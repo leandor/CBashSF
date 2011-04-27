@@ -87,10 +87,7 @@ bool LTEXRecord::IsStone()
 void LTEXRecord::IsStone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eStone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eStone : eDummyDefault;
     }
 
 bool LTEXRecord::IsCloth()
@@ -102,10 +99,7 @@ bool LTEXRecord::IsCloth()
 void LTEXRecord::IsCloth(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCloth;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCloth : eDummyDefault;
     }
 
 bool LTEXRecord::IsDirt()
@@ -117,10 +111,7 @@ bool LTEXRecord::IsDirt()
 void LTEXRecord::IsDirt(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDirt;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDirt : eDummyDefault;
     }
 
 bool LTEXRecord::IsGlass()
@@ -132,10 +123,7 @@ bool LTEXRecord::IsGlass()
 void LTEXRecord::IsGlass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGlass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGlass : eDummyDefault;
     }
 
 bool LTEXRecord::IsGrass()
@@ -147,10 +135,7 @@ bool LTEXRecord::IsGrass()
 void LTEXRecord::IsGrass(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eGrass;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eGrass : eDummyDefault;
     }
 
 bool LTEXRecord::IsMetal()
@@ -162,10 +147,7 @@ bool LTEXRecord::IsMetal()
 void LTEXRecord::IsMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMetal : eDummyDefault;
     }
 
 bool LTEXRecord::IsOrganic()
@@ -177,10 +159,7 @@ bool LTEXRecord::IsOrganic()
 void LTEXRecord::IsOrganic(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eOrganic;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eOrganic : eDummyDefault;
     }
 
 bool LTEXRecord::IsSkin()
@@ -192,10 +171,7 @@ bool LTEXRecord::IsSkin()
 void LTEXRecord::IsSkin(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSkin;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSkin : eDummyDefault;
     }
 
 bool LTEXRecord::IsWater()
@@ -207,10 +183,7 @@ bool LTEXRecord::IsWater()
 void LTEXRecord::IsWater(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWater;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWater : eDummyDefault;
     }
 
 bool LTEXRecord::IsWood()
@@ -222,10 +195,7 @@ bool LTEXRecord::IsWood()
 void LTEXRecord::IsWood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eWood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eWood : eDummyDefault;
     }
 
 bool LTEXRecord::IsHeavyStone()
@@ -237,10 +207,7 @@ bool LTEXRecord::IsHeavyStone()
 void LTEXRecord::IsHeavyStone(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeavyStone;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeavyStone : eDummyDefault;
     }
 
 bool LTEXRecord::IsHeavyMetal()
@@ -252,10 +219,7 @@ bool LTEXRecord::IsHeavyMetal()
 void LTEXRecord::IsHeavyMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeavyMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeavyMetal : eDummyDefault;
     }
 
 bool LTEXRecord::IsHeavyWood()
@@ -267,10 +231,7 @@ bool LTEXRecord::IsHeavyWood()
 void LTEXRecord::IsHeavyWood(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHeavyWood;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHeavyWood : eDummyDefault;
     }
 
 bool LTEXRecord::IsChain()
@@ -282,10 +243,7 @@ bool LTEXRecord::IsChain()
 void LTEXRecord::IsChain(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eChain;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eChain : eDummyDefault;
     }
 
 bool LTEXRecord::IsSnow()
@@ -297,10 +255,7 @@ bool LTEXRecord::IsSnow()
 void LTEXRecord::IsSnow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSnow;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSnow : eDummyDefault;
     }
 
 bool LTEXRecord::IsElevator()
@@ -312,10 +267,7 @@ bool LTEXRecord::IsElevator()
 void LTEXRecord::IsElevator(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eElevator;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eElevator : eDummyDefault;
     }
 
 bool LTEXRecord::IsHollowMetal()
@@ -327,10 +279,7 @@ bool LTEXRecord::IsHollowMetal()
 void LTEXRecord::IsHollowMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eHollowMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eHollowMetal : eDummyDefault;
     }
 
 bool LTEXRecord::IsSheetMetal()
@@ -342,10 +291,7 @@ bool LTEXRecord::IsSheetMetal()
 void LTEXRecord::IsSheetMetal(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSheetMetal;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSheetMetal : eDummyDefault;
     }
 
 bool LTEXRecord::IsSand()
@@ -357,10 +303,7 @@ bool LTEXRecord::IsSand()
 void LTEXRecord::IsSand(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSand;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSand : eDummyDefault;
     }
 
 bool LTEXRecord::IsBrokenConcrete()
@@ -372,10 +315,7 @@ bool LTEXRecord::IsBrokenConcrete()
 void LTEXRecord::IsBrokenConcrete(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBrokenConcrete;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBrokenConcrete : eDummyDefault;
     }
 
 bool LTEXRecord::IsVehicleBody()
@@ -387,10 +327,7 @@ bool LTEXRecord::IsVehicleBody()
 void LTEXRecord::IsVehicleBody(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVehicleBody;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVehicleBody : eDummyDefault;
     }
 
 bool LTEXRecord::IsVehiclePartSolid()
@@ -402,10 +339,7 @@ bool LTEXRecord::IsVehiclePartSolid()
 void LTEXRecord::IsVehiclePartSolid(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVehiclePartSolid;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVehiclePartSolid : eDummyDefault;
     }
 
 bool LTEXRecord::IsVehiclePartHollow()
@@ -417,10 +351,7 @@ bool LTEXRecord::IsVehiclePartHollow()
 void LTEXRecord::IsVehiclePartHollow(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVehiclePartHollow;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVehiclePartHollow : eDummyDefault;
     }
 
 bool LTEXRecord::IsBarrel()
@@ -432,10 +363,7 @@ bool LTEXRecord::IsBarrel()
 void LTEXRecord::IsBarrel(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBarrel;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBarrel : eDummyDefault;
     }
 
 bool LTEXRecord::IsBottle()
@@ -447,10 +375,7 @@ bool LTEXRecord::IsBottle()
 void LTEXRecord::IsBottle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBottle;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBottle : eDummyDefault;
     }
 
 bool LTEXRecord::IsSodaCan()
@@ -462,10 +387,7 @@ bool LTEXRecord::IsSodaCan()
 void LTEXRecord::IsSodaCan(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSodaCan;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSodaCan : eDummyDefault;
     }
 
 bool LTEXRecord::IsPistol()
@@ -477,10 +399,7 @@ bool LTEXRecord::IsPistol()
 void LTEXRecord::IsPistol(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = ePistol;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? ePistol : eDummyDefault;
     }
 
 bool LTEXRecord::IsRifle()
@@ -492,10 +411,7 @@ bool LTEXRecord::IsRifle()
 void LTEXRecord::IsRifle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRifle;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRifle : eDummyDefault;
     }
 
 bool LTEXRecord::IsShoppingCart()
@@ -507,10 +423,7 @@ bool LTEXRecord::IsShoppingCart()
 void LTEXRecord::IsShoppingCart(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eShoppingCart;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eShoppingCart : eDummyDefault;
     }
 
 bool LTEXRecord::IsLunchBox()
@@ -522,10 +435,7 @@ bool LTEXRecord::IsLunchBox()
 void LTEXRecord::IsLunchBox(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eLunchBox;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eLunchBox : eDummyDefault;
     }
 
 bool LTEXRecord::IsBabyRattle()
@@ -537,10 +447,7 @@ bool LTEXRecord::IsBabyRattle()
 void LTEXRecord::IsBabyRattle(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eBabyRattle;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eBabyRattle : eDummyDefault;
     }
 
 bool LTEXRecord::IsRubberBall()
@@ -552,10 +459,7 @@ bool LTEXRecord::IsRubberBall()
 void LTEXRecord::IsRubberBall(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eRubberBall;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eRubberBall : eDummyDefault;
     }
 
 bool LTEXRecord::Is0Type(UINT8 Type, bool Exact)

@@ -78,35 +78,53 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 16: //bnam Cloud Textures - Layer 3
             return ISTRING_FIELD;
-        case 17: //modl Model Filename
-            return STRING_FIELD;
-        case 18: //modb_p Unknown
+        case 17: //modPath
+            return ISTRING_FIELD;
+        case 18: //modb
+            return FLOAT32_FIELD;
+        case 19: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODB.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 19: //modt_p Texture Files Hashes
-            switch(WhichAttribute)
+        case 20: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODT.GetSize();
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 20: //mods Alternate Textures
-            return STRING_FIELD;
-        case 21: //mods Alternate Textures
-            return FORMID_FIELD;
-        case 22: //mods Alternate Textures
-            return SINT32_FIELD;
-        case 23: //modd FaceGen Model Flags
+
+        case 23: //modelFlags
             return UINT8_FIELD;
         case 24: //lnam_p Unknown
             switch(WhichAttribute)
@@ -245,12 +263,11 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ANAM.value;
         case 16: //bnam Cloud Textures - Layer 3
             return BNAM.value;
-        case 17: //modl Model Filename
+        case 17: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 18: //modb_p Unknown
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODB.value : NULL;
-            return NULL;
-        case 19: //modt_p Texture Files Hashes
+        case 18: //modb
+            return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
+        case 19: //modt_p
             *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
             return NULL;
         case 20: //mods Alternate Textures
@@ -259,7 +276,7 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return MODL.IsLoaded() ? &MODL->MODS->value21 : NULL;
         case 22: //mods Alternate Textures
             return MODL.IsLoaded() ? &MODL->MODS->value22 : NULL;
-        case 23: //modd FaceGen Model Flags
+        case 23: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD->value23 : NULL;
         case 24: //lnam_p Unknown
             *FieldValues = LNAM.IsLoaded() ? &LNAM->value24[0] : NULL;
@@ -395,15 +412,15 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 16: //bnam Cloud Textures - Layer 3
             BNAM.Copy((STRING)FieldValue);
             break;
-        case 17: //modl Model Filename
+        case 17: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 18: //modb_p Unknown
+        case 18: //modb
             MODL.Load();
-            MODL->MODB.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 19: //modt_p Texture Files Hashes
+        case 19: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
@@ -421,7 +438,7 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->MODS.Load();
             MODL->MODS->value22 = *(SINT32 *)FieldValue;
             break;
-        case 23: //modd FaceGen Model Flags
+        case 23: //modelFlags
             MODL.Load();
             MODL->MODD.Load();
             MODL->MODD->value23 = *(UINT8 *)FieldValue;
@@ -915,15 +932,15 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 16: //bnam Cloud Textures - Layer 3
             BNAM.Unload();
             return;
-        case 17: //modl Model Filename
+        case 17: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 18: //modb_p Unknown
+        case 18: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 19: //modt_p Texture Files Hashes
+        case 19: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
@@ -939,7 +956,7 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODS.Unload();
             return;
-        case 23: //modd FaceGen Model Flags
+        case 23: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

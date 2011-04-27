@@ -79,10 +79,7 @@ bool AMEFRecord::IsDamage()
 void AMEFRecord::IsDamage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDamage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDamage : eDummyDefault;
     }
 
 bool AMEFRecord::IsDR()
@@ -94,10 +91,7 @@ bool AMEFRecord::IsDR()
 void AMEFRecord::IsDR(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDR;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDR : eDummyDefault;
     }
 
 bool AMEFRecord::IsDT()
@@ -109,10 +103,7 @@ bool AMEFRecord::IsDT()
 void AMEFRecord::IsDT(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eDT;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eDT : eDummyDefault;
     }
 
 bool AMEFRecord::IsSpread()
@@ -124,10 +115,7 @@ bool AMEFRecord::IsSpread()
 void AMEFRecord::IsSpread(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSpread;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSpread : eDummyDefault;
     }
 
 bool AMEFRecord::IsCondition()
@@ -139,10 +127,7 @@ bool AMEFRecord::IsCondition()
 void AMEFRecord::IsCondition(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eCondition;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eCondition : eDummyDefault;
     }
 
 bool AMEFRecord::IsFatigue()
@@ -154,10 +139,7 @@ bool AMEFRecord::IsFatigue()
 void AMEFRecord::IsFatigue(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eFatigue;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eFatigue : eDummyDefault;
     }
 
 bool AMEFRecord::IsModType(UINT32 Type, bool Exact)
@@ -181,10 +163,7 @@ bool AMEFRecord::IsAdd()
 void AMEFRecord::IsAdd(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eAdd;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eAdd : eDummyDefault;
     }
 
 bool AMEFRecord::IsMultiply()
@@ -196,10 +175,7 @@ bool AMEFRecord::IsMultiply()
 void AMEFRecord::IsMultiply(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eMultiply;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eMultiply : eDummyDefault;
     }
 
 bool AMEFRecord::IsSubtract()
@@ -211,10 +187,7 @@ bool AMEFRecord::IsSubtract()
 void AMEFRecord::IsSubtract(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSubtract;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSubtract : eDummyDefault;
     }
 
 bool AMEFRecord::IsOpType(UINT32 Type, bool Exact)

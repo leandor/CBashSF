@@ -64,13 +64,13 @@ UINT32 DEBRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return STRING_FIELD;
         case 9: //data DATA ,, Struct
             return UINT8_FIELD;
-        case 10: //modt_p Texture Files Hashes
+        case 10: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return MODT.GetSize();
+                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -103,7 +103,7 @@ void * DEBRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return DATA.value;
         case 9: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value9 : NULL;
-        case 10: //modt_p Texture Files Hashes
+        case 10: //modt_p
             *FieldValues = MODT.value;
             return NULL;
         default:
@@ -149,7 +149,7 @@ bool DEBRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.Load();
             DATA->value9 = *(UINT8 *)FieldValue;
             break;
-        case 10: //modt_p Texture Files Hashes
+        case 10: //modt_p
             MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         default:
@@ -187,7 +187,7 @@ void DEBRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 9: //data DATA ,, Struct
             DATA.Unload();
             return;
-        case 10: //modt_p Texture Files Hashes
+        case 10: //modt_p
             MODT.Unload();
             return;
         default:

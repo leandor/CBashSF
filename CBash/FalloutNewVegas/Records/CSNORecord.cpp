@@ -100,10 +100,7 @@ bool CSNORecord::IsDealerStayOnSoft17()
 void CSNORecord::IsDealerStayOnSoft17(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsDealerStayOnSoft17;
-    else
-        Dummy->flags &= ~fIsDealerStayOnSoft17;
+    Dummy->flags = value ? (Dummy->flags | fIsDealerStayOnSoft17) : (Dummy->flags & ~fIsDealerStayOnSoft17);
     }
 
 bool CSNORecord::IsFlagMask(UINT32 Mask, bool Exact)

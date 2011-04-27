@@ -107,10 +107,7 @@ bool NOTERecord::IsSound()
 void NOTERecord::IsSound(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eSound=0;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eSound=0 : eDummyDefault;
     }
 
 bool NOTERecord::IsText()
@@ -122,10 +119,7 @@ bool NOTERecord::IsText()
 void NOTERecord::IsText(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eText;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eText : eDummyDefault;
     }
 
 bool NOTERecord::IsImage()
@@ -137,10 +131,7 @@ bool NOTERecord::IsImage()
 void NOTERecord::IsImage(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eImage;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eImage : eDummyDefault;
     }
 
 bool NOTERecord::IsVoice()
@@ -152,10 +143,7 @@ bool NOTERecord::IsVoice()
 void NOTERecord::IsVoice(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags = eVoice;
-    else
-        Dummy->flags = eDummyDefault;
+    Dummy->flags = value ? eVoice : eDummyDefault;
     }
 
 bool NOTERecord::IsType(UINT8 Type, bool Exact)

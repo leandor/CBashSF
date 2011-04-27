@@ -121,10 +121,7 @@ bool AMMORecord::IsNotNormalWeapon()
 void AMMORecord::IsNotNormalWeapon(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNotNormalWeapon;
-    else
-        Dummy->flags &= ~fIsNotNormalWeapon;
+    Dummy->flags = value ? (Dummy->flags | fIsNotNormalWeapon) : (Dummy->flags & ~fIsNotNormalWeapon);
     }
 
 bool AMMORecord::IsNonPlayable()
@@ -136,10 +133,7 @@ bool AMMORecord::IsNonPlayable()
 void AMMORecord::IsNonPlayable(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNonPlayable;
-    else
-        Dummy->flags &= ~fIsNonPlayable;
+    Dummy->flags = value ? (Dummy->flags | fIsNonPlayable) : (Dummy->flags & ~fIsNonPlayable);
     }
 
 bool AMMORecord::IsFlagMask(UINT8 Mask, bool Exact)

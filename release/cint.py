@@ -1544,6 +1544,22 @@ class Relation(ListComponent):
     faction = CBashFORMID_LIST(1)
     mod = CBashGeneric_LIST(2, c_long)
     exportattrs = copyattrs = ['faction', 'mod']
+    
+class FNVRelation(ListComponent):
+    faction = CBashFORMID_LIST(1)
+    mod = CBashGeneric_LIST(2, c_long)
+    groupReactionType = CBashGeneric_LIST(3, c_ulong)
+    IsNeutral = CBashBasicType('groupReactionType', 0, 'IsEnemy')
+    IsEnemy = CBashBasicType('groupReactionType', 1, 'IsNeutral')
+    IsAlly = CBashBasicType('groupReactionType', 2, 'IsNeutral')
+    IsFriend = CBashBasicType('groupReactionType', 3, 'IsNeutral')
+    exportattrs = copyattrs = ['faction', 'mod', 'groupReactionType']
+
+class FNVAltTexture(ListComponent):
+    name = CBashSTRING_LIST(1)
+    texture = CBashFORMID_LIST(2)
+    index = CBashGeneric_LIST(3, c_long)
+    exportattrs = copyattrs = ['name', 'texture', 'index']
 
 class PGRP(ListComponent):
     x = CBashFLOAT32_LIST(1)
@@ -1909,7 +1925,120 @@ class FnvGLOBRecord(FnvBaseRecord):
     _Type = 'GLOB'
     format = CBashGeneric(7, c_char)
     value = CBashFLOAT32(8)
+    
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['format', 'value']
+
+class FnvCLASRecord(FnvBaseRecord):
+    _Type = 'CLAS'
+    full = CBashSTRING(7)
+    description = CBashSTRING(8)
+    iconPath = CBashISTRING(9)
+    smallIconPath = CBashISTRING(10)
+    tagSkills1 = CBashGeneric(11, c_long)
+    tagSkills2 = CBashGeneric(12, c_long)
+    tagSkills3 = CBashGeneric(13, c_long)
+    tagSkills4 = CBashGeneric(14, c_long)
+    flags = CBashGeneric(15, c_ulong)
+    services = CBashGeneric(16, c_ulong)
+    trainSkill = CBashGeneric(17, c_byte)
+    trainLevel = CBashGeneric(18, c_ubyte)
+    unused1 = CBashUINT8ARRAY(19, 2)
+    strength = CBashGeneric(20, c_ubyte)
+    perception = CBashGeneric(21, c_ubyte)
+    endurance = CBashGeneric(22, c_ubyte)
+    charisma = CBashGeneric(23, c_ubyte)
+    intelligence = CBashGeneric(24, c_ubyte)
+    agility = CBashGeneric(25, c_ubyte)
+    luck = CBashGeneric(26, c_ubyte)
+    
+    IsPlayable = CBashBasicFlag('flags', 0x00000001)
+    IsGuard = CBashBasicFlag('flags', 0x00000002)
+    
+    IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
+    IsServicesArmor = CBashBasicFlag('services', 0x00000002)
+    IsServicesClothing = CBashBasicFlag('services', 0x00000004)
+    IsServicesBooks = CBashBasicFlag('services', 0x00000008)
+    IsServicesFood = CBashBasicFlag('services', 0x00000010)
+    IsServicesChems = CBashBasicFlag('services', 0x00000020)
+    IsServicesStimpacks = CBashBasicFlag('services', 0x00000040)
+    IsServicesLights = CBashBasicFlag('services', 0x00000080)
+    IsServicesMiscItems = CBashBasicFlag('services', 0x00000400)
+    IsServicesPotions = CBashBasicFlag('services', 0x00002000)
+    IsServicesTraining = CBashBasicFlag('services', 0x00004000)
+    IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
+    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                                         'tagSkills1', 'tagSkills2', 'tagSkills3',
+                                                         'tagSkills4', 'flags', 'services',
+                                                         'trainSkill', 'trainLevel', 'strength',
+                                                         'perception', 'endurance', 'charisma',
+                                                         'intelligence', 'agility', 'luck']
+
+class FnvFACTRecord(FnvBaseRecord):
+    _Type = 'FACT'
+    class Rank(ListComponent):
+        rank = CBashGeneric_LIST(1, c_long)
+        male = CBashSTRING_LIST(2)
+        female = CBashSTRING_LIST(3)
+        insigniaPath = CBashISTRING_LIST(4)
+        exportattrs = copyattrs = ['rank', 'male', 'female', 'insigniaPath']
+
+    full = CBashSTRING(7)
+
+    def create_relation(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVRelation(self._CollectionID, self._ModID, self._RecordID, 8, length)
+    relations = CBashLIST(8, FNVRelation)
+    relations_list = CBashLIST(8, FNVRelation, True)
+
+    flags = CBashGeneric(9, c_ushort)
+    unused1 = CBashUINT8ARRAY(10, 2)
+    crimeGoldMultiplier = CBashFLOAT32(11)
+
+    def create_rank(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Rank(self._CollectionID, self._ModID, self._RecordID, 12, length)
+    ranks = CBashLIST(12, Rank)
+    ranks_list = CBashLIST(12, Rank, True)
+
+    reputation = CBashFORMID(13)
+    
+    IsHiddenFromPC = CBashBasicFlag('flags', 0x0001)
+    IsEvil = CBashBasicFlag('flags', 0x0002)
+    IsSpecialCombat = CBashBasicFlag('flags', 0x0004)
+    IsTrackCrime = CBashBasicFlag('flags', 0x0100)
+    IsAllowSell = CBashBasicFlag('flags', 0x0200)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'relations_list', 'flags',
+                                        'crimeGoldMultiplier', 'ranks_list', 'reputation']
+
+class FnvHDPTRecord(FnvBaseRecord):
+    _Type = 'HDPT'
+    full = CBashSTRING(7)
+    modPath = CBashISTRING(8)
+    modb = CBashFLOAT32(9)
+    modt_p = CBashUINT8ARRAY(10)
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 11, length)
+    altTextures = CBashLIST(11, FNVAltTexture)
+    altTextures_list = CBashLIST(11, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(12, c_ubyte)
+    flags = CBashGeneric(13, c_ubyte)
+    parts = CBashFORMIDARRAY(14)
+    
+    IsPlayable = CBashBasicFlag('flags', 0x01)
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
+                                                         'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'flags', 'parts']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5446,7 +5575,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
-                        ('GLOB',FnvGLOBRecord),])
+                        ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
+                        ('HDPT',FnvHDPTRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6089,6 +6219,24 @@ class FnvModFile(object):
         if(RecordID): return FnvGLOBRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     GLOB = CBashRECORDARRAY(FnvGLOBRecord, 'GLOB', 0)
+
+    def create_CLAS(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CLAS", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvCLASRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    CLAS = CBashRECORDARRAY(FnvCLASRecord, 'CLAS', 0)
+
+    def create_FACT(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("FACT", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvFACTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    FACT = CBashRECORDARRAY(FnvFACTRecord, 'FACT', 0)
+
+    def create_HDPT(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("HDPT", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvHDPTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    HDPT = CBashRECORDARRAY(FnvHDPTRecord, 'HDPT', 0)
 
     @property
     def tops(self):

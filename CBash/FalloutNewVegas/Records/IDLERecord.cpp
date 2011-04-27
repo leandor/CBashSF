@@ -95,10 +95,7 @@ bool IDLERecord::IsNoAttacking()
 void IDLERecord::IsNoAttacking(bool value)
     {
     if(!Dummy.IsLoaded()) return;
-    if(value)
-        Dummy->flags |= fIsNoAttacking;
-    else
-        Dummy->flags &= ~fIsNoAttacking;
+    Dummy->flags = value ? (Dummy->flags | fIsNoAttacking) : (Dummy->flags & ~fIsNoAttacking);
     }
 
 bool IDLERecord::IsFlagMask(UINT8 Mask, bool Exact)

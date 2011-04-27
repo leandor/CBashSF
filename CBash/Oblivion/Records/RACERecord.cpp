@@ -381,10 +381,7 @@ bool RACERecord::IsPlayable()
 
 void RACERecord::IsPlayable(bool value)
     {
-    if(value)
-        DATA.value.flags |= fIsPlayable;
-    else
-        DATA.value.flags &= ~fIsPlayable;
+    DATA.value.flags = value ? (DATA.value.flags | fIsPlayable) : (DATA.value.flags & ~fIsPlayable);
     }
 
 bool RACERecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -459,7 +456,7 @@ UINT32 RACERecord::GetSize(bool forceCalc)
         }
 
     if(SPLO.size())
-        TotSize += (UINT32)SPLO.size() * (sizeof(UINT32) + 6);
+        TotSize += (UINT32)SPLO.size() * (sizeof(FORMID) + 6);
 
     for(UINT32 p = 0; p < XNAM.size(); p++)
         TotSize += XNAM[p]->GetSize() + 6;
@@ -1373,7 +1370,7 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
 
     for(UINT32 p = 0; p < SPLO.size(); p++)
-        SaveHandler.writeSubRecord('OLPS', &SPLO[p], sizeof(UINT32));
+        SaveHandler.writeSubRecord('OLPS', &SPLO[p], sizeof(FORMID));
 
     for(UINT32 p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
@@ -1394,7 +1391,7 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
     if(ATTR.IsLoaded())
         SaveHandler.writeSubRecord('RTTA', &ATTR.value, ATTR.GetSize());
 
-    SaveHandler.writeSubRecord('0MAN', NULL, 0);
+    SaveHandler.writeSubRecordHeader('0MAN', 0);
 
     SaveHandler.writeSubRecord('XDNI', &curINDX, 4);
     if(MOD0.IsLoaded() && MOD0->MODL.IsLoaded())
@@ -1513,8 +1510,8 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
         }
 
     curINDX = 0;
-    SaveHandler.writeSubRecord('1MAN', NULL, 0);
-    SaveHandler.writeSubRecord('MANM', NULL, 0);
+    SaveHandler.writeSubRecordHeader('1MAN', 0);
+    SaveHandler.writeSubRecordHeader('MANM', 0);
     if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
         {
         SaveHandler.writeSubRecord('LDOM', MMODL->MODL.value, MMODL->MODL.GetSize());
@@ -1549,7 +1546,7 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('NOCI', MICON4.value, MICON4.GetSize());
 
     curINDX = 0;
-    SaveHandler.writeSubRecord('MANF', NULL, 0);
+    SaveHandler.writeSubRecordHeader('MANF', 0);
     if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
         {
         SaveHandler.writeSubRecord('LDOM', FMODL->MODL.value, FMODL->MODL.GetSize());
@@ -1586,12 +1583,12 @@ SINT32 RACERecord::WriteRecord(_FileHandler &SaveHandler)
     if(HNAM.size())
         SaveHandler.writeSubRecord('MANH', &HNAM[0], (UINT32)HNAM.size() * sizeof(UINT32));
     else
-        SaveHandler.writeSubRecord('MANH', NULL, 0);
+        SaveHandler.writeSubRecordHeader('MANH', 0);
 
     if(ENAM.size())
         SaveHandler.writeSubRecord('MANE', &ENAM[0], (UINT32)ENAM.size() * sizeof(UINT32));
     else
-        SaveHandler.writeSubRecord('MANE', NULL, 0);
+        SaveHandler.writeSubRecordHeader('MANE', 0);
 
     if(FGGS.IsLoaded())
         SaveHandler.writeSubRecord('SGGF', FGGS.value, FGGS.GetSize());

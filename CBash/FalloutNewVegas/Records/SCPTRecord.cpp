@@ -88,10 +88,7 @@ bool SCPTRecord::IsScriptEnabled()
 
 void SCPTRecord::IsScriptEnabled(bool value)
     {
-    if(value)
-        SCHR.value.flags |= fIsEnabled;
-    else
-        SCHR.value.flags &= ~fIsEnabled;
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
     }
 
 bool SCPTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)

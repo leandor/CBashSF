@@ -58,7 +58,7 @@ UINT32 REPURecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //full Name
+        case 7: //full
             return STRING_FIELD;
         case 8: //iconPath
             return ISTRING_FIELD;
@@ -89,7 +89,7 @@ void * REPURecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //full Name
+        case 7: //full
             return FULL.value;
         case 8: //iconPath
             return ICON.value;
@@ -129,7 +129,7 @@ bool REPURecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //full Name
+        case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
         case 8: //iconPath
@@ -168,7 +168,7 @@ void REPURecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //full Name
+        case 7: //full
             FULL.Unload();
             return;
         case 8: //iconPath
