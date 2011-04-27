@@ -61,15 +61,6 @@ GLOBRecord::~GLOBRecord()
     //
     }
 
-bool GLOBRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 UINT32 GLOBRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -85,11 +76,9 @@ UINT32 GLOBRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
+    TotSize += FNAM.GetSize() + 6;
 
-    if(FLTV.IsLoaded())
-        TotSize += FLTV.GetSize() + 6;
+    TotSize += FLTV.GetSize() + 6;
 
     return TotSize;
     }
@@ -162,11 +151,9 @@ SINT32 GLOBRecord::WriteRecord(_FileHandler &SaveHandler)
     if(EDID.IsLoaded())
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
-    if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+    SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
 
-    if(FLTV.IsLoaded())
-        SaveHandler.writeSubRecord('VTLF', FLTV.value, FLTV.GetSize());
+    SaveHandler.writeSubRecord('VTLF', &FLTV.value, FLTV.GetSize());
 
     return -1;
     }

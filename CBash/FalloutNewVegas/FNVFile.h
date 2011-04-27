@@ -28,7 +28,7 @@ GPL License and Copyright Notice ============================================
 #include "Records/GMSTRecord.h"
 #include "Records/TXSTRecord.h"
 #include "Records/MICNRecord.h"
-//#include "Records/GLOBRecord.h"
+#include "Records/GLOBRecord.h"
 //#include "Records/CLASRecord.h"
 //#include "Records/FACTRecord.h"
 //#include "Records/HDPTRecord.h"
@@ -133,7 +133,7 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::GMSTRecord> GMST;
         FNVGRUPRecords<FNV::TXSTRecord> TXST;
         FNVGRUPRecords<FNV::MICNRecord> MICN;
-        //FNVGRUPRecords<FNV::GLOBRecord> GLOB;
+        FNVGRUPRecords<FNV::GLOBRecord> GLOB;
         //FNVGRUPRecords<FNV::CLASRecord> CLAS;
         //FNVGRUPRecords<FNV::FACTRecord> FACT;
         //FNVGRUPRecords<FNV::HDPTRecord> HDPT;

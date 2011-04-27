@@ -1905,6 +1905,12 @@ class FnvMICNRecord(FnvBaseRecord):
     
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath']
 
+class FnvGLOBRecord(FnvBaseRecord):
+    _Type = 'GLOB'
+    CHAR_MACRO(format, 7)
+    FLOAT32_MACRO(value, 8)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['format', 'value']
+
 #--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
@@ -5041,7 +5047,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
-                    ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),])
+                        ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
+                        ('GLOB',FnvGLOBRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5384,6 +5391,7 @@ class FnvModFile(object):
     FnvModEDIDRecordsMACRO(GMST)
     FnvModRecordsMACRO(TXST)
     FnvModRecordsMACRO(MICN)
+    FnvModRecordsMACRO(GLOB)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

@@ -232,10 +232,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgGLOB:
             case 'BOLG':
-                //ReadHandler.read(&GLOB.stamp, 4);
-                //ReadHandler.read(&GLOB.unknown, 4);
-                //GLOB.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&GLOB.stamp, 4);
+                ReadHandler.read(&GLOB.unknown, 4);
+                GLOB.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             case eIgCLAS:
             case 'SALC':
                 //ReadHandler.read(&CLAS.stamp, 4);
@@ -855,7 +855,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'NCIM':
             return (UINT32)MICN.Records.size();
         case 'BOLG':
-            //return (UINT32)GLOB.Records.size();
+            return (UINT32)GLOB.Records.size();
         case 'SALC':
             //return (UINT32)CLAS.Records.size();
         case 'TCAF':
@@ -1094,9 +1094,9 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = MICN.Records.back();
             break;
         case 'BOLG':
-            //GLOB.Records.push_back(new FNV::GLOBRecord((FNV::GLOBRecord *)SourceRecord));
-            //newRecord = GLOB.Records.back();
-            //break;
+            GLOB.Records.push_back(new FNV::GLOBRecord((FNV::GLOBRecord *)SourceRecord));
+            newRecord = GLOB.Records.back();
+            break;
         case 'SALC':
             //CLAS.Records.push_back(new FNV::CLASRecord((FNV::CLASRecord *)SourceRecord));
             //newRecord = CLAS.Records.back();
@@ -1653,7 +1653,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += TXST.WriteGRUP('TSXT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += MICN.WriteGRUP('NCIM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += GLOB.WriteGRUP('BOLG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.WriteGRUP('BOLG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += HDPT.WriteGRUP('TPDH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1901,8 +1901,8 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             MICN.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'BOLG':
-            //GLOB.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            GLOB.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'SALC':
             //CLAS.VisitRecords(RecordType, op, DeepVisit);
             //break;

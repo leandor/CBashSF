@@ -1,21 +1,63 @@
 from cint import *
 
+def fflags(y):
+    for x in range(32):
+        z = pow(2, x)
+        if y & z == z:
+            print hex(z)
+            
 RecIndent = -2
 def printRecord(record):
     global RecIndent
     RecIndent += 2
     if hasattr(record, 'copyattrs'):
+        msize = max([len(attr) for attr in record.copyattrs])
         for attr in record.copyattrs:
             rec = getattr(record, attr)
             if RecIndent: print " " * (RecIndent - 1),
-            print attr, ":", rec
+            print attr + " " * (msize - len(attr)), ":",
+            if 'flag' in attr.lower():
+                print hex(rec)
+                for x in range(32):
+                    z = pow(2, x)
+                    if rec & z == z:
+                        print "  Active" + " " * (msize - len("  Active")), "  :", hex(z)
+
+            elif isinstance(rec, tuple) and len(rec) == 2 and isinstance(rec[0], basestring) and isinstance(rec[1], int):
+                print PrintFormID(rec)
+            elif isinstance(rec, list):
+                if len(rec) > 0:
+                    IsFidList = True
+                    for obj in rec:
+                        if not (isinstance(obj, tuple) and len(obj) == 2 and isinstance(obj[0], basestring) and isinstance(obj[1], int)):
+                            IsFidList = False
+                            break
+                    if IsFidList:
+                        print [PrintFormID(x) for x in rec]
+                    else:
+                        print rec
+                else:
+                    print rec
+            else:
+                print rec
             printRecord(rec)
     elif isinstance(record, list):
-        if len(record) > 0 and hasattr(record[0], 'copyattrs'):
-            for rec in record:
-                printRecord(rec)
+        if len(record) > 0:
+            if hasattr(record[0], 'copyattrs'):
+                for rec in record:
+                    printRecord(rec)
+                    
     RecIndent -= 2
 
+def d(record):
+    try:
+        fid = record.fid
+        msize = max([len(attr) for attr in record.copyattrs])
+        print "fid" + " " * (msize - len("fid")), ":", PrintFormID(fid)
+    except AttributeError:
+        pass
+    printRecord(record)
+    
 def regressionTests():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")
@@ -27,7 +69,8 @@ def regressionTests():
     assertGMST(Current, newMod)
     assertTXST(Current, newMod)
     assertMICN(Current, newMod)
-    newMod.save()
+    assertGLOB(Current, newMod)
+##    newMod.save()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -69,7 +112,7 @@ def assertTES4(Current, newMod):
     record.DATA = 1
     record.overrides = [0x00001001, 0x00001002, 0x00001003]
     record.screenshot_p = [10, 11, 12, 13, 11, 12, 13]
-    
+
     assert record.flags1 ==  5 | 0x80000000 #CBash sets 0x80000000 for internal use
     assert record.versionControl1 == [1, 2, 3, 4]
     assert record.formVersion == 6
@@ -558,6 +601,89 @@ def assertMICN(Current, newMod):
     assert record.smallIconPath == None
 
     print "MICN:Finished testing"
+
+def assertGLOB(Current, newMod):
+    record = Current.LoadOrderMods[0].GLOB[0]
+    
+    assert record.fid == ('FalloutNV.esm', 0x179B16)
+    assert record.flags1 == 0x80000040 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [5, 92, 71, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'EuclidPointerRange'
+    assert record.eid == 'EuclidPointerRAnge'
+    
+    assert record.format == r'l'
+    assert record.value == 12000.0
+    
+    nrecord = newMod.create_GLOB()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = 'WarTest'
+    
+    nrecord.format = r'l'
+    nrecord.value = 10000
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x001007)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.format == r'l'
+    assert nrecord.value == 10000
+
+    record = Current.LoadOrderMods[0].GLOB[0]
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x179B16)
+    assert newrecord.flags1 == 0x80000040 #CBash sets 0x80000000 for internal use
+    assert newrecord.versionControl1 == [5, 92, 71, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'EuclidPointerRange'
+    assert newrecord.eid == 'EuclidPointerRAnge'
+    
+    assert newrecord.format == r'l'
+    assert newrecord.value == 12000.0
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.format = r'l'
+    newrecord.value = 11000
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x179B16)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.format == r'l'
+    assert newrecord.value == 11000
+
+    assert record.fid == ('FalloutNV.esm', 0x179B16)
+    assert record.flags1 == 0x80000040 #CBash sets 0x80000000 for internal use
+    assert record.versionControl1 == [5, 92, 71, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'EuclidPointerRange'
+    assert record.eid == 'EuclidPointerRAnge'
+    
+    assert record.format == r'l'
+    assert record.value == 12000.0
+
+    print "GLOB:Finished testing"
 
 from timeit import Timer
 

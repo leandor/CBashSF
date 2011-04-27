@@ -48,7 +48,7 @@ class Collection
         Collection(STRING const &ModsPath, UINT32 _CollectionType);
         ~Collection();
 
-        SINT32 AddMod(STRING const &_FileName, ModFlags &flags, bool isPreloading=false);
+        SINT32 AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading=false);
         bool IsModAdded(STRING const &ModName);
         SINT32 SaveMod(ModFile *&curModFile, bool CloseCollection=false);
 

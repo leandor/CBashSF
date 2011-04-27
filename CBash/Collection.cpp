@@ -88,7 +88,7 @@ Collection::~Collection()
     //LoadOrder255 is shared with ModFiles, so no deleting
     }
 
-SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool isPreloading)
+SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -98,7 +98,7 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool isPrelo
 
     if(IsLoaded || IsModAdded(ModName ? ModName : _FileName))
         {
-        if(!isPreloading)
+        if(!IsPreloading)
             {
             if(IsLoaded)
                 printf("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);

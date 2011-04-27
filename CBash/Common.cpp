@@ -327,7 +327,6 @@ UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
 
 void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount)
     {
-    UINT32 _Temp = 0;
     if(_MaxCharCount <= 65535)
         {
         write(&_Type, 4);
@@ -335,7 +334,7 @@ void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _Max
         }
     else //Requires XXXX SubRecord
         {
-        _Temp = 4;
+        UINT32 _Temp = 4;
         write("XXXX", 4);
         write(&_Temp, 2);
         write(&_MaxCharCount, 4);

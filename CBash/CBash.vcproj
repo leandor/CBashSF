@@ -1105,6 +1105,37 @@
 						Name="Simple"
 						>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\GLOBRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\GMSTRecord.cpp"
 							>
 							<FileConfiguration
@@ -1147,6 +1178,37 @@
 					<Filter
 						Name="API"
 						>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\GLOBRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\GMSTRecordAPI.cpp"
 							>

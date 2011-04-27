@@ -86,9 +86,9 @@ void * GLOBRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //fnam Type
-            return FNAM.IsLoaded() ? &FNAM->value7 : NULL;
+            return &FNAM.value;
         case 8: //fltv Value
-            return FLTV.IsLoaded() ? &FLTV->value8 : NULL;
+            return &FLTV.value;
         default:
             return NULL;
         }
@@ -122,12 +122,10 @@ bool GLOBRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
         case 7: //fnam Type
-            FNAM.Load();
-            FNAM->value7 = *(UINT8 *)FieldValue;
+            FNAM.value = *(UINT8 *)FieldValue;
             break;
         case 8: //fltv Value
-            FLTV.Load();
-            FLTV->value8 = *(FLOAT32 *)FieldValue;
+            FLTV.value = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;

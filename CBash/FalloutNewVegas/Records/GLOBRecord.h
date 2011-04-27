@@ -29,14 +29,12 @@ class GLOBRecord : public FNVRecord //Global
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSimpleSubRecord<UINT8, 'f'> FNAM; //Type
-        OptSimpleSubRecord<FLOAT32> FLTV; //Value
+        ReqSimpleSubRecord<UINT8, 'f'> FNAM; //Type
+        ReqSimpleSubRecord<FLOAT32> FLTV; //Value
 
         GLOBRecord(unsigned char *_recData=NULL);
         GLOBRecord(GLOBRecord *srcRecord);
         ~GLOBRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
