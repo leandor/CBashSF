@@ -123,7 +123,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 27: //femaleWeight
             return FLOAT32_FIELD;
         case 28: //flags
-            return UINT32_FIELD;
+            return UINT32_FLAG_FIELD;
         case 29: //maleVoice
             return FORMID_FIELD;
         case 30: //femaleVoice

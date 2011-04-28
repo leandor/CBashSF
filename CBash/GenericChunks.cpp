@@ -1758,6 +1758,156 @@ bool GENTNAM::operator !=(const GENTNAM &other) const
     {
     return !(*this == other);
     }
+
+RACESKILL::RACESKILL():
+    value(-1),
+    boost(0)
+    {
+    //
+    }
+
+RACESKILL::~RACESKILL()
+    {
+    //
+    }
+
+bool RACESKILL::operator ==(const RACESKILL &other) const
+    {
+    return (value == other.value &&
+            boost == other.boost);
+    }
+
+bool RACESKILL::operator !=(const RACESKILL &other) const
+    {
+    return !(*this == other);
+    }
+
+RACEDATA::RACEDATA():
+    maleHeight(1.0f),
+    femaleHeight(1.0f),
+    maleWeight(1.0f),
+    femaleWeight(1.0f),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 2);
+    }
+
+RACEDATA::~RACEDATA()
+    {
+    //
+    }
+
+bool RACEDATA::operator ==(const RACEDATA &other) const
+    {
+    return (skills[0] == other.skills[0] &&
+            skills[1] == other.skills[1] &&
+            skills[2] == other.skills[2] &&
+            skills[3] == other.skills[3] &&
+            skills[4] == other.skills[4] &&
+            skills[5] == other.skills[5] &&
+            skills[6] == other.skills[6] &&
+            AlmostEqual(maleHeight,other.maleHeight,2) &&
+            AlmostEqual(femaleHeight,other.femaleHeight,2) &&
+            AlmostEqual(maleWeight,other.maleWeight,2) &&
+            AlmostEqual(femaleWeight,other.femaleWeight,2) &&
+            flags == other.flags);
+    }
+
+bool RACEDATA::operator !=(const RACEDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+RACESNAM::RACESNAM()
+    {
+    memset(&SNAM, 0x00, 2);
+    }
+
+RACESNAM::~RACESNAM()
+    {
+    //
+    }
+
+bool RACESNAM::operator ==(const RACESNAM &other) const
+    {
+    return (SNAM[0] == other.SNAM[0] &&
+            SNAM[1] == other.SNAM[1]);
+    }
+
+bool RACESNAM::operator !=(const RACESNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+RACEVNAM::RACEVNAM():
+    maleVoice(0),
+    femaleVoice(0)
+    {
+    //
+    }
+
+RACEVNAM::~RACEVNAM()
+    {
+    //
+    }
+
+bool RACEVNAM::operator ==(const RACEVNAM &other) const
+    {
+    return (maleVoice == other.maleVoice &&
+            femaleVoice == other.femaleVoice);
+    }
+
+bool RACEVNAM::operator !=(const RACEVNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+RACEDNAM::RACEDNAM():
+    defaultHairMale(0),
+    defaultHairFemale(0)
+    {
+    //
+    }
+
+RACEDNAM::~RACEDNAM()
+    {
+    //
+    }
+
+bool RACEDNAM::operator ==(const RACEDNAM &other) const
+    {
+    return (defaultHairMale == other.defaultHairMale &&
+            defaultHairFemale == other.defaultHairFemale);
+    }
+
+bool RACEDNAM::operator !=(const RACEDNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+RACECNAM::RACECNAM():
+    defaultHairMale(0),
+    defaultHairFemale(0)
+    {
+    //
+    }
+
+RACECNAM::~RACECNAM()
+    {
+    //
+    }
+
+bool RACECNAM::operator ==(const RACECNAM &other) const
+    {
+    return (defaultHairMale == other.defaultHairMale &&
+            defaultHairFemale == other.defaultHairFemale);
+    }
+
+bool RACECNAM::operator !=(const RACECNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 //Fallout New Vegas Chunks
 
 GENOBND::GENOBND():
@@ -2063,6 +2213,35 @@ bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         curPos += 4;
         }
     return true;
+    }
+
+FNVAlternateTextures& FNVAlternateTextures::operator = (const FNVAlternateTextures &rhs)
+    {
+    if(this != &rhs)
+        {
+        if(rhs.MODS.size() != 0)
+            {
+            Unload();
+            MODS.resize(rhs.MODS.size());
+            UINT32 nameSize = 0;
+            for(UINT32 p = 0; p < rhs.MODS.size(); p++)
+                {
+                MODS[p] = new FNVMODS;
+                if(rhs.MODS[p]->name != NULL)
+                    {
+                    nameSize = (UINT32)strlen(rhs.MODS[p]->name) + 1;
+                    MODS[p]->name = new char[nameSize];
+                    strcpy_s(MODS[p]->name, nameSize, rhs.MODS[p]->name);
+                    }
+                MODS[p]->name = rhs.MODS[p]->name;
+                MODS[p]->texture = rhs.MODS[p]->texture;
+                MODS[p]->index = rhs.MODS[p]->index;
+                }
+            }
+        else
+            Unload();
+        }
+    return *this;
     }
 
 bool FNVAlternateTextures::operator ==(const FNVAlternateTextures &other) const

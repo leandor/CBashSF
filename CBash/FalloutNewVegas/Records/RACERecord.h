@@ -28,34 +28,8 @@ namespace FNV
 class RACERecord : public FNVRecord //Race
     {
     private:
-        struct RACESKILL
-            {
-            SINT8   value, boost;
-
-            RACESKILL();
-            ~RACESKILL();
-
-            bool operator ==(const RACESKILL &other) const;
-            bool operator !=(const RACESKILL &other) const;
-            };
-
-        struct RACEDATA
-            {
-            RACESKILL skills[7];
-            UINT8   unused1[2];
-            FLOAT32 maleHeight, femaleHeight, maleWeight, femaleWeight;
-            UINT32  flags;
-
-            RACEDATA();
-            ~RACEDATA();
-
-            bool operator ==(const RACEDATA &other) const;
-            bool operator !=(const RACEDATA &other) const;
-            };
-
         struct RACEPart // Head Part
             {
-            OptSimpleSubRecord<UINT32> INDX; //Index
             OptSubRecord<FNVMODEL> MODL; //Model
             StringRecord ICON; //Large Icon Filename
             StringRecord MICO; //Small Icon Filename
@@ -75,28 +49,54 @@ class RACERecord : public FNVRecord //Race
         StringRecord FULL; //Name
         StringRecord DESC; //Description
         std::vector<ReqSubRecord<FNVXNAM> *> XNAM;  //Relations
-        OptSubRecord<RACEDATA> DATA; //Data
+        ReqSubRecord<RACEDATA> DATA; //Data
         OptSimpleSubRecord<FORMID> ONAM; //Older
         OptSimpleSubRecord<FORMID> YNAM; //Younger
         //OptSubRecord<GENNAM2> NAM2; //Unknown Marker (Empty)
-        std::vector<FORMID> VTCK; //Voices
-        std::vector<FORMID> DNAM; //Default Hair Styles
-        std::vector<UINT8> CNAM; //Default Hair Colors
+        SubRecord<RACEVNAM> VTCK; //Voices
+        SubRecord<RACEDNAM> DNAM; //Default Hair Styles
+        SubRecord<RACECNAM> CNAM; //Default Hair Colors
         OptSimpleSubRecord<FLOAT32> PNAM; //FaceGen - Main clamp
         OptSimpleSubRecord<FLOAT32> UNAM; //FaceGen - Face clamp
         RawRecord ATTR; //Unknown
 
         //OptSubRecord<GENNAM> NAM0; //Head Data Marker (Empty)
         //OptSubRecord<GENMNAM> MNAM; //Male Data Marker (Empty)
-        std::vector<RACEPart *> MaleHeadParts; //Male Head Parts
+        //Male Head Parts
+        RACEPart MHMOD0; //Head
+        RACEPart MHMOD1; //Ears
+        RACEPart MHMOD2; //Mouth
+        RACEPart MHMOD3; //Teeth Lower
+        RACEPart MHMOD4; //Teeth Upper
+        RACEPart MHMOD5; //Tongue
+        RACEPart MHMOD6; //Left Eye
+        RACEPart MHMOD7; //Right Eye
+
         //OptSubRecord<GENFNAM> FNAM; //Female Data Marker (Empty)
-        std::vector<RACEPart *> FemaleHeadParts; //Female Head Parts
+        //Female Head Parts
+        RACEPart FHMOD0; //Head
+        RACEPart FHMOD1; //Ears
+        RACEPart FHMOD2; //Mouth
+        RACEPart FHMOD3; //Teeth Lower
+        RACEPart FHMOD4; //Teeth Upper
+        RACEPart FHMOD5; //Tongue
+        RACEPart FHMOD6; //Left Eye
+        RACEPart FHMOD7; //Right Eye
 
         //OptSubRecord<GENNAM1> NAM1; //Body Data Marker (Empty)
         //OptSubRecord<GENMNAM> MNAM; //Male Data Marker (Empty)
-        std::vector<RACEPart *> MaleBodyParts; //Male Head Parts
+        //Male Body Parts
+        RACEPart MBMOD0; //Upper Body
+        RACEPart MBMOD1; //Left Hand
+        RACEPart MBMOD2; //Right Hand
+        RACEPart MBMOD3; //Upper Body Texture
+
         //OptSubRecord<GENFNAM> FNAM; //Female Data Marker (Empty)
-        std::vector<RACEPart *> FemaleBodyParts; //Female Head Parts
+        //Female Body Parts
+        RACEPart FBMOD0; //Upper Body
+        RACEPart FBMOD1; //Left Hand
+        RACEPart FBMOD2; //Right Hand
+        RACEPart FBMOD3; //Upper Body Texture
 
         std::vector<FORMID> HNAM; //Hairs
         std::vector<FORMID> ENAM; //Eyes
@@ -105,12 +105,12 @@ class RACERecord : public FNVRecord //Race
         RawRecord MaleFGGS; //FaceGen Geometry-Symmetric
         RawRecord MaleFGGA; //FaceGen Geometry-Asymmetric
         RawRecord MaleFGTS; //FaceGen Texture-Symmetric
-        RawRecord MaleSNAM; //Unknown
+        ReqSubRecord<RACESNAM> MaleSNAM; //Unknown
         //OptSubRecord<GENFNAM> FNAM; //Female Data Marker (Empty)
         RawRecord FemaleFGGS; //FaceGen Geometry-Symmetric
         RawRecord FemaleFGGA; //FaceGen Geometry-Asymmetric
         RawRecord FemaleFGTS; //FaceGen Texture-Symmetric
-        RawRecord FemaleSNAM; //Unknown
+        ReqSubRecord<RACESNAM> FemaleSNAM; //Unknown
 
         RACERecord(unsigned char *_recData=NULL);
         RACERecord(RACERecord *srcRecord);

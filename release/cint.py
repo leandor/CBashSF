@@ -514,6 +514,31 @@ class CBashISTRING_GROUP(object):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
         else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
 
+class CBashLIST_GROUP(object):
+    def __init__(self, FieldID, Type, AsList=False):
+        self._FieldID = FieldID
+        self._Type = Type
+        self._AsList = AsList
+    def __get__(self, instance, owner):
+        FieldID = self._FieldID + instance._FieldID
+        numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+        oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x) for x in range(0, numElements)]
+        if(self._AsList): return ExtractCopyList(oElements)
+        return oElements
+    def __set__(self, instance, nElements):
+        FieldID = self._FieldID + instance._FieldID
+        if nElements is None or not len(nElements):
+            _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            length = len(nElements)
+            if isinstance(nElements[0], tuple): nValues = nElements
+            else: nValues = ExtractCopyList(nElements)
+            ##Resizes the list
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
+            numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+            oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x) for x in range(0, numElements)]
+            SetCopyList(oElements, nValues)
+
 # Top level Descriptors
 class CBashLIST(object):
     def __init__(self, FieldID, Type, AsList=False):
@@ -2081,6 +2106,187 @@ class FnvEYESRecord(FnvBaseRecord):
     IsNotFemale = CBashBasicFlag('flags', 0x04)
     IsFemale = CBashInvertedFlag('IsNotFemale')
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'iconPath', 'flags']
+    
+class FnvRACERecord(FnvBaseRecord):
+    _Type = 'RACE'
+    class RaceModel(BaseComponent):
+        modPath = CBashISTRING_GROUP(0)
+        modb = CBashFLOAT32_GROUP(1)
+        modt_p = CBashUINT8ARRAY_GROUP(2)
+        def create_altTexture(self):
+            FieldID = self._FieldID + 3
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, FieldID, length)
+        altTextures = CBashLIST_GROUP(3, FNVAltTexture)
+        altTextures_list = CBashLIST_GROUP(3, FNVAltTexture, True)
+        flags = CBashGeneric_GROUP(4, c_ubyte)
+        iconPath = CBashISTRING_GROUP(5)
+        smallIconPath = CBashISTRING_GROUP(6)
+        IsHead = CBashBasicFlag('flags', 0x01)
+        IsTorso = CBashBasicFlag('flags', 0x02)
+        IsRightHand = CBashBasicFlag('flags', 0x04)
+        IsLeftHand = CBashBasicFlag('flags', 0x08)
+        copyattrs = ['modPath', 'modb', 'modt_p', 'altTextures_list',
+                     'flags', 'iconPath', 'smallIconPath']
+        exportattrs = ['modPath', 'modb', 'altTextures_list',
+                     'flags', 'iconPath', 'smallIconPath']#, 'modt_p']
+
+    full = CBashSTRING(7)
+    description = CBashSTRING(8)
+    def create_relation(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVRelation(self._CollectionID, self._ModID, self._RecordID, 9, length)
+    relations = CBashLIST(9, FNVRelation)
+    relations_list = CBashLIST(9, FNVRelation, True)
+
+    skill1 = CBashGeneric(10, c_byte)
+    skill1Boost = CBashGeneric(11, c_byte)
+    skill2 = CBashGeneric(12, c_byte)
+    skill2Boost = CBashGeneric(13, c_byte)
+    skill3 = CBashGeneric(14, c_byte)
+    skill3Boost = CBashGeneric(15, c_byte)
+    skill4 = CBashGeneric(16, c_byte)
+    skill4Boost = CBashGeneric(17, c_byte)
+    skill5 = CBashGeneric(18, c_byte)
+    skill5Boost = CBashGeneric(19, c_byte)
+    skill6 = CBashGeneric(20, c_byte)
+    skill6Boost = CBashGeneric(21, c_byte)
+    skill7 = CBashGeneric(22, c_byte)
+    skill7Boost = CBashGeneric(23, c_byte)
+    unused1 = CBashUINT8ARRAY(24, 2)
+    maleHeight = CBashFLOAT32(25)
+    femaleHeight = CBashFLOAT32(26)
+    maleWeight = CBashFLOAT32(27)
+    femaleWeight = CBashFLOAT32(28)
+    flags = CBashGeneric(29, c_ulong)
+    older = CBashFORMID(30)
+    younger = CBashFORMID(31)
+    maleVoice = CBashFORMID(32)
+    femaleVoice = CBashFORMID(33)
+    defaultHairMale = CBashFORMID(34)
+    defaultHairFemale = CBashFORMID(35)
+    defaultHairMaleColor = CBashGeneric(36, c_ubyte)
+    defaultHairFemaleColor = CBashGeneric(37, c_ubyte)
+    mainClamp = CBashFLOAT32(38)
+    faceClamp = CBashFLOAT32(39)
+    attr_p = CBashUINT8ARRAY(40)
+    maleHead = CBashGrouped(41, RaceModel)
+    maleHead_list = CBashGrouped(41, RaceModel, True)
+
+    maleEars = CBashGrouped(48, RaceModel)
+    maleEars_list = CBashGrouped(48, RaceModel, True)
+
+    maleMouth = CBashGrouped(55, RaceModel)
+    maleMouth_list = CBashGrouped(55, RaceModel, True)
+
+    maleTeethLower = CBashGrouped(62, RaceModel)
+    maleTeethLower_list = CBashGrouped(62, RaceModel, True)
+
+    maleTeethUpper = CBashGrouped(69, RaceModel)
+    maleTeethUpper_list = CBashGrouped(69, RaceModel, True)
+
+    maleTongue = CBashGrouped(76, RaceModel)
+    maleTongue_list = CBashGrouped(76, RaceModel, True)
+
+    maleLeftEye = CBashGrouped(83, RaceModel)
+    maleLeftEye_list = CBashGrouped(83, RaceModel, True)
+
+    maleRightEye = CBashGrouped(90, RaceModel)
+    maleRightEye_list = CBashGrouped(90, RaceModel, True)
+
+    femaleHead = CBashGrouped(97, RaceModel)
+    femaleHead_list = CBashGrouped(97, RaceModel, True)
+
+    femaleEars = CBashGrouped(104, RaceModel)
+    femaleEars_list = CBashGrouped(104, RaceModel, True)
+
+    femaleMouth = CBashGrouped(111, RaceModel)
+    femaleMouth_list = CBashGrouped(111, RaceModel, True)
+
+    femaleTeethLower = CBashGrouped(118, RaceModel)
+    femaleTeethLower_list = CBashGrouped(118, RaceModel, True)
+
+    femaleTeethUpper = CBashGrouped(125, RaceModel)
+    femaleTeethUpper_list = CBashGrouped(125, RaceModel, True)
+
+    femaleTongue = CBashGrouped(132, RaceModel)
+    femaleTongue_list = CBashGrouped(132, RaceModel, True)
+
+    femaleLeftEye = CBashGrouped(139, RaceModel)
+    femaleLeftEye_list = CBashGrouped(139, RaceModel, True)
+
+    femaleRightEye = CBashGrouped(146, RaceModel)
+    femaleRightEye_list = CBashGrouped(146, RaceModel, True)
+    
+    maleUpperBody = CBashGrouped(153, RaceModel)
+    maleUpperBody_list = CBashGrouped(153, RaceModel, True)
+
+    maleLeftHand = CBashGrouped(160, RaceModel)
+    maleLeftHand_list = CBashGrouped(160, RaceModel, True)
+
+    maleRightHand = CBashGrouped(167, RaceModel)
+    maleRightHand_list = CBashGrouped(167, RaceModel, True)
+
+    maleUpperBodyTexture = CBashGrouped(174, RaceModel)
+    maleUpperBodyTexture_list = CBashGrouped(174, RaceModel, True)
+    
+    femaleUpperBody = CBashGrouped(181, RaceModel)
+    femaleUpperBody_list = CBashGrouped(181, RaceModel, True)
+
+    femaleLeftHand = CBashGrouped(188, RaceModel)
+    femaleLeftHand_list = CBashGrouped(188, RaceModel, True)
+
+    femaleRightHand = CBashGrouped(195, RaceModel)
+    femaleRightHand_list = CBashGrouped(195, RaceModel, True)
+
+    femaleUpperBodyTexture = CBashGrouped(202, RaceModel)
+    femaleUpperBodyTexture_list = CBashGrouped(202, RaceModel, True)
+
+    hairs = CBashFORMIDARRAY(209)
+    eyes = CBashFORMIDARRAY(210)
+    maleFggs_p = CBashUINT8ARRAY(211, 200)
+    maleFgga_p = CBashUINT8ARRAY(212, 120)
+    maleFgts_p = CBashUINT8ARRAY(213, 200)
+    maleSnam_p = CBashUINT8ARRAY(214, 2)
+    femaleFggs_p = CBashUINT8ARRAY(215, 200)
+    femaleFgga_p = CBashUINT8ARRAY(216, 120)
+    femaleFgts_p = CBashUINT8ARRAY(217, 200)
+    femaleSnam_p = CBashUINT8ARRAY(218, 2)
+    IsPlayable = CBashBasicFlag('flags', 0x00000001)
+    IsChild = CBashBasicFlag('flags', 0x00000004)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description',
+                                        'relations_list', 'skill1', 'skill1Boost',
+                                        'skill2', 'skill2Boost', 'skill3',
+                                        'skill3Boost', 'skill4', 'skill4Boost',
+                                        'skill5', 'skill5Boost', 'skill6',
+                                        'skill6Boost', 'skill7', 'skill7Boost',
+                                        'maleHeight', 'femaleHeight',
+                                        'maleWeight', 'femaleWeight', 'flags',
+                                        'older', 'younger',
+                                        'maleVoice', 'femaleVoice',
+                                        'defaultHairMale', 'defaultHairFemale',
+                                        'defaultHairMaleColor', 'defaultHairFemaleColor',
+                                        'mainClamp', 'faceClamp', 'attr_p',
+                                        'maleHead_list', 'maleEars_list',
+                                        'maleMouth_list', 'maleTeethLower_list',
+                                        'maleTeethUpper_list', 'maleTongue_list',
+                                        'maleLeftEye_list', 'maleRightEye_list',                                           
+                                        'femaleHead_list', 'femaleEars_list',
+                                        'femaleMouth_list', 'femaleTeethLower_list',
+                                        'femaleTeethUpper_list', 'femaleTongue_list',
+                                        'femaleLeftEye_list', 'femaleRightEye_list',
+                                        'maleUpperBody_list', 'maleLeftHand_list',
+                                        'maleRightHand_list', 'maleUpperBodyTexture_list',
+                                        'femaleUpperBody_list', 'femaleLeftHand_list',
+                                        'femaleRightHand_list',
+                                        'femaleUpperBodyTexture_list',
+                                        'hairs', 'eyes',
+                                        'maleFggs_p', 'maleFgga_p', 'maleFgts_p',
+                                        'maleSnam_p',
+                                        'femaleFggs_p', 'femaleFgga_p', 'femaleFgts_p',
+                                        'femaleSnam_p']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5618,7 +5824,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
-                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),])
+                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
+                        ('RACE',FnvRACERecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6291,6 +6498,12 @@ class FnvModFile(object):
         if(RecordID): return FnvEYESRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     EYES = CBashRECORDARRAY(FnvEYESRecord, 'EYES', 0)
+
+    def create_RACE(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("RACE", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvRACERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    RACE = CBashRECORDARRAY(FnvRACERecord, 'RACE', 0)
 
     @property
     def tops(self):

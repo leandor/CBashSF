@@ -28,7 +28,7 @@ namespace FNV
 class FACTRecord : public FNVRecord //Faction
     {
     private:
-        struct FACTDATA
+        struct FACTDATA // older format is a single UINT8 flag. It updates itself without any special action
             {
             UINT16  flags;
             UINT8   unused1[2];

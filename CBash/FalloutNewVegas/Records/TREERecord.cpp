@@ -53,20 +53,7 @@ TREERecord::TREERecord(TREERecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
 
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODT = srcRecord->MODL->MODT;
-        MODL->Textures.MODS.resize(srcRecord->MODL->Textures.MODS.size());
-        for(UINT32 x = 0; x < srcRecord->MODL->Textures.MODS.size(); x++)
-            {
-            MODL->Textures.MODS[x] = new FNVMODS;
-            *MODL->Textures.MODS[x] = *srcRecord->MODL->Textures.MODS[x];
-            }
-        MODL->MODD = srcRecord->MODL->MODD;
-        }
+    MODL = srcRecord->MODL;
 
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
@@ -293,7 +280,7 @@ SINT32 TREERecord::WriteRecord(_FileHandler &SaveHandler)
                     cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
                     SaveHandler.write(&cSize, 4);
                     SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }                
+                    }
 
                 SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
                 SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);

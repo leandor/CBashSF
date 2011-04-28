@@ -75,12 +75,12 @@ bool FileExists(STRING const FileName)
 
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
     {
-    SINT32 aInt = (SINT32)A;
+    SINT32 aInt = *(SINT32*)&A;
     // Make aInt lexicographically ordered as a twos-complement int
     if (aInt < 0)
         aInt = 0x80000000 - aInt;
     // Make bInt lexicographically ordered as a twos-complement int
-    SINT32 bInt = (SINT32)B;
+    SINT32 bInt = *(SINT32*)&B;
     if (bInt < 0)
         bInt = 0x80000000 - bInt;
 

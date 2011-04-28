@@ -27,53 +27,6 @@ GPL License and Copyright Notice ============================================
 class RACERecord : public Record
     {
     private:
-        struct RACESKILL
-            {
-            SINT8   value, boost;
-
-            RACESKILL();
-            ~RACESKILL();
-
-            bool operator ==(const RACESKILL &other) const;
-            bool operator !=(const RACESKILL &other) const;
-            };
-
-        struct RACEDATA
-            {
-            RACESKILL skills[7];
-            UINT8   unused1[2];
-            FLOAT32 maleHeight, femaleHeight, maleWeight, femaleWeight;
-            UINT32  flags;
-
-            RACEDATA();
-            ~RACEDATA();
-
-            bool operator ==(const RACEDATA &other) const;
-            bool operator !=(const RACEDATA &other) const;
-            };
-
-        struct RACEVNAM
-            {
-            FORMID  maleVoice, femaleVoice;
-
-            RACEVNAM();
-            ~RACEVNAM();
-
-            bool operator ==(const RACEVNAM &other) const;
-            bool operator !=(const RACEVNAM &other) const;
-            };
-
-        struct RACEDNAM
-            {
-            FORMID  defaultHairMale, defaultHairFemale;
-
-            RACEDNAM();
-            ~RACEDNAM();
-
-            bool operator ==(const RACEDNAM &other) const;
-            bool operator !=(const RACEDNAM &other) const;
-            };
-
         struct RACEATTR
             {
             UINT8   maleStrength, maleIntelligence, maleWillpower,
@@ -99,17 +52,6 @@ class RACERecord : public Record
 
             bool operator ==(const RACEMODEL &other) const;
             bool operator !=(const RACEMODEL &other) const;
-            };
-
-        struct RACESNAM
-            {
-            UINT8   SNAM[2];
-
-            RACESNAM();
-            ~RACESNAM();
-
-            bool operator ==(const RACESNAM &other) const;
-            bool operator !=(const RACESNAM &other) const;
             };
 
         enum flagsFlags

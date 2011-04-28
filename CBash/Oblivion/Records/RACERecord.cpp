@@ -23,111 +23,6 @@ GPL License and Copyright Notice ============================================
 #include "RACERecord.h"
 #include <vector>
 
-RACERecord::RACESKILL::RACESKILL():
-    value(-1),
-    boost(0)
-    {
-    //
-    }
-
-RACERecord::RACESKILL::~RACESKILL()
-    {
-    //
-    }
-
-bool RACERecord::RACESKILL::operator ==(const RACESKILL &other) const
-    {
-    return (value == other.value &&
-            boost == other.boost);
-    }
-
-bool RACERecord::RACESKILL::operator !=(const RACESKILL &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACEDATA::RACEDATA():
-    maleHeight(1.0f),
-    femaleHeight(1.0f),
-    maleWeight(1.0f),
-    femaleWeight(1.0f),
-    flags(0)
-    {
-    memset(&unused1, 0x00, 2);
-    }
-
-RACERecord::RACEDATA::~RACEDATA()
-    {
-    //
-    }
-
-bool RACERecord::RACEDATA::operator ==(const RACEDATA &other) const
-    {
-    return (skills[0] == other.skills[0] &&
-            skills[1] == other.skills[1] &&
-            skills[2] == other.skills[2] &&
-            skills[3] == other.skills[3] &&
-            skills[4] == other.skills[4] &&
-            skills[5] == other.skills[5] &&
-            skills[6] == other.skills[6] &&
-            AlmostEqual(maleHeight,other.maleHeight,2) &&
-            AlmostEqual(femaleHeight,other.femaleHeight,2) &&
-            AlmostEqual(maleWeight,other.maleWeight,2) &&
-            AlmostEqual(femaleWeight,other.femaleWeight,2) &&
-            flags == other.flags);
-    }
-
-bool RACERecord::RACEDATA::operator !=(const RACEDATA &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACEVNAM::RACEVNAM():
-    maleVoice(0),
-    femaleVoice(0)
-    {
-    //
-    }
-
-RACERecord::RACEVNAM::~RACEVNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACEVNAM::operator ==(const RACEVNAM &other) const
-    {
-    return (maleVoice == other.maleVoice &&
-            femaleVoice == other.femaleVoice);
-    }
-
-bool RACERecord::RACEVNAM::operator !=(const RACEVNAM &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACEDNAM::RACEDNAM():
-    defaultHairMale(0),
-    defaultHairFemale(0)
-    {
-    //
-    }
-
-RACERecord::RACEDNAM::~RACEDNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACEDNAM::operator ==(const RACEDNAM &other) const
-    {
-    return (defaultHairMale == other.defaultHairMale &&
-            defaultHairFemale == other.defaultHairFemale);
-    }
-
-bool RACERecord::RACEDNAM::operator !=(const RACEDNAM &other) const
-    {
-    return !(*this == other);
-    }
-
 RACERecord::RACEATTR::RACEATTR():maleStrength(50), maleIntelligence(50),
     maleWillpower(50), maleAgility(50),
     maleSpeed(50), maleEndurance(50),
@@ -179,27 +74,6 @@ bool RACERecord::RACEMODEL::operator ==(const RACEMODEL &other) const
     }
 
 bool RACERecord::RACEMODEL::operator !=(const RACEMODEL &other) const
-    {
-    return !(*this == other);
-    }
-
-RACERecord::RACESNAM::RACESNAM()
-    {
-    memset(&SNAM, 0x00, 2);
-    }
-
-RACERecord::RACESNAM::~RACESNAM()
-    {
-    //
-    }
-
-bool RACERecord::RACESNAM::operator ==(const RACESNAM &other) const
-    {
-    return (SNAM[0] == other.SNAM[0] &&
-            SNAM[1] == other.SNAM[1]);
-    }
-
-bool RACERecord::RACESNAM::operator !=(const RACESNAM &other) const
     {
     return !(*this == other);
     }
@@ -374,26 +248,6 @@ RACERecord::~RACERecord()
         delete XNAM[x];
     }
 
-bool RACERecord::IsPlayable()
-    {
-    return (DATA.value.flags & fIsPlayable) != 0;
-    }
-
-void RACERecord::IsPlayable(bool value)
-    {
-    DATA.value.flags = value ? (DATA.value.flags | fIsPlayable) : (DATA.value.flags & ~fIsPlayable);
-    }
-
-bool RACERecord::IsFlagMask(UINT32 Mask, bool Exact)
-    {
-    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
-    }
-
-void RACERecord::SetFlagMask(UINT32 Mask)
-    {
-    DATA.value.flags = Mask;
-    }
-
 bool RACERecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
@@ -419,6 +273,26 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
         op.Accept(ENAM[x]);
 
     return op.Stop();
+    }
+
+bool RACERecord::IsPlayable()
+    {
+    return (DATA.value.flags & fIsPlayable) != 0;
+    }
+
+void RACERecord::IsPlayable(bool value)
+    {
+    DATA.value.flags = value ? (DATA.value.flags | fIsPlayable) : (DATA.value.flags & ~fIsPlayable);
+    }
+
+bool RACERecord::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
+    }
+
+void RACERecord::SetFlagMask(UINT32 Mask)
+    {
+    DATA.value.flags = Mask;
     }
 
 UINT32 RACERecord::GetSize(bool forceCalc)
@@ -850,7 +724,6 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     SINT32 curINDX = -1;
     UINT32 curPos = 0;
     FORMID curFormID = 0;
-    ReqSubRecord<GENXNAM> *newXNAM = NULL;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -882,9 +755,8 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SPLO.push_back(curFormID);
                 break;
             case 'MANX':
-                newXNAM = new ReqSubRecord<GENXNAM>;
-                newXNAM->Read(buffer, subSize, curPos);
-                XNAM.push_back(newXNAM);
+                XNAM.push_back(new ReqSubRecord<GENXNAM>);
+                XNAM.back()->Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);

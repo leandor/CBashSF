@@ -540,12 +540,42 @@ struct SimpleSubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("SimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("SimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -623,12 +653,42 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
             }
         if(subSize > sizeof(FLOAT32))
             {
-            printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
+            printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
         else if(subSize < sizeof(FLOAT32))
             {
-            printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -703,12 +763,42 @@ struct ReqSimpleSubRecord
         {
         if(subSize > sizeof(T))
             {
-            printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -771,12 +861,42 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         {
         if(subSize > sizeof(FLOAT32))
             {
-            printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
+            printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
         else if(subSize < sizeof(FLOAT32))
             {
-            printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -845,12 +965,42 @@ struct OptSimpleSubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -917,12 +1067,42 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
             }
         if(subSize > sizeof(FLOAT32))
             {
-            printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
+            printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
         else if(subSize < sizeof(FLOAT32))
             {
-            printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -997,12 +1177,42 @@ struct SemiOptSimpleSubRecord
         value = new T(significand);
         if(subSize > sizeof(T))
             {
-            printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1091,12 +1301,42 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
         value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
         if(subSize > sizeof(FLOAT32))
             {
-            printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(FLOAT32));
+            printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(value, buffer + curPos, sizeof(FLOAT32));
             }
         else if(subSize < sizeof(FLOAT32))
             {
-            printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(FLOAT32));
+            printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(FLOAT32));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1188,12 +1428,42 @@ struct SubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("SubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("SubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1261,12 +1531,42 @@ struct ReqSubRecord
         {
         if(subSize > sizeof(T))
             {
-            printf("ReqSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("ReqSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1338,12 +1638,42 @@ struct OptSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("OptSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("OptSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1362,9 +1692,7 @@ struct OptSubRecord
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    {
                     value = new T();
-                    }
                 else
                     value->~T();
                 *value = *rhs.value;
@@ -1442,12 +1770,42 @@ struct SemiOptSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("SemiOptSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("SemiOptSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else
@@ -1466,9 +1824,7 @@ struct SemiOptSubRecord
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    {
                     value = new T();
-                    }
                 else
                     value->~T();
                 *value = *rhs.value;
@@ -1558,12 +1914,42 @@ struct OBMEEFIXSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk. Size of chunk (%u) is larger than the size of the subrecord (%u) and will be truncated.\n", subSize, sizeof(T));
+            printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(value, buffer + curPos, sizeof(T));
             }
         else if(subSize < sizeof(T))
             {
-            printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk. Size of chunk (%u) is less than the size of the subrecord (%u) and any remaining fields have their default value.\n", subSize, sizeof(T));
+            printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            //Peek into the data before and after to see what's up
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%02X", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%02X", (buffer + curPos)[x]);
+            //printf("\n\n");
+            //for(SINT32 x = 32; x > 0; x--)
+            //    printf("%c", (buffer + curPos)[-x]);
+            //for(UINT32 x = 0; x < 32; x++)
+            //    printf("%c", (buffer + curPos)[x]);
+            //printf("\n");
             memcpy(&value, buffer + curPos, subSize);
             }
         else

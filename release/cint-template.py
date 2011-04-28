@@ -514,6 +514,31 @@ class CBashISTRING_GROUP(object):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
         else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
 
+class CBashLIST_GROUP(object):
+    def __init__(self, FieldID, Type, AsList=False):
+        self._FieldID = FieldID
+        self._Type = Type
+        self._AsList = AsList
+    def __get__(self, instance, owner):
+        FieldID = self._FieldID + instance._FieldID
+        numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+        oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x) for x in range(0, numElements)]
+        if(self._AsList): return ExtractCopyList(oElements)
+        return oElements
+    def __set__(self, instance, nElements):
+        FieldID = self._FieldID + instance._FieldID
+        if nElements is None or not len(nElements):
+            _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            length = len(nElements)
+            if isinstance(nElements[0], tuple): nValues = nElements
+            else: nValues = ExtractCopyList(nElements)
+            ##Resizes the list
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
+            numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+            oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x) for x in range(0, numElements)]
+            SetCopyList(oElements, nValues)
+
 # Top level Descriptors
 class CBashLIST(object):
     def __init__(self, FieldID, Type, AsList=False):
@@ -2057,6 +2082,127 @@ class FnvEYESRecord(FnvBaseRecord):
     BasicFlagMACRO(IsNotFemale, flags, 0x04)
     BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'iconPath', 'flags']
+    
+class FnvRACERecord(FnvBaseRecord):
+    _Type = 'RACE'
+    class RaceModel(BaseComponent):
+        ISTRING_GROUPEDMACRO(modPath, 0)
+        FLOAT32_GROUPEDMACRO(modb, 1)
+        UINT8_ARRAY_GROUPEDMACRO(modt_p, 2)
+        LIST_GROUPEDMACRO(altTextures, 3, FNVAltTexture)
+        UINT8_FLAG_GROUPEDMACRO(flags, 4)
+        ISTRING_GROUPEDMACRO(iconPath, 5)
+        ISTRING_GROUPEDMACRO(smallIconPath, 6)
+        BasicFlagMACRO(IsHead, flags, 0x01)
+        BasicFlagMACRO(IsTorso, flags, 0x02)
+        BasicFlagMACRO(IsRightHand, flags, 0x04)
+        BasicFlagMACRO(IsLeftHand, flags, 0x08)
+        copyattrs = ['modPath', 'modb', 'modt_p', 'altTextures_list',
+                     'flags', 'iconPath', 'smallIconPath']
+        exportattrs = ['modPath', 'modb', 'altTextures_list',
+                     'flags', 'iconPath', 'smallIconPath']#, 'modt_p']
+
+    STRING_MACRO(full, 7)
+    STRING_MACRO(description, 8)
+    LIST_MACRO(relations, 9, FNVRelation)
+    SINT8_MACRO(skill1, 10)
+    SINT8_MACRO(skill1Boost, 11)
+    SINT8_MACRO(skill2, 12)
+    SINT8_MACRO(skill2Boost, 13)
+    SINT8_MACRO(skill3, 14)
+    SINT8_MACRO(skill3Boost, 15)
+    SINT8_MACRO(skill4, 16)
+    SINT8_MACRO(skill4Boost, 17)
+    SINT8_MACRO(skill5, 18)
+    SINT8_MACRO(skill5Boost, 19)
+    SINT8_MACRO(skill6, 20)
+    SINT8_MACRO(skill6Boost, 21)
+    SINT8_MACRO(skill7, 22)
+    SINT8_MACRO(skill7Boost, 23)
+    UINT8_ARRAY_MACRO(unused1, 24, 2)
+    FLOAT32_MACRO(maleHeight, 25)
+    FLOAT32_MACRO(femaleHeight, 26)
+    FLOAT32_MACRO(maleWeight, 27)
+    FLOAT32_MACRO(femaleWeight, 28)
+    UINT32_FLAG_MACRO(flags, 29)
+    FORMID_MACRO(older, 30)
+    FORMID_MACRO(younger, 31)
+    FORMID_MACRO(maleVoice, 32)
+    FORMID_MACRO(femaleVoice, 33)
+    FORMID_MACRO(defaultHairMale, 34)
+    FORMID_MACRO(defaultHairFemale, 35)
+    UINT8_MACRO(defaultHairMaleColor, 36)
+    UINT8_MACRO(defaultHairFemaleColor, 37)
+    FLOAT32_MACRO(mainClamp, 38)
+    FLOAT32_MACRO(faceClamp, 39)
+    UINT8_ARRAY_MACRO(attr_p, 40)
+    GroupedValuesMACRO(maleHead, 41, RaceModel)
+    GroupedValuesMACRO(maleEars, 48, RaceModel)
+    GroupedValuesMACRO(maleMouth, 55, RaceModel)
+    GroupedValuesMACRO(maleTeethLower, 62, RaceModel)
+    GroupedValuesMACRO(maleTeethUpper, 69, RaceModel)
+    GroupedValuesMACRO(maleTongue, 76, RaceModel)
+    GroupedValuesMACRO(maleLeftEye, 83, RaceModel)
+    GroupedValuesMACRO(maleRightEye, 90, RaceModel)
+    GroupedValuesMACRO(femaleHead, 97, RaceModel)
+    GroupedValuesMACRO(femaleEars, 104, RaceModel)
+    GroupedValuesMACRO(femaleMouth, 111, RaceModel)
+    GroupedValuesMACRO(femaleTeethLower, 118, RaceModel)
+    GroupedValuesMACRO(femaleTeethUpper, 125, RaceModel)
+    GroupedValuesMACRO(femaleTongue, 132, RaceModel)
+    GroupedValuesMACRO(femaleLeftEye, 139, RaceModel)
+    GroupedValuesMACRO(femaleRightEye, 146, RaceModel)    
+    GroupedValuesMACRO(maleUpperBody, 153, RaceModel)
+    GroupedValuesMACRO(maleLeftHand, 160, RaceModel)
+    GroupedValuesMACRO(maleRightHand, 167, RaceModel)
+    GroupedValuesMACRO(maleUpperBodyTexture, 174, RaceModel)    
+    GroupedValuesMACRO(femaleUpperBody, 181, RaceModel)
+    GroupedValuesMACRO(femaleLeftHand, 188, RaceModel)
+    GroupedValuesMACRO(femaleRightHand, 195, RaceModel)
+    GroupedValuesMACRO(femaleUpperBodyTexture, 202, RaceModel)
+    FORMID_ARRAY_MACRO(hairs, 209)
+    FORMID_ARRAY_MACRO(eyes, 210)
+    UINT8_ARRAY_MACRO(maleFggs_p, 211, 200)
+    UINT8_ARRAY_MACRO(maleFgga_p, 212, 120)
+    UINT8_ARRAY_MACRO(maleFgts_p, 213, 200)
+    UINT8_ARRAY_MACRO(maleSnam_p, 214, 2)
+    UINT8_ARRAY_MACRO(femaleFggs_p, 215, 200)
+    UINT8_ARRAY_MACRO(femaleFgga_p, 216, 120)
+    UINT8_ARRAY_MACRO(femaleFgts_p, 217, 200)
+    UINT8_ARRAY_MACRO(femaleSnam_p, 218, 2)
+    BasicFlagMACRO(IsPlayable, flags, 0x00000001)
+    BasicFlagMACRO(IsChild, flags, 0x00000004)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description',
+                                        'relations_list', 'skill1', 'skill1Boost',
+                                        'skill2', 'skill2Boost', 'skill3',
+                                        'skill3Boost', 'skill4', 'skill4Boost',
+                                        'skill5', 'skill5Boost', 'skill6',
+                                        'skill6Boost', 'skill7', 'skill7Boost',
+                                        'maleHeight', 'femaleHeight',
+                                        'maleWeight', 'femaleWeight', 'flags',
+                                        'older', 'younger',
+                                        'maleVoice', 'femaleVoice',
+                                        'defaultHairMale', 'defaultHairFemale',
+                                        'defaultHairMaleColor', 'defaultHairFemaleColor',
+                                        'mainClamp', 'faceClamp', 'attr_p',
+                                        'maleHead_list', 'maleEars_list',
+                                        'maleMouth_list', 'maleTeethLower_list',
+                                        'maleTeethUpper_list', 'maleTongue_list',
+                                        'maleLeftEye_list', 'maleRightEye_list',                                           
+                                        'femaleHead_list', 'femaleEars_list',
+                                        'femaleMouth_list', 'femaleTeethLower_list',
+                                        'femaleTeethUpper_list', 'femaleTongue_list',
+                                        'femaleLeftEye_list', 'femaleRightEye_list',
+                                        'maleUpperBody_list', 'maleLeftHand_list',
+                                        'maleRightHand_list', 'maleUpperBodyTexture_list',
+                                        'femaleUpperBody_list', 'femaleLeftHand_list',
+                                        'femaleRightHand_list',
+                                        'femaleUpperBodyTexture_list',
+                                        'hairs', 'eyes',
+                                        'maleFggs_p', 'maleFgga_p', 'maleFgts_p',
+                                        'maleSnam_p',
+                                        'femaleFggs_p', 'femaleFgga_p', 'femaleFgts_p',
+                                        'femaleSnam_p']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -4439,7 +4585,7 @@ class ObRACERecord(ObBaseRecord):
     FLOAT32_MACRO(femaleHeight, 25)
     FLOAT32_MACRO(maleWeight, 26)
     FLOAT32_MACRO(femaleWeight, 27)
-    UINT32_MACRO(flags, 28)
+    UINT32_FLAG_MACRO(flags, 28)
     FORMID_MACRO(maleVoice, 29)
     FORMID_MACRO(femaleVoice, 30)
     FORMID_MACRO(defaultHairMale, 31)
@@ -5196,7 +5342,8 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
-                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),])
+                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
+                        ('RACE',FnvRACERecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5545,6 +5692,7 @@ class FnvModFile(object):
     FnvModRecordsMACRO(HDPT)
     FnvModRecordsMACRO(HAIR)
     FnvModRecordsMACRO(EYES)
+    FnvModRecordsMACRO(RACE)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))
