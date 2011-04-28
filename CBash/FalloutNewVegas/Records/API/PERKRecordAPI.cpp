@@ -270,7 +270,7 @@ void * PERKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //full
             return FULL.value;
         case 8: //description
-            return DESCReq.value;
+            return DESC.value;
         case 9: //iconPath
             return ICON.value;
         case 10: //smallIconPath
@@ -323,22 +323,22 @@ void * PERKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 32: //prkc Run On
             return PRKC.IsLoaded() ? &PRKC->value32 : NULL;
         case 33: //ctda Conditions
-            return CTDAsReq.IsLoaded() ? &CTDAsReq->value33 : NULL;
+            return CTDAs.IsLoaded() ? &CTDAsReq->value33 : NULL;
         case 34: //ctda_p Conditions
-            *FieldValues = CTDAsReq.IsLoaded() ? &CTDAsReq->value34[0] : NULL;
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAsReq->value34[0] : NULL;
             return NULL;
         case 35: //ctda Conditions
             return UNPARSEDGET_FIELD35;
         case 36: //ctda Conditions
-            return CTDAsReq.IsLoaded() ? &CTDAsReq->value36 : NULL;
+            return CTDAs.IsLoaded() ? &CTDAsReq->value36 : NULL;
         case 37: //ctda_p Conditions
-            *FieldValues = CTDAsReq.IsLoaded() ? &CTDAsReq->value37[0] : NULL;
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAsReq->value37[0] : NULL;
             return NULL;
         case 38: //ctda_p Conditions
-            *FieldValues = CTDAsReq.IsLoaded() ? &CTDAsReq->value38[0] : NULL;
+            *FieldValues = CTDAs.IsLoaded() ? &CTDAsReq->value38[0] : NULL;
             return NULL;
         case 39: //ctda Conditions
-            return CTDAsReq.IsLoaded() ? &CTDAsReq->value39 : NULL;
+            return CTDAs.IsLoaded() ? &CTDAsReq->value39 : NULL;
         case 40: //ctda Conditions
             return UNPARSEDGET_FIELD40;
         case 41: //epft Type
@@ -419,7 +419,7 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FULL.Copy((STRING)FieldValue);
             break;
         case 8: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 9: //iconPath
             ICON.Copy((STRING)FieldValue);
@@ -526,13 +526,13 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             PRKC->value32 = *(SINT8 *)FieldValue;
             break;
         case 33: //ctda Conditions
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value33 = *(UINT8 *)FieldValue;
             break;
         case 34: //ctda_p Conditions
             if(ArraySize != 3)
                 break;
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value34[0] = ((UINT8 *)FieldValue)[0];
             CTDAsReq->value34[1] = ((UINT8 *)FieldValue)[1];
             CTDAsReq->value34[2] = ((UINT8 *)FieldValue)[2];
@@ -540,13 +540,13 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 35: //ctda Conditions
             return UNPARSEDGET_FIELD35;
         case 36: //ctda Conditions
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value36 = *(UINT32 *)FieldValue;
             break;
         case 37: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value37[0] = ((UINT8 *)FieldValue)[0];
             CTDAsReq->value37[1] = ((UINT8 *)FieldValue)[1];
             CTDAsReq->value37[2] = ((UINT8 *)FieldValue)[2];
@@ -555,14 +555,14 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 38: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value38[0] = ((UINT8 *)FieldValue)[0];
             CTDAsReq->value38[1] = ((UINT8 *)FieldValue)[1];
             CTDAsReq->value38[2] = ((UINT8 *)FieldValue)[2];
             CTDAsReq->value38[3] = ((UINT8 *)FieldValue)[3];
             break;
         case 39: //ctda Conditions
-            CTDAsReq.Load();
+            CTDAs.Load();
             CTDAsReq->value39 = *(UINT32 *)FieldValue;
             break;
         case 40: //ctda Conditions
@@ -712,7 +712,7 @@ void PERKRecord::DeleteField(FIELD_IDENTIFIERS)
             FULL.Unload();
             return;
         case 8: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 9: //iconPath
             ICON.Unload();
@@ -785,24 +785,24 @@ void PERKRecord::DeleteField(FIELD_IDENTIFIERS)
             PRKC.Unload();
             return;
         case 33: //ctda Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 34: //ctda_p Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 35: //ctda Conditions
             return UNPARSEDDEL_FIELD35;
         case 36: //ctda Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 37: //ctda_p Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 38: //ctda_p Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 39: //ctda Conditions
-            CTDAsReq.Unload();
+            CTDAs.Unload();
             return;
         case 40: //ctda Conditions
             return UNPARSEDDEL_FIELD40;

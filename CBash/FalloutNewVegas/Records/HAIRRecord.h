@@ -35,12 +35,13 @@ class HAIRRecord : public FNVRecord //Hair
             fIsNotFemale  = 0x00000004,
             fIsFixedColor = 0x00000008
             };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Texture
-        OptSimpleSubRecord<UINT8> DATA; //Flags
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
 
         HAIRRecord(unsigned char *_recData=NULL);
         HAIRRecord(HAIRRecord *srcRecord);

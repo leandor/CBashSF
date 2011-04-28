@@ -32,8 +32,8 @@ GPL License and Copyright Notice ============================================
 #include "Records/CLASRecord.h"
 #include "Records/FACTRecord.h"
 #include "Records/HDPTRecord.h"
-//#include "Records/HAIRRecord.h"
-//#include "Records/EYESRecord.h"
+#include "Records/HAIRRecord.h"
+#include "Records/EYESRecord.h"
 //#include "Records/RACERecord.h"
 //#include "Records/SOUNRecord.h"
 //#include "Records/ASPCRecord.h"
@@ -137,8 +137,8 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::CLASRecord> CLAS;
         FNVGRUPRecords<FNV::FACTRecord> FACT;
         FNVGRUPRecords<FNV::HDPTRecord> HDPT;
-        //FNVGRUPRecords<FNV::HAIRRecord> HAIR;
-        //FNVGRUPRecords<FNV::EYESRecord> EYES;
+        FNVGRUPRecords<FNV::HAIRRecord> HAIR;
+        FNVGRUPRecords<FNV::EYESRecord> EYES;
         //FNVGRUPRecords<FNV::RACERecord> RACE;
         //FNVGRUPRecords<FNV::SOUNRecord> SOUN;
         //FNVGRUPRecords<FNV::ASPCRecord> ASPC;

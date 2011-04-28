@@ -2039,6 +2039,48 @@ class FnvHDPTRecord(FnvBaseRecord):
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
                                                          'modt_p', 'altTextures_list',
                                                          'modelFlags', 'flags', 'parts']
+class FnvHAIRRecord(FnvBaseRecord):
+    _Type = 'HAIR'
+    full = CBashSTRING(7)
+    modPath = CBashISTRING(8)
+    modb = CBashFLOAT32(9)
+    modt_p = CBashUINT8ARRAY(10)
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 11, length)
+    altTextures = CBashLIST(11, FNVAltTexture)
+    altTextures_list = CBashLIST(11, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(12, c_ubyte)
+    iconPath = CBashISTRING(13)
+    flags = CBashGeneric(14, c_ubyte)
+    
+    IsPlayable = CBashBasicFlag('flags', 0x01)
+    IsNotMale = CBashBasicFlag('flags', 0x02)
+    IsMale = CBashInvertedFlag('IsNotMale')
+    IsNotFemale = CBashBasicFlag('flags', 0x04)
+    IsFemale = CBashInvertedFlag('IsNotFemale')
+    IsFixedColor = CBashBasicFlag('flags', 0x08)
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
+                                                         'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'iconPath', 'flags']
+class FnvEYESRecord(FnvBaseRecord):
+    _Type = 'EYES'
+    full = CBashSTRING(7)
+    iconPath = CBashISTRING(8)
+    flags = CBashGeneric(9, c_ubyte)
+    
+    IsPlayable = CBashBasicFlag('flags', 0x01)
+    IsNotMale = CBashBasicFlag('flags', 0x02)
+    IsMale = CBashInvertedFlag('IsNotMale')
+    IsNotFemale = CBashBasicFlag('flags', 0x04)
+    IsFemale = CBashInvertedFlag('IsNotFemale')
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'iconPath', 'flags']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -2687,7 +2729,7 @@ class ObLANDRecord(ObBaseRecord):
         return ExtractCopyList(self.colors)
     colors_list = property(get_colors_list, set_colors)
 
-    def create_baseTextures(self):
+    def create_baseTexture(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
         return self.BaseTexture(self._CollectionID, self._ModID, self._RecordID, 11, length)
@@ -2701,7 +2743,7 @@ class ObLANDRecord(ObBaseRecord):
     alphaLayers = CBashLIST(12, AlphaLayer)
     alphaLayers_list = CBashLIST(12, AlphaLayer, True)
 
-    def create_vertexTextures(self):
+    def create_vertexTexture(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
         return self.VertexTexture(self._CollectionID, self._ModID, self._RecordID, 13, length)
@@ -5576,7 +5618,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
-                        ('HDPT',FnvHDPTRecord),])
+                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6237,6 +6279,18 @@ class FnvModFile(object):
         if(RecordID): return FnvHDPTRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     HDPT = CBashRECORDARRAY(FnvHDPTRecord, 'HDPT', 0)
+
+    def create_HAIR(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("HAIR", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvHAIRRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    HAIR = CBashRECORDARRAY(FnvHAIRRecord, 'HAIR', 0)
+
+    def create_EYES(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("EYES", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvEYESRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    EYES = CBashRECORDARRAY(FnvEYESRecord, 'EYES', 0)
 
     @property
     def tops(self):

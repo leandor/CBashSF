@@ -37,6 +37,8 @@ FNVFile::~FNVFile()
 
 SINT32 FNVFile::LoadTES4()
     {
+    PROFILE_FUNC
+
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
@@ -75,6 +77,8 @@ SINT32 FNVFile::LoadTES4()
 
 SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
+    PROFILE_FUNC
+
     enum IgTopRecords {
         eIgGMST = 'TSMG' | 0x00001000, //Record::fIsIgnored
         eIgTXST = 'TSXT' | 0x00001000,
@@ -256,16 +260,16 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgHAIR:
             case 'RIAH':
-                //ReadHandler.read(&HAIR.stamp, 4);
-                //ReadHandler.read(&HAIR.unknown, 4);
-                //HAIR.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&HAIR.stamp, 4);
+                ReadHandler.read(&HAIR.unknown, 4);
+                HAIR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             //case eIgEYES: //Same as normal
             case 'SEYE':
-                //ReadHandler.read(&EYES.stamp, 4);
-                //ReadHandler.read(&EYES.unknown, 4);
-                //EYES.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&EYES.stamp, 4);
+                ReadHandler.read(&EYES.unknown, 4);
+                EYES.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             case eIgRACE:
             case 'ECAR':
                 //ReadHandler.read(&RACE.stamp, 4);
@@ -846,6 +850,8 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
 
 UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     {
+    PROFILE_FUNC
+
     switch(RecordType)
         {
         case 'TSMG':
@@ -863,9 +869,9 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'TPDH':
             return (UINT32)HDPT.Records.size();
         case 'RIAH':
-            //return (UINT32)HAIR.Records.size();
+            return (UINT32)HAIR.Records.size();
         case 'SEYE':
-            //return (UINT32)EYES.Records.size();
+            return (UINT32)EYES.Records.size();
         case 'ECAR':
             //return (UINT32)RACE.Records.size();
         case 'NUOS':
@@ -1059,6 +1065,8 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
 
 Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1110,13 +1118,13 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = HDPT.Records.back();
             break;
         case 'RIAH':
-            //HAIR.Records.push_back(new FNV::HAIRRecord((FNV::HAIRRecord *)SourceRecord));
-            //newRecord = HAIR.Records.back();
-            //break;
+            HAIR.Records.push_back(new FNV::HAIRRecord((FNV::HAIRRecord *)SourceRecord));
+            newRecord = HAIR.Records.back();
+            break;
         case 'SEYE':
-            //EYES.Records.push_back(new FNV::EYESRecord((FNV::EYESRecord *)SourceRecord));
-            //newRecord = EYES.Records.back();
-            //break;
+            EYES.Records.push_back(new FNV::EYESRecord((FNV::EYESRecord *)SourceRecord));
+            newRecord = EYES.Records.back();
+            break;
         case 'ECAR':
             //RACE.Records.push_back(new FNV::RACERecord((FNV::RACERecord *)SourceRecord));
             //newRecord = RACE.Records.back();
@@ -1494,6 +1502,8 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 
 SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1521,8 +1531,8 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(CLAS.VisitRecords(NULL, checker, false)) continue;
         if(FACT.VisitRecords(NULL, checker, false)) continue;
         if(HDPT.VisitRecords(NULL, checker, false)) continue;
-        //if(HAIR.VisitRecords(NULL, checker, false)) continue;
-        //if(EYES.VisitRecords(NULL, checker, false)) continue;
+        if(HAIR.VisitRecords(NULL, checker, false)) continue;
+        if(EYES.VisitRecords(NULL, checker, false)) continue;
         //if(RACE.VisitRecords(NULL, checker, false)) continue;
         //if(SOUN.VisitRecords(NULL, checker, false)) continue;
         //if(ASPC.VisitRecords(NULL, checker, false)) continue;
@@ -1631,6 +1641,8 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
 SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
+    PROFILE_FUNC
+
     if(!Flags.IsSaveable)
         {
         printf("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ReadHandler.getModName());
@@ -1657,8 +1669,8 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += HDPT.WriteGRUP('TPDH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += RACE.WriteGRUP('ECAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += SOUN.WriteGRUP('NUOS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += ASPC.WriteGRUP('CPSA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1762,6 +1774,8 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
 void FNVFile::VisitAllRecords(RecordOp &op)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1778,8 +1792,8 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     CLAS.VisitRecords(NULL, op, true);
     FACT.VisitRecords(NULL, op, true);
     HDPT.VisitRecords(NULL, op, true);
-    //HAIR.VisitRecords(NULL, op, true);
-    //EYES.VisitRecords(NULL, op, true);
+    HAIR.VisitRecords(NULL, op, true);
+    EYES.VisitRecords(NULL, op, true);
     //RACE.VisitRecords(NULL, op, true);
     //SOUN.VisitRecords(NULL, op, true);
     //ASPC.VisitRecords(NULL, op, true);
@@ -1878,6 +1892,8 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 
 void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1913,11 +1929,11 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             HDPT.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'RIAH':
-            //HAIR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            HAIR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'SEYE':
-            //EYES.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            EYES.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'ECAR':
             //RACE.VisitRecords(RecordType, op, DeepVisit);
             //break;
@@ -2195,7 +2211,10 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             //SLPD.VisitRecords(RecordType, op, DeepVisit);
             //break;
         default:
-            printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
+            if(RecordType)
+                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
+            else
+                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
             break;
         }
     return;

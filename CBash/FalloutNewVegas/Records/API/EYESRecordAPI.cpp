@@ -60,10 +60,10 @@ UINT32 EYESRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //full
             return STRING_FIELD;
-        case 8: //icon Texture
+        case 8: //iconPath
             return ISTRING_FIELD;
-        case 9: //data Flags
-            return UINT8_FIELD;
+        case 9: //flags
+            return UINT8_FLAG_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -88,11 +88,11 @@ void * EYESRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //full
-            return FULLReq.value;
-        case 8: //icon Texture
+            return FULL.value;
+        case 8: //iconPath
             return ICON.value;
-        case 9: //data Flags
-            return DATA.IsLoaded() ? &DATA->value9 : NULL;
+        case 9: //flags
+            return &DATA.value;
         default:
             return NULL;
         }
@@ -126,14 +126,13 @@ bool EYESRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
         case 7: //full
-            FULLReq.Copy((STRING)FieldValue);
+            FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //icon Texture
+        case 8: //iconPath
             ICON.Copy((STRING)FieldValue);
             break;
-        case 9: //data Flags
-            DATA.Load();
-            DATA->value9 = *(UINT8 *)FieldValue;
+        case 9: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
         default:
             break;
@@ -162,12 +161,12 @@ void EYESRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[1] = 0;
             return;
         case 7: //full
-            FULLReq.Unload();
+            FULL.Unload();
             return;
-        case 8: //icon Texture
+        case 8: //iconPath
             ICON.Unload();
             return;
-        case 9: //data Flags
+        case 9: //flags
             DATA.Unload();
             return;
         default:

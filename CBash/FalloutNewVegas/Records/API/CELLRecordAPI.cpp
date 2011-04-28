@@ -60,7 +60,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //full
             return STRING_FIELD;
-        case 8: //data Flags
+        case 8: //flags
             return UINT8_FIELD;
         case 9: //xclc XCLC ,, Struct
             return SINT32_FIELD;
@@ -203,7 +203,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //data Flags
+        case 8: //flags
             return DATA.IsLoaded() ? &DATA->value8 : NULL;
         case 9: //xclc XCLC ,, Struct
             return XCLC.IsLoaded() ? &XCLC->value9 : NULL;
@@ -321,7 +321,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //data Flags
+        case 8: //flags
             DATA.Load();
             DATA->value8 = *(UINT8 *)FieldValue;
             break;
@@ -515,7 +515,7 @@ void CELLRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //data Flags
+        case 8: //flags
             DATA.Unload();
             return;
         case 9: //xclc XCLC ,, Struct

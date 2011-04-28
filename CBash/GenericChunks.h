@@ -1038,6 +1038,9 @@ struct FNVMODS //Alternate Texture
     bool operator !=(const FNVMODS &other) const;
     };
 
+//This subrecord uses a very non-standard format
+//It combines an array of strings, formids, and longs into a single chunk
+//Normally, it would be expected for the strings to be in separate chunks
 struct FNVAlternateTextures
     {
     std::vector<FNVMODS *> MODS; //Alternate Textures

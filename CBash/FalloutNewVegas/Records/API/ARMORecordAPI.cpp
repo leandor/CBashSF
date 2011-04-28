@@ -267,7 +267,7 @@ void * ARMORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 16: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 17: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 18: //mods Alternate Texture
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -327,7 +327,7 @@ void * ARMORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 44: //bipl Biped Model List
             return BIPL.IsLoaded() ? &BIPL->value44 : NULL;
         case 45: //etyp Equipment Type
-            return ETYPReq.IsLoaded() ? &ETYPReq->value45 : NULL;
+            return ETYP.IsLoaded() ? &ETYPReq->value45 : NULL;
         case 46: //ynam Sound - Pick Up
             return YNAM.IsLoaded() ? &YNAM->value46 : NULL;
         case 47: //znam Sound - Drop
@@ -553,7 +553,7 @@ bool ARMORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             BIPL->value44 = *(FORMID *)FieldValue;
             return true;
         case 45: //etyp Equipment Type
-            ETYPReq.Load();
+            ETYP.Load();
             ETYPReq->value45 = *(SINT32 *)FieldValue;
             break;
         case 46: //ynam Sound - Pick Up
@@ -791,7 +791,7 @@ void ARMORecord::DeleteField(FIELD_IDENTIFIERS)
             BIPL.Unload();
             return;
         case 45: //etyp Equipment Type
-            ETYPReq.Unload();
+            ETYP.Unload();
             return;
         case 46: //ynam Sound - Pick Up
             YNAM.Unload();

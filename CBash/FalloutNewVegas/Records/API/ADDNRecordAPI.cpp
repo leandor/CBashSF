@@ -133,7 +133,7 @@ void * ADDNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 11: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 12: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 13: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;

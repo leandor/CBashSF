@@ -227,7 +227,7 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 14: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 15: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 16: //mods Alternate Texture
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -281,7 +281,7 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 39: //mic2 Female mico filename
             return MIC2.value;
         case 40: //etyp Equipment Type
-            return ETYPReq.IsLoaded() ? &ETYPReq->value40 : NULL;
+            return ETYP.IsLoaded() ? &ETYPReq->value40 : NULL;
         case 41: //data DATA ,, Struct
             return DATA.IsLoaded() ? &DATA->value41 : NULL;
         case 42: //data DATA ,, Struct
@@ -469,7 +469,7 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MIC2.Copy((STRING)FieldValue);
             break;
         case 40: //etyp Equipment Type
-            ETYPReq.Load();
+            ETYP.Load();
             ETYPReq->value40 = *(SINT32 *)FieldValue;
             break;
         case 41: //data DATA ,, Struct
@@ -646,7 +646,7 @@ void ARMARecord::DeleteField(FIELD_IDENTIFIERS)
             MIC2.Unload();
             return;
         case 40: //etyp Equipment Type
-            ETYPReq.Unload();
+            ETYP.Unload();
             return;
         case 41: //data DATA ,, Struct
             DATA.Unload();

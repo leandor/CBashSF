@@ -39,20 +39,22 @@ class EYESRecord : public FNVRecord //Eyes
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord ICON; //Texture
-        OptSimpleSubRecord<UINT8> DATA; //Flags
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
 
         EYESRecord(unsigned char *_recData=NULL);
         EYESRecord(EYESRecord *srcRecord);
         ~EYESRecord();
 
-        bool   VisitFormIDs(FormIDOp &op);
-
         bool   IsPlayable();
         void   IsPlayable(bool value);
         bool   IsNotMale();
         void   IsNotMale(bool value);
+        bool   IsMale();
+        void   IsMale(bool value);
         bool   IsNotFemale();
         void   IsNotFemale(bool value);
+        bool   IsFemale();
+        void   IsFemale(bool value);
         bool   IsFlagMask(UINT8 Mask, bool Exact=false);
         void   SetFlagMask(UINT8 Mask);
 

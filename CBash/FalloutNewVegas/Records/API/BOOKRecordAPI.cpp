@@ -210,7 +210,7 @@ void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -227,7 +227,7 @@ void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 20: //scri Script
             return SCRI.IsLoaded() ? &SCRI->value20 : NULL;
         case 21: //description
-            return DESCReq.value;
+            return DESC.value;
         case 22: //dest Header
             return DEST.IsLoaded() ? &DEST->DEST->value22 : NULL;
         case 23: //dest Header
@@ -355,7 +355,7 @@ bool BOOKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SCRI->value20 = *(FORMID *)FieldValue;
             return true;
         case 21: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 22: //dest Header
             DEST.Load();
@@ -523,7 +523,7 @@ void BOOKRecord::DeleteField(FIELD_IDENTIFIERS)
             SCRI.Unload();
             return;
         case 21: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 22: //dest Header
             if(DEST.IsLoaded())

@@ -60,7 +60,7 @@ UINT32 RCCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //full
             return STRING_FIELD;
-        case 8: //data Flags
+        case 8: //flags
             return UINT8_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -87,7 +87,7 @@ void * RCCTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //data Flags
+        case 8: //flags
             return DATA.IsLoaded() ? &DATA->value8 : NULL;
         default:
             return NULL;
@@ -124,7 +124,7 @@ bool RCCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //data Flags
+        case 8: //flags
             DATA.Load();
             DATA->value8 = *(UINT8 *)FieldValue;
             break;
@@ -157,7 +157,7 @@ void RCCTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //data Flags
+        case 8: //flags
             DATA.Unload();
             return;
         default:

@@ -166,7 +166,7 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 14: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 15: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;

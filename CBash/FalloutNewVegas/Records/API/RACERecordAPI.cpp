@@ -207,9 +207,9 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //full
-            return FULLReq.value;
+            return FULL.value;
         case 8: //description
-            return DESCReq.value;
+            return DESC.value;
         case 9: //xnam Relation
             return XNAMs.IsLoaded() ? &XNAMs->value9 : NULL;
         case 10: //xnam Relation
@@ -255,7 +255,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 29: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 30: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 31: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -318,10 +318,10 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
         case 7: //full
-            FULLReq.Copy((STRING)FieldValue);
+            FULL.Copy((STRING)FieldValue);
             break;
         case 8: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 9: //xnam Relation
             XNAMs.Load();
@@ -478,10 +478,10 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[1] = 0;
             return;
         case 7: //full
-            FULLReq.Unload();
+            FULL.Unload();
             return;
         case 8: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 9: //xnam Relation
             XNAMs.Unload();

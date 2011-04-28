@@ -186,7 +186,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //full
             return FULL.value;
         case 8: //description
-            return DESCReq.value;
+            return DESC.value;
         case 9: //iconPath
             return ICON.value;
         case 10: //smallIconPath
@@ -196,7 +196,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -281,7 +281,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FULL.Copy((STRING)FieldValue);
             break;
         case 8: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 9: //iconPath
             ICON.Copy((STRING)FieldValue);
@@ -425,7 +425,7 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             FULL.Unload();
             return;
         case 8: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 9: //iconPath
             ICON.Unload();

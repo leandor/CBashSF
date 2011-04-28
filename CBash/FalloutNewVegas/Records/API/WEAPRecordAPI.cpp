@@ -530,7 +530,7 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -585,7 +585,7 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 38: //repl Repair List
             return REPL.IsLoaded() ? &REPL->value38 : NULL;
         case 39: //etyp Equipment Type
-            return ETYPReq.IsLoaded() ? &ETYPReq->value39 : NULL;
+            return ETYP.IsLoaded() ? &ETYPReq->value39 : NULL;
         case 40: //bipl Biped Model List
             return BIPL.IsLoaded() ? &BIPL->value40 : NULL;
         case 41: //ynam Sound - Pick Up
@@ -1026,7 +1026,7 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             REPL->value38 = *(FORMID *)FieldValue;
             return true;
         case 39: //etyp Equipment Type
-            ETYPReq.Load();
+            ETYP.Load();
             ETYPReq->value39 = *(SINT32 *)FieldValue;
             break;
         case 40: //bipl Biped Model List
@@ -1713,7 +1713,7 @@ void WEAPRecord::DeleteField(FIELD_IDENTIFIERS)
             REPL.Unload();
             return;
         case 39: //etyp Equipment Type
-            ETYPReq.Unload();
+            ETYP.Unload();
             return;
         case 40: //bipl Biped Model List
             BIPL.Unload();

@@ -53,15 +53,22 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
+
     if(srcRecord->MODL.IsLoaded())
         {
         MODL.Load();
         MODL->MODL = srcRecord->MODL->MODL;
         MODL->MODB = srcRecord->MODL->MODB;
         MODL->MODT = srcRecord->MODL->MODT;
-        MODL->MODS = srcRecord->MODL->MODS;
+        MODL->Textures.MODS.resize(srcRecord->MODL->Textures.MODS.size());
+        for(UINT32 x = 0; x < srcRecord->MODL->Textures.MODS.size(); x++)
+            {
+            MODL->Textures.MODS[x] = new FNVMODS;
+            *MODL->Textures.MODS[x] = *srcRecord->MODL->Textures.MODS[x];
+            }
         MODL->MODD = srcRecord->MODL->MODD;
         }
+
     ACBS = srcRecord->ACBS;
     SNAM = srcRecord->SNAM;
     INAM = srcRecord->INAM;
@@ -117,8 +124,11 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
-        op.Accept(MODL->MODS->value);
+    if(MODL.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
+            op.Accept(MODL->Textures.MODS[x]->texture);
+        }
     //if(SNAM.IsLoaded()) //FILL IN MANUALLY
     //    op.Accept(SNAM->value);
     if(INAM.IsLoaded())
@@ -993,19 +1003,19 @@ UINT32 NPC_Record::GetSize(bool forceCalc)
             TotSize += cSize += 6;
             }
         if(MODL->MODB.IsLoaded())
-            {
-            cSize = MODL->MODB.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
+            TotSize += MODL->MODB.GetSize() + 6;
         if(MODL->MODT.IsLoaded())
             {
             cSize = MODL->MODT.GetSize();
             if(cSize > 65535) cSize += 10;
             TotSize += cSize += 6;
             }
-        if(MODL->MODS.IsLoaded())
-            TotSize += MODL->MODS.GetSize() + 6;
+        if(MODL->Textures.IsLoaded())
+            {
+            cSize = MODL->Textures.GetSize();
+            if(cSize > 65535) cSize += 10;
+            TotSize += cSize += 6;
+            }
         if(MODL->MODD.IsLoaded())
             TotSize += MODL->MODD.GetSize() + 6;
         }
@@ -1190,7 +1200,7 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case 'SDOM':
                 MODL.Load();
-                MODL->MODS.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize, curPos);
                 break;
             case 'DDOM':
                 MODL.Load();
@@ -1372,19 +1382,30 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
         {
         if(MODL->MODL.IsLoaded())
             SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', MODL->MODB.value, MODL->MODB.GetSize());
-
+            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
             SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+        if(MODL->Textures.IsLoaded())
+            {
+            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
+            UINT32 cSize = MODL->Textures.MODS.size();
+            SaveHandler.write(&cSize, 4);
+            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
+                {
+                if(MODL->Textures.MODS[p]->name != NULL)
+                    {
+                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
+                    SaveHandler.write(&cSize, 4);
+                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
+                    }                
 
-        if(MODL->MODS.IsLoaded())
-            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
-
+                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
+                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
+                }
+           }
         if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
-
+            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
     if(ACBS.IsLoaded())

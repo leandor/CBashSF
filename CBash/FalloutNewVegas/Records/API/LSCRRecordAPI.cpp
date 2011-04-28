@@ -102,7 +102,7 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //smallIconPath
             return MICO.value;
         case 9: //description
-            return DESCReq.value;
+            return DESC.value;
         case 10: //lnam LNAM ,, Struct
             return LNAM.IsLoaded() ? &LNAM->value10 : NULL;
         case 11: //lnam LNAM ,, Struct
@@ -152,7 +152,7 @@ bool LSCRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MICO.Copy((STRING)FieldValue);
             break;
         case 9: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 10: //lnam LNAM ,, Struct
             LNAM.Load();
@@ -207,7 +207,7 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
             MICO.Unload();
             return;
         case 9: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 10: //lnam LNAM ,, Struct
             LNAM.Unload();

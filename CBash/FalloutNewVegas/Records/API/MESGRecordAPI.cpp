@@ -134,7 +134,7 @@ void * MESGRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //description
-            return DESCReq.value;
+            return DESC.value;
         case 8: //full
             return FULL.value;
         case 9: //inam Icon
@@ -197,7 +197,7 @@ bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
         case 7: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 8: //full
             FULL.Copy((STRING)FieldValue);
@@ -286,7 +286,7 @@ void MESGRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[1] = 0;
             return;
         case 7: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 8: //full
             FULL.Unload();

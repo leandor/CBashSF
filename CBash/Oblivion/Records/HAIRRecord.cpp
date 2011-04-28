@@ -90,10 +90,7 @@ bool HAIRRecord::IsMale()
 
 void HAIRRecord::IsMale(bool value)
     {
-    if(value)
-        IsNotMale(false);
-    else
-        IsNotMale(true);
+    IsNotMale(!value);
     }
 
 bool HAIRRecord::IsNotFemale()
@@ -113,10 +110,7 @@ bool HAIRRecord::IsFemale()
 
 void HAIRRecord::IsFemale(bool value)
     {
-    if(value)
-        IsNotFemale(false);
-    else
-        IsNotFemale(true);
+    IsNotFemale(!value);
     }
 
 bool HAIRRecord::IsFixedColor()

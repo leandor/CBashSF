@@ -59,6 +59,8 @@ bool ModFile::operator >(ModFile &other)
 
 bool ModFile::Open()
     {
+    PROFILE_FUNC
+
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !ReadHandler.exists())
         {
         if(!Flags.IsIgnoreExisting)
@@ -80,6 +82,8 @@ bool ModFile::Open()
 
 bool ModFile::Close()
     {
+    PROFILE_FUNC
+
     if(!ReadHandler.IsOpen())
         {
         if(!Flags.IsIgnoreExisting)

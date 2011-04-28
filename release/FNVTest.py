@@ -75,6 +75,8 @@ def regressionTests():
     assertCLAS(Current, newMod)
     assertFACT(Current, newMod)
     assertHDPT(Current, newMod)
+    assertHAIR(Current, newMod)
+    assertEYES(Current, newMod)
     newMod.save()
 
 def assertTES4(Current, newMod):
@@ -1185,6 +1187,246 @@ def assertHDPT(Current, newMod):
     assert record.parts == []
 
     print "HDPT:Finished testing"
+
+def assertHAIR(Current, newMod):
+    record = Current.LoadOrderMods[0].HAIR[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x05239D)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [5, 66, 39, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == r'HairFemaleCherry'
+    assert record.eid == r'HAirFemaleCherry'
+    
+    assert record.full == r'Pretty Puff'
+    assert record.full != r'PrEtty Puff'
+    assert record.modPath == r'Characters\Hair\HairFemaleCherry.NIF'
+    assert record.modPath == r'ChAracters\Hair\HairFemaleCherry.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == [249, 236, 15, 104, 106, 177, 7, 48, 121, 108, 15, 104, 111, 177, 7, 48, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 17, 104, 247, 73, 32, 158, 110, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 17, 104, 247, 73, 32, 158, 115, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 18, 104, 114, 22, 241, 46, 108, 104, 18, 104, 119, 22, 241, 46, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.iconPath == r'Characters\Hair\HairChildMCurly.dds'
+    assert record.iconPath == r'ChAracters\Hair\HairChildMCurly.dds'
+    assert record.flags == 0x2
+    
+    nrecord = newMod.create_HAIR()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = r'WarPretty Puff'
+    nrecord.modPath = r'War\Hair\HairFemaleCherry.NIF'
+    nrecord.modb = 3.1
+    nrecord.modt_p = [1, 236, 15]
+    nrecord.altTextures_list = [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    nrecord.modelFlags = 0x3
+    nrecord.iconPath = r'War\Hair\HairChildMCurly.dds'
+    nrecord.flags = 0x4
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x00100B)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == r'WarPretty Puff'
+    assert nrecord.full != r'WArPretty Puff'
+    assert nrecord.modPath == r'War\Hair\HairFemaleCherry.NIF'
+    assert nrecord.modPath == r'WAr\Hair\HairFemaleCherry.NIF'
+    assert nrecord.modb == 3.1
+    assert nrecord.modt_p == [1, 236, 15]
+    assert nrecord.altTextures_list == [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert nrecord.modelFlags == 0x3
+    assert nrecord.iconPath == r'War\Hair\HairChildMCurly.dds'
+    assert nrecord.iconPath == r'WAr\Hair\HairChildMCurly.dds'
+    assert nrecord.flags == 0x4
+
+    record = Current.LoadOrderMods[0].HAIR[0]
+    newrecord = record.CopyAsOverride(newMod)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x05239D)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [5, 66, 39, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [2, 0]
+    assert newrecord.eid == r'HairFemaleCherry'
+    assert newrecord.eid == r'HAirFemaleCherry'
+    
+    assert newrecord.full == r'Pretty Puff'
+    assert newrecord.full != r'PrEtty Puff'
+    assert newrecord.modPath == r'Characters\Hair\HairFemaleCherry.NIF'
+    assert newrecord.modPath == r'ChAracters\Hair\HairFemaleCherry.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == [249, 236, 15, 104, 106, 177, 7, 48, 121, 108, 15, 104, 111, 177, 7, 48, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 17, 104, 247, 73, 32, 158, 110, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 17, 104, 247, 73, 32, 158, 115, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 18, 104, 114, 22, 241, 46, 108, 104, 18, 104, 119, 22, 241, 46, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.iconPath == r'Characters\Hair\HairChildMCurly.dds'
+    assert newrecord.iconPath == r'ChAracters\Hair\HairChildMCurly.dds'
+    assert newrecord.flags == 0x2
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = r'WarPretty Puff'
+    newrecord.modPath = r'War\Hair\HairFemaleCherry.NIF'
+    newrecord.modb = 3.1
+    newrecord.modt_p = [1, 236, 15]
+    newrecord.altTextures_list = [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    newrecord.modelFlags = 0x3
+    newrecord.iconPath = r'War\Hair\HairChildMCurly.dds'
+    newrecord.flags = 0x4
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x05239D)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == r'WarPretty Puff'
+    assert newrecord.full != r'WArPretty Puff'
+    assert newrecord.modPath == r'War\Hair\HairFemaleCherry.NIF'
+    assert newrecord.modPath == r'WAr\Hair\HairFemaleCherry.NIF'
+    assert newrecord.modb == 3.1
+    assert newrecord.modt_p == [1, 236, 15]
+    assert newrecord.altTextures_list == [('BeardMustacheCurly:1', ('FalloutNV.esm', 653606), -2), ('BeardMustacheCuRly:0', ('FalloutNV.esm', 653607), -1), ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert newrecord.modelFlags == 0x3
+    assert newrecord.iconPath == r'War\Hair\HairChildMCurly.dds'
+    assert newrecord.iconPath == r'WAr\Hair\HairChildMCurly.dds'
+    assert newrecord.flags == 0x4
+
+    assert record.fid == ('FalloutNV.esm', 0x05239D)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [5, 66, 39, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == r'HairFemaleCherry'
+    assert record.eid == r'HAirFemaleCherry'
+    
+    assert record.full == r'Pretty Puff'
+    assert record.full != r'PrEtty Puff'
+    assert record.modPath == r'Characters\Hair\HairFemaleCherry.NIF'
+    assert record.modPath == r'ChAracters\Hair\HairFemaleCherry.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == [249, 236, 15, 104, 106, 177, 7, 48, 121, 108, 15, 104, 111, 177, 7, 48, 114, 105, 24, 116, 155, 242, 124, 224, 238, 223, 17, 104, 247, 73, 32, 158, 110, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 243, 223, 17, 104, 247, 73, 32, 158, 115, 95, 17, 104, 252, 73, 32, 158, 114, 105, 24, 116, 155, 242, 124, 224, 236, 232, 18, 104, 114, 22, 241, 46, 108, 104, 18, 104, 119, 22, 241, 46, 114, 105, 24, 116, 155, 242, 124, 224]
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.iconPath == r'Characters\Hair\HairChildMCurly.dds'
+    assert record.iconPath == r'ChAracters\Hair\HairChildMCurly.dds'
+    assert record.flags == 0x2
+
+    print "HAIR:Finished testing"
+
+def assertEYES(Current, newMod):
+    record = Current.LoadOrderMods[0].EYES[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'DLCPittEyeGreenMut'
+    assert record.eid == 'DLCPittEyEGreenMut'
+    
+    assert record.full == 'Green'
+    assert record.full != 'GreEn'
+    assert record.iconPath == r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    assert record.iconPath == r'ChAracters\Eyes\EyeGreenMutantHuman.dds'
+    assert record.flags == 0x0
+    
+    nrecord = newMod.create_EYES()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = 'Green'
+    nrecord.iconPath = r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    nrecord.flags = 0x0
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x00100C)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'Green'
+    assert nrecord.full != 'GrEen'
+    assert nrecord.iconPath == r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    assert nrecord.iconPath == r'ChAracters\Eyes\EyeGreenMutantHuman.dds'
+    assert nrecord.flags == 0x0
+
+    record = Current.LoadOrderMods[0].EYES[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [9, 76, 1, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'DLCPittEyeGreenMut'
+    assert newrecord.eid == 'DLCPittEyEGreenMut'
+    
+    assert newrecord.full == 'Green'
+    assert newrecord.full != 'GreEn'
+    assert newrecord.iconPath == r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    assert newrecord.iconPath == r'ChAracters\Eyes\EyeGreenMutantHuman.dds'
+    assert newrecord.flags == 0x0
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = 'Green'
+    newrecord.iconPath = r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    newrecord.flags = 0x0
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'Green'
+    assert newrecord.full != 'GrEen'
+    assert newrecord.iconPath == r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    assert newrecord.iconPath == r'ChAracters\Eyes\EyeGreenMutantHuman.dds'
+    assert newrecord.flags == 0x0
+
+    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'DLCPittEyeGreenMut'
+    assert record.eid == 'DLCPittEyEGreenMut'
+    
+    assert record.full == 'Green'
+    assert record.full != 'GreEn'
+    assert record.iconPath == r'Characters\Eyes\EyeGreenMutantHuman.dds'
+    assert record.iconPath == r'ChAracters\Eyes\EyeGreenMutantHuman.dds'
+    assert record.flags == 0x0
+
+    print "EYES:Finished testing"
 
 from timeit import Timer
 

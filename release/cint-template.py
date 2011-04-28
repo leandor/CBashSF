@@ -2021,6 +2021,42 @@ class FnvHDPTRecord(FnvBaseRecord):
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
                                                          'modt_p', 'altTextures_list',
                                                          'modelFlags', 'flags', 'parts']
+class FnvHAIRRecord(FnvBaseRecord):
+    _Type = 'HAIR'
+    STRING_MACRO(full, 7)
+    ISTRING_MACRO(modPath, 8)
+    FLOAT32_MACRO(modb, 9)
+    UINT8_ARRAY_MACRO(modt_p, 10)
+    LIST_MACRO(altTextures, 11, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 12)
+    ISTRING_MACRO(iconPath, 13)
+    UINT8_FLAG_MACRO(flags, 14)
+    
+    BasicFlagMACRO(IsPlayable, flags, 0x01)
+    BasicFlagMACRO(IsNotMale, flags, 0x02)
+    BasicInvertedFlagMACRO(IsMale, IsNotMale)
+    BasicFlagMACRO(IsNotFemale, flags, 0x04)
+    BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
+    BasicFlagMACRO(IsFixedColor, flags, 0x08)
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
+                                                         'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'iconPath', 'flags']
+class FnvEYESRecord(FnvBaseRecord):
+    _Type = 'EYES'
+    STRING_MACRO(full, 7)
+    ISTRING_MACRO(iconPath, 8)
+    UINT8_FLAG_MACRO(flags, 9)
+    
+    BasicFlagMACRO(IsPlayable, flags, 0x01)
+    BasicFlagMACRO(IsNotMale, flags, 0x02)
+    BasicInvertedFlagMACRO(IsMale, IsNotMale)
+    BasicFlagMACRO(IsNotFemale, flags, 0x04)
+    BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'iconPath', 'flags']
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5160,7 +5196,7 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
-                        ('HDPT',FnvHDPTRecord),])
+                        ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5507,6 +5543,8 @@ class FnvModFile(object):
     FnvModRecordsMACRO(CLAS)
     FnvModRecordsMACRO(FACT)
     FnvModRecordsMACRO(HDPT)
+    FnvModRecordsMACRO(HAIR)
+    FnvModRecordsMACRO(EYES)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

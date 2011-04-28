@@ -204,13 +204,13 @@ void * KEYMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //boundZ
             return OBND.IsLoaded() ? &OBND->z : NULL;
         case 10: //full
-            return FULLReq.value;
+            return FULL.value;
         case 11: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -311,7 +311,7 @@ bool KEYMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             OBND->z = *(SINT16 *)FieldValue;
             break;
         case 10: //full
-            FULLReq.Copy((STRING)FieldValue);
+            FULL.Copy((STRING)FieldValue);
             break;
         case 11: //modPath
             MODL.Load();
@@ -484,7 +484,7 @@ void KEYMRecord::DeleteField(FIELD_IDENTIFIERS)
                 OBND->z = defaultOBND.z;
             return;
         case 10: //full
-            FULLReq.Unload();
+            FULL.Unload();
             return;
         case 11: //modPath
             if(MODL.IsLoaded())

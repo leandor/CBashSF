@@ -112,7 +112,7 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FLOAT32_FIELD;
         case 29: //inam Image Space
             return FORMID_FIELD;
-        case 30: //data Flags
+        case 30: //flags
             return UINT8_FIELD;
         case 31: //nam0 NAM0 ,, Struct
             return FLOAT32_FIELD;
@@ -216,7 +216,7 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ONAM.IsLoaded() ? &ONAM->value28 : NULL;
         case 29: //inam Image Space
             return INAM.IsLoaded() ? &INAM->value29 : NULL;
-        case 30: //data Flags
+        case 30: //flags
             return DATA.IsLoaded() ? &DATA->value30 : NULL;
         case 31: //nam0 NAM0 ,, Struct
             return NAM0.IsLoaded() ? &NAM0->value31 : NULL;
@@ -366,7 +366,7 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             INAM.Load();
             INAM->value29 = *(FORMID *)FieldValue;
             return true;
-        case 30: //data Flags
+        case 30: //flags
             DATA.Load();
             DATA->value30 = *(UINT8 *)FieldValue;
             break;
@@ -508,7 +508,7 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 29: //inam Image Space
             INAM.Unload();
             return;
-        case 30: //data Flags
+        case 30: //flags
             DATA.Unload();
             return;
         case 31: //nam0 NAM0 ,, Struct

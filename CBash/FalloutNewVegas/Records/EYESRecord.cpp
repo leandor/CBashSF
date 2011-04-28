@@ -62,61 +62,64 @@ EYESRecord::~EYESRecord()
     //
     }
 
-bool EYESRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 bool EYESRecord::IsPlayable()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPlayable) != 0;
+    return (DATA.value & fIsPlayable) != 0;
     }
 
 void EYESRecord::IsPlayable(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPlayable) : (Dummy->flags & ~fIsPlayable);
+    DATA.value = value ? (DATA.value | fIsPlayable) : (DATA.value & ~fIsPlayable);
     }
 
 bool EYESRecord::IsNotMale()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNotMale) != 0;
+    return (DATA.value & fIsNotMale) != 0;
     }
 
 void EYESRecord::IsNotMale(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNotMale) : (Dummy->flags & ~fIsNotMale);
+    DATA.value = value ? (DATA.value | fIsNotMale) : (DATA.value & ~fIsNotMale);
+    }
+
+bool EYESRecord::IsMale()
+    {
+    return !IsNotMale();
+    }
+
+void EYESRecord::IsMale(bool value)
+    {
+    IsNotMale(!value);
     }
 
 bool EYESRecord::IsNotFemale()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNotFemale) != 0;
+    return (DATA.value & fIsNotFemale) != 0;
     }
 
 void EYESRecord::IsNotFemale(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNotFemale) : (Dummy->flags & ~fIsNotFemale);
+    DATA.value = value ? (DATA.value | fIsNotFemale) : (DATA.value & ~fIsNotFemale);
+    }
+
+bool EYESRecord::IsFemale()
+    {
+    return !IsNotFemale();
+    }
+
+void EYESRecord::IsFemale(bool value)
+    {
+    IsNotFemale(!value);
     }
 
 bool EYESRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void EYESRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value = Mask;
     }
 
 UINT32 EYESRecord::GetSize(bool forceCalc)
@@ -148,8 +151,7 @@ UINT32 EYESRecord::GetSize(bool forceCalc)
         TotSize += cSize += 6;
         }
 
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
+    TotSize += DATA.GetSize() + 6;
 
     return TotSize;
     }
@@ -232,18 +234,17 @@ SINT32 EYESRecord::WriteRecord(_FileHandler &SaveHandler)
     if(ICON.IsLoaded())
         SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
 
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
 
     return -1;
     }
 
 bool EYESRecord::operator ==(const EYESRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
+    return (DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
-            ICON.equalsi(other.ICON) &&
-            DATA == other.DATA);
+            ICON.equalsi(other.ICON));
     }
 
 bool EYESRecord::operator !=(const EYESRecord &other) const

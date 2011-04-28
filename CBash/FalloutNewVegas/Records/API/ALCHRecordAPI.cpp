@@ -274,13 +274,13 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //boundZ
             return OBND.IsLoaded() ? &OBND->z : NULL;
         case 10: //full
-            return FULLReq.value;
+            return FULL.value;
         case 11: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -331,7 +331,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 36: //znam Sound - Drop
             return ZNAM.IsLoaded() ? &ZNAM->value36 : NULL;
         case 37: //etyp Equipment Type
-            return ETYPReq.IsLoaded() ? &ETYPReq->value37 : NULL;
+            return ETYP.IsLoaded() ? &ETYPReq->value37 : NULL;
         case 38: //data Weight
             return DATA.IsLoaded() ? &DATA->value38 : NULL;
         case 39: //enit ENIT ,, Struct
@@ -423,7 +423,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             OBND->z = *(SINT16 *)FieldValue;
             break;
         case 10: //full
-            FULLReq.Copy((STRING)FieldValue);
+            FULL.Copy((STRING)FieldValue);
             break;
         case 11: //modPath
             MODL.Load();
@@ -546,7 +546,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             ZNAM->value36 = *(FORMID *)FieldValue;
             return true;
         case 37: //etyp Equipment Type
-            ETYPReq.Load();
+            ETYP.Load();
             ETYPReq->value37 = *(SINT32 *)FieldValue;
             break;
         case 38: //data Weight
@@ -695,7 +695,7 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
                 OBND->z = defaultOBND.z;
             return;
         case 10: //full
-            FULLReq.Unload();
+            FULL.Unload();
             return;
         case 11: //modPath
             if(MODL.IsLoaded())
@@ -797,7 +797,7 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
             ZNAM.Unload();
             return;
         case 37: //etyp Equipment Type
-            ETYPReq.Unload();
+            ETYP.Unload();
             return;
         case 38: //data Weight
             DATA.Unload();

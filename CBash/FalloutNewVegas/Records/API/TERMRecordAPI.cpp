@@ -330,7 +330,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 12: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
         case 13: //modt_p
-            *FieldValues = (MODL.IsLoaded()) ? MODL->MODT.value : NULL;
+            *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 14: //mods Alternate Textures
             return MODL.IsLoaded() ? MODL->MODS.value : NULL;
@@ -373,7 +373,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
             return NULL;
         case 33: //description
-            return DESCReq.value;
+            return DESC.value;
         case 34: //snam Sound - Looping
             return SNAM.IsLoaded() ? &SNAM->value34 : NULL;
         case 35: //pnam Password Note
@@ -604,7 +604,7 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         case 33: //description
-            DESCReq.Copy((STRING)FieldValue);
+            DESC.Copy((STRING)FieldValue);
             break;
         case 34: //snam Sound - Looping
             SNAM.Load();
@@ -922,7 +922,7 @@ void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
                 DEST->DMDT.Unload();
             return;
         case 33: //description
-            DESCReq.Unload();
+            DESC.Unload();
             return;
         case 34: //snam Sound - Looping
             SNAM.Unload();

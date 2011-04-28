@@ -104,8 +104,11 @@ bool ARMARecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
-        op.Accept(MODL->MODS->value);
+    if(MODL.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
+            op.Accept(MODL->Textures.MODS[x]->texture);
+        }
     if(MOD2.IsLoaded() && MOD2->MO2S.IsLoaded())
         op.Accept(MOD2->MO2S->value);
     if(MOD3.IsLoaded() && MOD3->MO3S.IsLoaded())

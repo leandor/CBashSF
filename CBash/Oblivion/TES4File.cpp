@@ -37,6 +37,8 @@ TES4File::~TES4File()
 
 SINT32 TES4File::LoadTES4()
     {
+    PROFILE_FUNC
+
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
@@ -73,6 +75,8 @@ SINT32 TES4File::LoadTES4()
 
 SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
     {
+    PROFILE_FUNC
+
     enum IgTopRecords {
         eIgGMST = 'TSMG' | 0x00001000, //Record::fIsIgnored
         eIgGLOB = 'BOLG' | 0x00001000,
@@ -477,6 +481,8 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
 
 UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
     {
+    PROFILE_FUNC
+
     switch(RecordType)
         {
         case 'TSMG':
@@ -613,6 +619,8 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
 
 Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("TES4File::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1006,6 +1014,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 
 SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("TES4File::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1097,6 +1107,8 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
 SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
+    PROFILE_FUNC
+
     if(!Flags.IsSaveable)
         {
         printf("TES4File::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ReadHandler.getModName());
@@ -1183,6 +1195,8 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
 
 void TES4File::VisitAllRecords(RecordOp &op)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("TES4File::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1254,6 +1268,8 @@ void TES4File::VisitAllRecords(RecordOp &op)
 
 void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
+    PROFILE_FUNC
+
     if(Flags.IsNoLoad)
         {
         printf("TES4File::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
@@ -1437,7 +1453,10 @@ void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordTyp
             EFSH.VisitRecords(RecordType, op, DeepVisit);
             break;
         default:
-            printf("TES4File::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
+            if(RecordType)
+                printf("TES4File::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
+            else
+                printf("TES4File::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
             break;
         }
     return;
