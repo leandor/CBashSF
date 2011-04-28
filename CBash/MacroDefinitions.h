@@ -175,6 +175,10 @@
     #define SINT16 signed short
 #endif
 
+#ifndef SINT16ARRAY
+    #define SINT16ARRAY signed short *
+#endif
+
 #ifndef SINT32
     #define SINT32 signed long
 #endif

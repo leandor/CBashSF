@@ -278,10 +278,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgSOUN:
             case 'NUOS':
-                //ReadHandler.read(&SOUN.stamp, 4);
-                //ReadHandler.read(&SOUN.unknown, 4);
-                //SOUN.Skim(ReadHandler, GRUPSize, processor, indexer);
-                //break;
+                ReadHandler.read(&SOUN.stamp, 4);
+                ReadHandler.read(&SOUN.unknown, 4);
+                SOUN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                break;
             //case eIgASPC:  //Same as normal
             case 'CPSA':
                 //ReadHandler.read(&ASPC.stamp, 4);
@@ -875,7 +875,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'ECAR':
             return (UINT32)RACE.Records.size();
         case 'NUOS':
-            //return (UINT32)SOUN.Records.size();
+            return (UINT32)SOUN.Records.size();
         case 'CPSA':
             //return (UINT32)ASPC.Records.size();
         case 'FEGM':
@@ -1130,9 +1130,9 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = RACE.Records.back();
             break;
         case 'NUOS':
-            //SOUN.Records.push_back(new FNV::SOUNRecord((FNV::SOUNRecord *)SourceRecord));
-            //newRecord = SOUN.Records.back();
-            //break;
+            SOUN.Records.push_back(new FNV::SOUNRecord((FNV::SOUNRecord *)SourceRecord));
+            newRecord = SOUN.Records.back();
+            break;
         case 'CPSA':
             //ASPC.Records.push_back(new FNV::ASPCRecord((FNV::ASPCRecord *)SourceRecord));
             //newRecord = ASPC.Records.back();
@@ -1534,7 +1534,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(HAIR.VisitRecords(NULL, checker, false)) continue;
         if(EYES.VisitRecords(NULL, checker, false)) continue;
         if(RACE.VisitRecords(NULL, checker, false)) continue;
-        //if(SOUN.VisitRecords(NULL, checker, false)) continue;
+        if(SOUN.VisitRecords(NULL, checker, false)) continue;
         //if(ASPC.VisitRecords(NULL, checker, false)) continue;
         //if(MGEF.VisitRecords(NULL, checker, false)) continue;
         //if(SCPT.VisitRecords(NULL, checker, false)) continue;
@@ -1672,7 +1672,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += RACE.WriteGRUP('ECAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SOUN.WriteGRUP('NUOS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.WriteGRUP('NUOS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += ASPC.WriteGRUP('CPSA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += MGEF.WriteGRUP('FEGM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += SCPT.WriteGRUP('TPCS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1795,7 +1795,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     HAIR.VisitRecords(NULL, op, true);
     EYES.VisitRecords(NULL, op, true);
     RACE.VisitRecords(NULL, op, true);
-    //SOUN.VisitRecords(NULL, op, true);
+    SOUN.VisitRecords(NULL, op, true);
     //ASPC.VisitRecords(NULL, op, true);
     //MGEF.VisitRecords(NULL, op, true);
     //SCPT.VisitRecords(NULL, op, true);
@@ -1938,8 +1938,8 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             RACE.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'NUOS':
-            //SOUN.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            SOUN.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'CPSA':
             //ASPC.VisitRecords(RecordType, op, DeepVisit);
             //break;

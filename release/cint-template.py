@@ -803,6 +803,25 @@ class CBashUINT32ARRAY(object):
             cRecords = (c_ulong * length)(*nValue)
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords), length)
 
+class CBashSINT16ARRAY(object):
+    def __init__(self, FieldID, Size=None):
+        self._FieldID = FieldID
+        self._Size = Size
+    def __get__(self, instance, owner):
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1)
+        if(numRecords > 0):
+            cRecords = POINTER(c_short * numRecords)()
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        return []
+    def __set__(self, instance, nValue):
+        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            length = len(nValue)
+            if self._Size and length != self._Size: return
+            cRecords = (c_short * length)(*nValue)
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords), length)
+
 class CBashFLOAT32(object):
     def __init__(self, FieldID):
         self._FieldID = FieldID
@@ -2203,6 +2222,59 @@ class FnvRACERecord(FnvBaseRecord):
                                         'maleSnam_p',
                                         'femaleFggs_p', 'femaleFgga_p', 'femaleFgts_p',
                                         'femaleSnam_p']
+
+class FnvSOUNRecord(FnvBaseRecord):
+    _Type = 'SOUN'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(soundPath, 13)
+    UINT8_MACRO(chance, 14)
+    UINT8_MACRO(minDistance, 15)
+    UINT8_MACRO(maxDistance, 16)
+    SINT8_MACRO(freqAdjustment, 17)
+    UINT8_ARRAY_MACRO(unused1, 18, 1)
+    UINT32_FLAG_MACRO(flags, 19)
+    SINT16_MACRO(staticAtten, 20)
+    UINT8_MACRO(stopTime, 21)
+    UINT8_MACRO(startTime, 22)
+    SINT16_ARRAY_MACRO(attenCurve, 23, 5)
+    SINT16_MACRO(reverb, 24)
+    SINT32_MACRO(priority, 25)
+    SINT32_MACRO(x, 26)
+    SINT32_MACRO(y, 27)
+    BasicFlagMACRO(IsRandomFrequencyShift, flags, 0x00000001)
+    BasicFlagMACRO(IsPlayAtRandom, flags, 0x00000002)
+    BasicFlagMACRO(IsEnvironmentIgnored, flags, 0x00000004)
+    BasicFlagMACRO(IsRandomLocation, flags, 0x00000008)
+    BasicFlagMACRO(IsLoop, flags, 0x00000010)
+    BasicFlagMACRO(IsMenuSound, flags, 0x00000020)
+    BasicFlagMACRO(Is2D, flags, 0x00000040)
+    BasicFlagMACRO(Is360LFE, flags, 0x00000080)
+    BasicFlagMACRO(IsDialogueSound, flags, 0x00000100)
+    BasicFlagMACRO(IsEnvelopeFast, flags, 0x00000200)
+    BasicFlagMACRO(IsEnvelopeSlow, flags, 0x00000400)
+    BasicFlagMACRO(Is2DRadius, flags, 0x00000800)
+    BasicFlagMACRO(IsMuteWhenSubmerged, flags, 0x00001000)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'soundPath',
+                                           'chance', 'minDistance', 'maxDistance',
+                                           'freqAdjustment', 'unused1', 'flags',
+                                           'staticAtten', 'stopTime', 'startTime',
+                                           'attenCurve', 'reverb', 'priority',
+                                           'x', 'y']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'soundPath',
+                                           'chance', 'minDistance', 'maxDistance',
+                                           'freqAdjustment', 'flags',
+                                           'staticAtten', 'stopTime', 'startTime',
+                                           'attenCurve', 'reverb', 'priority',
+                                           'x', 'y'] # 'unused1', 
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5343,7 +5415,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
                         ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
-                        ('RACE',FnvRACERecord),])
+                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5693,6 +5765,7 @@ class FnvModFile(object):
     FnvModRecordsMACRO(HAIR)
     FnvModRecordsMACRO(EYES)
     FnvModRecordsMACRO(RACE)
+    FnvModRecordsMACRO(SOUN)
     @property
     def tops(self):
         return dict((("GMST", self.GMST),))

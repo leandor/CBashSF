@@ -803,6 +803,25 @@ class CBashUINT32ARRAY(object):
             cRecords = (c_ulong * length)(*nValue)
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords), length)
 
+class CBashSINT16ARRAY(object):
+    def __init__(self, FieldID, Size=None):
+        self._FieldID = FieldID
+        self._Size = Size
+    def __get__(self, instance, owner):
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1)
+        if(numRecords > 0):
+            cRecords = POINTER(c_short * numRecords)()
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
+            return [cRecords.contents[x] for x in range(0, numRecords)]
+        return []
+    def __set__(self, instance, nValue):
+        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            length = len(nValue)
+            if self._Size and length != self._Size: return
+            cRecords = (c_short * length)(*nValue)
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords), length)
+
 class CBashFLOAT32(object):
     def __init__(self, FieldID):
         self._FieldID = FieldID
@@ -2287,6 +2306,59 @@ class FnvRACERecord(FnvBaseRecord):
                                         'maleSnam_p',
                                         'femaleFggs_p', 'femaleFgga_p', 'femaleFgts_p',
                                         'femaleSnam_p']
+
+class FnvSOUNRecord(FnvBaseRecord):
+    _Type = 'SOUN'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    soundPath = CBashISTRING(13)
+    chance = CBashGeneric(14, c_ubyte)
+    minDistance = CBashGeneric(15, c_ubyte)
+    maxDistance = CBashGeneric(16, c_ubyte)
+    freqAdjustment = CBashGeneric(17, c_byte)
+    unused1 = CBashUINT8ARRAY(18, 1)
+    flags = CBashGeneric(19, c_ulong)
+    staticAtten = CBashGeneric(20, c_short)
+    stopTime = CBashGeneric(21, c_ubyte)
+    startTime = CBashGeneric(22, c_ubyte)
+    attenCurve = CBashSINT16ARRAY(23, 5)
+    reverb = CBashGeneric(24, c_short)
+    priority = CBashGeneric(25, c_long)
+    x = CBashGeneric(26, c_long)
+    y = CBashGeneric(27, c_long)
+    IsRandomFrequencyShift = CBashBasicFlag('flags', 0x00000001)
+    IsPlayAtRandom = CBashBasicFlag('flags', 0x00000002)
+    IsEnvironmentIgnored = CBashBasicFlag('flags', 0x00000004)
+    IsRandomLocation = CBashBasicFlag('flags', 0x00000008)
+    IsLoop = CBashBasicFlag('flags', 0x00000010)
+    IsMenuSound = CBashBasicFlag('flags', 0x00000020)
+    Is2D = CBashBasicFlag('flags', 0x00000040)
+    Is360LFE = CBashBasicFlag('flags', 0x00000080)
+    IsDialogueSound = CBashBasicFlag('flags', 0x00000100)
+    IsEnvelopeFast = CBashBasicFlag('flags', 0x00000200)
+    IsEnvelopeSlow = CBashBasicFlag('flags', 0x00000400)
+    Is2DRadius = CBashBasicFlag('flags', 0x00000800)
+    IsMuteWhenSubmerged = CBashBasicFlag('flags', 0x00001000)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'soundPath',
+                                           'chance', 'minDistance', 'maxDistance',
+                                           'freqAdjustment', 'unused1', 'flags',
+                                           'staticAtten', 'stopTime', 'startTime',
+                                           'attenCurve', 'reverb', 'priority',
+                                           'x', 'y']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2', 'soundPath',
+                                           'chance', 'minDistance', 'maxDistance',
+                                           'freqAdjustment', 'flags',
+                                           'staticAtten', 'stopTime', 'startTime',
+                                           'attenCurve', 'reverb', 'priority',
+                                           'x', 'y'] # 'unused1', 
 
 #--Oblivion
 class ObBaseRecord(object):
@@ -5825,7 +5897,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
                         ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
-                        ('RACE',FnvRACERecord),])
+                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6504,6 +6576,12 @@ class FnvModFile(object):
         if(RecordID): return FnvRACERecord(self._CollectionID, self._ModID, RecordID, 0, 0)
         return None
     RACE = CBashRECORDARRAY(FnvRACERecord, 'RACE', 0)
+
+    def create_SOUN(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("SOUN", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvSOUNRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    SOUN = CBashRECORDARRAY(FnvSOUNRecord, 'SOUN', 0)
 
     @property
     def tops(self):

@@ -36,7 +36,7 @@ class SOUNRecord : public FNVRecord //Sound
             UINT32  flags;
             SINT16  staticAtten;
             UINT8   stopTime, startTime;
-            //Below are only on SNDX, and not the SNDD
+            //Below are only on SNDD, and not SNDX
             SINT16  attenCurve[5], reverb;
             SINT32  priority, x, y;
 
@@ -66,20 +66,18 @@ class SOUNRecord : public FNVRecord //Sound
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FNAM; //Sound Filename
-        OptSimpleSubRecord<UINT8> RNAM; //Random Chance %
+        SemiOptSimpleSubRecord<UINT8> RNAM; //Random Chance %
         ReqSubRecord<SOUNSNDD> SNDD; // Sound Data (May be SNDX format, so auto-update on read)
 
-        //OptSubRecord<GENANAM> ANAM; //Attenuation Curve (Read into SNDD, and write out from that)
-        //OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control (Read into SNDD, and write out from that)
-        //OptSimpleSubRecord<SINT32> HNAM; //Priority (Read into SNDD, and write out from that)
+        //OptSubRecord<GENANAM> ANAM; //Attenuation Curve (Read into SNDD)
+        //OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control (Read into SNDD)
+        //OptSimpleSubRecord<SINT32> HNAM; //Priority (Read into SNDD)
 
         SOUNRecord(unsigned char *_recData=NULL);
         SOUNRecord(SOUNRecord *srcRecord);
         ~SOUNRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsRandomFrequencyShift();
         void   IsRandomFrequencyShift(bool value);

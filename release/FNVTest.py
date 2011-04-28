@@ -78,7 +78,8 @@ def regressionTests():
     assertHAIR(Current, newMod)
     assertEYES(Current, newMod)
     assertRACE(Current, newMod)
-    newMod.save()
+    assertSOUN(Current, newMod)
+##    newMod.save()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -2986,6 +2987,107 @@ def assertRACE(Current, newMod):
     assert record.femaleSnam_p == [149, 130]
 
     print "RACE:Finished testing"
+
+def assertSOUN(Current, newMod):
+    record = Current.LoadOrderMods[0].SOUN[0]
+    d(record)
+    return
+    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'DLCPittEyeGreenMut'
+    assert record.eid == 'DLCPittEyEGreenMut'
+    
+    assert record.full == 'Green'
+    assert record.full != 'GreEn'
+    assert record.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    assert record.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
+    assert record.flags == 0x0
+    
+    nrecord = newMod.create_SOUN()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = 'Green'
+    nrecord.iconPath = r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    nrecord.flags = 0x0
+    
+    assert nrecord.fid == ('RegressionTests.esp', 0x00100C)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'Green'
+    assert nrecord.full != 'GrEen'
+    assert nrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    assert nrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
+    assert nrecord.flags == 0x0
+
+    record = Current.LoadOrderMods[0].SOUN[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [9, 76, 1, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'DLCPittEyeGreenMut'
+    assert newrecord.eid == 'DLCPittEyEGreenMut'
+    
+    assert newrecord.full == 'Green'
+    assert newrecord.full != 'GreEn'
+    assert newrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    assert newrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
+    assert newrecord.flags == 0x0
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = 'Green'
+    newrecord.iconPath = r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    newrecord.flags = 0x0
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'Green'
+    assert newrecord.full != 'GrEen'
+    assert newrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    assert newrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
+    assert newrecord.flags == 0x0
+
+    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'DLCPittEyeGreenMut'
+    assert record.eid == 'DLCPittEyEGreenMut'
+    
+    assert record.full == 'Green'
+    assert record.full != 'GreEn'
+    assert record.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
+    assert record.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
+    assert record.flags == 0x0
+
+    print "SOUN:Finished testing"
 
 from timeit import Timer
 

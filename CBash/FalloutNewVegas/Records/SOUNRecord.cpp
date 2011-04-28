@@ -24,6 +24,53 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+SOUNRecord::SOUNSNDD::SOUNSNDD():
+    minDistance(0),
+    maxDistance(0),
+    freqAdjustment(0),
+    unused1(0),
+    flags(0),
+    staticAtten(0),
+    stopTime(0),
+    startTime(0),
+    reverb(0),
+    priority(0),
+    x(0),
+    y(0)
+    {
+    memset(&attenCurve[0], 0x00, 10);
+    }
+
+SOUNRecord::SOUNSNDD::~SOUNSNDD()
+    {
+    //
+    }
+
+bool SOUNRecord::SOUNSNDD::operator ==(const SOUNSNDD &other) const
+    {
+    return (minDistance == other.minDistance &&
+            maxDistance == other.maxDistance &&
+            freqAdjustment == other.freqAdjustment &&
+            flags == other.flags &&
+            staticAtten == other.staticAtten &&
+            stopTime == other.stopTime &&
+            startTime == other.startTime &&
+            reverb == other.reverb &&
+            priority == other.priority &&
+            x == other.x &&
+            y == other.y &&
+            attenCurve[0] == other.attenCurve[0] &&
+            attenCurve[1] == other.attenCurve[1] &&
+            attenCurve[2] == other.attenCurve[2] &&
+            attenCurve[3] == other.attenCurve[3] &&
+            attenCurve[4] == other.attenCurve[4]);
+    }
+
+bool SOUNRecord::SOUNSNDD::operator !=(const SOUNSNDD &other) const
+    {
+    return !(*this == other);
+    }
+
 SOUNRecord::SOUNRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -55,10 +102,6 @@ SOUNRecord::SOUNRecord(SOUNRecord *srcRecord):
     FNAM = srcRecord->FNAM;
     RNAM = srcRecord->RNAM;
     SNDD = srcRecord->SNDD;
-    SNDX = srcRecord->SNDX;
-    ANAM = srcRecord->ANAM;
-    GNAM = srcRecord->GNAM;
-    HNAM = srcRecord->HNAM;
     return;
     }
 
@@ -67,181 +110,144 @@ SOUNRecord::~SOUNRecord()
     //
     }
 
-bool SOUNRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 bool SOUNRecord::IsRandomFrequencyShift()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRandomFrequencyShift) != 0;
+    return (SNDD.value.flags & fIsRandomFrequencyShift) != 0;
     }
 
 void SOUNRecord::IsRandomFrequencyShift(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRandomFrequencyShift) : (Dummy->flags & ~fIsRandomFrequencyShift);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsRandomFrequencyShift) : (SNDD.value.flags & ~fIsRandomFrequencyShift);
     }
 
 bool SOUNRecord::IsPlayAtRandom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPlayAtRandom) != 0;
+    return (SNDD.value.flags & fIsPlayAtRandom) != 0;
     }
 
 void SOUNRecord::IsPlayAtRandom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPlayAtRandom) : (Dummy->flags & ~fIsPlayAtRandom);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsPlayAtRandom) : (SNDD.value.flags & ~fIsPlayAtRandom);
     }
 
 bool SOUNRecord::IsEnvironmentIgnored()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEnvironmentIgnored) != 0;
+    return (SNDD.value.flags & fIsEnvironmentIgnored) != 0;
     }
 
 void SOUNRecord::IsEnvironmentIgnored(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsEnvironmentIgnored) : (Dummy->flags & ~fIsEnvironmentIgnored);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsEnvironmentIgnored) : (SNDD.value.flags & ~fIsEnvironmentIgnored);
     }
 
 bool SOUNRecord::IsRandomLocation()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRandomLocation) != 0;
+    return (SNDD.value.flags & fIsRandomLocation) != 0;
     }
 
 void SOUNRecord::IsRandomLocation(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRandomLocation) : (Dummy->flags & ~fIsRandomLocation);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsRandomLocation) : (SNDD.value.flags & ~fIsRandomLocation);
     }
 
 bool SOUNRecord::IsLoop()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsLoop) != 0;
+    return (SNDD.value.flags & fIsLoop) != 0;
     }
 
 void SOUNRecord::IsLoop(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsLoop) : (Dummy->flags & ~fIsLoop);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsLoop) : (SNDD.value.flags & ~fIsLoop);
     }
 
 bool SOUNRecord::IsMenuSound()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsMenuSound) != 0;
+    return (SNDD.value.flags & fIsMenuSound) != 0;
     }
 
 void SOUNRecord::IsMenuSound(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsMenuSound) : (Dummy->flags & ~fIsMenuSound);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsMenuSound) : (SNDD.value.flags & ~fIsMenuSound);
     }
 
 bool SOUNRecord::Is2D()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIs2D) != 0;
+    return (SNDD.value.flags & fIs2D) != 0;
     }
 
 void SOUNRecord::Is2D(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIs2D) : (Dummy->flags & ~fIs2D);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIs2D) : (SNDD.value.flags & ~fIs2D);
     }
 
 bool SOUNRecord::Is360LFE()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIs360LFE) != 0;
+    return (SNDD.value.flags & fIs360LFE) != 0;
     }
 
 void SOUNRecord::Is360LFE(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIs360LFE) : (Dummy->flags & ~fIs360LFE);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIs360LFE) : (SNDD.value.flags & ~fIs360LFE);
     }
 
 bool SOUNRecord::IsDialogueSound()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDialogueSound) != 0;
+    return (SNDD.value.flags & fIsDialogueSound) != 0;
     }
 
 void SOUNRecord::IsDialogueSound(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDialogueSound) : (Dummy->flags & ~fIsDialogueSound);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsDialogueSound) : (SNDD.value.flags & ~fIsDialogueSound);
     }
 
 bool SOUNRecord::IsEnvelopeFast()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEnvelopeFast) != 0;
+    return (SNDD.value.flags & fIsEnvelopeFast) != 0;
     }
 
 void SOUNRecord::IsEnvelopeFast(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsEnvelopeFast) : (Dummy->flags & ~fIsEnvelopeFast);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsEnvelopeFast) : (SNDD.value.flags & ~fIsEnvelopeFast);
     }
 
 bool SOUNRecord::IsEnvelopeSlow()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEnvelopeSlow) != 0;
+    return (SNDD.value.flags & fIsEnvelopeSlow) != 0;
     }
 
 void SOUNRecord::IsEnvelopeSlow(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsEnvelopeSlow) : (Dummy->flags & ~fIsEnvelopeSlow);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsEnvelopeSlow) : (SNDD.value.flags & ~fIsEnvelopeSlow);
     }
 
 bool SOUNRecord::Is2DRadius()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIs2DRadius) != 0;
+    return (SNDD.value.flags & fIs2DRadius) != 0;
     }
 
 void SOUNRecord::Is2DRadius(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIs2DRadius) : (Dummy->flags & ~fIs2DRadius);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIs2DRadius) : (SNDD.value.flags & ~fIs2DRadius);
     }
 
 bool SOUNRecord::IsMuteWhenSubmerged()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsMuteWhenSubmerged) != 0;
+    return (SNDD.value.flags & fIsMuteWhenSubmerged) != 0;
     }
 
 void SOUNRecord::IsMuteWhenSubmerged(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsMuteWhenSubmerged) : (Dummy->flags & ~fIsMuteWhenSubmerged);
+    SNDD.value.flags = value ? (SNDD.value.flags | fIsMuteWhenSubmerged) : (SNDD.value.flags & ~fIsMuteWhenSubmerged);
     }
 
 bool SOUNRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((SNDD.value.flags & Mask) == Mask) : ((SNDD.value.flags & Mask) != 0);
     }
 
 void SOUNRecord::SetFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    SNDD.value.flags = Mask;
     }
 
 UINT32 SOUNRecord::GetSize(bool forceCalc)
@@ -272,20 +278,7 @@ UINT32 SOUNRecord::GetSize(bool forceCalc)
     if(RNAM.IsLoaded())
         TotSize += RNAM.GetSize() + 6;
 
-    if(SNDD.IsLoaded())
-        TotSize += SNDD.GetSize() + 6;
-
-    if(SNDX.IsLoaded())
-        TotSize += SNDX.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(GNAM.IsLoaded())
-        TotSize += GNAM.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
+    TotSize += SNDD.GetSize() + 6;
 
     return TotSize;
     }
@@ -337,17 +330,17 @@ SINT32 SOUNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'DDNS':
                 SNDD.Read(buffer, subSize, curPos);
                 break;
-            case 'XDNS':
-                SNDX.Read(buffer, subSize, curPos);
+            case 'XDNS': //auto update to SNDD
+                SNDD.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
-                ANAM.Read(buffer, subSize, curPos);
+            case 'MANA': //auto update to SNDD
+                _readBuffer(&SNDD.value.attenCurve[0], buffer, subSize, curPos);
                 break;
-            case 'MANG':
-                GNAM.Read(buffer, subSize, curPos);
+            case 'MANG': //auto update to SNDD
+                _readBuffer(&SNDD.value.reverb, buffer, subSize, curPos);
                 break;
-            case 'MANH':
-                HNAM.Read(buffer, subSize, curPos);
+            case 'MANH': //auto update to SNDD
+                _readBuffer(&SNDD.value.priority, buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -370,10 +363,6 @@ SINT32 SOUNRecord::Unload()
     FNAM.Unload();
     RNAM.Unload();
     SNDD.Unload();
-    SNDX.Unload();
-    ANAM.Unload();
-    GNAM.Unload();
-    HNAM.Unload();
     return 1;
     }
 
@@ -383,7 +372,7 @@ SINT32 SOUNRecord::WriteRecord(_FileHandler &SaveHandler)
         SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
 
     if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+        SaveHandler.writeSubRecord('DNBO', &OBND.value, OBND.GetSize());
 
     if(FNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
@@ -391,20 +380,7 @@ SINT32 SOUNRecord::WriteRecord(_FileHandler &SaveHandler)
     if(RNAM.IsLoaded())
         SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
 
-    if(SNDD.IsLoaded())
-        SaveHandler.writeSubRecord('DDNS', SNDD.value, SNDD.GetSize());
-
-    if(SNDX.IsLoaded())
-        SaveHandler.writeSubRecord('XDNS', SNDX.value, SNDX.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
-
-    if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
+    SaveHandler.writeSubRecord('DDNS', &SNDD.value, SNDD.GetSize());
 
     return -1;
     }
@@ -415,11 +391,7 @@ bool SOUNRecord::operator ==(const SOUNRecord &other) const
             OBND == other.OBND &&
             FNAM.equalsi(other.FNAM) &&
             RNAM == other.RNAM &&
-            SNDD == other.SNDD &&
-            SNDX == other.SNDX &&
-            ANAM == other.ANAM &&
-            GNAM == other.GNAM &&
-            HNAM == other.HNAM);
+            SNDD == other.SNDD);
     }
 
 bool SOUNRecord::operator !=(const SOUNRecord &other) const
