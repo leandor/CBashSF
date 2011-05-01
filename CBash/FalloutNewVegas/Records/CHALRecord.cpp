@@ -284,6 +284,7 @@ void CHALRecord::Set0Type(UINT8 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 CHALRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -327,6 +328,7 @@ UINT32 CHALRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CHALRecord::GetType()
     {

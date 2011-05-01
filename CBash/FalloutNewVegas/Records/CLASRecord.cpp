@@ -303,6 +303,7 @@ void CLASRecord::SetServicesFlagMask(UINT32 Mask)
     DATA.value.services = Mask;
     }
 
+/*
 UINT32 CLASRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -353,6 +354,7 @@ UINT32 CLASRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CLASRecord::GetType()
     {
@@ -433,30 +435,30 @@ SINT32 CLASRecord::Unload()
     return 1;
     }
 
-SINT32 CLASRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CLASRecord::WriteRecord(FileWriter &writer)
     {
     char null = 0;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
 
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
 
     if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
     else
-        SaveHandler.writeSubRecord('CSED', &null, 1);
+        writer.record_write_subrecord('CSED', &null, 1);
 
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
 
     if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
+        writer.record_write_subrecord('OCIM', MICO.value, MICO.GetSize());
 
-    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+    writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
 
-    SaveHandler.writeSubRecord('RTTA', &ATTR.value, ATTR.GetSize());
+    writer.record_write_subrecord('RTTA', &ATTR.value, ATTR.GetSize());
 
     return -1;
     }

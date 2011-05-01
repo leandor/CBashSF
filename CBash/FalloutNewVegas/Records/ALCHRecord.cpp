@@ -308,6 +308,7 @@ void ALCHRecord::SetEquipmentType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 ALCHRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -425,6 +426,7 @@ UINT32 ALCHRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ALCHRecord::GetType()
     {

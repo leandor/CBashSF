@@ -402,6 +402,7 @@ void CELLRecord::SetHiddenFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 CELLRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -491,6 +492,7 @@ UINT32 CELLRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CELLRecord::GetType()
     {

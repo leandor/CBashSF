@@ -115,7 +115,7 @@ UINT32 HDPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)HNAM.size();
+                    return (UINT32)HNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -174,7 +174,7 @@ void * HDPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //flags
             return DATA.IsLoaded() ? &DATA.value : NULL;
         case 14: //parts
-            *FieldValues = HNAM.size() ? &HNAM[0] : NULL;
+            *FieldValues = HNAM.IsLoaded() ? &HNAM.value[0] : NULL;
             return NULL;
         default:
             return NULL;
@@ -275,9 +275,9 @@ bool HDPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 14: //parts
-            HNAM.resize(ArraySize);
+            HNAM.value.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                HNAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                HNAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         default:
             break;
@@ -360,7 +360,7 @@ void HDPTRecord::DeleteField(FIELD_IDENTIFIERS)
             DATA.Unload();
             return;
         case 14: //parts
-            HNAM.clear();
+            HNAM.Unload();
             return;
         default:
             return;

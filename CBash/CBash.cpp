@@ -75,6 +75,12 @@ GPL License and Copyright Notice ============================================
 #endif
 
 static std::vector<Collection *> Collections;
+#ifdef CBASH_CALLTIMING
+    extern std::map<char *, double> CallTime;
+#endif
+#ifdef CBASH_CALLCOUNT
+    extern std::map<char *, unsigned long> CallCount;
+#endif
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Internal Functions
@@ -91,7 +97,7 @@ ModFile *ValidateModName(Collection *curCollection, STRING const ModName)
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-        if(_stricmp(CompName, curCollection->ModFiles[x]->ReadHandler.getModName()) == 0)
+        if(_stricmp(CompName, curCollection->ModFiles[x]->reader.getModName()) == 0)
             {
             delete []NonGhostName;
             return curCollection->ModFiles[x];
@@ -116,7 +122,7 @@ ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->LoadOrder255.size();++x)
-        if(_stricmp(CompName, curCollection->LoadOrder255[x]->ReadHandler.getModName()) == 0)
+        if(_stricmp(CompName, curCollection->LoadOrder255[x]->reader.getModName()) == 0)
             {
             delete []NonGhostName;
             return curCollection->LoadOrder255[x];
@@ -737,7 +743,7 @@ STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
     try
         {
         ValidatePointer(ModID);
-        return ModID->ReadHandler.getFileName();
+        return ModID->reader.getFileName();
         }
     catch(std::exception &ex)
         {
@@ -761,7 +767,7 @@ STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     try
         {
         ValidatePointer(CollectionID);
-        return ValidateLoadOrderIndex(CollectionID, ModIndex)->ReadHandler.getFileName();
+        return ValidateLoadOrderIndex(CollectionID, ModIndex)->reader.getFileName();
         }
     catch(std::exception &ex)
         {
@@ -785,7 +791,7 @@ STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
     try
         {
         ValidatePointer(ModID);
-        return ModID->ReadHandler.getModName();
+        return ModID->reader.getModName();
         }
     catch(std::exception &ex)
         {
@@ -809,7 +815,7 @@ STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     try
         {
         ValidatePointer(CollectionID);
-        return ValidateLoadOrderIndex(CollectionID, ModIndex)->ReadHandler.getModName();
+        return ValidateLoadOrderIndex(CollectionID, ModIndex)->reader.getModName();
         }
     catch(std::exception &ex)
         {
@@ -935,7 +941,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
         ValidatePointer(ModID);
         UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
         if(CollapsedIndex >= ModID->TES4.MAST.size())
-            return ModID->ReadHandler.getModName();
+            return ModID->reader.getModName();
         return ModID->TES4.MAST[CollapsedIndex].value;
         }
     catch(std::exception &ex)
@@ -963,7 +969,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
 //        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
 //            if(_stricmp(curModFile->TES4.MAST[x].value, ModName) == 0)
 //                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
-//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->ReadHandler.getModName());
+//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->reader.getModName());
 //        return -1;
 //        }
 //    catch(std::exception &ex)
@@ -1014,7 +1020,7 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
         ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
-            printf("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ReadHandler.getModName());
+            printf("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
             return -1;
             }
 
@@ -1044,7 +1050,7 @@ void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTyp
         ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
-            printf("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ReadHandler.getModName());
+            printf("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
             return;
             }
 
@@ -1388,7 +1394,6 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
     //Sanity check.
     if(FormIDToReplace == ReplacementFormID)
         return -1;
-
     try
         {
         ValidatePointer(CollectionID);
@@ -1401,12 +1406,16 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
             }
         else //Swap all possible uses of FormIDToReplace
             {
-            RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(RecordID->GetType());
-            if(curTypes != RecordType_PossibleGroups.end())
-                {
-                for(std::vector<UINT32>::const_iterator x = curTypes->second.begin(); x != curTypes->second.end(); ++x)
-                    ModID->VisitRecords(*x, NULL, swapper, true);
-                }
+            ModID->VisitAllRecords(swapper);
+            //Can't get the record type when it's a NULL pointer....stupid me
+            //RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(RecordID->GetType());
+            //if(curTypes != RecordType_PossibleGroups.end())
+            //    {
+            //    for(std::vector<UINT32>::const_iterator x = curTypes->second.begin(); x != curTypes->second.end(); ++x)
+            //        {
+            //        ModID->VisitRecords(*x, NULL, swapper, true);
+            //        }
+            //    }
             }
         return swapper.GetCount();
         }

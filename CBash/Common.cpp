@@ -21,6 +21,15 @@ GPL License and Copyright Notice ============================================
 */
 // Common.cpp
 #include "Common.h"
+#include "zlib/zlib.h"
+
+#ifdef CBASH_CALLTIMING
+    std::map<char *, double> CallTime;
+#endif
+
+#ifdef CBASH_CALLCOUNT
+    std::map<char *, unsigned long> CallCount;
+#endif
 
 const STRING Ex_NULL::__CLR_OR_THIS_CALL what() const
     {
@@ -91,77 +100,37 @@ bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
     return false;
     }
 
-_FileHandler::_FileHandler(STRING _FileName, STRING _ModName):
-    ModName(_ModName),
-    FileName(_FileName),
-    m_region(NULL),
-    f_map(NULL),
-    _Buffer(NULL),
-    _BufSize(0),
-    _BufPos(0),
-    _BufEnd(0),
-    _TotalWritten(0),
-    fh(-1)
+FileWriter::FileWriter(STRING filename, UINT32 size):
+    file_buffer(NULL),
+    record_buffer(NULL),
+    compressed_buffer(NULL),
+    file_buffer_used(0),
+    record_buffer_used(0),
+    compressed_buffer_used(0),
+    file_buffer_size(size),
+    record_buffer_size(size),
+    compressed_buffer_size(size),
+    fh(-1),
+    FileName(filename)
     {
-    //
-    }
-
-_FileHandler::_FileHandler(STRING _FileName, UINT32 nSize):
-    ModName(_FileName),
-    FileName(_FileName),
-    m_region(NULL),
-    f_map(NULL),
-    _Buffer(NULL),
-    _BufSize(nSize),
-    _BufPos(0),
-    _BufEnd(0),
-    _TotalWritten(0),
-    fh(-1)
-    {
-    if(_BufSize == 0)
+    if(size == 0)
         return;
-    _Buffer = new unsigned char[_BufSize];
+    file_buffer = new unsigned char[file_buffer_size];
+    record_buffer = new unsigned char[record_buffer_size];
+    compressed_buffer = new unsigned char[compressed_buffer_size];
     }
 
-_FileHandler::~_FileHandler()
+FileWriter::~FileWriter()
     {
-    if(FileName != ModName)
-        delete []FileName;
-    delete []ModName;
     close();
-    if(m_region == NULL && f_map == NULL && _Buffer != NULL)
-        delete []_Buffer;
+    delete []file_buffer;
+    delete []record_buffer;
+    delete []compressed_buffer;
     }
 
-SINT32 _FileHandler::open_ReadOnly()
+SINT32 FileWriter::open()
     {
-    if(fh != -1 || f_map != NULL || m_region != NULL || FileName == NULL)
-        return -1;
-    try
-        {
-        f_map = new boost::interprocess::file_mapping(FileName, boost::interprocess::read_only);
-        m_region = new boost::interprocess::mapped_region(*f_map, boost::interprocess::read_only);
-        }
-    catch(boost::interprocess::interprocess_exception &ex)
-        {
-        printf("FileHandler: Error - Unable to open \"%s\" as read only via memory mapping. An exception occurred: %s\n", FileName, ex.what());
-        throw;
-        return -1;
-        }
-    catch(...)
-        {
-        printf("FileHandler: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
-        throw;
-        return -1;
-        }
-    _Buffer = (unsigned char*)m_region->get_address();
-    _BufEnd = (UINT32)m_region->get_size();
-    return 0;
-    }
-
-SINT32 _FileHandler::open_ReadWrite()
-    {
-    if(fh != -1 || f_map != NULL || m_region != NULL || FileName == NULL)
+    if(fh != -1 || FileName == NULL)
         return -1;
     errno_t err = _sopen_s(&fh, FileName, _O_CREAT | _O_RDWR | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE );
     if( err != 0 )
@@ -169,22 +138,22 @@ SINT32 _FileHandler::open_ReadWrite()
         switch(err)
             {
             case EACCES:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n", FileName);
                 return -1;
             case EEXIST:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. _O_CREAT and _O_EXCL flags were specified, but filename already exists.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. _O_CREAT and _O_EXCL flags were specified, but filename already exists.\n", FileName);
                 return -1;
             case EINVAL:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n", FileName);
                 return -1;
             case EMFILE:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. No more file descriptors available.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. No more file descriptors available.\n", FileName);
                 return -1;
             case ENOENT:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. File or path not found.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. File or path not found.\n", FileName);
                 return -1;
             default:
-                printf("FileHandler: Error - Unable to open \"%s\" as read,write via file handle. An unknown error occurred.\n", FileName);
+                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. An unknown error occurred.\n", FileName);
                 return -1;
             }
         _close(fh);
@@ -193,32 +162,219 @@ SINT32 _FileHandler::open_ReadWrite()
     return 0;
     }
 
-STRING const _FileHandler::getFileName()
+SINT32 FileWriter::close()
+    {
+    if(fh != -1)
+        {
+        if(file_buffer_used)
+            {
+            _write(fh, file_buffer, file_buffer_used);
+            file_buffer_used = 0;
+            }
+        _close(fh);
+        }
+    fh = -1;
+    return 0;
+    }
+
+void FileWriter::record_write(const void *source, UINT32 length)
+    {
+    if(length == 0)
+        return;
+    if(source == NULL)
+        {
+        printf("FileWriter:write: Error - Unable to write. Source buffer is NULL.\n");
+        return;
+        }
+
+    if((length + record_buffer_used) > record_buffer_size)
+        {
+        //Should be rare or never occur with a sufficiently large initial buffer size
+        record_buffer_size = (length + record_buffer_used) * 2;
+        unsigned char *resized_buffer = new unsigned char[record_buffer_size];
+        memcpy(resized_buffer, record_buffer, record_buffer_used);
+        delete []record_buffer;
+        record_buffer = resized_buffer;
+        }
+        
+    memcpy(record_buffer + record_buffer_used, source, length);
+    record_buffer_used += length;
+    return;
+    }
+
+void FileWriter::record_write_subheader(UINT32 signature, UINT32 length)
+    {
+    if(length <= 65535)
+        {
+        record_write(&signature, 4);
+        record_write(&length, 2);
+        }
+    else //Requires XXXX SubRecord
+        {
+        UINT32 _Temp = 4;
+        record_write("XXXX", 4);
+        record_write(&_Temp, 2);
+        record_write(&length, 4);
+        record_write(&signature, 4);
+        _Temp = 0;
+        record_write(&_Temp, 2);
+        }
+    return;
+    }
+
+void FileWriter::record_write_subrecord(UINT32 signature, const void *source, UINT32 length)
+    {
+    record_write_subheader(signature, length);
+    record_write(source, length);
+    return;
+    }
+
+UINT32 FileWriter::record_compress()
+    {
+    UINT32 compSize = compressBound(record_buffer_used);
+    if(compSize + 4 > compressed_buffer_size)
+        {
+        delete []compressed_buffer;
+        compressed_buffer_size = compSize + 4;
+        compressed_buffer = new unsigned char[compressed_buffer_size];
+        }
+    else
+        compSize = compressed_buffer_size;
+    compress2(compressed_buffer + 4, &compSize, record_buffer, record_buffer_used, 6);
+    memcpy(compressed_buffer, &record_buffer_used, 4);
+    std::swap(record_buffer, compressed_buffer);
+    std::swap(record_buffer_size, compressed_buffer_size);
+    record_buffer_used = compSize + 4;
+    return record_buffer_used;
+    }
+    
+UINT32 FileWriter::record_size()
+    {
+    return record_buffer_used;
+    }
+
+void FileWriter::record_flush()
+    {
+    file_write(record_buffer, record_buffer_used);
+    record_buffer_used = 0;
+    return;
+    }
+
+UINT32 FileWriter::file_tell()
+    {
+    return file_buffer_used + _tell(fh);
+    }
+
+void FileWriter::file_write(const void *source_buffer, UINT32 source_buffer_used)
+    {
+    if(source_buffer_used == 0)
+        return;
+
+    if(fh == -1 || file_buffer == NULL)
+        {
+        printf("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
+        return;
+        }
+    else if(source_buffer == NULL)
+        {
+        printf("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
+        return;
+        }
+
+    //Flush the file buffer if it is getting full
+    if((file_buffer_used + source_buffer_used) >= file_buffer_size)
+        {
+        //file_flush();
+        _write(fh, file_buffer, file_buffer_used);
+        file_buffer_used = 0;
+        }
+    //Use the file buffer if there's room
+    if(source_buffer_used < file_buffer_size)
+        {
+        memcpy(file_buffer + file_buffer_used, source_buffer, source_buffer_used);
+        file_buffer_used += source_buffer_used;
+        }
+    else
+        {
+        //Otherwise, write directly to disk.
+        _write(fh, source_buffer, source_buffer_used);
+        }
+    return;
+    }
+
+void FileWriter::file_write(UINT32 position, const void *source_buffer, UINT32 source_buffer_used)
+    {
+    //Back written data must not advance past the current tell / file_buffer_used
+    if(source_buffer_used == 0)
+        return;
+
+    if(fh == -1 || file_buffer == NULL)
+        {
+        printf("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
+        return;
+        }
+    else if(source_buffer == NULL)
+        {
+        printf("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
+        return;
+        }
+    SINT32 curPos = _tell(fh);
+        
+    if(position < (UINT32)curPos)
+        {
+        //It has already been written to disk.
+        _lseek(fh, position, SEEK_SET);
+        _write(fh, source_buffer, source_buffer_used);
+        _lseek(fh, curPos, SEEK_SET);
+        }
+    else if(position < (file_buffer_used + curPos))
+        {
+        //Address is still in buffer
+        memcpy(file_buffer + (position - curPos), source_buffer, source_buffer_used);
+        }
+    else
+        {
+        printf("FileWriter::file_write: Error - Unable to write at offset. Provided offset is greater than the current position.\n");
+        return;
+        }
+    return;
+    }
+
+FileReader::FileReader(STRING filename, STRING modname):
+    file_map(),
+    FileName(filename),
+    ModName(modname),
+    buffer_position(0),
+    start(NULL),
+    end(NULL)   
+    {
+    //
+    }
+
+FileReader::~FileReader()
+    {
+    if(FileName != ModName)
+        delete []FileName;
+    delete []ModName;
+    close();
+    }
+    
+STRING const FileReader::getFileName()
     {
     return FileName;
     }
 
-STRING const _FileHandler::getModName()
+STRING const FileReader::getModName()
     {
     return ModName;
     }
 
-bool _FileHandler::IsGhosted()
+bool FileReader::IsGhosted()
     {
     return ModName != FileName;
     }
 
-UINT32 _FileHandler::tell()
-    {
-    return _BufPos + _TotalWritten;
-    }
-
-bool _FileHandler::IsOpen()
-    {
-    return (fh != -1 || f_map != NULL || m_region != NULL);
-    }
-
-time_t _FileHandler::mtime()
+time_t FileReader::mtime()
     {
     struct stat buf;
     if(stat(FileName, &buf) < 0)
@@ -227,233 +383,86 @@ time_t _FileHandler::mtime()
         return buf.st_mtime;
     }
 
-bool _FileHandler::exists()
+bool FileReader::exists()
     {
     struct stat statBuffer;
     return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
     }
 
-bool _FileHandler::eof()
+SINT32 FileReader::open()
     {
-    return (_BufPos >= _BufEnd);
+    if(FileName == NULL || file_map.is_open())
+        return -1;
+    try
+        {
+        file_map.open(FileName);
+        }
+    catch(...)
+        {
+        printf("FileReader: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
+        throw;
+        return -1;
+        }
+    start = (unsigned char *)file_map.data();
+    end = start + file_map.size();
+    return 0;
     }
 
-UINT32 _FileHandler::set_used(SINT32 _Used)
+SINT32 FileReader::close()
     {
-    if(_Used == 0)
-        return _BufPos;
-    else if(_Used < 0)
-        {
-        if(((UINT32)abs(_Used) > _BufPos))
-            _BufPos = 0;
-        else
-            _BufPos += _Used;
-        return _BufPos;
-        }
-    //If in read mode, simply move the position
-    if(fh == -1)
-        {
-        _BufPos += _Used;
-        return _BufPos;
-        }
-    //Flush the buffer if it is getting full
-    if((_BufPos + _Used) >= _BufSize)
-        flush();
-    if((UINT32)_Used < _BufSize)
-        _BufPos += _Used;
-    else
-        {
-        flush();
-        printf("FileHandler: Error - Exceeded buffer capacity. Tried to set (%u) as used in a buffer with a capacity of (%u).\n", _Used, _BufSize);
-        }
-    return _BufPos;
+    file_map.close();
+    return 0;
     }
 
-void _FileHandler::read(void *_DstBuf, UINT32 _MaxCharCount)
+bool FileReader::IsOpen()
     {
-    if(_DstBuf == NULL || _Buffer == NULL)
+    return file_map.is_open();
+    }
+
+UINT32 FileReader::tell()
+    {
+    return buffer_position;
+    }
+
+bool FileReader::eof()
+    {
+    return (buffer_position >= file_map.size());
+    }
+
+void FileReader::skip(UINT32 length)
+    {
+    buffer_position += length;
+    }
+    
+bool FileReader::IsInFile(void *buffer)
+    {
+    return (buffer >= start) && (buffer <= end);
+    }
+
+unsigned char *FileReader::getBuffer(UINT32 offset)
+    {
+    if(IsInFile(start + offset))
+        return start + offset;
+    return NULL;
+    }
+
+UINT32 FileReader::getBufferSize()
+    {
+    return file_map.size();
+    }
+
+void FileReader::read(void *destination, UINT32 length)
+    {
+    if(destination == NULL || !file_map.is_open())
         {
-        if(_DstBuf == NULL)
+        if(destination == NULL)
             printf("FileHandler: Error - Unable to read from buffer. Destination pointer is NULL.\n");
         else
             printf("FileHandler: Error - Unable to read from buffer. Source pointer is NULL.\n");
         return;
         }
-    memcpy(_DstBuf, _Buffer + _BufPos, _MaxCharCount);
-    _BufPos += _MaxCharCount;
-    }
-
-unsigned char *_FileHandler::getBuffer(UINT32 _Offset)
-    {
-    if(IsCached(_Offset))
-        return _Buffer + _Offset - _TotalWritten;
-    printf("FileHandler: Error - Unable to get specified buffer. Provided offset is not in the buffer.\n");
-    return NULL;
-    }
-
-UINT32 _FileHandler::getBufferSize()
-    {
-    return _BufEnd;
-    }
-
-UINT32 _FileHandler::write(const void *_SrcBuf, UINT32 _MaxCharCount)
-    {
-    if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0)
-        {
-        if(fh == -1 || _Buffer == NULL)
-            printf("FileHandler: Error - Unable to write. Buffer or File Handle is invalid.\n");
-        else if(_SrcBuf == NULL)
-            printf("FileHandler: Error - Unable to write. Source buffer is NULL.\n");
-        return _BufPos;
-        }
-    //Flush the buffer if it is getting full
-    if((_BufPos + _MaxCharCount) >= _BufSize)
-        flush();
-    //Use the buffer if there's room
-    if(_MaxCharCount < _BufSize)
-        {
-        memcpy(_Buffer + _BufPos, _SrcBuf, _MaxCharCount);
-        _BufPos += _MaxCharCount;
-        }
-    else
-        {
-        //Otherwise, flush the buffer and write directly to disk.
-        flush();
-        _write(fh, _SrcBuf, _MaxCharCount);
-        _TotalWritten += _MaxCharCount;
-        }
-    return _BufPos;
-    }
-
-void _FileHandler::writeSubRecordHeader(UINT32 _Type, UINT32 _MaxCharCount)
-    {
-    if(_MaxCharCount <= 65535)
-        {
-        write(&_Type, 4);
-        write(&_MaxCharCount, 2);
-        }
-    else //Requires XXXX SubRecord
-        {
-        UINT32 _Temp = 4;
-        write("XXXX", 4);
-        write(&_Temp, 2);
-        write(&_MaxCharCount, 4);
-        write(&_Type, 4);
-        _Temp = 0;
-        write(&_Temp, 2);
-        }
-    return;
-    }
-
-void _FileHandler::writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount)
-    {
-    if(_MaxCharCount <= 65535)
-        {
-        write(&_Type, 4);
-        write(&_MaxCharCount, 2);
-        }
-    else //Requires XXXX SubRecord
-        {
-        UINT32 _Temp = 4;
-        write("XXXX", 4);
-        write(&_Temp, 2);
-        write(&_MaxCharCount, 4);
-        write(&_Type, 4);
-        _Temp = 0;
-        write(&_Temp, 2);
-        }
-    write(_SrcBuf, _MaxCharCount);
-    return;
-    }
-
-UINT32 _FileHandler::writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount)
-    {
-    if(fh == -1 || _SrcBuf == NULL || _Buffer == NULL || _MaxCharCount == 0 || _Offset > tell())
-        {
-        if(fh == -1 || _Buffer == NULL)
-            printf("FileHandler: Error - Unable to write at offset. Buffer or File Handle is invalid.\n");
-        else if(_SrcBuf == NULL)
-            printf("FileHandler: Error - Unable to write at offset. Source buffer is NULL.\n");
-        else if(_Offset > tell())
-            printf("FileHandler: Error - Unable to write at offset. Provided offset is greater than the current position.\n");
-        return _Offset;
-        }
-    //See if the address is still in buffer
-    if(IsCached(_Offset))
-        {
-        memcpy(_Buffer + _Offset - _TotalWritten, _SrcBuf, _MaxCharCount);
-        }
-    else
-        {
-        //It has already been written to disk.
-        SINT32 curPos = _tell(fh);
-        _lseek(fh, _Offset, SEEK_SET);
-        _write(fh, _SrcBuf, _MaxCharCount);
-        _lseek(fh, curPos, SEEK_SET);
-        }
-    return _Offset + _MaxCharCount;
-    }
-
-void _FileHandler::flush()
-    {
-    if(fh == -1 || _Buffer == NULL || _BufPos == 0)
-        {
-        if(fh == -1 || _Buffer == NULL)
-            printf("FileHandler: Error - Unable to flush buffer. Buffer or File Handle is invalid.\n");
-        return;
-        }
-    _write(fh, _Buffer, _BufPos);
-    _TotalWritten += _BufPos;
-    _BufPos = 0;
-    return;
-    }
-
-UINT32 _FileHandler::UnusedCache()
-    {
-    return _BufSize - _BufPos;
-    }
-
-bool _FileHandler::IsCached(UINT32 _Offset)
-    {
-    return (_Offset >= _TotalWritten && _Offset <= tell());
-    }
-
-SINT32 _FileHandler::close()
-    {
-    if(fh != -1)
-        {
-        flush();
-        _close(fh);
-        }
-    delete m_region;
-    delete f_map;
-    m_region = NULL;
-    f_map = NULL;
-    fh = -1;
-    _Buffer = NULL;
-    _BufEnd = 0;
-    _BufPos = 0;
-    return 0;
-    }
-
-void _FileHandler::reserveBuffer(UINT32 nSize)
-    {
-    if(fh == -1 || f_map != NULL || m_region != NULL || nSize <= UnusedCache())
-        {
-        if(fh == -1 || f_map != NULL || m_region != NULL)
-            printf("FileHandler: Error - Unable to reserve buffer. Memory mapping or File Handle is invalid.\n");
-        return;
-        }
-    flush();
-    //There's room in the current buffer if flushed.
-    if(nSize < _BufSize)
-        return;
-    //Otherwise, resize the buffer to fit
-    printf("FileHandler: Info - Resizing buffer from: %u to %u\n", _BufSize, nSize);
-    delete []_Buffer;
-    _BufSize = nSize;
-    _Buffer = new unsigned char[_BufSize];
-    return;
+    memcpy(destination, start + buffer_position, length);
+    buffer_position += length;
     }
 
 FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
@@ -778,12 +787,23 @@ UINT32 StringRecord::GetSize() const
     return (UINT32)strlen(value) + 1;
     }
 
+UINT32 StringRecord::CalcSize() const
+    {
+    if(value != NULL)
+        {
+        UINT32 cSize = GetSize();
+        cSize += (cSize > 65535) ? 16 : 6;
+        return cSize;
+        }
+    return 0;
+    }
+
 bool StringRecord::IsLoaded() const
     {
     return value != NULL;
     }
 
-void Load()
+void StringRecord::Load()
     {
     //
     }
@@ -805,6 +825,12 @@ bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &cu
     memcpy(value, buffer + curPos, subSize);
     curPos += subSize;
     return true;
+    }
+
+void StringRecord::Write(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, GetSize());
     }
 
 void StringRecord::Copy(const StringRecord &FieldValue)
@@ -917,6 +943,17 @@ UINT32 RawRecord::GetSize() const
     return size;
     }
 
+UINT32 RawRecord::CalcSize() const
+    {
+    if(value != NULL)
+        {
+        UINT32 cSize = GetSize();
+        cSize += (cSize > 65535) ? 16 : 6;
+        return cSize;
+        }
+    return 0;
+    }
+
 bool RawRecord::IsLoaded() const
     {
     return value != NULL;
@@ -946,6 +983,12 @@ bool RawRecord::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
     memcpy(value, buffer + curPos, size);
     curPos += subSize;
     return true;
+    }
+
+void RawRecord::Write(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, size);
     }
 
 void RawRecord::Copy(unsigned char *FieldValue, UINT32 nSize)

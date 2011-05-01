@@ -180,6 +180,7 @@ void ACRERecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 ACRERecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -324,6 +325,7 @@ UINT32 ACRERecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ACRERecord::GetType()
     {

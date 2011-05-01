@@ -167,6 +167,7 @@ void ACHRRecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 ACHRRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -300,6 +301,7 @@ UINT32 ACHRRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ACHRRecord::GetType()
     {

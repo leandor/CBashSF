@@ -718,6 +718,7 @@ void ARMORecord::SetDNAMFlagMask(UINT16 Mask)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 ARMORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -895,6 +896,7 @@ UINT32 ARMORecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ARMORecord::GetType()
     {

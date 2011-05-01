@@ -98,6 +98,7 @@ bool ALOCRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 ALOCRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -183,6 +184,7 @@ UINT32 ALOCRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ALOCRecord::GetType()
     {

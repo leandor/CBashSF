@@ -31,9 +31,11 @@ GPL License and Copyright Notice ============================================
 #include <exception>
 #include <vector>
 #include <boost/unordered_set.hpp>
+#include <set>
 #include <map>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/iostreams/device/mapped_file.hpp>
 #include "MacroDefinitions.h"
 
 #ifdef CBASH_USE_LOGGING
@@ -57,7 +59,6 @@ GPL License and Copyright Notice ============================================
         critical
     };
 #endif
-
 
 enum whichGameTypes {
     eIsOblivion = 0,
@@ -225,6 +226,13 @@ extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
 
 extern const std::map<UINT32, FunctionArguments> FNVFunction_Arguments;
 
+#ifdef CBASH_CALLTIMING
+    extern std::map<char *, double> CallTime;
+#endif
+#ifdef CBASH_CALLCOUNT
+    extern std::map<char *, unsigned long> CallCount;
+#endif
+
 inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT32 &_MaxCharCount, UINT32 &_BufPos)
     {
     memcpy(_DstBuf, _SrcBuf + _BufPos, _MaxCharCount);
@@ -235,48 +243,67 @@ STRING DeGhostModName(STRING const ModName);
 bool FileExists(STRING const FileName);
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps);
 
-class _FileHandler
+class FileWriter
     {
     private:
-        boost::interprocess::mapped_region *m_region;
-        boost::interprocess::file_mapping *f_map;
-        unsigned char *_Buffer;
-        UINT32 _BufSize;
-        UINT32 _BufPos;
-        UINT32 _BufEnd;
-        UINT32 _TotalWritten;
+        unsigned char *file_buffer, *record_buffer, *compressed_buffer;
+        UINT32 file_buffer_used, record_buffer_used, compressed_buffer_used;
+        UINT32 file_buffer_size, record_buffer_size, compressed_buffer_size;
         int fh;
+        STRING FileName;
+
+    public:
+        FileWriter(STRING filename, UINT32 size);
+        ~FileWriter();
+
+        SINT32 open();
+        SINT32 close();
+
+        void   record_write(const void *source, UINT32 length);
+        void   record_write_subheader(UINT32 signature, UINT32 length);
+        void   record_write_subrecord(UINT32 signature, const void *source, UINT32 length);
+        UINT32 record_compress();
+        UINT32 record_size();
+        void   record_flush();
+
+        UINT32 file_tell();
+        void   file_write(const void *source_buffer, UINT32 source_buffer_used);
+        void   file_write(UINT32 position, const void *source_buffer, UINT32 source_buffer_used);
+    };
+
+class FileReader
+    {
+    private:
+        boost::iostreams::mapped_file_source file_map;
+
         STRING FileName;
         STRING ModName;
 
-    public:
-        _FileHandler(STRING _FileName, STRING _ModName);
-        _FileHandler(STRING _FileName, UINT32 nSize);
-        ~_FileHandler();
+        UINT32 buffer_position;
+        unsigned char *start, *end;
 
-        SINT32 open_ReadOnly();
-        SINT32 open_ReadWrite();
+    public:
+        FileReader(STRING filename, STRING modname);
+        ~FileReader();
+
         STRING const getFileName();
         STRING const getModName();
         bool   IsGhosted();
-        bool   IsOpen();
+
         time_t mtime();
         bool   exists();
-        bool   eof();
-        UINT32 tell();
-        UINT32 set_used(SINT32 _Used);
-        void   read(void *_DestBuf, UINT32 _MaxCharCount);
-        unsigned char *getBuffer(UINT32 _Offset);
-        UINT32 getBufferSize();
-        UINT32 write(const void *_SrcBuf, UINT32 _MaxCharCount);
-        void   writeSubRecordHeader(UINT32 _Type, UINT32 _MaxCharCount);
-        void   writeSubRecord(UINT32 _Type, const void *_SrcBuf, UINT32 _MaxCharCount);
-        UINT32 writeAt(UINT32 _Offset, const void *_SrcBuf, UINT32 _MaxCharCount);
-        UINT32 UnusedCache();
-        bool   IsCached(UINT32 _Offset);
+
+        SINT32 open();
         SINT32 close();
-        void   reserveBuffer(UINT32 nSize);
-        void   flush();
+        bool   IsOpen();
+
+        UINT32 tell();
+        bool   eof();
+        void   skip(UINT32 length);
+        bool   IsInFile(void *buffer);
+        unsigned char *getBuffer(UINT32 offset=0);
+        UINT32 getBufferSize();
+        void   read(void *destination, UINT32 length);
     };
 
 class FormIDHandlerClass
@@ -436,12 +463,14 @@ class StringRecord
         virtual ~StringRecord();
 
         virtual UINT32 GetSize() const;
+        UINT32 CalcSize() const;
 
         bool IsLoaded() const;
         void Load();
         void Unload();
 
         virtual bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+        void Write(UINT32 _Type, FileWriter &writer);
 
         void Copy(const StringRecord &FieldValue);
         void Copy(STRING FieldValue);
@@ -474,12 +503,14 @@ class RawRecord
         ~RawRecord();
 
         UINT32 GetSize() const;
+        UINT32 CalcSize() const;
 
         bool IsLoaded() const;
         void Load();
         void Unload();
 
         bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+        void Write(UINT32 _Type, FileWriter &writer);
 
         void Copy(unsigned char *FieldValue, UINT32 nSize);
 
@@ -540,44 +571,30 @@ struct SimpleSubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -653,44 +670,28 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
             }
         if(subSize > sizeof(FLOAT32))
             {
-            printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
-        else if(subSize < sizeof(FLOAT32))
-            {
-            printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
-            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(FLOAT32))
+                {
+                printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+                memcpy(&value, buffer + curPos, subSize);
+                }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -763,44 +764,30 @@ struct ReqSimpleSubRecord
         {
         if(subSize > sizeof(T))
             {
-            printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
@@ -861,44 +848,28 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         {
         if(subSize > sizeof(FLOAT32))
             {
-            printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
-        else if(subSize < sizeof(FLOAT32))
-            {
-            printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
-            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(FLOAT32))
+                {
+                printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+                memcpy(&value, buffer + curPos, subSize);
+                }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
@@ -943,6 +914,11 @@ struct OptSimpleSubRecord
         {
         return sizeof(T);
         }
+    UINT32 CalcSize() const
+        {
+        return value != significand ? sizeof(T) + 6 : 0;
+        }
+
     bool IsLoaded() const
         {
         return (value != significand);
@@ -965,48 +941,39 @@ struct OptSimpleSubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value != significand)
+            writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
     OptSimpleSubRecord<T, significand, exponent>& operator = (const OptSimpleSubRecord<T, significand, exponent> &rhs)
@@ -1044,6 +1011,10 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
         {
         return sizeof(FLOAT32);
         }
+    UINT32 CalcSize() const
+        {
+        return IsLoaded() ? sizeof(FLOAT32) + 6 : 0;
+        }
 
     bool IsLoaded() const
         {
@@ -1067,48 +1038,37 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
             }
         if(subSize > sizeof(FLOAT32))
             {
-            printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(FLOAT32));
             }
-        else if(subSize < sizeof(FLOAT32))
-            {
-            printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
-            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(FLOAT32))
+                {
+                printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+                memcpy(&value, buffer + curPos, subSize);
+                }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(IsLoaded())
+            writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
     OptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const OptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
@@ -1177,44 +1137,30 @@ struct SemiOptSimpleSubRecord
         value = new T(significand);
         if(subSize > sizeof(T))
             {
-            printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
+            #ifdef CBASH_CHUNK_WARN
+                printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
@@ -1301,44 +1247,28 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
         value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
         if(subSize > sizeof(FLOAT32))
             {
-            printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(value, buffer + curPos, sizeof(FLOAT32));
             }
-        else if(subSize < sizeof(FLOAT32))
-            {
-            printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(FLOAT32));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
-            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(FLOAT32))
+                {
+                printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(FLOAT32));
+                CBASH_CHUNK_DEBUG
+                memcpy(&value, buffer + curPos, subSize);
+                }
+        #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
@@ -1428,44 +1358,30 @@ struct SubRecord
             }
         if(subSize > sizeof(T))
             {
-            printf("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         isLoaded = true;
@@ -1531,44 +1447,30 @@ struct ReqSubRecord
         {
         if(subSize > sizeof(T))
             {
-            printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(&value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
@@ -1611,6 +1513,10 @@ struct OptSubRecord
         {
         return sizeof(T);
         }
+    UINT32 CalcSize() const
+        {
+        return value != NULL ? value->CalcSize() : 0;
+        }
 
     bool IsLoaded() const
         {
@@ -1638,49 +1544,41 @@ struct OptSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
+            #ifdef CBASH_CHUNK_WARN
+                printf("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
         }
+    void Write(FileWriter &writer)
+        {
+        if(value != NULL)
+            value->Write(writer);
+        }
+
 
     T *operator->() const
         {
@@ -1770,44 +1668,30 @@ struct SemiOptSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
+            #ifdef CBASH_CHUNK_WARN
+                printf("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
@@ -1914,44 +1798,30 @@ struct OBMEEFIXSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                   "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
+            #ifdef CBASH_CHUNK_WARN
+                printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
             memcpy(value, buffer + curPos, sizeof(T));
             }
-        else if(subSize < sizeof(T))
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
             {
-            printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            //Peek into the data before and after to see what's up
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%02X", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%02X", (buffer + curPos)[x]);
-            //printf("\n\n");
-            //for(SINT32 x = 32; x > 0; x--)
-            //    printf("%c", (buffer + curPos)[-x]);
-            //for(UINT32 x = 0; x < 32; x++)
-            //    printf("%c", (buffer + curPos)[x]);
-            //printf("\n");
-            memcpy(&value, buffer + curPos, subSize);
+            #ifdef CBASH_CHUNK_WARN
+                printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(value, buffer + curPos, subSize);
             }
+        #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
@@ -1995,6 +1865,349 @@ struct OBMEEFIXSubRecord
         }
 
     bool operator !=(const OBMEEFIXSubRecord<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T>
+struct OrderedPackedArray
+    {
+    std::vector<T> value;
+
+    OrderedPackedArray()
+        {
+        //
+        }
+    ~OrderedPackedArray()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(T) * (UINT32)value.size();
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value.clear();
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(subSize % sizeof(T) == 0)
+            {
+            if(subSize == 0)
+                break;
+            value.resize(subSize / sizeof(T));
+            memcpy(&value[0], buffer + curPos, subSize);
+            }
+        #ifdef CBASH_CHUNK_WARN
+            else
+                {
+                printf("PackedArray: Error - Unable to parse chunk. "
+                       "Size of chunk (%u) is not a multiple of the "
+                       "size of the subrecord (%u)\n", subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+                }
+        #endif
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    bool operator ==(const OrderedPackedArray<T> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                if(value[x] != other.value[x])
+                    return false;
+            return true;
+            }
+        return false;
+        }
+    bool operator !=(const OrderedPackedArray<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T>
+struct UnorderedPackedArray
+    {
+    std::vector<T> value;
+
+    UnorderedPackedArray()
+        {
+        //
+        }
+    ~UnorderedPackedArray()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(T) * (UINT32)value.size();
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value.clear();
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        if(subSize % sizeof(T) == 0)
+            {
+            if(subSize == 0)
+                break;
+            value.resize(subSize / sizeof(T));
+            memcpy(&value[0], buffer + curPos, subSize);
+            }
+        #ifdef CBASH_CHUNK_WARN
+            else
+                {
+                printf("UnorderedPackedArray: Error - Unable to parse chunk. "
+                       "Size of chunk (%u) is not a multiple of the "
+                       "size of the subrecord (%u)\n", subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+                }
+        #endif
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    bool operator ==(const UnorderedPackedArray<T> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            std::multiset<T> self1, other1;
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                {
+                self1.insert(value[x]);
+                other1.insert(other.value[x]);
+                }
+            return self1 == other1;
+            }
+        return false;
+        }
+    bool operator !=(const UnorderedPackedArray<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T>
+struct OrderedSparseArray
+    {
+    std::vector<T> value;
+
+    OrderedSparseArray()
+        {
+        //
+        }
+    ~OrderedSparseArray()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return sizeof(T) * (UINT32)value.size();
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value.clear();
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        T curValue;
+        if(subSize > sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&curValue, buffer + curPos, sizeof(T));
+            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&curValue, buffer + curPos, subSize);
+            }
+        #endif
+        else
+            memcpy(&curValue, buffer + curPos, subSize);
+        value.push_back(curValue);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    bool operator ==(const OrderedSparseArray<T> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                if(value[x] != other.value[x])
+                    return false;
+            return true;
+            }
+        return false;
+        }
+    bool operator !=(const OrderedSparseArray<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T>
+struct UnorderedSparseArray
+    {
+    std::vector<T> value;
+
+    UnorderedSparseArray()
+        {
+        //
+        }
+    ~UnorderedSparseArray()
+        {
+        //
+        }
+
+    UINT32 GetSize() const
+        {
+        return (UINT32)value.size() * (sizeof(T) + 6);
+        }
+
+    UINT32 CalcSize() const
+        {
+        return (UINT32)value.size() * (sizeof(T) + 6);
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+    void Load()
+        {
+        //
+        }
+    void Unload()
+        {
+        value.clear();
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        T curValue;
+        if(subSize > sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&curValue, buffer + curPos, sizeof(T));
+            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&curValue, buffer + curPos, subSize);
+            }
+        #endif
+        else
+            memcpy(&curValue, buffer + curPos, subSize);
+        value.push_back(curValue);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        for(UINT32 p = 0; p < value.size(); p++)
+            writer.record_write_subrecord(_Type, &value[p], sizeof(T));
+        }
+
+    UnorderedSparseArray<T>& operator = (const UnorderedSparseArray<T> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                value[x] = rhs.value[x];
+            }
+        return *this;
+        }
+
+    bool operator ==(const UnorderedSparseArray<T> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            std::multiset<T> self1, other1;
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                {
+                self1.insert(value[x]);
+                other1.insert(other.value[x]);
+                }
+            return self1 == other1;
+            }
+        return false;
+        }
+    bool operator !=(const UnorderedSparseArray<T> &other) const
         {
         return !(*this == other);
         }

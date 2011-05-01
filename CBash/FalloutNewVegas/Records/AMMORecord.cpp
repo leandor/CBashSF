@@ -145,6 +145,7 @@ void AMMORecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 AMMORecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -266,6 +267,7 @@ UINT32 AMMORecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 AMMORecord::GetType()
     {

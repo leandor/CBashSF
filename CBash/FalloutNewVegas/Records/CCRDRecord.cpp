@@ -187,6 +187,7 @@ void CCRDRecord::SetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 CCRDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -291,6 +292,7 @@ UINT32 CCRDRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CCRDRecord::GetType()
     {

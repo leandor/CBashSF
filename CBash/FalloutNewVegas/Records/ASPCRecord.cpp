@@ -498,6 +498,7 @@ void ASPCRecord::SetSpaceType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 ASPCRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -533,6 +534,7 @@ UINT32 ASPCRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ASPCRecord::GetType()
     {

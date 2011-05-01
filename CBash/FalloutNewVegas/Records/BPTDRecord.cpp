@@ -377,6 +377,7 @@ bool BPTDRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 BPTDRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -475,6 +476,7 @@ UINT32 BPTDRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 BPTDRecord::GetType()
     {

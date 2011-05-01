@@ -108,6 +108,7 @@ bool ACTIRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 ACTIRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -208,6 +209,7 @@ UINT32 ACTIRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ACTIRecord::GetType()
     {

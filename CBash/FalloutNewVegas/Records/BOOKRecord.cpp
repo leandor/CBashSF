@@ -126,6 +126,7 @@ void BOOKRecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
+/*
 UINT32 BOOKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -228,6 +229,7 @@ UINT32 BOOKRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 BOOKRecord::GetType()
     {

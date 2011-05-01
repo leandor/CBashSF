@@ -42,7 +42,7 @@ SINT32 FNVFile::LoadTES4()
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
-            printf("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", ReadHandler.getModName());
+            printf("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", reader.getModName());
         return 0;
         }
     #ifdef CBASH_USE_LOGGING
@@ -51,14 +51,14 @@ SINT32 FNVFile::LoadTES4()
         BOOST_LOG_SEV(lg, trace) << "LoadTES4: " << FileName;
     #endif
 
-    ReadHandler.set_used(4);
+    reader.skip(4);
     UINT32 recSize = 0;
-    ReadHandler.read(&recSize, 4);
-    ReadHandler.read(&TES4.flags, 4);
-    ReadHandler.read(&TES4.formID, 4);
-    ReadHandler.read(&TES4.flagsUnk, 4);
-    ReadHandler.read(&TES4.formVersion, 2);
-    ReadHandler.read(&TES4.versionControl2[0], 2);
+    reader.read(&recSize, 4);
+    reader.read(&TES4.flags, 4);
+    reader.read(&TES4.formID, 4);
+    reader.read(&TES4.flagsUnk, 4);
+    reader.read(&TES4.formVersion, 2);
+    reader.read(&TES4.versionControl2[0], 2);
     if(TES4.IsLoaded())
         printf("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
 
@@ -68,10 +68,10 @@ SINT32 FNVFile::LoadTES4()
     //TES4 is constructed when the modfile is created
     // so the info isn't available then.
     //Must make sure this mimics the read method as needed
-    TES4.ParseRecord(ReadHandler.getBuffer(24), recSize);
+    TES4.ParseRecord(reader.getBuffer(24), recSize);
     TES4.IsLoaded(true);
     TES4.IsChanged(true);
-    ReadHandler.set_used(recSize);
+    reader.skip(recSize);
     return 1;
     }
 
@@ -183,14 +183,14 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
         eIgSLPD = 'DPLS' | 0x00001000
         };
 
-    if(Flags.IsIgnoreExisting || !ReadHandler.IsOpen() || Flags.LoadedGRUPs)
+    if(Flags.IsIgnoreExisting || !reader.IsOpen() || Flags.LoadedGRUPs)
         {
         if(!Flags.IsIgnoreExisting)
             {
-            if(!ReadHandler.IsOpen())
-                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ReadHandler.getModName());
+            if(!reader.IsOpen())
+                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", reader.getModName());
             else
-                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", ReadHandler.getModName());
+                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", reader.getModName());
             }
         return 0;
         }
@@ -203,634 +203,634 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
     RecordReader fullReader(FormIDHandler, Expanders);
     RecordOp skipReader;
 
-    FNVRecordProcessor processor_min(ReadHandler, FormIDHandler, skipReader, Flags, UsedFormIDs);
-    FNVRecordProcessor processor_full(ReadHandler, FormIDHandler, fullReader, Flags, UsedFormIDs);
+    FNVRecordProcessor processor_min(reader, FormIDHandler, skipReader, Flags, UsedFormIDs);
+    FNVRecordProcessor processor_full(reader, FormIDHandler, fullReader, Flags, UsedFormIDs);
 
     FNVRecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
 
-    while(!ReadHandler.eof()){
-        ReadHandler.set_used(4); //Skip "GRUP"
-        ReadHandler.read(&GRUPSize, 4);
-        ReadHandler.read(&GRUPLabel, 4);
-        ReadHandler.set_used(4); //Skip type (tops will all == 0)
+    while(!reader.eof()){
+        reader.skip(4); //Skip "GRUP"
+        reader.read(&GRUPSize, 4);
+        reader.read(&GRUPLabel, 4);
+        reader.skip(4); //Skip type (tops will all == 0)
         //printf("%c%c%c%c\n", ((char *)&GRUPLabel)[0], ((char *)&GRUPLabel)[1], ((char *)&GRUPLabel)[2], ((char *)&GRUPLabel)[3]);
         switch(GRUPLabel)
             {
             case eIgGMST:
             case 'TSMG':
-                ReadHandler.read(&GMST.stamp, 4);
-                ReadHandler.read(&GMST.unknown, 4);
-                GMST.Skim(ReadHandler, GRUPSize, processor_full, indexer);
+                reader.read(&GMST.stamp, 4);
+                reader.read(&GMST.unknown, 4);
+                GMST.Skim(reader, GRUPSize, processor_full, indexer);
                 break;
             //case eIgTXST: //Same as normal
             case 'TSXT':
-                ReadHandler.read(&TXST.stamp, 4);
-                ReadHandler.read(&TXST.unknown, 4);
-                TXST.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&TXST.stamp, 4);
+                reader.read(&TXST.unknown, 4);
+                TXST.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgMICN:
             case 'NCIM':
-                ReadHandler.read(&MICN.stamp, 4);
-                ReadHandler.read(&MICN.unknown, 4);
-                MICN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&MICN.stamp, 4);
+                reader.read(&MICN.unknown, 4);
+                MICN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgGLOB:
             case 'BOLG':
-                ReadHandler.read(&GLOB.stamp, 4);
-                ReadHandler.read(&GLOB.unknown, 4);
-                GLOB.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&GLOB.stamp, 4);
+                reader.read(&GLOB.unknown, 4);
+                GLOB.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCLAS:
             case 'SALC':
-                ReadHandler.read(&CLAS.stamp, 4);
-                ReadHandler.read(&CLAS.unknown, 4);
-                CLAS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&CLAS.stamp, 4);
+                reader.read(&CLAS.unknown, 4);
+                CLAS.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgFACT:
             case 'TCAF':
-                ReadHandler.read(&FACT.stamp, 4);
-                ReadHandler.read(&FACT.unknown, 4);
-                FACT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&FACT.stamp, 4);
+                reader.read(&FACT.unknown, 4);
+                FACT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgHDPT:
             case 'TPDH':
-                ReadHandler.read(&HDPT.stamp, 4);
-                ReadHandler.read(&HDPT.unknown, 4);
-                HDPT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&HDPT.stamp, 4);
+                reader.read(&HDPT.unknown, 4);
+                HDPT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgHAIR:
             case 'RIAH':
-                ReadHandler.read(&HAIR.stamp, 4);
-                ReadHandler.read(&HAIR.unknown, 4);
-                HAIR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&HAIR.stamp, 4);
+                reader.read(&HAIR.unknown, 4);
+                HAIR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgEYES: //Same as normal
             case 'SEYE':
-                ReadHandler.read(&EYES.stamp, 4);
-                ReadHandler.read(&EYES.unknown, 4);
-                EYES.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&EYES.stamp, 4);
+                reader.read(&EYES.unknown, 4);
+                EYES.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgRACE:
             case 'ECAR':
-                ReadHandler.read(&RACE.stamp, 4);
-                ReadHandler.read(&RACE.unknown, 4);
-                RACE.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&RACE.stamp, 4);
+                reader.read(&RACE.unknown, 4);
+                RACE.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSOUN:
             case 'NUOS':
-                ReadHandler.read(&SOUN.stamp, 4);
-                ReadHandler.read(&SOUN.unknown, 4);
-                SOUN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                reader.read(&SOUN.stamp, 4);
+                reader.read(&SOUN.unknown, 4);
+                SOUN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgASPC:  //Same as normal
             case 'CPSA':
-                //ReadHandler.read(&ASPC.stamp, 4);
-                //ReadHandler.read(&ASPC.unknown, 4);
-                //ASPC.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ASPC.stamp, 4);
+                //reader.read(&ASPC.unknown, 4);
+                //ASPC.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgMGEF:
             case 'FEGM':
-                //ReadHandler.read(&MGEF.stamp, 4);
-                //ReadHandler.read(&MGEF.unknown, 4);
-                //MGEF.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MGEF.stamp, 4);
+                //reader.read(&MGEF.unknown, 4);
+                //MGEF.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgSCPT:
             case 'TPCS':
-                //ReadHandler.read(&SCPT.stamp, 4);
-                //ReadHandler.read(&SCPT.unknown, 4);
-                //SCPT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&SCPT.stamp, 4);
+                //reader.read(&SCPT.unknown, 4);
+                //SCPT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLTEX: //Same as normal
             case 'XETL':
-                //ReadHandler.read(&LTEX.stamp, 4);
-                //ReadHandler.read(&LTEX.unknown, 4);
-                //LTEX.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LTEX.stamp, 4);
+                //reader.read(&LTEX.unknown, 4);
+                //LTEX.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgENCH:
             case 'HCNE':
-                //ReadHandler.read(&ENCH.stamp, 4);
-                //ReadHandler.read(&ENCH.unknown, 4);
-                //ENCH.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ENCH.stamp, 4);
+                //reader.read(&ENCH.unknown, 4);
+                //ENCH.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgSPEL: //Same as normal
             case 'LEPS':
-                //ReadHandler.read(&SPEL.stamp, 4);
-                //ReadHandler.read(&SPEL.unknown, 4);
-                //SPEL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&SPEL.stamp, 4);
+                //reader.read(&SPEL.unknown, 4);
+                //SPEL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgACTI:
             case 'ITCA':
-                //ReadHandler.read(&ACTI.stamp, 4);
-                //ReadHandler.read(&ACTI.unknown, 4);
-                //ACTI.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ACTI.stamp, 4);
+                //reader.read(&ACTI.unknown, 4);
+                //ACTI.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgTACT:
             case 'TCAT':
-                //ReadHandler.read(&TACT.stamp, 4);
-                //ReadHandler.read(&TACT.unknown, 4);
-                //TACT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&TACT.stamp, 4);
+                //reader.read(&TACT.unknown, 4);
+                //TACT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgTERM:
             case 'MRET':
-                //ReadHandler.read(&TERM.stamp, 4);
-                //ReadHandler.read(&TERM.unknown, 4);
-                //TERM.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&TERM.stamp, 4);
+                //reader.read(&TERM.unknown, 4);
+                //TERM.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgARMO: //Same as normal
             case 'OMRA':
-                //ReadHandler.read(&ARMO.stamp, 4);
-                //ReadHandler.read(&ARMO.unknown, 4);
-                //ARMO.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ARMO.stamp, 4);
+                //reader.read(&ARMO.unknown, 4);
+                //ARMO.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgBOOK:
             case 'KOOB':
-                //ReadHandler.read(&BOOK.stamp, 4);
-                //ReadHandler.read(&BOOK.unknown, 4);
-                //BOOK.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&BOOK.stamp, 4);
+                //reader.read(&BOOK.unknown, 4);
+                //BOOK.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCONT:
             case 'TNOC':
-                //ReadHandler.read(&CONT.stamp, 4);
-                //ReadHandler.read(&CONT.unknown, 4);
-                //CONT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CONT.stamp, 4);
+                //reader.read(&CONT.unknown, 4);
+                //CONT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgDOOR:
             case 'ROOD':
-                //ReadHandler.read(&DOOR.stamp, 4);
-                //ReadHandler.read(&DOOR.unknown, 4);
-                //DOOR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&DOOR.stamp, 4);
+                //reader.read(&DOOR.unknown, 4);
+                //DOOR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgINGR:
             case 'RGNI':
-                //ReadHandler.read(&INGR.stamp, 4);
-                //ReadHandler.read(&INGR.unknown, 4);
-                //INGR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&INGR.stamp, 4);
+                //reader.read(&INGR.unknown, 4);
+                //INGR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgLIGH:
             case 'HGIL':
-                //ReadHandler.read(&LIGH.stamp, 4);
-                //ReadHandler.read(&LIGH.unknown, 4);
-                //LIGH.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LIGH.stamp, 4);
+                //reader.read(&LIGH.unknown, 4);
+                //LIGH.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgMISC:
             case 'CSIM':
-                //ReadHandler.read(&MISC.stamp, 4);
-                //ReadHandler.read(&MISC.unknown, 4);
-                //MISC.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MISC.stamp, 4);
+                //reader.read(&MISC.unknown, 4);
+                //MISC.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgSTAT: //Same as normal
             case 'TATS':
-                //ReadHandler.read(&STAT.stamp, 4);
-                //ReadHandler.read(&STAT.unknown, 4);
-                //STAT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&STAT.stamp, 4);
+                //reader.read(&STAT.unknown, 4);
+                //STAT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgSCOL:
             case 'LOCS':
-                //ReadHandler.read(&SCOL.stamp, 4);
-                //ReadHandler.read(&SCOL.unknown, 4);
-                //SCOL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&SCOL.stamp, 4);
+                //reader.read(&SCOL.unknown, 4);
+                //SCOL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgMSTT: //Same as normal
             case 'TTSM':
-                //ReadHandler.read(&MSTT.stamp, 4);
-                //ReadHandler.read(&MSTT.unknown, 4);
-                //MSTT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MSTT.stamp, 4);
+                //reader.read(&MSTT.unknown, 4);
+                //MSTT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgPWAT: //Same as normal
             case 'TAWP':
-                //ReadHandler.read(&PWAT.stamp, 4);
-                //ReadHandler.read(&PWAT.unknown, 4);
-                //PWAT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&PWAT.stamp, 4);
+                //reader.read(&PWAT.unknown, 4);
+                //PWAT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgGRAS: //Same as normal
             case 'SARG':
-                //ReadHandler.read(&GRAS.stamp, 4);
-                //ReadHandler.read(&GRAS.unknown, 4);
-                //GRAS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&GRAS.stamp, 4);
+                //reader.read(&GRAS.unknown, 4);
+                //GRAS.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgTREE: //Same as normal
             case 'EERT':
-                //ReadHandler.read(&TREE.stamp, 4);
-                //ReadHandler.read(&TREE.unknown, 4);
-                //TREE.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&TREE.stamp, 4);
+                //reader.read(&TREE.unknown, 4);
+                //TREE.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgFURN: //Same as normal
             case 'NRUF':
-                //ReadHandler.read(&FURN.stamp, 4);
-                //ReadHandler.read(&FURN.unknown, 4);
-                //FURN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&FURN.stamp, 4);
+                //reader.read(&FURN.unknown, 4);
+                //FURN.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgWEAP:
             case 'PAEW':
-                //ReadHandler.read(&WEAP.stamp, 4);
-                //ReadHandler.read(&WEAP.unknown, 4);
-                //WEAP.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&WEAP.stamp, 4);
+                //reader.read(&WEAP.unknown, 4);
+                //WEAP.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgAMMO:
             case 'OMMA':
-                //ReadHandler.read(&AMMO.stamp, 4);
-                //ReadHandler.read(&AMMO.unknown, 4);
-                //AMMO.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&AMMO.stamp, 4);
+                //reader.read(&AMMO.unknown, 4);
+                //AMMO.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgNPC_: //Same as normal
             case '_CPN':
-                //ReadHandler.read(&NPC_.stamp, 4);
-                //ReadHandler.read(&NPC_.unknown, 4);
-                //NPC_.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&NPC_.stamp, 4);
+                //reader.read(&NPC_.unknown, 4);
+                //NPC_.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgCREA: //Same as normal
             case 'AERC':
-                //ReadHandler.read(&CREA.stamp, 4);
-                //ReadHandler.read(&CREA.unknown, 4);
-                //CREA.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CREA.stamp, 4);
+                //reader.read(&CREA.unknown, 4);
+                //CREA.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLVLC: //Same as normal
             case 'CLVL':
-                //ReadHandler.read(&LVLC.stamp, 4);
-                //ReadHandler.read(&LVLC.unknown, 4);
-                //LVLC.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LVLC.stamp, 4);
+                //reader.read(&LVLC.unknown, 4);
+                //LVLC.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLVLN: //Same as normal
             case 'NLVL':
-                //ReadHandler.read(&LVLN.stamp, 4);
-                //ReadHandler.read(&LVLN.unknown, 4);
-                //LVLN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LVLN.stamp, 4);
+                //reader.read(&LVLN.unknown, 4);
+                //LVLN.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgKEYM:
             case 'MYEK':
-                //ReadHandler.read(&KEYM.stamp, 4);
-                //ReadHandler.read(&KEYM.unknown, 4);
-                //KEYM.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&KEYM.stamp, 4);
+                //reader.read(&KEYM.unknown, 4);
+                //KEYM.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgALCH:
             case 'HCLA':
-                //ReadHandler.read(&ALCH.stamp, 4);
-                //ReadHandler.read(&ALCH.unknown, 4);
-                //ALCH.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ALCH.stamp, 4);
+                //reader.read(&ALCH.unknown, 4);
+                //ALCH.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgIDLM:
             case 'MLDI':
-                //ReadHandler.read(&IDLM.stamp, 4);
-                //ReadHandler.read(&IDLM.unknown, 4);
-                //IDLM.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IDLM.stamp, 4);
+                //reader.read(&IDLM.unknown, 4);
+                //IDLM.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgNOTE:
             case 'ETON':
-                //ReadHandler.read(&NOTE.stamp, 4);
-                //ReadHandler.read(&NOTE.unknown, 4);
-                //NOTE.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&NOTE.stamp, 4);
+                //reader.read(&NOTE.unknown, 4);
+                //NOTE.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCOBJ:
             case 'JBOC':
-                //ReadHandler.read(&COBJ.stamp, 4);
-                //ReadHandler.read(&COBJ.unknown, 4);
-                //COBJ.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&COBJ.stamp, 4);
+                //reader.read(&COBJ.unknown, 4);
+                //COBJ.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgPROJ: //Same as normal
             case 'JORP':
-                //ReadHandler.read(&PROJ.stamp, 4);
-                //ReadHandler.read(&PROJ.unknown, 4);
-                //PROJ.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&PROJ.stamp, 4);
+                //reader.read(&PROJ.unknown, 4);
+                //PROJ.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLVLI: //Same as normal
             case 'ILVL':
-                //ReadHandler.read(&LVLI.stamp, 4);
-                //ReadHandler.read(&LVLI.unknown, 4);
-                //LVLI.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LVLI.stamp, 4);
+                //reader.read(&LVLI.unknown, 4);
+                //LVLI.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgWTHR: //Same as normal
             case 'RHTW':
-                //ReadHandler.read(&WTHR.stamp, 4);
-                //ReadHandler.read(&WTHR.unknown, 4);
-                //WTHR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&WTHR.stamp, 4);
+                //reader.read(&WTHR.unknown, 4);
+                //WTHR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCLMT:
             case 'TMLC':
-                //ReadHandler.read(&CLMT.stamp, 4);
-                //ReadHandler.read(&CLMT.unknown, 4);
-                //CLMT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CLMT.stamp, 4);
+                //reader.read(&CLMT.unknown, 4);
+                //CLMT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgREGN:
             case 'NGER':
-                //ReadHandler.read(&REGN.stamp, 4);
-                //ReadHandler.read(&REGN.unknown, 4);
-                //REGN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&REGN.stamp, 4);
+                //reader.read(&REGN.unknown, 4);
+                //REGN.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgNAVI:
             case 'IVAN':
-                //ReadHandler.read(&NAVI.stamp, 4);
-                //ReadHandler.read(&NAVI.unknown, 4);
-                //NAVI.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&NAVI.stamp, 4);
+                //reader.read(&NAVI.unknown, 4);
+                //NAVI.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCELL:
             case 'LLEC':
-                //ReadHandler.read(&CELL.stamp, 4);
-                //ReadHandler.read(&CELL.unknown, 4);
-                //CELL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CELL.stamp, 4);
+                //reader.read(&CELL.unknown, 4);
+                //CELL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgWRLD: //Same as normal
             case 'DLRW':
-                //ReadHandler.read(&WRLD.stamp, 4);
-                //ReadHandler.read(&WRLD.unknown, 4);
-                //WRLD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&WRLD.stamp, 4);
+                //reader.read(&WRLD.unknown, 4);
+                //WRLD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgDIAL:
             case 'LAID':
-                //ReadHandler.read(&DIAL.stamp, 4);
-                //ReadHandler.read(&DIAL.unknown, 4);
-                //DIAL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&DIAL.stamp, 4);
+                //reader.read(&DIAL.unknown, 4);
+                //DIAL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgQUST: //Same as normal
             case 'TSUQ':
-                //ReadHandler.read(&QUST.stamp, 4);
-                //ReadHandler.read(&QUST.unknown, 4);
-                //QUST.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&QUST.stamp, 4);
+                //reader.read(&QUST.unknown, 4);
+                //QUST.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgIDLE:
             case 'ELDI':
-                //ReadHandler.read(&IDLE.stamp, 4);
-                //ReadHandler.read(&IDLE.unknown, 4);
-                //IDLE.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IDLE.stamp, 4);
+                //reader.read(&IDLE.unknown, 4);
+                //IDLE.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgPACK:
             case 'KCAP':
-                //ReadHandler.read(&PACK.stamp, 4);
-                //ReadHandler.read(&PACK.unknown, 4);
-                //PACK.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&PACK.stamp, 4);
+                //reader.read(&PACK.unknown, 4);
+                //PACK.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgCSTY: //Same as normal
             case 'YTSC':
-                //ReadHandler.read(&CSTY.stamp, 4);
-                //ReadHandler.read(&CSTY.unknown, 4);
-                //CSTY.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CSTY.stamp, 4);
+                //reader.read(&CSTY.unknown, 4);
+                //CSTY.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLSCR: //Same as normal
             case 'RCSL':
-                //ReadHandler.read(&LSCR.stamp, 4);
-                //ReadHandler.read(&LSCR.unknown, 4);
-                //LSCR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LSCR.stamp, 4);
+                //reader.read(&LSCR.unknown, 4);
+                //LSCR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgANIO:
             case 'OINA':
-                //ReadHandler.read(&ANIO.stamp, 4);
-                //ReadHandler.read(&ANIO.unknown, 4);
-                //ANIO.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ANIO.stamp, 4);
+                //reader.read(&ANIO.unknown, 4);
+                //ANIO.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgWATR:
             case 'RTAW':
-                //ReadHandler.read(&WATR.stamp, 4);
-                //ReadHandler.read(&WATR.unknown, 4);
-                //WATR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&WATR.stamp, 4);
+                //reader.read(&WATR.unknown, 4);
+                //WATR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgEFSH:
             case 'HSFE':
-                //ReadHandler.read(&EFSH.stamp, 4);
-                //ReadHandler.read(&EFSH.unknown, 4);
-                //EFSH.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&EFSH.stamp, 4);
+                //reader.read(&EFSH.unknown, 4);
+                //EFSH.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgEXPL: //Same as normal
             case 'LPXE':
-                //ReadHandler.read(&EXPL.stamp, 4);
-                //ReadHandler.read(&EXPL.unknown, 4);
-                //EXPL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&EXPL.stamp, 4);
+                //reader.read(&EXPL.unknown, 4);
+                //EXPL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgDEBR:
             case 'RBED':
-                //ReadHandler.read(&DEBR.stamp, 4);
-                //ReadHandler.read(&DEBR.unknown, 4);
-                //DEBR.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&DEBR.stamp, 4);
+                //reader.read(&DEBR.unknown, 4);
+                //DEBR.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgIMGS:
             case 'SGMI':
-                //ReadHandler.read(&IMGS.stamp, 4);
-                //ReadHandler.read(&IMGS.unknown, 4);
-                //IMGS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IMGS.stamp, 4);
+                //reader.read(&IMGS.unknown, 4);
+                //IMGS.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgIMAD:
             case 'DAMI':
-                //ReadHandler.read(&IMAD.stamp, 4);
-                //ReadHandler.read(&IMAD.unknown, 4);
-                //IMAD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IMAD.stamp, 4);
+                //reader.read(&IMAD.unknown, 4);
+                //IMAD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgFLST:
             case 'TSLF':
-                //ReadHandler.read(&FLST.stamp, 4);
-                //ReadHandler.read(&FLST.unknown, 4);
-                //FLST.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&FLST.stamp, 4);
+                //reader.read(&FLST.unknown, 4);
+                //FLST.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgPERK:
             case 'KREP':
-                //ReadHandler.read(&PERK.stamp, 4);
-                //ReadHandler.read(&PERK.unknown, 4);
-                //PERK.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&PERK.stamp, 4);
+                //reader.read(&PERK.unknown, 4);
+                //PERK.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgBPTD: //Same as normal
             case 'DTPB':
-                //ReadHandler.read(&BPTD.stamp, 4);
-                //ReadHandler.read(&BPTD.unknown, 4);
-                //BPTD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&BPTD.stamp, 4);
+                //reader.read(&BPTD.unknown, 4);
+                //BPTD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgADDN:
             case 'NDDA':
-                //ReadHandler.read(&ADDN.stamp, 4);
-                //ReadHandler.read(&ADDN.unknown, 4);
-                //ADDN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ADDN.stamp, 4);
+                //reader.read(&ADDN.unknown, 4);
+                //ADDN.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgAVIF: //Same as normal
             case 'FIVA':
-                //ReadHandler.read(&AVIF.stamp, 4);
-                //ReadHandler.read(&AVIF.unknown, 4);
-                //AVIF.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&AVIF.stamp, 4);
+                //reader.read(&AVIF.unknown, 4);
+                //AVIF.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgRADS:
             case 'SDAR':
-                //ReadHandler.read(&RADS.stamp, 4);
-                //ReadHandler.read(&RADS.unknown, 4);
-                //RADS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&RADS.stamp, 4);
+                //reader.read(&RADS.unknown, 4);
+                //RADS.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCAMS:
             case 'SMAC':
-                //ReadHandler.read(&CAMS.stamp, 4);
-                //ReadHandler.read(&CAMS.unknown, 4);
-                //CAMS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CAMS.stamp, 4);
+                //reader.read(&CAMS.unknown, 4);
+                //CAMS.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgCPTH: //Same as normal
             case 'HTPC':
-                //ReadHandler.read(&CPTH.stamp, 4);
-                //ReadHandler.read(&CPTH.unknown, 4);
-                //CPTH.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CPTH.stamp, 4);
+                //reader.read(&CPTH.unknown, 4);
+                //CPTH.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgVTYP: //Same as normal
             case 'PYTV':
-                //ReadHandler.read(&VTYP.stamp, 4);
-                //ReadHandler.read(&VTYP.unknown, 4);
-                //VTYP.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&VTYP.stamp, 4);
+                //reader.read(&VTYP.unknown, 4);
+                //VTYP.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgIPCT: //Same as normal
             case 'TCPI':
-                //ReadHandler.read(&IPCT.stamp, 4);
-                //ReadHandler.read(&IPCT.unknown, 4);
-                //IPCT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IPCT.stamp, 4);
+                //reader.read(&IPCT.unknown, 4);
+                //IPCT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgIPDS: //Same as normal
             case 'SDPI':
-                //ReadHandler.read(&IPDS.stamp, 4);
-                //ReadHandler.read(&IPDS.unknown, 4);
-                //IPDS.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IPDS.stamp, 4);
+                //reader.read(&IPDS.unknown, 4);
+                //IPDS.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgARMA: //Same as normal
             case 'AMRA':
-                //ReadHandler.read(&ARMA.stamp, 4);
-                //ReadHandler.read(&ARMA.unknown, 4);
-                //ARMA.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ARMA.stamp, 4);
+                //reader.read(&ARMA.unknown, 4);
+                //ARMA.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgECZN:
             case 'NZCE':
-                //ReadHandler.read(&ECZN.stamp, 4);
-                //ReadHandler.read(&ECZN.unknown, 4);
-                //ECZN.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ECZN.stamp, 4);
+                //reader.read(&ECZN.unknown, 4);
+                //ECZN.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgMESG:
             case 'GSEM':
-                //ReadHandler.read(&MESG.stamp, 4);
-                //ReadHandler.read(&MESG.unknown, 4);
-                //MESG.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MESG.stamp, 4);
+                //reader.read(&MESG.unknown, 4);
+                //MESG.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgRGDL:
             case 'LDGR':
-                //ReadHandler.read(&RGDL.stamp, 4);
-                //ReadHandler.read(&RGDL.unknown, 4);
-                //RGDL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&RGDL.stamp, 4);
+                //reader.read(&RGDL.unknown, 4);
+                //RGDL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgDOBJ:
             case 'JBOD':
-                //ReadHandler.read(&DOBJ.stamp, 4);
-                //ReadHandler.read(&DOBJ.unknown, 4);
-                //DOBJ.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&DOBJ.stamp, 4);
+                //reader.read(&DOBJ.unknown, 4);
+                //DOBJ.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgLGTM:
             case 'MTGL':
-                //ReadHandler.read(&LGTM.stamp, 4);
-                //ReadHandler.read(&LGTM.unknown, 4);
-                //LGTM.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LGTM.stamp, 4);
+                //reader.read(&LGTM.unknown, 4);
+                //LGTM.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgMUSC: //Same as normal
             case 'CSUM':
-                //ReadHandler.read(&MUSC.stamp, 4);
-                //ReadHandler.read(&MUSC.unknown, 4);
-                //MUSC.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MUSC.stamp, 4);
+                //reader.read(&MUSC.unknown, 4);
+                //MUSC.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgIMOD:
             case 'DOMI':
-                //ReadHandler.read(&IMOD.stamp, 4);
-                //ReadHandler.read(&IMOD.unknown, 4);
-                //IMOD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&IMOD.stamp, 4);
+                //reader.read(&IMOD.unknown, 4);
+                //IMOD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgREPU:
             case 'UPER':
-                //ReadHandler.read(&REPU.stamp, 4);
-                //ReadHandler.read(&REPU.unknown, 4);
-                //REPU.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&REPU.stamp, 4);
+                //reader.read(&REPU.unknown, 4);
+                //REPU.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgRCPE:
             case 'EPCR':
-                //ReadHandler.read(&RCPE.stamp, 4);
-                //ReadHandler.read(&RCPE.unknown, 4);
-                //RCPE.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&RCPE.stamp, 4);
+                //reader.read(&RCPE.unknown, 4);
+                //RCPE.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgRCCT:
             case 'TCCR':
-                //ReadHandler.read(&RCCT.stamp, 4);
-                //ReadHandler.read(&RCCT.unknown, 4);
-                //RCCT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&RCCT.stamp, 4);
+                //reader.read(&RCCT.unknown, 4);
+                //RCCT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCHIP:
             case 'PIHC':
-                //ReadHandler.read(&CHIP.stamp, 4);
-                //ReadHandler.read(&CHIP.unknown, 4);
-                //CHIP.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CHIP.stamp, 4);
+                //reader.read(&CHIP.unknown, 4);
+                //CHIP.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgCSNO: //Same as normal
             case 'ONSC':
-                //ReadHandler.read(&CSNO.stamp, 4);
-                //ReadHandler.read(&CSNO.unknown, 4);
-                //CSNO.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CSNO.stamp, 4);
+                //reader.read(&CSNO.unknown, 4);
+                //CSNO.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgLSCT: //Same as normal
             case 'TCSL':
-                //ReadHandler.read(&LSCT.stamp, 4);
-                //ReadHandler.read(&LSCT.unknown, 4);
-                //LSCT.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&LSCT.stamp, 4);
+                //reader.read(&LSCT.unknown, 4);
+                //LSCT.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgMSET: //Same as normal
             case 'TESM':
-                //ReadHandler.read(&MSET.stamp, 4);
-                //ReadHandler.read(&MSET.unknown, 4);
-                //MSET.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&MSET.stamp, 4);
+                //reader.read(&MSET.unknown, 4);
+                //MSET.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgALOC:
             case 'COLA':
-                //ReadHandler.read(&ALOC.stamp, 4);
-                //ReadHandler.read(&ALOC.unknown, 4);
-                //ALOC.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&ALOC.stamp, 4);
+                //reader.read(&ALOC.unknown, 4);
+                //ALOC.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCHAL:
             case 'LAHC':
-                //ReadHandler.read(&CHAL.stamp, 4);
-                //ReadHandler.read(&CHAL.unknown, 4);
-                //CHAL.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CHAL.stamp, 4);
+                //reader.read(&CHAL.unknown, 4);
+                //CHAL.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgAMEF:
             case 'FEMA':
-                //ReadHandler.read(&AMEF.stamp, 4);
-                //ReadHandler.read(&AMEF.unknown, 4);
-                //AMEF.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&AMEF.stamp, 4);
+                //reader.read(&AMEF.unknown, 4);
+                //AMEF.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCCRD:
             case 'DRCC':
-                //ReadHandler.read(&CCRD.stamp, 4);
-                //ReadHandler.read(&CCRD.unknown, 4);
-                //CCRD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CCRD.stamp, 4);
+                //reader.read(&CCRD.unknown, 4);
+                //CCRD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCMNY:
             case 'YNMC':
-                //ReadHandler.read(&CMNY.stamp, 4);
-                //ReadHandler.read(&CMNY.unknown, 4);
-                //CMNY.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CMNY.stamp, 4);
+                //reader.read(&CMNY.unknown, 4);
+                //CMNY.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgCDCK:
             case 'KCDC':
-                //ReadHandler.read(&CDCK.stamp, 4);
-                //ReadHandler.read(&CDCK.unknown, 4);
-                //CDCK.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&CDCK.stamp, 4);
+                //reader.read(&CDCK.unknown, 4);
+                //CDCK.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgDEHY:
             case 'YHED':
-                //ReadHandler.read(&DEHY.stamp, 4);
-                //ReadHandler.read(&DEHY.unknown, 4);
-                //DEHY.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&DEHY.stamp, 4);
+                //reader.read(&DEHY.unknown, 4);
+                //DEHY.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             //case eIgHUNG: //Same as normal
             case 'GNUH':
-                //ReadHandler.read(&HUNG.stamp, 4);
-                //ReadHandler.read(&HUNG.unknown, 4);
-                //HUNG.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&HUNG.stamp, 4);
+                //reader.read(&HUNG.unknown, 4);
+                //HUNG.Skim(reader, GRUPSize, processor, indexer);
                 //break;
             case eIgSLPD:
             case 'DPLS':
-                //ReadHandler.read(&SLPD.stamp, 4);
-                //ReadHandler.read(&SLPD.unknown, 4);
-                //SLPD.Skim(ReadHandler, GRUPSize, processor, indexer);
+                //reader.read(&SLPD.stamp, 4);
+                //reader.read(&SLPD.unknown, 4);
+                //SLPD.Skim(reader, GRUPSize, processor, indexer);
                 //break;
 
             default:
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printf("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
+                    printf("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
                     return 1;
                     }
                 //else
-                //    printf("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ReadHandler.getModName());
+                //    printf("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
 
                 if(GRUPSize == 0)
                     {
@@ -840,7 +840,7 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 else
                     {
                     //printf("Attempting to skip and continue loading.\n");
-                    ReadHandler.set_used(GRUPSize - 16); //Skip type (tops will all == 0)
+                    reader.skip(GRUPSize - 16); //Skip type (tops will all == 0)
                     }
                 break;
             }
@@ -1057,7 +1057,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'DPLS':
             //return (UINT32)SLPD.Records.size();
         default:
-            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
+            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         }
     return 0;
@@ -1069,7 +1069,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
+        printf("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return NULL;
         }
 
@@ -1080,7 +1080,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case 'TSMG':
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ReadHandler.getModName());
+                printf("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
                 return NULL;
                 }
 
@@ -1494,7 +1494,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             //newRecord = SLPD.Records.back();
             //break;
         default:
-            printf("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ReadHandler.getModName());
+            printf("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         }
     return newRecord;
@@ -1506,7 +1506,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
+        printf("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return -1;
         }
 
@@ -1645,12 +1645,12 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
     if(!Flags.IsSaveable)
         {
-        printf("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ReadHandler.getModName());
+        printf("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
         return -1;
         }
 
-    _FileHandler SaveHandler(SaveName, BUFFERSIZE);
-    if(SaveHandler.open_ReadWrite() == -1)
+    FileWriter writer(SaveName, BUFFERSIZE);
+    if(writer.open() == -1)
         throw std::exception("Unable to open temporary file for writing\n");
 
     UINT32 formCount = 0;
@@ -1659,114 +1659,114 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     //RecordReader reader(FormIDHandler);
     const bool bMastersChanged = FormIDHandler.MastersChanged();
 
-    TES4.Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+    TES4.Write(writer, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP('TSMG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TXST.WriteGRUP('TSXT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MICN.WriteGRUP('NCIM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GLOB.WriteGRUP('BOLG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLAS.WriteGRUP('SALC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FACT.WriteGRUP('TCAF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HDPT.WriteGRUP('TPDH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HAIR.WriteGRUP('RIAH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EYES.WriteGRUP('SEYE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += RACE.WriteGRUP('ECAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SOUN.WriteGRUP('NUOS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ASPC.WriteGRUP('CPSA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MGEF.WriteGRUP('FEGM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SCPT.WriteGRUP('TPCS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LTEX.WriteGRUP('XETL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ENCH.WriteGRUP('HCNE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SPEL.WriteGRUP('LEPS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ACTI.WriteGRUP('ITCA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TACT.WriteGRUP('TCAT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TERM.WriteGRUP('MRET', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ARMO.WriteGRUP('OMRA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += BOOK.WriteGRUP('KOOB', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CONT.WriteGRUP('TNOC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DOOR.WriteGRUP('ROOD', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += INGR.WriteGRUP('RGNI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LIGH.WriteGRUP('HGIL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MISC.WriteGRUP('CSIM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += STAT.WriteGRUP('TATS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SCOL.WriteGRUP('LOCS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MSTT.WriteGRUP('TTSM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PWAT.WriteGRUP('TAWP', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += GRAS.WriteGRUP('SARG', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TREE.WriteGRUP('EERT', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += FURN.WriteGRUP('NRUF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WEAP.WriteGRUP('PAEW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AMMO.WriteGRUP('OMMA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NPC_.WriteGRUP('_CPN', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CREA.WriteGRUP('AERC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLC.WriteGRUP('CLVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLN.WriteGRUP('NLVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += KEYM.WriteGRUP('MYEK', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ALCH.WriteGRUP('HCLA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IDLM.WriteGRUP('MLDI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NOTE.WriteGRUP('ETON', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += COBJ.WriteGRUP('JBOC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PROJ.WriteGRUP('JORP', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLI.WriteGRUP('ILVL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WTHR.WriteGRUP('RHTW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CLMT.WriteGRUP('TMLC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += REGN.WriteGRUP('NGER', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NAVI.WriteGRUP('IVAN', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CELL.WriteGRUP('LLEC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WRLD.WriteGRUP('DLRW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DIAL.WriteGRUP('LAID', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += QUST.WriteGRUP('TSUQ', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IDLE.WriteGRUP('ELDI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PACK.WriteGRUP('KCAP', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CSTY.WriteGRUP('YTSC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LSCR.WriteGRUP('RCSL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ANIO.WriteGRUP('OINA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WATR.WriteGRUP('RTAW', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += EFSH.WriteGRUP('HSFE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += EXPL.WriteGRUP('LPXE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DEBR.WriteGRUP('RBED', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMGS.WriteGRUP('SGMI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMAD.WriteGRUP('DAMI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += FLST.WriteGRUP('TSLF', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PERK.WriteGRUP('KREP', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += BPTD.WriteGRUP('DTPB', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ADDN.WriteGRUP('NDDA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AVIF.WriteGRUP('FIVA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RADS.WriteGRUP('SDAR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CAMS.WriteGRUP('SMAC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CPTH.WriteGRUP('HTPC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += VTYP.WriteGRUP('PYTV', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IPCT.WriteGRUP('TCPI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IPDS.WriteGRUP('SDPI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ARMA.WriteGRUP('AMRA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ECZN.WriteGRUP('NZCE', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MESG.WriteGRUP('GSEM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RGDL.WriteGRUP('LDGR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DOBJ.WriteGRUP('JBOD', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LGTM.WriteGRUP('MTGL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MUSC.WriteGRUP('CSUM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMOD.WriteGRUP('DOMI', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += REPU.WriteGRUP('UPER', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RCPE.WriteGRUP('EPCR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RCCT.WriteGRUP('TCCR', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CHIP.WriteGRUP('PIHC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CSNO.WriteGRUP('ONSC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LSCT.WriteGRUP('TCSL', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MSET.WriteGRUP('TESM', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ALOC.WriteGRUP('COLA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CHAL.WriteGRUP('LAHC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AMEF.WriteGRUP('FEMA', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CCRD.WriteGRUP('DRCC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CMNY.WriteGRUP('YNMC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CDCK.WriteGRUP('KCDC', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DEHY.WriteGRUP('YHED', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += HUNG.WriteGRUP('GNUH', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SLPD.WriteGRUP('DPLS', SaveHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GMST.WriteGRUP('TSMG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TXST.WriteGRUP('TSXT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MICN.WriteGRUP('NCIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.WriteGRUP('BOLG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.WriteGRUP('SALC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.WriteGRUP('TCAF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HDPT.WriteGRUP('TPDH', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.WriteGRUP('RIAH', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.WriteGRUP('SEYE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += RACE.WriteGRUP('ECAR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.WriteGRUP('NUOS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ASPC.WriteGRUP('CPSA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MGEF.WriteGRUP('FEGM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += SCPT.WriteGRUP('TPCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LTEX.WriteGRUP('XETL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ENCH.WriteGRUP('HCNE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += SPEL.WriteGRUP('LEPS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ACTI.WriteGRUP('ITCA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += TACT.WriteGRUP('TCAT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += TERM.WriteGRUP('MRET', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ARMO.WriteGRUP('OMRA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += BOOK.WriteGRUP('KOOB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CONT.WriteGRUP('TNOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DOOR.WriteGRUP('ROOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += INGR.WriteGRUP('RGNI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LIGH.WriteGRUP('HGIL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MISC.WriteGRUP('CSIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += SCOL.WriteGRUP('LOCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MSTT.WriteGRUP('TTSM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += PWAT.WriteGRUP('TAWP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += FURN.WriteGRUP('NRUF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += AMMO.WriteGRUP('OMMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += NPC_.WriteGRUP('_CPN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CREA.WriteGRUP('AERC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LVLC.WriteGRUP('CLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LVLN.WriteGRUP('NLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += KEYM.WriteGRUP('MYEK', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ALCH.WriteGRUP('HCLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IDLM.WriteGRUP('MLDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += NOTE.WriteGRUP('ETON', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += COBJ.WriteGRUP('JBOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += PROJ.WriteGRUP('JORP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LVLI.WriteGRUP('ILVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += NAVI.WriteGRUP('IVAN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CELL.WriteGRUP('LLEC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += WRLD.WriteGRUP('DLRW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DIAL.WriteGRUP('LAID', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += QUST.WriteGRUP('TSUQ', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IDLE.WriteGRUP('ELDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += PACK.WriteGRUP('KCAP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CSTY.WriteGRUP('YTSC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LSCR.WriteGRUP('RCSL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ANIO.WriteGRUP('OINA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += WATR.WriteGRUP('RTAW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += EFSH.WriteGRUP('HSFE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += EXPL.WriteGRUP('LPXE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DEBR.WriteGRUP('RBED', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMGS.WriteGRUP('SGMI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMAD.WriteGRUP('DAMI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += FLST.WriteGRUP('TSLF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += PERK.WriteGRUP('KREP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += BPTD.WriteGRUP('DTPB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ADDN.WriteGRUP('NDDA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += AVIF.WriteGRUP('FIVA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RADS.WriteGRUP('SDAR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CAMS.WriteGRUP('SMAC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CPTH.WriteGRUP('HTPC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += VTYP.WriteGRUP('PYTV', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IPCT.WriteGRUP('TCPI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IPDS.WriteGRUP('SDPI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ARMA.WriteGRUP('AMRA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ECZN.WriteGRUP('NZCE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MESG.WriteGRUP('GSEM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RGDL.WriteGRUP('LDGR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DOBJ.WriteGRUP('JBOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LGTM.WriteGRUP('MTGL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MUSC.WriteGRUP('CSUM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMOD.WriteGRUP('DOMI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += REPU.WriteGRUP('UPER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RCPE.WriteGRUP('EPCR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RCCT.WriteGRUP('TCCR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CHIP.WriteGRUP('PIHC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CSNO.WriteGRUP('ONSC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LSCT.WriteGRUP('TCSL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MSET.WriteGRUP('TESM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ALOC.WriteGRUP('COLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CHAL.WriteGRUP('LAHC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += AMEF.WriteGRUP('FEMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CCRD.WriteGRUP('DRCC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CMNY.WriteGRUP('YNMC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CDCK.WriteGRUP('KCDC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DEHY.WriteGRUP('YHED', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += HUNG.WriteGRUP('GNUH', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += SLPD.WriteGRUP('DPLS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
-    SaveHandler.writeAt(34, &formCount, 4);
-    SaveHandler.close();
+    writer.file_write(34, &formCount, 4);
+    writer.close();
     if(CloseMod)
         Close();
     return 0;
@@ -1778,7 +1778,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
+        printf("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return;
         }
 
@@ -1896,7 +1896,7 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ReadHandler.getModName());
+        printf("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return;
         }
 
@@ -2212,9 +2212,9 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             //break;
         default:
             if(RecordType)
-                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
+                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
             else
-                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], ReadHandler.getModName());
+                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
             break;
         }
     return;

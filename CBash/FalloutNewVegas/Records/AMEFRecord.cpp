@@ -202,6 +202,7 @@ void AMEFRecord::SetOpType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 AMEFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -229,6 +230,7 @@ UINT32 AMEFRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 AMEFRecord::GetType()
     {

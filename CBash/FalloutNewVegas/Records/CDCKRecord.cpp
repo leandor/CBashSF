@@ -73,6 +73,7 @@ bool CDCKRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 CDCKRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -103,6 +104,7 @@ UINT32 CDCKRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CDCKRecord::GetType()
     {

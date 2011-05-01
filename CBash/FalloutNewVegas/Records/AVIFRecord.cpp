@@ -73,6 +73,7 @@ bool AVIFRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 AVIFRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -125,6 +126,7 @@ UINT32 AVIFRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 AVIFRecord::GetType()
     {

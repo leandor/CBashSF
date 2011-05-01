@@ -320,6 +320,7 @@ void CAMSRecord::SetTargetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
+/*
 UINT32 CAMSRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -369,6 +370,7 @@ UINT32 CAMSRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CAMSRecord::GetType()
     {

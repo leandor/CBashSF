@@ -82,6 +82,7 @@ bool ADDNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 ADDNRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -137,6 +138,7 @@ UINT32 ADDNRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 ADDNRecord::GetType()
     {

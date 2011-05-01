@@ -97,6 +97,7 @@ bool CHIPRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+/*
 UINT32 CHIPRecord::GetSize(bool forceCalc)
     {
     if(!forceCalc && !IsChanged())
@@ -192,6 +193,7 @@ UINT32 CHIPRecord::GetSize(bool forceCalc)
 
     return TotSize;
     }
+*/
 
 UINT32 CHIPRecord::GetType()
     {
