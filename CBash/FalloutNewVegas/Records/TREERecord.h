@@ -54,7 +54,7 @@ class TREERecord : public FNVRecord //Tree
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename

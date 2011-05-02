@@ -66,7 +66,7 @@ class FURNRecord : public FNVRecord //Furniture
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script

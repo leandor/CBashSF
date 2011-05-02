@@ -80,7 +80,7 @@ class AMEFRecord : public FNVRecord //Ammo Effect
         void   IsCondition(bool value);
         bool   IsFatigue();
         void   IsFatigue(bool value);
-        bool   IsModType(UINT32 Type, bool Exact=false);
+        bool   IsModType(UINT32 Type);
         void   SetModType(UINT32 Type);
 
         bool   IsAdd();
@@ -89,7 +89,7 @@ class AMEFRecord : public FNVRecord //Ammo Effect
         void   IsMultiply(bool value);
         bool   IsSubtract();
         void   IsSubtract(bool value);
-        bool   IsOpType(UINT32 Type, bool Exact=false);
+        bool   IsOpType(UINT32 Type);
         void   SetOpType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

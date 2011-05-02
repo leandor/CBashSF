@@ -161,7 +161,7 @@ SINT32 RCPERecord::Unload()
     return 1;
     }
 
-SINT32 RCPERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RCPERecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

@@ -272,10 +272,10 @@ void CHALRecord::IsMiscStat(bool value)
     Dummy->flags = value ? eMiscStat : eDummyDefault;
     }
 
-bool CHALRecord::Is0Type(UINT8 Type, bool Exact)
+bool CHALRecord::Is0Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CHALRecord::Set0Type(UINT8 Type)
@@ -363,7 +363,7 @@ SINT32 CHALRecord::Unload()
     return 1;
     }
 
-SINT32 CHALRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CHALRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

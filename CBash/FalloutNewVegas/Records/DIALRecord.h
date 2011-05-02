@@ -118,7 +118,7 @@ class DIALRecord : public FNVRecord //Dialog Topic
         void   IsMisc(bool value);
         bool   IsRadio();
         void   IsRadio(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         bool   IsRumors();

@@ -153,7 +153,7 @@ class LTEXRecord : public FNVRecord //Landscape Texture
         void   IsBabyRattle(bool value);
         bool   IsRubberBall();
         void   IsRubberBall(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

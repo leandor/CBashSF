@@ -1124,6 +1124,8 @@ struct FNVAlternateTextures
     void Load();
     void Unload();
 
+    void resize(UINT32 newSize);
+
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
     void Write(FileWriter &writer);
 

@@ -79,7 +79,7 @@ class LSCTRecord : public FNVRecord //Load Screen Type
         void   IsTip(bool value);
         bool   IsStats();
         void   IsStats(bool value);
-        bool   IsType(UINT32 Type, bool Exact=false);
+        bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

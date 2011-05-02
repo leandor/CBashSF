@@ -37,7 +37,7 @@ class NOTERecord : public FNVRecord //Note
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
@@ -65,7 +65,7 @@ class NOTERecord : public FNVRecord //Note
         void   IsImage(bool value);
         bool   IsVoice();
         void   IsVoice(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

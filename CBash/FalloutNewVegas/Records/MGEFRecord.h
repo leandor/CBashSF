@@ -34,15 +34,15 @@ class MGEFRecord : public FNVRecord //Base Effect
             FLOAT32 baseCost; // Unused
             FORMID  associated;
             SINT32  school; // Unused
-            UINT32  resistValue;
+            SINT32  resistType;
             UINT16  numCounters; //According to OBME
             UINT8   unused1[2];
-            UINT32  light;
+            FORMID  light;
             FLOAT32 projectileSpeed;
             FORMID  effectShader, displayShader, effectSound, boltSound, hitSound, areaSound;
             FLOAT32 cefEnchantment, cefBarter; // Unused, Unused
-            UINT32  archtype;
-            ACTORVALUE actorValue;
+            UINT32  archType;
+            SINT32  actorValue;
 
             MGEFDATA();
             ~MGEFDATA();
@@ -86,7 +86,7 @@ class MGEFRecord : public FNVRecord //Base Effect
             fIsUnknown1             = 0x20000000
             };
 
-        enum archtypeTypes
+        enum archTypes
             {
             eValueModifier  = 0,
             eScript         = 1,
@@ -115,7 +115,7 @@ class MGEFRecord : public FNVRecord //Base Effect
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        ReqSubRecord<MGEFDATA> DATA; //Data
 
         MGEFRecord(unsigned char *_recData=NULL);
         MGEFRecord(MGEFRecord *srcRecord);
@@ -161,6 +161,8 @@ class MGEFRecord : public FNVRecord //Base Effect
         void   IsBoltType(bool value);
         bool   IsFogType();
         void   IsFogType(bool value);
+        bool   IsBallType();
+        void   IsBallType(bool value);
         bool   IsNoHitEffect();
         void   IsNoHitEffect(bool value);
         bool   IsPersistOnDeath();
@@ -208,7 +210,7 @@ class MGEFRecord : public FNVRecord //Base Effect
         void   IsLimbCondition(bool value);
         bool   IsTurbo();
         void   IsTurbo(bool value);
-        bool   IsType(UINT32 Type, bool Exact=false);
+        bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

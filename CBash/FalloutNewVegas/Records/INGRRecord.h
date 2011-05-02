@@ -48,7 +48,7 @@ class INGRRecord : public FNVRecord //Ingredient
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename

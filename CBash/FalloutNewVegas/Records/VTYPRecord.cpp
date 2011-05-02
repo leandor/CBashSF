@@ -164,7 +164,7 @@ SINT32 VTYPRecord::Unload()
     return 1;
     }
 
-SINT32 VTYPRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 VTYPRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DNAM);

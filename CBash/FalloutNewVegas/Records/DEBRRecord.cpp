@@ -157,7 +157,7 @@ SINT32 DEBRRecord::Unload()
     return 1;
     }
 
-SINT32 DEBRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DEBRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

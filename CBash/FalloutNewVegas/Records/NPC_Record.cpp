@@ -560,10 +560,10 @@ void NPC_Record::IsFrenzied(bool value)
     Dummy->flags = value ? eFrenzied : eDummyDefault;
     }
 
-bool NPC_Record::IsAggressionType(UINT8 Type, bool Exact)
+bool NPC_Record::IsAggressionType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void NPC_Record::SetAggressionType(UINT8 Type)
@@ -632,10 +632,10 @@ void NPC_Record::IsFoolhardy(bool value)
     Dummy->flags = value ? eFoolhardy : eDummyDefault;
     }
 
-bool NPC_Record::IsConfidenceType(UINT8 Type, bool Exact)
+bool NPC_Record::IsConfidenceType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void NPC_Record::SetConfidenceType(UINT8 Type)
@@ -740,10 +740,10 @@ void NPC_Record::IsSad(bool value)
     Dummy->flags = value ? eSad : eDummyDefault;
     }
 
-bool NPC_Record::IsMoodType(UINT8 Type, bool Exact)
+bool NPC_Record::IsMoodType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void NPC_Record::SetMoodType(UINT8 Type)
@@ -788,10 +788,10 @@ void NPC_Record::IsHelpsFriendsAndAllies(bool value)
     Dummy->flags = value ? eHelpsFriendsAndAllies : eDummyDefault;
     }
 
-bool NPC_Record::IsAssistanceType(UINT8 Type, bool Exact)
+bool NPC_Record::IsAssistanceType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void NPC_Record::SetAssistanceType(UINT8 Type)
@@ -944,10 +944,10 @@ void NPC_Record::IsOrganicGlow(bool value)
     Dummy->flags = value ? eOrganicGlow : eDummyDefault;
     }
 
-bool NPC_Record::IsImpactType(UINT8 Type, bool Exact)
+bool NPC_Record::IsImpactType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void NPC_Record::SetImpactType(UINT8 Type)
@@ -1178,41 +1178,13 @@ SINT32 NPC_Record::Unload()
     return 1;
     }
 
-SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
+SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
 
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
+    MODL.Write(writer);
 
     WRITE(ACBS);
     WRITE(SNAM);

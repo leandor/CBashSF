@@ -166,7 +166,7 @@ SINT32 ECZNRecord::Unload()
     return 1;
     }
 
-SINT32 ECZNRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ECZNRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

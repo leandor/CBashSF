@@ -244,10 +244,10 @@ void MSETRecord::IsIncidential(bool value)
     Dummy->flags = value ? eIncidential : eDummyDefault;
     }
 
-bool MSETRecord::IsType(UINT32 Type, bool Exact)
+bool MSETRecord::IsType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void MSETRecord::SetType(UINT32 Type)
@@ -423,7 +423,7 @@ SINT32 MSETRecord::Unload()
     return 1;
     }
 
-SINT32 MSETRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 MSETRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

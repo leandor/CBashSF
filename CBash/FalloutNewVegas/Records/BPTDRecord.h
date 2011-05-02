@@ -144,7 +144,7 @@ class BPTDRecord : public FNVRecord //Body Part Data
             void   IsBrain(bool value);
             bool   IsWeapon();
             void   IsWeapon(bool value);
-            bool   IsType(UINT8 Type, bool Exact=false);
+            bool   IsType(UINT8 Type);
             void   SetType(UINT8 Type);
 
             bool operator ==(const BPTDPart &other) const;

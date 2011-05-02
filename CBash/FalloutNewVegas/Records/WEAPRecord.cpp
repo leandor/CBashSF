@@ -737,7 +737,7 @@ void WEAPRecord::IsAlcohol(bool value)
 bool WEAPRecord::IsEquipmentType(SINT32 Type, bool Exact)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetEquipmentType(SINT32 Type)
@@ -914,10 +914,10 @@ void WEAPRecord::IsThrown1Hand(bool value)
     Dummy->flags = value ? eThrown1Hand : eDummyDefault;
     }
 
-bool WEAPRecord::IsType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetType(UINT8 Type)
@@ -1010,10 +1010,10 @@ void WEAPRecord::IsGripDefault(bool value)
     Dummy->flags = value ? eDefault : eDummyDefault;
     }
 
-bool WEAPRecord::IsGripType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsGripType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetGripType(UINT8 Type)
@@ -1298,10 +1298,10 @@ void WEAPRecord::IsReloadAnimReloadZ(bool value)
     Dummy->flags = value ? eReloadZ : eDummyDefault;
     }
 
-bool WEAPRecord::IsReloadAnimType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsReloadAnimType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetReloadAnimType(UINT8 Type)
@@ -1586,10 +1586,10 @@ void WEAPRecord::IsAttackDefault(bool value)
     Dummy->flags = value ? eDefault : eDummyDefault;
     }
 
-bool WEAPRecord::IsAttackType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsAttackType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetAttackType(UINT8 Type)
@@ -1682,10 +1682,10 @@ void WEAPRecord::IsEmbeddedAVBrain(bool value)
     Dummy->flags = value ? eBrain : eDummyDefault;
     }
 
-bool WEAPRecord::IsEmbeddedAVType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsEmbeddedAVType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetEmbeddedAVType(UINT8 Type)
@@ -1742,10 +1742,10 @@ void WEAPRecord::IsOnHitNoDismemberExplode(bool value)
     Dummy->flags = value ? eNoDismemberExplode : eDummyDefault;
     }
 
-bool WEAPRecord::IsOnHitType(UINT32 Type, bool Exact)
+bool WEAPRecord::IsOnHitType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetOnHitType(UINT32 Type)
@@ -1802,10 +1802,10 @@ void WEAPRecord::IsRumbleSawtooth(bool value)
     Dummy->flags = value ? eSawtooth : eDummyDefault;
     }
 
-bool WEAPRecord::IsRumbleType(UINT32 Type, bool Exact)
+bool WEAPRecord::IsRumbleType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetRumbleType(UINT32 Type)
@@ -1898,10 +1898,10 @@ void WEAPRecord::IsPowerAttackAnimOverrideDefault(bool value)
     Dummy->flags = value ? eDefault : eDummyDefault;
     }
 
-bool WEAPRecord::IsPowerAttackAnimOverrideType(UINT32 Type, bool Exact)
+bool WEAPRecord::IsPowerAttackAnimOverrideType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetPowerAttackAnimOverrideType(UINT32 Type)
@@ -2186,10 +2186,10 @@ void WEAPRecord::IsReloadAnimModReloadZ(bool value)
     Dummy->flags = value ? eReloadZ : eDummyDefault;
     }
 
-bool WEAPRecord::IsReloadAnimModType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsReloadAnimModType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetReloadAnimModType(UINT8 Type)
@@ -2222,10 +2222,10 @@ void WEAPRecord::IsVATSSilent(bool value)
     Dummy->flags = value ? eIsSilent : eDummyDefault;
     }
 
-bool WEAPRecord::IsVATSSilenceType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsVATSSilenceType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetVATSSilenceType(UINT8 Type)
@@ -2258,10 +2258,10 @@ void WEAPRecord::IsVATSModRequired(bool value)
     Dummy->flags = value ? eIsModRequired : eDummyDefault;
     }
 
-bool WEAPRecord::IsVATSModType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsVATSModType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetVATSModType(UINT8 Type)
@@ -2306,10 +2306,10 @@ void WEAPRecord::IsSilent(bool value)
     Dummy->flags = value ? eSilent : eDummyDefault;
     }
 
-bool WEAPRecord::IsSoundLevelType(UINT8 Type, bool Exact)
+bool WEAPRecord::IsSoundLevelType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void WEAPRecord::SetSoundLevelType(UINT8 Type)
@@ -2657,41 +2657,13 @@ SINT32 WEAPRecord::Unload()
     return 1;
     }
 
-SINT32 WEAPRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
 
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
+    MODL.Write(writer);
 
     WRITE(ICON);
     WRITE(MICO);

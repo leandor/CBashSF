@@ -191,41 +191,13 @@ SINT32 CMNYRecord::Unload()
     return 1;
     }
 
-SINT32 CMNYRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CMNYRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
 
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
+    MODL.Write(writer);
 
     WRITE(ICON);
     WRITE(MICO);

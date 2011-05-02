@@ -128,10 +128,10 @@ void RGDLRecord::IsFeedback(bool value)
     Dummy->flags = value ? eFeedback : eDummyDefault;
     }
 
-bool RGDLRecord::IsFeedbackType(UINT8 Type, bool Exact)
+bool RGDLRecord::IsFeedbackType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void RGDLRecord::SetFeedbackType(UINT8 Type)
@@ -164,10 +164,10 @@ void RGDLRecord::IsFootIK(bool value)
     Dummy->flags = value ? eFootIK : eDummyDefault;
     }
 
-bool RGDLRecord::IsFootType(UINT8 Type, bool Exact)
+bool RGDLRecord::IsFootType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void RGDLRecord::SetFootType(UINT8 Type)
@@ -200,10 +200,10 @@ void RGDLRecord::IsLookIK(bool value)
     Dummy->flags = value ? eLookIK : eDummyDefault;
     }
 
-bool RGDLRecord::IsLookType(UINT8 Type, bool Exact)
+bool RGDLRecord::IsLookType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void RGDLRecord::SetLookType(UINT8 Type)
@@ -236,10 +236,10 @@ void RGDLRecord::IsGrabIK(bool value)
     Dummy->flags = value ? eGrabIK : eDummyDefault;
     }
 
-bool RGDLRecord::IsGrabType(UINT8 Type, bool Exact)
+bool RGDLRecord::IsGrabType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void RGDLRecord::SetGrabType(UINT8 Type)
@@ -272,10 +272,10 @@ void RGDLRecord::IsMatchPose(bool value)
     Dummy->flags = value ? eMatchPose : eDummyDefault;
     }
 
-bool RGDLRecord::IsMatchType(UINT8 Type, bool Exact)
+bool RGDLRecord::IsMatchType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void RGDLRecord::SetMatchType(UINT8 Type)
@@ -371,7 +371,7 @@ SINT32 RGDLRecord::Unload()
     return 1;
     }
 
-SINT32 RGDLRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RGDLRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NVER);

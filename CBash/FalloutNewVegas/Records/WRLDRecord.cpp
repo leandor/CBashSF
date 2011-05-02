@@ -254,7 +254,7 @@ SINT32 WRLDRecord::Unload()
     return 1;
     }
 
-SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

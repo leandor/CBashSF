@@ -37,7 +37,7 @@ class LVLIRecord : public FNVRecord //Leveled Item
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSimpleSubRecord<UINT8> LVLD; //Chance none
         OptSimpleSubRecord<UINT8> LVLF; //Flags
         std::vector<ReqSubRecord<FNVLVLO> *> Entries; //Leveled List Entries

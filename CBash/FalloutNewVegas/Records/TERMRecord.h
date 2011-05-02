@@ -114,7 +114,7 @@ class TERMRecord : public FNVRecord //Terminal
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script
@@ -154,7 +154,7 @@ class TERMRecord : public FNVRecord //Terminal
         void   IsVeryHard(bool value);
         bool   IsRequiresKey();
         void   IsRequiresKey(bool value);
-        bool   IsLockType(UINT8 Type, bool Exact=false);
+        bool   IsLockType(UINT8 Type);
         void   SetLockType(UINT8 Type);
 
         bool   IsServer1();
@@ -177,7 +177,7 @@ class TERMRecord : public FNVRecord //Terminal
         void   IsServer9(bool value);
         bool   IsServer10();
         void   IsServer10(bool value);
-        bool   IsServerType(UINT8 Type, bool Exact=false);
+        bool   IsServerType(UINT8 Type);
         void   SetServerType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

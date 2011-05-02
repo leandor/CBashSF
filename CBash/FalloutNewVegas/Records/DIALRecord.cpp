@@ -178,10 +178,10 @@ void DIALRecord::IsRadio(bool value)
     Dummy->flags = value ? eRadio : eDummyDefault;
     }
 
-bool DIALRecord::IsType(UINT8 Type, bool Exact)
+bool DIALRecord::IsType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void DIALRecord::SetType(UINT8 Type)
@@ -313,7 +313,7 @@ SINT32 DIALRecord::Unload()
     return 1;
     }
 
-SINT32 DIALRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DIALRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(QSTI);

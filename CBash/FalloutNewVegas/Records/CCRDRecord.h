@@ -39,7 +39,7 @@ class CCRDRecord : public FNVRecord //Caravan Card
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
@@ -71,7 +71,7 @@ class CCRDRecord : public FNVRecord //Caravan Card
         void   IsClubs(bool value);
         bool   IsJoker();
         void   IsJoker(bool value);
-        bool   IsType(UINT32 Type, bool Exact=false);
+        bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

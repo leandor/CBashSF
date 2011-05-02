@@ -382,10 +382,10 @@ void REFRRecord::IsPortalBox(bool value)
     Dummy->flags = value ? ePortalBox : eDummyDefault;
     }
 
-bool REFRRecord::Is0Type(UINT8 Type, bool Exact)
+bool REFRRecord::Is0Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void REFRRecord::Set0Type(UINT8 Type)
@@ -910,10 +910,10 @@ void REFRRecord::IsDroppingPick(bool value)
     Dummy->flags = value ? eDroppingPick : eDummyDefault;
     }
 
-bool REFRRecord::Is1Type(UINT8 Type, bool Exact)
+bool REFRRecord::Is1Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void REFRRecord::Set1Type(UINT8 Type)
@@ -1102,10 +1102,10 @@ void REFRRecord::IsVault(bool value)
     Dummy->flags = value ? eVault : eDummyDefault;
     }
 
-bool REFRRecord::Is2Type(UINT8 Type, bool Exact)
+bool REFRRecord::Is2Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void REFRRecord::Set2Type(UINT8 Type)
@@ -1174,10 +1174,10 @@ void REFRRecord::IsCurrentCellOnly(bool value)
     Dummy->flags = value ? eCurrentCellOnly : eDummyDefault;
     }
 
-bool REFRRecord::Is3Type(UINT8 Type, bool Exact)
+bool REFRRecord::Is3Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void REFRRecord::Set3Type(UINT8 Type)
@@ -1210,10 +1210,10 @@ void REFRRecord::IsRefraction(bool value)
     Dummy->flags = value ? eRefraction : eDummyDefault;
     }
 
-bool REFRRecord::Is4Type(UINT8 Type, bool Exact)
+bool REFRRecord::Is4Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void REFRRecord::Set4Type(UINT8 Type)
@@ -1613,7 +1613,7 @@ SINT32 REFRRecord::Unload()
     return 1;
     }
 
-SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(RCLR);

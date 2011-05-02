@@ -96,7 +96,7 @@ class IPCTRecord : public FNVRecord //Impact
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type, bool Exact=false);
+        bool   IsSoundLevelType(UINT8 Type);
         void   SetSoundLevelType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

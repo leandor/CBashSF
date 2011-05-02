@@ -148,7 +148,7 @@ SINT32 AVIFRecord::Unload()
     return 1;
     }
 
-SINT32 AVIFRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 AVIFRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

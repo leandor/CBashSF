@@ -128,7 +128,7 @@ SINT32 LGTMRecord::Unload()
     return 1;
     }
 
-SINT32 LGTMRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LGTMRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

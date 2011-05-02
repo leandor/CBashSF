@@ -565,7 +565,7 @@ SINT32 NAVMRecord::Unload()
     return 1;
     }
 
-SINT32 NAVMRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 NAVMRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NVER);

@@ -137,7 +137,7 @@ class CSTYRecord : public FNVRecord //Combat Style
         void   IsMeleeOnly(bool value);
         bool   IsRangedOnly();
         void   IsRangedOnly(bool value);
-        bool   IsType(UINT32 Type, bool Exact=false);
+        bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

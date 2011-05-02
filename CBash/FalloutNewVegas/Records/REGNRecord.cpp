@@ -226,7 +226,7 @@ SINT32 REGNRecord::Unload()
     return 1;
     }
 
-SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REGNRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(ICON);

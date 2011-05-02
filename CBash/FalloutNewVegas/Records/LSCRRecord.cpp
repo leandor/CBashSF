@@ -152,7 +152,7 @@ SINT32 LSCRRecord::Unload()
     return 1;
     }
 
-SINT32 LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LSCRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(ICON);

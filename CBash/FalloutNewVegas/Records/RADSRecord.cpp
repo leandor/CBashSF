@@ -130,7 +130,7 @@ SINT32 RADSRecord::Unload()
     return 1;
     }
 
-SINT32 RADSRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RADSRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

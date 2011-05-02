@@ -114,10 +114,10 @@ void CPTHRecord::IsShotList(bool value)
     Dummy->flags = value ? eShotList : eDummyDefault;
     }
 
-bool CPTHRecord::IsType(UINT8 Type, bool Exact)
+bool CPTHRecord::IsType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CPTHRecord::SetType(UINT8 Type)
@@ -197,7 +197,7 @@ SINT32 CPTHRecord::Unload()
     return 1;
     }
 
-SINT32 CPTHRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CPTHRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(CTDA);

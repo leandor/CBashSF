@@ -141,10 +141,10 @@ void ENCHRecord::IsApparel(bool value)
     Dummy->flags = value ? eApparel : eDummyDefault;
     }
 
-bool ENCHRecord::IsType(UINT32 Type, bool Exact)
+bool ENCHRecord::IsType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void ENCHRecord::SetType(UINT32 Type)
@@ -229,7 +229,7 @@ SINT32 ENCHRecord::Unload()
     return 1;
     }
 
-SINT32 ENCHRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ENCHRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

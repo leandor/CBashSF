@@ -41,7 +41,7 @@ class ADDNRecord : public FNVRecord //Addon Node
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<SINT32> DATA; //Node Index
         OptSimpleSubRecord<FORMID> SNAM; //Sound

@@ -327,7 +327,7 @@ bool RecordDeleter::Accept(Record *&curRecord)
         //De-Index the record
         if(curRecord->IsKeyedByEditorID())
             {
-            for(EditorID_Range range = EditorID_ModFile_Record.equal_range((curRecord->GetType() == 'FEGM' && ((MGEFRecord*)curRecord)->OBME.IsLoaded()) ? &(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0] : (STRING)curRecord->GetField(4)); range.first != range.second; ++range.first)
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
                 if(range.first->second.second == curRecord)
                     {
                     EditorID_ModFile_Record.erase(range.first);
@@ -384,12 +384,7 @@ RecordIndexer::~RecordIndexer()
 bool RecordIndexer::Accept(Record *&curRecord)
     {
     if(curRecord->IsKeyedByEditorID())
-        {
-        if(curRecord->GetType() == 'FEGM' && ((MGEFRecord*)curRecord)->OBME.IsLoaded())
-            EditorID_ModFile_Record.insert(std::make_pair(&(((MGEFRecord*)curRecord)->OBME->EDDX.value.mgefCode)[0],std::make_pair(curModFile,curRecord)));
-        else
-            EditorID_ModFile_Record.insert(std::make_pair((STRING)curRecord->GetField(4),std::make_pair(curModFile,curRecord)));
-        }
+        EditorID_ModFile_Record.insert(std::make_pair(curRecord->GetEditorIDKey(),std::make_pair(curModFile,curRecord)));
     else
         FormID_ModFile_Record.insert(std::make_pair(curRecord->formID,std::make_pair(curModFile,curRecord)));
     return false;

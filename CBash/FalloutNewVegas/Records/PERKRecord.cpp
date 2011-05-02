@@ -178,10 +178,10 @@ void PERKRecord::IsTrait(bool value)
     Dummy->flags = value ? eTrait : eDummyDefault;
     }
 
-bool PERKRecord::IsTraitType(UINT8 Type, bool Exact)
+bool PERKRecord::IsTraitType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void PERKRecord::SetTraitType(UINT8 Type)
@@ -214,10 +214,10 @@ void PERKRecord::IsPlayable(bool value)
     Dummy->flags = value ? ePlayable : eDummyDefault;
     }
 
-bool PERKRecord::IsPlayableType(UINT8 Type, bool Exact)
+bool PERKRecord::IsPlayableType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void PERKRecord::SetPlayableType(UINT8 Type)
@@ -250,10 +250,10 @@ void PERKRecord::IsHidden(bool value)
     Dummy->flags = value ? eHidden : eDummyDefault;
     }
 
-bool PERKRecord::IsHiddenType(UINT8 Type, bool Exact)
+bool PERKRecord::IsHiddenType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void PERKRecord::SetHiddenType(UINT8 Type)
@@ -298,10 +298,10 @@ void PERKRecord::IsEntryPoint(bool value)
     Dummy->flags = value ? eEntryPoint : eDummyDefault;
     }
 
-bool PERKRecord::IsType(UINT8 Type, bool Exact)
+bool PERKRecord::IsType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void PERKRecord::SetType(UINT8 Type)
@@ -451,7 +451,7 @@ SINT32 PERKRecord::Unload()
     return 1;
     }
 
-SINT32 PERKRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PERKRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

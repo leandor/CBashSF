@@ -358,7 +358,7 @@ SINT32 ACHRRecord::Unload()
     return 1;
     }
 
-SINT32 ACHRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NAME);

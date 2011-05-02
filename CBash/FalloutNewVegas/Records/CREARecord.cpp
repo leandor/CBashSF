@@ -289,10 +289,10 @@ void CREARecord::CREASoundType::IsPlayRandomLoop(bool value)
     Dummy->flags = value ? ePlayRandomLoop : eDummyDefault;
     }
 
-bool CREARecord::CREASoundType::IsType(UINT32 Type, bool Exact)
+bool CREARecord::CREASoundType::IsType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::CREASoundType::SetType(UINT32 Type)
@@ -1042,10 +1042,10 @@ void CREARecord::IsGiant(bool value)
     Dummy->flags = value ? eGiant : eDummyDefault;
     }
 
-bool CREARecord::IsType(UINT8 Type, bool Exact)
+bool CREARecord::IsType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetType(UINT8 Type)
@@ -2446,10 +2446,10 @@ void CREARecord::IsANY(bool value)
     Dummy->flags = value ? eANY : eDummyDefault;
     }
 
-bool CREARecord::IsAttackAnimType(UINT8 Type, bool Exact)
+bool CREARecord::IsAttackAnimType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetAttackAnimType(UINT8 Type)
@@ -2494,10 +2494,10 @@ void CREARecord::IsSilent(bool value)
     Dummy->flags = value ? eSilent : eDummyDefault;
     }
 
-bool CREARecord::IsSoundLevelType(UINT8 Type, bool Exact)
+bool CREARecord::IsSoundLevelType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetSoundLevelType(UINT8 Type)
@@ -2554,10 +2554,10 @@ void CREARecord::IsFrenzied(bool value)
     Dummy->flags = value ? eFrenzied : eDummyDefault;
     }
 
-bool CREARecord::IsAggressionType(UINT8 Type, bool Exact)
+bool CREARecord::IsAggressionType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetAggressionType(UINT8 Type)
@@ -2626,10 +2626,10 @@ void CREARecord::IsFoolhardy(bool value)
     Dummy->flags = value ? eFoolhardy : eDummyDefault;
     }
 
-bool CREARecord::IsConfidenceType(UINT8 Type, bool Exact)
+bool CREARecord::IsConfidenceType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetConfidenceType(UINT8 Type)
@@ -2734,10 +2734,10 @@ void CREARecord::IsSad(bool value)
     Dummy->flags = value ? eSad : eDummyDefault;
     }
 
-bool CREARecord::IsMoodType(UINT8 Type, bool Exact)
+bool CREARecord::IsMoodType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetMoodType(UINT8 Type)
@@ -2782,10 +2782,10 @@ void CREARecord::IsHelpsFriendsAndAllies(bool value)
     Dummy->flags = value ? eHelpsFriendsAndAllies : eDummyDefault;
     }
 
-bool CREARecord::IsAssistanceType(UINT8 Type, bool Exact)
+bool CREARecord::IsAssistanceType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetAssistanceType(UINT8 Type)
@@ -2938,10 +2938,10 @@ void CREARecord::IsOrganicGlow(bool value)
     Dummy->flags = value ? eOrganicGlow : eDummyDefault;
     }
 
-bool CREARecord::IsImpactType(UINT8 Type, bool Exact)
+bool CREARecord::IsImpactType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void CREARecord::SetImpactType(UINT8 Type)
@@ -3176,41 +3176,13 @@ SINT32 CREARecord::Unload()
     return 1;
     }
 
-SINT32 CREARecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CREARecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
 
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
+    MODL.Write(writer);
 
     WRITE(SPLO);
     WRITE(EITM);

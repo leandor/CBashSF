@@ -133,7 +133,7 @@ SINT32 MUSCRecord::Unload()
     return 1;
     }
 
-SINT32 MUSCRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 MUSCRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FNAM);

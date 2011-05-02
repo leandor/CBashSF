@@ -284,16 +284,16 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgASPC:  //Same as normal
             case 'CPSA':
-                //reader.read(&ASPC.stamp, 4);
-                //reader.read(&ASPC.unknown, 4);
-                //ASPC.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ASPC.stamp, 4);
+                reader.read(&ASPC.unknown, 4);
+                ASPC.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgMGEF:
             case 'FEGM':
-                //reader.read(&MGEF.stamp, 4);
-                //reader.read(&MGEF.unknown, 4);
-                //MGEF.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&MGEF.stamp, 4);
+                reader.read(&MGEF.unknown, 4);
+                MGEF.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgSCPT:
             case 'TPCS':
                 //reader.read(&SCPT.stamp, 4);
@@ -877,9 +877,9 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'NUOS':
             return (UINT32)SOUN.Records.size();
         case 'CPSA':
-            //return (UINT32)ASPC.Records.size();
+            return (UINT32)ASPC.Records.size();
         case 'FEGM':
-            //return (UINT32)MGEF.Records.size();
+            return (UINT32)MGEF.Records.size();
         case 'TPCS':
             //return (UINT32)SCPT.Records.size();
         case 'XETL':
@@ -1134,13 +1134,13 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = SOUN.Records.back();
             break;
         case 'CPSA':
-            //ASPC.Records.push_back(new FNV::ASPCRecord((FNV::ASPCRecord *)SourceRecord));
-            //newRecord = ASPC.Records.back();
-            //break;
+            ASPC.Records.push_back(new FNV::ASPCRecord((FNV::ASPCRecord *)SourceRecord));
+            newRecord = ASPC.Records.back();
+            break;
         case 'FEGM':
-            //MGEF.Records.push_back(new FNV::MGEFRecord((FNV::MGEFRecord *)SourceRecord));
-            //newRecord = MGEF.Records.back();
-            //break;
+            MGEF.Records.push_back(new FNV::MGEFRecord((FNV::MGEFRecord *)SourceRecord));
+            newRecord = MGEF.Records.back();
+            break;
         case 'TPCS':
             //SCPT.Records.push_back(new FNV::SCPTRecord((FNV::SCPTRecord *)SourceRecord));
             //newRecord = SCPT.Records.back();
@@ -1535,8 +1535,8 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(EYES.VisitRecords(NULL, checker, false)) continue;
         if(RACE.VisitRecords(NULL, checker, false)) continue;
         if(SOUN.VisitRecords(NULL, checker, false)) continue;
-        //if(ASPC.VisitRecords(NULL, checker, false)) continue;
-        //if(MGEF.VisitRecords(NULL, checker, false)) continue;
+        if(ASPC.VisitRecords(NULL, checker, false)) continue;
+        if(MGEF.VisitRecords(NULL, checker, false)) continue;
         //if(SCPT.VisitRecords(NULL, checker, false)) continue;
         //if(LTEX.VisitRecords(NULL, checker, false)) continue;
         //if(ENCH.VisitRecords(NULL, checker, false)) continue;
@@ -1673,8 +1673,8 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += EYES.WriteGRUP('SEYE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += RACE.WriteGRUP('ECAR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += SOUN.WriteGRUP('NUOS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ASPC.WriteGRUP('CPSA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MGEF.WriteGRUP('FEGM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ASPC.WriteGRUP('CPSA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MGEF.WriteGRUP('FEGM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += SCPT.WriteGRUP('TPCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += LTEX.WriteGRUP('XETL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += ENCH.WriteGRUP('HCNE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1796,8 +1796,8 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     EYES.VisitRecords(NULL, op, true);
     RACE.VisitRecords(NULL, op, true);
     SOUN.VisitRecords(NULL, op, true);
-    //ASPC.VisitRecords(NULL, op, true);
-    //MGEF.VisitRecords(NULL, op, true);
+    ASPC.VisitRecords(NULL, op, true);
+    MGEF.VisitRecords(NULL, op, true);
     //SCPT.VisitRecords(NULL, op, true);
     //LTEX.VisitRecords(NULL, op, true);
     //ENCH.VisitRecords(NULL, op, true);
@@ -1941,11 +1941,11 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             SOUN.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'CPSA':
-            //ASPC.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            ASPC.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'FEGM':
-            //MGEF.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            MGEF.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TPCS':
             //SCPT.VisitRecords(RecordType, op, DeepVisit);
             //break;

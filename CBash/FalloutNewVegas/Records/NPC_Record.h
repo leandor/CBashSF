@@ -167,7 +167,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<FNVACBS> ACBS; //Configuration
@@ -278,7 +278,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsVeryAggressive(bool value);
         bool   IsFrenzied();
         void   IsFrenzied(bool value);
-        bool   IsAggressionType(UINT8 Type, bool Exact=false);
+        bool   IsAggressionType(UINT8 Type);
         void   SetAggressionType(UINT8 Type);
 
         bool   IsCowardly();
@@ -291,7 +291,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsBrave(bool value);
         bool   IsFoolhardy();
         void   IsFoolhardy(bool value);
-        bool   IsConfidenceType(UINT8 Type, bool Exact=false);
+        bool   IsConfidenceType(UINT8 Type);
         void   SetConfidenceType(UINT8 Type);
 
         bool   IsNeutral();
@@ -310,7 +310,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsAngry(bool value);
         bool   IsSad();
         void   IsSad(bool value);
-        bool   IsMoodType(UINT8 Type, bool Exact=false);
+        bool   IsMoodType(UINT8 Type);
         void   SetMoodType(UINT8 Type);
 
         bool   IsHelpsNobody();
@@ -319,7 +319,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsHelpsAllies(bool value);
         bool   IsHelpsFriendsAndAllies();
         void   IsHelpsFriendsAndAllies(bool value);
-        bool   IsAssistanceType(UINT8 Type, bool Exact=false);
+        bool   IsAssistanceType(UINT8 Type);
         void   SetAssistanceType(UINT8 Type);
 
         bool   IsStone();
@@ -346,7 +346,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsOrganicBug(bool value);
         bool   IsOrganicGlow();
         void   IsOrganicGlow(bool value);
-        bool   IsImpactType(UINT8 Type, bool Exact=false);
+        bool   IsImpactType(UINT8 Type);
         void   SetImpactType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

@@ -91,13 +91,13 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -111,22 +111,21 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-
-        case 17: //modelFlags
-            return UINT8_FIELD;
-        case 18: //data DATA ,, Struct
-            return UINT32_FIELD;
-        case 19: //data DATA ,, Struct
+        case 15: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 16: //flags
+            return UINT32_FLAG_FIELD;
+        case 17: //baseCostUnused
             return FLOAT32_FIELD;
-        case 20: //data DATA ,, Struct
+        case 18: //associated
             return FORMID_FIELD;
-        case 21: //data DATA ,, Struct
+        case 19: //schoolUnused
             return SINT32_FIELD;
-        case 22: //data DATA ,, Struct
-            return UNPARSED_FIELD;
-        case 23: //data DATA ,, Struct
+        case 20: //resistType
+            return SINT32_TYPE_FIELD;
+        case 21: //numCounters
             return UINT16_FIELD;
-        case 24: //data_p DATA ,, Struct
+        case 22: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -136,30 +135,30 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 25: //data DATA ,, Struct
+        case 23: //light
             return FORMID_FIELD;
-        case 26: //data DATA ,, Struct
+        case 24: //projectileSpeed
             return FLOAT32_FIELD;
-        case 27: //data DATA ,, Struct
+        case 25: //effectShader
             return FORMID_FIELD;
-        case 28: //data DATA ,, Struct
+        case 26: //displayShader
             return FORMID_FIELD;
-        case 29: //data DATA ,, Struct
+        case 27: //effectSound
             return FORMID_FIELD;
-        case 30: //data DATA ,, Struct
+        case 28: //boltSound
             return FORMID_FIELD;
-        case 31: //data DATA ,, Struct
+        case 29: //hitSound
             return FORMID_FIELD;
-        case 32: //data DATA ,, Struct
+        case 30: //areaSound
             return FORMID_FIELD;
-        case 33: //data DATA ,, Struct
+        case 31: //cefEnchantmentUnused
             return FLOAT32_FIELD;
-        case 34: //data DATA ,, Struct
+        case 32: //cefBarterUnused
             return FLOAT32_FIELD;
-        case 35: //data DATA ,, Struct
-            return UINT32_FIELD;
-        case 36: //data DATA ,, Struct
-            return UNPARSED_FIELD;
+        case 33: //archType
+            return UINT32_TYPE_FIELD;
+        case 34: //actorValue
+            return SINT32_TYPE_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -198,53 +197,65 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 14: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 15: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
-        case 16: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
-        case 17: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value17 : NULL;
-        case 18: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value18 : NULL;
-        case 19: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value19 : NULL;
-        case 20: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value20 : NULL;
-        case 21: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value21 : NULL;
-        case 22: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD22;
-        case 23: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value23 : NULL;
-        case 24: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value24[0] : NULL;
+        case 14: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+        case 15: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 16: //flags
+            return &DATA.value.flags;
+        case 17: //baseCostUnused
+            return &DATA.value.baseCost;
+        case 18: //associated
+            return &DATA.value.associated;
+        case 19: //schoolUnused
+            return &DATA.value.school;
+        case 20: //resistType
+            return &DATA.value.resistType;
+        case 21: //numCounters
+            return &DATA.value.numCounters;
+        case 22: //unused1
+            *FieldValues = &DATA.value.unused1[0];
             return NULL;
-        case 25: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value25 : NULL;
-        case 26: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value26 : NULL;
-        case 27: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value27 : NULL;
-        case 28: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value28 : NULL;
-        case 29: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value29 : NULL;
-        case 30: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value30 : NULL;
-        case 31: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value31 : NULL;
-        case 32: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value32 : NULL;
-        case 33: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value33 : NULL;
-        case 34: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value34 : NULL;
-        case 35: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value35 : NULL;
-        case 36: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD36;
+        case 23: //light
+            return &DATA.value.light;
+        case 24: //projectileSpeed
+            return &DATA.value.projectileSpeed;
+        case 25: //effectShader
+            return &DATA.value.effectShader;
+        case 26: //displayShader
+            return &DATA.value.displayShader;
+        case 27: //effectSound
+            return &DATA.value.effectSound;
+        case 28: //boltSound
+            return &DATA.value.boltSound;
+        case 29: //hitSound
+            return &DATA.value.hitSound;
+        case 30: //areaSound
+            return &DATA.value.areaSound;
+        case 31: //cefEnchantmentUnused
+            return &DATA.value.cefEnchantment;
+        case 32: //cefBarterUnused
+            return &DATA.value.cefBarter;
+        case 33: //archType
+            return &DATA.value.archType;
+        case 34: //actorValue
+            return &DATA.value.actorValue;
         default:
             return NULL;
         }
@@ -301,100 +312,103 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 14: //mods Alternate Textures
+        case 14: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 15: //mods Alternate Textures
+        case 15: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value15 = *(FORMID *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 16: //flags
+            SetFlagMask(*(UINT32 *)FieldValue);
+            break;
+        case 17: //baseCostUnused
+            DATA.value.baseCost = *(FLOAT32 *)FieldValue;
+            break;
+        case 18: //associated
+            DATA.value.associated = *(FORMID *)FieldValue;
             return true;
-        case 16: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value16 = *(SINT32 *)FieldValue;
+        case 19: //schoolUnused
+            DATA.value.school = *(SINT32 *)FieldValue;
             break;
-        case 17: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value17 = *(UINT8 *)FieldValue;
+        case 20: //resistType
+            DATA.value.resistType = *(SINT32 *)FieldValue;
             break;
-        case 18: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value18 = *(UINT32 *)FieldValue;
+        case 21: //numCounters
+            DATA.value.numCounters = *(UINT16 *)FieldValue;
             break;
-        case 19: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value19 = *(FLOAT32 *)FieldValue;
-            break;
-        case 20: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value20 = *(FORMID *)FieldValue;
-            return true;
-        case 21: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value21 = *(SINT32 *)FieldValue;
-            break;
-        case 22: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD22;
-        case 23: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value23 = *(UINT16 *)FieldValue;
-            break;
-        case 24: //data_p DATA ,, Struct
+        case 22: //unused1
             if(ArraySize != 2)
                 break;
-            DATA.Load();
-            DATA->value24[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value24[1] = ((UINT8 *)FieldValue)[1];
+            DATA.value.unused1[0] = ((UINT8 *)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 25: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value25 = *(FORMID *)FieldValue;
+        case 23: //light
+            DATA.value.light = *(FORMID *)FieldValue;
             return true;
-        case 26: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value26 = *(FLOAT32 *)FieldValue;
+        case 24: //projectileSpeed
+            DATA.value.projectileSpeed = *(FLOAT32 *)FieldValue;
             break;
-        case 27: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value27 = *(FORMID *)FieldValue;
+        case 25: //effectShader
+            DATA.value.effectShader = *(FORMID *)FieldValue;
             return true;
-        case 28: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value28 = *(FORMID *)FieldValue;
+        case 26: //displayShader
+            DATA.value.displayShader = *(FORMID *)FieldValue;
             return true;
-        case 29: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value29 = *(FORMID *)FieldValue;
+        case 27: //effectSound
+            DATA.value.effectSound = *(FORMID *)FieldValue;
             return true;
-        case 30: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value30 = *(FORMID *)FieldValue;
+        case 28: //boltSound
+            DATA.value.boltSound = *(FORMID *)FieldValue;
             return true;
-        case 31: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value31 = *(FORMID *)FieldValue;
+        case 29: //hitSound
+            DATA.value.hitSound = *(FORMID *)FieldValue;
             return true;
-        case 32: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value32 = *(FORMID *)FieldValue;
+        case 30: //areaSound
+            DATA.value.areaSound = *(FORMID *)FieldValue;
             return true;
-        case 33: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value33 = *(FLOAT32 *)FieldValue;
+        case 31: //cefEnchantmentUnused
+            DATA.value.cefEnchantment = *(FLOAT32 *)FieldValue;
             break;
-        case 34: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value34 = *(FLOAT32 *)FieldValue;
+        case 32: //cefBarterUnused
+            DATA.value.cefBarter = *(FLOAT32 *)FieldValue;
             break;
-        case 35: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value35 = *(UINT32 *)FieldValue;
+        case 33: //archType
+            SetType(*(UINT32 *)FieldValue);
             break;
-        case 36: //data DATA ,, Struct
-            return UNPARSEDGET_FIELD36;
+        case 34: //actorValue
+            DATA.value.actorValue = *(SINT32 *)FieldValue;
+            break;
         default:
             break;
         }
@@ -403,6 +417,8 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVMODS defaultMODS;
+    MGEFDATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -445,77 +461,97 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 14: //mods Alternate Textures
+        case 14: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 15: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 16: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 17: //modelFlags
+        case 15: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 18: //data DATA ,, Struct
-            DATA.Unload();
+        case 16: //flags
+            SetFlagMask(defaultDATA.flags);
             return;
-        case 19: //data DATA ,, Struct
-            DATA.Unload();
+        case 17: //baseCostUnused
+            DATA.value.baseCost = defaultDATA.baseCost;
             return;
-        case 20: //data DATA ,, Struct
-            DATA.Unload();
+        case 18: //associated
+            DATA.value.associated = defaultDATA.associated;
             return;
-        case 21: //data DATA ,, Struct
-            DATA.Unload();
+        case 19: //schoolUnused
+            DATA.value.school = defaultDATA.school;
             return;
-        case 22: //data DATA ,, Struct
-            return UNPARSEDDEL_FIELD22;
-        case 23: //data DATA ,, Struct
-            DATA.Unload();
+        case 20: //resistType
+            DATA.value.resistType = defaultDATA.resistType;
             return;
-        case 24: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 21: //numCounters
+            DATA.value.numCounters = defaultDATA.numCounters;
             return;
-        case 25: //data DATA ,, Struct
-            DATA.Unload();
+        case 22: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
             return;
-        case 26: //data DATA ,, Struct
-            DATA.Unload();
+        case 23: //light
+            DATA.value.light = defaultDATA.light ;
             return;
-        case 27: //data DATA ,, Struct
-            DATA.Unload();
+        case 24: //projectileSpeed
+            DATA.value.projectileSpeed = defaultDATA.projectileSpeed;
             return;
-        case 28: //data DATA ,, Struct
-            DATA.Unload();
+        case 25: //effectShader
+            DATA.value.effectShader = defaultDATA.effectShader;
             return;
-        case 29: //data DATA ,, Struct
-            DATA.Unload();
+        case 26: //displayShader
+            DATA.value.displayShader = defaultDATA.displayShader;
             return;
-        case 30: //data DATA ,, Struct
-            DATA.Unload();
+        case 27: //effectSound
+            DATA.value.effectSound = defaultDATA.effectSound;
             return;
-        case 31: //data DATA ,, Struct
-            DATA.Unload();
+        case 28: //boltSound
+            DATA.value.boltSound = defaultDATA.boltSound;
             return;
-        case 32: //data DATA ,, Struct
-            DATA.Unload();
+        case 29: //hitSound
+            DATA.value.hitSound = defaultDATA.hitSound;
             return;
-        case 33: //data DATA ,, Struct
-            DATA.Unload();
+        case 30: //areaSound
+            DATA.value.areaSound = defaultDATA.areaSound;
             return;
-        case 34: //data DATA ,, Struct
-            DATA.Unload();
+        case 31: //cefEnchantmentUnused
+            DATA.value.cefEnchantment = defaultDATA.cefEnchantment;
             return;
-        case 35: //data DATA ,, Struct
-            DATA.Unload();
+        case 32: //cefBarterUnused
+            DATA.value.cefBarter = defaultDATA.cefBarter;
             return;
-        case 36: //data DATA ,, Struct
-            return UNPARSEDDEL_FIELD36;
+        case 33: //archType
+            SetType(defaultDATA.archType);
+            return;
+        case 34: //actorValue
+            DATA.value.actorValue = defaultDATA.actorValue;
+            return;
         default:
             return;
         }

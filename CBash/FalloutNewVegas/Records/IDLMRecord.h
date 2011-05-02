@@ -47,7 +47,7 @@ class IDLMRecord : public FNVRecord //Idle Marker
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSimpleSubRecord<UINT8> IDLF; //Flags
         OptSubRecord<IDLMIDLC> IDLC; //Data
         OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting

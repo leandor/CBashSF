@@ -110,7 +110,7 @@ class CHALRecord : public FNVRecord //Challenge
         void   IsGetItemFromList(bool value);
         bool   IsMiscStat();
         void   IsMiscStat(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

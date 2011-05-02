@@ -2360,6 +2360,155 @@ class FnvSOUNRecord(FnvBaseRecord):
                                            'attenCurve', 'reverb', 'priority',
                                            'x', 'y'] # 'unused1', 
 
+class FnvASPCRecord(FnvBaseRecord):
+    _Type = 'ASPC'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    dawnOrDefaultLoop = CBashFORMID(13)
+    afternoon = CBashFORMID(14)
+    dusk = CBashFORMID(15)
+    night = CBashFORMID(16)
+    walla = CBashFORMID(17)
+    wallaTriggerCount = CBashGeneric(18, c_ulong)
+    regionSound = CBashFORMID(19)
+    environmentType = CBashGeneric(20, c_ulong)
+    spaceType = CBashGeneric(21, c_ulong)
+    IsEnvironmentNone = CBashBasicType('environmentType', 0, 'IsEnvironmentDefault')
+    IsEnvironmentDefault = CBashBasicType('environmentType', 1, 'IsEnvironmentNone')
+    IsEnvironmentGeneric = CBashBasicType('environmentType', 2, 'IsEnvironmentNone')
+    IsEnvironmentPaddedCell = CBashBasicType('environmentType', 3, 'IsEnvironmentNone')
+    IsEnvironmentRoom = CBashBasicType('environmentType', 4, 'IsEnvironmentNone')
+    IsEnvironmentBathroom = CBashBasicType('environmentType', 5, 'IsEnvironmentNone')
+    IsEnvironmentLivingroom = CBashBasicType('environmentType', 6, 'IsEnvironmentNone')
+    IsEnvironmentStoneRoom = CBashBasicType('environmentType', 7, 'IsEnvironmentNone')
+    IsEnvironmentAuditorium = CBashBasicType('environmentType', 8, 'IsEnvironmentNone')
+    IsEnvironmentConcerthall = CBashBasicType('environmentType', 9, 'IsEnvironmentNone')
+    IsEnvironmentCave = CBashBasicType('environmentType', 10, 'IsEnvironmentNone')
+    IsEnvironmentArena = CBashBasicType('environmentType', 11, 'IsEnvironmentNone')
+    IsEnvironmentHangar = CBashBasicType('environmentType', 12, 'IsEnvironmentNone')
+    IsEnvironmentCarpetedHallway = CBashBasicType('environmentType', 13, 'IsEnvironmentNone')
+    IsEnvironmentHallway = CBashBasicType('environmentType', 14, 'IsEnvironmentNone')
+    IsEnvironmentStoneCorridor = CBashBasicType('environmentType', 15, 'IsEnvironmentNone')
+    IsEnvironmentAlley = CBashBasicType('environmentType', 16, 'IsEnvironmentNone')
+    IsEnvironmentForest = CBashBasicType('environmentType', 17, 'IsEnvironmentNone')
+    IsEnvironmentCity = CBashBasicType('environmentType', 18, 'IsEnvironmentNone')
+    IsEnvironmentMountains = CBashBasicType('environmentType', 19, 'IsEnvironmentNone')
+    IsEnvironmentQuarry = CBashBasicType('environmentType', 20, 'IsEnvironmentNone')
+    IsEnvironmentPlain = CBashBasicType('environmentType', 21, 'IsEnvironmentNone')
+    IsEnvironmentParkinglot = CBashBasicType('environmentType', 22, 'IsEnvironmentNone')
+    IsEnvironmentSewerpipe = CBashBasicType('environmentType', 23, 'IsEnvironmentNone')
+    IsEnvironmentUnderwater = CBashBasicType('environmentType', 24, 'IsEnvironmentNone')
+    IsEnvironmentSmallRoom = CBashBasicType('environmentType', 25, 'IsEnvironmentNone')
+    IsEnvironmentMediumRoom = CBashBasicType('environmentType', 26, 'IsEnvironmentNone')
+    IsEnvironmentLargeRoom = CBashBasicType('environmentType', 27, 'IsEnvironmentNone')
+    IsEnvironmentMediumHall = CBashBasicType('environmentType', 28, 'IsEnvironmentNone')
+    IsEnvironmentLargeHall = CBashBasicType('environmentType', 29, 'IsEnvironmentNone')
+    IsEnvironmentPlate = CBashBasicType('environmentType', 30, 'IsEnvironmentNone')
+    IsSpaceExterior = CBashBasicType('spaceType', 0, 'IsSpaceInterior')
+    IsSpaceInterior = CBashBasicType('spaceType', 1, 'IsSpaceExterior')
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'dawnOrDefaultLoop', 'afternoon',
+                                                         'dusk', 'night', 'walla',
+                                                         'wallaTriggerCount', 'regionSound',
+                                                         'environmentType', 'spaceType']
+
+class FnvMGEFRecord(FnvBaseRecord):
+    _Type = 'MGEF'
+    full = CBashSTRING(7)
+    description = CBashSTRING(8)
+    iconPath = CBashISTRING(9)
+    smallIconPath = CBashISTRING(10)
+    modPath = CBashISTRING(11)
+    modb = CBashFLOAT32(12)
+    modt_p = CBashUINT8ARRAY(13)
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 14, length)
+    altTextures = CBashLIST(14, FNVAltTexture)
+    altTextures_list = CBashLIST(14, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(15, c_ubyte)
+    flags = CBashGeneric(16, c_ulong)
+    baseCostUnused = CBashFLOAT32(17)
+    associated = CBashFORMID(18)
+    schoolUnused = CBashGeneric(19, c_long)
+    resistType = CBashGeneric(20, c_long)
+    numCounters = CBashGeneric(21, c_ushort)
+    unused1 = CBashUINT8ARRAY(22, 2)
+    light = CBashFORMID(23)
+    projectileSpeed = CBashFLOAT32(24)
+    effectShader = CBashFORMID(25)
+    displayShader = CBashFORMID(26)
+    effectSound = CBashFORMID(27)
+    boltSound = CBashFORMID(28)
+    hitSound = CBashFORMID(29)
+    areaSound = CBashFORMID(30)
+    cefEnchantmentUnused = CBashFLOAT32(31)
+    cefBarterUnused = CBashFLOAT32(32)
+    archType = CBashGeneric(33, c_ulong)
+    actorValue = CBashGeneric(34, c_long)
+    IsHostile = CBashBasicFlag('flags', 0x00000001)
+    IsRecover = CBashBasicFlag('flags', 0x00000002)
+    IsDetrimental = CBashBasicFlag('flags', 0x00000004)
+    IsSelf = CBashBasicFlag('flags', 0x00000010)
+    IsTouch = CBashBasicFlag('flags', 0x00000020)
+    IsTarget = CBashBasicFlag('flags', 0x00000040)
+    IsNoDuration = CBashBasicFlag('flags', 0x00000080)
+    IsNoMagnitude = CBashBasicFlag('flags', 0x00000100)
+    IsNoArea = CBashBasicFlag('flags', 0x00000200)
+    IsFXPersist = CBashBasicFlag('flags', 0x00000400)
+    IsGoryVisuals = CBashBasicFlag('flags', 0x00001000)
+    IsDisplayNameOnly = CBashBasicFlag('flags', 0x00002000)
+    IsRadioBroadcast = CBashBasicFlag('flags', 0x00008000)
+    IsUseSkill = CBashBasicFlag('flags', 0x00080000)
+    IsUseAttr = CBashBasicFlag('flags', 0x00100000)
+    IsPainless = CBashBasicFlag('flags', 0x01000000)
+    IsSprayType = CBashBasicFlag('flags', 0x02000000)
+    IsBoltType = CBashBasicFlag('flags', 0x04000000)
+    IsFogType = CBashBasicFlag('flags', 0x06000000)
+    IsNoHitEffect = CBashBasicFlag('flags', 0x08000000)
+    IsPersistOnDeath = CBashBasicFlag('flags', 0x10000000)
+    IsUnknown1 = CBashBasicFlag('flags', 0x20000000)
+    IsValueModifier = CBashBasicType('archType', 0, 'IsScript')
+    IsScript = CBashBasicType('archType', 1, 'IsValueModifier')
+    IsDispel = CBashBasicType('archType', 2, 'IsValueModifier')
+    IsCureDisease = CBashBasicType('archType', 3, 'IsValueModifier')
+    IsInvisibility = CBashBasicType('archType', 11, 'IsValueModifier')
+    IsChameleon = CBashBasicType('archType', 12, 'IsValueModifier')
+    IsLight = CBashBasicType('archType', 13, 'IsValueModifier')
+    IsLock = CBashBasicType('archType', 16, 'IsValueModifier')
+    IsOpen = CBashBasicType('archType', 17, 'IsValueModifier')
+    IsBoundItem = CBashBasicType('archType', 18, 'IsValueModifier')
+    IsSummonCreature = CBashBasicType('archType', 19, 'IsValueModifier')
+    IsParalysis = CBashBasicType('archType', 24, 'IsValueModifier')
+    IsCureParalysis = CBashBasicType('archType', 30, 'IsValueModifier')
+    IsCureAddiction = CBashBasicType('archType', 31, 'IsValueModifier')
+    IsCurePoison = CBashBasicType('archType', 32, 'IsValueModifier')
+    IsConcussion = CBashBasicType('archType', 33, 'IsValueModifier')
+    IsValueAndParts = CBashBasicType('archType', 34, 'IsValueModifier')
+    IsLimbCondition = CBashBasicType('archType', 35, 'IsValueModifier')
+    IsTurbo = CBashBasicType('archType', 36, 'IsValueModifier')
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                                         'modPath', 'modb', 'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'flags', 'baseCostUnused', 'associated',
+                                                         'schoolUnused', 'resistType', 'numCounters', 'unused1',
+                                                         'light', 'projectileSpeed', 'effectShader', 'displayShader',
+                                                         'effectSound', 'boltSound', 'hitSound', 'areaSound',
+                                                         'cefEnchantmentUnused', 'cefBarterUnused', 'archType', 'actorValue']
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                             'modPath', 'modb', 'altTextures_list',
+                                             'modelFlags', 'flags', 'associated',
+                                             'resistType', 'numCounters', 
+                                             'light', 'projectileSpeed', 'effectShader', 'displayShader',
+                                             'effectSound', 'boltSound', 'hitSound', 'areaSound',
+                                             'archType', 'actorValue'] #'modt_p', 'baseCostUnused', 'schoolUnused', 'unused1', 'cefEnchantmentUnused', 'cefBarterUnused', 
+
 #--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
@@ -5897,7 +6046,8 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
                         ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
-                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),])
+                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),('ASPC',FnvASPCRecord),
+                        ('MGEF',FnvMGEFRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -6583,13 +6733,33 @@ class FnvModFile(object):
         return None
     SOUN = CBashRECORDARRAY(FnvSOUNRecord, 'SOUN', 0)
 
+    def create_ASPC(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ASPC", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvASPCRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    ASPC = CBashRECORDARRAY(FnvASPCRecord, 'ASPC', 0)
+
+    def create_MGEF(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("MGEF", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)
+        if(RecordID): return FnvMGEFRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return None
+    MGEF = CBashRECORDARRAY(FnvMGEFRecord, 'MGEF', 0)
+
     @property
     def tops(self):
-        return dict((("GMST", self.GMST),))
+        return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
+                     ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
+                     ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
+                     ("MGEF", self.MGEF),))
 
     @property
     def aggregates(self):
-        return dict((("GMST", self.GMST),))
+        return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
+                     ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
+                     ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
+                     ("MGEF", self.MGEF),))
 
 class ObCollection:
     """Collection of esm/esp's."""

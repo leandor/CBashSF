@@ -209,7 +209,7 @@ SINT32 CSNORecord::Unload()
     return 1;
     }
 
-SINT32 CSNORecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CSNORecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

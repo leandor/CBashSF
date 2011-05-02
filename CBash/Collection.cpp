@@ -538,7 +538,7 @@ UINT32 Collection::IsRecordWinning(ModFile *&curModFile, Record *&curRecord, con
 
     if(curRecord->IsKeyedByEditorID())
         {
-        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        STRING RecordEditorID = curRecord->GetEditorIDKey();
         if(RecordEditorID != NULL)
             {
             for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
@@ -579,7 +579,7 @@ UINT32 Collection::GetNumRecordConflicts(Record *&curRecord, const bool GetExten
     UINT32 count = 0;
     if(curRecord->IsKeyedByEditorID())
         {
-        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        STRING RecordEditorID = curRecord->GetEditorIDKey();
         if(RecordEditorID != NULL)
             {
             count = EditorID_ModFile_Record.count(RecordEditorID);
@@ -603,7 +603,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, REC
     //std::set<UINT32> conflicts;
     if(curRecord->IsKeyedByEditorID())
         {
-        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        STRING RecordEditorID = curRecord->GetEditorIDKey();
         if(RecordEditorID != NULL)
             {
             for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
@@ -664,7 +664,7 @@ SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MO
 
     if(curRecord->IsKeyedByEditorID())
         {
-        STRING RecordEditorID = (STRING)curRecord->GetField(4);
+        STRING RecordEditorID = curRecord->GetEditorIDKey();
         if(RecordEditorID != NULL)
             {
             for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
@@ -800,7 +800,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
         {
         //See if its trying to copy a record that already exists in the destination mod
         if(curRecord->IsKeyedByEditorID())
-            LookupRecord(DestModFile, (STRING)curRecord->GetField(4), RecordCopy);
+            LookupRecord(DestModFile, curRecord->GetEditorIDKey(), RecordCopy);
         else
             LookupRecord(DestModFile, DestRecordFormID ? DestRecordFormID : curRecord->formID, RecordCopy);
 
@@ -845,7 +845,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
         }
 
     //Create the record copy
-    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : (STRING)curRecord->GetField(4), curRecord, ParentRecord, options);
+    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
         printf("CopyRecord: Error - Unable to create the copied record (%08X). An unknown error occurred when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->reader.getModName(), curModFile->reader.getModName());
@@ -899,7 +899,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
         FormID &= 0x00FFFFFF;
     bool bChangingFormID = RecordID->formID != FormID;
     bool bChangingEditorID = false;
-    STRING RecordEditorID = (STRING)RecordID->GetField(4);
+    STRING RecordEditorID = RecordID->GetEditorIDKey();
     if(RecordEditorID == NULL)
         {
         if(EditorID != NULL)
@@ -934,7 +934,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
 
     if(curRecord != NULL)
         {
-        printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". One or more of the new record ids is already in use.\n", FormID, EditorID, curRecord->formID, (STRING)curRecord->GetField(4), curModFile->reader.getModName());
+        printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". One or more of the new record ids is already in use.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
         return -1;
         }
 
@@ -966,7 +966,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
             }
         else
             {
-            printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". Unable to locate the record.\n", FormID, EditorID, curRecord->formID, (STRING)curRecord->GetField(4), curModFile->reader.getModName());
+            printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". Unable to locate the record.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
             return -1;
             }
         }

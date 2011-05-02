@@ -157,7 +157,7 @@ SINT32 RCCTRecord::Unload()
     return 1;
     }
 
-SINT32 RCCTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 RCCTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

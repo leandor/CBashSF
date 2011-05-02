@@ -188,7 +188,7 @@ SINT32 IMGSRecord::Unload()
     return 1;
     }
 
-SINT32 IMGSRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IMGSRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DNAM);

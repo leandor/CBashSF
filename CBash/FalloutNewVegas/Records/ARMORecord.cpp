@@ -682,10 +682,10 @@ void ARMORecord::IsAlcohol(bool value)
     Dummy->flags = value ? eAlcohol : eDummyDefault;
     }
 
-bool ARMORecord::IsEquipmentType(UINT32 Type, bool Exact)
+bool ARMORecord::IsEquipmentType(UINT32 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void ARMORecord::SetEquipmentType(UINT32 Type)
@@ -913,7 +913,7 @@ SINT32 ARMORecord::Unload()
     return 1;
     }
 
-SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ARMORecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);

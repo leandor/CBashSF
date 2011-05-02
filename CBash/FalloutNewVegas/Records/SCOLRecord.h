@@ -52,7 +52,7 @@ class SCOLRecord : public FNVRecord //Static Collection
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         std::vector<SCOLPart *> Parts; //Parts
 

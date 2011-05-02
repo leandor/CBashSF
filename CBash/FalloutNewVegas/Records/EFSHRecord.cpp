@@ -237,7 +237,7 @@ SINT32 EFSHRecord::Unload()
     return 1;
     }
 
-SINT32 EFSHRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 EFSHRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(ICON);

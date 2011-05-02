@@ -130,7 +130,7 @@ SINT32 SLPDRecord::Unload()
     return 1;
     }
 
-SINT32 SLPDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SLPDRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

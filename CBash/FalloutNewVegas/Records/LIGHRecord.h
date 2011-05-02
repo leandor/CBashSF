@@ -61,7 +61,7 @@ class LIGHRecord : public FNVRecord //Light
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name

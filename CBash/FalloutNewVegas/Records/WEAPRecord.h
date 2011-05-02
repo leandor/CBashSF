@@ -301,7 +301,7 @@ class WEAPRecord : public FNVRecord //Weapon
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
@@ -489,7 +489,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsMineDrop1Hand(bool value);
         bool   IsThrown1Hand();
         void   IsThrown1Hand(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         bool   IsGripHandGrip1();
@@ -506,7 +506,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsGripHandGrip6(bool value);
         bool   IsGripDefault();
         void   IsGripDefault(bool value);
-        bool   IsGripType(UINT8 Type, bool Exact=false);
+        bool   IsGripType(UINT8 Type);
         void   SetGripType(UINT8 Type);
 
         bool   IsReloadAnimReloadA();
@@ -555,7 +555,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsReloadAnimReloadY(bool value);
         bool   IsReloadAnimReloadZ();
         void   IsReloadAnimReloadZ(bool value);
-        bool   IsReloadAnimType(UINT8 Type, bool Exact=false);
+        bool   IsReloadAnimType(UINT8 Type);
         void   SetReloadAnimType(UINT8 Type);
 
         bool   IsAttackLeft();
@@ -604,7 +604,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsAttackPlaceMine2(bool value);
         bool   IsAttackDefault();
         void   IsAttackDefault(bool value);
-        bool   IsAttackType(UINT8 Type, bool Exact=false);
+        bool   IsAttackType(UINT8 Type);
         void   SetAttackType(UINT8 Type);
 
         bool   IsEmbeddedAVPerception();
@@ -621,7 +621,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsEmbeddedAVRightMobilty(bool value);
         bool   IsEmbeddedAVBrain();
         void   IsEmbeddedAVBrain(bool value);
-        bool   IsEmbeddedAVType(UINT8 Type, bool Exact=false);
+        bool   IsEmbeddedAVType(UINT8 Type);
         void   SetEmbeddedAVType(UINT8 Type);
 
         bool   IsOnHitNormalFormulaBehavior();
@@ -632,7 +632,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsOnHitExplodeOnly(bool value);
         bool   IsOnHitNoDismemberExplode();
         void   IsOnHitNoDismemberExplode(bool value);
-        bool   IsOnHitType(UINT32 Type, bool Exact=false);
+        bool   IsOnHitType(UINT32 Type);
         void   SetOnHitType(UINT32 Type);
 
         bool   IsRumbleConstant();
@@ -643,7 +643,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsRumbleTriangle(bool value);
         bool   IsRumbleSawtooth();
         void   IsRumbleSawtooth(bool value);
-        bool   IsRumbleType(UINT32 Type, bool Exact=false);
+        bool   IsRumbleType(UINT32 Type);
         void   SetRumbleType(UINT32 Type);
 
         bool   IsPowerAttackAnimOverrideUnknown0();
@@ -660,7 +660,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsPowerAttackAnimOverrideAttackCustom5Power(bool value);
         bool   IsPowerAttackAnimOverrideDefault();
         void   IsPowerAttackAnimOverrideDefault(bool value);
-        bool   IsPowerAttackAnimOverrideType(UINT32 Type, bool Exact=false);
+        bool   IsPowerAttackAnimOverrideType(UINT32 Type);
         void   SetPowerAttackAnimOverrideType(UINT32 Type);
 
         bool   IsReloadAnimModReloadA();
@@ -709,21 +709,21 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsReloadAnimModReloadY(bool value);
         bool   IsReloadAnimModReloadZ();
         void   IsReloadAnimModReloadZ(bool value);
-        bool   IsReloadAnimModType(UINT8 Type, bool Exact=false);
+        bool   IsReloadAnimModType(UINT8 Type);
         void   SetReloadAnimModType(UINT8 Type);
 
         bool   IsVATSNotSilent();
         void   IsVATSNotSilent(bool value);
         bool   IsVATSSilent();
         void   IsVATSSilent(bool value);
-        bool   IsVATSSilenceType(UINT8 Type, bool Exact=false);
+        bool   IsVATSSilenceType(UINT8 Type);
         void   SetVATSSilenceType(UINT8 Type);
 
         bool   IsVATSModNotRequired();
         void   IsVATSModNotRequired(bool value);
         bool   IsVATSModRequired();
         void   IsVATSModRequired(bool value);
-        bool   IsVATSModType(UINT8 Type, bool Exact=false);
+        bool   IsVATSModType(UINT8 Type);
         void   SetVATSModType(UINT8 Type);
 
         bool   IsLoud();
@@ -732,7 +732,7 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type, bool Exact=false);
+        bool   IsSoundLevelType(UINT8 Type);
         void   SetSoundLevelType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

@@ -380,7 +380,7 @@ SINT32 SPELRecord::Unload()
     return 1;
     }
 
-SINT32 SPELRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SPELRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

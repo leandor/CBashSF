@@ -188,7 +188,7 @@ SINT32 SCPTRecord::Unload()
     return 1;
     }
 
-SINT32 SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
 

@@ -140,7 +140,7 @@ SINT32 CDCKRecord::Unload()
     return 1;
     }
 
-SINT32 CDCKRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CDCKRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

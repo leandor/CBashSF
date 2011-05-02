@@ -417,7 +417,7 @@ SINT32 IMADRecord::Unload()
     return 1;
     }
 
-SINT32 IMADRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IMADRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DNAM);

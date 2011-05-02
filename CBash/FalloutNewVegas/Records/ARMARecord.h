@@ -84,7 +84,7 @@ class ARMARecord : public FNVRecord //Armor Addon
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<GENBMDT> BMDT; //Biped Data
         OptSubRecord<FNVBIPEDMODEL> MODL; //Male Biped Model

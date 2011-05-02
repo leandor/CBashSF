@@ -282,4 +282,4 @@
 #define REV32(x)((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
 #define WRITE(x) x.Write(REV32(x), writer)
 #define WRITEREQ(x) x.ReqWrite(REV32(x), writer)
-#define WRITEALT(x,y) x.Write(REV32(y), writer)
+#define WRITEAS(x,y) x.Write(REV32(y), writer)

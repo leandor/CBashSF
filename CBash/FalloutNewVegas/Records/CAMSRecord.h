@@ -107,7 +107,7 @@ class CAMSRecord : public FNVRecord //Camera Shot
         void   IsActionHit(bool value);
         bool   IsActionZoom();
         void   IsActionZoom(bool value);
-        bool   IsActionType(UINT32 Type, bool Exact=false);
+        bool   IsActionType(UINT32 Type);
         void   SetActionType(UINT32 Type);
 
         bool   IsLocationAttacker();
@@ -116,7 +116,7 @@ class CAMSRecord : public FNVRecord //Camera Shot
         void   IsLocationProjectile(bool value);
         bool   IsLocationTarget();
         void   IsLocationTarget(bool value);
-        bool   IsLocationType(UINT32 Type, bool Exact=false);
+        bool   IsLocationType(UINT32 Type);
         void   SetLocationType(UINT32 Type);
 
         bool   IsTargetAttacker();
@@ -125,7 +125,7 @@ class CAMSRecord : public FNVRecord //Camera Shot
         void   IsTargetProjectile(bool value);
         bool   IsTargetTarget();
         void   IsTargetTarget(bool value);
-        bool   IsTargetType(UINT32 Type, bool Exact=false);
+        bool   IsTargetType(UINT32 Type);
         void   SetTargetType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

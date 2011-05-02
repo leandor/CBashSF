@@ -130,7 +130,7 @@ SINT32 FLSTRecord::Unload()
     return 1;
     }
 
-SINT32 FLSTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 FLSTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(LNAM);

@@ -212,7 +212,7 @@ SINT32 MESGRecord::Unload()
     return 1;
     }
 
-SINT32 MESGRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 MESGRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DESC);

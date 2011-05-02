@@ -261,7 +261,7 @@ SINT32 QUSTRecord::Unload()
     return 1;
     }
 
-SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(SCRI);

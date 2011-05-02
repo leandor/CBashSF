@@ -539,7 +539,7 @@ SINT32 CELLRecord::Unload()
     return 1;
     }
 
-SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

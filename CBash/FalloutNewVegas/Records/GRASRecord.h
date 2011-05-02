@@ -52,7 +52,7 @@ class GRASRecord : public FNVRecord //Grass
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDATA> DATA; //DATA ,, Struct
 

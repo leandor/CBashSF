@@ -1105,6 +1105,10 @@
 						Name="Simple"
 						>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\ASPCRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\CLASRecord.cpp"
 							>
 							<FileConfiguration
@@ -1295,6 +1299,37 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\MGEFRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\MICNRecord.cpp"
 							>
 						</File>
@@ -1368,6 +1403,10 @@
 					<Filter
 						Name="API"
 						>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\ASPCRecordAPI.cpp"
+							>
+						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\CLASRecordAPI.cpp"
 							>
@@ -1557,6 +1596,37 @@
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\HDPTRecordAPI.cpp"
 							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\MGEFRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\MICNRecordAPI.cpp"

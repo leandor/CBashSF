@@ -2091,16 +2091,16 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
         writer.record_write_subheader('MANE', 0);
 
     writer.record_write_subheader('MANM', 0);
-    WRITEALT(MaleFGGS,FGGS);
-    WRITEALT(MaleFGGA,FGGA);
-    WRITEALT(MaleFGTS,FGTS);
-    WRITEALT(MaleSNAM,SNAM);
+    WRITEAS(MaleFGGS,FGGS);
+    WRITEAS(MaleFGGA,FGGA);
+    WRITEAS(MaleFGTS,FGTS);
+    WRITEAS(MaleSNAM,SNAM);
 
     writer.record_write_subheader('MANF', 0);
-    WRITEALT(FemaleFGGS,FGGS);
-    WRITEALT(FemaleFGGA,FGGA);
-    WRITEALT(FemaleFGTS,FGTS);
-    WRITEALT(FemaleSNAM,SNAM);
+    WRITEAS(FemaleFGGS,FGGS);
+    WRITEAS(FemaleFGGA,FGGA);
+    WRITEAS(FemaleFGTS,FGTS);
+    WRITEAS(FemaleSNAM,SNAM);
     return -1;
     }
 

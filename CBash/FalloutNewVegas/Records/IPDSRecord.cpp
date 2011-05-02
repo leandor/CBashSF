@@ -130,7 +130,7 @@ SINT32 IPDSRecord::Unload()
     return 1;
     }
 
-SINT32 IPDSRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IPDSRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

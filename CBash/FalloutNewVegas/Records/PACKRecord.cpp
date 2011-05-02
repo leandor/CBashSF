@@ -483,7 +483,7 @@ SINT32 PACKRecord::Unload()
     return 1;
     }
 
-SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(PKDT);

@@ -56,6 +56,7 @@ bool MGEFRecord::MGEFDATA::operator ==(const MGEFDATA &other) const
             associated == other.associated &&
             school == other.school &&
             resistValue == other.resistValue &&
+            numCounters == other.numCounters &&
             light == other.light &&
             AlmostEqual(projectileSpeed,other.projectileSpeed,2) &&
             effectShader == other.effectShader &&
@@ -813,6 +814,14 @@ STRING MGEFRecord::GetStrType()
 bool MGEFRecord::IsKeyedByEditorID()
     {
     return true;
+    }
+
+STRING MGEFRecord::GetEditorIDKey()
+    {
+    if(OBME.IsLoaded())
+        return &OBME->EDDX.value.mgefCode[0];
+    else
+        return (STRING)GetField(4);
     }
 
 SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)

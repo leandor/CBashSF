@@ -53,7 +53,7 @@ class CPTHRecord : public FNVRecord //Camera Path
         void   IsDisable(bool value);
         bool   IsShotList();
         void   IsShotList(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

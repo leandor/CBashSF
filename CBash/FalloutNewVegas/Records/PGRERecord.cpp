@@ -371,7 +371,7 @@ SINT32 PGRERecord::Unload()
     return 1;
     }
 
-SINT32 PGRERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PGRERecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NAME);

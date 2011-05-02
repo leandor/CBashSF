@@ -79,6 +79,8 @@ def TestRegressions():
     assertEYES(Current, newMod)
     assertRACE(Current, newMod)
     assertSOUN(Current, newMod)
+    assertASPC(Current, newMod)
+    assertMGEF(Current, newMod)
     newMod.save()
 
 def assertTES4(Current, newMod):
@@ -3216,6 +3218,466 @@ def assertSOUN(Current, newMod):
     assert record.y == 0
 
     print "SOUN:Finished testing"
+
+def assertASPC(Current, newMod):
+    record = Current.LoadOrderMods[0].ASPC[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x17AFB7)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [11, 92, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'ExtDesertNorthVegas'
+    assert record.eid == 'EXtDesertNorthVegas'
+    
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.dawnOrDefaultLoop == ('FalloutNV.esm', 0x169075)
+    assert record.afternoon == ('FalloutNV.esm', 0x169073)
+    assert record.dusk == ('FalloutNV.esm', 0x169074)
+    assert record.night == ('FalloutNV.esm', 0x169076)
+    assert record.walla == 0
+    assert record.wallaTriggerCount == 0
+    assert record.regionSound == ('FalloutNV.esm', 0x16B451)
+    assert record.environmentType == 26
+    assert record.spaceType == 0
+    
+    nrecord = newMod.create_ASPC()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.dawnOrDefaultLoop = ('FalloutNV.esm', 0x7)
+    nrecord.afternoon = ('FalloutNV.esm', 0x8)
+    nrecord.dusk = ('FalloutNV.esm', 0x9)
+    nrecord.night = ('FalloutNV.esm', 0xA)
+    nrecord.walla = ('FalloutNV.esm', 0xB)
+    nrecord.wallaTriggerCount = 12
+    nrecord.regionSound = ('FalloutNV.esm', 0xD)
+    nrecord.environmentType = 14
+    nrecord.spaceType = 15
+    
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100F)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.dawnOrDefaultLoop == ('FalloutNV.esm', 0x7)
+    assert nrecord.afternoon == ('FalloutNV.esm', 0x8)
+    assert nrecord.dusk == ('FalloutNV.esm', 0x9)
+    assert nrecord.night == ('FalloutNV.esm', 0xA)
+    assert nrecord.walla == ('FalloutNV.esm', 0xB)
+    assert nrecord.wallaTriggerCount == 12
+    assert nrecord.regionSound == ('FalloutNV.esm', 0xD)
+    assert nrecord.environmentType == 14
+    assert nrecord.spaceType == 15
+
+    record = Current.LoadOrderMods[0].ASPC[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x17AFB7)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [11, 92, 63, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'ExtDesertNorthVegas'
+    assert newrecord.eid == 'EXtDesertNorthVegas'
+    
+    assert newrecord.boundX1 == 0
+    assert newrecord.boundY1 == 0
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 0
+    assert newrecord.boundY2 == 0
+    assert newrecord.boundZ2 == 0
+    assert newrecord.dawnOrDefaultLoop == ('FalloutNV.esm', 0x169075)
+    assert newrecord.afternoon == ('FalloutNV.esm', 0x169073)
+    assert newrecord.dusk == ('FalloutNV.esm', 0x169074)
+    assert newrecord.night == ('FalloutNV.esm', 0x169076)
+    assert newrecord.walla == 0
+    assert newrecord.wallaTriggerCount == 0
+    assert newrecord.regionSound == ('FalloutNV.esm', 0x16B451)
+    assert newrecord.environmentType == 26
+    assert newrecord.spaceType == 0
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.dawnOrDefaultLoop = ('FalloutNV.esm', 0x7)
+    newrecord.afternoon = ('FalloutNV.esm', 0x8)
+    newrecord.dusk = ('FalloutNV.esm', 0x9)
+    newrecord.night = ('FalloutNV.esm', 0xA)
+    newrecord.walla = ('FalloutNV.esm', 0xB)
+    newrecord.wallaTriggerCount = 12
+    newrecord.regionSound = ('FalloutNV.esm', 0xD)
+    newrecord.environmentType = 14
+    newrecord.spaceType = 15
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x17AFB7)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.dawnOrDefaultLoop == ('FalloutNV.esm', 0x7)
+    assert newrecord.afternoon == ('FalloutNV.esm', 0x8)
+    assert newrecord.dusk == ('FalloutNV.esm', 0x9)
+    assert newrecord.night == ('FalloutNV.esm', 0xA)
+    assert newrecord.walla == ('FalloutNV.esm', 0xB)
+    assert newrecord.wallaTriggerCount == 12
+    assert newrecord.regionSound == ('FalloutNV.esm', 0xD)
+    assert newrecord.environmentType == 14
+    assert newrecord.spaceType == 15
+
+    assert record.fid == ('FalloutNV.esm', 0x17AFB7)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [11, 92, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'ExtDesertNorthVegas'
+    assert record.eid == 'EXtDesertNorthVegas'
+    
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.dawnOrDefaultLoop == ('FalloutNV.esm', 0x169075)
+    assert record.afternoon == ('FalloutNV.esm', 0x169073)
+    assert record.dusk == ('FalloutNV.esm', 0x169074)
+    assert record.night == ('FalloutNV.esm', 0x169076)
+    assert record.walla == 0
+    assert record.wallaTriggerCount == 0
+    assert record.regionSound == ('FalloutNV.esm', 0x16B451)
+    assert record.environmentType == 26
+    assert record.spaceType == 0
+
+    print "ASPC:Finished testing"
+
+def assertMGEF(Current, newMod):
+    record = Current.LoadOrderMods[0].MGEF[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x179B18)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [5, 92, 71, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'EuclidDamageEffect'
+    assert record.eid == 'EuClidDamageEffect'
+    
+    assert record.full == 'ARCHIMEDES II Damage'
+    assert record.full != 'aRCHIMEDES II Damage'
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.modPath == None
+    assert record.modb == None
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == None
+    assert record.flags == 0x171L
+    assert record.baseCostUnused == 0.0
+    assert record.associated == ('FalloutNV.esm', 0x179B19)
+    assert record.schoolUnused == -1
+    assert record.resistType == -1
+    assert record.numCounters == 0
+    assert record.unused1 == [35, 17]
+    assert record.light == 0
+    assert record.projectileSpeed == 1.0
+    assert record.effectShader == 0
+    assert record.displayShader == 0
+    assert record.effectSound == 0
+    assert record.boltSound == 0
+    assert record.hitSound == 0
+    assert record.areaSound == 0
+    assert record.cefEnchantmentUnused == 0.0
+    assert record.cefBarterUnused == 0.0
+    assert record.archType == 1
+    assert record.actorValue == -1
+    
+    nrecord = newMod.create_MGEF()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = 'WarARCHIMEDES II Damage'
+    nrecord.description = 'Ward'
+    nrecord.iconPath = r'War\Icon.dds'
+    nrecord.smallIconPath = r'War\Icon2.dds'
+    nrecord.modPath = r'War\Mod.nif'
+    nrecord.modb = 1.0
+    nrecord.modt_p = [1,2,3]
+    nrecord.altTextures_list = [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1),
+                                ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    nrecord.modelFlags = 2
+    nrecord.flags = 3
+    nrecord.baseCostUnused = 4.0
+    nrecord.associated = ('FalloutNV.esm', 0x5)
+    nrecord.schoolUnused = 6
+    nrecord.resistType = 7
+    nrecord.numCounters = 8
+    nrecord.unused1 = [9, 10]
+    nrecord.light = ('FalloutNV.esm', 0xB)
+    nrecord.projectileSpeed = 12.0
+    nrecord.effectShader = ('FalloutNV.esm', 0xD)
+    nrecord.displayShader = ('FalloutNV.esm', 0xE)
+    nrecord.effectSound = ('FalloutNV.esm', 0xF)
+    nrecord.boltSound = ('FalloutNV.esm', 0x10)
+    nrecord.hitSound = ('FalloutNV.esm', 0x11)
+    nrecord.areaSound = ('FalloutNV.esm', 0x12)
+    nrecord.cefEnchantmentUnused = 19.0
+    nrecord.cefBarterUnused = 20.0
+    nrecord.archType = 21
+    nrecord.actorValue = 22
+    
+    assert nrecord.fid == ('TestRegressions.esp', 0x001010)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'WarARCHIMEDES II Damage'
+    assert nrecord.full != 'WArARCHIMEDES II Damage'
+    assert nrecord.description == 'Ward'
+    assert nrecord.description != 'WArd'
+    assert nrecord.iconPath == r'War\Icon.dds'
+    assert nrecord.iconPath == r'WAr\Icon.dds'
+    assert nrecord.smallIconPath == r'War\Icon2.dds'
+    assert nrecord.smallIconPath == r'WAr\Icon2.dds'
+    assert nrecord.modPath == r'War\Mod.nif'
+    assert nrecord.modPath == r'WAr\Mod.nif'
+    assert nrecord.modb == 1.0
+    assert nrecord.modt_p == [1,2,3]
+    assert nrecord.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1),
+                                        ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert nrecord.modelFlags == 2
+    assert nrecord.flags == 3
+    assert nrecord.baseCostUnused == 4.0
+    assert nrecord.associated == ('FalloutNV.esm', 0x5)
+    assert nrecord.schoolUnused == 6
+    assert nrecord.resistType == 7
+    assert nrecord.numCounters == 8
+    assert nrecord.unused1 == [9, 10]
+    assert nrecord.light == ('FalloutNV.esm', 0xB)
+    assert nrecord.projectileSpeed == 12.0
+    assert nrecord.effectShader == ('FalloutNV.esm', 0xD)
+    assert nrecord.displayShader == ('FalloutNV.esm', 0xE)
+    assert nrecord.effectSound == ('FalloutNV.esm', 0xF)
+    assert nrecord.boltSound == ('FalloutNV.esm', 0x10)
+    assert nrecord.hitSound == ('FalloutNV.esm', 0x11)
+    assert nrecord.areaSound == ('FalloutNV.esm', 0x12)
+    assert nrecord.cefEnchantmentUnused == 19.0
+    assert nrecord.cefBarterUnused == 20.0
+    assert nrecord.archType == 21
+    assert nrecord.actorValue == 22
+
+
+    altTexture = nrecord.create_altTexture()
+    altTexture.name = r'WarTESTNAME'
+    altTexture.texture = ('FalloutNV.esm', 653616)
+    altTexture.index = 6
+
+    assert nrecord.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1),
+                                        ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0),
+                                        ('WarTESTNAME', ('FalloutNV.esm', 653616), 6)]
+
+    record = Current.LoadOrderMods[0].MGEF[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x179B18)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [5, 92, 71, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'EuclidDamageEffect'
+    assert newrecord.eid == 'EuClidDamageEffect'
+    
+    assert newrecord.full == 'ARCHIMEDES II Damage'
+    assert newrecord.full != 'aRCHIMEDES II Damage'
+    assert newrecord.description == None
+    assert newrecord.iconPath == None
+    assert newrecord.smallIconPath == None
+    assert newrecord.modPath == None
+    assert newrecord.modb == None
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == None
+    assert newrecord.flags == 0x171L
+    assert newrecord.baseCostUnused == 0.0
+    assert newrecord.associated == ('FalloutNV.esm', 0x179B19)
+    assert newrecord.schoolUnused == -1
+    assert newrecord.resistType == -1
+    assert newrecord.numCounters == 0
+    assert newrecord.unused1 == [35, 17]
+    assert newrecord.light == 0
+    assert newrecord.projectileSpeed == 1.0
+    assert newrecord.effectShader == 0
+    assert newrecord.displayShader == 0
+    assert newrecord.effectSound == 0
+    assert newrecord.boltSound == 0
+    assert newrecord.hitSound == 0
+    assert newrecord.areaSound == 0
+    assert newrecord.cefEnchantmentUnused == 0.0
+    assert newrecord.cefBarterUnused == 0.0
+    assert newrecord.archType == 1
+    assert newrecord.actorValue == -1
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.full = 'WarARCHIMEDES II Damage'
+    newrecord.description = 'Ward'
+    newrecord.iconPath = r'War\Icon.dds'
+    newrecord.smallIconPath = r'War\Icon2.dds'
+    newrecord.modPath = r'War\Mod.nif'
+    newrecord.modb = 1.0
+    newrecord.modt_p = [1,2,3]
+    newrecord.altTextures_list = [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1),
+                                  ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    newrecord.modelFlags = 2
+    newrecord.flags = 3
+    newrecord.baseCostUnused = 4.0
+    newrecord.associated = ('FalloutNV.esm', 0x5)
+    newrecord.schoolUnused = 6
+    newrecord.resistType = 7
+    newrecord.numCounters = 8
+    newrecord.unused1 = [9, 10]
+    newrecord.light = ('FalloutNV.esm', 0xB)
+    newrecord.projectileSpeed = 12.0
+    newrecord.effectShader = ('FalloutNV.esm', 0xD)
+    newrecord.displayShader = ('FalloutNV.esm', 0xE)
+    newrecord.effectSound = ('FalloutNV.esm', 0xF)
+    newrecord.boltSound = ('FalloutNV.esm', 0x10)
+    newrecord.hitSound = ('FalloutNV.esm', 0x11)
+    newrecord.areaSound = ('FalloutNV.esm', 0x12)
+    newrecord.cefEnchantmentUnused = 19.0
+    newrecord.cefBarterUnused = 20.0
+    newrecord.archType = 21
+    newrecord.actorValue = 22
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x179B18)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'WarARCHIMEDES II Damage'
+    assert newrecord.description == 'Ward'
+    assert newrecord.iconPath == r'War\Icon.dds'
+    assert newrecord.smallIconPath == r'War\Icon2.dds'
+    assert newrecord.modPath == r'War\Mod.nif'
+    assert newrecord.modb == 1.0
+    assert newrecord.modt_p == [1,2,3]
+    assert newrecord.altTextures_list == [('BeardMustacheCurly:0', ('FalloutNV.esm', 653607), -1),
+                                          ('BeardMustacheCurly:0', ('FalloutNV.esm',653605), 0)]
+    assert newrecord.modelFlags == 2
+    assert newrecord.flags == 3
+    assert newrecord.baseCostUnused == 4.0
+    assert newrecord.associated == ('FalloutNV.esm', 0x5)
+    assert newrecord.schoolUnused == 6
+    assert newrecord.resistType == 7
+    assert newrecord.numCounters == 8
+    assert newrecord.unused1 == [9, 10]
+    assert newrecord.light == ('FalloutNV.esm', 0xB)
+    assert newrecord.projectileSpeed == 12.0
+    assert newrecord.effectShader == ('FalloutNV.esm', 0xD)
+    assert newrecord.displayShader == ('FalloutNV.esm', 0xE)
+    assert newrecord.effectSound == ('FalloutNV.esm', 0xF)
+    assert newrecord.boltSound == ('FalloutNV.esm', 0x10)
+    assert newrecord.hitSound == ('FalloutNV.esm', 0x11)
+    assert newrecord.areaSound == ('FalloutNV.esm', 0x12)
+    assert newrecord.cefEnchantmentUnused == 19.0
+    assert newrecord.cefBarterUnused == 20.0
+    assert newrecord.archType == 21
+    assert newrecord.actorValue == 22
+    assert record.fid == ('FalloutNV.esm', 0x179B18)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [5, 92, 71, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'EuclidDamageEffect'
+    assert record.eid == 'EuClidDamageEffect'
+    
+    assert record.full == 'ARCHIMEDES II Damage'
+    assert record.full != 'aRCHIMEDES II Damage'
+    assert record.description == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.modPath == None
+    assert record.modb == None
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == None
+    assert record.flags == 0x171L
+    assert record.baseCostUnused == 0.0
+    assert record.associated == ('FalloutNV.esm', 0x179B19)
+    assert record.schoolUnused == -1
+    assert record.resistType == -1
+    assert record.numCounters == 0
+    assert record.unused1 == [35, 17]
+    assert record.light == 0
+    assert record.projectileSpeed == 1.0
+    assert record.effectShader == 0
+    assert record.displayShader == 0
+    assert record.effectSound == 0
+    assert record.boltSound == 0
+    assert record.hitSound == 0
+    assert record.areaSound == 0
+    assert record.cefEnchantmentUnused == 0.0
+    assert record.cefBarterUnused == 0.0
+    assert record.archType == 1
+    assert record.actorValue == -1
+    
+    print "MGEF:Finished testing"
 
 from timeit import Timer
 

@@ -60,7 +60,7 @@ class ARMORecord : public FNVRecord //Armor
             void   IsRunArmor(bool value);
             bool   IsWalkArmor();
             void   IsWalkArmor(bool value);
-            bool   IsType(UINT32 Type, bool Exact=false);
+            bool   IsType(UINT32 Type);
             void   SetType(UINT32 Type);
 
             bool operator ==(const FNVSNAM &other) const;
@@ -128,7 +128,7 @@ class ARMORecord : public FNVRecord //Armor
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<FORMID> EITM; //Object Effect

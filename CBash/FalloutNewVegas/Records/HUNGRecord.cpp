@@ -130,7 +130,7 @@ SINT32 HUNGRecord::Unload()
     return 1;
     }
 
-SINT32 HUNGRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 HUNGRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

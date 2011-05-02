@@ -371,7 +371,7 @@ SINT32 PMISRecord::Unload()
     return 1;
     }
 
-SINT32 PMISRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PMISRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NAME);

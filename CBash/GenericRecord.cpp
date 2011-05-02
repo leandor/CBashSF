@@ -150,7 +150,7 @@ bool RecordProcessor::operator()(Record *&curRecord)
         {
         parser.Accept(curRecord);
         //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
-        if(IsTrackNewTypes && curRecord->GetType() != 'TSMG' && curRecord->GetType() != 'FEGM' && FormIDHandler.IsNewRecord(curRecord->formID))
+        if(IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && FormIDHandler.IsNewRecord(curRecord->formID))
             FormIDHandler.NewTypes.insert(curRecord->GetType());
         return true;
         }
@@ -208,7 +208,7 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
         {
         parser.Accept(curRecord);
         //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
-        if(IsTrackNewTypes && curRecord->GetType() != 'TSMG' && curRecord->GetType() != 'FEGM' && FormIDHandler.IsNewRecord(curRecord->formID))
+        if(IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && FormIDHandler.IsNewRecord(curRecord->formID))
             FormIDHandler.NewTypes.insert(curRecord->GetType());
         return true;
         }
@@ -267,6 +267,11 @@ UINT32 Record::GetParentType()
 bool Record::IsKeyedByEditorID()
     {
     return false;
+    }
+
+STRING Record::GetEditorIDKey()
+    {
+    return (STRING)GetField(4);
     }
 
 bool Record::HasSubRecords()

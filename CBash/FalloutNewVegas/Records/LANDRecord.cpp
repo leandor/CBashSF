@@ -164,7 +164,7 @@ SINT32 LANDRecord::Unload()
     return 1;
     }
 
-SINT32 LANDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LANDRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(DATA);
     WRITE(VNML);

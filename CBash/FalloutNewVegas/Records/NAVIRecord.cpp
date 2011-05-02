@@ -142,7 +142,7 @@ SINT32 NAVIRecord::Unload()
     return 1;
     }
 
-SINT32 NAVIRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 NAVIRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NVER);

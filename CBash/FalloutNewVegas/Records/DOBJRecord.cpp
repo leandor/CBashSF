@@ -130,7 +130,7 @@ SINT32 DOBJRecord::Unload()
     return 1;
     }
 
-SINT32 DOBJRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DOBJRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

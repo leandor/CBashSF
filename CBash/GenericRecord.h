@@ -143,6 +143,7 @@ class Record
         virtual UINT32 GetParentType();
 
         virtual bool IsKeyedByEditorID();
+        virtual STRING GetEditorIDKey();
         virtual bool HasSubRecords();
 
         virtual bool VisitSubRecords(const UINT32 &RecordType, RecordOp &op);

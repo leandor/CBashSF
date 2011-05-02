@@ -230,7 +230,7 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsSphere(bool value);
         bool   IsPortalBox();
         void   IsPortalBox(bool value);
-        bool   Is0Type(UINT8 Type, bool Exact=false);
+        bool   Is0Type(UINT8 Type);
         void   Set0Type(UINT8 Type);
 
         bool   IsUnidentified();
@@ -319,7 +319,7 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsSpellExplosion(bool value);
         bool   IsDroppingPick();
         void   IsDroppingPick(bool value);
-        bool   Is1Type(UINT8 Type, bool Exact=false);
+        bool   Is1Type(UINT8 Type);
         void   Set1Type(UINT8 Type);
 
         bool   IsMarkerNone();
@@ -352,7 +352,7 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsMetro(bool value);
         bool   IsVault();
         void   IsVault(bool value);
-        bool   Is2Type(UINT8 Type, bool Exact=false);
+        bool   Is2Type(UINT8 Type);
         void   Set2Type(UINT8 Type);
 
         bool   IsRadius();
@@ -365,14 +365,14 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsLinkedInteriors(bool value);
         bool   IsCurrentCellOnly();
         void   IsCurrentCellOnly(bool value);
-        bool   Is3Type(UINT8 Type, bool Exact=false);
+        bool   Is3Type(UINT8 Type);
         void   Set3Type(UINT8 Type);
 
         bool   IsReflection();
         void   IsReflection(bool value);
         bool   IsRefraction();
         void   IsRefraction(bool value);
-        bool   Is4Type(UINT8 Type, bool Exact=false);
+        bool   Is4Type(UINT8 Type);
         void   Set4Type(UINT8 Type);
 
         bool   IsOppositeParent();

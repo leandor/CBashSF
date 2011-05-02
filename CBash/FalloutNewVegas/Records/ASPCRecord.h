@@ -70,16 +70,16 @@ class ASPCRecord : public FNVRecord //Acoustic Space
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
-        OptSimpleSubRecord<FORMID> DawnSNAM; //Dawn / Default Loop
-        OptSimpleSubRecord<FORMID> AfternoonSNAM; //Afternoon
-        OptSimpleSubRecord<FORMID> DuskSNAM; //Dusk
-        OptSimpleSubRecord<FORMID> NightSNAM; //Night
-        OptSimpleSubRecord<FORMID> WallaSNAM; //Walla
-        OptSimpleSubRecord<UINT32> WNAM; //Walla Trigger Count
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSimpleSubRecord<FORMID> DawnSNAM; //Dawn / Default Loop
+        ReqSimpleSubRecord<FORMID> AfternoonSNAM; //Afternoon
+        ReqSimpleSubRecord<FORMID> DuskSNAM; //Dusk
+        ReqSimpleSubRecord<FORMID> NightSNAM; //Night
+        ReqSimpleSubRecord<FORMID> WallaSNAM; //Walla
+        ReqSimpleSubRecord<UINT32> WNAM; //Walla Trigger Count
         OptSimpleSubRecord<FORMID> RDAT; //Use Sound from Region (Interiors Only)
-        OptSimpleSubRecord<UINT32> ANAM; //Environment Type
-        OptSimpleSubRecord<UINT32> INAM; //Is Interior
+        ReqSimpleSubRecord<UINT32> ANAM; //Environment Type
+        ReqSimpleSubRecord<UINT32> INAM; //Is Interior
 
         ASPCRecord(unsigned char *_recData=NULL);
         ASPCRecord(ASPCRecord *srcRecord);
@@ -87,76 +87,76 @@ class ASPCRecord : public FNVRecord //Acoustic Space
 
         bool   VisitFormIDs(FormIDOp &op);
 
-        bool   IsNone();
-        void   IsNone(bool value);
-        bool   IsDefault();
-        void   IsDefault(bool value);
-        bool   IsGeneric();
-        void   IsGeneric(bool value);
-        bool   IsPaddedCell();
-        void   IsPaddedCell(bool value);
-        bool   IsRoom();
-        void   IsRoom(bool value);
-        bool   IsBathroom();
-        void   IsBathroom(bool value);
-        bool   IsLivingroom();
-        void   IsLivingroom(bool value);
-        bool   IsStoneRoom();
-        void   IsStoneRoom(bool value);
-        bool   IsAuditorium();
-        void   IsAuditorium(bool value);
-        bool   IsConcerthall();
-        void   IsConcerthall(bool value);
-        bool   IsCave();
-        void   IsCave(bool value);
-        bool   IsArena();
-        void   IsArena(bool value);
-        bool   IsHangar();
-        void   IsHangar(bool value);
-        bool   IsCarpetedHallway();
-        void   IsCarpetedHallway(bool value);
-        bool   IsHallway();
-        void   IsHallway(bool value);
-        bool   IsStoneCorridor();
-        void   IsStoneCorridor(bool value);
-        bool   IsAlley();
-        void   IsAlley(bool value);
-        bool   IsForest();
-        void   IsForest(bool value);
-        bool   IsCity();
-        void   IsCity(bool value);
-        bool   IsMountains();
-        void   IsMountains(bool value);
-        bool   IsQuarry();
-        void   IsQuarry(bool value);
-        bool   IsPlain();
-        void   IsPlain(bool value);
-        bool   IsParkinglot();
-        void   IsParkinglot(bool value);
-        bool   IsSewerpipe();
-        void   IsSewerpipe(bool value);
-        bool   IsUnderwater();
-        void   IsUnderwater(bool value);
-        bool   IsSmallRoom();
-        void   IsSmallRoom(bool value);
-        bool   IsMediumRoom();
-        void   IsMediumRoom(bool value);
-        bool   IsLargeRoom();
-        void   IsLargeRoom(bool value);
-        bool   IsMediumHall();
-        void   IsMediumHall(bool value);
-        bool   IsLargeHall();
-        void   IsLargeHall(bool value);
-        bool   IsPlate();
-        void   IsPlate(bool value);
-        bool   IsEnvironmentType(UINT32 Type, bool Exact=false);
+        bool   IsEnvironmentNone();
+        void   IsEnvironmentNone(bool value);
+        bool   IsEnvironmentDefault();
+        void   IsEnvironmentDefault(bool value);
+        bool   IsEnvironmentGeneric();
+        void   IsEnvironmentGeneric(bool value);
+        bool   IsEnvironmentPaddedCell();
+        void   IsEnvironmentPaddedCell(bool value);
+        bool   IsEnvironmentRoom();
+        void   IsEnvironmentRoom(bool value);
+        bool   IsEnvironmentBathroom();
+        void   IsEnvironmentBathroom(bool value);
+        bool   IsEnvironmentLivingroom();
+        void   IsEnvironmentLivingroom(bool value);
+        bool   IsEnvironmentStoneRoom();
+        void   IsEnvironmentStoneRoom(bool value);
+        bool   IsEnvironmentAuditorium();
+        void   IsEnvironmentAuditorium(bool value);
+        bool   IsEnvironmentConcerthall();
+        void   IsEnvironmentConcerthall(bool value);
+        bool   IsEnvironmentCave();
+        void   IsEnvironmentCave(bool value);
+        bool   IsEnvironmentArena();
+        void   IsEnvironmentArena(bool value);
+        bool   IsEnvironmentHangar();
+        void   IsEnvironmentHangar(bool value);
+        bool   IsEnvironmentCarpetedHallway();
+        void   IsEnvironmentCarpetedHallway(bool value);
+        bool   IsEnvironmentHallway();
+        void   IsEnvironmentHallway(bool value);
+        bool   IsEnvironmentStoneCorridor();
+        void   IsEnvironmentStoneCorridor(bool value);
+        bool   IsEnvironmentAlley();
+        void   IsEnvironmentAlley(bool value);
+        bool   IsEnvironmentForest();
+        void   IsEnvironmentForest(bool value);
+        bool   IsEnvironmentCity();
+        void   IsEnvironmentCity(bool value);
+        bool   IsEnvironmentMountains();
+        void   IsEnvironmentMountains(bool value);
+        bool   IsEnvironmentQuarry();
+        void   IsEnvironmentQuarry(bool value);
+        bool   IsEnvironmentPlain();
+        void   IsEnvironmentPlain(bool value);
+        bool   IsEnvironmentParkinglot();
+        void   IsEnvironmentParkinglot(bool value);
+        bool   IsEnvironmentSewerpipe();
+        void   IsEnvironmentSewerpipe(bool value);
+        bool   IsEnvironmentUnderwater();
+        void   IsEnvironmentUnderwater(bool value);
+        bool   IsEnvironmentSmallRoom();
+        void   IsEnvironmentSmallRoom(bool value);
+        bool   IsEnvironmentMediumRoom();
+        void   IsEnvironmentMediumRoom(bool value);
+        bool   IsEnvironmentLargeRoom();
+        void   IsEnvironmentLargeRoom(bool value);
+        bool   IsEnvironmentMediumHall();
+        void   IsEnvironmentMediumHall(bool value);
+        bool   IsEnvironmentLargeHall();
+        void   IsEnvironmentLargeHall(bool value);
+        bool   IsEnvironmentPlate();
+        void   IsEnvironmentPlate(bool value);
+        bool   IsEnvironmentType(UINT32 Type);
         void   SetEnvironmentType(UINT32 Type);
 
-        bool   IsExterior();
-        void   IsExterior(bool value);
-        bool   IsInterior();
-        void   IsInterior(bool value);
-        bool   IsSpaceType(UINT32 Type, bool Exact=false);
+        bool   IsSpaceExterior();
+        void   IsSpaceExterior(bool value);
+        bool   IsSpaceInterior();
+        void   IsSpaceInterior(bool value);
+        bool   IsSpaceType(UINT32 Type);
         void   SetSpaceType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

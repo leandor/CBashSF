@@ -127,7 +127,7 @@ class CREARecord : public FNVRecord //Creature
             void   IsJump(bool value);
             bool   IsPlayRandomLoop();
             void   IsPlayRandomLoop(bool value);
-            bool   IsType(UINT32 Type, bool Exact=false);
+            bool   IsType(UINT32 Type);
             void   Se0Type(UINT32 Type);
 
             bool   operator ==(const CREASoundType &other) const;
@@ -379,7 +379,7 @@ class CREARecord : public FNVRecord //Creature
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         std::vector<FORMID> SPLO; //Actor Effects
@@ -523,7 +523,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsRobot(bool value);
         bool   IsGiant();
         void   IsGiant(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         bool   IsAttackLeft();
@@ -758,7 +758,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsPipBoyChild(bool value);
         bool   IsANY();
         void   IsANY(bool value);
-        bool   IsAttackAnimType(UINT8 Type, bool Exact=false);
+        bool   IsAttackAnimType(UINT8 Type);
         void   SetAttackAnimType(UINT8 Type);
 
         bool   IsLoud();
@@ -767,7 +767,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type, bool Exact=false);
+        bool   IsSoundLevelType(UINT8 Type);
         void   SetSoundLevelType(UINT8 Type);
 
         bool   IsUnaggressive();
@@ -778,7 +778,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsVeryAggressive(bool value);
         bool   IsFrenzied();
         void   IsFrenzied(bool value);
-        bool   IsAggressionType(UINT8 Type, bool Exact=false);
+        bool   IsAggressionType(UINT8 Type);
         void   SetAggressionType(UINT8 Type);
 
         bool   IsCowardly();
@@ -791,7 +791,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsBrave(bool value);
         bool   IsFoolhardy();
         void   IsFoolhardy(bool value);
-        bool   IsConfidenceType(UINT8 Type, bool Exact=false);
+        bool   IsConfidenceType(UINT8 Type);
         void   SetConfidenceType(UINT8 Type);
 
         bool   IsNeutral();
@@ -810,7 +810,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsAngry(bool value);
         bool   IsSad();
         void   IsSad(bool value);
-        bool   IsMoodType(UINT8 Type, bool Exact=false);
+        bool   IsMoodType(UINT8 Type);
         void   SetMoodType(UINT8 Type);
 
         bool   IsHelpsNobody();
@@ -819,7 +819,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsHelpsAllies(bool value);
         bool   IsHelpsFriendsAndAllies();
         void   IsHelpsFriendsAndAllies(bool value);
-        bool   IsAssistanceType(UINT8 Type, bool Exact=false);
+        bool   IsAssistanceType(UINT8 Type);
         void   SetAssistanceType(UINT8 Type);
 
         bool   IsStone();
@@ -846,7 +846,7 @@ class CREARecord : public FNVRecord //Creature
         void   IsOrganicBug(bool value);
         bool   IsOrganicGlow();
         void   IsOrganicGlow(bool value);
-        bool   IsImpactType(UINT8 Type, bool Exact=false);
+        bool   IsImpactType(UINT8 Type);
         void   SetImpactType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

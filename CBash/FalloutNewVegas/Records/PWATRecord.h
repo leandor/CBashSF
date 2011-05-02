@@ -64,7 +64,7 @@ class PWATRecord : public FNVRecord //Placeable Water
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<PWATDNAM> DNAM; //Data
 

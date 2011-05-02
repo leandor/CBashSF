@@ -2276,6 +2276,149 @@ class FnvSOUNRecord(FnvBaseRecord):
                                            'attenCurve', 'reverb', 'priority',
                                            'x', 'y'] # 'unused1', 
 
+class FnvASPCRecord(FnvBaseRecord):
+    _Type = 'ASPC'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    FORMID_MACRO(dawnOrDefaultLoop, 13)
+    FORMID_MACRO(afternoon, 14)
+    FORMID_MACRO(dusk, 15)
+    FORMID_MACRO(night, 16)
+    FORMID_MACRO(walla, 17)
+    UINT32_MACRO(wallaTriggerCount, 18)
+    FORMID_MACRO(regionSound, 19)
+    UINT32_TYPE_MACRO(environmentType, 20)
+    UINT32_TYPE_MACRO(spaceType, 21)
+    BasicTypeMACRO(IsEnvironmentNone, environmentType, 0, IsEnvironmentDefault)
+    BasicTypeMACRO(IsEnvironmentDefault, environmentType, 1, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentGeneric, environmentType, 2, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentPaddedCell, environmentType, 3, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentRoom, environmentType, 4, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentBathroom, environmentType, 5, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentLivingroom, environmentType, 6, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentStoneRoom, environmentType, 7, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentAuditorium, environmentType, 8, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentConcerthall, environmentType, 9, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentCave, environmentType, 10, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentArena, environmentType, 11, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentHangar, environmentType, 12, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentCarpetedHallway, environmentType, 13, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentHallway, environmentType, 14, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentStoneCorridor, environmentType, 15, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentAlley, environmentType, 16, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentForest, environmentType, 17, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentCity, environmentType, 18, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentMountains, environmentType, 19, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentQuarry, environmentType, 20, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentPlain, environmentType, 21, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentParkinglot, environmentType, 22, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentSewerpipe, environmentType, 23, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentUnderwater, environmentType, 24, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentSmallRoom, environmentType, 25, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentMediumRoom, environmentType, 26, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentLargeRoom, environmentType, 27, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentMediumHall, environmentType, 28, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentLargeHall, environmentType, 29, IsEnvironmentNone)
+    BasicTypeMACRO(IsEnvironmentPlate, environmentType, 30, IsEnvironmentNone)
+    BasicTypeMACRO(IsSpaceExterior, spaceType, 0, IsSpaceInterior)
+    BasicTypeMACRO(IsSpaceInterior, spaceType, 1, IsSpaceExterior)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'dawnOrDefaultLoop', 'afternoon',
+                                                         'dusk', 'night', 'walla',
+                                                         'wallaTriggerCount', 'regionSound',
+                                                         'environmentType', 'spaceType']
+
+class FnvMGEFRecord(FnvBaseRecord):
+    _Type = 'MGEF'
+    STRING_MACRO(full, 7)
+    STRING_MACRO(description, 8)
+    ISTRING_MACRO(iconPath, 9)
+    ISTRING_MACRO(smallIconPath, 10)
+    ISTRING_MACRO(modPath, 11)
+    FLOAT32_MACRO(modb, 12)
+    UINT8_ARRAY_MACRO(modt_p, 13)
+    LIST_MACRO(altTextures, 14, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 15)
+    UINT32_FLAG_MACRO(flags, 16)
+    FLOAT32_MACRO(baseCostUnused, 17)
+    FORMID_MACRO(associated, 18)
+    SINT32_MACRO(schoolUnused, 19)
+    SINT32_TYPE_MACRO(resistType, 20)
+    UINT16_MACRO(numCounters, 21)
+    UINT8_ARRAY_MACRO(unused1, 22, 2)
+    FORMID_MACRO(light, 23)
+    FLOAT32_MACRO(projectileSpeed, 24)
+    FORMID_MACRO(effectShader, 25)
+    FORMID_MACRO(displayShader, 26)
+    FORMID_MACRO(effectSound, 27)
+    FORMID_MACRO(boltSound, 28)
+    FORMID_MACRO(hitSound, 29)
+    FORMID_MACRO(areaSound, 30)
+    FLOAT32_MACRO(cefEnchantmentUnused, 31)
+    FLOAT32_MACRO(cefBarterUnused, 32)
+    UINT32_TYPE_MACRO(archType, 33)
+    SINT32_TYPE_MACRO(actorValue, 34)
+    BasicFlagMACRO(IsHostile, flags, 0x00000001)
+    BasicFlagMACRO(IsRecover, flags, 0x00000002)
+    BasicFlagMACRO(IsDetrimental, flags, 0x00000004)
+    BasicFlagMACRO(IsSelf, flags, 0x00000010)
+    BasicFlagMACRO(IsTouch, flags, 0x00000020)
+    BasicFlagMACRO(IsTarget, flags, 0x00000040)
+    BasicFlagMACRO(IsNoDuration, flags, 0x00000080)
+    BasicFlagMACRO(IsNoMagnitude, flags, 0x00000100)
+    BasicFlagMACRO(IsNoArea, flags, 0x00000200)
+    BasicFlagMACRO(IsFXPersist, flags, 0x00000400)
+    BasicFlagMACRO(IsGoryVisuals, flags, 0x00001000)
+    BasicFlagMACRO(IsDisplayNameOnly, flags, 0x00002000)
+    BasicFlagMACRO(IsRadioBroadcast, flags, 0x00008000)
+    BasicFlagMACRO(IsUseSkill, flags, 0x00080000)
+    BasicFlagMACRO(IsUseAttr, flags, 0x00100000)
+    BasicFlagMACRO(IsPainless, flags, 0x01000000)
+    BasicFlagMACRO(IsSprayType, flags, 0x02000000)
+    BasicFlagMACRO(IsBoltType, flags, 0x04000000)
+    BasicFlagMACRO(IsFogType, flags, 0x06000000)
+    BasicFlagMACRO(IsNoHitEffect, flags, 0x08000000)
+    BasicFlagMACRO(IsPersistOnDeath, flags, 0x10000000)
+    BasicFlagMACRO(IsUnknown1, flags, 0x20000000)
+    BasicTypeMACRO(IsValueModifier, archType, 0, IsScript)
+    BasicTypeMACRO(IsScript, archType, 1, IsValueModifier)
+    BasicTypeMACRO(IsDispel, archType, 2, IsValueModifier)
+    BasicTypeMACRO(IsCureDisease, archType, 3, IsValueModifier)
+    BasicTypeMACRO(IsInvisibility, archType, 11, IsValueModifier)
+    BasicTypeMACRO(IsChameleon, archType, 12, IsValueModifier)
+    BasicTypeMACRO(IsLight, archType, 13, IsValueModifier)
+    BasicTypeMACRO(IsLock, archType, 16, IsValueModifier)
+    BasicTypeMACRO(IsOpen, archType, 17, IsValueModifier)
+    BasicTypeMACRO(IsBoundItem, archType, 18, IsValueModifier)
+    BasicTypeMACRO(IsSummonCreature, archType, 19, IsValueModifier)
+    BasicTypeMACRO(IsParalysis, archType, 24, IsValueModifier)
+    BasicTypeMACRO(IsCureParalysis, archType, 30, IsValueModifier)
+    BasicTypeMACRO(IsCureAddiction, archType, 31, IsValueModifier)
+    BasicTypeMACRO(IsCurePoison, archType, 32, IsValueModifier)
+    BasicTypeMACRO(IsConcussion, archType, 33, IsValueModifier)
+    BasicTypeMACRO(IsValueAndParts, archType, 34, IsValueModifier)
+    BasicTypeMACRO(IsLimbCondition, archType, 35, IsValueModifier)
+    BasicTypeMACRO(IsTurbo, archType, 36, IsValueModifier)
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                                         'modPath', 'modb', 'modt_p', 'altTextures_list',
+                                                         'modelFlags', 'flags', 'baseCostUnused', 'associated',
+                                                         'schoolUnused', 'resistType', 'numCounters', 'unused1',
+                                                         'light', 'projectileSpeed', 'effectShader', 'displayShader',
+                                                         'effectSound', 'boltSound', 'hitSound', 'areaSound',
+                                                         'cefEnchantmentUnused', 'cefBarterUnused', 'archType', 'actorValue']
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
+                                             'modPath', 'modb', 'altTextures_list',
+                                             'modelFlags', 'flags', 'associated',
+                                             'resistType', 'numCounters', 
+                                             'light', 'projectileSpeed', 'effectShader', 'displayShader',
+                                             'effectSound', 'boltSound', 'hitSound', 'areaSound',
+                                             'archType', 'actorValue'] #'modt_p', 'baseCostUnused', 'schoolUnused', 'unused1', 'cefEnchantmentUnused', 'cefBarterUnused', 
+
 #--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
@@ -5415,7 +5558,8 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
                         ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
-                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),])
+                        ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),('ASPC',FnvASPCRecord),
+                        ('MGEF',FnvMGEFRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5766,13 +5910,23 @@ class FnvModFile(object):
     FnvModRecordsMACRO(EYES)
     FnvModRecordsMACRO(RACE)
     FnvModRecordsMACRO(SOUN)
+    FnvModRecordsMACRO(ASPC)
+    FnvModRecordsMACRO(MGEF)
     @property
     def tops(self):
-        return dict((("GMST", self.GMST),))
+        return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
+                     ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
+                     ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
+                     ("MGEF", self.MGEF),))
 
     @property
     def aggregates(self):
-        return dict((("GMST", self.GMST),))
+        return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
+                     ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
+                     ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
+                     ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
+                     ("MGEF", self.MGEF),))
 
 class ObCollection:
     """Collection of esm/esp's."""

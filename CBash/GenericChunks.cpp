@@ -2195,6 +2195,18 @@ void FNVAlternateTextures::Unload()
     MODS.clear();
     }
 
+void FNVAlternateTextures::resize(UINT32 newSize)
+    {
+    //Shrink
+    UINT32 size = MODS.size();
+    for(; size > newSize;)
+        delete MODS[--size];
+    MODS.resize(newSize);
+    //Grow
+    for(; size < newSize;)
+        MODS[size++] = new FNVMODS;
+    }
+
 bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
     {
     if(MODS.size() != 0)

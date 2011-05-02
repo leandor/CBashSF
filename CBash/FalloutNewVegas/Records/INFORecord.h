@@ -226,7 +226,7 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsMisc(bool value);
         bool   IsRadio();
         void   IsRadio(bool value);
-        bool   IsDialogType(UINT16 Type, bool Exact=false);
+        bool   IsDialogType(UINT16 Type);
         void   SetDialogType(UINT16 Type);
 
         bool   IsTarget();
@@ -235,7 +235,7 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsSelf(bool value);
         bool   IsEither();
         void   IsEither(bool value);
-        bool   IsSpeakerType(UINT8 Type, bool Exact=false);
+        bool   IsSpeakerType(UINT8 Type);
         void   SetSpeakerType(UINT8 Type);
 
         bool   IsNone();
@@ -250,7 +250,7 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsHard(bool value);
         bool   IsVeryHard();
         void   IsVeryHard(bool value);
-        bool   IsDifficultyType(UINT8 Type, bool Exact=false);
+        bool   IsDifficultyType(UINT8 Type);
         void   SetDifficultyType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

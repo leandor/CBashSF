@@ -58,22 +58,36 @@ UINT32 ASPCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //snam Walla
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //dawnOrDefaultLoop
             return FORMID_FIELD;
-        case 11: //wnam Walla Trigger Count
-            return UINT32_FIELD;
-        case 12: //rdat Use Sound from Region (Interiors Only)
+        case 14: //afternoon
             return FORMID_FIELD;
-        case 13: //anam Environment Type
+        case 15: //dusk
+            return FORMID_FIELD;
+        case 16: //night
+            return FORMID_FIELD;
+        case 17: //walla
+            return FORMID_FIELD;
+        case 18: //wallaTriggerCount
             return UINT32_FIELD;
-        case 14: //inam Is Interior
-            return UINT32_FIELD;
+        case 19: //regionSound
+            return FORMID_FIELD;
+        case 20: //environmentType
+            return UINT32_TYPE_FIELD;
+        case 21: //spaceType
+            return UINT32_TYPE_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -97,22 +111,36 @@ void * ASPCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //snam Walla
-            return SNAM.IsLoaded() ? &SNAM->value10 : NULL;
-        case 11: //wnam Walla Trigger Count
-            return WNAM.IsLoaded() ? &WNAM->value11 : NULL;
-        case 12: //rdat Use Sound from Region (Interiors Only)
-            return RDAT.IsLoaded() ? &RDAT->value12 : NULL;
-        case 13: //anam Environment Type
-            return ANAM.IsLoaded() ? &ANAM->value13 : NULL;
-        case 14: //inam Is Interior
-            return INAM.IsLoaded() ? &INAM->value14 : NULL;
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //dawnOrDefaultLoop
+            return &DawnSNAM.value;
+        case 14: //afternoon
+            return &AfternoonSNAM.value;
+        case 15: //dusk
+            return &DuskSNAM.value;
+        case 16: //night
+            return &NightSNAM.value;
+        case 17: //walla
+            return &WallaSNAM.value;
+        case 18: //wallaTriggerCount
+            return &WNAM.value;
+        case 19: //regionSound
+            return RDAT.IsLoaded() ? &RDAT.value : NULL;
+        case 20: //environmentType
+            return &ANAM.value;
+        case 21: //spaceType
+            return &INAM.value;
         default:
             return NULL;
         }
@@ -145,37 +173,50 @@ bool ASPCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //snam Walla
-            SNAM.Load();
-            SNAM->value10 = *(FORMID *)FieldValue;
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
+            break;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
+            break;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
+            break;
+        case 13: //dawnOrDefaultLoop
+            DawnSNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 11: //wnam Walla Trigger Count
-            WNAM.Load();
-            WNAM->value11 = *(UINT32 *)FieldValue;
-            break;
-        case 12: //rdat Use Sound from Region (Interiors Only)
-            RDAT.Load();
-            RDAT->value12 = *(FORMID *)FieldValue;
+        case 14: //afternoon
+            AfternoonSNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 13: //anam Environment Type
-            ANAM.Load();
-            ANAM->value13 = *(UINT32 *)FieldValue;
+        case 15: //dusk
+            DuskSNAM.value = *(FORMID *)FieldValue;
+            return true;
+        case 16: //night
+            NightSNAM.value = *(FORMID *)FieldValue;
+            return true;
+        case 17: //walla
+            WallaSNAM.value = *(FORMID *)FieldValue;
+            return true;
+        case 18: //wallaTriggerCount
+            WNAM.value = *(UINT32 *)FieldValue;
             break;
-        case 14: //inam Is Interior
-            INAM.Load();
-            INAM->value14 = *(UINT32 *)FieldValue;
+        case 19: //regionSound
+            RDAT.value = *(FORMID *)FieldValue;
+            return true;
+        case 20: //environmentType
+            SetEnvironmentType(*(UINT32 *)FieldValue);
+            break;
+        case 21: //spaceType
+            SetSpaceType(*(UINT32 *)FieldValue);
             break;
         default:
             break;
@@ -185,6 +226,7 @@ bool ASPCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void ASPCRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
     switch(FieldID)
         {
         case 1: //flags1
@@ -203,31 +245,49 @@ void ASPCRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //snam Walla
-            SNAM.Unload();
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
             return;
-        case 11: //wnam Walla Trigger Count
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //dawnOrDefaultLoop
+            DawnSNAM.Unload();
+            return;
+        case 14: //afternoon
+            AfternoonSNAM.Unload();
+            return;
+        case 15: //dusk
+            DuskSNAM.Unload();
+            return;
+        case 16: //night
+            NightSNAM.Unload();
+            return;
+        case 17: //walla
+            WallaSNAM.Unload();
+            return;
+        case 18: //wallaTriggerCount
             WNAM.Unload();
             return;
-        case 12: //rdat Use Sound from Region (Interiors Only)
+        case 19: //regionSound
             RDAT.Unload();
             return;
-        case 13: //anam Environment Type
+        case 20: //environmentType
             ANAM.Unload();
             return;
-        case 14: //inam Is Interior
+        case 21: //spaceType
             INAM.Unload();
             return;
         default:

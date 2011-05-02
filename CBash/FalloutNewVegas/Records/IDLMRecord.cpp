@@ -186,7 +186,7 @@ SINT32 IDLMRecord::Unload()
     return 1;
     }
 
-SINT32 IDLMRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IDLMRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);

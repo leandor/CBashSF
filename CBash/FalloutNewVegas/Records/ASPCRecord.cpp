@@ -52,7 +52,11 @@ ASPCRecord::ASPCRecord(ASPCRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-    SNAM = srcRecord->SNAM;
+    DawnSNAM = srcRecord->DawnSNAM;
+    AfternoonSNAM = srcRecord->AfternoonSNAM;
+    DuskSNAM = srcRecord->DuskSNAM;
+    NightSNAM = srcRecord->NightSNAM;
+    WallaSNAM = srcRecord->WallaSNAM;
     WNAM = srcRecord->WNAM;
     RDAT = srcRecord->RDAT;
     ANAM = srcRecord->ANAM;
@@ -70,432 +74,366 @@ bool ASPCRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+    op.Accept(DawnSNAM.value);
+    op.Accept(AfternoonSNAM.value);
+    op.Accept(DuskSNAM.value);
+    op.Accept(NightSNAM.value);
+    op.Accept(WallaSNAM.value);
+
     if(RDAT.IsLoaded())
-        op.Accept(RDAT->value);
+        op.Accept(RDAT.value);
 
     return op.Stop();
     }
 
-bool ASPCRecord::IsNone()
+bool ASPCRecord::IsEnvironmentNone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return (ANAM.value == eNone);
     }
 
-void ASPCRecord::IsNone(bool value)
+void ASPCRecord::IsEnvironmentNone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
+    ANAM.value = value ? eNone : eDefault;
     }
 
-bool ASPCRecord::IsDefault()
+bool ASPCRecord::IsEnvironmentDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDefault);
+    return (ANAM.value == eDefault);
     }
 
-void ASPCRecord::IsDefault(bool value)
+void ASPCRecord::IsEnvironmentDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDefault : eDummyDefault;
+    ANAM.value = value ? eDefault : eNone;
     }
 
-bool ASPCRecord::IsGeneric()
+bool ASPCRecord::IsEnvironmentGeneric()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGeneric);
+    return (ANAM.value == eGeneric);
     }
 
-void ASPCRecord::IsGeneric(bool value)
+void ASPCRecord::IsEnvironmentGeneric(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGeneric : eDummyDefault;
+    ANAM.value = value ? eGeneric : eDefault;
     }
 
-bool ASPCRecord::IsPaddedCell()
+bool ASPCRecord::IsEnvironmentPaddedCell()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePaddedCell);
+    return (ANAM.value == ePaddedCell);
     }
 
-void ASPCRecord::IsPaddedCell(bool value)
+void ASPCRecord::IsEnvironmentPaddedCell(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePaddedCell : eDummyDefault;
+    ANAM.value = value ? ePaddedCell : eDefault;
     }
 
-bool ASPCRecord::IsRoom()
+bool ASPCRecord::IsEnvironmentRoom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRoom);
+    return (ANAM.value == eRoom);
     }
 
-void ASPCRecord::IsRoom(bool value)
+void ASPCRecord::IsEnvironmentRoom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRoom : eDummyDefault;
+    ANAM.value = value ? eRoom : eDefault;
     }
 
-bool ASPCRecord::IsBathroom()
+bool ASPCRecord::IsEnvironmentBathroom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBathroom);
+    return (ANAM.value == eBathroom);
     }
 
-void ASPCRecord::IsBathroom(bool value)
+void ASPCRecord::IsEnvironmentBathroom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBathroom : eDummyDefault;
+    ANAM.value = value ? eBathroom : eDefault;
     }
 
-bool ASPCRecord::IsLivingroom()
+bool ASPCRecord::IsEnvironmentLivingroom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLivingroom);
+    return (ANAM.value == eLivingroom);
     }
 
-void ASPCRecord::IsLivingroom(bool value)
+void ASPCRecord::IsEnvironmentLivingroom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLivingroom : eDummyDefault;
+    ANAM.value = value ? eLivingroom : eDefault;
     }
 
-bool ASPCRecord::IsStoneRoom()
+bool ASPCRecord::IsEnvironmentStoneRoom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStoneRoom);
+    return (ANAM.value == eStoneRoom);
     }
 
-void ASPCRecord::IsStoneRoom(bool value)
+void ASPCRecord::IsEnvironmentStoneRoom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStoneRoom : eDummyDefault;
+    ANAM.value = value ? eStoneRoom : eDefault;
     }
 
-bool ASPCRecord::IsAuditorium()
+bool ASPCRecord::IsEnvironmentAuditorium()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAuditorium);
+    return (ANAM.value == eAuditorium);
     }
 
-void ASPCRecord::IsAuditorium(bool value)
+void ASPCRecord::IsEnvironmentAuditorium(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAuditorium : eDummyDefault;
+    ANAM.value = value ? eAuditorium : eDefault;
     }
 
-bool ASPCRecord::IsConcerthall()
+bool ASPCRecord::IsEnvironmentConcerthall()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eConcerthall);
+    return (ANAM.value == eConcerthall);
     }
 
-void ASPCRecord::IsConcerthall(bool value)
+void ASPCRecord::IsEnvironmentConcerthall(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eConcerthall : eDummyDefault;
+    ANAM.value = value ? eConcerthall : eDefault;
     }
 
-bool ASPCRecord::IsCave()
+bool ASPCRecord::IsEnvironmentCave()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCave);
+    return (ANAM.value == eCave);
     }
 
-void ASPCRecord::IsCave(bool value)
+void ASPCRecord::IsEnvironmentCave(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCave : eDummyDefault;
+    ANAM.value = value ? eCave : eDefault;
     }
 
-bool ASPCRecord::IsArena()
+bool ASPCRecord::IsEnvironmentArena()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eArena);
+    return (ANAM.value == eArena);
     }
 
-void ASPCRecord::IsArena(bool value)
+void ASPCRecord::IsEnvironmentArena(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eArena : eDummyDefault;
+    ANAM.value = value ? eArena : eDefault;
     }
 
-bool ASPCRecord::IsHangar()
+bool ASPCRecord::IsEnvironmentHangar()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHangar);
+    return (ANAM.value == eHangar);
     }
 
-void ASPCRecord::IsHangar(bool value)
+void ASPCRecord::IsEnvironmentHangar(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHangar : eDummyDefault;
+    ANAM.value = value ? eHangar : eDefault;
     }
 
-bool ASPCRecord::IsCarpetedHallway()
+bool ASPCRecord::IsEnvironmentCarpetedHallway()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCarpetedHallway);
+    return (ANAM.value == eCarpetedHallway);
     }
 
-void ASPCRecord::IsCarpetedHallway(bool value)
+void ASPCRecord::IsEnvironmentCarpetedHallway(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCarpetedHallway : eDummyDefault;
+    ANAM.value = value ? eCarpetedHallway : eDefault;
     }
 
-bool ASPCRecord::IsHallway()
+bool ASPCRecord::IsEnvironmentHallway()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHallway);
+    return (ANAM.value == eHallway);
     }
 
-void ASPCRecord::IsHallway(bool value)
+void ASPCRecord::IsEnvironmentHallway(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHallway : eDummyDefault;
+    ANAM.value = value ? eHallway : eDefault;
     }
 
-bool ASPCRecord::IsStoneCorridor()
+bool ASPCRecord::IsEnvironmentStoneCorridor()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStoneCorridor);
+    return (ANAM.value == eStoneCorridor);
     }
 
-void ASPCRecord::IsStoneCorridor(bool value)
+void ASPCRecord::IsEnvironmentStoneCorridor(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStoneCorridor : eDummyDefault;
+    ANAM.value = value ? eStoneCorridor : eDefault;
     }
 
-bool ASPCRecord::IsAlley()
+bool ASPCRecord::IsEnvironmentAlley()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAlley);
+    return (ANAM.value == eAlley);
     }
 
-void ASPCRecord::IsAlley(bool value)
+void ASPCRecord::IsEnvironmentAlley(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAlley : eDummyDefault;
+    ANAM.value = value ? eAlley : eDefault;
     }
 
-bool ASPCRecord::IsForest()
+bool ASPCRecord::IsEnvironmentForest()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eForest);
+    return (ANAM.value == eForest);
     }
 
-void ASPCRecord::IsForest(bool value)
+void ASPCRecord::IsEnvironmentForest(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eForest : eDummyDefault;
+    ANAM.value = value ? eForest : eDefault;
     }
 
-bool ASPCRecord::IsCity()
+bool ASPCRecord::IsEnvironmentCity()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCity);
+    return (ANAM.value == eCity);
     }
 
-void ASPCRecord::IsCity(bool value)
+void ASPCRecord::IsEnvironmentCity(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCity : eDummyDefault;
+    ANAM.value = value ? eCity : eDefault;
     }
 
-bool ASPCRecord::IsMountains()
+bool ASPCRecord::IsEnvironmentMountains()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMountains);
+    return (ANAM.value == eMountains);
     }
 
-void ASPCRecord::IsMountains(bool value)
+void ASPCRecord::IsEnvironmentMountains(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMountains : eDummyDefault;
+    ANAM.value = value ? eMountains : eDefault;
     }
 
-bool ASPCRecord::IsQuarry()
+bool ASPCRecord::IsEnvironmentQuarry()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eQuarry);
+    return (ANAM.value == eQuarry);
     }
 
-void ASPCRecord::IsQuarry(bool value)
+void ASPCRecord::IsEnvironmentQuarry(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eQuarry : eDummyDefault;
+    ANAM.value = value ? eQuarry : eDefault;
     }
 
-bool ASPCRecord::IsPlain()
+bool ASPCRecord::IsEnvironmentPlain()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePlain);
+    return (ANAM.value == ePlain);
     }
 
-void ASPCRecord::IsPlain(bool value)
+void ASPCRecord::IsEnvironmentPlain(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePlain : eDummyDefault;
+    ANAM.value = value ? ePlain : eDefault;
     }
 
-bool ASPCRecord::IsParkinglot()
+bool ASPCRecord::IsEnvironmentParkinglot()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eParkinglot);
+    return (ANAM.value == eParkinglot);
     }
 
-void ASPCRecord::IsParkinglot(bool value)
+void ASPCRecord::IsEnvironmentParkinglot(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eParkinglot : eDummyDefault;
+    ANAM.value = value ? eParkinglot : eDefault;
     }
 
-bool ASPCRecord::IsSewerpipe()
+bool ASPCRecord::IsEnvironmentSewerpipe()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSewerpipe);
+    return (ANAM.value == eSewerpipe);
     }
 
-void ASPCRecord::IsSewerpipe(bool value)
+void ASPCRecord::IsEnvironmentSewerpipe(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSewerpipe : eDummyDefault;
+    ANAM.value = value ? eSewerpipe : eDefault;
     }
 
-bool ASPCRecord::IsUnderwater()
+bool ASPCRecord::IsEnvironmentUnderwater()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnderwater);
+    return (ANAM.value == eUnderwater);
     }
 
-void ASPCRecord::IsUnderwater(bool value)
+void ASPCRecord::IsEnvironmentUnderwater(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnderwater : eDummyDefault;
+    ANAM.value = value ? eUnderwater : eDefault;
     }
 
-bool ASPCRecord::IsSmallRoom()
+bool ASPCRecord::IsEnvironmentSmallRoom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSmallRoom);
+    return (ANAM.value == eSmallRoom);
     }
 
-void ASPCRecord::IsSmallRoom(bool value)
+void ASPCRecord::IsEnvironmentSmallRoom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSmallRoom : eDummyDefault;
+    ANAM.value = value ? eSmallRoom : eDefault;
     }
 
-bool ASPCRecord::IsMediumRoom()
+bool ASPCRecord::IsEnvironmentMediumRoom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMediumRoom);
+    return (ANAM.value == eMediumRoom);
     }
 
-void ASPCRecord::IsMediumRoom(bool value)
+void ASPCRecord::IsEnvironmentMediumRoom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMediumRoom : eDummyDefault;
+    ANAM.value = value ? eMediumRoom : eDefault;
     }
 
-bool ASPCRecord::IsLargeRoom()
+bool ASPCRecord::IsEnvironmentLargeRoom()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLargeRoom);
+    return (ANAM.value == eLargeRoom);
     }
 
-void ASPCRecord::IsLargeRoom(bool value)
+void ASPCRecord::IsEnvironmentLargeRoom(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLargeRoom : eDummyDefault;
+    ANAM.value = value ? eLargeRoom : eDefault;
     }
 
-bool ASPCRecord::IsMediumHall()
+bool ASPCRecord::IsEnvironmentMediumHall()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMediumHall);
+    return (ANAM.value == eMediumHall);
     }
 
-void ASPCRecord::IsMediumHall(bool value)
+void ASPCRecord::IsEnvironmentMediumHall(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMediumHall : eDummyDefault;
+    ANAM.value = value ? eMediumHall : eDefault;
     }
 
-bool ASPCRecord::IsLargeHall()
+bool ASPCRecord::IsEnvironmentLargeHall()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLargeHall);
+    return (ANAM.value == eLargeHall);
     }
 
-void ASPCRecord::IsLargeHall(bool value)
+void ASPCRecord::IsEnvironmentLargeHall(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLargeHall : eDummyDefault;
+    ANAM.value = value ? eLargeHall : eDefault;
     }
 
-bool ASPCRecord::IsPlate()
+bool ASPCRecord::IsEnvironmentPlate()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePlate);
+    return (ANAM.value == ePlate);
     }
 
-void ASPCRecord::IsPlate(bool value)
+void ASPCRecord::IsEnvironmentPlate(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePlate : eDummyDefault;
+    ANAM.value = value ? ePlate : eDefault;
     }
 
-bool ASPCRecord::IsnvironmentType(UINT32 Type, bool Exact)
+bool ASPCRecord::IsEnvironmentType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return ANAM.value == Type;
     }
 
 void ASPCRecord::SetEnvironmentType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ANAM.value = Type;
     }
 
-bool ASPCRecord::IsIsExterior()
+bool ASPCRecord::IsSpaceExterior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsExterior);
+    return (INAM.value == eIsExterior);
     }
 
-void ASPCRecord::IsIsExterior(bool value)
+void ASPCRecord::IsSpaceExterior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsExterior : eDummyDefault;
+    INAM.value = value ? eIsExterior : eIsInterior;
     }
 
-bool ASPCRecord::IsIsInterior()
+bool ASPCRecord::IsSpaceInterior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsInterior);
+    return (INAM.value == eIsInterior);
     }
 
-void ASPCRecord::IsIsInterior(bool value)
+void ASPCRecord::IsSpaceInterior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsInterior : eDummyDefault;
+    INAM.value = value ? eIsInterior : eIsExterior;
     }
 
-bool ASPCRecord::IsSpaceType(UINT32 Type, bool Exact)
+bool ASPCRecord::IsSpaceType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return INAM.value == Type;
     }
 
 void ASPCRecord::SetSpaceType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    INAM.value = Type;
     }
 
 UINT32 ASPCRecord::GetType()
@@ -513,6 +451,7 @@ SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
+    UINT32 curSNAM = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -537,7 +476,32 @@ SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 OBND.Read(buffer, subSize, curPos);
                 break;
             case 'MANS':
-                SNAM.Read(buffer, subSize, curPos);
+                switch(curSNAM)
+                    {
+                    case 0:
+                        DawnSNAM.Read(buffer, subSize, curPos);
+                        break;
+                    case 1:
+                        AfternoonSNAM.Read(buffer, subSize, curPos);
+                        break;
+                    case 2:
+                        DuskSNAM.Read(buffer, subSize, curPos);
+                        break;
+                    case 3:
+                        NightSNAM.Read(buffer, subSize, curPos);
+                        break;
+                    case 4:
+                        WallaSNAM.Read(buffer, subSize, curPos);
+                        break;
+                    default:
+                        //ERROR
+                        //printf("FileName = %s\n", FileName);
+                        printf("  ASPC: %08X - Unexpected SNAM\n", formID);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        curPos = recSize;
+                        break;
+                    }
+                ++curSNAM;
                 break;
             case 'MANW':
                 WNAM.Read(buffer, subSize, curPos);
@@ -569,7 +533,11 @@ SINT32 ASPCRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     OBND.Unload();
-    SNAM.Unload();
+    DawnSNAM.Unload();
+    AfternoonSNAM.Unload();
+    DuskSNAM.Unload();
+    NightSNAM.Unload();
+    WallaSNAM.Unload();
     WNAM.Unload();
     RDAT.Unload();
     ANAM.Unload();
@@ -577,16 +545,19 @@ SINT32 ASPCRecord::Unload()
     return 1;
     }
 
-SINT32 ASPCRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ASPCRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-    WRITE(SNAM);
+    WRITEAS(DawnSNAM, SNAM);
+    WRITEAS(AfternoonSNAM, SNAM);
+    WRITEAS(DuskSNAM, SNAM);
+    WRITEAS(NightSNAM, SNAM);
+    WRITEAS(WallaSNAM, SNAM);
     WRITE(WNAM);
     WRITE(RDAT);
     WRITE(ANAM);
     WRITE(INAM);
-
     return -1;
     }
 
@@ -594,7 +565,11 @@ bool ASPCRecord::operator ==(const ASPCRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
             OBND == other.OBND &&
-            SNAM == other.SNAM &&
+            DawnSNAM == other.DawnSNAM &&
+            AfternoonSNAM == other.AfternoonSNAM &&
+            DuskSNAM == other.DuskSNAM &&
+            NightSNAM == other.NightSNAM &&
+            WallaSNAM == other.WallaSNAM &&
             WNAM == other.WNAM &&
             RDAT == other.RDAT &&
             ANAM == other.ANAM &&

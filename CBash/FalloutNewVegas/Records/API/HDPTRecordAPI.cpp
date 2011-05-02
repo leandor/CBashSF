@@ -227,18 +227,7 @@ bool HDPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MODL->Textures.MODS.back();
-                    MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -326,9 +315,7 @@ void HDPTRecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MODL->Textures.MODS.size(); x++)
-                        delete MODL->Textures.MODS[x];
-                    MODL->Textures.MODS.clear();
+                    MODL->Textures.Unload();
                     return;
                     }
 

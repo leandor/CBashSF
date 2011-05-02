@@ -217,7 +217,7 @@ SINT32 ALOCRecord::Unload()
     return 1;
     }
 
-SINT32 ALOCRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ALOCRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

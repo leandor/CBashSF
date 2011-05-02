@@ -381,7 +381,7 @@ SINT32 ACRERecord::Unload()
     return 1;
     }
 
-SINT32 ACRERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACRERecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NAME);

@@ -132,35 +132,35 @@ class RGDLRecord : public FNVRecord //Ragdoll
         void   IsNoFeedback(bool value);
         bool   IsFeedback();
         void   IsFeedback(bool value);
-        bool   IsFeedbackType(UINT8 Type, bool Exact=false);
+        bool   IsFeedbackType(UINT8 Type);
         void   SetFeedbackType(UINT8 Type);
 
         bool   IsNoFootIK();
         void   IsNoFootIK(bool value);
         bool   IsFootIK();
         void   IsFootIK(bool value);
-        bool   IsFootType(UINT8 Type, bool Exact=false);
+        bool   IsFootType(UINT8 Type);
         void   SetFootType(UINT8 Type);
 
         bool   IsNoLookIK();
         void   IsNoLookIK(bool value);
         bool   IsLookIK();
         void   IsLookIK(bool value);
-        bool   IsLookType(UINT8 Type, bool Exact=false);
+        bool   IsLookType(UINT8 Type);
         void   SetLookType(UINT8 Type);
 
         bool   IsNoGrabIK();
         void   IsNoGrabIK(bool value);
         bool   IsGrabIK();
         void   IsGrabIK(bool value);
-        bool   IsGrabType(UINT8 Type, bool Exact=false);
+        bool   IsGrabType(UINT8 Type);
         void   SetGrabType(UINT8 Type);
 
         bool   IsNoMatchPose();
         void   IsNoMatchPose(bool value);
         bool   IsMatchPose();
         void   IsMatchPose(bool value);
-        bool   IsMatchType(UINT8 Type, bool Exact=false);
+        bool   IsMatchType(UINT8 Type);
         void   SetMatchType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

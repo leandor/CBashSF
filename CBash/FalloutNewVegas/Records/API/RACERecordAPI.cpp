@@ -2553,18 +2553,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD0.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD0.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD0.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD0.MODL->Textures.MODS.back();
-                    MHMOD0.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD0.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2619,18 +2608,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD1.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD1.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD1.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD1.MODL->Textures.MODS.back();
-                    MHMOD1.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD1.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2685,18 +2663,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD2.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD2.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD2.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD2.MODL->Textures.MODS.back();
-                    MHMOD2.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD2.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2751,18 +2718,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD3.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD3.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD3.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD3.MODL->Textures.MODS.back();
-                    MHMOD3.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD3.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2817,18 +2773,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD4.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD4.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD4.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD4.MODL->Textures.MODS.back();
-                    MHMOD4.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD4.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2883,18 +2828,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD5.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD5.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD5.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD5.MODL->Textures.MODS.back();
-                    MHMOD5.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD5.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -2949,18 +2883,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD6.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD6.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD6.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD6.MODL->Textures.MODS.back();
-                    MHMOD6.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD6.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3015,18 +2938,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MHMOD7.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MHMOD7.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MHMOD7.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MHMOD7.MODL->Textures.MODS.back();
-                    MHMOD7.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MHMOD7.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3081,18 +2993,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD0.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD0.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD0.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD0.MODL->Textures.MODS.back();
-                    FHMOD0.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD0.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3147,18 +3048,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD1.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD1.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD1.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD1.MODL->Textures.MODS.back();
-                    FHMOD1.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD1.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3213,18 +3103,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD2.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD2.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD2.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD2.MODL->Textures.MODS.back();
-                    FHMOD2.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD2.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3279,18 +3158,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD3.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD3.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD3.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD3.MODL->Textures.MODS.back();
-                    FHMOD3.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD3.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3345,18 +3213,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD4.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD4.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD4.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD4.MODL->Textures.MODS.back();
-                    FHMOD4.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD4.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3411,18 +3268,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD5.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD5.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD5.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD5.MODL->Textures.MODS.back();
-                    FHMOD5.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD5.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3477,18 +3323,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD6.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD6.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD6.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD6.MODL->Textures.MODS.back();
-                    FHMOD6.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD6.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3543,18 +3378,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FHMOD7.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FHMOD7.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FHMOD7.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FHMOD7.MODL->Textures.MODS.back();
-                    FHMOD7.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FHMOD7.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3609,18 +3433,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MBMOD0.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MBMOD0.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MBMOD0.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MBMOD0.MODL->Textures.MODS.back();
-                    MBMOD0.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MBMOD0.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3675,18 +3488,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MBMOD1.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MBMOD1.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MBMOD1.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MBMOD1.MODL->Textures.MODS.back();
-                    MBMOD1.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MBMOD1.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3741,18 +3543,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MBMOD2.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MBMOD2.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MBMOD2.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MBMOD2.MODL->Textures.MODS.back();
-                    MBMOD2.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MBMOD2.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3807,18 +3598,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MBMOD3.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)MBMOD3.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    MBMOD3.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete MBMOD3.MODL->Textures.MODS.back();
-                    MBMOD3.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                MBMOD3.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3873,18 +3653,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FBMOD0.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FBMOD0.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FBMOD0.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FBMOD0.MODL->Textures.MODS.back();
-                    FBMOD0.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FBMOD0.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -3939,18 +3708,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FBMOD1.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FBMOD1.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FBMOD1.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FBMOD1.MODL->Textures.MODS.back();
-                    FBMOD1.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FBMOD1.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -4005,18 +3763,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FBMOD2.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FBMOD2.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FBMOD2.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FBMOD2.MODL->Textures.MODS.back();
-                    FBMOD2.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FBMOD2.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 
@@ -4071,18 +3818,7 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FBMOD3.MODL.Load();
             if(ListFieldID == 0) //altTexturesSize
                 {
-                ArraySize -= (UINT32)FBMOD3.MODL->Textures.MODS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    FBMOD3.MODL->Textures.MODS.push_back(new FNVMODS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete FBMOD3.MODL->Textures.MODS.back();
-                    FBMOD3.MODL->Textures.MODS.pop_back();
-                    ++ArraySize;
-                    }
+                FBMOD3.MODL->Textures.resize(ArraySize);
                 return false;
                 }
 

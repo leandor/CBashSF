@@ -369,10 +369,10 @@ void INFORecord::IsRadio(bool value)
     Dummy->flags = value ? eRadio : eDummyDefault;
     }
 
-bool INFORecord::IsDialogType(UINT16 Type, bool Exact)
+bool INFORecord::IsDialogType(UINT16 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void INFORecord::SetDialogType(UINT16 Type)
@@ -417,10 +417,10 @@ void INFORecord::IsEither(bool value)
     Dummy->flags = value ? eEither : eDummyDefault;
     }
 
-bool INFORecord::IsSpeakerType(UINT8 Type, bool Exact)
+bool INFORecord::IsSpeakerType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void INFORecord::SetSpeakerType(UINT8 Type)
@@ -501,10 +501,10 @@ void INFORecord::IsVeryHard(bool value)
     Dummy->flags = value ? eVeryHard : eDummyDefault;
     }
 
-bool INFORecord::IsDifficultyType(UINT8 Type, bool Exact)
+bool INFORecord::IsDifficultyType(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void INFORecord::SetDifficultyType(UINT8 Type)
@@ -677,7 +677,7 @@ SINT32 INFORecord::Unload()
     return 1;
     }
 
-SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 INFORecord::WriteRecord(FileWriter &writer)
     {
     WRITE(DATA);
     WRITE(QSTI);

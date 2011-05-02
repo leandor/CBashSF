@@ -130,7 +130,7 @@ SINT32 DEHYRecord::Unload()
     return 1;
     }
 
-SINT32 DEHYRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DEHYRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(DATA);

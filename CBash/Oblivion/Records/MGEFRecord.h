@@ -31,14 +31,14 @@ class MGEFRecord : public Record
             {
             UINT32  flags;
             FLOAT32 baseCost;
-            UINT32  associated;
+            FORMID  associated;
             SINT32  school;
             UINT32  resistValue;
             UINT16  numCounters; //According to OBME
             UINT8   unused1[2];
-            UINT32  light;
+            FORMID  light;
             FLOAT32 projectileSpeed;
-            UINT32  effectShader, enchantEffect, castingSound, boltSound, hitSound, areaSound;
+            FORMID  effectShader, enchantEffect, castingSound, boltSound, hitSound, areaSound;
             FLOAT32 cefEnchantment, cefBarter;
 
             MGEFDATA();
@@ -268,6 +268,7 @@ class MGEFRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
         bool   IsKeyedByEditorID();
+        STRING GetEditorIDKey();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

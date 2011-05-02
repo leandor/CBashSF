@@ -143,7 +143,7 @@ SINT32 REPURecord::Unload()
     return 1;
     }
 
-SINT32 REPURecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REPURecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

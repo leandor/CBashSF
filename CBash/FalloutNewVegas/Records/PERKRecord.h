@@ -199,21 +199,21 @@ class PERKRecord : public FNVRecord //Perk
         void   IsNotTrait(bool value);
         bool   IsTrait();
         void   IsTrait(bool value);
-        bool   IsTraitType(UINT8 Type, bool Exact=false);
+        bool   IsTraitType(UINT8 Type);
         void   SetTraitType(UINT8 Type);
 
         bool   IsNotPlayable();
         void   IsNotPlayable(bool value);
         bool   IsPlayable();
         void   IsPlayable(bool value);
-        bool   IsPlayableType(UINT8 Type, bool Exact=false);
+        bool   IsPlayableType(UINT8 Type);
         void   SetPlayableType(UINT8 Type);
 
         bool   IsNotHidden();
         void   IsNotHidden(bool value);
         bool   IsHidden();
         void   IsHidden(bool value);
-        bool   IsHiddenType(UINT8 Type, bool Exact=false);
+        bool   IsHiddenType(UINT8 Type);
         void   SetHiddenType(UINT8 Type);
 
         bool   IsQuestStage();
@@ -222,7 +222,7 @@ class PERKRecord : public FNVRecord //Perk
         void   IsAbility(bool value);
         bool   IsEntryPoint();
         void   IsEntryPoint(bool value);
-        bool   IsType(UINT8 Type, bool Exact=false);
+        bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

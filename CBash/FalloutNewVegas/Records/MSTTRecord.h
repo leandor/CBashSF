@@ -29,7 +29,7 @@ class MSTTRecord : public FNVRecord //Moveable Static
     {
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<GENOBND> OBND; //Object Bounds
+        ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable

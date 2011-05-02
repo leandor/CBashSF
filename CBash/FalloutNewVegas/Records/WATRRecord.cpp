@@ -219,7 +219,7 @@ SINT32 WATRRecord::Unload()
     return 1;
     }
 
-SINT32 WATRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WATRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);

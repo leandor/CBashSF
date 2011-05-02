@@ -462,10 +462,10 @@ void LTEXRecord::IsRubberBall(bool value)
     Dummy->flags = value ? eRubberBall : eDummyDefault;
     }
 
-bool LTEXRecord::Is0Type(UINT8 Type, bool Exact)
+bool LTEXRecord::Is0Type(UINT8 Type)
     {
     if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Type) == Mask) : ((Dummy->flags & Type) != 0);
+    return Dummy->type == Type;
     }
 
 void LTEXRecord::Set0Type(UINT8 Type)
@@ -553,7 +553,7 @@ SINT32 LTEXRecord::Unload()
     return 1;
     }
 
-SINT32 LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LTEXRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(ICON);
