@@ -25,6 +25,8 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+struct sortRNAM;
+
 class FACTRecord : public FNVRecord //Faction
     {
     private:
@@ -45,6 +47,8 @@ class FACTRecord : public FNVRecord //Faction
             ReqSimpleSubRecord<SINT32> RNAM; //Rank#
             StringRecord MNAM, FNAM, INAM; // Male, Female, Insignia (Unused)
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const FACTRNAM &other) const;
             bool operator !=(const FACTRNAM &other) const;
             };
@@ -58,15 +62,15 @@ class FACTRecord : public FNVRecord //Faction
             fIsAllowSell     = 0x0200
             };
 
-        friend bool sortRNAM(FACTRNAM *lhs, FACTRNAM *rhs);
+        friend sortRNAM;
 
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        std::vector<ReqSubRecord<FNVXNAM> *> XNAM;  //Relations
+        OrderedSparseArray<FNVXNAM *> XNAM; //Relations, not sure if record order matters
         ReqSubRecord<FACTDATA> DATA; //Data
-        SemiOptSimpleSubRecord<FLOAT32, 1, 0> CNAM; //Unused
-        std::vector<FACTRNAM *> RNAM; // Ranks
+        SemiOptSimpleSubRecord<FLOAT32, 1> CNAM; //Unused
+        OrderedSparseArray<FACTRNAM *, sortRNAM> RNAM; // Ranks
         OptSimpleSubRecord<FORMID> WMI1; //Reputation
 
         FACTRecord(unsigned char *_recData=NULL);
@@ -93,15 +97,20 @@ class FACTRecord : public FNVRecord //Faction
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const FACTRecord &other) const;
         bool operator !=(const FACTRecord &other) const;
+    };
+
+struct sortRNAM
+    {
+    bool operator()(const FACTRecord::FACTRNAM *lhs, const FACTRecord::FACTRNAM *rhs) const;
     };
 }

@@ -140,66 +140,6 @@ void DOORRecord::SetFlagMask(UINT8 Mask)
     FNAM.value = Mask;
     }
 
-UINT32 DOORRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(BNAM.IsLoaded())
-        TotSize += BNAM.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(TNAM.size())
-        TotSize += (UINT32)TNAM.size() * (sizeof(UINT32) + 6);
-
-    return TotSize;
-    }
-
 UINT32 DOORRecord::GetType()
     {
     return 'ROOD';
@@ -298,32 +238,32 @@ SINT32 DOORRecord::Unload()
     return 1;
     }
 
-SINT32 DOORRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DOORRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
     if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', &BNAM.value, BNAM.GetSize());
+        writer.record_write_subrecord('MANB', &BNAM.value, BNAM.GetSize());
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
     for(UINT32 p = 0; p < TNAM.size(); p++)
-        SaveHandler.writeSubRecord('MANT', &TNAM[p], sizeof(UINT32));
+        writer.record_write_subrecord('MANT', &TNAM[p], sizeof(UINT32));
     return -1;
     }
 

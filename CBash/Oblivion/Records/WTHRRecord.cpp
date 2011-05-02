@@ -493,70 +493,6 @@ void WTHRRecord::SetFlagMask(UINT8 Mask)
     DATA.value.weatherType = Mask;
     }
 
-UINT32 WTHRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DNAM.IsLoaded())
-        {
-        cSize = DNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    for(UINT32 p = 0; p < Sounds.size(); p++)
-        TotSize += Sounds[p]->GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 WTHRRecord::GetType()
     {
     return 'RHTW';
@@ -658,32 +594,32 @@ SINT32 WTHRRecord::Unload()
     return 1;
     }
 
-SINT32 WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WTHRRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
     if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+        writer.record_write_subrecord('MAND', DNAM.value, DNAM.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(NAM0.IsLoaded())
-        SaveHandler.writeSubRecord('0MAN', &NAM0.value, NAM0.GetSize());
+        writer.record_write_subrecord('0MAN', &NAM0.value, NAM0.GetSize());
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
     if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', &HNAM.value, HNAM.GetSize());
+        writer.record_write_subrecord('MANH', &HNAM.value, HNAM.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     for(UINT32 p = 0; p < Sounds.size(); p++)
-        SaveHandler.writeSubRecord('MANS', &Sounds[p]->value, Sounds[p]->GetSize());
+        writer.record_write_subrecord('MANS', &Sounds[p]->value, Sounds[p]->GetSize());
     return -1;
     }
 

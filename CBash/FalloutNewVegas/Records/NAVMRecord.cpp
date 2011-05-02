@@ -478,48 +478,6 @@ bool NAVMRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 NAVMRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NVER.IsLoaded())
-        TotSize += NVER.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(NVVX.IsLoaded())
-        TotSize += NVVX.GetSize() + 6;
-
-    if(NVTR.IsLoaded())
-        TotSize += NVTR.GetSize() + 6;
-
-    if(NVCA.IsLoaded())
-        TotSize += NVCA.GetSize() + 6;
-
-    if(NVDP.IsLoaded())
-        TotSize += NVDP.GetSize() + 6;
-
-    if(NVGD.IsLoaded())
-        TotSize += NVGD.GetSize() + 6;
-
-    if(NVEX.IsLoaded())
-        TotSize += NVEX.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 NAVMRecord::GetType()
     {
     return 'MVAN';
@@ -609,32 +567,15 @@ SINT32 NAVMRecord::Unload()
 
 SINT32 NAVMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(NVER.IsLoaded())
-        SaveHandler.writeSubRecord('REVN', NVER.value, NVER.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(NVVX.IsLoaded())
-        SaveHandler.writeSubRecord('XVVN', NVVX.value, NVVX.GetSize());
-
-    if(NVTR.IsLoaded())
-        SaveHandler.writeSubRecord('RTVN', NVTR.value, NVTR.GetSize());
-
-    if(NVCA.IsLoaded())
-        SaveHandler.writeSubRecord('ACVN', NVCA.value, NVCA.GetSize());
-
-    if(NVDP.IsLoaded())
-        SaveHandler.writeSubRecord('PDVN', NVDP.value, NVDP.GetSize());
-
-    if(NVGD.IsLoaded())
-        SaveHandler.writeSubRecord('DGVN', NVGD.value, NVGD.GetSize());
-
-    if(NVEX.IsLoaded())
-        SaveHandler.writeSubRecord('XEVN', NVEX.value, NVEX.GetSize());
+    WRITE(EDID);
+    WRITE(NVER);
+    WRITE(DATA);
+    WRITE(NVVX);
+    WRITE(NVTR);
+    WRITE(NVCA);
+    WRITE(NVDP);
+    WRITE(NVGD);
+    WRITE(NVEX);
 
     return -1;
     }

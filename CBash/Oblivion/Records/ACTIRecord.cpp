@@ -77,54 +77,6 @@ bool ACTIRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 ACTIRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 ACTIRecord::GetType()
     {
     return 'ITCA';
@@ -205,24 +157,24 @@ SINT32 ACTIRecord::Unload()
     return 1;
     }
 
-SINT32 ACTIRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACTIRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
     return -1;
     }
 

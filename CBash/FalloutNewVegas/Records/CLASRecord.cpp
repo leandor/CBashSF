@@ -303,59 +303,6 @@ void CLASRecord::SetServicesFlagMask(UINT32 Mask)
     DATA.value.services = Mask;
     }
 
-/*
-UINT32 CLASRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    else TotSize += 7;
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += DATA.GetSize() + 6;
-
-    TotSize += ATTR.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 CLASRecord::GetType()
     {
     return 'SALC';
@@ -437,29 +384,13 @@ SINT32 CLASRecord::Unload()
 
 SINT32 CLASRecord::WriteRecord(FileWriter &writer)
     {
-    char null = 0;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
-    else
-        writer.record_write_subrecord('CSED', &null, 1);
-
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        writer.record_write_subrecord('OCIM', MICO.value, MICO.GetSize());
-
-    writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
-
-    writer.record_write_subrecord('RTTA', &ATTR.value, ATTR.GetSize());
-
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITEREQ(DESC);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(DATA);
+    WRITE(ATTR);
     return -1;
     }
 

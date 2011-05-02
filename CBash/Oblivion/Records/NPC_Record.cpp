@@ -106,7 +106,8 @@ NPC_Record::NPC_Record(unsigned char *_recData):
     Record(_recData)
     {
     //NPC_ records are normally compressed
-    IsCompressed(true);
+    if(_recData == NULL)
+        IsCompressed(true);
     }
 
 NPC_Record::NPC_Record(NPC_Record *srcRecord):
@@ -526,120 +527,6 @@ void NPC_Record::SetServicesFlagMask(UINT32 Mask)
     AIDT.value.flags = Mask;
     }
 
-UINT32 NPC_Record::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(ACBS.IsLoaded())
-        TotSize += ACBS.GetSize() + 6;
-
-    for(UINT32 p = 0; p < SNAM.size(); p++)
-        if(SNAM[p]->IsLoaded())
-            TotSize += SNAM[p]->GetSize() + 6;
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    if(RNAM.IsLoaded())
-        TotSize += RNAM.GetSize() + 6;
-
-    if(SPLO.size())
-        TotSize += (UINT32)SPLO.size() * (sizeof(UINT32) + 6);
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    for(UINT32 p = 0; p < CNTO.size(); p++)
-        if(CNTO[p]->IsLoaded())
-            TotSize += CNTO[p]->GetSize() + 6;
-
-    if(AIDT.IsLoaded())
-        TotSize += AIDT.GetSize() + 6;
-
-    if(PKID.size())
-        TotSize += (UINT32)PKID.size() * (sizeof(UINT32) + 6);
-
-    if(KFFZ.size())
-        {
-        cSize = 1; //Type, size, and final null terminator
-        for(UINT32 p = 0; p < KFFZ.size(); p++)
-            if(KFFZ[p].IsLoaded())
-                cSize += KFFZ[p].GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(ENAM.IsLoaded())
-        TotSize += ENAM.GetSize() + 6;
-
-    if(HCLR.IsLoaded())
-        TotSize += HCLR.GetSize() + 6;
-
-    if(ZNAM.IsLoaded())
-        TotSize += ZNAM.GetSize() + 6;
-
-    if(FGGS.IsLoaded())
-        TotSize += FGGS.GetSize() + 6;
-
-    if(FGGA.IsLoaded())
-        TotSize += FGGA.GetSize() + 6;
-
-    if(FGTS.IsLoaded())
-        TotSize += FGTS.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 NPC_Record::GetType()
     {
     return '_CPN';
@@ -822,78 +709,78 @@ SINT32 NPC_Record::Unload()
     return 1;
     }
 
-SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
+SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     {
     UINT32 cSize = 0;
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
 
     if(ACBS.IsLoaded())
-        SaveHandler.writeSubRecord('SBCA', &ACBS.value, ACBS.GetSize());
+        writer.record_write_subrecord('SBCA', &ACBS.value, ACBS.GetSize());
     for(UINT32 p = 0; p < SNAM.size(); p++)
         if(SNAM[p]->IsLoaded())
-            SaveHandler.writeSubRecord('MANS', &SNAM[p]->value, SNAM[p]->GetSize());
+            writer.record_write_subrecord('MANS', &SNAM[p]->value, SNAM[p]->GetSize());
     if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', &INAM.value, INAM.GetSize());
+        writer.record_write_subrecord('MANI', &INAM.value, INAM.GetSize());
     if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', &RNAM.value, RNAM.GetSize());
+        writer.record_write_subrecord('MANR', &RNAM.value, RNAM.GetSize());
     for(UINT32 p = 0; p < SPLO.size(); p++)
-        SaveHandler.writeSubRecord('OLPS', &SPLO[p], sizeof(UINT32));
+        writer.record_write_subrecord('OLPS', &SPLO[p], sizeof(UINT32));
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
     for(UINT32 p = 0; p < CNTO.size(); p++)
         if(CNTO[p]->IsLoaded())
-            SaveHandler.writeSubRecord('OTNC', &CNTO[p]->value, sizeof(GENCNTO));
+            writer.record_write_subrecord('OTNC', &CNTO[p]->value, sizeof(GENCNTO));
     if(AIDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDIA', &AIDT.value, AIDT.GetSize());
+        writer.record_write_subrecord('TDIA', &AIDT.value, AIDT.GetSize());
     for(UINT32 p = 0; p < PKID.size(); p++)
-        SaveHandler.writeSubRecord('DIKP', &PKID[p], sizeof(UINT32));
+        writer.record_write_subrecord('DIKP', &PKID[p], sizeof(UINT32));
     if(KFFZ.size())
         {
         cSize = 1; //final null terminator
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
-        SaveHandler.writeSubRecordHeader('ZFFK', cSize);
+        writer.record_write_subheader('ZFFK', cSize);
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
-                SaveHandler.write(KFFZ[p].value, KFFZ[p].GetSize());
+                writer.record_write(KFFZ[p].value, KFFZ[p].GetSize());
         cSize = 0;
         //write final null terminator
-        SaveHandler.write(&cSize, 1);
+        writer.record_write(&cSize, 1);
         }
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord('MANC', &CNAM.value, CNAM.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', &HNAM.value, HNAM.GetSize());
+        writer.record_write_subrecord('MANH', &HNAM.value, HNAM.GetSize());
     if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
+        writer.record_write_subrecord('MANL', LNAM.value, LNAM.GetSize());
     if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', &ENAM.value, ENAM.GetSize());
+        writer.record_write_subrecord('MANE', &ENAM.value, ENAM.GetSize());
     if(HCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCH', &HCLR.value, HCLR.GetSize());
+        writer.record_write_subrecord('RLCH', &HCLR.value, HCLR.GetSize());
     if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', &ZNAM.value, ZNAM.GetSize());
+        writer.record_write_subrecord('MANZ', &ZNAM.value, ZNAM.GetSize());
     if(FGGS.IsLoaded())
-        SaveHandler.writeSubRecord('SGGF', FGGS.value, FGGS.GetSize());
+        writer.record_write_subrecord('SGGF', FGGS.value, FGGS.GetSize());
     if(FGGA.IsLoaded())
-        SaveHandler.writeSubRecord('AGGF', FGGA.value, FGGA.GetSize());
+        writer.record_write_subrecord('AGGF', FGGA.value, FGGA.GetSize());
     if(FGTS.IsLoaded())
-        SaveHandler.writeSubRecord('STGF', FGTS.value, FGTS.GetSize());
+        writer.record_write_subrecord('STGF', FGTS.value, FGTS.GetSize());
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
     return -1;
     }
 

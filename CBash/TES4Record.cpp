@@ -115,112 +115,6 @@ void TES4Record::IsESM(bool value)
     flags = value ? (flags | fIsESM) : (flags & ~fIsESM);
     }
 
-UINT32 TES4Record::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    switch(whichGame)
-        {
-        case eIsOblivion:
-            if(HEDR.IsLoaded())
-                TotSize += HEDR.GetSize() + 6;
-
-            if(OFST.IsLoaded())
-                {
-                cSize = OFST.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(DELE.IsLoaded())
-                {
-                cSize = DELE.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(CNAM.IsLoaded())
-                {
-                cSize = CNAM.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(SNAM.IsLoaded())
-                {
-                cSize = SNAM.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            for(UINT32 p = 0; p < MAST.size(); p++)
-                {
-                cSize = MAST[p].GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
-                }
-            break;
-        case eIsFallout3:
-            return 0;
-
-        case eIsFalloutNewVegas:
-            if(HEDR.IsLoaded())
-                TotSize += HEDR.GetSize() + 6;
-
-            if(OFST.IsLoaded())
-                {
-                cSize = OFST.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(DELE.IsLoaded())
-                {
-                cSize = DELE.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(CNAM.IsLoaded())
-                {
-                cSize = CNAM.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(SNAM.IsLoaded())
-                {
-                cSize = SNAM.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            for(UINT32 p = 0; p < MAST.size(); p++)
-                {
-                cSize = MAST[p].GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 20;//accounts for associated DATA element, subTypes and sizes
-                }
-
-            if(ONAM.size())
-                TotSize += ONAM.size() * sizeof(FORMID) + 6;
-
-            if(SCRN.IsLoaded())
-                {
-                cSize = SCRN.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            break;
-        }
-
-    return TotSize;
-    }
-
 UINT32 TES4Record::GetType()
     {
     return '4SET';
@@ -323,163 +217,79 @@ SINT32 TES4Record::Unload()
     return 1;
     }
 
-SINT32 TES4Record::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TES4Record::WriteRecord(FileWriter &writer)
     {
     UINT8 DATA[8] = {0};
     switch(whichGame)
         {
         case eIsOblivion:
-            SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            writer.record_write_subrecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
             if(OFST.IsLoaded())
-                SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+                writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
             if(DELE.IsLoaded())
-                SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
+                writer.record_write_subrecord('ELED', DELE.value, DELE.GetSize());
             if(CNAM.IsLoaded())
-                SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+                writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
             if(SNAM.IsLoaded())
-                SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+                writer.record_write_subrecord('MANS', SNAM.value, SNAM.GetSize());
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
-                SaveHandler.writeSubRecord('ATAD', &DATA[0], sizeof(DATA));
+                writer.record_write_subrecord('TSAM', MAST[p].value, MAST[p].GetSize());
+                writer.record_write_subrecord('ATAD', &DATA[0], sizeof(DATA));
                 }
             break;
         case eIsFallout3:
             printf("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
             return -1;
         case eIsFalloutNewVegas:
-            SaveHandler.writeSubRecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            writer.record_write_subrecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
             if(OFST.IsLoaded())
-                SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+                writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
             if(DELE.IsLoaded())
-                SaveHandler.writeSubRecord('ELED', DELE.value, DELE.GetSize());
+                writer.record_write_subrecord('ELED', DELE.value, DELE.GetSize());
             if(CNAM.IsLoaded())
-                SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+                writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
             if(SNAM.IsLoaded())
-                SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+                writer.record_write_subrecord('MANS', SNAM.value, SNAM.GetSize());
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                SaveHandler.writeSubRecord('TSAM', MAST[p].value, MAST[p].GetSize());
-                SaveHandler.writeSubRecord('ATAD', &DATA[0], sizeof(DATA));
+                writer.record_write_subrecord('TSAM', MAST[p].value, MAST[p].GetSize());
+                writer.record_write_subrecord('ATAD', &DATA[0], sizeof(DATA));
                 }
             if(ONAM.size())
-                SaveHandler.writeSubRecord('MANO', &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
+                writer.record_write_subrecord('MANO', &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
             if(SCRN.IsLoaded())
-                SaveHandler.writeSubRecord('NRCS', SCRN.value, SCRN.GetSize());
+                writer.record_write_subrecord('NRCS', SCRN.value, SCRN.GetSize());
             break;
         }
 
     return -1;
     }
 
-UINT32 TES4Record::Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
+UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
     {
     UINT32 recSize = 0;
     UINT32 recType = GetType();
     collapser.Accept(formID);
 
-    if(!IsChanged())
-        {
-        if(bMastersChanged)
-            {
-            //if masters have changed, all formIDs have to be updated...
-            //so the record can't just be written as is.
-            if(Read())
-                {
-                SINT32 index = -1;
-                for(UINT32 x = 0; x < Expanders.size(); ++x)
-                    if(IsValid(*Expanders[x]))
-                        {
-                        index = x;
-                        break;
-                        }
-                if(index == -1)
-                    {
-                    printf("Unable to find the correct expander!\n");
-                    VisitFormIDs(expander);
-                    }
-                else
-                    VisitFormIDs(*Expanders[index]);
-                }
-            }
-        else
-            {
-            //if masters have not changed, the record can just be written from the read buffer
-            recSize = GetSize();
-
-            IsLoaded(false);
-            SaveHandler.write(&recType, 4);
-            SaveHandler.write(&recSize, 4);
-            SaveHandler.write(&flags, 4);
-            SaveHandler.write(&formID, 4);
-            SaveHandler.write(&flagsUnk, 4);
-            if(whichGame == eIsFalloutNewVegas)
-                {
-                SaveHandler.write(&formVersion, 2);
-                SaveHandler.write(&versionControl2[0], 2);
-                }
-            IsLoaded(true);
-            SaveHandler.write(recData, recSize);
-            Unload();
-            if(whichGame == eIsFalloutNewVegas)
-                return recSize + 24;
-            else
-                return recSize + 20;
-            }
-        }
-    recSize = IsDeleted() ? 0 : GetSize(true);
-
+    VisitFormIDs(collapser);
+    IsCompressed(false);
+    WriteRecord(writer);
     IsLoaded(false);
-    SaveHandler.write(&recType, 4);
-    SaveHandler.write(&recSize, 4);
-    SaveHandler.write(&flags, 4);
-    SaveHandler.write(&formID, 4);
-    SaveHandler.write(&flagsUnk, 4);
+    recSize = writer.record_size();
+    writer.file_write(&recType, 4);
+    writer.file_write(&recSize, 4);
+    writer.file_write(&flags, 4);
+    writer.file_write(&formID, 4);
+    writer.file_write(&flagsUnk, 4);
     if(whichGame == eIsFalloutNewVegas)
         {
-        SaveHandler.write(&formVersion, 2);
-        SaveHandler.write(&versionControl2[0], 2);
+        writer.file_write(&formVersion, 2);
+        writer.file_write(&versionControl2[0], 2);
         }
     IsLoaded(true);
+    writer.record_flush();
 
-    VisitFormIDs(collapser);
-
-    if(!IsDeleted())
-        {
-        //IsCompressed(true); //Test code
-        if(IsCompressed())
-            {
-            //printf("Compressed: %08X\n", formID);
-            UINT32 recStart = SaveHandler.tell();
-            UINT32 compSize = compressBound(recSize);
-            unsigned char *compBuffer = new unsigned char[compSize + 4];
-            SaveHandler.reserveBuffer(compSize + 4);
-            WriteRecord(SaveHandler);
-            memcpy(compBuffer, &recSize, 4);
-            if(SaveHandler.IsCached(recStart) && ((SaveHandler.UnusedCache() + recSize) >= compSize))
-                compress2(compBuffer + 4, &compSize, SaveHandler.getBuffer(recStart), recSize, 6);
-            else
-                {
-                SaveHandler.flush();
-                printf("TES4Record::WriteRecord: Error - Compressed record (%08X) written incorrectly. Requested data not in cache, size: %u\n", formID, recSize);
-                if(whichGame == eIsFalloutNewVegas)
-                    return recSize + 24;
-                else
-                    return recSize + 20;
-                }
-            SaveHandler.set_used((compSize + 4) - recSize);
-            recSize = compSize + 4;
-            if(whichGame == eIsFalloutNewVegas)
-                SaveHandler.writeAt(recStart - 20, &recSize, 4);
-            else
-                SaveHandler.writeAt(recStart - 16, &recSize, 4);
-
-            SaveHandler.writeAt(recStart, compBuffer, recSize);
-            delete []compBuffer;
-            }
-        else
-            WriteRecord(SaveHandler);
-        }
     expander.Accept(formID);
     if(IsChanged())
         VisitFormIDs(expander);

@@ -226,56 +226,6 @@ void DIALRecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 DIALRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(QSTI.IsLoaded())
-        TotSize += QSTI.GetSize() + 6;
-
-    if(INFC.IsLoaded())
-        TotSize += INFC.GetSize() + 6;
-
-    if(INFX.IsLoaded())
-        TotSize += INFX.GetSize() + 6;
-
-    if(QSTR.IsLoaded())
-        TotSize += QSTR.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PNAM.IsLoaded())
-        TotSize += PNAM.GetSize() + 6;
-
-    if(TDUM.IsLoaded())
-        {
-        cSize = TDUM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 DIALRecord::GetType()
     {
     return 'LAID';
@@ -365,32 +315,15 @@ SINT32 DIALRecord::Unload()
 
 SINT32 DIALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(QSTI.IsLoaded())
-        SaveHandler.writeSubRecord('ITSQ', QSTI.value, QSTI.GetSize());
-
-    if(INFC.IsLoaded())
-        SaveHandler.writeSubRecord('CFNI', INFC.value, INFC.GetSize());
-
-    if(INFX.IsLoaded())
-        SaveHandler.writeSubRecord('XFNI', INFX.value, INFX.GetSize());
-
-    if(QSTR.IsLoaded())
-        SaveHandler.writeSubRecord('RTSQ', QSTR.value, QSTR.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
-
-    if(TDUM.IsLoaded())
-        SaveHandler.writeSubRecord('MUDT', TDUM.value, TDUM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(QSTI);
+    WRITE(INFC);
+    WRITE(INFX);
+    WRITE(QSTR);
+    WRITE(FULL);
+    WRITE(PNAM);
+    WRITE(TDUM);
+    WRITE(DATA);
 
     return -1;
     }

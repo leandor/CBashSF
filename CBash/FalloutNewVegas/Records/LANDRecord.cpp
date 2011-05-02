@@ -81,61 +81,6 @@ bool LANDRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LANDRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VNML.IsLoaded())
-        {
-        cSize = VNML.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VHGT.IsLoaded())
-        {
-        cSize = VHGT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VCLR.IsLoaded())
-        {
-        cSize = VCLR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BTXT.IsLoaded())
-        TotSize += BTXT.GetSize() + 6;
-
-    if(ATXT.IsLoaded())
-        TotSize += ATXT.GetSize() + 6;
-
-    if(VTXT.IsLoaded())
-        {
-        cSize = VTXT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VTEX.IsLoaded())
-        TotSize += VTEX.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LANDRecord::GetType()
     {
     return 'DNAL';
@@ -221,29 +166,14 @@ SINT32 LANDRecord::Unload()
 
 SINT32 LANDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(VNML.IsLoaded())
-        SaveHandler.writeSubRecord('LMNV', VNML.value, VNML.GetSize());
-
-    if(VHGT.IsLoaded())
-        SaveHandler.writeSubRecord('TGHV', VHGT.value, VHGT.GetSize());
-
-    if(VCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCV', VCLR.value, VCLR.GetSize());
-
-    if(BTXT.IsLoaded())
-        SaveHandler.writeSubRecord('TXTB', BTXT.value, BTXT.GetSize());
-
-    if(ATXT.IsLoaded())
-        SaveHandler.writeSubRecord('TXTA', ATXT.value, ATXT.GetSize());
-
-    if(VTXT.IsLoaded())
-        SaveHandler.writeSubRecord('TXTV', VTXT.value, VTXT.GetSize());
-
-    if(VTEX.IsLoaded())
-        SaveHandler.writeSubRecord('XETV', VTEX.value, VTEX.GetSize());
+    WRITE(DATA);
+    WRITE(VNML);
+    WRITE(VHGT);
+    WRITE(VCLR);
+    WRITE(BTXT);
+    WRITE(ATXT);
+    WRITE(VTXT);
+    WRITE(VTEX);
 
     return -1;
     }

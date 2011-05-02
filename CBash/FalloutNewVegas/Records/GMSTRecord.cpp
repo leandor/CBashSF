@@ -134,45 +134,6 @@ GMSTRecord::~GMSTRecord()
     //
     }
 
-UINT32 GMSTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    switch(DATA.format)
-        {
-        case 'i':
-        case 'f':
-            TotSize += 10;
-            break;
-        case 's':
-            if(DATA.s != NULL)
-                {
-                cSize = (UINT32)strlen(DATA.s) + 1;
-                if(cSize > 65535) cSize += 10;
-                }
-            else
-                cSize = 1;
-            TotSize += cSize += 6;
-            break;
-        default:
-            printf("Unknown GMST format (%c) in GetSize(): %s\n", DATA.format, EDID.value);
-            break;
-        }
-
-    return TotSize;
-    }
-
 UINT32 GMSTRecord::GetType()
     {
     return 'TSMG';
@@ -263,24 +224,23 @@ SINT32 GMSTRecord::Unload()
     return 1;
     }
 
-SINT32 GMSTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 GMSTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    WRITE(EDID);
     UINT8 null = 0;
     switch(DATA.format)
         {
         case 'i':
-            SaveHandler.writeSubRecord('ATAD', &DATA.i, 4);
+            writer.record_write_subrecord('ATAD', &DATA.i, 4);
             break;
         case 'f':
-            SaveHandler.writeSubRecord('ATAD', &DATA.f, 4);
+            writer.record_write_subrecord('ATAD', &DATA.f, 4);
             break;
         case 's':
             if(DATA.s != NULL)
-                SaveHandler.writeSubRecord('ATAD', DATA.s, (UINT32)strlen(DATA.s) + 1);
+                writer.record_write_subrecord('ATAD', DATA.s, (UINT32)strlen(DATA.s) + 1);
             else
-                SaveHandler.writeSubRecord('ATAD', &null, 1);
+                writer.record_write_subrecord('ATAD', &null, 1);
             break;
         default:
             printf("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);

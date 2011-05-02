@@ -115,92 +115,6 @@ void CSNORecord::SetFlagMask(UINT32 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 CSNORecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(MODL.IsLoaded())
-        {
-        cSize = MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD2.IsLoaded())
-        {
-        cSize = MOD2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD3.IsLoaded())
-        {
-        cSize = MOD3.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD4.IsLoaded())
-        {
-        cSize = MOD4.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        if(ICON->ICON.IsLoaded())
-            {
-            cSize = ICON->ICON.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(ICO2.IsLoaded())
-        {
-        if(ICO2->ICO2.IsLoaded())
-            {
-            cSize = ICO2->ICO2.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    return TotSize;
-    }
-
 UINT32 CSNORecord::GetType()
     {
     return 'ONSC';
@@ -297,14 +211,9 @@ SINT32 CSNORecord::Unload()
 
 SINT32 CSNORecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(DATA);
 
     if(MODL.IsLoaded())
         {
@@ -313,17 +222,10 @@ SINT32 CSNORecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(MODL.IsLoaded())
-        SaveHandler.writeSubRecord('LDOM', MODL.value, MODL.GetSize());
-
-    if(MOD2.IsLoaded())
-        SaveHandler.writeSubRecord('2DOM', MOD2.value, MOD2.GetSize());
-
-    if(MOD3.IsLoaded())
-        SaveHandler.writeSubRecord('3DOM', MOD3.value, MOD3.GetSize());
-
-    if(MOD4.IsLoaded())
-        SaveHandler.writeSubRecord('4DOM', MOD4.value, MOD4.GetSize());
+    WRITE(MODL);
+    WRITE(MOD2);
+    WRITE(MOD3);
+    WRITE(MOD4);
 
     if(ICON.IsLoaded())
         {

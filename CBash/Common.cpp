@@ -791,7 +791,7 @@ UINT32 StringRecord::CalcSize() const
     {
     if(value != NULL)
         {
-        UINT32 cSize = GetSize();
+        UINT32 cSize = (UINT32)strlen(value) + 1;
         cSize += (cSize > 65535) ? 16 : 6;
         return cSize;
         }
@@ -830,9 +830,19 @@ bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &cu
 void StringRecord::Write(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
-        writer.record_write_subrecord(_Type, value, GetSize());
+        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value) + 1);
     }
 
+void StringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value) + 1);
+    else
+        {
+        char null = 0x00;
+        writer.record_write_subrecord(_Type, &null, 1);
+        }
+    }
 void StringRecord::Copy(const StringRecord &FieldValue)
     {
     Copy(FieldValue.value);
@@ -946,11 +956,7 @@ UINT32 RawRecord::GetSize() const
 UINT32 RawRecord::CalcSize() const
     {
     if(value != NULL)
-        {
-        UINT32 cSize = GetSize();
-        cSize += (cSize > 65535) ? 16 : 6;
-        return cSize;
-        }
+        return (size > 65535) ? size + 16 : size + 6;;
     return 0;
     }
 

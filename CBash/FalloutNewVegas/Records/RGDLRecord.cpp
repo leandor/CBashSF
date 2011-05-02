@@ -284,52 +284,6 @@ void RGDLRecord::SetMatchType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 RGDLRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NVER.IsLoaded())
-        TotSize += NVER.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(XNAM.IsLoaded())
-        TotSize += XNAM.GetSize() + 6;
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-
-    if(RAFD.IsLoaded())
-        TotSize += RAFD.GetSize() + 6;
-
-    if(RAFB.IsLoaded())
-        TotSize += RAFB.GetSize() + 6;
-
-    if(RAPS.IsLoaded())
-        TotSize += RAPS.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        {
-        cSize = ANAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 RGDLRecord::GetType()
     {
     return 'LDGR';
@@ -419,32 +373,15 @@ SINT32 RGDLRecord::Unload()
 
 SINT32 RGDLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(NVER.IsLoaded())
-        SaveHandler.writeSubRecord('REVN', NVER.value, NVER.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(RAFD.IsLoaded())
-        SaveHandler.writeSubRecord('DFAR', RAFD.value, RAFD.GetSize());
-
-    if(RAFB.IsLoaded())
-        SaveHandler.writeSubRecord('BFAR', RAFB.value, RAFB.GetSize());
-
-    if(RAPS.IsLoaded())
-        SaveHandler.writeSubRecord('SPAR', RAPS.value, RAPS.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+    WRITE(EDID);
+    WRITE(NVER);
+    WRITE(DATA);
+    WRITE(XNAM);
+    WRITE(TNAM);
+    WRITE(RAFD);
+    WRITE(RAFB);
+    WRITE(RAPS);
+    WRITE(ANAM);
 
     return -1;
     }

@@ -421,102 +421,6 @@ void QUSTRecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
-UINT32 QUSTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        if(CTDA[p]->IsLoaded())
-            TotSize += CTDA[p]->GetSize() + 6;
-
-    for(UINT32 p = 0; p < Stages.size(); p++)
-        {
-        if(Stages[p]->INDX.IsLoaded())
-            TotSize += Stages[p]->INDX.GetSize() + 6;
-
-        for(UINT32 x = 0; x < Stages[p]->Entries.size(); x++)
-            {
-
-            if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                TotSize += Stages[p]->Entries[x]->QSDT.GetSize() + 6;
-
-            if(Stages[p]->Entries[x]->CTDA.size())
-                for(UINT32 y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
-                    if(Stages[p]->Entries[x]->CTDA[y]->IsLoaded())
-                        TotSize += Stages[p]->Entries[x]->CTDA[y]->GetSize() + 6;
-
-            if(Stages[p]->Entries[x]->CNAM.IsLoaded())
-                {
-                cSize = Stages[p]->Entries[x]->CNAM.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                TotSize += Stages[p]->Entries[x]->SCHR.GetSize() + 6;
-
-            if(Stages[p]->Entries[x]->SCDA.IsLoaded())
-                {
-                cSize = Stages[p]->Entries[x]->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(Stages[p]->Entries[x]->SCTX.IsLoaded())
-                {
-                cSize = Stages[p]->Entries[x]->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            TotSize += (sizeof(UINT32) + 6) * (UINT32)Stages[p]->Entries[x]->SCR_.size();
-            }
-        }
-
-    for(UINT32 p = 0; p < Targets.size(); p++)
-        {
-        if(Targets[p]->QSTA.IsLoaded())
-            TotSize += Targets[p]->QSTA.GetSize() + 6;
-
-        for(UINT32 y = 0; y < Targets[p]->CTDA.size(); y++)
-            if(Targets[p]->CTDA[y]->IsLoaded())
-                TotSize += Targets[p]->CTDA[y]->GetSize() + 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 QUSTRecord::GetType()
     {
     return 'TSUQ';
@@ -700,21 +604,21 @@ SINT32 QUSTRecord::Unload()
     return 1;
     }
 
-SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     {
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
         curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
@@ -726,18 +630,18 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        SaveHandler.writeSubRecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
         }
     if(Stages.size())
         for(UINT32 p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
-                SaveHandler.writeSubRecord('XDNI', &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
+                writer.record_write_subrecord('XDNI', &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
             if(Stages[p]->Entries.size())
                 for(UINT32 x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                        SaveHandler.writeSubRecord('TDSQ', &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
+                        writer.record_write_subrecord('TDSQ', &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
                     for(UINT32 y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                         {
                         curCTDAFunction = Function_Arguments.find(Stages[p]->Entries[x]->CTDA[y]->value.ifunc);
@@ -749,30 +653,30 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
                             if(CTDAFunction.second == eNONE)
                                 Stages[p]->Entries[x]->CTDA[y]->value.param2 = 0;
                             }
-                        SaveHandler.writeSubRecord('ADTC', &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
+                        writer.record_write_subrecord('ADTC', &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
                         }
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
-                        SaveHandler.writeSubRecord('MANC', Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
+                        writer.record_write_subrecord('MANC', Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
                     if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                        SaveHandler.writeSubRecord('RHCS', &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
+                        writer.record_write_subrecord('RHCS', &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
                     if(Stages[p]->Entries[x]->SCDA.IsLoaded())
-                        SaveHandler.writeSubRecord('ADCS', Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
+                        writer.record_write_subrecord('ADCS', Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
                     if(Stages[p]->Entries[x]->SCTX.IsLoaded())
-                        SaveHandler.writeSubRecord('XTCS', Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
+                        writer.record_write_subrecord('XTCS', Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
                     if(Stages[p]->Entries[x]->SCR_.size())
                         for(UINT32 y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
                             if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
                                 if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
-                                    SaveHandler.writeSubRecord('ORCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
+                                    writer.record_write_subrecord('ORCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
                                 else
-                                    SaveHandler.writeSubRecord('VRCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
+                                    writer.record_write_subrecord('VRCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
                     }
             }
     if(Targets.size())
         for(UINT32 p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
-                SaveHandler.writeSubRecord('ATSQ', &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
+                writer.record_write_subrecord('ATSQ', &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
             for(UINT32 y = 0; y < Targets[p]->CTDA.size(); y++)
                 {
                 curCTDAFunction = Function_Arguments.find(Targets[p]->CTDA[y]->value.ifunc);
@@ -784,7 +688,7 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
                     if(CTDAFunction.second == eNONE)
                         Targets[p]->CTDA[y]->value.param2 = 0;
                     }
-                SaveHandler.writeSubRecord('ADTC', &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
+                writer.record_write_subrecord('ADTC', &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
                 }
             }
     return -1;

@@ -71,27 +71,6 @@ bool FLSTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 FLSTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 FLSTRecord::GetType()
     {
     return 'TSLF';
@@ -153,11 +132,8 @@ SINT32 FLSTRecord::Unload()
 
 SINT32 FLSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
+    WRITE(EDID);
+    WRITE(LNAM);
 
     return -1;
     }

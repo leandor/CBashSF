@@ -81,31 +81,6 @@ ROADRecord::~ROADRecord()
     //
     }
 
-UINT32 ROADRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(PGRP.size())
-        {
-        cSize = (sizeof(GENPGRP) * (UINT32)PGRP.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PGRR.size())
-        {
-        cSize = (sizeof(ROADPGRR) * (UINT32)PGRR.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 ROADRecord::GetType()
     {
     return 'DAOR';
@@ -192,12 +167,12 @@ SINT32 ROADRecord::Unload()
     return 1;
     }
 
-SINT32 ROADRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ROADRecord::WriteRecord(FileWriter &writer)
     {
     if(PGRP.size())
-        SaveHandler.writeSubRecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
+        writer.record_write_subrecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
     if(PGRR.size())
-        SaveHandler.writeSubRecord('RRGP', &PGRR[0], sizeof(ROADPGRR) * (UINT32)PGRR.size());
+        writer.record_write_subrecord('RRGP', &PGRR[0], sizeof(ROADPGRR) * (UINT32)PGRR.size());
     return -1;
     }
 

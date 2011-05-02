@@ -307,51 +307,6 @@ void IDLERecord::SetFlagMask(UINT8 Mask)
     ANAM.value |= Mask;
     }
 
-UINT32 IDLERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        if(CTDA[p]->IsLoaded())
-            TotSize += CTDA[p]->GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 IDLERecord::GetType()
     {
     return 'ELDI';
@@ -438,20 +393,20 @@ SINT32 IDLERecord::Unload()
     return 1;
     }
 
-SINT32 IDLERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 IDLERecord::WriteRecord(FileWriter &writer)
     {
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
@@ -464,12 +419,12 @@ SINT32 IDLERecord::WriteRecord(_FileHandler &SaveHandler)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        SaveHandler.writeSubRecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
         }
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;
     }
 

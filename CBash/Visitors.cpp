@@ -41,12 +41,19 @@ FormIDMasterUpdater::~FormIDMasterUpdater()
 
 bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
     {
-    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((curFormID == 0) || (curFormID < END_HARDCODED_IDS))
+    //If formID is not set, or the formID belongs to the engine, do nothing
+    //Any formID whose objectID is less than END_HARDCODED_IDS is given the 00 modIndex by the engine regardless of what it actually is
+    //I.e. the CS will complain of duplicate formIDs if a mod has both 0x00000042 and 0x01000042
+    //In short, formIDs with an objectID < END_HARDCODED_IDS all collide. They don't use the modIndex.
+    if((curFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
+        {
+        curFormID &= 0x00FFFFFF;
         return stop;
+        }
 
     UINT32 modIndex = curFormID >> 24;
     //printf("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
+    //If the formID belongs to the mod, or if the master is already present, do nothing
     if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;
 
@@ -63,11 +70,12 @@ bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
 
 bool FormIDMasterUpdater::AcceptMGEF(UINT32 &curMgefCode)
     {
-    //If formID is not set, or the formID belongs to the engine, or the formID belongs to the mod, or if the master is already present, do nothing
-    if((curMgefCode == 0) || (curMgefCode < END_HARDCODED_IDS))
+    //If MgefCode is not set, do nothing
+    if(curMgefCode == 0)
         return stop;
 
     UINT32 modIndex = curMgefCode & 0x000000FF;
+    //If the MgefCode belongs to the mod, or if the master is already present, do nothing
     if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;
 
@@ -169,7 +177,7 @@ bool RecordMasterChecker::FormIDMasterChecker::Accept(UINT32 &curFormID)
         return result;
 
     //Any formID <= 0x800 is hardcoded in the engine and doesn't 'belong' to a mod.
-    if(curFormID < END_HARDCODED_IDS)
+    if((curFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
         return false;
 
     //Check if the master index is in use

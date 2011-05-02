@@ -147,67 +147,6 @@ void HAIRRecord::SetFlagMask(UINT8 Mask)
     DATA.value = Mask;
     }
 
-UINT32 HAIRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 HAIRRecord::GetType()
     {
     return 'RIAH';
@@ -296,49 +235,13 @@ SINT32 HAIRRecord::Unload()
     return 1;
     }
 
-SINT32 HAIRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 HAIRRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
-
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(ICON);
+    WRITE(DATA);
     return -1;
     }
 

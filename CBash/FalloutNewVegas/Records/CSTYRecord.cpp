@@ -227,33 +227,6 @@ void CSTYRecord::SetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 CSTYRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CSTD.IsLoaded())
-        TotSize += CSTD.GetSize() + 6;
-
-    if(CSAD.IsLoaded())
-        TotSize += CSAD.GetSize() + 6;
-
-    if(CSSD.IsLoaded())
-        TotSize += CSSD.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 CSTYRecord::GetType()
     {
     return 'YTSC';
@@ -323,17 +296,10 @@ SINT32 CSTYRecord::Unload()
 
 SINT32 CSTYRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(CSTD.IsLoaded())
-        SaveHandler.writeSubRecord('DTSC', CSTD.value, CSTD.GetSize());
-
-    if(CSAD.IsLoaded())
-        SaveHandler.writeSubRecord('DASC', CSAD.value, CSAD.GetSize());
-
-    if(CSSD.IsLoaded())
-        SaveHandler.writeSubRecord('DSSC', CSSD.value, CSSD.GetSize());
+    WRITE(EDID);
+    WRITE(CSTD);
+    WRITE(CSAD);
+    WRITE(CSSD);
 
     return -1;
     }

@@ -94,34 +94,6 @@ bool DEBRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 DEBRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(MODT.IsLoaded())
-        {
-        cSize = MODT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 DEBRRecord::GetType()
     {
     return 'RBED';
@@ -187,14 +159,9 @@ SINT32 DEBRRecord::Unload()
 
 SINT32 DEBRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(MODT.IsLoaded())
-        SaveHandler.writeSubRecord('TDOM', MODT.value, MODT.GetSize());
+    WRITE(EDID);
+    WRITE(DATA);
+    WRITE(MODT);
 
     return -1;
     }

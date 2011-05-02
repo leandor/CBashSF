@@ -155,103 +155,6 @@ void NOTERecord::SetType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 NOTERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(YNAM.IsLoaded())
-        TotSize += YNAM.GetSize() + 6;
-
-    if(ZNAM.IsLoaded())
-        TotSize += ZNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(ONAM.IsLoaded())
-        TotSize += ONAM.GetSize() + 6;
-
-    if(XNAM.IsLoaded())
-        {
-        cSize = XNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TNAM.IsLoaded())
-        {
-        cSize = TNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 NOTERecord::GetType()
     {
     return 'ETON';
@@ -374,14 +277,9 @@ SINT32 NOTERecord::Unload()
 
 SINT32 NOTERecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(FULL);
 
     if(MODL.IsLoaded())
         {
@@ -413,32 +311,15 @@ SINT32 NOTERecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(YNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
-
-    if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(ONAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(YNAM);
+    WRITE(ZNAM);
+    WRITE(DATA);
+    WRITE(ONAM);
+    WRITE(XNAM);
+    WRITE(TNAM);
+    WRITE(SNAM);
 
     return -1;
     }

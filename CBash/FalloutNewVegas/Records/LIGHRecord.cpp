@@ -208,86 +208,6 @@ void LIGHRecord::SetFlagMask(UINT32 Mask)
     DATA.value.flags = Mask;
     }
 
-UINT32 LIGHRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LIGHRecord::GetType()
     {
     return 'HGIL';
@@ -398,11 +318,8 @@ SINT32 LIGHRecord::Unload()
 
 SINT32 LIGHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
 
     if(MODL.IsLoaded())
         {
@@ -434,26 +351,13 @@ SINT32 LIGHRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+    WRITE(SCRI);
+    WRITE(FULL);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(DATA);
+    WRITE(FNAM);
+    WRITE(SNAM);
 
     return -1;
     }

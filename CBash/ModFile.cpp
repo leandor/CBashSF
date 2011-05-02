@@ -27,17 +27,17 @@ GPL License and Copyright Notice ============================================
 ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
     Flags(_flags),
     TES4(),
-    ReadHandler(FileName, ModName),
+    reader(FileName, ModName),
     FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),
     ModID(0)
     {
     TES4.IsLoaded(false);
-    ModTime = ReadHandler.mtime();
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !ReadHandler.exists())
+    ModTime = reader.mtime();
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !reader.exists())
         {
         Flags.IsIgnoreExisting = true;
         TES4.IsLoaded(true);
-        STRING const _Name = ReadHandler.getModName();
+        STRING const _Name = reader.getModName();
         TES4.IsESM(_stricmp(".esm",_Name + strlen(_Name) - 4) == 0);
         }
     }
@@ -61,22 +61,22 @@ bool ModFile::Open()
     {
     PROFILE_FUNC
 
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || ReadHandler.IsOpen() || !ReadHandler.exists())
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || reader.IsOpen() || !reader.exists())
         {
         if(!Flags.IsIgnoreExisting)
             {
             if(Flags.IsNoLoad)
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", ReadHandler.getModName());
-            else if(ReadHandler.IsOpen())
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", ReadHandler.getModName());
-            else if(!ReadHandler.exists())
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", ReadHandler.getModName());
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", reader.getModName());
+            else if(reader.IsOpen())
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", reader.getModName());
+            else if(!reader.exists())
+                printf("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", reader.getModName());
             }
         return false;
         }
-    ReadHandler.open_ReadOnly();
-    FormIDHandler.FileStart = ReadHandler.getBuffer(0);
-    FormIDHandler.FileEnd = FormIDHandler.FileStart + ReadHandler.getBufferSize();
+    reader.open();
+    FormIDHandler.FileStart = reader.getBuffer();
+    FormIDHandler.FileEnd = FormIDHandler.FileStart + reader.getBufferSize();
     return true;
     }
 
@@ -84,12 +84,12 @@ bool ModFile::Close()
     {
     PROFILE_FUNC
 
-    if(!ReadHandler.IsOpen())
+    if(!reader.IsOpen())
         {
         if(!Flags.IsIgnoreExisting)
-            printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", ReadHandler.getModName());
+            printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", reader.getModName());
         return false;
         }
-    ReadHandler.close();
+    reader.close();
     return true;
     }

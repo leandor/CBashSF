@@ -310,118 +310,6 @@ void PERKRecord::SetType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 PERKRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(PRKE.IsLoaded())
-        TotSize += PRKE.GetSize() + 6;
-
-    if(PRKC.IsLoaded())
-        TotSize += PRKC.GetSize() + 6;
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(EPFT.IsLoaded())
-        {
-        if(EPFT->EPFT.IsLoaded())
-            TotSize += EPFT->EPFT.GetSize() + 6;
-        if(EPFT->DATA.IsLoaded())
-            TotSize += EPFT->DATA.GetSize() + 6;
-        }
-
-    if(EPF2.IsLoaded())
-        {
-        cSize = EPF2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(EPF3.IsLoaded())
-        TotSize += EPF3.GetSize() + 6;
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            TotSize += SCHR->SCHR.GetSize() + 6;
-        if(SCHR->SCDA.IsLoaded())
-            {
-            cSize = SCHR->SCDA.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCTX.IsLoaded())
-            {
-            cSize = SCHR->SCTX.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SLSD.IsLoaded())
-            TotSize += SCHR->SLSD.GetSize() + 6;
-        if(SCHR->SCVR.IsLoaded())
-            {
-            cSize = SCHR->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCRO.IsLoaded())
-            TotSize += SCHR->SCRO.GetSize() + 6;
-        if(SCHR->SCRV.IsLoaded())
-            TotSize += SCHR->SCRV.GetSize() + 6;
-        }
-
-    if(PRKF.IsLoaded())
-        TotSize += PRKF.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 PERKRecord::GetType()
     {
     return 'KREP';
@@ -565,35 +453,16 @@ SINT32 PERKRecord::Unload()
 
 SINT32 PERKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(PRKE.IsLoaded())
-        SaveHandler.writeSubRecord('EKRP', PRKE.value, PRKE.GetSize());
-
-    if(PRKC.IsLoaded())
-        SaveHandler.writeSubRecord('CKRP', PRKC.value, PRKC.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(DESC);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(CTDA);
+    WRITE(DATA);
+    WRITE(PRKE);
+    WRITE(PRKC);
+    WRITE(CTDA);
 
     if(EPFT.IsLoaded())
         {
@@ -605,11 +474,8 @@ SINT32 PERKRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(EPF2.IsLoaded())
-        SaveHandler.writeSubRecord('2FPE', EPF2.value, EPF2.GetSize());
-
-    if(EPF3.IsLoaded())
-        SaveHandler.writeSubRecord('3FPE', EPF3.value, EPF3.GetSize());
+    WRITE(EPF2);
+    WRITE(EPF3);
 
     if(SCHR.IsLoaded())
         {

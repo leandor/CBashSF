@@ -359,102 +359,6 @@ void PROJRecord::SetSoundLevelType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 PROJRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            TotSize += DEST->DEST.GetSize() + 6;
-        if(DEST->DSTD.IsLoaded())
-            TotSize += DEST->DSTD.GetSize() + 6;
-        if(DEST->DMDL.IsLoaded())
-            {
-            cSize = DEST->DMDL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DMDT.IsLoaded())
-            {
-            cSize = DEST->DMDT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DSTF.IsLoaded())
-            TotSize += DEST->DSTF.GetSize() + 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(NAM1.IsLoaded())
-        {
-        cSize = NAM1.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VNAM.IsLoaded())
-        TotSize += VNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 PROJRecord::GetType()
     {
     return 'JORP';
@@ -578,14 +482,9 @@ SINT32 PROJRecord::Unload()
 
 SINT32 PROJRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(FULL);
 
     if(MODL.IsLoaded())
         {
@@ -636,17 +535,10 @@ SINT32 PROJRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
-
-    if(VNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANV', VNAM.value, VNAM.GetSize());
+    WRITE(DATA);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    WRITE(VNAM);
 
     return -1;
     }

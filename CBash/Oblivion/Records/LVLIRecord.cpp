@@ -127,37 +127,6 @@ void LVLIRecord::SetFlagMask(UINT8 Mask)
         LVLF.Unload();
     }
 
-UINT32 LVLIRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(LVLD.IsLoaded())
-        TotSize += LVLD.GetSize() + 6;
-
-    if(LVLF.IsLoaded())
-        TotSize += LVLF.GetSize() + 6;
-
-    for(UINT32 p = 0; p < Entries.size(); p++)
-        if(Entries[p]->IsLoaded())
-            TotSize += Entries[p]->GetSize() + 6;
-
-    //if(DATA.IsLoaded())
-    //    TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LVLIRecord::GetType()
     {
     return 'ILVL';
@@ -246,20 +215,20 @@ SINT32 LVLIRecord::Unload()
     return 1;
     }
 
-SINT32 LVLIRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LVLIRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(LVLD.IsLoaded())
-        SaveHandler.writeSubRecord('DLVL', &LVLD.value, LVLD.GetSize());
+        writer.record_write_subrecord('DLVL', &LVLD.value, LVLD.GetSize());
     if(LVLF.IsLoaded())
-        SaveHandler.writeSubRecord('FLVL', LVLF.value, LVLF.GetSize());
+        writer.record_write_subrecord('FLVL', LVLF.value, LVLF.GetSize());
     for(UINT32 p = 0; p < Entries.size(); p++)
         if(Entries[p]->IsLoaded())
-            SaveHandler.writeSubRecord('OLVL', &Entries[p]->value, Entries[p]->GetSize());
+            writer.record_write_subrecord('OLVL', &Entries[p]->value, Entries[p]->GetSize());
 
     //if(DATA.IsLoaded())
-    //    SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    //    writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
     return -1;
     }
 

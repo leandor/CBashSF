@@ -251,69 +251,6 @@ void WRLDRecord::SetMusicType(UINT32 Type)
     SNAM.value = Type;
     }
 
-UINT32 WRLDRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(WNAM.IsLoaded())
-        TotSize += WNAM.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(NAM2.IsLoaded())
-        TotSize += NAM2.GetSize() + 6;
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MNAM.IsLoaded())
-        TotSize += MNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(NAM9.IsLoaded())
-        TotSize += NAM9.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(OFST.IsLoaded())
-        {
-        cSize = OFST.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 WRLDRecord::GetType()
     {
     return 'DLRW';
@@ -413,32 +350,32 @@ SINT32 WRLDRecord::Unload()
     return 1;
     }
 
-SINT32 WRLDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(WNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANW', &WNAM.value, WNAM.GetSize());
+        writer.record_write_subrecord('MANW', &WNAM.value, WNAM.GetSize());
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord('MANC', &CNAM.value, CNAM.GetSize());
     if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', &NAM2.value, NAM2.GetSize());
+        writer.record_write_subrecord('2MAN', &NAM2.value, NAM2.GetSize());
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(MNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(NAM0.IsLoaded())
-        SaveHandler.writeSubRecord('0MAN', &NAM0.value, NAM0.GetSize());
+        writer.record_write_subrecord('0MAN', &NAM0.value, NAM0.GetSize());
     if(NAM9.IsLoaded())
-        SaveHandler.writeSubRecord('9MAN', &NAM9.value, NAM9.GetSize());
+        writer.record_write_subrecord('9MAN', &NAM9.value, NAM9.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
     if(OFST.IsLoaded())
-        SaveHandler.writeSubRecord('TSFO', OFST.value, OFST.GetSize());
+        writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
     return -1;
     }
 

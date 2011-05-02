@@ -308,56 +308,6 @@ void PWATRecord::SetFlagMask(UINT32 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 PWATRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 PWATRecord::GetType()
     {
     return 'TAWP';
@@ -444,11 +394,8 @@ SINT32 PWATRecord::Unload()
 
 SINT32 PWATRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
 
     if(MODL.IsLoaded())
         {
@@ -480,8 +427,7 @@ SINT32 PWATRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+    WRITE(DNAM);
 
     return -1;
     }

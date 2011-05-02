@@ -956,182 +956,6 @@ void NPC_Record::SetImpactType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 NPC_Record::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(ACBS.IsLoaded())
-        TotSize += ACBS.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    if(VTCK.IsLoaded())
-        TotSize += VTCK.GetSize() + 6;
-
-    if(TPLT.IsLoaded())
-        TotSize += TPLT.GetSize() + 6;
-
-    if(RNAM.IsLoaded())
-        TotSize += RNAM.GetSize() + 6;
-
-    if(SPLO.IsLoaded())
-        TotSize += SPLO.GetSize() + 6;
-
-    if(EITM.IsLoaded())
-        TotSize += EITM.GetSize() + 6;
-
-    if(EAMT.IsLoaded())
-        TotSize += EAMT.GetSize() + 6;
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            TotSize += DEST->DEST.GetSize() + 6;
-        if(DEST->DSTD.IsLoaded())
-            TotSize += DEST->DSTD.GetSize() + 6;
-        if(DEST->DMDL.IsLoaded())
-            {
-            cSize = DEST->DMDL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DMDT.IsLoaded())
-            {
-            cSize = DEST->DMDT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DSTF.IsLoaded())
-            TotSize += DEST->DSTF.GetSize() + 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(CNTO.IsLoaded())
-        TotSize += CNTO.GetSize() + 6;
-
-    if(AIDT.IsLoaded())
-        TotSize += AIDT.GetSize() + 6;
-
-    if(PKID.IsLoaded())
-        TotSize += PKID.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    if(PNAM.IsLoaded())
-        TotSize += PNAM.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(ENAM.IsLoaded())
-        TotSize += ENAM.GetSize() + 6;
-
-    if(HCLR.IsLoaded())
-        TotSize += HCLR.GetSize() + 6;
-
-    if(ZNAM.IsLoaded())
-        TotSize += ZNAM.GetSize() + 6;
-
-    if(NAM4.IsLoaded())
-        TotSize += NAM4.GetSize() + 6;
-
-    if(FGGS.IsLoaded())
-        {
-        if(FGGS->FGGS.IsLoaded())
-            {
-            cSize = FGGS->FGGS.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(FGGS->FGGA.IsLoaded())
-            {
-            cSize = FGGS->FGGA.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(FGGS->FGTS.IsLoaded())
-            {
-            cSize = FGGS->FGTS.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(NAM5.IsLoaded())
-        TotSize += NAM5.GetSize() + 6;
-
-    if(NAM6.IsLoaded())
-        TotSize += NAM6.GetSize() + 6;
-
-    if(NAM7.IsLoaded())
-        TotSize += NAM7.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 NPC_Record::GetType()
     {
     return '_CPN';
@@ -1356,14 +1180,9 @@ SINT32 NPC_Record::Unload()
 
 SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(FULL);
 
     if(MODL.IsLoaded())
         {
@@ -1395,32 +1214,15 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(ACBS.IsLoaded())
-        SaveHandler.writeSubRecord('SBCA', ACBS.value, ACBS.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
-
-    if(VTCK.IsLoaded())
-        SaveHandler.writeSubRecord('KCTV', VTCK.value, VTCK.GetSize());
-
-    if(TPLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLPT', TPLT.value, TPLT.GetSize());
-
-    if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
-
-    if(SPLO.IsLoaded())
-        SaveHandler.writeSubRecord('OLPS', SPLO.value, SPLO.GetSize());
-
-    if(EITM.IsLoaded())
-        SaveHandler.writeSubRecord('MTIE', EITM.value, EITM.GetSize());
-
-    if(EAMT.IsLoaded())
-        SaveHandler.writeSubRecord('TMAE', EAMT.value, EAMT.GetSize());
+    WRITE(ACBS);
+    WRITE(SNAM);
+    WRITE(INAM);
+    WRITE(VTCK);
+    WRITE(TPLT);
+    WRITE(RNAM);
+    WRITE(SPLO);
+    WRITE(EITM);
+    WRITE(EAMT);
 
     if(DEST.IsLoaded())
         {
@@ -1441,47 +1243,20 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
-
-    if(CNTO.IsLoaded())
-        SaveHandler.writeSubRecord('OTNC', CNTO.value, CNTO.GetSize());
-
-    if(AIDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDIA', AIDT.value, AIDT.GetSize());
-
-    if(PKID.IsLoaded())
-        SaveHandler.writeSubRecord('DIKP', PKID.value, PKID.GetSize());
-
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
-
-    if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
-
-    if(HCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCH', HCLR.value, HCLR.GetSize());
-
-    if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
-
-    if(NAM4.IsLoaded())
-        SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
+    WRITE(SCRI);
+    WRITE(CNTO);
+    WRITE(AIDT);
+    WRITE(PKID);
+    WRITE(CNAM);
+    WRITE(DATA);
+    WRITE(DNAM);
+    WRITE(PNAM);
+    WRITE(HNAM);
+    WRITE(LNAM);
+    WRITE(ENAM);
+    WRITE(HCLR);
+    WRITE(ZNAM);
+    WRITE(NAM4);
 
     if(FGGS.IsLoaded())
         {
@@ -1496,14 +1271,9 @@ SINT32 NPC_Record::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(NAM5.IsLoaded())
-        SaveHandler.writeSubRecord('5MAN', NAM5.value, NAM5.GetSize());
-
-    if(NAM6.IsLoaded())
-        SaveHandler.writeSubRecord('6MAN', NAM6.value, NAM6.GetSize());
-
-    if(NAM7.IsLoaded())
-        SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
+    WRITE(NAM5);
+    WRITE(NAM6);
+    WRITE(NAM7);
 
     return -1;
     }

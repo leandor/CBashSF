@@ -1118,12 +1118,14 @@ struct FNVAlternateTextures
     ~FNVAlternateTextures();
 
     UINT32 GetSize() const;
+    UINT32 CalcSize() const;
 
     bool IsLoaded() const;
     void Load();
     void Unload();
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    void Write(FileWriter &writer);
 
     FNVAlternateTextures& operator = (const FNVAlternateTextures &rhs);
     bool operator ==(const FNVAlternateTextures &other) const;
@@ -1159,6 +1161,9 @@ struct FNVMODEL
     void   IsLeftHand(bool value);
     bool   IsFlagMask(UINT8 Mask, bool Exact=false);
     void   SetFlagMask(UINT8 Mask);
+
+    UINT32 CalcSize() const;
+    void Write(FileWriter &writer);
 
     bool operator ==(const FNVMODEL &other) const;
     bool operator !=(const FNVMODEL &other) const;

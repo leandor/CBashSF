@@ -93,88 +93,6 @@ bool MSTTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 MSTTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            TotSize += DEST->DEST.GetSize() + 6;
-        if(DEST->DSTD.IsLoaded())
-            TotSize += DEST->DSTD.GetSize() + 6;
-        if(DEST->DMDL.IsLoaded())
-            {
-            cSize = DEST->DMDL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DMDT.IsLoaded())
-            {
-            cSize = DEST->DMDT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(DEST->DSTF.IsLoaded())
-            TotSize += DEST->DSTF.GetSize() + 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 MSTTRecord::GetType()
     {
     return 'TTSM';
@@ -290,14 +208,9 @@ SINT32 MSTTRecord::Unload()
 
 SINT32 MSTTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(FULL);
 
     if(MODL.IsLoaded())
         {
@@ -348,11 +261,8 @@ SINT32 MSTTRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+    WRITE(DATA);
+    WRITE(SNAM);
 
     return -1;
     }

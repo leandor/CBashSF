@@ -107,59 +107,6 @@ void IDLERecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 IDLERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 IDLERecord::GetType()
     {
     return 'ELDI';
@@ -250,8 +197,7 @@ SINT32 IDLERecord::Unload()
 
 SINT32 IDLERecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    WRITE(EDID);
 
     if(MODL.IsLoaded())
         {
@@ -283,14 +229,9 @@ SINT32 IDLERecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(CTDA);
+    WRITE(ANAM);
+    WRITE(DATA);
 
     return -1;
     }

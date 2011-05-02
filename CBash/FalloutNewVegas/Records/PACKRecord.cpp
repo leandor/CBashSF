@@ -200,204 +200,6 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 PACKRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PKDT.IsLoaded())
-        TotSize += PKDT.GetSize() + 6;
-
-    if(PLDT.IsLoaded())
-        TotSize += PLDT.GetSize() + 6;
-
-    if(PLD2.IsLoaded())
-        TotSize += PLD2.GetSize() + 6;
-
-    if(PSDT.IsLoaded())
-        TotSize += PSDT.GetSize() + 6;
-
-    if(PTDT.IsLoaded())
-        TotSize += PTDT.GetSize() + 6;
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(IDLF.IsLoaded())
-        TotSize += IDLF.GetSize() + 6;
-
-    if(IDLC.IsLoaded())
-        TotSize += IDLC.GetSize() + 6;
-
-    if(IDLT.IsLoaded())
-        TotSize += IDLT.GetSize() + 6;
-
-    if(IDLA.IsLoaded())
-        TotSize += IDLA.GetSize() + 6;
-
-    if(IDLB.IsLoaded())
-        TotSize += IDLB.GetSize() + 6;
-
-    if(PKED.IsLoaded())
-        TotSize += PKED.GetSize() + 6;
-
-    if(PKE2.IsLoaded())
-        TotSize += PKE2.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(PKFD.IsLoaded())
-        TotSize += PKFD.GetSize() + 6;
-
-    if(PKPT.IsLoaded())
-        TotSize += PKPT.GetSize() + 6;
-
-    if(PKW3.IsLoaded())
-        TotSize += PKW3.GetSize() + 6;
-
-    if(PTD2.IsLoaded())
-        TotSize += PTD2.GetSize() + 6;
-
-    if(PUID.IsLoaded())
-        TotSize += PUID.GetSize() + 6;
-
-    if(PKAM.IsLoaded())
-        TotSize += PKAM.GetSize() + 6;
-
-    if(PKDD.IsLoaded())
-        TotSize += PKDD.GetSize() + 6;
-
-    if(POBA.IsLoaded())
-        {
-        if(POBA->POBA.IsLoaded())
-            TotSize += POBA->POBA.GetSize() + 6;
-        if(POBA->INAM.IsLoaded())
-            TotSize += POBA->INAM.GetSize() + 6;
-        if(POBA->SCHR.IsLoaded())
-            {
-            if(POBA->SCHR->SCHR.IsLoaded())
-                TotSize += POBA->SCHR->SCHR.GetSize() + 6;
-            if(POBA->SCHR->SCDA.IsLoaded())
-                {
-                cSize = POBA->SCHR->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POBA->SCHR->SCTX.IsLoaded())
-                {
-                cSize = POBA->SCHR->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POBA->SCHR->SLSD.IsLoaded())
-                TotSize += POBA->SCHR->SLSD.GetSize() + 6;
-            if(POBA->SCHR->SCVR.IsLoaded())
-                {
-                cSize = POBA->SCHR->SCVR.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POBA->SCHR->SCRO.IsLoaded())
-                TotSize += POBA->SCHR->SCRO.GetSize() + 6;
-            if(POBA->SCHR->SCRV.IsLoaded())
-                TotSize += POBA->SCHR->SCRV.GetSize() + 6;
-            }
-        if(POBA->TNAM.IsLoaded())
-            TotSize += POBA->TNAM.GetSize() + 6;
-        }
-
-    if(POEA.IsLoaded())
-        {
-        if(POEA->POEA.IsLoaded())
-            TotSize += POEA->POEA.GetSize() + 6;
-        if(POEA->INAM.IsLoaded())
-            TotSize += POEA->INAM.GetSize() + 6;
-        if(POEA->SCHR.IsLoaded())
-            {
-            if(POEA->SCHR->SCHR.IsLoaded())
-                TotSize += POEA->SCHR->SCHR.GetSize() + 6;
-            if(POEA->SCHR->SCDA.IsLoaded())
-                {
-                cSize = POEA->SCHR->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POEA->SCHR->SCTX.IsLoaded())
-                {
-                cSize = POEA->SCHR->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POEA->SCHR->SLSD.IsLoaded())
-                TotSize += POEA->SCHR->SLSD.GetSize() + 6;
-            if(POEA->SCHR->SCVR.IsLoaded())
-                {
-                cSize = POEA->SCHR->SCVR.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POEA->SCHR->SCRO.IsLoaded())
-                TotSize += POEA->SCHR->SCRO.GetSize() + 6;
-            if(POEA->SCHR->SCRV.IsLoaded())
-                TotSize += POEA->SCHR->SCRV.GetSize() + 6;
-            }
-        if(POEA->TNAM.IsLoaded())
-            TotSize += POEA->TNAM.GetSize() + 6;
-        }
-
-    if(POCA.IsLoaded())
-        {
-        if(POCA->POCA.IsLoaded())
-            TotSize += POCA->POCA.GetSize() + 6;
-        if(POCA->INAM.IsLoaded())
-            TotSize += POCA->INAM.GetSize() + 6;
-        if(POCA->SCHR.IsLoaded())
-            {
-            if(POCA->SCHR->SCHR.IsLoaded())
-                TotSize += POCA->SCHR->SCHR.GetSize() + 6;
-            if(POCA->SCHR->SCDA.IsLoaded())
-                {
-                cSize = POCA->SCHR->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POCA->SCHR->SCTX.IsLoaded())
-                {
-                cSize = POCA->SCHR->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POCA->SCHR->SLSD.IsLoaded())
-                TotSize += POCA->SCHR->SLSD.GetSize() + 6;
-            if(POCA->SCHR->SCVR.IsLoaded())
-                {
-                cSize = POCA->SCHR->SCVR.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(POCA->SCHR->SCRO.IsLoaded())
-                TotSize += POCA->SCHR->SCRO.GetSize() + 6;
-            if(POCA->SCHR->SCRV.IsLoaded())
-                TotSize += POCA->SCHR->SCRV.GetSize() + 6;
-            }
-        if(POCA->TNAM.IsLoaded())
-            TotSize += POCA->TNAM.GetSize() + 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 PACKRecord::GetType()
     {
     return 'KCAP';
@@ -683,71 +485,34 @@ SINT32 PACKRecord::Unload()
 
 SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(PKDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDKP', PKDT.value, PKDT.GetSize());
-
-    if(PLDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDLP', PLDT.value, PLDT.GetSize());
-
-    if(PLD2.IsLoaded())
-        SaveHandler.writeSubRecord('2DLP', PLD2.value, PLD2.GetSize());
-
-    if(PSDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDSP', PSDT.value, PSDT.GetSize());
-
-    if(PTDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDTP', PTDT.value, PTDT.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(IDLF.IsLoaded())
-        SaveHandler.writeSubRecord('FLDI', IDLF.value, IDLF.GetSize());
-
-    if(IDLC.IsLoaded())
-        SaveHandler.writeSubRecord('CLDI', IDLC.value, IDLC.GetSize());
-
-    if(IDLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLDI', IDLT.value, IDLT.GetSize());
-
-    if(IDLA.IsLoaded())
-        SaveHandler.writeSubRecord('ALDI', IDLA.value, IDLA.GetSize());
-
-    if(IDLB.IsLoaded())
-        SaveHandler.writeSubRecord('BLDI', IDLB.value, IDLB.GetSize());
+    WRITE(EDID);
+    WRITE(PKDT);
+    WRITE(PLDT);
+    WRITE(PLD2);
+    WRITE(PSDT);
+    WRITE(PTDT);
+    WRITE(CTDA);
+    WRITE(IDLF);
+    WRITE(IDLC);
+    WRITE(IDLT);
+    WRITE(IDLA);
+    WRITE(IDLB);
 
     //if(PKED.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('DEKP', PKED.value, PKED.GetSize());
-
-    if(PKE2.IsLoaded())
-        SaveHandler.writeSubRecord('2EKP', PKE2.value, PKE2.GetSize());
-
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
-
-    if(PKFD.IsLoaded())
-        SaveHandler.writeSubRecord('DFKP', PKFD.value, PKFD.GetSize());
-
-    if(PKPT.IsLoaded())
-        SaveHandler.writeSubRecord('TPKP', PKPT.value, PKPT.GetSize());
-
-    if(PKW3.IsLoaded())
-        SaveHandler.writeSubRecord('3WKP', PKW3.value, PKW3.GetSize());
-
-    if(PTD2.IsLoaded())
-        SaveHandler.writeSubRecord('2DTP', PTD2.value, PTD2.GetSize());
+    WRITE(PKE2);
+    WRITE(CNAM);
+    WRITE(PKFD);
+    WRITE(PKPT);
+    WRITE(PKW3);
+    WRITE(PTD2);
 
     //if(PUID.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('DIUP', PUID.value, PUID.GetSize());
 
     //if(PKAM.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('MAKP', PKAM.value, PKAM.GetSize());
-
-    if(PKDD.IsLoaded())
-        SaveHandler.writeSubRecord('DDKP', PKDD.value, PKDD.GetSize());
+    WRITE(PKDD);
 
     if(POBA.IsLoaded())
         {

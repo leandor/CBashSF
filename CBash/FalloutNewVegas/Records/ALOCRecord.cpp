@@ -98,94 +98,6 @@ bool ALOCRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-/*
-UINT32 ALOCRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM1.IsLoaded())
-        {
-        cSize = NAM1.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM3.IsLoaded())
-        {
-        cSize = NAM3.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM4.IsLoaded())
-        TotSize += NAM4.GetSize() + 6;
-
-    if(NAM5.IsLoaded())
-        TotSize += NAM5.GetSize() + 6;
-
-    if(NAM6.IsLoaded())
-        TotSize += NAM6.GetSize() + 6;
-
-    if(NAM7.IsLoaded())
-        TotSize += NAM7.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(ZNAM.IsLoaded())
-        TotSize += ZNAM.GetSize() + 6;
-
-    if(XNAM.IsLoaded())
-        TotSize += XNAM.GetSize() + 6;
-
-    if(YNAM.IsLoaded())
-        TotSize += YNAM.GetSize() + 6;
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(GNAM.IsLoaded())
-        TotSize += GNAM.GetSize() + 6;
-
-    if(RNAM.IsLoaded())
-        TotSize += RNAM.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-*/
-
 UINT32 ALOCRecord::GetType()
     {
     return 'COLA';
@@ -307,56 +219,23 @@ SINT32 ALOCRecord::Unload()
 
 SINT32 ALOCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
-
-    if(NAM3.IsLoaded())
-        SaveHandler.writeSubRecord('3MAN', NAM3.value, NAM3.GetSize());
-
-    if(NAM4.IsLoaded())
-        SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
-
-    if(NAM5.IsLoaded())
-        SaveHandler.writeSubRecord('5MAN', NAM5.value, NAM5.GetSize());
-
-    if(NAM6.IsLoaded())
-        SaveHandler.writeSubRecord('6MAN', NAM6.value, NAM6.GetSize());
-
-    if(NAM7.IsLoaded())
-        SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
-
-    if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
-
-    if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
-
-    if(YNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
-
-    if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
-
-    if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    WRITE(NAM3);
+    WRITE(NAM4);
+    WRITE(NAM5);
+    WRITE(NAM6);
+    WRITE(NAM7);
+    WRITE(HNAM);
+    WRITE(ZNAM);
+    WRITE(XNAM);
+    WRITE(YNAM);
+    WRITE(LNAM);
+    WRITE(GNAM);
+    WRITE(RNAM);
+    WRITE(FNAM);
 
     return -1;
     }

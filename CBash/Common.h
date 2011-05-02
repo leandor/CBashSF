@@ -29,13 +29,13 @@ GPL License and Copyright Notice ============================================
 #include <share.h>
 #include <errno.h>
 #include <exception>
-#include <vector>
 #include <boost/unordered_set.hpp>
 #include <set>
 #include <map>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <vector>
 #include "MacroDefinitions.h"
 
 #ifdef CBASH_USE_LOGGING
@@ -471,6 +471,7 @@ class StringRecord
 
         virtual bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
         void Write(UINT32 _Type, FileWriter &writer);
+        void ReqWrite(UINT32 _Type, FileWriter &writer);
 
         void Copy(const StringRecord &FieldValue);
         void Copy(STRING FieldValue);
@@ -602,6 +603,11 @@ struct SimpleSubRecord
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(isLoaded && value != significand)
+            writer.record_write_subrecord(_Type, &value, sizeof(T));
+        }
 
     SimpleSubRecord<T, significand, exponent>& operator = (const SimpleSubRecord<T, significand, exponent> &rhs)
         {
@@ -699,6 +705,11 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(isLoaded && value != significand)
+            writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
+        }
 
     SimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SimpleSubRecord<FLOAT32, significand, exponent> &rhs)
         {
@@ -794,6 +805,10 @@ struct ReqSimpleSubRecord
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(T));
+        }
 
     ReqSimpleSubRecord<T, significand, exponent>& operator = (const ReqSimpleSubRecord<T, significand, exponent> &rhs)
         {
@@ -875,6 +890,10 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         //size = subSize;
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
     ReqSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const ReqSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
@@ -1166,6 +1185,11 @@ struct SemiOptSimpleSubRecord
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value != NULL)
+            writer.record_write_subrecord(_Type, value, sizeof(T));
+        }
 
     SemiOptSimpleSubRecord<T, significand, exponent>& operator = (const SemiOptSimpleSubRecord<T, significand, exponent> &rhs)
         {
@@ -1273,6 +1297,11 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value != NULL)
+            writer.record_write_subrecord(_Type, value, sizeof(FLOAT32));
         }
 
     SemiOptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
@@ -1389,6 +1418,11 @@ struct SubRecord
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(isLoaded)
+            writer.record_write_subrecord(_Type, &value, sizeof(T));
+        }
 
     T *operator->() const
         {
@@ -1476,6 +1510,10 @@ struct ReqSubRecord
         //size = subSize;
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
     T *operator->() const
@@ -1578,7 +1616,11 @@ struct OptSubRecord
         if(value != NULL)
             value->Write(writer);
         }
-
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value != NULL)
+            writer.record_write_subrecord(_Type, value, sizeof(T));
+        }
 
     T *operator->() const
         {
@@ -1696,6 +1738,11 @@ struct SemiOptSubRecord
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
         return true;
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value != NULL)
+            writer.record_write_subrecord(_Type, value, sizeof(T));
         }
 
     T *operator->() const
@@ -1827,6 +1874,11 @@ struct OBMEEFIXSubRecord
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(IsLoaded())
+            writer.record_write_subrecord(_Type, value, sizeof(T));
+        }
 
     T *operator->() const
         {
@@ -1870,7 +1922,7 @@ struct OBMEEFIXSubRecord
         }
     };
 
-template<class T>
+template<class T, class _Pr = std::less<T> >
 struct OrderedPackedArray
     {
     std::vector<T> value;
@@ -1893,13 +1945,16 @@ struct OrderedPackedArray
         {
         return value.size() != 0;
         }
-    void Load()
-        {
-        //
-        }
+
     void Unload()
         {
         value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        value.resize(newSize);
+        return;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -1907,7 +1962,10 @@ struct OrderedPackedArray
         if(subSize % sizeof(T) == 0)
             {
             if(subSize == 0)
-                break;
+                {
+                curPos += subSize;
+                return false;
+                }
             value.resize(subSize / sizeof(T));
             memcpy(&value[0], buffer + curPos, subSize);
             }
@@ -1924,8 +1982,25 @@ struct OrderedPackedArray
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        std::sort(value.begin(), value.end(), _Pr());
+        if(value.size())
+            writer.record_write_subrecord(_Type, &value[0], (UINT32)value.size() * sizeof(T));
+        }
 
-    bool operator ==(const OrderedPackedArray<T> &other) const
+    OrderedPackedArray<T, _Pr>& operator = (const OrderedPackedArray<T, _Pr> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                value[x] = rhs.value[x];
+            }
+        return *this;
+        }
+
+    bool operator ==(const OrderedPackedArray<T, _Pr> &other) const
         {
         if(value.size() == other.value.size())
             {
@@ -1936,7 +2011,7 @@ struct OrderedPackedArray
             }
         return false;
         }
-    bool operator !=(const OrderedPackedArray<T> &other) const
+    bool operator !=(const OrderedPackedArray<T, _Pr> &other) const
         {
         return !(*this == other);
         }
@@ -1965,13 +2040,16 @@ struct UnorderedPackedArray
         {
         return value.size() != 0;
         }
-    void Load()
-        {
-        //
-        }
+
     void Unload()
         {
         value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        value.resize(newSize);
+        return;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -1979,7 +2057,10 @@ struct UnorderedPackedArray
         if(subSize % sizeof(T) == 0)
             {
             if(subSize == 0)
-                break;
+                {
+                curPos += subSize;
+                return false;
+                }
             value.resize(subSize / sizeof(T));
             memcpy(&value[0], buffer + curPos, subSize);
             }
@@ -1996,7 +2077,22 @@ struct UnorderedPackedArray
         curPos += subSize;
         return true;
         }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        if(value.size())
+            writer.record_write_subrecord(_Type, &value[0], (UINT32)value.size() * sizeof(T));
+        }
 
+    UnorderedPackedArray<T>& operator = (const UnorderedPackedArray<T> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                value[x] = rhs.value[x];
+            }
+        return *this;
+        }
     bool operator ==(const UnorderedPackedArray<T> &other) const
         {
         if(value.size() == other.value.size())
@@ -2017,7 +2113,7 @@ struct UnorderedPackedArray
         }
     };
 
-template<class T>
+template<class T, class _Pr = std::less<T> >
 struct OrderedSparseArray
     {
     std::vector<T> value;
@@ -2040,13 +2136,16 @@ struct OrderedSparseArray
         {
         return value.size() != 0;
         }
-    void Load()
-        {
-        //
-        }
+
     void Unload()
         {
         value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        value.resize(newSize);
+        return;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -2086,7 +2185,31 @@ struct OrderedSparseArray
         return true;
         }
 
-    bool operator ==(const OrderedSparseArray<T> &other) const
+    void Write(FileWriter &writer)
+        {
+        std::sort(value.begin(), value.end(), _Pr());
+        for(UINT32 p = 0; p < value.size(); p++)
+            value[p].Write(writer);
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        std::sort(value.begin(), value.end(), _Pr());
+        for(UINT32 p = 0; p < value.size(); p++)
+            writer.record_write_subrecord(_Type, &value[p], sizeof(T));
+        }
+
+    OrderedSparseArray<T, _Pr>& operator = (const OrderedSparseArray<T, _Pr> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                value[x] = rhs.value[x];
+            }
+        return *this;
+        }
+
+    bool operator ==(const OrderedSparseArray<T, _Pr> &other) const
         {
         if(value.size() == other.value.size())
             {
@@ -2097,7 +2220,125 @@ struct OrderedSparseArray
             }
         return false;
         }
-    bool operator !=(const OrderedSparseArray<T> &other) const
+    bool operator !=(const OrderedSparseArray<T, _Pr> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T, class _Pr>
+struct OrderedSparseArray<T *, _Pr>
+    {
+    std::vector<T *> value;
+
+    OrderedSparseArray()
+        {
+        //
+        }
+    ~OrderedSparseArray()
+        {
+        Unload();
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+    void Unload()
+        {
+        for(UINT32 x = 0; x < value.size(); ++x)
+            delete value[x];
+        value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        //Shrink
+        UINT32 size = value.size();
+        for(; size > newSize;)
+            delete value[--size];
+        value.resize(newSize);
+        //Grow
+        for(; size < newSize;)
+            value[size++] = new T;
+        return;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        value.push_back(new T);
+        if(subSize > sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&(*value.back()), buffer + curPos, sizeof(T));
+            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&(*value.back()), buffer + curPos, subSize);
+            }
+        #endif
+        else
+            memcpy(&(*value.back()), buffer + curPos, subSize);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    void Write(FileWriter &writer)
+        {
+        std::sort(value.begin(), value.end(), _Pr());
+        for(UINT32 p = 0; p < value.size(); p++)
+            value[p]->Write(writer);
+        }
+
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        std::sort(value.begin(), value.end(), _Pr());
+        for(UINT32 p = 0; p < value.size(); p++)
+            writer.record_write_subrecord(_Type, value[p], sizeof(T));
+        }
+
+    OrderedSparseArray<T *, _Pr>& operator = (const OrderedSparseArray<T *, _Pr> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                {
+                value[x] = new T;
+                *value[x] = *rhs.value[x];
+                }
+            }
+        return *this;
+        }
+    bool operator ==(const OrderedSparseArray<T *, _Pr> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                if(*value[x] != *other.value[x])
+                    return false;
+            return true;
+            }
+        return false;
+        }
+    bool operator !=(const OrderedSparseArray<T *, _Pr> &other) const
         {
         return !(*this == other);
         }
@@ -2131,13 +2372,16 @@ struct UnorderedSparseArray
         {
         return value.size() != 0;
         }
-    void Load()
-        {
-        //
-        }
+
     void Unload()
         {
         value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        value.resize(newSize);
+        return;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -2176,6 +2420,12 @@ struct UnorderedSparseArray
         curPos += subSize;
         return true;
         }
+
+    void Write(FileWriter &writer)
+        {
+        for(UINT32 p = 0; p < value.size(); p++)
+            value[p].Write(writer);
+        }
     void Write(UINT32 _Type, FileWriter &writer)
         {
         for(UINT32 p = 0; p < value.size(); p++)
@@ -2208,6 +2458,126 @@ struct UnorderedSparseArray
         return false;
         }
     bool operator !=(const UnorderedSparseArray<T> &other) const
+        {
+        return !(*this == other);
+        }
+    };
+
+template<class T>
+struct UnorderedSparseArray<T *>
+    {
+    std::vector<T *> value;
+
+    UnorderedSparseArray()
+        {
+        //
+        }
+    ~UnorderedSparseArray()
+        {
+        Unload();
+        }
+
+    bool IsLoaded() const
+        {
+        return value.size() != 0;
+        }
+
+    void Unload()
+        {
+        for(UINT32 x = 0; x < value.size(); ++x)
+            delete value[x];
+        value.clear();
+        }
+
+    void resize(UINT32 &newSize)
+        {
+        //Shrink
+        UINT32 size = value.size();
+        for(; size > newSize;)
+            delete value[--size];
+        value.resize(newSize);
+        //Grow
+        for(; size < newSize;)
+            value[size++] = new T;
+        return;
+        }
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+        {
+        value.push_back(new T);
+        if(subSize > sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                       "and will be truncated.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&(*value.back()), buffer + curPos, sizeof(T));
+            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(subSize < sizeof(T))
+            {
+            #ifdef CBASH_CHUNK_WARN
+                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+            #endif
+            memcpy(&(*value.back()), buffer + curPos, subSize);
+            }
+        #endif
+        else
+            memcpy(&(*value.back()), buffer + curPos, subSize);
+        //size = subSize;
+        curPos += subSize;
+        return true;
+        }
+
+    void Write(FileWriter &writer)
+        {
+        for(UINT32 p = 0; p < value.size(); p++)
+            value[p]->Write(writer);
+        }
+    void Write(UINT32 _Type, FileWriter &writer)
+        {
+        for(UINT32 p = 0; p < value.size(); p++)
+            writer.record_write_subrecord(_Type, value[p], sizeof(T));
+        }
+
+    UnorderedSparseArray<T *>& operator = (const UnorderedSparseArray<T *> &rhs)
+        {
+        if(this != &rhs)
+            {
+            value.resize(rhs.value.size());
+            for(UINT32 x = 0; x < value.size(); x++)
+                {
+                value[x] = new T;
+                *value[x] = *rhs.value[x];
+                }
+            }
+        return *this;
+        }
+
+    bool operator ==(const UnorderedSparseArray<T *> &other) const
+        {
+        if(value.size() == other.value.size())
+            {
+            std::multiset<T> self1, other1;
+            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+                {
+                self1.insert(*value[x]);
+                other1.insert(*other.value[x]);
+                }
+            return self1 == other1;
+            }
+        return false;
+        }
+    bool operator !=(const UnorderedSparseArray<T *> &other) const
         {
         return !(*this == other);
         }

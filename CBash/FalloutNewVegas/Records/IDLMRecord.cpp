@@ -111,39 +111,6 @@ void IDLMRecord::Set0FlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 IDLMRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(IDLF.IsLoaded())
-        TotSize += IDLF.GetSize() + 6;
-
-    if(IDLC.IsLoaded())
-        TotSize += IDLC.GetSize() + 6;
-
-    if(IDLT.IsLoaded())
-        TotSize += IDLT.GetSize() + 6;
-
-    if(IDLA.IsLoaded())
-        TotSize += IDLA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 IDLMRecord::GetType()
     {
     return 'MLDI';
@@ -221,23 +188,12 @@ SINT32 IDLMRecord::Unload()
 
 SINT32 IDLMRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(IDLF.IsLoaded())
-        SaveHandler.writeSubRecord('FLDI', IDLF.value, IDLF.GetSize());
-
-    if(IDLC.IsLoaded())
-        SaveHandler.writeSubRecord('CLDI', IDLC.value, IDLC.GetSize());
-
-    if(IDLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLDI', IDLT.value, IDLT.GetSize());
-
-    if(IDLA.IsLoaded())
-        SaveHandler.writeSubRecord('ALDI', IDLA.value, IDLA.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(IDLF);
+    WRITE(IDLC);
+    WRITE(IDLT);
+    WRITE(IDLA);
 
     return -1;
     }

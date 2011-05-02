@@ -1258,288 +1258,6 @@ void REFRRecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 REFRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(RCLR.IsLoaded())
-        {
-        cSize = RCLR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(XEZN.IsLoaded())
-        TotSize += XEZN.GetSize() + 6;
-
-    if(XRGD.IsLoaded())
-        {
-        cSize = XRGD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XRGB.IsLoaded())
-        {
-        cSize = XRGB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XPRM.IsLoaded())
-        TotSize += XPRM.GetSize() + 6;
-
-    if(XTRI.IsLoaded())
-        TotSize += XTRI.GetSize() + 6;
-
-    if(XMBP.IsLoaded())
-        TotSize += XMBP.GetSize() + 6;
-
-    if(XMBO.IsLoaded())
-        TotSize += XMBO.GetSize() + 6;
-
-    if(XTEL.IsLoaded())
-        TotSize += XTEL.GetSize() + 6;
-
-    if(XMRK.IsLoaded())
-        {
-        if(XMRK->XMRK.IsLoaded())
-            TotSize += XMRK->XMRK.GetSize() + 6;
-        if(XMRK->FNAM.IsLoaded())
-            TotSize += XMRK->FNAM.GetSize() + 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-
-    if(WMI1.IsLoaded())
-        TotSize += WMI1.GetSize() + 6;
-
-    if(MMRK.IsLoaded())
-        {
-        if(MMRK->MMRK.IsLoaded())
-            TotSize += MMRK->MMRK.GetSize() + 6;
-        if(MMRK->FULL.IsLoaded())
-            {
-            cSize = MMRK->FULL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MMRK->CNAM.IsLoaded())
-            TotSize += MMRK->CNAM.GetSize() + 6;
-        if(MMRK->BNAM.IsLoaded())
-            {
-            cSize = MMRK->BNAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MMRK->MNAM.IsLoaded())
-            TotSize += MMRK->MNAM.GetSize() + 6;
-        if(MMRK->NNAM.IsLoaded())
-            TotSize += MMRK->NNAM.GetSize() + 6;
-        }
-
-    if(XSRF.IsLoaded())
-        {
-        cSize = XSRF.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XSRD.IsLoaded())
-        {
-        cSize = XSRD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XTRG.IsLoaded())
-        TotSize += XTRG.GetSize() + 6;
-
-    if(XLCM.IsLoaded())
-        TotSize += XLCM.GetSize() + 6;
-
-    if(XPRD.IsLoaded())
-        {
-        if(XPRD->XPRD.IsLoaded())
-            TotSize += XPRD->XPRD.GetSize() + 6;
-        if(XPRD->XPPA.IsLoaded())
-            TotSize += XPRD->XPPA.GetSize() + 6;
-        if(XPRD->INAM.IsLoaded())
-            TotSize += XPRD->INAM.GetSize() + 6;
-        if(XPRD->SCHR.IsLoaded())
-            {
-            if(XPRD->SCHR->SCHR.IsLoaded())
-                TotSize += XPRD->SCHR->SCHR.GetSize() + 6;
-            if(XPRD->SCHR->SCDA.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SCTX.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SLSD.IsLoaded())
-                TotSize += XPRD->SCHR->SLSD.GetSize() + 6;
-            if(XPRD->SCHR->SCVR.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCVR.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SCRO.IsLoaded())
-                TotSize += XPRD->SCHR->SCRO.GetSize() + 6;
-            if(XPRD->SCHR->SCRV.IsLoaded())
-                TotSize += XPRD->SCHR->SCRV.GetSize() + 6;
-            }
-        if(XPRD->TNAM.IsLoaded())
-            TotSize += XPRD->TNAM.GetSize() + 6;
-        }
-
-    if(XRDO.IsLoaded())
-        TotSize += XRDO.GetSize() + 6;
-
-    if(XOWN.IsLoaded())
-        {
-        if(XOWN->XOWN.IsLoaded())
-            TotSize += XOWN->XOWN.GetSize() + 6;
-        if(XOWN->XRNK.IsLoaded())
-            TotSize += XOWN->XRNK.GetSize() + 6;
-        }
-
-    if(XLOC.IsLoaded())
-        TotSize += XLOC.GetSize() + 6;
-
-    if(XCNT.IsLoaded())
-        TotSize += XCNT.GetSize() + 6;
-
-    if(XRDS.IsLoaded())
-        TotSize += XRDS.GetSize() + 6;
-
-    if(XHLP.IsLoaded())
-        TotSize += XHLP.GetSize() + 6;
-
-    if(XRAD.IsLoaded())
-        TotSize += XRAD.GetSize() + 6;
-
-    if(XCHG.IsLoaded())
-        TotSize += XCHG.GetSize() + 6;
-
-    if(XAMT.IsLoaded())
-        {
-        if(XAMT->XAMT.IsLoaded())
-            TotSize += XAMT->XAMT.GetSize() + 6;
-        if(XAMT->XAMC.IsLoaded())
-            TotSize += XAMT->XAMC.GetSize() + 6;
-        }
-
-    if(XPWR.IsLoaded())
-        TotSize += XPWR.GetSize() + 6;
-
-    if(XLTW.IsLoaded())
-        TotSize += XLTW.GetSize() + 6;
-
-    if(XDCR.IsLoaded())
-        TotSize += XDCR.GetSize() + 6;
-
-    if(XLKR.IsLoaded())
-        TotSize += XLKR.GetSize() + 6;
-
-    if(XCLP.IsLoaded())
-        TotSize += XCLP.GetSize() + 6;
-
-    if(XAPD.IsLoaded())
-        TotSize += XAPD.GetSize() + 6;
-
-    if(XAPR.IsLoaded())
-        TotSize += XAPR.GetSize() + 6;
-
-    if(XATO.IsLoaded())
-        {
-        cSize = XATO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XESP.IsLoaded())
-        TotSize += XESP.GetSize() + 6;
-
-    if(XEMI.IsLoaded())
-        TotSize += XEMI.GetSize() + 6;
-
-    if(XMBR.IsLoaded())
-        TotSize += XMBR.GetSize() + 6;
-
-    if(XACT.IsLoaded())
-        TotSize += XACT.GetSize() + 6;
-
-    if(ONAM.IsLoaded())
-        TotSize += ONAM.GetSize() + 6;
-
-    if(XIBS.IsLoaded())
-        TotSize += XIBS.GetSize() + 6;
-
-    if(XNDP.IsLoaded())
-        TotSize += XNDP.GetSize() + 6;
-
-    if(XPOD.IsLoaded())
-        TotSize += XPOD.GetSize() + 6;
-
-    if(XPTL.IsLoaded())
-        TotSize += XPTL.GetSize() + 6;
-
-    if(XSED.IsLoaded())
-        TotSize += XSED.GetSize() + 6;
-
-    if(XRMR.IsLoaded())
-        TotSize += XRMR.GetSize() + 6;
-
-    if(XLRM.IsLoaded())
-        TotSize += XLRM.GetSize() + 6;
-
-    if(XOCP.IsLoaded())
-        TotSize += XOCP.GetSize() + 6;
-
-    if(XORD.IsLoaded())
-        TotSize += XORD.GetSize() + 6;
-
-    if(XLOD.IsLoaded())
-        TotSize += XLOD.GetSize() + 6;
-
-    if(XSCL.IsLoaded())
-        TotSize += XSCL.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 REFRRecord::GetType()
     {
     return 'RFER';
@@ -1897,38 +1615,19 @@ SINT32 REFRRecord::Unload()
 
 SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(RCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCR', RCLR.value, RCLR.GetSize());
-
-    if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', NAME.value, NAME.GetSize());
-
-    if(XEZN.IsLoaded())
-        SaveHandler.writeSubRecord('NZEX', XEZN.value, XEZN.GetSize());
-
-    if(XRGD.IsLoaded())
-        SaveHandler.writeSubRecord('DGRX', XRGD.value, XRGD.GetSize());
-
-    if(XRGB.IsLoaded())
-        SaveHandler.writeSubRecord('BGRX', XRGB.value, XRGB.GetSize());
-
-    if(XPRM.IsLoaded())
-        SaveHandler.writeSubRecord('MRPX', XPRM.value, XPRM.GetSize());
-
-    if(XTRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRTX', XTRI.value, XTRI.GetSize());
+    WRITE(EDID);
+    WRITE(RCLR);
+    WRITE(NAME);
+    WRITE(XEZN);
+    WRITE(XRGD);
+    WRITE(XRGB);
+    WRITE(XPRM);
+    WRITE(XTRI);
 
     //if(XMBP.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('PBMX', XMBP.value, XMBP.GetSize());
-
-    if(XMBO.IsLoaded())
-        SaveHandler.writeSubRecord('OBMX', XMBO.value, XMBO.GetSize());
-
-    if(XTEL.IsLoaded())
-        SaveHandler.writeSubRecord('LETX', XTEL.value, XTEL.GetSize());
+    WRITE(XMBO);
+    WRITE(XTEL);
 
     if(XMRK.IsLoaded())
         {
@@ -1940,14 +1639,9 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(WMI1.IsLoaded())
-        SaveHandler.writeSubRecord('1IMW', WMI1.value, WMI1.GetSize());
+    WRITE(FULL);
+    WRITE(TNAM);
+    WRITE(WMI1);
 
     if(MMRK.IsLoaded())
         {
@@ -1971,17 +1665,10 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XSRF.IsLoaded())
-        SaveHandler.writeSubRecord('FRSX', XSRF.value, XSRF.GetSize());
-
-    if(XSRD.IsLoaded())
-        SaveHandler.writeSubRecord('DRSX', XSRD.value, XSRD.GetSize());
-
-    if(XTRG.IsLoaded())
-        SaveHandler.writeSubRecord('GRTX', XTRG.value, XTRG.GetSize());
-
-    if(XLCM.IsLoaded())
-        SaveHandler.writeSubRecord('MCLX', XLCM.value, XLCM.GetSize());
+    WRITE(XSRF);
+    WRITE(XSRD);
+    WRITE(XTRG);
+    WRITE(XLCM);
 
     if(XPRD.IsLoaded())
         {
@@ -2023,8 +1710,7 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XRDO.IsLoaded())
-        SaveHandler.writeSubRecord('ODRX', XRDO.value, XRDO.GetSize());
+    WRITE(XRDO);
 
     if(XOWN.IsLoaded())
         {
@@ -2036,23 +1722,12 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XLOC.IsLoaded())
-        SaveHandler.writeSubRecord('COLX', XLOC.value, XLOC.GetSize());
-
-    if(XCNT.IsLoaded())
-        SaveHandler.writeSubRecord('TNCX', XCNT.value, XCNT.GetSize());
-
-    if(XRDS.IsLoaded())
-        SaveHandler.writeSubRecord('SDRX', XRDS.value, XRDS.GetSize());
-
-    if(XHLP.IsLoaded())
-        SaveHandler.writeSubRecord('PLHX', XHLP.value, XHLP.GetSize());
-
-    if(XRAD.IsLoaded())
-        SaveHandler.writeSubRecord('DARX', XRAD.value, XRAD.GetSize());
-
-    if(XCHG.IsLoaded())
-        SaveHandler.writeSubRecord('GHCX', XCHG.value, XCHG.GetSize());
+    WRITE(XLOC);
+    WRITE(XCNT);
+    WRITE(XRDS);
+    WRITE(XHLP);
+    WRITE(XRAD);
+    WRITE(XCHG);
 
     if(XAMT.IsLoaded())
         {
@@ -2064,80 +1739,35 @@ SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XPWR.IsLoaded())
-        SaveHandler.writeSubRecord('RWPX', XPWR.value, XPWR.GetSize());
-
-    if(XLTW.IsLoaded())
-        SaveHandler.writeSubRecord('WTLX', XLTW.value, XLTW.GetSize());
-
-    if(XDCR.IsLoaded())
-        SaveHandler.writeSubRecord('RCDX', XDCR.value, XDCR.GetSize());
-
-    if(XLKR.IsLoaded())
-        SaveHandler.writeSubRecord('RKLX', XLKR.value, XLKR.GetSize());
-
-    if(XCLP.IsLoaded())
-        SaveHandler.writeSubRecord('PLCX', XCLP.value, XCLP.GetSize());
-
-    if(XAPD.IsLoaded())
-        SaveHandler.writeSubRecord('DPAX', XAPD.value, XAPD.GetSize());
-
-    if(XAPR.IsLoaded())
-        SaveHandler.writeSubRecord('RPAX', XAPR.value, XAPR.GetSize());
-
-    if(XATO.IsLoaded())
-        SaveHandler.writeSubRecord('OTAX', XATO.value, XATO.GetSize());
-
-    if(XESP.IsLoaded())
-        SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
-
-    if(XEMI.IsLoaded())
-        SaveHandler.writeSubRecord('IMEX', XEMI.value, XEMI.GetSize());
-
-    if(XMBR.IsLoaded())
-        SaveHandler.writeSubRecord('RBMX', XMBR.value, XMBR.GetSize());
-
-    if(XACT.IsLoaded())
-        SaveHandler.writeSubRecord('TCAX', XACT.value, XACT.GetSize());
+    WRITE(XPWR);
+    WRITE(XLTW);
+    WRITE(XDCR);
+    WRITE(XLKR);
+    WRITE(XCLP);
+    WRITE(XAPD);
+    WRITE(XAPR);
+    WRITE(XATO);
+    WRITE(XESP);
+    WRITE(XEMI);
+    WRITE(XMBR);
+    WRITE(XACT);
 
     //if(ONAM.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
 
     //if(XIBS.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('SBIX', XIBS.value, XIBS.GetSize());
-
-    if(XNDP.IsLoaded())
-        SaveHandler.writeSubRecord('PDNX', XNDP.value, XNDP.GetSize());
-
-    if(XPOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOPX', XPOD.value, XPOD.GetSize());
-
-    if(XPTL.IsLoaded())
-        SaveHandler.writeSubRecord('LTPX', XPTL.value, XPTL.GetSize());
-
-    if(XSED.IsLoaded())
-        SaveHandler.writeSubRecord('DESX', XSED.value, XSED.GetSize());
-
-    if(XRMR.IsLoaded())
-        SaveHandler.writeSubRecord('RMRX', XRMR.value, XRMR.GetSize());
-
-    if(XLRM.IsLoaded())
-        SaveHandler.writeSubRecord('MRLX', XLRM.value, XLRM.GetSize());
-
-    if(XOCP.IsLoaded())
-        SaveHandler.writeSubRecord('PCOX', XOCP.value, XOCP.GetSize());
-
-    if(XORD.IsLoaded())
-        SaveHandler.writeSubRecord('DROX', XORD.value, XORD.GetSize());
-
-    if(XLOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOLX', XLOD.value, XLOD.GetSize());
-
-    if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', XSCL.value, XSCL.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(XNDP);
+    WRITE(XPOD);
+    WRITE(XPTL);
+    WRITE(XSED);
+    WRITE(XRMR);
+    WRITE(XLRM);
+    WRITE(XOCP);
+    WRITE(XORD);
+    WRITE(XLOD);
+    WRITE(XSCL);
+    WRITE(DATA);
 
     return -1;
     }

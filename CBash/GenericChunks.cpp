@@ -72,7 +72,10 @@ FormIDResolver::~FormIDResolver()
 
 bool FormIDResolver::Accept(UINT32 &curFormID)
     {
-    curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
+    if((curFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
+        curFormID &= 0x00FFFFFF;
+    else
+        curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
     return stop;
     }
 
@@ -2167,6 +2170,14 @@ UINT32 FNVAlternateTextures::GetSize() const
     return 0;
     }
 
+UINT32 FNVAlternateTextures::CalcSize() const
+    {
+    UINT32 cSize = GetSize();
+    if(cSize)
+        cSize += (cSize > 65535) ? 16 : 6;
+    return cSize;
+    }
+
 bool FNVAlternateTextures::IsLoaded() const
     {
     return (MODS.size() != 0);
@@ -2213,6 +2224,27 @@ bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         curPos += 4;
         }
     return true;
+    }
+
+void FNVAlternateTextures::Write(FileWriter &writer)
+    {
+    UINT32 cSize = MODS.size();
+    if(cSize)
+        {
+        writer.record_write_subheader('SDOM', GetSize());
+        writer.record_write(&cSize, 4);
+        for(UINT32 p = 0; p < MODS.size(); ++p)
+            {
+            if(MODS[p]->name != NULL)
+                {
+                cSize = (UINT32)strlen(MODS[p]->name);
+                writer.record_write(&cSize, 4);
+                writer.record_write(MODS[p]->name, cSize);
+                }
+            writer.record_write(&MODS[p]->texture, 4);
+            writer.record_write(&MODS[p]->index, 4);
+            }
+       }
     }
 
 FNVAlternateTextures& FNVAlternateTextures::operator = (const FNVAlternateTextures &rhs)
@@ -2331,6 +2363,26 @@ void FNVMODEL::SetFlagMask(UINT8 Mask)
     {
     MODD.Load();
     MODD.value = Mask;
+    }
+
+UINT32 FNVMODEL::CalcSize() const
+    {
+    UINT32 cSize = 0;
+    cSize += MODL.CalcSize();
+    cSize += MODB.CalcSize();
+    cSize += MODT.CalcSize();
+    cSize += Textures.CalcSize();
+    cSize += MODD.CalcSize();
+    return cSize;
+    }
+
+void FNVMODEL::Write(FileWriter &writer)
+    {
+    WRITE(MODL);
+    WRITE(MODB);
+    WRITE(MODT);
+    Textures.Write(writer);
+    WRITE(MODD);
     }
 
 bool FNVMODEL::operator ==(const FNVMODEL &other) const

@@ -40,7 +40,7 @@ class ACHRRecord : public Record
         OptSimpleSubRecord<FORMID> XMRC;
         SimpleSubRecord<FORMID> XHRS;
         RawRecord XRGD;
-        OptSimpleSubRecord<FLOAT32, 1, 0> XSCL; // scale
+        OptSimpleSubRecord<FLOAT32, 1> XSCL; // scale
         ReqSubRecord<GENPOSDATA> DATA;
 
         ACHRRecord(unsigned char *_recData=NULL);
@@ -59,14 +59,14 @@ class ACHRRecord : public Record
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
         UINT32 GetParentType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const ACHRRecord &other) const;
         bool operator !=(const ACHRRecord &other) const;

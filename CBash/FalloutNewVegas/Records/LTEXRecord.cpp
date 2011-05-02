@@ -474,50 +474,6 @@ void LTEXRecord::Set0Type(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 LTEXRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(GNAM.IsLoaded())
-        TotSize += GNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LTEXRecord::GetType()
     {
     return 'XETL';
@@ -599,26 +555,13 @@ SINT32 LTEXRecord::Unload()
 
 SINT32 LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(TNAM);
+    WRITE(HNAM);
+    WRITE(SNAM);
+    WRITE(GNAM);
 
     return -1;
     }

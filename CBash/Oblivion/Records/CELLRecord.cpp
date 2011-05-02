@@ -372,70 +372,6 @@ void CELLRecord::SetMusicType(UINT8 Type)
     XCMT.value = Type;
     }
 
-UINT32 CELLRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(XCLL.IsLoaded())
-        TotSize += XCLL.GetSize() + 6;
-
-    if(XCMT.IsLoaded())
-        TotSize += XCMT.GetSize() + 6;
-
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-        {
-        TotSize += Ownership->XOWN.GetSize() + 6;
-
-        if(Ownership->XRNK.IsLoaded())
-            TotSize += Ownership->XRNK.GetSize() + 6;
-
-        if(Ownership->XGLB.IsLoaded())
-            TotSize += Ownership->XGLB.GetSize() + 6;
-        }
-
-    if(XCCM.IsLoaded())
-        TotSize += XCCM.GetSize() + 6;
-
-    if(XCLW.IsLoaded())
-        TotSize += XCLW.GetSize() + 6;
-
-    if(XCLR.size())
-        {
-        cSize = (sizeof(UINT32) * (UINT32)XCLR.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XCLC.IsLoaded() && !IsInterior())
-        TotSize += XCLC.GetSize() + 6;
-
-    if(XCWT.IsLoaded())
-        TotSize += XCWT.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 CELLRecord::GetType()
     {
     return 'LLEC';
@@ -558,43 +494,43 @@ SINT32 CELLRecord::Unload()
     return 1;
     }
 
-SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
 
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(XCLL.IsLoaded())
-        SaveHandler.writeSubRecord('LLCX', XCLL.value, XCLL.GetSize());
+        writer.record_write_subrecord('LLCX', XCLL.value, XCLL.GetSize());
     if(XCMT.IsLoaded())
-        SaveHandler.writeSubRecord('TMCX', &XCMT.value, XCMT.GetSize());
+        writer.record_write_subrecord('TMCX', &XCMT.value, XCMT.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        SaveHandler.writeSubRecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
+        writer.record_write_subrecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
+            writer.record_write_subrecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            SaveHandler.writeSubRecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            writer.record_write_subrecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XCCM.IsLoaded())
-        SaveHandler.writeSubRecord('MCCX', &XCCM.value, XCCM.GetSize());
+        writer.record_write_subrecord('MCCX', &XCCM.value, XCCM.GetSize());
     if(XCLW.IsLoaded())
-        SaveHandler.writeSubRecord('WLCX', &XCLW.value, XCLW.GetSize());
+        writer.record_write_subrecord('WLCX', &XCLW.value, XCLW.GetSize());
 
     if(XCLR.size())
-        SaveHandler.writeSubRecord('RLCX', &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
+        writer.record_write_subrecord('RLCX', &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
     //else
-    //    SaveHandler.writeSubRecordHeader('RLCX', 0);
+    //    writer.record_write_subheader('RLCX', 0);
 
     if(XCLC.IsLoaded() && !IsInterior())
-        SaveHandler.writeSubRecord('CLCX', XCLC.value, XCLC.GetSize());
+        writer.record_write_subrecord('CLCX', XCLC.value, XCLC.GetSize());
     if(XCWT.IsLoaded())
-        SaveHandler.writeSubRecord('TWCX', &XCWT.value, XCWT.GetSize());
+        writer.record_write_subrecord('TWCX', &XCWT.value, XCWT.GetSize());
     return -1;
     }
 

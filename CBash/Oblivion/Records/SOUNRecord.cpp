@@ -179,34 +179,6 @@ void SOUNRecord::SetFlagMask(unsigned short Mask)
     SNDX.value.flags = Mask;
     }
 
-UINT32 SOUNRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNDX.IsLoaded())
-        TotSize += SNDX.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 SOUNRecord::GetType()
     {
     return 'NUOS';
@@ -273,17 +245,17 @@ SINT32 SOUNRecord::Unload()
     return 1;
     }
 
-SINT32 SOUNRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SOUNRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', FNAM.value, FNAM.GetSize());
     if(SNDX.IsLoaded())
         if(SNDX.GetSize() == 8)
-            SaveHandler.writeSubRecord('DDNS', &SNDX.value, SNDX.GetSize());
+            writer.record_write_subrecord('DDNS', &SNDX.value, SNDX.GetSize());
         else
-            SaveHandler.writeSubRecord('XDNS', &SNDX.value, SNDX.GetSize());
+            writer.record_write_subrecord('XDNS', &SNDX.value, SNDX.GetSize());
     return -1;
     }
 

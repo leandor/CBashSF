@@ -304,44 +304,6 @@ void SPELRecord::SetType(UINT32 Type)
 
 
 
-UINT32 SPELRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SPIT.IsLoaded())
-        TotSize += SPIT.GetSize() + 6;
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            TotSize += EFID->EFID.GetSize() + 6;
-        if(EFID->EFIT.IsLoaded())
-            TotSize += EFID->EFIT.GetSize() + 6;
-        if(EFID->CTDA.IsLoaded())
-            TotSize += EFID->CTDA.GetSize() + 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 SPELRecord::GetType()
     {
     return 'LEPS';
@@ -420,14 +382,9 @@ SINT32 SPELRecord::Unload()
 
 SINT32 SPELRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(SPIT.IsLoaded())
-        SaveHandler.writeSubRecord('TIPS', SPIT.value, SPIT.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(SPIT);
 
     if(EFID.IsLoaded())
         {

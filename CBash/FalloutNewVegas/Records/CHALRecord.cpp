@@ -284,52 +284,6 @@ void CHALRecord::Set0Type(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-/*
-UINT32 CHALRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(XNAM.IsLoaded())
-        TotSize += XNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 CHALRecord::GetType()
     {
     return 'LAHC';
@@ -411,26 +365,13 @@ SINT32 CHALRecord::Unload()
 
 SINT32 CHALRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
-
-    if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(SCRI);
+    WRITE(DESC);
+    WRITE(DATA);
+    WRITE(SNAM);
+    WRITE(XNAM);
 
     return -1;
     }

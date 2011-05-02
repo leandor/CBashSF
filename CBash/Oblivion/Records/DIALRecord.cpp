@@ -204,40 +204,6 @@ void DIALRecord::SetType(UINT8 Type)
     DATA.value = Type;
     }
 
-UINT32 DIALRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(QSTI.size())
-        TotSize += (UINT32)QSTI.size() * (sizeof(UINT32) + 6);
-
-    if(QSTR.size())
-        TotSize += (UINT32)QSTR.size() * (sizeof(UINT32) + 6);
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 DIALRecord::GetType()
     {
     return 'LAID';
@@ -314,18 +280,18 @@ SINT32 DIALRecord::Unload()
     return 1;
     }
 
-SINT32 DIALRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 DIALRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     for(UINT32 p = 0; p < QSTI.size(); p++)
-        SaveHandler.writeSubRecord('ITSQ', &QSTI[p], sizeof(UINT32));
+        writer.record_write_subrecord('ITSQ', &QSTI[p], sizeof(UINT32));
     for(UINT32 p = 0; p < QSTR.size(); p++)
-        SaveHandler.writeSubRecord('RTSQ', &QSTR[p], sizeof(UINT32));
+        writer.record_write_subrecord('RTSQ', &QSTR[p], sizeof(UINT32));
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;
     }
 

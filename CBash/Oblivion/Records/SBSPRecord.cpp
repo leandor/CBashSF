@@ -79,27 +79,6 @@ SBSPRecord::~SBSPRecord()
     //
     }
 
-UINT32 SBSPRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 SBSPRecord::GetType()
     {
     return 'PSBS';
@@ -159,12 +138,12 @@ SINT32 SBSPRecord::Unload()
     return 1;
     }
 
-SINT32 SBSPRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SBSPRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', &DNAM.value, DNAM.GetSize());
+        writer.record_write_subrecord('MAND', &DNAM.value, DNAM.GetSize());
     return -1;
     }
 

@@ -61,7 +61,7 @@ class RecordReader : public RecordOp
 class RecordProcessor
     {
     protected:
-        _FileHandler &ReadHandler;
+        FileReader &reader;
         FormIDHandlerClass &FormIDHandler;
         boost::unordered_set<UINT32> &UsedFormIDs;
 
@@ -71,10 +71,10 @@ class RecordProcessor
 
         FormIDResolver expander;
     public:
-        RecordOp &reader;
+        RecordOp &parser;
         const ModFlags &Flags;
 
-        RecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
+        RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
         virtual ~RecordProcessor();
 
         virtual bool operator()(Record *&curRecord);
@@ -84,7 +84,7 @@ class RecordProcessor
 class FNVRecordProcessor : public RecordProcessor
     {
     public:
-        FNVRecordProcessor(_FileHandler &_ReadHandler, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
+        FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
         ~FNVRecordProcessor();
 
         bool operator()(Record *&curRecord);
@@ -129,10 +129,10 @@ class Record
         virtual ~Record();
 
         virtual SINT32 Unload() abstract {};
-        virtual UINT32 GetSize(bool forceCalc=false) abstract {};
+        //virtual UINT32 GetSize(bool forceCalc=false) abstract {};
         virtual UINT32 GetType() abstract {};
         virtual STRING GetStrType() abstract {};
-        virtual SINT32 WriteRecord(_FileHandler &SaveHandler) abstract {};
+        virtual SINT32 WriteRecord(FileWriter &writer) abstract {};
         virtual SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize) abstract {};
 
         virtual UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
@@ -148,10 +148,10 @@ class Record
         virtual bool VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         virtual bool VisitFormIDs(FormIDOp &op);
 
-        bool Read();
+        virtual bool Read();
         bool IsValid(FormIDResolver &expander);
         //FormIDResolver& GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver);
-        virtual UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
+        virtual UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool IsDeleted() const;
         void IsDeleted(bool value);
@@ -243,5 +243,6 @@ class FNVRecord : public Record
         FNVRecord(unsigned char *_recData=NULL);
         virtual ~FNVRecord();
 
-        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
+        bool Read();
+        UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
     };

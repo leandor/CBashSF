@@ -166,48 +166,6 @@ void EFSHRecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
-UINT32 EFSHRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICO2.IsLoaded())
-        {
-        cSize = ICO2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM7.IsLoaded())
-        {
-        cSize = NAM7.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 EFSHRecord::GetType()
     {
     return 'HSFE';
@@ -281,20 +239,11 @@ SINT32 EFSHRecord::Unload()
 
 SINT32 EFSHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(ICO2.IsLoaded())
-        SaveHandler.writeSubRecord('2OCI', ICO2.value, ICO2.GetSize());
-
-    if(NAM7.IsLoaded())
-        SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(ICO2);
+    WRITE(NAM7);
+    WRITE(DATA);
 
     return -1;
     }

@@ -131,64 +131,6 @@ bool CLMTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 CLMTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(Weathers.size())
-        {
-        cSize = (sizeof(CLMTWLST) * (UINT32)Weathers.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FNAM.IsLoaded())
-        {
-        cSize = FNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(GNAM.IsLoaded())
-        {
-        cSize = GNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-    return TotSize;
-    }
-
 UINT32 CLMTRecord::GetType()
     {
     return 'TMLC';
@@ -284,31 +226,31 @@ SINT32 CLMTRecord::Unload()
     return 1;
     }
 
-SINT32 CLMTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 CLMTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(Weathers.size())
-        SaveHandler.writeSubRecord('TSLW', &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
+        writer.record_write_subrecord('TSLW', &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
     //else
-    //    SaveHandler.writeSubRecordHeader('TSLW', 0);
+    //    writer.record_write_subheader('TSLW', 0);
 
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', FNAM.value, FNAM.GetSize());
     if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
+        writer.record_write_subrecord('MANG', GNAM.value, GNAM.GetSize());
 
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
 
     if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', &TNAM.value, TNAM.GetSize());
+        writer.record_write_subrecord('MANT', &TNAM.value, TNAM.GetSize());
     return -1;
     }
 

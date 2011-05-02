@@ -483,84 +483,6 @@ void INFORecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
-UINT32 INFORecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(QSTI.IsLoaded())
-        TotSize += QSTI.GetSize() + 6;
-
-    if(TPIC.IsLoaded())
-        TotSize += TPIC.GetSize() + 6;
-
-    if(PNAM.IsLoaded())
-        TotSize += PNAM.GetSize() + 6;
-
-    if(NAME.size())
-        TotSize += (UINT32)NAME.size() * (sizeof(UINT32) + 6);
-
-    for(UINT32 p = 0; p < Responses.size(); p++)
-        {
-        if(Responses[p]->TRDT.IsLoaded())
-            TotSize += Responses[p]->TRDT.GetSize() + 6;
-
-        if(Responses[p]->NAM1.IsLoaded())
-            {
-            cSize = Responses[p]->NAM1.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-
-        if(Responses[p]->NAM2.IsLoaded())
-            {
-            cSize = Responses[p]->NAM2.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        if(CTDA[p]->IsLoaded())
-            TotSize += CTDA[p]->GetSize() + 6;
-
-    if(TCLT.size())
-        TotSize += (UINT32)TCLT.size() * (sizeof(UINT32) + 6);
-
-    if(TCLF.size())
-        TotSize += (UINT32)TCLF.size() * (sizeof(UINT32) + 6);
-
-    //if(SCHD.IsLoaded())
-    //    cSize += SCHD.GetSize() + 6;
-
-    if(SCHR.IsLoaded())
-        TotSize += SCHR.GetSize() + 6;
-
-    if(SCDA.IsLoaded())
-        {
-        cSize = SCDA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCTX.IsLoaded())
-        {
-        cSize = SCTX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
-
-    return TotSize;
-    }
-
 UINT32 INFORecord::GetType()
     {
     return 'OFNI';
@@ -709,31 +631,31 @@ SINT32 INFORecord::Unload()
     return 1;
     }
 
-SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 INFORecord::WriteRecord(FileWriter &writer)
     {
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
 
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(QSTI.IsLoaded())
-        SaveHandler.writeSubRecord('ITSQ', &QSTI.value, QSTI.GetSize());
+        writer.record_write_subrecord('ITSQ', &QSTI.value, QSTI.GetSize());
     if(TPIC.IsLoaded())
-        SaveHandler.writeSubRecord('CIPT', &TPIC.value, TPIC.GetSize());
+        writer.record_write_subrecord('CIPT', &TPIC.value, TPIC.GetSize());
     if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
+        writer.record_write_subrecord('MANP', PNAM.value, PNAM.GetSize());
     for(UINT32 p = 0; p < NAME.size(); p++)
-        SaveHandler.writeSubRecord('EMAN', &NAME[p], sizeof(UINT32));
+        writer.record_write_subrecord('EMAN', &NAME[p], sizeof(UINT32));
     if(Responses.size())
         {
         for(UINT32 p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
-                SaveHandler.writeSubRecord('TDRT', &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
+                writer.record_write_subrecord('TDRT', &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
             if(Responses[p]->NAM1.IsLoaded())
-                SaveHandler.writeSubRecord('1MAN', Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
+                writer.record_write_subrecord('1MAN', Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
             if(Responses[p]->NAM2.IsLoaded())
-                SaveHandler.writeSubRecord('2MAN', Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
+                writer.record_write_subrecord('2MAN', Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
             }
         }
     for(UINT32 p = 0; p < CTDA.size(); p++)
@@ -747,26 +669,26 @@ SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        SaveHandler.writeSubRecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
         }
     for(UINT32 p = 0; p < TCLT.size(); p++)
-        SaveHandler.writeSubRecord('TLCT', &TCLT[p], sizeof(UINT32));
+        writer.record_write_subrecord('TLCT', &TCLT[p], sizeof(UINT32));
     for(UINT32 p = 0; p < TCLF.size(); p++)
-        SaveHandler.writeSubRecord('FLCT', &TCLF[p], sizeof(UINT32));
+        writer.record_write_subrecord('FLCT', &TCLF[p], sizeof(UINT32));
     //if(SCHD.IsLoaded())
-    //    SaveHandler.writeSubRecord('DHCS', SCHD.value, SCHD.GetSize());
+    //    writer.record_write_subrecord('DHCS', SCHD.value, SCHD.GetSize());
     if(SCHR.IsLoaded())
-        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
+        writer.record_write_subrecord('RHCS', &SCHR.value, SCHR.GetSize());
     if(SCDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
+        writer.record_write_subrecord('ADCS', SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
+        writer.record_write_subrecord('XTCS', SCTX.value, SCTX.GetSize());
     for(UINT32 p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
             else
-                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 

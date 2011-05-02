@@ -135,73 +135,6 @@ void TXSTRecord::SetObjectFlagMask(UINT8 Mask)
     DODT->flags = Mask;
     }
 
-UINT32 TXSTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += OBND.GetSize() + 6;
-
-    if(TX00.IsLoaded())
-        {
-        cSize = TX00.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TX01.IsLoaded())
-        {
-        cSize = TX01.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TX02.IsLoaded())
-        {
-        cSize = TX02.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TX03.IsLoaded())
-        {
-        cSize = TX03.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TX04.IsLoaded())
-        {
-        cSize = TX04.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TX05.IsLoaded())
-        {
-        cSize = TX05.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DODT.IsLoaded())
-        TotSize += DODT.GetSize() + 6;
-
-    TotSize += DNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 TXSTRecord::GetType()
     {
     return 'TSXT';
@@ -293,35 +226,18 @@ SINT32 TXSTRecord::Unload()
     return 1;
     }
 
-SINT32 TXSTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TXSTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    SaveHandler.writeSubRecord('DNBO', &OBND.value, OBND.GetSize());
-
-    if(TX00.IsLoaded())
-        SaveHandler.writeSubRecord('00XT', TX00.value, TX00.GetSize());
-
-    if(TX01.IsLoaded())
-        SaveHandler.writeSubRecord('10XT', TX01.value, TX01.GetSize());
-
-    if(TX02.IsLoaded())
-        SaveHandler.writeSubRecord('20XT', TX02.value, TX02.GetSize());
-
-    if(TX03.IsLoaded())
-        SaveHandler.writeSubRecord('30XT', TX03.value, TX03.GetSize());
-
-    if(TX04.IsLoaded())
-        SaveHandler.writeSubRecord('40XT', TX04.value, TX04.GetSize());
-
-    if(TX05.IsLoaded())
-        SaveHandler.writeSubRecord('50XT', TX05.value, TX05.GetSize());
-
-    if(DODT.IsLoaded())
-        SaveHandler.writeSubRecord('TDOD', DODT.value, DODT.GetSize());
-
-    SaveHandler.writeSubRecord('MAND', &DNAM.value, DNAM.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(TX00);
+    WRITE(TX01);
+    WRITE(TX02);
+    WRITE(TX03);
+    WRITE(TX04);
+    WRITE(TX05);
+    WRITE(DODT);
+    WRITE(DNAM);
     return -1;
     }
 

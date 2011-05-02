@@ -75,33 +75,6 @@ bool NAVIRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 NAVIRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NVER.IsLoaded())
-        TotSize += NVER.GetSize() + 6;
-
-    if(NVMI.IsLoaded())
-        TotSize += NVMI.GetSize() + 6;
-
-    if(NVCI.IsLoaded())
-        TotSize += NVCI.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 NAVIRecord::GetType()
     {
     return 'IVAN';
@@ -171,17 +144,10 @@ SINT32 NAVIRecord::Unload()
 
 SINT32 NAVIRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(NVER.IsLoaded())
-        SaveHandler.writeSubRecord('REVN', NVER.value, NVER.GetSize());
-
-    if(NVMI.IsLoaded())
-        SaveHandler.writeSubRecord('IMVN', NVMI.value, NVMI.GetSize());
-
-    if(NVCI.IsLoaded())
-        SaveHandler.writeSubRecord('ICVN', NVCI.value, NVCI.GetSize());
+    WRITE(EDID);
+    WRITE(NVER);
+    WRITE(NVMI);
+    WRITE(NVCI);
 
     return -1;
     }

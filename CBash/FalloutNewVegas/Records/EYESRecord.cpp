@@ -122,40 +122,6 @@ void EYESRecord::SetFlagMask(UINT8 Mask)
     DATA.value = Mask;
     }
 
-UINT32 EYESRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 EYESRecord::GetType()
     {
     return 'SEYE';
@@ -223,19 +189,12 @@ SINT32 EYESRecord::Unload()
     return 1;
     }
 
-SINT32 EYESRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 EYESRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
-
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(ICON);
+    WRITE(DATA);
     return -1;
     }
 

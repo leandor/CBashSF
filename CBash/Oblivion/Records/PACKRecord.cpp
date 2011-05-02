@@ -699,40 +699,6 @@ void PACKRecord::SetTargetType(SINT32 Type)
     PTDT->targetType = Type;
     }
 
-UINT32 PACKRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PKDT.IsLoaded())
-        TotSize += PKDT.GetSize() + 6;
-
-    if(PLDT.IsLoaded())
-        TotSize += PLDT.GetSize() + 6;
-
-    if(PSDT.IsLoaded())
-        TotSize += PSDT.GetSize() + 6;
-
-    if(PTDT.IsLoaded())
-        TotSize += PTDT.GetSize() + 6;
-
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        if(CTDA[p]->IsLoaded())
-            TotSize += CTDA[p]->GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 PACKRecord::GetType()
     {
     return 'KCAP';
@@ -865,21 +831,21 @@ SINT32 PACKRecord::Unload()
     return 1;
     }
 
-SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     {
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(PKDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDKP', &PKDT.value, PKDT.GetSize());
+        writer.record_write_subrecord('TDKP', &PKDT.value, PKDT.GetSize());
     if(PLDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDLP', PLDT.value, PLDT.GetSize());
+        writer.record_write_subrecord('TDLP', PLDT.value, PLDT.GetSize());
     if(PSDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDSP', &PSDT.value, PSDT.GetSize());
+        writer.record_write_subrecord('TDSP', &PSDT.value, PSDT.GetSize());
     if(PTDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDTP', PTDT.value, PTDT.GetSize());
+        writer.record_write_subrecord('TDTP', PTDT.value, PTDT.GetSize());
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
         curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
@@ -891,7 +857,7 @@ SINT32 PACKRecord::WriteRecord(_FileHandler &SaveHandler)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        SaveHandler.writeSubRecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
         }
     return -1;
     }

@@ -175,145 +175,6 @@ void PGRERecord::SetFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-UINT32 PGRERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(XEZN.IsLoaded())
-        TotSize += XEZN.GetSize() + 6;
-
-    if(XRGD.IsLoaded())
-        {
-        cSize = XRGD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XRGB.IsLoaded())
-        {
-        cSize = XRGB.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XPRD.IsLoaded())
-        {
-        if(XPRD->XPRD.IsLoaded())
-            TotSize += XPRD->XPRD.GetSize() + 6;
-        if(XPRD->XPPA.IsLoaded())
-            TotSize += XPRD->XPPA.GetSize() + 6;
-        if(XPRD->INAM.IsLoaded())
-            TotSize += XPRD->INAM.GetSize() + 6;
-        if(XPRD->SCHR.IsLoaded())
-            {
-            if(XPRD->SCHR->SCHR.IsLoaded())
-                TotSize += XPRD->SCHR->SCHR.GetSize() + 6;
-            if(XPRD->SCHR->SCDA.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCDA.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SCTX.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCTX.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SLSD.IsLoaded())
-                TotSize += XPRD->SCHR->SLSD.GetSize() + 6;
-            if(XPRD->SCHR->SCVR.IsLoaded())
-                {
-                cSize = XPRD->SCHR->SCVR.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-            if(XPRD->SCHR->SCRO.IsLoaded())
-                TotSize += XPRD->SCHR->SCRO.GetSize() + 6;
-            if(XPRD->SCHR->SCRV.IsLoaded())
-                TotSize += XPRD->SCHR->SCRV.GetSize() + 6;
-            }
-        if(XPRD->TNAM.IsLoaded())
-            TotSize += XPRD->TNAM.GetSize() + 6;
-        }
-
-    if(XOWN.IsLoaded())
-        {
-        if(XOWN->XOWN.IsLoaded())
-            TotSize += XOWN->XOWN.GetSize() + 6;
-        if(XOWN->XRNK.IsLoaded())
-            TotSize += XOWN->XRNK.GetSize() + 6;
-        }
-
-    if(XCNT.IsLoaded())
-        TotSize += XCNT.GetSize() + 6;
-
-    if(XRDS.IsLoaded())
-        TotSize += XRDS.GetSize() + 6;
-
-    if(XHLP.IsLoaded())
-        TotSize += XHLP.GetSize() + 6;
-
-    if(XPWR.IsLoaded())
-        TotSize += XPWR.GetSize() + 6;
-
-    if(XDCR.IsLoaded())
-        TotSize += XDCR.GetSize() + 6;
-
-    if(XLKR.IsLoaded())
-        TotSize += XLKR.GetSize() + 6;
-
-    if(XCLP.IsLoaded())
-        TotSize += XCLP.GetSize() + 6;
-
-    if(XAPD.IsLoaded())
-        TotSize += XAPD.GetSize() + 6;
-
-    if(XAPR.IsLoaded())
-        TotSize += XAPR.GetSize() + 6;
-
-    if(XATO.IsLoaded())
-        {
-        cSize = XATO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XESP.IsLoaded())
-        TotSize += XESP.GetSize() + 6;
-
-    if(XEMI.IsLoaded())
-        TotSize += XEMI.GetSize() + 6;
-
-    if(XMBR.IsLoaded())
-        TotSize += XMBR.GetSize() + 6;
-
-    if(XIBS.IsLoaded())
-        TotSize += XIBS.GetSize() + 6;
-
-    if(XSCL.IsLoaded())
-        TotSize += XSCL.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 PGRERecord::GetType()
     {
     return 'ERGP';
@@ -512,20 +373,11 @@ SINT32 PGRERecord::Unload()
 
 SINT32 PGRERecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', NAME.value, NAME.GetSize());
-
-    if(XEZN.IsLoaded())
-        SaveHandler.writeSubRecord('NZEX', XEZN.value, XEZN.GetSize());
-
-    if(XRGD.IsLoaded())
-        SaveHandler.writeSubRecord('DGRX', XRGD.value, XRGD.GetSize());
-
-    if(XRGB.IsLoaded())
-        SaveHandler.writeSubRecord('BGRX', XRGB.value, XRGB.GetSize());
+    WRITE(EDID);
+    WRITE(NAME);
+    WRITE(XEZN);
+    WRITE(XRGD);
+    WRITE(XRGB);
 
     if(XPRD.IsLoaded())
         {
@@ -577,53 +429,24 @@ SINT32 PGRERecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XCNT.IsLoaded())
-        SaveHandler.writeSubRecord('TNCX', XCNT.value, XCNT.GetSize());
-
-    if(XRDS.IsLoaded())
-        SaveHandler.writeSubRecord('SDRX', XRDS.value, XRDS.GetSize());
-
-    if(XHLP.IsLoaded())
-        SaveHandler.writeSubRecord('PLHX', XHLP.value, XHLP.GetSize());
-
-    if(XPWR.IsLoaded())
-        SaveHandler.writeSubRecord('RWPX', XPWR.value, XPWR.GetSize());
-
-    if(XDCR.IsLoaded())
-        SaveHandler.writeSubRecord('RCDX', XDCR.value, XDCR.GetSize());
-
-    if(XLKR.IsLoaded())
-        SaveHandler.writeSubRecord('RKLX', XLKR.value, XLKR.GetSize());
-
-    if(XCLP.IsLoaded())
-        SaveHandler.writeSubRecord('PLCX', XCLP.value, XCLP.GetSize());
-
-    if(XAPD.IsLoaded())
-        SaveHandler.writeSubRecord('DPAX', XAPD.value, XAPD.GetSize());
-
-    if(XAPR.IsLoaded())
-        SaveHandler.writeSubRecord('RPAX', XAPR.value, XAPR.GetSize());
-
-    if(XATO.IsLoaded())
-        SaveHandler.writeSubRecord('OTAX', XATO.value, XATO.GetSize());
-
-    if(XESP.IsLoaded())
-        SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
-
-    if(XEMI.IsLoaded())
-        SaveHandler.writeSubRecord('IMEX', XEMI.value, XEMI.GetSize());
-
-    if(XMBR.IsLoaded())
-        SaveHandler.writeSubRecord('RBMX', XMBR.value, XMBR.GetSize());
+    WRITE(XCNT);
+    WRITE(XRDS);
+    WRITE(XHLP);
+    WRITE(XPWR);
+    WRITE(XDCR);
+    WRITE(XLKR);
+    WRITE(XCLP);
+    WRITE(XAPD);
+    WRITE(XAPR);
+    WRITE(XATO);
+    WRITE(XESP);
+    WRITE(XEMI);
+    WRITE(XMBR);
 
     //if(XIBS.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('SBIX', XIBS.value, XIBS.GetSize());
-
-    if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', XSCL.value, XSCL.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(XSCL);
+    WRITE(DATA);
 
     return -1;
     }

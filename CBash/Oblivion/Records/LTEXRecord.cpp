@@ -289,40 +289,6 @@ void LTEXRecord::SetType(UINT8 Type)
     HNAM.value.types = Type;
     }
 
-UINT32 LTEXRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(GNAM.size())
-        TotSize += (UINT32)GNAM.size() * (sizeof(UINT32) + 6);
-
-    return TotSize;
-    }
-
 UINT32 LTEXRecord::GetType()
     {
     return 'XETL';
@@ -397,18 +363,18 @@ SINT32 LTEXRecord::Unload()
     return 1;
     }
 
-SINT32 LTEXRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LTEXRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', &HNAM.value, HNAM.GetSize());
+        writer.record_write_subrecord('MANH', &HNAM.value, HNAM.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
     for(UINT32 p = 0; p < GNAM.size(); p++)
-        SaveHandler.writeSubRecord('MANG', &GNAM[p], sizeof(UINT32));
+        writer.record_write_subrecord('MANG', &GNAM[p], sizeof(UINT32));
     return -1;
     }
 

@@ -2238,7 +2238,7 @@ def TestMinimalLoad():
 
 def TestFullLoad():
     Current = ObCollection()
-    Current.addMod("Pulse.esp", MinLoad=False)
+    Current.addMod("Oblivion.esm", MinLoad=False)
     Current.load()
 ##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
@@ -10348,12 +10348,12 @@ from timeit import Timer
 
 ##phonenumber = raw_input(">")
 ##Current = ObCollection()
-####Current.addMod("Oblivion.esm")
-####print "MinLoad"
-##Current.addMod("Oblivion.esm", MinLoad=False)
-##print "FullLoad"
-####Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
-####Current.fullLoad(LoadMasters=True)
+##Current.addMod("Oblivion.esm")
+##print "MinLoad"
+####Current.addMod("Oblivion.esm", MinLoad=False)
+####print "FullLoad"
+######Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
+######Current.fullLoad(LoadMasters=True)
 ##Current.load()
 ##phonenumber = raw_input(">")
 ##del Current
@@ -10365,7 +10365,7 @@ from timeit import Timer
 ##TestAttrReport()
 ##TestCopyAttrs()
 ##TestCleanMasters()
-TestFullLoad()
+##TestFullLoad()
 ##TestMinimalLoad()
 ##TestLoadMasters()
 ##TestDeleteRecord()
@@ -10379,7 +10379,7 @@ TestFullLoad()
 ##TestEYES()
 ##TestRACE()
 ##TestSOUN()
-##TestSKIL()
+TestSKIL()
 ##TestMGEF()
 ##TestSCPT()
 ##TestLTEX()

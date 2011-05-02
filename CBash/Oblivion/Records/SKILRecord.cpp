@@ -91,68 +91,6 @@ SKILRecord::~SKILRecord()
     //
     }
 
-UINT32 SKILRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(INDX.IsLoaded())
-        TotSize += INDX.GetSize() + 6;
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(JNAM.IsLoaded())
-        {
-        cSize = JNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ENAM.IsLoaded())
-        {
-        cSize = ENAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MNAM.IsLoaded())
-        {
-        cSize = MNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 SKILRecord::GetType()
     {
     return 'LIKS';
@@ -240,26 +178,26 @@ SINT32 SKILRecord::Unload()
     return 1;
     }
 
-SINT32 SKILRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SKILRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(INDX.IsLoaded())
-        SaveHandler.writeSubRecord('XDNI', &INDX.value, INDX.GetSize());
+        writer.record_write_subrecord('XDNI', &INDX.value, INDX.GetSize());
     if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord('MANA', ANAM.value, ANAM.GetSize());
     if(JNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANJ', JNAM.value, JNAM.GetSize());
+        writer.record_write_subrecord('MANJ', JNAM.value, JNAM.GetSize());
     if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
+        writer.record_write_subrecord('MANE', ENAM.value, ENAM.GetSize());
     if(MNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
     return -1;
     }
 

@@ -203,113 +203,6 @@ void INGRRecord::SetFlagMask(UINT8 Mask)
     ENIT.value.flags = Mask;
     }
 
-UINT32 INGRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBME.IsLoaded())
-        {
-        if(OBME->OBME.IsLoaded())
-            TotSize += OBME->OBME.GetSize() + 6;
-        if(OBME->DATX.IsLoaded())
-            {
-            cSize = OBME->DATX.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(Effects.size())
-            TotSize += 6; //EFXX chunk
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(ENIT.IsLoaded())
-        TotSize += ENIT.GetSize() + 6;
-
-    for(UINT32 p = 0; p < Effects.size(); p++)
-        {
-        if(Effects[p]->EFID.IsLoaded())
-            TotSize += Effects[p]->EFID.GetSize() + 6;
-
-        if(Effects[p]->EFIT.IsLoaded())
-            TotSize += Effects[p]->EFIT.GetSize() + 6;
-
-        if(Effects[p]->SCIT.IsLoaded() || Effects[p]->FULL.IsLoaded())
-            TotSize += Effects[p]->SCIT.GetSize() + 6;
-
-        if(Effects[p]->FULL.IsLoaded())
-            {
-            cSize = Effects[p]->FULL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-
-        if(Effects[p]->OBME.IsLoaded())
-            {
-            if(Effects[p]->OBME->EFME.IsLoaded())
-                TotSize += Effects[p]->OBME->EFME.GetSize() + 6;
-
-            if(Effects[p]->OBME->EFII.IsLoaded())
-                {
-                cSize = Effects[p]->OBME->EFII.GetSize();
-                if(cSize > 65535) cSize += 10;
-                TotSize += cSize += 6;
-                }
-
-            if(Effects[p]->OBME->EFIX.IsLoaded())
-                TotSize += Effects[p]->OBME->EFIX.GetSize() + 6;
-            }
-        }
-
-    return TotSize;
-    }
-
 UINT32 INGRRecord::GetType()
     {
     return 'RGNI';
@@ -465,52 +358,52 @@ SINT32 INGRRecord::Unload()
     return 1;
     }
 
-SINT32 INGRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 INGRRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
-        SaveHandler.writeSubRecord('EMBO', &OBME->OBME.value, OBME->OBME.GetSize());
+        writer.record_write_subrecord('EMBO', &OBME->OBME.value, OBME->OBME.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(ENIT.IsLoaded())
-        SaveHandler.writeSubRecord('TINE', &ENIT.value, ENIT.GetSize());
+        writer.record_write_subrecord('TINE', &ENIT.value, ENIT.GetSize());
     if(Effects.size())
         for(UINT32 p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFME.IsLoaded())
-                SaveHandler.writeSubRecord('EMFE', &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
+                writer.record_write_subrecord('EMFE', &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
             if(Effects[p]->EFID.IsLoaded())
-                SaveHandler.writeSubRecord('DIFE', &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
+                writer.record_write_subrecord('DIFE', &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
             if(Effects[p]->EFIT.IsLoaded())
-                SaveHandler.writeSubRecord('TIFE', &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
+                writer.record_write_subrecord('TIFE', &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
             if(Effects[p]->SCIT.IsLoaded() || Effects[p]->FULL.IsLoaded())
-                SaveHandler.writeSubRecord('TICS', Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
+                writer.record_write_subrecord('TICS', Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
             if(Effects[p]->FULL.IsLoaded())
-                SaveHandler.writeSubRecord('LLUF', Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
+                writer.record_write_subrecord('LLUF', Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFII.IsLoaded())
-                SaveHandler.writeSubRecord('IIFE', Effects[p]->OBME->EFII.value, Effects[p]->OBME->EFII.GetSize());
+                writer.record_write_subrecord('IIFE', Effects[p]->OBME->EFII.value, Effects[p]->OBME->EFII.GetSize());
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFIX.IsLoaded())
-                SaveHandler.writeSubRecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
+                writer.record_write_subrecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
             }
     if(Effects.size() && OBME.IsLoaded())
-        SaveHandler.writeSubRecordHeader('XXFE', 0);
+        writer.record_write_subheader('XXFE', 0);
     if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
-        SaveHandler.writeSubRecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
+        writer.record_write_subrecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
     return -1;
     }
 

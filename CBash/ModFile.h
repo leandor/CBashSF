@@ -29,7 +29,7 @@ GPL License and Copyright Notice ============================================
 class ModFile
     {
     public:
-        _FileHandler ReadHandler;
+        FileReader reader;
         FormIDHandlerClass FormIDHandler;
         ModFlags Flags;
         time_t ModTime;

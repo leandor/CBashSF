@@ -61,39 +61,6 @@ MICNRecord::~MICNRecord()
     //
     }
 
-UINT32 MICNRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-    else TotSize += 7;
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 MICNRecord::GetType()
     {
     return 'NCIM';
@@ -157,21 +124,11 @@ SINT32 MICNRecord::Unload()
     return 1;
     }
 
-SINT32 MICNRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 MICNRecord::WriteRecord(FileWriter &writer)
     {
-    char null = 0;
-
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-    else
-        SaveHandler.writeSubRecord('NOCI', &null, 1);
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
+    WRITE(EDID);
+    WRITEREQ(ICON);
+    WRITE(MICO);
     return -1;
     }
 

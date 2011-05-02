@@ -54,10 +54,7 @@ HDPTRecord::HDPTRecord(HDPTRecord *srcRecord):
     FULL = srcRecord->FULL;
     MODL = srcRecord->MODL;
     DATA = srcRecord->DATA;
-
-    HNAM.resize(srcRecord->HNAM.size());
-    for(UINT32 x = 0; x < srcRecord->HNAM.size(); x++)
-        HNAM[x] = srcRecord->HNAM[x];
+    HNAM = srcRecord->HNAM;
     return;
     }
 
@@ -77,8 +74,8 @@ bool HDPTRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
 
-    for(UINT32 x = 0; x < HNAM.size(); x++)
-        op.Accept(HNAM[x]);
+    for(UINT32 x = 0; x < HNAM.value.size(); x++)
+        op.Accept(HNAM.value[x]);
 
     return op.Stop();
     }
@@ -107,63 +104,6 @@ void HDPTRecord::SetFlagMask(UINT8 Mask)
     DATA.value = Mask;
     }
 
-UINT32 HDPTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(HNAM.size())
-        TotSize += (UINT32)HNAM.size() * (sizeof(FORMID) + 6);
-
-    return TotSize;
-    }
-
 UINT32 HDPTRecord::GetType()
     {
     return 'TPDH';
@@ -179,7 +119,6 @@ SINT32 HDPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
-    FORMID curFormID = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -227,8 +166,7 @@ SINT32 HDPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             case 'MANH':
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                HNAM.push_back(curFormID);
+                HNAM.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -250,54 +188,17 @@ SINT32 HDPTRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     DATA.Unload();
-    HNAM.clear();
+    HNAM.Unload();
     return 1;
     }
 
-SINT32 HDPTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 HDPTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
-        if(MODL->Textures.IsLoaded())
-            {
-            SaveHandler.writeSubRecordHeader('SDOM', MODL->Textures.GetSize());
-            UINT32 cSize = MODL->Textures.MODS.size();
-            SaveHandler.write(&cSize, 4);
-            for(UINT32 p = 0; p < MODL->Textures.MODS.size(); ++p)
-                {
-                if(MODL->Textures.MODS[p]->name != NULL)
-                    {
-                    cSize = (UINT32)strlen(MODL->Textures.MODS[p]->name);
-                    SaveHandler.write(&cSize, 4);
-                    SaveHandler.write(MODL->Textures.MODS[p]->name, cSize);
-                    }
-
-                SaveHandler.write(&MODL->Textures.MODS[p]->texture, 4);
-                SaveHandler.write(&MODL->Textures.MODS[p]->index, 4);
-                }
-           }
-        if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
-        }
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
-
-    for(UINT32 p = 0; p < HNAM.size(); p++)
-        SaveHandler.writeSubRecord('MANH', &HNAM[p], sizeof(FORMID));
-
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(DATA);
+    WRITE(HNAM);
     return -1;
     }
 

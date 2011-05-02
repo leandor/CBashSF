@@ -377,107 +377,6 @@ bool BPTDRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-/*
-UINT32 BPTDRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(BPTN.IsLoaded())
-        {
-        cSize = BPTN.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BPNN.IsLoaded())
-        {
-        cSize = BPNN.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BPNT.IsLoaded())
-        {
-        cSize = BPNT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BPNI.IsLoaded())
-        {
-        cSize = BPNI.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BPND.IsLoaded())
-        TotSize += BPND.GetSize() + 6;
-
-    if(NAM1.IsLoaded())
-        {
-        cSize = NAM1.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM4.IsLoaded())
-        {
-        cSize = NAM4.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM5.IsLoaded())
-        {
-        cSize = NAM5.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(RAGA.IsLoaded())
-        TotSize += RAGA.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 BPTDRecord::GetType()
     {
     return 'DTPB';
@@ -592,8 +491,7 @@ SINT32 BPTDRecord::Unload()
 
 SINT32 BPTDRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    WRITE(EDID);
 
     if(MODL.IsLoaded())
         {
@@ -625,32 +523,15 @@ SINT32 BPTDRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(BPTN.IsLoaded())
-        SaveHandler.writeSubRecord('NTPB', BPTN.value, BPTN.GetSize());
-
-    if(BPNN.IsLoaded())
-        SaveHandler.writeSubRecord('NNPB', BPNN.value, BPNN.GetSize());
-
-    if(BPNT.IsLoaded())
-        SaveHandler.writeSubRecord('TNPB', BPNT.value, BPNT.GetSize());
-
-    if(BPNI.IsLoaded())
-        SaveHandler.writeSubRecord('INPB', BPNI.value, BPNI.GetSize());
-
-    if(BPND.IsLoaded())
-        SaveHandler.writeSubRecord('DNPB', BPND.value, BPND.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM4.IsLoaded())
-        SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
-
-    if(NAM5.IsLoaded())
-        SaveHandler.writeSubRecord('5MAN', NAM5.value, NAM5.GetSize());
-
-    if(RAGA.IsLoaded())
-        SaveHandler.writeSubRecord('AGAR', RAGA.value, RAGA.GetSize());
+    WRITE(BPTN);
+    WRITE(BPNN);
+    WRITE(BPNT);
+    WRITE(BPNI);
+    WRITE(BPND);
+    WRITE(NAM1);
+    WRITE(NAM4);
+    WRITE(NAM5);
+    WRITE(RAGA);
 
     return -1;
     }

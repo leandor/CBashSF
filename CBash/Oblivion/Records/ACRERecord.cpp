@@ -109,55 +109,6 @@ void ACRERecord::SetFlagMask(UINT8 Mask)
     XESP->flags = Mask;
     }
 
-UINT32 ACRERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-        {
-        TotSize += Ownership->XOWN.GetSize() + 6;
-        if(Ownership->XRNK.IsLoaded())
-            TotSize += Ownership->XRNK.GetSize() + 6;
-        if(Ownership->XGLB.IsLoaded())
-            TotSize += Ownership->XGLB.GetSize() + 6;
-        }
-
-    if(XLOD.IsLoaded())
-        TotSize += XLOD.GetSize() + 6;
-
-    if(XESP.IsLoaded())
-        TotSize += XESP.GetSize() + 6;
-
-    if(XRGD.IsLoaded())
-        {
-        cSize = XRGD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XSCL.IsLoaded())
-        TotSize += XSCL.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 ACRERecord::GetType()
     {
     return 'ERCA';
@@ -255,37 +206,37 @@ SINT32 ACRERecord::Unload()
     return 1;
     }
 
-SINT32 ACRERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACRERecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', &NAME.value, NAME.GetSize());
+        writer.record_write_subrecord('EMAN', &NAME.value, NAME.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        SaveHandler.writeSubRecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
+        writer.record_write_subrecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
+            writer.record_write_subrecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            SaveHandler.writeSubRecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            writer.record_write_subrecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XLOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOLX', XLOD.value, XLOD.GetSize());
+        writer.record_write_subrecord('DOLX', XLOD.value, XLOD.GetSize());
 
     if(XESP.IsLoaded())
-        SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
+        writer.record_write_subrecord('PSEX', XESP.value, XESP.GetSize());
 
     if(XRGD.IsLoaded())
-        SaveHandler.writeSubRecord('DGRX', XRGD.value, XRGD.GetSize());
+        writer.record_write_subrecord('DGRX', XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());
+        writer.record_write_subrecord('LCSX', &XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;
     }
 

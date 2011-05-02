@@ -69,13 +69,13 @@ class HAIRRecord : public FNVRecord //Hair
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const HAIRRecord &other) const;
         bool operator !=(const HAIRRecord &other) const;

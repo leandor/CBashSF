@@ -213,53 +213,6 @@ void WATRRecord::SetFlagMask(UINT8 Mask)
     FNAM.value = Mask;
     }
 
-UINT32 WATRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TNAM.IsLoaded())
-        {
-        cSize = TNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(MNAM.IsLoaded())
-        {
-        cSize = MNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(GNAM.IsLoaded())
-        TotSize += GNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 WATRRecord::GetType()
     {
     return 'RTAW';
@@ -343,24 +296,24 @@ SINT32 WATRRecord::Unload()
     return 1;
     }
 
-SINT32 WATRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 WATRRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
+        writer.record_write_subrecord('MANT', TNAM.value, TNAM.GetSize());
     if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
     if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
     if(MNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
     if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
     if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
+        writer.record_write_subrecord('MANG', GNAM.value, GNAM.GetSize());
     return -1;
     }
 

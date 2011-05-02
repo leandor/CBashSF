@@ -79,7 +79,9 @@ bool PGRDRecord::PGRDPGRL::operator !=(const PGRDPGRL &other) const
 PGRDRecord::PGRDRecord(unsigned char *_recData):
     Record(_recData)
     {
-    IsCompressed(true);
+    //PGRD records are normally compressed due to size
+    if(_recData == NULL)
+        IsCompressed(true);
     }
 
 PGRDRecord::PGRDRecord(PGRDRecord *srcRecord):
@@ -129,58 +131,6 @@ bool PGRDRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(PGRL[x]->points[0]);
 
     return op.Stop();
-    }
-
-UINT32 PGRDRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(PGRP.size())
-        {
-        cSize = (sizeof(GENPGRP) * (UINT32)PGRP.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PGAG.IsLoaded())
-        {
-        cSize = PGAG.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(PGRR.IsLoaded())
-        {
-        cSize = PGRR.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    //if(PGRR.size())
-    //    cSize += 6 + (sizeof(PGRDPGRR) * (UINT32)PGRR.size());
-
-    if(PGRI.size())
-        {
-        cSize = (sizeof(PGRDPGRI) * (UINT32)PGRI.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    for(UINT32 x = 0; x < PGRL.size(); ++x)
-        {
-        cSize = (sizeof(UINT32) * (UINT32)PGRL[x]->points.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
     }
 
 UINT32 PGRDRecord::GetType()
@@ -314,22 +264,22 @@ SINT32 PGRDRecord::Unload()
     return 1;
     }
 
-SINT32 PGRDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 PGRDRecord::WriteRecord(FileWriter &writer)
     {
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(PGRP.size())
-        SaveHandler.writeSubRecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
+        writer.record_write_subrecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
     if(PGAG.IsLoaded())
-        SaveHandler.writeSubRecord('GAGP', PGAG.value, PGAG.GetSize());
+        writer.record_write_subrecord('GAGP', PGAG.value, PGAG.GetSize());
     if(PGRR.IsLoaded())
-        SaveHandler.writeSubRecord('RRGP', PGRR.value, PGRR.GetSize());
+        writer.record_write_subrecord('RRGP', PGRR.value, PGRR.GetSize());
     //if(PGRR.size())
-    //    SaveHandler.writeSubRecord('RRGP', &PGRR[0], sizeof(PGRDPGRR) * (UINT32)PGRR.size());
+    //    writer.record_write_subrecord('RRGP', &PGRR[0], sizeof(PGRDPGRR) * (UINT32)PGRR.size());
     if(PGRI.size())
-        SaveHandler.writeSubRecord('IRGP', &PGRI[0], sizeof(PGRDPGRI) * (UINT32)PGRI.size());
+        writer.record_write_subrecord('IRGP', &PGRI[0], sizeof(PGRDPGRI) * (UINT32)PGRI.size());
     for(UINT32 x = 0; x < PGRL.size(); ++x)
-        SaveHandler.writeSubRecord('LRGP', &PGRL[x]->points[0], (sizeof(UINT32) * (UINT32)PGRL[x]->points.size()));
+        writer.record_write_subrecord('LRGP', &PGRL[x]->points[0], (sizeof(UINT32) * (UINT32)PGRL[x]->points.size()));
     return -1;
     }
 

@@ -38,7 +38,7 @@ class HDPTRecord : public FNVRecord //Head Part
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<UINT8> DATA; //Flags
-        std::vector<FORMID> HNAM; //Parts
+        UnorderedSparseArray<FORMID> HNAM; //Parts
 
         HDPTRecord(unsigned char *_recData=NULL);
         HDPTRecord(HDPTRecord *srcRecord);
@@ -56,13 +56,13 @@ class HDPTRecord : public FNVRecord //Head Part
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const HDPTRecord &other) const;
         bool operator !=(const HDPTRecord &other) const;

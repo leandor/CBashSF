@@ -82,46 +82,6 @@ bool RCPERecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 RCPERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(RCIL.IsLoaded())
-        TotSize += RCIL.GetSize() + 6;
-
-    if(RCQY.IsLoaded())
-        TotSize += RCQY.GetSize() + 6;
-
-    if(RCOD.IsLoaded())
-        TotSize += RCOD.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 RCPERecord::GetType()
     {
     return 'EPCR';
@@ -203,26 +163,13 @@ SINT32 RCPERecord::Unload()
 
 SINT32 RCPERecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(RCIL.IsLoaded())
-        SaveHandler.writeSubRecord('LICR', RCIL.value, RCIL.GetSize());
-
-    if(RCQY.IsLoaded())
-        SaveHandler.writeSubRecord('YQCR', RCQY.value, RCQY.GetSize());
-
-    if(RCOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOCR', RCOD.value, RCOD.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(CTDA);
+    WRITE(DATA);
+    WRITE(RCIL);
+    WRITE(RCQY);
+    WRITE(RCOD);
 
     return -1;
     }

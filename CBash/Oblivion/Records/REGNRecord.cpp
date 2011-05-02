@@ -647,114 +647,6 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 REGNRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(RCLR.IsLoaded())
-        TotSize += RCLR.GetSize() + 6;
-
-    if(WNAM.IsLoaded())
-        TotSize += WNAM.GetSize() + 6;
-
-    for(UINT32 p = 0; p < Areas.size(); p++)
-        {
-        if(Areas[p]->RPLI.IsLoaded())
-            TotSize += Areas[p]->RPLI.GetSize() + 6;
-        if(Areas[p]->RPLD.size())
-            {
-            cSize = (sizeof(REGNRPLD) * (UINT32)Areas[p]->RPLD.size());
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    for(UINT32 p = 0; p < Entries.size(); p++)
-        {
-        if(Entries[p]->RDAT.IsLoaded())
-            TotSize += Entries[p]->RDAT.GetSize() + 6;
-
-        switch(Entries[p]->RDAT.value.entryType)
-            {
-            case eREGNObjects:
-                TotSize += 6; //RDOT written even if empty
-                if(Entries[p]->RDOT.size())
-                    {
-                    cSize = (sizeof(REGNRDOT) * (UINT32)Entries[p]->RDOT.size());
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize;
-                    }
-                break;
-            case eREGNWeathers:
-                if(Entries[p]->RDWT.size())
-                    {
-                    cSize = (sizeof(REGNRDWT) * (UINT32)Entries[p]->RDWT.size());
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize += 6;
-                    }
-                break;
-            case eREGNMap:
-                if(Entries[p]->RDMP.IsLoaded())
-                    {
-                    cSize = Entries[p]->RDMP.GetSize();
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize += 6;
-                    }
-                break;
-            case eREGNIcon:
-                if(Entries[p]->ICON.IsLoaded())
-                    {
-                    cSize = Entries[p]->ICON.GetSize();
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize += 6;
-                    }
-                break;
-            case eREGNGrasses:
-                if(Entries[p]->RDGS.size())
-                    {
-                    cSize = (sizeof(REGNRDGS) * (UINT32)Entries[p]->RDGS.size());
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize += 6;
-                    }
-                break;
-            case eREGNSounds:
-                if(Entries[p]->RDMD.IsLoaded())
-                    TotSize += Entries[p]->RDMD.GetSize() + 6;
-                TotSize += 6; //RDSD written even if empty
-                if(Entries[p]->RDSD.size())
-                    {
-                    cSize = (sizeof(REGNRDSD) * (UINT32)Entries[p]->RDSD.size());
-                    if(cSize > 65535) cSize += 10;
-                    TotSize += cSize;
-                    }
-                break;
-            default:
-                printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);
-                break;
-            }
-        }
-
-    return TotSize;
-    }
-
 UINT32 REGNRecord::GetType()
     {
     return 'NGER';
@@ -955,66 +847,66 @@ SINT32 REGNRecord::Unload()
     return 1;
     }
 
-SINT32 REGNRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REGNRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(RCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCR', &RCLR.value, RCLR.GetSize());
+        writer.record_write_subrecord('RLCR', &RCLR.value, RCLR.GetSize());
     if(WNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANW', &WNAM.value, WNAM.GetSize());
+        writer.record_write_subrecord('MANW', &WNAM.value, WNAM.GetSize());
     if(Areas.size())
         for(UINT32 p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
-                SaveHandler.writeSubRecord('ILPR', &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
+                writer.record_write_subrecord('ILPR', &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
             if(Areas[p]->RPLD.size())
-                SaveHandler.writeSubRecord('DLPR', &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
+                writer.record_write_subrecord('DLPR', &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
             //else
-            //    SaveHandler.writeSubRecordHeader('DLPR', 0);
+            //    writer.record_write_subheader('DLPR', 0);
             }
     if(Entries.size())
         for(UINT32 p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
-                SaveHandler.writeSubRecord('TADR', &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
+                writer.record_write_subrecord('TADR', &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
             switch(Entries[p]->RDAT.value.entryType)
                 {
                 case eREGNObjects:
                     if(Entries[p]->RDOT.size())
-                        SaveHandler.writeSubRecord('TODR', &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
+                        writer.record_write_subrecord('TODR', &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
                     else
-                        SaveHandler.writeSubRecordHeader('TODR', 0);
+                        writer.record_write_subheader('TODR', 0);
                     break;
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
-                        SaveHandler.writeSubRecord('TWDR', &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
+                        writer.record_write_subrecord('TWDR', &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
                     //else
-                    //    SaveHandler.writeSubRecordHeader('TWDR', 0);
+                    //    writer.record_write_subheader('TWDR', 0);
                     break;
                 case eREGNMap:
                     if(Entries[p]->RDMP.IsLoaded())
-                        SaveHandler.writeSubRecord('PMDR', Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
+                        writer.record_write_subrecord('PMDR', Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
                     break;
                 case eREGNIcon:
                     if(Entries[p]->ICON.IsLoaded())
-                        SaveHandler.writeSubRecord('NOCI', Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
+                        writer.record_write_subrecord('NOCI', Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
                     break;
                 case eREGNGrasses:
                     if(Entries[p]->RDGS.size())
-                        SaveHandler.writeSubRecord('SGDR', &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
+                        writer.record_write_subrecord('SGDR', &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
                     //else
-                    //    SaveHandler.writeSubRecordHeader('SGDR', 0);
+                    //    writer.record_write_subheader('SGDR', 0);
                     break;
                 case eREGNSounds:
                     if(Entries[p]->RDMD.IsLoaded())
-                        SaveHandler.writeSubRecord('DMDR', Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
+                        writer.record_write_subrecord('DMDR', Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
                     if(Entries[p]->RDSD.size())
-                        SaveHandler.writeSubRecord('DSDR', &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
+                        writer.record_write_subrecord('DSDR', &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
                     else
-                        SaveHandler.writeSubRecordHeader('DSDR', 0);
+                        writer.record_write_subheader('DSDR', 0);
                     break;
                 default:
                     printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);

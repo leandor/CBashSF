@@ -260,124 +260,6 @@ void WTHRRecord::SetFlagMask(UINT8 Mask)
     DATA.value.weatherType = Mask;
     }
 
-UINT32 WTHRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(0IAD.IsLoaded())
-        TotSize += 0IAD.GetSize() + 6;
-
-    if(1IAD.IsLoaded())
-        TotSize += 1IAD.GetSize() + 6;
-
-    if(2IAD.IsLoaded())
-        TotSize += 2IAD.GetSize() + 6;
-
-    if(3IAD.IsLoaded())
-        TotSize += 3IAD.GetSize() + 6;
-
-    if(4IAD.IsLoaded())
-        TotSize += 4IAD.GetSize() + 6;
-
-    if(5IAD.IsLoaded())
-        TotSize += 5IAD.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        {
-        cSize = DNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ANAM.IsLoaded())
-        {
-        cSize = ANAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BNAM.IsLoaded())
-        {
-        cSize = BNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->Textures.IsLoaded())
-            {
-            cSize = MODL->Textures.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(ONAM.IsLoaded())
-        TotSize += ONAM.GetSize() + 6;
-
-    if(PNAM.IsLoaded())
-        {
-        cSize = PNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 WTHRRecord::GetType()
     {
     return 'RHTW';
@@ -528,38 +410,17 @@ SINT32 WTHRRecord::Unload()
 
 SINT32 WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(0IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI0', 0IAD.value, 0IAD.GetSize());
-
-    if(1IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI1', 1IAD.value, 1IAD.GetSize());
-
-    if(2IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI2', 2IAD.value, 2IAD.GetSize());
-
-    if(3IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI3', 3IAD.value, 3IAD.GetSize());
-
-    if(4IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI4', 4IAD.value, 4IAD.GetSize());
-
-    if(5IAD.IsLoaded())
-        SaveHandler.writeSubRecord('DAI5', 5IAD.value, 5IAD.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', BNAM.value, BNAM.GetSize());
+    WRITE(EDID);
+    WRITE(0IAD);
+    WRITE(1IAD);
+    WRITE(2IAD);
+    WRITE(3IAD);
+    WRITE(4IAD);
+    WRITE(5IAD);
+    WRITE(DNAM);
+    WRITE(CNAM);
+    WRITE(ANAM);
+    WRITE(BNAM);
 
     if(MODL.IsLoaded())
         {
@@ -591,29 +452,14 @@ SINT32 WTHRRecord::WriteRecord(_FileHandler &SaveHandler)
             SaveHandler.writeSubRecord('DDOM', &MODL->MODD.value, MODL->MODD.GetSize());
         }
 
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(ONAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
-
-    if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
-
-    if(NAM0.IsLoaded())
-        SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
-
-    if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
-
-    if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
+    WRITE(LNAM);
+    WRITE(ONAM);
+    WRITE(PNAM);
+    WRITE(NAM0);
+    WRITE(FNAM);
+    WRITE(INAM);
+    WRITE(DATA);
+    WRITE(SNAM);
 
     return -1;
     }

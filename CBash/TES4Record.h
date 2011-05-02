@@ -70,14 +70,14 @@ class TES4Record : public Record
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
-        UINT32 Write(_FileHandler &SaveHandler, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
+        SINT32 WriteRecord(FileWriter &writer);
+        UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool operator ==(const TES4Record &other) const;
         bool operator !=(const TES4Record &other) const;

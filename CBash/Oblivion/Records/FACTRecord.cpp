@@ -145,66 +145,6 @@ void FACTRecord::SetFlagMask(UINT8 Mask)
     DATA.value = Mask;
     }
 
-UINT32 FACTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    for(UINT32 p = 0; p < XNAM.size(); p++)
-        TotSize += XNAM[p]->GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    for(UINT32 p = 0; p < RNAM.size(); p++)
-        {
-        TotSize += RNAM[p]->RNAM.GetSize() + 6;
-
-        if(RNAM[p]->MNAM.IsLoaded())
-            {
-            cSize = RNAM[p]->MNAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-
-        if(RNAM[p]->FNAM.IsLoaded())
-            {
-            cSize = RNAM[p]->FNAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-
-        if(RNAM[p]->INAM.IsLoaded())
-            {
-            cSize = RNAM[p]->INAM.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    return TotSize;
-    }
-
 UINT32 FACTRecord::GetType()
     {
     return 'TCAF';
@@ -304,31 +244,31 @@ SINT32 FACTRecord::Unload()
     return 1;
     }
 
-SINT32 FACTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 FACTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
     for(UINT32 p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
-            SaveHandler.writeSubRecord('MANX', &XNAM[p]->value, XNAM[p]->GetSize());
+            writer.record_write_subrecord('MANX', &XNAM[p]->value, XNAM[p]->GetSize());
 
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
 
     std::sort(RNAM.begin(), RNAM.end(), sortRNAM);
     for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        SaveHandler.writeSubRecord('MANR', &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
+        writer.record_write_subrecord('MANR', &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
         if(RNAM[p]->MNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANM', RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
+            writer.record_write_subrecord('MANM', RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
         if(RNAM[p]->FNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANF', RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
+            writer.record_write_subrecord('MANF', RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
         if(RNAM[p]->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
+            writer.record_write_subrecord('MANI', RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
         }
     return -1;
     }

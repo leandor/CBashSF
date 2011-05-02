@@ -195,7 +195,7 @@ class LANDRecord : public FNVRecord //Landscape
 
         SINT32  ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32  Unload();
-        SINT32  WriteRecord(_FileHandler &SaveHandler);
+        SINT32  WriteRecord(FileWriter &writer);
 
         bool operator ==(const LANDRecord &other) const;
         bool operator !=(const LANDRecord &other) const;

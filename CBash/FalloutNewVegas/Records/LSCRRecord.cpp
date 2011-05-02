@@ -77,51 +77,6 @@ bool LSCRRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 LSCRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(WMI1.IsLoaded())
-        TotSize += WMI1.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LSCRRecord::GetType()
     {
     return 'RCSL';
@@ -199,23 +154,12 @@ SINT32 LSCRRecord::Unload()
 
 SINT32 LSCRRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(WMI1.IsLoaded())
-        SaveHandler.writeSubRecord('1IMW', WMI1.value, WMI1.GetSize());
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(DESC);
+    WRITE(LNAM);
+    WRITE(WMI1);
 
     return -1;
     }

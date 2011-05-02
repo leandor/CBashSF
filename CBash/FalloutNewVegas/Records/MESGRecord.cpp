@@ -89,87 +89,6 @@ bool MESGRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 MESGRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DESC.IsLoaded())
-        {
-        cSize = DESC.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(NAM1.IsLoaded())
-        TotSize += NAM1.GetSize() + 6;
-
-    if(NAM2.IsLoaded())
-        TotSize += NAM2.GetSize() + 6;
-
-    if(NAM3.IsLoaded())
-        TotSize += NAM3.GetSize() + 6;
-
-    if(NAM4.IsLoaded())
-        TotSize += NAM4.GetSize() + 6;
-
-    if(NAM5.IsLoaded())
-        TotSize += NAM5.GetSize() + 6;
-
-    if(NAM6.IsLoaded())
-        TotSize += NAM6.GetSize() + 6;
-
-    if(NAM7.IsLoaded())
-        TotSize += NAM7.GetSize() + 6;
-
-    if(NAM8.IsLoaded())
-        TotSize += NAM8.GetSize() + 6;
-
-    if(NAM9.IsLoaded())
-        TotSize += NAM9.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-
-    if(ITXT.IsLoaded())
-        {
-        cSize = ITXT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 MESGRecord::GetType()
     {
     return 'GSEM';
@@ -295,17 +214,10 @@ SINT32 MESGRecord::Unload()
 
 SINT32 MESGRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(DESC.IsLoaded())
-        SaveHandler.writeSubRecord('CSED', DESC.value, DESC.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
+    WRITE(EDID);
+    WRITE(DESC);
+    WRITE(FULL);
+    WRITE(INAM);
 
     //if(NAM0.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
@@ -336,18 +248,10 @@ SINT32 MESGRecord::WriteRecord(_FileHandler &SaveHandler)
 
     //if(NAM9.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('9MAN', NAM9.value, NAM9.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(ITXT.IsLoaded())
-        SaveHandler.writeSubRecord('TXTI', ITXT.value, ITXT.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
+    WRITE(DNAM);
+    WRITE(TNAM);
+    WRITE(ITXT);
+    WRITE(CTDA);
 
     return -1;
     }

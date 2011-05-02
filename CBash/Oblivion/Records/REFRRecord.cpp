@@ -639,116 +639,6 @@ void REFRRecord::SetSoul(UINT8 Type)
     XSOL.value = Type;
     }
 
-UINT32 REFRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(XTEL.IsLoaded())
-        TotSize += XTEL.GetSize() + 6;
-
-    if(XLOC.IsLoaded())
-        TotSize += XLOC.GetSize() + 6;
-
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-        {
-        TotSize += Ownership->XOWN.GetSize() + 6;
-        if(Ownership->XRNK.IsLoaded())
-            TotSize += Ownership->XRNK.GetSize() + 6;
-        if(Ownership->XGLB.IsLoaded())
-            TotSize += Ownership->XGLB.GetSize() + 6;
-        }
-
-    if(XESP.IsLoaded())
-        TotSize += XESP.GetSize() + 6;
-
-    if(XTRG.IsLoaded())
-        TotSize += XTRG.GetSize() + 6;
-
-    if(XSED.IsLoaded())
-        if(XSED->isOffset)
-            TotSize += 7;
-        else TotSize += 10;
-
-    if(XLOD.IsLoaded())
-        TotSize += XLOD.GetSize() + 6;
-
-    if(XCHG.IsLoaded())
-        TotSize += XCHG.GetSize() + 6;
-
-    if(XHLT.IsLoaded())
-        TotSize += XHLT.GetSize() + 6;
-
-    if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        {
-        TotSize += XPCI->XPCI.GetSize() + 6;
-
-        if(XPCI->FULL.IsLoaded())
-            {
-            cSize = XPCI->FULL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        else TotSize += 7;
-        }
-
-    if(XLCM.IsLoaded())
-        TotSize += XLCM.GetSize() + 6;
-
-    if(XRTM.IsLoaded())
-        TotSize += XRTM.GetSize() + 6;
-
-    if(XACT.IsLoaded())
-        TotSize += XACT.GetSize() + 6;
-
-    if(XCNT.IsLoaded())
-        TotSize += XCNT.GetSize() + 6;
-
-    if(Marker.IsLoaded())
-        {
-        TotSize += 6;
-
-        if(Marker->FNAM.IsLoaded())
-            TotSize += Marker->FNAM.GetSize() + 6;
-
-        if(Marker->FULL.IsLoaded())
-            {
-            cSize = Marker->FULL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-
-        if(Marker->TNAM.IsLoaded())
-            TotSize += Marker->TNAM.GetSize() + 6;
-        }
-
-    if(IsOpenByDefault()) //ONAM
-        TotSize += 6;
-
-    if(XSCL.IsLoaded())
-        TotSize += XSCL.GetSize() + 6;
-
-    if(XSOL.IsLoaded())
-        TotSize += XSOL.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 REFRRecord::GetType()
     {
     return 'RFER';
@@ -963,95 +853,95 @@ SINT32 REFRRecord::Unload()
     return 1;
     }
 
-SINT32 REFRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     {
     char null = 0;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', &NAME.value, NAME.GetSize());
+        writer.record_write_subrecord('EMAN', &NAME.value, NAME.GetSize());
 
     if(XTEL.IsLoaded())
-        SaveHandler.writeSubRecord('LETX', XTEL.value, XTEL.GetSize());
+        writer.record_write_subrecord('LETX', XTEL.value, XTEL.GetSize());
 
     if(XLOC.IsLoaded())
-        SaveHandler.writeSubRecord('COLX', XLOC.value, XLOC.GetSize());
+        writer.record_write_subrecord('COLX', XLOC.value, XLOC.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        SaveHandler.writeSubRecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
+        writer.record_write_subrecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
+            writer.record_write_subrecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            SaveHandler.writeSubRecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            writer.record_write_subrecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XESP.IsLoaded())
-        SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
+        writer.record_write_subrecord('PSEX', XESP.value, XESP.GetSize());
 
     if(XTRG.IsLoaded())
-        SaveHandler.writeSubRecord('GRTX', &XTRG.value, XTRG.GetSize());
+        writer.record_write_subrecord('GRTX', &XTRG.value, XTRG.GetSize());
 
     if(XSED.IsLoaded())
         if(XSED->isOffset)
-            SaveHandler.writeSubRecord('DESX', &XSED->offset, 1);
+            writer.record_write_subrecord('DESX', &XSED->offset, 1);
         else
-            SaveHandler.writeSubRecord('DESX', &XSED->seed, 4);
+            writer.record_write_subrecord('DESX', &XSED->seed, 4);
 
     if(XLOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOLX', XLOD.value, XLOD.GetSize());
+        writer.record_write_subrecord('DOLX', XLOD.value, XLOD.GetSize());
 
     if(XCHG.IsLoaded())
-        SaveHandler.writeSubRecord('GHCX', &XCHG.value, XCHG.GetSize());
+        writer.record_write_subrecord('GHCX', &XCHG.value, XCHG.GetSize());
 
     if(XHLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLHX', &XHLT.value, XHLT.GetSize());
+        writer.record_write_subrecord('TLHX', &XHLT.value, XHLT.GetSize());
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        SaveHandler.writeSubRecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
+        writer.record_write_subrecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
-            SaveHandler.writeSubRecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
+            writer.record_write_subrecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
         else
-            SaveHandler.writeSubRecord('LLUF', &null, 1);
+            writer.record_write_subrecord('LLUF', &null, 1);
         }
 
     if(XLCM.IsLoaded())
-        SaveHandler.writeSubRecord('MCLX', &XLCM.value, XLCM.GetSize());
+        writer.record_write_subrecord('MCLX', &XLCM.value, XLCM.GetSize());
 
     if(XRTM.IsLoaded())
-        SaveHandler.writeSubRecord('MTRX', &XRTM.value, XRTM.GetSize());
+        writer.record_write_subrecord('MTRX', &XRTM.value, XRTM.GetSize());
 
     if(XACT.IsLoaded())
-        SaveHandler.writeSubRecord('TCAX', &XACT.value, XACT.GetSize());
+        writer.record_write_subrecord('TCAX', &XACT.value, XACT.GetSize());
 
     if(XCNT.IsLoaded())
-        SaveHandler.writeSubRecord('TNCX', &XCNT.value, XCNT.GetSize());
+        writer.record_write_subrecord('TNCX', &XCNT.value, XCNT.GetSize());
 
     if(Marker.IsLoaded())
         {
-        SaveHandler.writeSubRecordHeader('KRMX', 0);
+        writer.record_write_subheader('KRMX', 0);
         if(Marker->FNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANF', &Marker->FNAM.value, Marker->FNAM.GetSize());
+            writer.record_write_subrecord('MANF', &Marker->FNAM.value, Marker->FNAM.GetSize());
         if(Marker->FULL.IsLoaded())
-            SaveHandler.writeSubRecord('LLUF', Marker->FULL.value, Marker->FULL.GetSize());
+            writer.record_write_subrecord('LLUF', Marker->FULL.value, Marker->FULL.GetSize());
         if(Marker->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', &Marker->TNAM.value, Marker->TNAM.GetSize());
+            writer.record_write_subrecord('MANT', &Marker->TNAM.value, Marker->TNAM.GetSize());
         }
 
     if(IsOpenByDefault()) //ONAM
-        SaveHandler.writeSubRecordHeader('MANO', 0);
+        writer.record_write_subheader('MANO', 0);
 
     if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());
+        writer.record_write_subrecord('LCSX', &XSCL.value, XSCL.GetSize());
 
     if(XSOL.IsLoaded())
-        SaveHandler.writeSubRecord('LOSX', &XSOL.value, XSOL.GetSize());
+        writer.record_write_subrecord('LOSX', &XSOL.value, XSOL.GetSize());
 
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
 
     return -1;
     }

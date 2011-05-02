@@ -104,54 +104,6 @@ void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
     SCHR.value.flags = Mask;
     }
 
-UINT32 SCPTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            TotSize += SCHR->SCHR.GetSize() + 6;
-        if(SCHR->SCDA.IsLoaded())
-            {
-            cSize = SCHR->SCDA.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCTX.IsLoaded())
-            {
-            cSize = SCHR->SCTX.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SLSD.IsLoaded())
-            TotSize += SCHR->SLSD.GetSize() + 6;
-        if(SCHR->SCVR.IsLoaded())
-            {
-            cSize = SCHR->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCRO.IsLoaded())
-            TotSize += SCHR->SCRO.GetSize() + 6;
-        if(SCHR->SCRV.IsLoaded())
-            TotSize += SCHR->SCRV.GetSize() + 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 SCPTRecord::GetType()
     {
     return 'TPCS';
@@ -238,8 +190,7 @@ SINT32 SCPTRecord::Unload()
 
 SINT32 SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+    WRITE(EDID);
 
     if(SCHR.IsLoaded())
         {

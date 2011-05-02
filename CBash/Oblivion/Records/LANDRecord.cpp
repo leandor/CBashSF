@@ -214,7 +214,8 @@ LANDRecord::LANDRecord(unsigned char *_recData):
     SouthLand(NULL)
     {
     //LAND records are normally compressed due to size
-    IsCompressed(true);
+    if(_recData == NULL)
+        IsCompressed(true);
     }
 
 LANDRecord::LANDRecord(LANDRecord *srcRecord):
@@ -316,57 +317,6 @@ UINT16 LANDRecord::CalcPosition(const UINT8 &curQuadrant, const UINT32 &row, con
         default:
             return 0;
         }
-    }
-
-UINT32 LANDRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VNML.IsLoaded())
-        TotSize += VNML.GetSize() + 6;
-
-    if(VHGT.IsLoaded())
-        TotSize += VHGT.GetSize() + 6;
-
-    if(VCLR.IsLoaded())
-        TotSize += VCLR.GetSize() + 6;
-
-    for(UINT32 p = 0; p < BTXT.size(); p++)
-        if(BTXT[p] != NULL && BTXT[p]->IsLoaded())
-            TotSize += BTXT[p]->GetSize() + 6;
-
-    for(UINT32 p = 0; p < Layers.size(); p++)
-        {
-        if(Layers[p]->ATXT.IsLoaded())
-            TotSize += Layers[p]->ATXT.GetSize() + 6;
-
-        if(Layers[p]->VTXT.size())
-            {
-            cSize = (sizeof(LANDVTXT) * (UINT32)Layers[p]->VTXT.size());
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(VTEX.size())
-        {
-        cSize = (sizeof(UINT32) * (UINT32)VTEX.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
     }
 
 UINT32 LANDRecord::GetType()
@@ -528,31 +478,31 @@ SINT32 LANDRecord::Unload()
     return 1;
     }
 
-SINT32 LANDRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 LANDRecord::WriteRecord(FileWriter &writer)
     {
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
     if(VNML.IsLoaded())
-        SaveHandler.writeSubRecord('LMNV', VNML.value, VNML.GetSize());
+        writer.record_write_subrecord('LMNV', VNML.value, VNML.GetSize());
     if(VHGT.IsLoaded())
-        SaveHandler.writeSubRecord('TGHV', VHGT.value, VHGT.GetSize());
+        writer.record_write_subrecord('TGHV', VHGT.value, VHGT.GetSize());
     if(VCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCV', VCLR.value, VCLR.GetSize());
+        writer.record_write_subrecord('RLCV', VCLR.value, VCLR.GetSize());
     if(BTXT.size())
         for(UINT32 p = 0; p < BTXT.size(); p++)
             if(BTXT[p]->IsLoaded())
-                SaveHandler.writeSubRecord('TXTB', &BTXT[p]->value, BTXT[p]->GetSize());
+                writer.record_write_subrecord('TXTB', &BTXT[p]->value, BTXT[p]->GetSize());
 
     if(Layers.size())
         for(UINT32 p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
-                SaveHandler.writeSubRecord('TXTA', &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
+                writer.record_write_subrecord('TXTA', &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
             if(Layers[p]->VTXT.size())
-                SaveHandler.writeSubRecord('TXTV', &Layers[p]->VTXT[0], (UINT32)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
+                writer.record_write_subrecord('TXTV', &Layers[p]->VTXT[0], (UINT32)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
             }
     if(VTEX.size())
-        SaveHandler.writeSubRecord('XETV', &VTEX[0], (UINT32)VTEX.size() * sizeof(UINT32));
+        writer.record_write_subrecord('XETV', &VTEX[0], (UINT32)VTEX.size() * sizeof(UINT32));
 
     return -1;
     }

@@ -68,13 +68,13 @@ UINT32 FACTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)XNAM.size();
+                        return (UINT32)XNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -110,13 +110,13 @@ UINT32 FACTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)RNAM.size();
+                        return (UINT32)RNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= RNAM.size())
+            if(ListIndex >= RNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -160,17 +160,17 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //full
             return FULL.value;
         case 8: //relations
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    return &XNAM[ListIndex]->value.faction;
+                    return &XNAM.value[ListIndex]->faction;
                 case 2: //mod
-                    return &XNAM[ListIndex]->value.mod;
+                    return &XNAM.value[ListIndex]->mod;
                 case 3: //groupReactionType
-                    return &XNAM[ListIndex]->value.groupReactionType;
+                    return &XNAM.value[ListIndex]->groupReactionType;
                 default:
                     return NULL;
                 }
@@ -182,19 +182,19 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 11: ///crimeGoldMultiplier
             return CNAM.value;
         case 12: //ranks
-            if(ListIndex >= RNAM.size())
+            if(ListIndex >= RNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    return &RNAM[ListIndex]->RNAM.value;
+                    return &RNAM.value[ListIndex]->RNAM.value;
                 case 2: //male
-                    return RNAM[ListIndex]->MNAM.value;
+                    return RNAM.value[ListIndex]->MNAM.value;
                 case 3: //female
-                    return RNAM[ListIndex]->FNAM.value;
+                    return RNAM.value[ListIndex]->FNAM.value;
                 case 4: //insigniaPath
-                    return RNAM[ListIndex]->INAM.value;
+                    return RNAM.value[ListIndex]->INAM.value;
                 default:
                     return NULL;
                 }
@@ -238,34 +238,23 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //relations
             if(ListFieldID == 0) //relationsSize
                 {
-                ArraySize -= (UINT32)XNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    XNAM.push_back(new ReqSubRecord<FNVXNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete XNAM.back();
-                    XNAM.pop_back();
-                    ++ArraySize;
-                    }
+                XNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    XNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
                     return true;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = *(SINT32 *)FieldValue;
+                    XNAM.value[ListIndex]->mod = *(SINT32 *)FieldValue;
                     break;
                 case 3: //groupReactionType
-                    XNAM[ListIndex]->value.SetType(*(UINT32 *)FieldValue);
+                    XNAM.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 default:
                     break;
@@ -287,37 +276,26 @@ bool FACTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 12: //ranks
             if(ListFieldID == 0) //ranksSize
                 {
-                ArraySize -= (UINT32)RNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    RNAM.push_back(new FACTRNAM);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete RNAM.back();
-                    RNAM.pop_back();
-                    ++ArraySize;
-                    }
+                RNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= RNAM.size())
+            if(ListIndex >= RNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    RNAM[ListIndex]->RNAM.value = *(SINT32 *)FieldValue;
+                    RNAM.value[ListIndex]->RNAM.value = *(SINT32 *)FieldValue;
                     break;
                 case 2: //male
-                    RNAM[ListIndex]->MNAM.Copy((STRING)FieldValue);
+                    RNAM.value[ListIndex]->MNAM.Copy((STRING)FieldValue);
                     break;
                 case 3: //female
-                    RNAM[ListIndex]->FNAM.Copy((STRING)FieldValue);
+                    RNAM.value[ListIndex]->FNAM.Copy((STRING)FieldValue);
                     break;
                 case 4: //insigniaPath
-                    RNAM[ListIndex]->INAM.Copy((STRING)FieldValue);
+                    RNAM.value[ListIndex]->INAM.Copy((STRING)FieldValue);
                     break;
                 default:
                     break;
@@ -362,25 +340,23 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //relations
             if(ListFieldID == 0) //relations
                 {
-                for(UINT32 x = 0; x < (UINT32)XNAM.size(); x++)
-                    delete XNAM[x];
-                XNAM.clear();
+                XNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = defaultXNAM.faction;
+                    XNAM.value[ListIndex]->faction = defaultXNAM.faction;
                     return;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = defaultXNAM.mod;
+                    XNAM.value[ListIndex]->mod = defaultXNAM.mod;
                     return;
                 case 3: //groupReactionType
-                    XNAM[ListIndex]->value.groupReactionType = defaultXNAM.groupReactionType;
+                    XNAM.value[ListIndex]->groupReactionType = defaultXNAM.groupReactionType;
                     return;
                 default:
                     return;
@@ -398,28 +374,26 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 12: //ranks
             if(ListFieldID == 0) //ranks
                 {
-                for(UINT32 x = 0; x < (UINT32)RNAM.size(); x++)
-                    delete RNAM[x];
-                RNAM.clear();
+                RNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= RNAM.size())
+            if(ListIndex >= RNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //rank
-                    RNAM[ListIndex]->RNAM.value = defaultRNAM.RNAM.value;
+                    RNAM.value[ListIndex]->RNAM.value = defaultRNAM.RNAM.value;
                     return;
                 case 2: //male
-                    RNAM[ListIndex]->MNAM.Unload();
+                    RNAM.value[ListIndex]->MNAM.Unload();
                     return;
                 case 3: //female
-                    RNAM[ListIndex]->FNAM.Unload();
+                    RNAM.value[ListIndex]->FNAM.Unload();
                     return;
                 case 4: //insigniaPath
-                    RNAM[ListIndex]->INAM.Unload();
+                    RNAM.value[ListIndex]->INAM.Unload();
                     return;
                 default:
                     return;

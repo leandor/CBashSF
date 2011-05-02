@@ -152,56 +152,6 @@ void SCPTRecord::SetType(UINT32 Type)
     SCHR.value.scriptType = Type;
     }
 
-UINT32 SCPTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCHR.IsLoaded())
-        TotSize += SCHR.GetSize() + 6;
-
-    if(SCDA.IsLoaded())
-        {
-        cSize = SCDA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCTX.IsLoaded())
-        {
-        cSize = SCTX.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    for(UINT32 p = 0; p < VARS.size(); p++)
-        {
-        if(VARS[p]->SLSD.IsLoaded())
-            TotSize += VARS[p]->SLSD.GetSize() + 6;
-
-        if(VARS[p]->SCVR.IsLoaded())
-            {
-            cSize = VARS[p]->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    TotSize += (sizeof(UINT32) + 6) * (UINT32)SCR_.size();
-
-    return TotSize;
-    }
-
 UINT32 SCPTRecord::GetType()
     {
     return 'TPCS';
@@ -295,33 +245,33 @@ SINT32 SCPTRecord::Unload()
     return 1;
     }
 
-SINT32 SCPTRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(SCHR.IsLoaded())
         {
         SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-        SaveHandler.writeSubRecord('RHCS', &SCHR.value, SCHR.GetSize());
+        writer.record_write_subrecord('RHCS', &SCHR.value, SCHR.GetSize());
         }
     if(SCDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADCS', SCDA.value, SCDA.GetSize());
+        writer.record_write_subrecord('ADCS', SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        SaveHandler.writeSubRecord('XTCS', SCTX.value, SCTX.GetSize());
+        writer.record_write_subrecord('XTCS', SCTX.value, SCTX.GetSize());
     for(UINT32 p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
+            writer.record_write_subrecord('DSLS', &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
         if(VARS[p]->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
+            writer.record_write_subrecord('RVCS', VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
         }
 
     for(UINT32 p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                SaveHandler.writeSubRecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
             else
-                SaveHandler.writeSubRecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 

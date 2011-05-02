@@ -403,7 +403,7 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
         OptSimpleSubRecord<FLOAT32> TNAM; //Turning Speed
-        OptSimpleSubRecord<FLOAT32, 1, 0> BNAM; //Base Scale
+        OptSimpleSubRecord<FLOAT32, 1> BNAM; //Base Scale
         OptSimpleSubRecord<FLOAT32> WNAM; //Foot Weight
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level
@@ -854,13 +854,13 @@ class CREARecord : public FNVRecord //Creature
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CREARecord &other) const;
         bool operator !=(const CREARecord &other) const;

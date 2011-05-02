@@ -130,422 +130,6 @@ bool IMADRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-UINT32 IMADRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DNAM.IsLoaded())
-        {
-        cSize = DNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BNAM.IsLoaded())
-        {
-        cSize = BNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(VNAM.IsLoaded())
-        {
-        cSize = VNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(TNAM.IsLoaded())
-        {
-        cSize = TNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM3.IsLoaded())
-        {
-        cSize = NAM3.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(RNAM.IsLoaded())
-        {
-        cSize = RNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNAM.IsLoaded())
-        {
-        cSize = SNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(UNAM.IsLoaded())
-        {
-        cSize = UNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM1.IsLoaded())
-        {
-        cSize = NAM1.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(WNAM.IsLoaded())
-        {
-        cSize = WNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XNAM.IsLoaded())
-        {
-        cSize = XNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(YNAM.IsLoaded())
-        {
-        cSize = YNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM4.IsLoaded())
-        {
-        cSize = NAM4.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_00_.IsLoaded())
-        {
-        cSize = _00_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_40_.IsLoaded())
-        {
-        cSize = _40_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_01_.IsLoaded())
-        {
-        cSize = _01_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_41_.IsLoaded())
-        {
-        cSize = _41_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_02_.IsLoaded())
-        {
-        cSize = _02_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_42_.IsLoaded())
-        {
-        cSize = _42_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_03_.IsLoaded())
-        {
-        cSize = _03_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_43_.IsLoaded())
-        {
-        cSize = _43_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_04_.IsLoaded())
-        {
-        cSize = _04_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_44_.IsLoaded())
-        {
-        cSize = _44_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_05_.IsLoaded())
-        {
-        cSize = _05_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_45_.IsLoaded())
-        {
-        cSize = _45_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_06_.IsLoaded())
-        {
-        cSize = _06_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_46_.IsLoaded())
-        {
-        cSize = _46_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_07_.IsLoaded())
-        {
-        cSize = _07_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_47_.IsLoaded())
-        {
-        cSize = _47_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_08_.IsLoaded())
-        {
-        cSize = _08_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_48_.IsLoaded())
-        {
-        cSize = _48_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_09_.IsLoaded())
-        {
-        cSize = _09_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_49_.IsLoaded())
-        {
-        cSize = _49_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0A_.IsLoaded())
-        {
-        cSize = _0A_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4A_.IsLoaded())
-        {
-        cSize = _4A_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0B_.IsLoaded())
-        {
-        cSize = _0B_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4B_.IsLoaded())
-        {
-        cSize = _4B_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0C_.IsLoaded())
-        {
-        cSize = _0C_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4C_.IsLoaded())
-        {
-        cSize = _4C_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0D_.IsLoaded())
-        {
-        cSize = _0D_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4D_.IsLoaded())
-        {
-        cSize = _4D_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0E_.IsLoaded())
-        {
-        cSize = _0E_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4E_.IsLoaded())
-        {
-        cSize = _4E_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_0F_.IsLoaded())
-        {
-        cSize = _0F_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_4F_.IsLoaded())
-        {
-        cSize = _4F_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_10_.IsLoaded())
-        {
-        cSize = _10_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_50_.IsLoaded())
-        {
-        cSize = _50_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_11_.IsLoaded())
-        {
-        cSize = _11_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_51_.IsLoaded())
-        {
-        cSize = _51_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_12_.IsLoaded())
-        {
-        cSize = _12_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_52_.IsLoaded())
-        {
-        cSize = _52_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_13_.IsLoaded())
-        {
-        cSize = _13_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_53_.IsLoaded())
-        {
-        cSize = _53_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_14_.IsLoaded())
-        {
-        cSize = _14_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(_54_.IsLoaded())
-        {
-        cSize = _54_.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(RDSD.IsLoaded())
-        TotSize += RDSD.GetSize() + 6;
-
-    if(RDSI.IsLoaded())
-        TotSize += RDSI.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 IMADRecord::GetType()
     {
     return 'DAMI';
@@ -835,182 +419,65 @@ SINT32 IMADRecord::Unload()
 
 SINT32 IMADRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', BNAM.value, BNAM.GetSize());
-
-    if(VNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANV', VNAM.value, VNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
-
-    if(NAM3.IsLoaded())
-        SaveHandler.writeSubRecord('3MAN', NAM3.value, NAM3.GetSize());
-
-    if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(UNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANU', UNAM.value, UNAM.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
-
-    if(WNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANW', WNAM.value, WNAM.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
-
-    if(YNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
-
-    if(NAM4.IsLoaded())
-        SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
-
-    if(_00_.IsLoaded())
-        SaveHandler.writeSubRecord('_00_', _00_.value, _00_.GetSize());
-
-    if(_40_.IsLoaded())
-        SaveHandler.writeSubRecord('_04_', _40_.value, _40_.GetSize());
-
-    if(_01_.IsLoaded())
-        SaveHandler.writeSubRecord('_10_', _01_.value, _01_.GetSize());
-
-    if(_41_.IsLoaded())
-        SaveHandler.writeSubRecord('_14_', _41_.value, _41_.GetSize());
-
-    if(_02_.IsLoaded())
-        SaveHandler.writeSubRecord('_20_', _02_.value, _02_.GetSize());
-
-    if(_42_.IsLoaded())
-        SaveHandler.writeSubRecord('_24_', _42_.value, _42_.GetSize());
-
-    if(_03_.IsLoaded())
-        SaveHandler.writeSubRecord('_30_', _03_.value, _03_.GetSize());
-
-    if(_43_.IsLoaded())
-        SaveHandler.writeSubRecord('_34_', _43_.value, _43_.GetSize());
-
-    if(_04_.IsLoaded())
-        SaveHandler.writeSubRecord('_40_', _04_.value, _04_.GetSize());
-
-    if(_44_.IsLoaded())
-        SaveHandler.writeSubRecord('_44_', _44_.value, _44_.GetSize());
-
-    if(_05_.IsLoaded())
-        SaveHandler.writeSubRecord('_50_', _05_.value, _05_.GetSize());
-
-    if(_45_.IsLoaded())
-        SaveHandler.writeSubRecord('_54_', _45_.value, _45_.GetSize());
-
-    if(_06_.IsLoaded())
-        SaveHandler.writeSubRecord('_60_', _06_.value, _06_.GetSize());
-
-    if(_46_.IsLoaded())
-        SaveHandler.writeSubRecord('_64_', _46_.value, _46_.GetSize());
-
-    if(_07_.IsLoaded())
-        SaveHandler.writeSubRecord('_70_', _07_.value, _07_.GetSize());
-
-    if(_47_.IsLoaded())
-        SaveHandler.writeSubRecord('_74_', _47_.value, _47_.GetSize());
-
-    if(_08_.IsLoaded())
-        SaveHandler.writeSubRecord('_80_', _08_.value, _08_.GetSize());
-
-    if(_48_.IsLoaded())
-        SaveHandler.writeSubRecord('_84_', _48_.value, _48_.GetSize());
-
-    if(_09_.IsLoaded())
-        SaveHandler.writeSubRecord('_90_', _09_.value, _09_.GetSize());
-
-    if(_49_.IsLoaded())
-        SaveHandler.writeSubRecord('_94_', _49_.value, _49_.GetSize());
-
-    if(_0A_.IsLoaded())
-        SaveHandler.writeSubRecord('_A0_', _0A_.value, _0A_.GetSize());
-
-    if(_4A_.IsLoaded())
-        SaveHandler.writeSubRecord('_A4_', _4A_.value, _4A_.GetSize());
-
-    if(_0B_.IsLoaded())
-        SaveHandler.writeSubRecord('_B0_', _0B_.value, _0B_.GetSize());
-
-    if(_4B_.IsLoaded())
-        SaveHandler.writeSubRecord('_B4_', _4B_.value, _4B_.GetSize());
-
-    if(_0C_.IsLoaded())
-        SaveHandler.writeSubRecord('_C0_', _0C_.value, _0C_.GetSize());
-
-    if(_4C_.IsLoaded())
-        SaveHandler.writeSubRecord('_C4_', _4C_.value, _4C_.GetSize());
-
-    if(_0D_.IsLoaded())
-        SaveHandler.writeSubRecord('_D0_', _0D_.value, _0D_.GetSize());
-
-    if(_4D_.IsLoaded())
-        SaveHandler.writeSubRecord('_D4_', _4D_.value, _4D_.GetSize());
-
-    if(_0E_.IsLoaded())
-        SaveHandler.writeSubRecord('_E0_', _0E_.value, _0E_.GetSize());
-
-    if(_4E_.IsLoaded())
-        SaveHandler.writeSubRecord('_E4_', _4E_.value, _4E_.GetSize());
-
-    if(_0F_.IsLoaded())
-        SaveHandler.writeSubRecord('_F0_', _0F_.value, _0F_.GetSize());
-
-    if(_4F_.IsLoaded())
-        SaveHandler.writeSubRecord('_F4_', _4F_.value, _4F_.GetSize());
-
-    if(_10_.IsLoaded())
-        SaveHandler.writeSubRecord('_01_', _10_.value, _10_.GetSize());
-
-    if(_50_.IsLoaded())
-        SaveHandler.writeSubRecord('_05_', _50_.value, _50_.GetSize());
-
-    if(_11_.IsLoaded())
-        SaveHandler.writeSubRecord('_11_', _11_.value, _11_.GetSize());
-
-    if(_51_.IsLoaded())
-        SaveHandler.writeSubRecord('_15_', _51_.value, _51_.GetSize());
-
-    if(_12_.IsLoaded())
-        SaveHandler.writeSubRecord('_21_', _12_.value, _12_.GetSize());
-
-    if(_52_.IsLoaded())
-        SaveHandler.writeSubRecord('_25_', _52_.value, _52_.GetSize());
-
-    if(_13_.IsLoaded())
-        SaveHandler.writeSubRecord('_31_', _13_.value, _13_.GetSize());
-
-    if(_53_.IsLoaded())
-        SaveHandler.writeSubRecord('_35_', _53_.value, _53_.GetSize());
-
-    if(_14_.IsLoaded())
-        SaveHandler.writeSubRecord('_41_', _14_.value, _14_.GetSize());
-
-    if(_54_.IsLoaded())
-        SaveHandler.writeSubRecord('_45_', _54_.value, _54_.GetSize());
-
-    if(RDSD.IsLoaded())
-        SaveHandler.writeSubRecord('DSDR', RDSD.value, RDSD.GetSize());
-
-    if(RDSI.IsLoaded())
-        SaveHandler.writeSubRecord('ISDR', RDSI.value, RDSI.GetSize());
+    WRITE(EDID);
+    WRITE(DNAM);
+    WRITE(BNAM);
+    WRITE(VNAM);
+    WRITE(TNAM);
+    WRITE(NAM3);
+    WRITE(RNAM);
+    WRITE(SNAM);
+    WRITE(UNAM);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    WRITE(WNAM);
+    WRITE(XNAM);
+    WRITE(YNAM);
+    WRITE(NAM4);
+    WRITE(_00_);
+    WRITE(_40_);
+    WRITE(_01_);
+    WRITE(_41_);
+    WRITE(_02_);
+    WRITE(_42_);
+    WRITE(_03_);
+    WRITE(_43_);
+    WRITE(_04_);
+    WRITE(_44_);
+    WRITE(_05_);
+    WRITE(_45_);
+    WRITE(_06_);
+    WRITE(_46_);
+    WRITE(_07_);
+    WRITE(_47_);
+    WRITE(_08_);
+    WRITE(_48_);
+    WRITE(_09_);
+    WRITE(_49_);
+    WRITE(_0A_);
+    WRITE(_4A_);
+    WRITE(_0B_);
+    WRITE(_4B_);
+    WRITE(_0C_);
+    WRITE(_4C_);
+    WRITE(_0D_);
+    WRITE(_4D_);
+    WRITE(_0E_);
+    WRITE(_4E_);
+    WRITE(_0F_);
+    WRITE(_4F_);
+    WRITE(_10_);
+    WRITE(_50_);
+    WRITE(_11_);
+    WRITE(_51_);
+    WRITE(_12_);
+    WRITE(_52_);
+    WRITE(_13_);
+    WRITE(_53_);
+    WRITE(_14_);
+    WRITE(_54_);
+    WRITE(RDSD);
+    WRITE(RDSI);
 
     return -1;
     }

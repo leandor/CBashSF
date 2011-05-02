@@ -718,186 +718,6 @@ void ARMORecord::SetDNAMFlagMask(UINT16 Mask)
     Dummy->flags = Mask;
     }
 
-/*
-UINT32 ARMORecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(EITM.IsLoaded())
-        TotSize += EITM.GetSize() + 6;
-
-    if(BMDT.IsLoaded())
-        TotSize += BMDT.GetSize() + 6;
-
-    if(MODL.IsLoaded())
-        {
-        if(MODL->MODL.IsLoaded())
-            {
-            cSize = MODL->MODL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MODL->MODS.IsLoaded())
-            TotSize += MODL->MODS.GetSize() + 6;
-        if(MODL->MODD.IsLoaded())
-            TotSize += MODL->MODD.GetSize() + 6;
-        }
-
-    if(MOD2.IsLoaded())
-        {
-        if(MOD2->MOD2.IsLoaded())
-            {
-            cSize = MOD2->MOD2.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD2->MO2T.IsLoaded())
-            {
-            cSize = MOD2->MO2T.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD2->MO2S.IsLoaded())
-            TotSize += MOD2->MO2S.GetSize() + 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MOD3.IsLoaded())
-        {
-        if(MOD3->MOD3.IsLoaded())
-            {
-            cSize = MOD3->MOD3.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD3->MO3T.IsLoaded())
-            {
-            cSize = MOD3->MO3T.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD3->MO3S.IsLoaded())
-            TotSize += MOD3->MO3S.GetSize() + 6;
-        if(MOD3->MOSD.IsLoaded())
-            TotSize += MOD3->MOSD.GetSize() + 6;
-        }
-
-    if(MOD4.IsLoaded())
-        {
-        if(MOD4->MOD4.IsLoaded())
-            {
-            cSize = MOD4->MOD4.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD4->MO4T.IsLoaded())
-            {
-            cSize = MOD4->MO4T.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(MOD4->MO4S.IsLoaded())
-            TotSize += MOD4->MO4S.GetSize() + 6;
-        }
-
-    if(ICO2.IsLoaded())
-        {
-        cSize = ICO2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MIC2.IsLoaded())
-        {
-        cSize = MIC2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(BMCT.IsLoaded())
-        {
-        cSize = BMCT.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(REPL.IsLoaded())
-        TotSize += REPL.GetSize() + 6;
-
-    if(BIPL.IsLoaded())
-        TotSize += BIPL.GetSize() + 6;
-
-    if(ETYP.IsLoaded())
-        TotSize += ETYP.GetSize() + 6;
-
-    if(YNAM.IsLoaded())
-        TotSize += YNAM.GetSize() + 6;
-
-    if(ZNAM.IsLoaded())
-        TotSize += ZNAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    if(BNAM.IsLoaded())
-        TotSize += BNAM.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(TNAM.IsLoaded())
-        TotSize += TNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 ARMORecord::GetType()
     {
     return 'OMRA';
@@ -1095,23 +915,12 @@ SINT32 ARMORecord::Unload()
 
 SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
-
-    if(EITM.IsLoaded())
-        SaveHandler.writeSubRecord('MTIE', EITM.value, EITM.GetSize());
-
-    if(BMDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDMB', BMDT.value, BMDT.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(FULL);
+    WRITE(SCRI);
+    WRITE(EITM);
+    WRITE(BMDT);
 
     if(MODL.IsLoaded())
         {
@@ -1142,11 +951,8 @@ SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
+    WRITE(ICON);
+    WRITE(MICO);
 
     if(MOD3.IsLoaded())
         {
@@ -1177,44 +983,19 @@ SINT32 ARMORecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(ICO2.IsLoaded())
-        SaveHandler.writeSubRecord('2OCI', ICO2.value, ICO2.GetSize());
-
-    if(MIC2.IsLoaded())
-        SaveHandler.writeSubRecord('2CIM', MIC2.value, MIC2.GetSize());
-
-    if(BMCT.IsLoaded())
-        SaveHandler.writeSubRecord('TCMB', BMCT.value, BMCT.GetSize());
-
-    if(REPL.IsLoaded())
-        SaveHandler.writeSubRecord('LPER', REPL.value, REPL.GetSize());
-
-    if(BIPL.IsLoaded())
-        SaveHandler.writeSubRecord('LPIB', BIPL.value, BIPL.GetSize());
-
-    if(ETYP.IsLoaded())
-        SaveHandler.writeSubRecord('PYTE', ETYP.value, ETYP.GetSize());
-
-    if(YNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANY', YNAM.value, YNAM.GetSize());
-
-    if(ZNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANZ', ZNAM.value, ZNAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', BNAM.value, BNAM.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANT', TNAM.value, TNAM.GetSize());
+    WRITE(ICO2);
+    WRITE(MIC2);
+    WRITE(BMCT);
+    WRITE(REPL);
+    WRITE(BIPL);
+    WRITE(ETYP);
+    WRITE(YNAM);
+    WRITE(ZNAM);
+    WRITE(DATA);
+    WRITE(DNAM);
+    WRITE(BNAM);
+    WRITE(SNAM);
+    WRITE(TNAM);
 
     return -1;
     }

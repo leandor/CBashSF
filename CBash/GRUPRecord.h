@@ -54,29 +54,29 @@ class GRUPRecords
                 delete Records[p];
             }
 
-        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
-                printf("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
+                printf("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
                 return false;
                 }
             SkimmedGRUP = true;
             Record * curRecord = NULL;
             //UINT32 recordType = 0;
-            UINT32 gEnd = ReadHandler.tell() + gSize - 20;
+            UINT32 gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
 
-            while(ReadHandler.tell() < gEnd){
-                curRecord = new T(ReadHandler.getBuffer(ReadHandler.tell()) + 20);
-                ReadHandler.set_used(4); //ReadHandler.read(&recordType, 4);
-                ReadHandler.read(&recordSize, 4);
+            while(reader.tell() < gEnd){
+                curRecord = new T(reader.getBuffer(reader.tell()) + 20);
+                reader.skip(4); //reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
                 if(processor(curRecord))
                     {
                     indexer.Accept(curRecord);
                     Records.push_back(curRecord);
                     }
-                ReadHandler.set_used(recordSize);
+                reader.skip(recordSize);
                 };
             if(Records.size())
                 processor.IsEmpty(false);
@@ -114,7 +114,7 @@ class GRUPRecords
                 }
             return stop;
             }
-        UINT32 WriteGRUP(UINT32 TopLabel, _FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+        UINT32 WriteGRUP(UINT32 TopLabel, FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
@@ -125,24 +125,23 @@ class GRUPRecords
             UINT32 formCount = 0;
 
             //Top GRUP Header
-            SaveHandler.write(&type, 4);
-            UINT32 TopSizePos = SaveHandler.tell();
-            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-            //SaveHandler.write(&TopSize, 4);
-            SaveHandler.write(&TopLabel, 4);
-            SaveHandler.write(&gType, 4);
-            SaveHandler.write(&stamp, 4);
+            writer.file_write(&type, 4);
+            UINT32 TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&TopLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
             ++formCount;
             TopSize = 20;
 
             formCount += numRecords;
             for(UINT32 p = 0; p < numRecords; p++)
                 {
-                TopSize += Records[p]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                TopSize += Records[p]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                 if(CloseMod)
                     delete Records[p];
                 }
-            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            writer.file_write(TopSizePos, &TopSize, 4);
             if(CloseMod)
                 Records.clear();
             return formCount;
@@ -163,27 +162,27 @@ class GRUPRecords<DIALRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
-                printf("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
+                printf("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
                 return false;
                 }
             SkimmedGRUP = true;
             Record * curDIALRecord = NULL;
             Record * curINFORecord = NULL;
             UINT32 recordType = 0;
-            UINT32 gEnd = ReadHandler.tell() + gSize - 20;
+            UINT32 gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
 
-            while(ReadHandler.tell() < gEnd){
-                ReadHandler.read(&recordType, 4);
-                ReadHandler.read(&recordSize, 4);
+            while(reader.tell() < gEnd){
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case 'LAID':
-                        curDIALRecord = new DIALRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curDIALRecord = new DIALRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curDIALRecord))
                             {
                             indexer.Accept(curDIALRecord);
@@ -191,11 +190,11 @@ class GRUPRecords<DIALRecord>
                             }
                         break;
                     case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
-                        ReadHandler.set_used(8); //Skip label and type fields
-                        ReadHandler.read(&stamp, 4);
+                        reader.skip(8); //Skip label and type fields
+                        reader.read(&stamp, 4);
                         continue;
                     case 'OFNI':
-                        curINFORecord = new INFORecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curINFORecord = new INFORecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curINFORecord))
                             {
                             if(curDIALRecord != NULL)
@@ -205,16 +204,16 @@ class GRUPRecords<DIALRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curINFORecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curINFORecord->formID, reader.tell(), reader.getFileName());
                                 delete curINFORecord;
                                 }
                             }
                         break;
                     default:
-                        printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
+                        printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         break;
                     }
-                ReadHandler.set_used(recordSize);
+                reader.skip(recordSize);
                 };
             if(Records.size())
                 processor.IsEmpty(false);
@@ -252,7 +251,7 @@ class GRUPRecords<DIALRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numDIALRecords = (UINT32)Records.size(); //Parent Records
             if(numDIALRecords == 0)
@@ -268,13 +267,12 @@ class GRUPRecords<DIALRecord>
             DIALRecord *curRecord = NULL;
 
             //Top GRUP Header
-            SaveHandler.write(&type, 4);
-            UINT32 TopSizePos = SaveHandler.tell();
-            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-            //SaveHandler.write(&TopSize, 4);
-            SaveHandler.write(&TopLabel, 4);
-            SaveHandler.write(&gType, 4);
-            SaveHandler.write(&stamp, 4);
+            writer.file_write(&type, 4);
+            UINT32 TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&TopLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
             ++formCount;
             TopSize = 20;
 
@@ -285,28 +283,28 @@ class GRUPRecords<DIALRecord>
                 curRecord = (DIALRecord *)Records[p];
                 parentFormID = curRecord->formID;
                 collapser.Accept(parentFormID);
-                TopSize += curRecord->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                TopSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
 
                 numINFORecords = (UINT32)curRecord->INFO.size();
                 if(numINFORecords)
                     {
-                    SaveHandler.write(&type, 4);
-                    UINT32 ChildrenSizePos = SaveHandler.tell();
-                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                    SaveHandler.write(&parentFormID, 4);
-                    SaveHandler.write(&gType, 4);
-                    SaveHandler.write(&stamp, 4);
+                    writer.file_write(&type, 4);
+                    UINT32 ChildrenSizePos = writer.file_tell();
+                    writer.file_write(&ChildrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                    writer.file_write(&parentFormID, 4);
+                    writer.file_write(&gType, 4);
+                    writer.file_write(&stamp, 4);
                     ++formCount;
                     ChildrenSize = 20;
 
                     formCount += numINFORecords;
                     for(UINT32 y = 0; y < curRecord->INFO.size(); ++y)
                         {
-                        ChildrenSize += curRecord->INFO[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                        ChildrenSize += curRecord->INFO[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                         if(CloseMod)
                             delete curRecord->INFO[y];
                         }
-                    SaveHandler.writeAt(ChildrenSizePos, &ChildrenSize, 4);
+                    writer.file_write(ChildrenSizePos, &ChildrenSize, 4);
                     TopSize += ChildrenSize;
                     if(CloseMod)
                         curRecord->INFO.clear();
@@ -314,7 +312,7 @@ class GRUPRecords<DIALRecord>
                 if(CloseMod)
                     delete curRecord;
                 }
-            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            writer.file_write(TopSizePos, &TopSize, 4);
             if(CloseMod)
                 Records.clear();
             return formCount;
@@ -335,11 +333,11 @@ class GRUPRecords<CELLRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
-                printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
+                printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
                 return false;
                 }
             SkimmedGRUP = true;
@@ -350,16 +348,16 @@ class GRUPRecords<CELLRecord>
             Record *curPGRDRecord = NULL;
             Record *curLANDRecord = NULL;
             UINT32 recordType = 0;
-            UINT32 gEnd = ReadHandler.tell() + gSize - 20;
+            UINT32 gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
 
-            while(ReadHandler.tell() < gEnd){
-                ReadHandler.read(&recordType, 4);
-                ReadHandler.read(&recordSize, 4);
+            while(reader.tell() < gEnd){
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case 'LLEC':
-                        curCELLRecord = new CELLRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curCELLRecord = new CELLRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curCELLRecord))
                             {
                             indexer.Accept(curCELLRecord);
@@ -367,10 +365,10 @@ class GRUPRecords<CELLRecord>
                             }
                         break;
                     case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
-                        ReadHandler.set_used(12); //skip the rest of the header
+                        reader.skip(12); //skip the rest of the header
                         continue;
                     case 'RHCA':
-                        curACHRRecord = new ACHRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curACHRRecord = new ACHRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACHRRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -380,13 +378,13 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
                         break;
                     case 'ERCA':
-                        curACRERecord = new ACRERecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curACRERecord = new ACRERecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACRERecord))
                             {
                             if(curCELLRecord != NULL)
@@ -396,13 +394,13 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, reader.tell(), reader.getFileName());
                                 delete curACRERecord;
                                 }
                             }
                         break;
                     case 'RFER':
-                        curREFRRecord = new REFRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curREFRRecord = new REFRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curREFRRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -412,13 +410,13 @@ class GRUPRecords<CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
                         break;
                     case 'DRGP':
-                        curPGRDRecord = new PGRDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curPGRDRecord = new PGRDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curPGRDRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -430,22 +428,22 @@ class GRUPRecords<CELLRecord>
                                     }
                                 else
                                     {
-                                    printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
                         break;
                     default:
-                        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
+                        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         break;
                     }
-                ReadHandler.set_used(recordSize);
+                reader.skip(recordSize);
                 };
             if(Records.size())
                 processor.IsEmpty(false);
@@ -483,7 +481,7 @@ class GRUPRecords<CELLRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numCELLRecords = (UINT32)Records.size();
             if(numCELLRecords == 0)
@@ -529,13 +527,12 @@ class GRUPRecords<CELLRecord>
                 }
 
             //Top GRUP Header
-            SaveHandler.write(&type, 4);
-            TopSizePos = SaveHandler.tell();
-            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-            //SaveHandler.write(&TopSize, 4);
-            SaveHandler.write(&gLabel, 4);
-            SaveHandler.write(&gType, 4);
-            SaveHandler.write(&stamp, 4);
+            writer.file_write(&type, 4);
+            TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&gLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
             ++formCount;
             TopSize = 20;
 
@@ -550,22 +547,22 @@ class GRUPRecords<CELLRecord>
                         {
                         if(gType == eInteriorBlock)
                             {
-                            SaveHandler.write(&type, 4);
-                            blockSizePos = SaveHandler.tell();
-                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                            SaveHandler.write(&curBlock, 4);
-                            SaveHandler.write(&gType, 4);
-                            SaveHandler.write(&stamp, 4);
+                            writer.file_write(&type, 4);
+                            blockSizePos = writer.file_tell();
+                            writer.file_write(&blockSizePos, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&curBlock, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
                             ++formCount;
                             blockSize = 20;
                             }
                         gType = eInteriorSubBlock;
-                        SaveHandler.write(&type, 4);
-                        subBlockSizePos = SaveHandler.tell();
-                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                        SaveHandler.write(&curSubBlock, 4);
-                        SaveHandler.write(&gType, 4);
-                        SaveHandler.write(&stamp, 4);
+                        writer.file_write(&type, 4);
+                        subBlockSizePos = writer.file_tell();
+                        writer.file_write(&subBlockSize, 4); //Placeholder: will be overwritten with correct value later.
+                        writer.file_write(&curSubBlock, 4);
+                        writer.file_write(&gType, 4);
+                        writer.file_write(&stamp, 4);
                         ++formCount;
                         subBlockSize = 20;
                         for(UINT32 p = 0; p < numSubBlocks; ++p)
@@ -573,7 +570,7 @@ class GRUPRecords<CELLRecord>
                             curRecord = BlockedRecords[curBlock][curSubBlock][p];
                             parentFormID = curRecord->formID;
                             collapser.Accept(parentFormID);
-                            subBlockSize += curRecord->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                            subBlockSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
                             //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
                             if(curRecord->PGRD != NULL)
                                 Temporary.push_back(curRecord->PGRD);
@@ -621,12 +618,12 @@ class GRUPRecords<CELLRecord>
                                 {
                                 formCount += numChildren;
                                 gType = eCellChildren;
-                                SaveHandler.write(&type, 4);
-                                childrenSizePos = SaveHandler.tell();
-                                SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                SaveHandler.write(&parentFormID, 4);
-                                SaveHandler.write(&gType, 4);
-                                SaveHandler.write(&stamp, 4);
+                                writer.file_write(&type, 4);
+                                childrenSizePos = writer.file_tell();
+                                writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                                writer.file_write(&parentFormID, 4);
+                                writer.file_write(&gType, 4);
+                                writer.file_write(&stamp, 4);
                                 ++formCount;
                                 childrenSize = 20;
 
@@ -634,23 +631,23 @@ class GRUPRecords<CELLRecord>
                                 if(numChild)
                                     {
                                     gType = eCellPersistent;
-                                    SaveHandler.write(&type, 4);
-                                    childSizePos = SaveHandler.tell();
-                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                    SaveHandler.write(&parentFormID, 4);
-                                    SaveHandler.write(&gType, 4);
-                                    SaveHandler.write(&stamp, 4);
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
                                     ++formCount;
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += Persistent[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                        childSize += Persistent[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete Persistent[x];
                                         }
                                     childrenSize += childSize;
-                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    writer.file_write(childSizePos, &childSize, 4);
                                     Persistent.clear();
                                     }
 
@@ -658,23 +655,23 @@ class GRUPRecords<CELLRecord>
                                 if(numChild)
                                     {
                                     gType = eCellVWD;
-                                    SaveHandler.write(&type, 4);
-                                    childSizePos = SaveHandler.tell();
-                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                    SaveHandler.write(&parentFormID, 4);
-                                    SaveHandler.write(&gType, 4);
-                                    SaveHandler.write(&stamp, 4);
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
                                     ++formCount;
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += VWD[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                        childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete VWD[x];
                                         }
                                     childrenSize += childSize;
-                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    writer.file_write(childSizePos, &childSize, 4);
                                     VWD.clear();
                                     }
 
@@ -682,46 +679,46 @@ class GRUPRecords<CELLRecord>
                                 if(numChild)
                                     {
                                     gType = eCellTemporary;
-                                    SaveHandler.write(&type, 4);
-                                    childSizePos = SaveHandler.tell();
-                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                    SaveHandler.write(&parentFormID, 4);
-                                    SaveHandler.write(&gType, 4);
-                                    SaveHandler.write(&stamp, 4);
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
                                     ++formCount;
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
                                         {
-                                        childSize += Temporary[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                        childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                         if(CloseMod)
                                             delete Temporary[x];
                                         }
                                     childrenSize += childSize;
-                                    SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                    writer.file_write(childSizePos, &childSize, 4);
                                     Temporary.clear();
                                     }
                                 subBlockSize += childrenSize;
-                                SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
+                                writer.file_write(childrenSizePos, &childrenSize, 4);
                                 }
                             if(CloseMod)
                                 delete curRecord;
                             }
                         blockSize += subBlockSize;
-                        SaveHandler.writeAt(subBlockSizePos, &subBlockSize, 4);
+                        writer.file_write(subBlockSizePos, &subBlockSize, 4);
                         BlockedRecords[curBlock][curSubBlock].clear();
                         }
                     }
                 if(gType != eInteriorBlock)
                     {
                     TopSize += blockSize;
-                    SaveHandler.writeAt(blockSizePos, &blockSize, 4);
+                    writer.file_write(blockSizePos, &blockSize, 4);
                     }
                 BlockedRecords[curBlock].clear();
                 }
             if(CloseMod)
                 Records.clear();
-            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            writer.file_write(TopSizePos, &TopSize, 4);
             BlockedRecords.clear();
             return formCount;
             }
@@ -741,11 +738,11 @@ class GRUPRecords<WRLDRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
-                printf("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
+                printf("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
                 return false;
                 }
             SkimmedGRUP = true;
@@ -761,14 +758,14 @@ class GRUPRecords<WRLDRecord>
             std::vector<std::pair<UINT32, UINT32>> GRUPs;
             std::pair<UINT32, UINT32> GRUP_Size;
             UINT32 recordType = 0;
-            UINT32 gEnd = ReadHandler.tell() + gSize - 20;
+            UINT32 gEnd = reader.tell() + gSize - 20;
             GRUP_Size.first = eTop;
             GRUP_Size.second = gEnd;
             GRUPs.push_back(GRUP_Size);
             UINT32 recordSize = 0;
 
-            while(ReadHandler.tell() < gEnd){
-                while(ReadHandler.tell() >= GRUP_Size.second)
+            while(reader.tell() < gEnd){
+                while(reader.tell() >= GRUP_Size.second)
                     {
                     //Better tracking of the last GRUP
                     //Mainly fixes cases where the world cell isn't located before the cell blocks
@@ -776,12 +773,12 @@ class GRUPRecords<WRLDRecord>
                     GRUPs.pop_back();
                     GRUP_Size = GRUPs.back();
                     };
-                ReadHandler.read(&recordType, 4);
-                ReadHandler.read(&recordSize, 4);
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
                 switch(recordType)
                     {
                     case 'DLRW':
-                        curWRLDRecord = new WRLDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curWRLDRecord = new WRLDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curWRLDRecord))
                             {
                             indexer.Accept(curWRLDRecord);
@@ -789,7 +786,7 @@ class GRUPRecords<WRLDRecord>
                             }
                         break;
                     case 'LLEC':
-                        curCELLRecord = new CELLRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curCELLRecord = new CELLRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curCELLRecord))
                             {
                             if(curWRLDRecord != NULL)
@@ -805,7 +802,7 @@ class GRUPRecords<WRLDRecord>
                                             }
                                         else
                                             {
-                                            printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
+                                            printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, reader.tell(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
                                             delete curCELLRecord;
                                             }
                                         break;
@@ -817,20 +814,20 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan CELL (%08X) at %08X in file \"%s\"\n", curCELLRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan CELL (%08X) at %08X in file \"%s\"\n", curCELLRecord->formID, reader.tell(), reader.getFileName());
                                 delete curCELLRecord;
                                 }
                             }
                         break;
                     case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
-                        ReadHandler.set_used(4);
-                        ReadHandler.read(&GRUP_Size.first, 4);
-                        ReadHandler.set_used(4);
-                        GRUP_Size.second = ReadHandler.tell() + recordSize - 20;
+                        reader.skip(4);
+                        reader.read(&GRUP_Size.first, 4);
+                        reader.skip(4);
+                        GRUP_Size.second = reader.tell() + recordSize - 20;
                         GRUPs.push_back(GRUP_Size);
                         continue;
                     case 'DAOR':
-                        curROADRecord = new ROADRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curROADRecord = new ROADRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curROADRecord))
                             {
                             if(curWRLDRecord != NULL)
@@ -842,19 +839,19 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, reader.tell(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
                                     delete curROADRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", curROADRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", curROADRecord->formID, reader.tell(), reader.getFileName());
                                 delete curROADRecord;
                                 }
                             }
                         break;
                     case 'DNAL':
-                        curLANDRecord = new LANDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curLANDRecord = new LANDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curLANDRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -865,7 +862,7 @@ class GRUPRecords<WRLDRecord>
                                     ((CELLRecord *)curCELLRecord)->LAND = curLANDRecord;
                                     if(processor.Flags.IsIndexLANDs)
                                         {
-                                        processor.reader.Accept(curCELLRecord); //may already be loaded, but just to be sure.
+                                        processor.parser.Accept(curCELLRecord); //may already be loaded, but just to be sure.
                                         //CELL will be unloaded if needed after a second round of indexing when all records are loaded
                                         ((CELLRecord *)curCELLRecord)->XCLC.Load();
                                         GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curLANDRecord;
@@ -873,19 +870,19 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
                                     delete curLANDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curLANDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curLANDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curLANDRecord;
                                 }
                             }
                         break;
                     case 'DRGP':
-                        curPGRDRecord = new PGRDRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curPGRDRecord = new PGRDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curPGRDRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -897,19 +894,19 @@ class GRUPRecords<WRLDRecord>
                                     }
                                 else
                                     {
-                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                                    printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
                                     }
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curPGRDRecord;
                                 }
                             }
                         break;
                     case 'RHCA':
-                        curACHRRecord = new ACHRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curACHRRecord = new ACHRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACHRRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -919,13 +916,13 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curACHRRecord;
                                 }
                             }
                         break;
                     case 'ERCA':
-                        curACRERecord = new ACRERecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curACRERecord = new ACRERecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACRERecord))
                             {
                             if(curCELLRecord != NULL)
@@ -935,13 +932,13 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, reader.tell(), reader.getFileName());
                                 delete curACRERecord;
                                 }
                             }
                         break;
                     case 'RFER':
-                        curREFRRecord = new REFRRecord(ReadHandler.getBuffer(ReadHandler.tell()) + 12);
+                        curREFRRecord = new REFRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curREFRRecord))
                             {
                             if(curCELLRecord != NULL)
@@ -951,16 +948,16 @@ class GRUPRecords<WRLDRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, ReadHandler.tell(), ReadHandler.getFileName());
+                                printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curREFRRecord;
                                 }
                             }
                         break;
                     default:
-                        printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], ReadHandler.getFileName());
+                        printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         break;
                     }
-                ReadHandler.set_used(recordSize);
+                reader.skip(recordSize);
                 };
 
             //Index LAND records by grid
@@ -991,7 +988,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
                                 curACHRRecord = curWRLDCELL->ACHR[x];
-                                processor.reader.Accept(curACHRRecord);
+                                processor.parser.Accept(curACHRRecord);
 
                                 gridX = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posY / 4096.0);
@@ -1012,7 +1009,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
                                 {
                                 curACRERecord = curWRLDCELL->ACRE[x];
-                                processor.reader.Accept(curACRERecord);
+                                processor.parser.Accept(curACRERecord);
 
                                 gridX = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posY / 4096.0);
@@ -1031,7 +1028,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
                                 {
                                 curREFRRecord = curWRLDCELL->REFR[x];
-                                processor.reader.Accept(curREFRRecord);
+                                processor.parser.Accept(curREFRRecord);
 
                                 gridX = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posY / 4096.0);
@@ -1108,7 +1105,7 @@ class GRUPRecords<WRLDRecord>
                 }
             return stop;
             }
-        UINT32 WriteGRUP(_FileHandler &SaveHandler, FormIDHandlerClass &FormIDHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+        UINT32 WriteGRUP(FileWriter &writer, FormIDHandlerClass &FormIDHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numWrldRecords = (UINT32)Records.size();
             if(numWrldRecords == 0)
@@ -1151,13 +1148,12 @@ class GRUPRecords<WRLDRecord>
             std::vector<Record *> VWD;
 
             //Top GRUP Header
-            SaveHandler.write(&type, 4);
-            TopSizePos = SaveHandler.tell();
-            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-            //SaveHandler.write(&TopSize, 4);
-            SaveHandler.write(&gLabel, 4);
-            SaveHandler.write(&gType, 4);
-            SaveHandler.write(&stamp, 4);
+            writer.file_write(&type, 4);
+            TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&gLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
             ++formCount;
             TopSize = 20;
 
@@ -1167,7 +1163,7 @@ class GRUPRecords<WRLDRecord>
                 curWorld = (WRLDRecord *)Records[x];
                 worldFormID = curWorld->formID;
                 collapser.Accept(worldFormID);
-                TopSize += curWorld->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                TopSize += curWorld->Write(writer, bMastersChanged, expander, collapser, Expanders);
 
                 curWorldCell = (CELLRecord *)curWorld->CELL;
 
@@ -1217,18 +1213,18 @@ class GRUPRecords<WRLDRecord>
                 if(curWorld->ROAD != NULL || curWorldCell != NULL || curWorld->CELLS.size() > 0)
                     {
                     gType = eWorld;
-                    SaveHandler.write(&type, 4);
-                    worldSizePos = SaveHandler.tell();
-                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                    SaveHandler.write(&worldFormID, 4);
-                    SaveHandler.write(&gType, 4);
-                    SaveHandler.write(&stamp, 4);
+                    writer.file_write(&type, 4);
+                    worldSizePos = writer.file_tell();
+                    writer.file_write(&worldSize, 4); //Placeholder: will be overwritten with correct value later.
+                    writer.file_write(&worldFormID, 4);
+                    writer.file_write(&gType, 4);
+                    writer.file_write(&stamp, 4);
                     ++formCount;
                     worldSize = 20;
 
                     if(curWorld->ROAD != NULL)
                         {
-                        worldSize += curWorld->ROAD->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                        worldSize += curWorld->ROAD->Write(writer, bMastersChanged, expander, collapser, Expanders);
                         ++formCount;
                         if(CloseMod)
                             {
@@ -1242,7 +1238,7 @@ class GRUPRecords<WRLDRecord>
                         curCell = curWorldCell;
                         cellFormID = curCell->formID;
                         collapser.Accept(cellFormID);
-                        worldSize += curCell->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                        worldSize += curCell->Write(writer, bMastersChanged, expander, collapser, Expanders);
                         ++formCount;
 
                         if(curCell->LAND != NULL)
@@ -1320,30 +1316,30 @@ class GRUPRecords<WRLDRecord>
                             {
                             formCount += numChildren;
                             gType = eCellChildren;
-                            SaveHandler.write(&type, 4);
-                            childrenSizePos = SaveHandler.tell();
-                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                            SaveHandler.write(&cellFormID, 4);
-                            SaveHandler.write(&gType, 4);
-                            SaveHandler.write(&stamp, 4);
+                            writer.file_write(&type, 4);
+                            childrenSizePos = writer.file_tell();
+                            writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&cellFormID, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
                             ++formCount;
                             childrenSize = 20;
 
                             //World CELL should only have persistent objects in it
                             gType = eCellPersistent;
-                            SaveHandler.write(&type, 4);
-                            childSizePos = SaveHandler.tell();
-                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                            SaveHandler.write(&cellFormID, 4);
-                            SaveHandler.write(&gType, 4);
-                            SaveHandler.write(&stamp, 4);
+                            writer.file_write(&type, 4);
+                            childSizePos = writer.file_tell();
+                            writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&cellFormID, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
                             ++formCount;
                             childSize = 20;
 
                             numChild = (UINT32)Persistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
                                 {
-                                childSize += Persistent[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                childSize += Persistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                 if(CloseMod)
                                     delete Persistent[y];
                                 }
@@ -1351,14 +1347,14 @@ class GRUPRecords<WRLDRecord>
                             //The moved persistents will be deleted by their owning cell when its indexed
                             numChild = (UINT32)FixedPersistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
-                                childSize += FixedPersistent[y]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                childSize += FixedPersistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
 
                             childrenSize += childSize;
-                            SaveHandler.writeAt(childSizePos, &childSize, 4);
+                            writer.file_write(childSizePos, &childSize, 4);
                             Persistent.clear();
                             FixedPersistent.clear();
                             worldSize += childrenSize;
-                            SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
+                            writer.file_write(childrenSizePos, &childrenSize, 4);
                             }
                         if(CloseMod)
                             delete curCell;
@@ -1368,24 +1364,24 @@ class GRUPRecords<WRLDRecord>
                     for(std::map<UINT32, std::map<UINT32, std::vector<CELLRecord *> > >::iterator curBlock = BlockedRecords.begin(); curBlock != BlockedRecords.end(); ++curBlock)
                         {
                         gType = eExteriorBlock;
-                        SaveHandler.write(&type, 4);
-                        blockSizePos = SaveHandler.tell();
-                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                        SaveHandler.write(&curBlock->first, 4);
-                        SaveHandler.write(&gType, 4);
-                        SaveHandler.write(&stamp, 4);
+                        writer.file_write(&type, 4);
+                        blockSizePos = writer.file_tell();
+                        writer.file_write(&blockSize, 4); //Placeholder: will be overwritten with correct value later.
+                        writer.file_write(&curBlock->first, 4);
+                        writer.file_write(&gType, 4);
+                        writer.file_write(&stamp, 4);
                         ++formCount;
                         blockSize = 20;
 
                         for(std::map<UINT32, std::vector<CELLRecord *> >::iterator curSubBlock = curBlock->second.begin(); curSubBlock != curBlock->second.end(); ++curSubBlock)
                             {
                             gType = eExteriorSubBlock;
-                            SaveHandler.write(&type, 4);
-                            subBlockSizePos = SaveHandler.tell();
-                            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                            SaveHandler.write(&curSubBlock->first, 4);
-                            SaveHandler.write(&gType, 4);
-                            SaveHandler.write(&stamp, 4);
+                            writer.file_write(&type, 4);
+                            subBlockSizePos = writer.file_tell();
+                            writer.file_write(&subBlockSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&curSubBlock->first, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
                             ++formCount;
                             subBlockSize = 20;
 
@@ -1395,7 +1391,7 @@ class GRUPRecords<WRLDRecord>
                                 curCell = curSubBlock->second[p];
                                 cellFormID = curCell->formID;
                                 collapser.Accept(cellFormID);
-                                subBlockSize += curCell->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                subBlockSize += curCell->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                 //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
 
                                 if(curCell->LAND != NULL)
@@ -1458,12 +1454,12 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     formCount += numChildren;
                                     gType = eCellChildren;
-                                    SaveHandler.write(&type, 4);
-                                    childrenSizePos = SaveHandler.tell();
-                                    SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                    SaveHandler.write(&cellFormID, 4);
-                                    SaveHandler.write(&gType, 4);
-                                    SaveHandler.write(&stamp, 4);
+                                    writer.file_write(&type, 4);
+                                    childrenSizePos = writer.file_tell();
+                                    writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&cellFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
                                     ++formCount;
                                     childrenSize = 20;
 
@@ -1471,23 +1467,23 @@ class GRUPRecords<WRLDRecord>
                                     if(numChild)
                                         {
                                         gType = eCellVWD;
-                                        SaveHandler.write(&type, 4);
-                                        childSizePos = SaveHandler.tell();
-                                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                        SaveHandler.write(&cellFormID, 4);
-                                        SaveHandler.write(&gType, 4);
-                                        SaveHandler.write(&stamp, 4);
+                                        writer.file_write(&type, 4);
+                                        childSizePos = writer.file_tell();
+                                        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                        writer.file_write(&cellFormID, 4);
+                                        writer.file_write(&gType, 4);
+                                        writer.file_write(&stamp, 4);
                                         ++formCount;
                                         childSize = 20;
 
                                         for(UINT32 x = 0; x < numChild; ++x)
                                             {
-                                            childSize += VWD[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                            childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                             if(CloseMod)
                                                 delete VWD[x];
                                             }
                                         childrenSize += childSize;
-                                        SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                        writer.file_write(childSizePos, &childSize, 4);
                                         VWD.clear();
                                         }
 
@@ -1495,47 +1491,47 @@ class GRUPRecords<WRLDRecord>
                                     if(numChild)
                                         {
                                         gType = eCellTemporary;
-                                        SaveHandler.write(&type, 4);
-                                        childSizePos = SaveHandler.tell();
-                                        SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-                                        SaveHandler.write(&cellFormID, 4);
-                                        SaveHandler.write(&gType, 4);
-                                        SaveHandler.write(&stamp, 4);
+                                        writer.file_write(&type, 4);
+                                        childSizePos = writer.file_tell();
+                                        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                        writer.file_write(&cellFormID, 4);
+                                        writer.file_write(&gType, 4);
+                                        writer.file_write(&stamp, 4);
                                         ++formCount;
                                         childSize = 20;
 
                                         for(UINT32 x = 0; x < numChild; ++x)
                                             {
-                                            childSize += Temporary[x]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                                            childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                                             if(CloseMod)
                                                 delete Temporary[x];
                                             }
                                         childrenSize += childSize;
-                                        SaveHandler.writeAt(childSizePos, &childSize, 4);
+                                        writer.file_write(childSizePos, &childSize, 4);
                                         Temporary.clear();
                                         }
                                     subBlockSize += childrenSize;
-                                    SaveHandler.writeAt(childrenSizePos, &childrenSize, 4);
+                                    writer.file_write(childrenSizePos, &childrenSize, 4);
                                     }
                                 if(CloseMod)
                                     delete curCell;
                                 }
                             blockSize += subBlockSize;
-                            SaveHandler.writeAt(subBlockSizePos, &subBlockSize, 4);
+                            writer.file_write(subBlockSizePos, &subBlockSize, 4);
                             curSubBlock->second.clear();
                             }
                         worldSize += blockSize;
-                        SaveHandler.writeAt(blockSizePos, &blockSize, 4);
+                        writer.file_write(blockSizePos, &blockSize, 4);
                         curBlock->second.clear();
                         }
                     TopSize += worldSize;
-                    SaveHandler.writeAt(worldSizePos, &worldSize, 4);
+                    writer.file_write(worldSizePos, &worldSize, 4);
                     }
                 BlockedRecords.clear();
                 }
             if(CloseMod)
                 Records.clear();
-            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            writer.file_write(TopSizePos, &TopSize, 4);
 
             return formCount;
             }
@@ -1555,29 +1551,29 @@ class FNVGRUPRecords
                 delete Records[p];
             }
 
-        bool Skim(_FileHandler &ReadHandler, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
-                printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", ReadHandler.getFileName());
+                printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
                 return false;
                 }
             SkimmedGRUP = true;
             Record * curRecord = NULL;
             //UINT32 recordType = 0;
-            UINT32 gEnd = ReadHandler.tell() + gSize - 24;
+            UINT32 gEnd = reader.tell() + gSize - 24;
             UINT32 recordSize = 0;
 
-            while(ReadHandler.tell() < gEnd){
-                curRecord = new T(ReadHandler.getBuffer(ReadHandler.tell()) + 24);
-                ReadHandler.set_used(4); //ReadHandler.read(&recordType, 4);
-                ReadHandler.read(&recordSize, 4);
+            while(reader.tell() < gEnd){
+                curRecord = new T(reader.getBuffer(reader.tell()) + 24);
+                reader.skip(4); //reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
                 if(processor(curRecord))
                     {
                     indexer.Accept(curRecord);
                     Records.push_back(curRecord);
                     }
-                ReadHandler.set_used(recordSize);
+                reader.skip(recordSize);
                 };
             if(Records.size())
                 processor.IsEmpty(false);
@@ -1615,7 +1611,7 @@ class FNVGRUPRecords
                 }
             return stop;
             }
-        UINT32 WriteGRUP(UINT32 TopLabel, _FileHandler &SaveHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+        UINT32 WriteGRUP(UINT32 TopLabel, FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
@@ -1626,25 +1622,25 @@ class FNVGRUPRecords
             UINT32 formCount = 0;
 
             //Top GRUP Header
-            SaveHandler.write(&type, 4);
-            UINT32 TopSizePos = SaveHandler.tell();
-            SaveHandler.set_used(4); //Placeholder: will be overwritten with correct value later.
-            //SaveHandler.write(&TopSize, 4);
-            SaveHandler.write(&TopLabel, 4);
-            SaveHandler.write(&gType, 4);
-            SaveHandler.write(&stamp, 4);
-            SaveHandler.write(&unknown, 4);
+            writer.file_write(&type, 4);
+            UINT32 TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            //writer.file_write(&TopSize, 4);
+            writer.file_write(&TopLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
+            writer.file_write(&unknown, 4);
             ++formCount;
             TopSize = 24;
 
             formCount += numRecords;
             for(UINT32 p = 0; p < numRecords; p++)
                 {
-                TopSize += Records[p]->Write(SaveHandler, bMastersChanged, expander, collapser, Expanders);
+                TopSize += Records[p]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                 if(CloseMod)
                     delete Records[p];
                 }
-            SaveHandler.writeAt(TopSizePos, &TopSize, 4);
+            writer.file_write(TopSizePos, &TopSize, 4);
             if(CloseMod)
                 Records.clear();
             return formCount;

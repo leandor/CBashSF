@@ -498,44 +498,6 @@ void ASPCRecord::SetSpaceType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
-/*
-UINT32 ASPCRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(OBND.IsLoaded())
-        TotSize += OBND.GetSize() + 6;
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(WNAM.IsLoaded())
-        TotSize += WNAM.GetSize() + 6;
-
-    if(RDAT.IsLoaded())
-        TotSize += RDAT.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 ASPCRecord::GetType()
     {
     return 'CPSA';
@@ -617,26 +579,13 @@ SINT32 ASPCRecord::Unload()
 
 SINT32 ASPCRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(OBND.IsLoaded())
-        SaveHandler.writeSubRecord('DNBO', OBND.value, OBND.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(WNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANW', WNAM.value, WNAM.GetSize());
-
-    if(RDAT.IsLoaded())
-        SaveHandler.writeSubRecord('TADR', RDAT.value, RDAT.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
+    WRITE(EDID);
+    WRITE(OBND);
+    WRITE(SNAM);
+    WRITE(WNAM);
+    WRITE(RDAT);
+    WRITE(ANAM);
+    WRITE(INAM);
 
     return -1;
     }

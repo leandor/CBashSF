@@ -123,61 +123,6 @@ TREERecord::~TREERecord()
     //
     }
 
-UINT32 TREERecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        cSize = MODL->MODL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-
-        if(MODL->MODB.IsLoaded())
-            TotSize += MODL->MODB.GetSize() + 6;
-
-        if(MODL->MODT.IsLoaded())
-            {
-            cSize = MODL->MODT.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNAM.size())
-        {
-        cSize = (sizeof(UINT32) * (UINT32)SNAM.size());
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(BNAM.IsLoaded())
-        TotSize += BNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 TREERecord::GetType()
     {
     return 'EERT';
@@ -273,28 +218,28 @@ SINT32 TREERecord::Unload()
     return 1;
     }
 
-SINT32 TREERecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 TREERecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            SaveHandler.writeSubRecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
     if(SNAM.size())
-        SaveHandler.writeSubRecord('MANS', &SNAM[0], (UINT32)SNAM.size() * sizeof(UINT32));
+        writer.record_write_subrecord('MANS', &SNAM[0], (UINT32)SNAM.size() * sizeof(UINT32));
     //else
-    //    SaveHandler.writeSubRecordHeader('MANS', 0);
+    //    writer.record_write_subheader('MANS', 0);
     if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', &CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord('MANC', &CNAM.value, CNAM.GetSize());
     if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', &BNAM.value, BNAM.GetSize());
+        writer.record_write_subrecord('MANB', &BNAM.value, BNAM.GetSize());
     return -1;
     }
 

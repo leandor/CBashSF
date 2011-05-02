@@ -402,98 +402,6 @@ void CELLRecord::SetHiddenFlagMask(UINT8 Mask)
     Dummy->flags = Mask;
     }
 
-/*
-UINT32 CELLRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(XCLC.IsLoaded())
-        TotSize += XCLC.GetSize() + 6;
-
-    if(XCLL.IsLoaded())
-        TotSize += XCLL.GetSize() + 6;
-
-    if(IMPF.IsLoaded())
-        TotSize += IMPF.GetSize() + 6;
-
-    if(LTMP.IsLoaded())
-        {
-        if(LTMP->LTMP.IsLoaded())
-            TotSize += LTMP->LTMP.GetSize() + 6;
-        if(LTMP->LNAM.IsLoaded())
-            TotSize += LTMP->LNAM.GetSize() + 6;
-        }
-
-    if(XCLW.IsLoaded())
-        TotSize += XCLW.GetSize() + 6;
-
-    if(XNAM.IsLoaded())
-        {
-        cSize = XNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XCLR.IsLoaded())
-        TotSize += XCLR.GetSize() + 6;
-
-    if(XCIM.IsLoaded())
-        TotSize += XCIM.GetSize() + 6;
-
-    if(XCET.IsLoaded())
-        TotSize += XCET.GetSize() + 6;
-
-    if(XEZN.IsLoaded())
-        TotSize += XEZN.GetSize() + 6;
-
-    if(XCCM.IsLoaded())
-        TotSize += XCCM.GetSize() + 6;
-
-    if(XCWT.IsLoaded())
-        TotSize += XCWT.GetSize() + 6;
-
-    if(XOWN.IsLoaded())
-        {
-        if(XOWN->XOWN.IsLoaded())
-            TotSize += XOWN->XOWN.GetSize() + 6;
-        if(XOWN->XRNK.IsLoaded())
-            TotSize += XOWN->XRNK.GetSize() + 6;
-        }
-
-    if(XCAS.IsLoaded())
-        TotSize += XCAS.GetSize() + 6;
-
-    if(XCMT.IsLoaded())
-        TotSize += XCMT.GetSize() + 6;
-
-    if(XCMO.IsLoaded())
-        TotSize += XCMO.GetSize() + 6;
-
-    return TotSize;
-    }
-*/
-
 UINT32 CELLRecord::GetType()
     {
     return 'LLEC';
@@ -633,23 +541,12 @@ SINT32 CELLRecord::Unload()
 
 SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(XCLC.IsLoaded())
-        SaveHandler.writeSubRecord('CLCX', XCLC.value, XCLC.GetSize());
-
-    if(XCLL.IsLoaded())
-        SaveHandler.writeSubRecord('LLCX', XCLL.value, XCLL.GetSize());
-
-    if(IMPF.IsLoaded())
-        SaveHandler.writeSubRecord('FPMI', IMPF.value, IMPF.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(DATA);
+    WRITE(XCLC);
+    WRITE(XCLL);
+    WRITE(IMPF);
 
     if(LTMP.IsLoaded())
         {
@@ -661,29 +558,14 @@ SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XCLW.IsLoaded())
-        SaveHandler.writeSubRecord('WLCX', XCLW.value, XCLW.GetSize());
-
-    if(XNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANX', XNAM.value, XNAM.GetSize());
-
-    if(XCLR.IsLoaded())
-        SaveHandler.writeSubRecord('RLCX', XCLR.value, XCLR.GetSize());
-
-    if(XCIM.IsLoaded())
-        SaveHandler.writeSubRecord('MICX', XCIM.value, XCIM.GetSize());
-
-    if(XCET.IsLoaded())
-        SaveHandler.writeSubRecord('TECX', XCET.value, XCET.GetSize());
-
-    if(XEZN.IsLoaded())
-        SaveHandler.writeSubRecord('NZEX', XEZN.value, XEZN.GetSize());
-
-    if(XCCM.IsLoaded())
-        SaveHandler.writeSubRecord('MCCX', XCCM.value, XCCM.GetSize());
-
-    if(XCWT.IsLoaded())
-        SaveHandler.writeSubRecord('TWCX', XCWT.value, XCWT.GetSize());
+    WRITE(XCLW);
+    WRITE(XNAM);
+    WRITE(XCLR);
+    WRITE(XCIM);
+    WRITE(XCET);
+    WRITE(XEZN);
+    WRITE(XCCM);
+    WRITE(XCWT);
 
     if(XOWN.IsLoaded())
         {
@@ -695,14 +577,9 @@ SINT32 CELLRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(XCAS.IsLoaded())
-        SaveHandler.writeSubRecord('SACX', XCAS.value, XCAS.GetSize());
-
-    if(XCMT.IsLoaded())
-        SaveHandler.writeSubRecord('TMCX', XCMT.value, XCMT.GetSize());
-
-    if(XCMO.IsLoaded())
-        SaveHandler.writeSubRecord('OMCX', XCMO.value, XCMO.GetSize());
+    WRITE(XCAS);
+    WRITE(XCMT);
+    WRITE(XCMO);
 
     return -1;
     }

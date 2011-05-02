@@ -70,13 +70,13 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)XNAM.size();
+                        return (UINT32)XNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -1398,7 +1398,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)HNAM.size();
+                    return (UINT32)HNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -1408,7 +1408,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)ENAM.size();
+                    return (UINT32)ENAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -1520,17 +1520,17 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //description
             return DESC.value;
         case 9: //relations
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    return &XNAM[ListIndex]->value.faction;
+                    return &XNAM.value[ListIndex]->faction;
                 case 2: //mod
-                    return &XNAM[ListIndex]->value.mod;
+                    return &XNAM.value[ListIndex]->mod;
                 case 3: //groupReactionType
-                    return &XNAM[ListIndex]->value.groupReactionType;
+                    return &XNAM.value[ListIndex]->groupReactionType;
                 default:
                     return NULL;
                 }
@@ -2343,10 +2343,10 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 208: //femaleUpperBodyTexture_smallIconPath
             return FBMOD3.MICO.value;
         case 209: //hairs
-            *FieldValues = HNAM.size() ? &HNAM[0] : NULL;
+            *FieldValues = HNAM.value.size() ? &HNAM.value[0] : NULL;
             return NULL;
         case 210: //eyes
-            *FieldValues = ENAM.size() ? &ENAM[0] : NULL;
+            *FieldValues = ENAM.value.size() ? &ENAM.value[0] : NULL;
             return NULL;
         case 211: //maleFggs_p
             *FieldValues = MaleFGGS.value;
@@ -2413,34 +2413,23 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 9: //relations
             if(ListFieldID == 0) //relationsSize
                 {
-                ArraySize -= (UINT32)XNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    XNAM.push_back(new ReqSubRecord<FNVXNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete XNAM.back();
-                    XNAM.pop_back();
-                    ++ArraySize;
-                    }
+                XNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    XNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
                     return true;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = *(SINT32 *)FieldValue;
+                    XNAM.value[ListIndex]->mod = *(SINT32 *)FieldValue;
                     break;
                 case 3: //groupReactionType
-                    XNAM[ListIndex]->value.SetType(*(UINT32 *)FieldValue);
+                    XNAM.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 default:
                     break;
@@ -4133,14 +4122,14 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             FBMOD3.MICO.Copy((STRING)FieldValue);
             break;
         case 209: //hairs
-            HNAM.resize(ArraySize);
+            HNAM.value.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                HNAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                HNAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 210: //eyes
-            ENAM.resize(ArraySize);
+            ENAM.value.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                ENAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                ENAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 211: //maleFggs_p
             if(ArraySize != 200)
@@ -4226,25 +4215,23 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
         case 9: //relations
             if(ListFieldID == 0) //relations
                 {
-                for(UINT32 x = 0; x < (UINT32)XNAM.size(); x++)
-                    delete XNAM[x];
-                XNAM.clear();
+                XNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = defaultXNAM.faction;
+                    XNAM.value[ListIndex]->faction = defaultXNAM.faction;
                     return;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = defaultXNAM.mod;
+                    XNAM.value[ListIndex]->mod = defaultXNAM.mod;
                     return;
                 case 3: //groupReactionType
-                    XNAM[ListIndex]->value.groupReactionType = defaultXNAM.groupReactionType;
+                    XNAM.value[ListIndex]->groupReactionType = defaultXNAM.groupReactionType;
                     return;
                 default:
                     return;
@@ -5622,10 +5609,10 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             FBMOD3.MICO.Unload();
             return;
         case 209: //hairs
-            HNAM.clear();
+            HNAM.Unload();
             return;
         case 210: //eyes
-            ENAM.clear();
+            ENAM.Unload();
             return;
         case 211: //maleFggs_p
             MaleFGGS.Unload();

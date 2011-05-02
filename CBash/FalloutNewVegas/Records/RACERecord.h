@@ -28,11 +28,14 @@ namespace FNV
 class RACERecord : public FNVRecord //Race
     {
     private:
-        struct RACEPart // Head Part
+        struct RACEPart // Part
             {
             OptSubRecord<FNVMODEL> MODL; //Model
             StringRecord ICON; //Large Icon Filename
             StringRecord MICO; //Small Icon Filename
+
+            void Write(UINT32 index, FileWriter &writer);
+            void WriteIconsFirst(UINT32 index, FileWriter &writer);
 
             bool operator ==(const RACEPart &other) const;
             bool operator !=(const RACEPart &other) const;
@@ -48,7 +51,7 @@ class RACERecord : public FNVRecord //Race
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord DESC; //Description
-        std::vector<ReqSubRecord<FNVXNAM> *> XNAM;  //Relations
+        OrderedSparseArray<FNVXNAM *> XNAM; //Relations, not sure if record order matters
         ReqSubRecord<RACEDATA> DATA; //Data
         OptSimpleSubRecord<FORMID> ONAM; //Older
         OptSimpleSubRecord<FORMID> YNAM; //Younger
@@ -98,8 +101,8 @@ class RACERecord : public FNVRecord //Race
         RACEPart FBMOD2; //Right Hand
         RACEPart FBMOD3; //Upper Body Texture
 
-        std::vector<FORMID> HNAM; //Hairs
-        std::vector<FORMID> ENAM; //Eyes
+        UnorderedPackedArray<FORMID> HNAM; //Hairs
+        UnorderedPackedArray<FORMID> ENAM; //Eyes
 
         //OptSubRecord<GENMNAM> MNAM; //Male Data Marker (Empty)
         RawRecord MaleFGGS; //FaceGen Geometry-Symmetric
@@ -130,13 +133,13 @@ class RACERecord : public FNVRecord //Race
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        UINT32 GetSize(bool forceCalc=false);
+        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();
-        SINT32 WriteRecord(_FileHandler &SaveHandler);
+        SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const RACERecord &other) const;
         bool operator !=(const RACERecord &other) const;

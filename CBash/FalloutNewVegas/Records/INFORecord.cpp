@@ -513,126 +513,6 @@ void INFORecord::SetDifficultyType(UINT8 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 INFORecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(QSTI.IsLoaded())
-        TotSize += QSTI.GetSize() + 6;
-
-    if(TPIC.IsLoaded())
-        TotSize += TPIC.GetSize() + 6;
-
-    if(PNAM.IsLoaded())
-        TotSize += PNAM.GetSize() + 6;
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(TRDT.IsLoaded())
-        TotSize += TRDT.GetSize() + 6;
-
-    if(NAM1.IsLoaded())
-        {
-        cSize = NAM1.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM3.IsLoaded())
-        {
-        cSize = NAM3.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SNAM.IsLoaded())
-        TotSize += SNAM.GetSize() + 6;
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(TCLT.IsLoaded())
-        TotSize += TCLT.GetSize() + 6;
-
-    if(TCLF.IsLoaded())
-        TotSize += TCLF.GetSize() + 6;
-
-    if(TCFU.IsLoaded())
-        TotSize += TCFU.GetSize() + 6;
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            TotSize += SCHR->SCHR.GetSize() + 6;
-        if(SCHR->SCDA.IsLoaded())
-            {
-            cSize = SCHR->SCDA.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCTX.IsLoaded())
-            {
-            cSize = SCHR->SCTX.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SLSD.IsLoaded())
-            TotSize += SCHR->SLSD.GetSize() + 6;
-        if(SCHR->SCVR.IsLoaded())
-            {
-            cSize = SCHR->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCRO.IsLoaded())
-            TotSize += SCHR->SCRO.GetSize() + 6;
-        if(SCHR->SCRV.IsLoaded())
-            TotSize += SCHR->SCRV.GetSize() + 6;
-        }
-
-    if(NEXT.IsLoaded())
-        TotSize += NEXT.GetSize() + 6;
-
-    if(SNDD.IsLoaded())
-        TotSize += SNDD.GetSize() + 6;
-
-    if(RNAM.IsLoaded())
-        {
-        cSize = RNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(KNAM.IsLoaded())
-        TotSize += KNAM.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 INFORecord::GetType()
     {
     return 'OFNI';
@@ -799,50 +679,21 @@ SINT32 INFORecord::Unload()
 
 SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(QSTI.IsLoaded())
-        SaveHandler.writeSubRecord('ITSQ', QSTI.value, QSTI.GetSize());
-
-    if(TPIC.IsLoaded())
-        SaveHandler.writeSubRecord('CIPT', TPIC.value, TPIC.GetSize());
-
-    if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
-
-    if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', NAME.value, NAME.GetSize());
-
-    if(TRDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDRT', TRDT.value, TRDT.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
-
-    if(NAM3.IsLoaded())
-        SaveHandler.writeSubRecord('3MAN', NAM3.value, NAM3.GetSize());
-
-    if(SNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANS', SNAM.value, SNAM.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(TCLT.IsLoaded())
-        SaveHandler.writeSubRecord('TLCT', TCLT.value, TCLT.GetSize());
-
-    if(TCLF.IsLoaded())
-        SaveHandler.writeSubRecord('FLCT', TCLF.value, TCLF.GetSize());
-
-    if(TCFU.IsLoaded())
-        SaveHandler.writeSubRecord('UFCT', TCFU.value, TCFU.GetSize());
+    WRITE(DATA);
+    WRITE(QSTI);
+    WRITE(TPIC);
+    WRITE(PNAM);
+    WRITE(NAME);
+    WRITE(TRDT);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    WRITE(NAM3);
+    WRITE(SNAM);
+    WRITE(LNAM);
+    WRITE(CTDA);
+    WRITE(TCLT);
+    WRITE(TCLF);
+    WRITE(TCFU);
 
     if(SCHR.IsLoaded())
         {
@@ -871,21 +722,11 @@ SINT32 INFORecord::WriteRecord(_FileHandler &SaveHandler)
 
     //if(NEXT.IsLoaded()) //FILL IN MANUALLY
         //SaveHandler.writeSubRecord('TXEN', NEXT.value, NEXT.GetSize());
-
-    if(SNDD.IsLoaded())
-        SaveHandler.writeSubRecord('DDNS', SNDD.value, SNDD.GetSize());
-
-    if(RNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANR', RNAM.value, RNAM.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(KNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANK', KNAM.value, KNAM.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
+    WRITE(SNDD);
+    WRITE(RNAM);
+    WRITE(ANAM);
+    WRITE(KNAM);
+    WRITE(DNAM);
 
     return -1;
     }

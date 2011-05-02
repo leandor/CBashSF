@@ -141,27 +141,6 @@ void LSCTRecord::SetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 LSCTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 LSCTRecord::GetType()
     {
     return 'TCSL';
@@ -223,11 +202,8 @@ SINT32 LSCTRecord::Unload()
 
 SINT32 LSCTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(DATA);
 
     return -1;
     }

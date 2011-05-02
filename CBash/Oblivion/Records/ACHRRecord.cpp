@@ -109,64 +109,6 @@ void ACHRRecord::SetFlagMask(UINT8 Mask)
     XESP->flags = Mask;
     }
 
-UINT32 ACHRRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-16];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAME.IsLoaded())
-        TotSize += NAME.GetSize() + 6;
-
-    if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        {
-        TotSize += XPCI->XPCI.GetSize() + 6;
-        if(XPCI->FULL.IsLoaded())
-            {
-            cSize = XPCI->FULL.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        else TotSize += 7;
-        }
-
-    if(XLOD.IsLoaded())
-        TotSize += XLOD.GetSize() + 6;
-
-    if(XESP.IsLoaded())
-        TotSize += XESP.GetSize() + 6;
-
-    if(XMRC.IsLoaded())
-        TotSize += XMRC.GetSize() + 6;
-
-    if(XHRS.IsLoaded())
-        TotSize += XHRS.GetSize() + 6;
-
-    if(XRGD.IsLoaded())
-        {
-        cSize = XRGD.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(XSCL.IsLoaded())
-        TotSize += XSCL.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 ACHRRecord::GetType()
     {
     return 'RHCA';
@@ -268,45 +210,45 @@ SINT32 ACHRRecord::Unload()
     return 1;
     }
 
-SINT32 ACHRRecord::WriteRecord(_FileHandler &SaveHandler)
+SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     {
     char null = 0;
 
     if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        SaveHandler.writeSubRecord('EMAN', &NAME.value, NAME.GetSize());
+        writer.record_write_subrecord('EMAN', &NAME.value, NAME.GetSize());
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        SaveHandler.writeSubRecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
+        writer.record_write_subrecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
-            SaveHandler.writeSubRecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
+            writer.record_write_subrecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
         else
-            SaveHandler.writeSubRecord('LLUF', &null, 1);
+            writer.record_write_subrecord('LLUF', &null, 1);
         }
 
     if(XLOD.IsLoaded())
-        SaveHandler.writeSubRecord('DOLX', XLOD.value, XLOD.GetSize());
+        writer.record_write_subrecord('DOLX', XLOD.value, XLOD.GetSize());
 
     if(XESP.IsLoaded())
-        SaveHandler.writeSubRecord('PSEX', XESP.value, XESP.GetSize());
+        writer.record_write_subrecord('PSEX', XESP.value, XESP.GetSize());
 
     if(XMRC.IsLoaded())
-        SaveHandler.writeSubRecord('CRMX', &XMRC.value, XMRC.GetSize());
+        writer.record_write_subrecord('CRMX', &XMRC.value, XMRC.GetSize());
 
     if(XHRS.IsLoaded())
-        SaveHandler.writeSubRecord('SRHX', &XHRS.value, XHRS.GetSize());
+        writer.record_write_subrecord('SRHX', &XHRS.value, XHRS.GetSize());
 
     if(XRGD.IsLoaded())
-        SaveHandler.writeSubRecord('DGRX', XRGD.value, XRGD.GetSize());
+        writer.record_write_subrecord('DGRX', XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        SaveHandler.writeSubRecord('LCSX', &XSCL.value, XSCL.GetSize());
+        writer.record_write_subrecord('LCSX', &XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
     return -1;
     }
 

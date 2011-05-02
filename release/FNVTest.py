@@ -60,12 +60,12 @@ def d(record):
         pass
     printRecord(record)
     
-def regressionTests():
+def TestRegressions():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("RegressionTests.esp")
+    Current.addMod("TestRegressions.esp")
     Current.load()
-    newMod = Current.LookupModFile("RegressionTests.esp")
+    newMod = Current.LookupModFile("TestRegressions.esp")
 
     assertTES4(Current, newMod)
     assertGMST(Current, newMod)
@@ -79,7 +79,7 @@ def regressionTests():
     assertEYES(Current, newMod)
     assertRACE(Current, newMod)
     assertSOUN(Current, newMod)
-##    newMod.save()
+    newMod.save()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -170,7 +170,7 @@ def assertGMST(Current, newMod):
     srecord.value = 1 #Shouldn't work
     srecord.value = 1.0 #Shouldn't work
 
-    assert srecord.fid == ('RegressionTests.esp', 0x001001)
+    assert srecord.fid == ('TestRegressions.esp', 0x00001001)
     assert srecord.flags1 == 10 | 0x80000000
     assert srecord.versionControl1 == [1, 3, 2, 6]
     assert srecord.formVersion == 1
@@ -188,7 +188,7 @@ def assertGMST(Current, newMod):
     irecord.value = "It works!"  #Shouldn't work
     irecord.value = 2.0 #Shouldn't work
 
-    assert irecord.fid == ('RegressionTests.esp', 0x001002)
+    assert irecord.fid == ('TestRegressions.esp', 0x001002)
     assert irecord.flags1 == 11 | 0x80000000
     assert irecord.versionControl1 == [11, 13, 12, 16]
     assert irecord.formVersion == 13
@@ -205,7 +205,7 @@ def assertGMST(Current, newMod):
     frecord.value = "It works!"  #Shouldn't work
     frecord.value = 3 #Shouldn't work
 
-    assert frecord.fid == ('RegressionTests.esp', 0x001003)
+    assert frecord.fid == ('TestRegressions.esp', 0x001003)
     assert frecord.flags1 == 12 | 0x80000000
     assert frecord.versionControl1 == [12, 32, 22, 62]
     assert frecord.formVersion == 21
@@ -217,7 +217,7 @@ def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001004) #GMSTs are keyed by editorID, so the formID will change on CopyAsOverride
+    assert newrecord.fid == ('TestRegressions.esp', 0x001004) #GMSTs are keyed by editorID, so the formID will change on CopyAsOverride
     assert newrecord.flags1 == 0x80000000
     assert newrecord.versionControl1 == [12, 92, 22, 0]
     assert newrecord.formVersion == 15
@@ -235,7 +235,7 @@ def assertGMST(Current, newMod):
     newrecord.eid = "" #Shouldn't work
     newrecord.value = "Test:"
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001004)
+    assert newrecord.fid == ('TestRegressions.esp', 0x001004)
     assert newrecord.flags1 == 0x80000000
     assert newrecord.versionControl1 == [122, 232, 222, 6]
     assert newrecord.formVersion == 24
@@ -334,7 +334,7 @@ def assertTXST(Current, newMod):
     nrecord.decalUnused2 = [3]
     nrecord.flags = 29
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x001005)
+    assert nrecord.fid == ('TestRegressions.esp', 0x001005)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -547,7 +547,7 @@ def assertMICN(Current, newMod):
     nrecord.iconPath = r'armor\1\trooperHelmMP.dds'
     nrecord.smallIconPath = r'Armor\2\trooperHelm_n.dds'
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x001006)
+    assert nrecord.fid == ('TestRegressions.esp', 0x001006)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -636,7 +636,7 @@ def assertGLOB(Current, newMod):
     nrecord.format = r'l'
     nrecord.value = 10000
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x001007)
+    assert nrecord.fid == ('TestRegressions.esp', 0x001007)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -754,7 +754,7 @@ def assertCLAS(Current, newMod):
     nrecord.agility = 14
     nrecord.luck = 15
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x001008)
+    assert nrecord.fid == ('TestRegressions.esp', 0x001008)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -950,7 +950,7 @@ def assertFACT(Current, newMod):
     nrecord.ranks_list = [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
     nrecord.reputation = ('FalloutNV.esm', 6)
 
-    assert nrecord.fid == ('RegressionTests.esp', 0x001009)
+    assert nrecord.fid == ('TestRegressions.esp', 0x001009)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -966,11 +966,11 @@ def assertFACT(Current, newMod):
     assert nrecord.reputation == ('FalloutNV.esm', 6)
 
     relation = nrecord.create_relation()
-    relation.faction = ('RegressionTests.esp', 0x001009)
+    relation.faction = ('TestRegressions.esp', 0x001009)
     relation.mod = 3
     relation.groupReactionType = 2
     
-    assert nrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L), (('RegressionTests.esp', 0x001009), 3, 2)]
+    assert nrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L), (('TestRegressions.esp', 0x001009), 3, 2)]
 
     relation = nrecord.create_rank()
     relation.rank = 12
@@ -1015,7 +1015,10 @@ def assertFACT(Current, newMod):
     newrecord.eid = 'WarTest'
     
     newrecord.full = 'WarBrotherhood of Steel'
-    newrecord.relations_list = [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    newrecord.relations_list = [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L),
+                                (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L),
+                                (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L),
+                                (('FalloutNV.esm', 13), 0, 1L)]
     newrecord.flags = 4
     newrecord.crimeGoldMultiplier = 5.0
     newrecord.ranks_list = [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
@@ -1037,10 +1040,15 @@ def assertFACT(Current, newMod):
     assert newrecord.eid == 'WArTest'
     
     assert newrecord.full == 'WarBrotherhood of Steel'
-    assert newrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L), (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L), (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L), (('FalloutNV.esm', 13), 0, 1L)]
+    assert newrecord.relations_list == [(('FalloutNV.esm', 1), -2, 0L), (('FalloutNV.esm', 3), 4, 1L),
+                                        (('FalloutNV.esm', 5), 6, 2L), (('FalloutNV.esm', 7), 8, 3L),
+                                        (('FalloutNV.esm', 9), 10, 4L), (('FalloutNV.esm', 11), 12,0L),
+                                        (('FalloutNV.esm', 13), 0, 1L)]
     assert newrecord.flags == 4
     assert newrecord.crimeGoldMultiplier == 5.0
-    assert newrecord.ranks_list == [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None), (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None), (4, 'WarPaladin', None, None)]
+    assert newrecord.ranks_list == [(1, 'WarSquire', None, 'Wart'), (0, 'WarKnight', None, None),
+                                    (2, 'WarKnight Sergeant', None, None), (3, 'WarKnight Captain', None, None),
+                                    (4, 'WarPaladin', None, None)]
     assert newrecord.reputation == ('FalloutNV.esm', 6)
 
     assert record.fid == ('FalloutNV.esm', 0x01D3FE)
@@ -1118,7 +1126,7 @@ def assertHDPT(Current, newMod):
     nrecord.flags = 0x2
     nrecord.parts = [('FalloutNV.esm', 653606)]
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x00100A)
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100A)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -1295,7 +1303,7 @@ def assertHAIR(Current, newMod):
     nrecord.iconPath = r'War\Hair\HairChildMCurly.dds'
     nrecord.flags = 0x4
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x00100B)
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100B)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -1453,7 +1461,7 @@ def assertEYES(Current, newMod):
     nrecord.iconPath = r'Characters\Eyes\EyeGreenMutantHuman.dds'
     nrecord.flags = 0x0
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x00100C)
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100C)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -1970,7 +1978,7 @@ def assertRACE(Current, newMod):
     nrecord.femaleFgts_p = [a for a in range(200)]
     nrecord.femaleSnam_p = [3, 4]
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x00100D)
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100D)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -2065,7 +2073,7 @@ def assertRACE(Current, newMod):
     assert nrecord.femaleSnam_p == [3, 4]
 
     relation = nrecord.create_relation()
-    relation.faction = ('RegressionTests.esp', 0x001009)
+    relation.faction = ('TestRegressions.esp', 0x001009)
     relation.mod = 3
     relation.groupReactionType = 2
     
@@ -2077,7 +2085,7 @@ def assertRACE(Current, newMod):
                               (('FalloutNV.esm', 1317537), 0, 2L), (('FalloutNV.esm', 1355838), 0, 2L),
                               (('FalloutNV.esm',197906), 0, 2L), (('FalloutNV.esm', 673511), 0, 0L),
                               (('FalloutNV.esm', 119275), -100, 0L), (('FalloutNV.esm', 119806),100, 2L),
-                              (('RegressionTests.esp', 0x001009), 3, 2)]
+                              (('TestRegressions.esp', 0x001009), 3, 2)]
 
     altTexture = nrecord.maleHead.create_altTexture()
     altTexture.name = r'WarTESTNAME'
@@ -2990,21 +2998,37 @@ def assertRACE(Current, newMod):
 
 def assertSOUN(Current, newMod):
     record = Current.LoadOrderMods[0].SOUN[0]
-    d(record)
-    return
-    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+
+    assert record.fid == ('FalloutNV.esm', 0x17AE34)
     assert record.flags1 == 0x80000000L
-    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.versionControl1 == [10, 92, 63, 0]
     assert record.formVersion == 15
     assert record.versionControl2 == [0, 0]
-    assert record.eid == 'DLCPittEyeGreenMut'
-    assert record.eid == 'DLCPittEyEGreenMut'
+    assert record.eid == r'EMTCampfireInactive02'
+    assert record.eid == r'EMTCAmpfireInactive02'
     
-    assert record.full == 'Green'
-    assert record.full != 'GreEn'
-    assert record.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    assert record.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
-    assert record.flags == 0x0
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.soundPath == r'fx\amb\amb_campfireinactive_lp.wav'
+    assert record.soundPath == r'fx\amb\amb_campfireinactive_lp.wAv'
+    assert record.chance == 0
+    assert record.minDistance == 61
+    assert record.maxDistance == 13
+    assert record.freqAdjustment == 0
+    assert record.unused1 == [0]
+    assert record.flags == 0x1010L
+    assert record.staticAtten == 1013
+    assert record.stopTime == 0
+    assert record.startTime == 0
+    assert record.attenCurve == [100, 60, 30, 10, 0]
+    assert record.reverb == 0
+    assert record.priority == 192
+    assert record.x == 0
+    assert record.y == 0
     
     nrecord = newMod.create_SOUN()
 
@@ -3014,11 +3038,29 @@ def assertSOUN(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
     
-    nrecord.full = 'Green'
-    nrecord.iconPath = r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    nrecord.flags = 0x0
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.soundPath = r'WAR\amb\amb_campfireinactive_lp.wav'
+    nrecord.chance = 7
+    nrecord.minDistance = 8
+    nrecord.maxDistance = 9
+    nrecord.freqAdjustment = 10
+    nrecord.unused1 = [11]
+    nrecord.flags = 0x12L
+    nrecord.staticAtten = 13
+    nrecord.stopTime = 14
+    nrecord.startTime = 15
+    nrecord.attenCurve = [16, 17, 18, 19, 20]
+    nrecord.reverb = 21
+    nrecord.priority = 22
+    nrecord.x = 23
+    nrecord.y = 24
     
-    assert nrecord.fid == ('RegressionTests.esp', 0x00100C)
+    assert nrecord.fid == ('TestRegressions.esp', 0x00100E)
     assert nrecord.flags1 == 0x80000000 | 10
     assert nrecord.versionControl1 == [1, 3, 2, 6]
     assert nrecord.formVersion == 1
@@ -3026,28 +3068,62 @@ def assertSOUN(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
     
-    assert nrecord.full == 'Green'
-    assert nrecord.full != 'GrEen'
-    assert nrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    assert nrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
-    assert nrecord.flags == 0x0
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.soundPath == r'WAR\amb\amb_campfireinactive_lp.wav'
+    assert nrecord.soundPath == r'WaR\amb\amb_campfireinactive_lp.wav'
+    assert nrecord.chance == 7
+    assert nrecord.minDistance == 8
+    assert nrecord.maxDistance == 9
+    assert nrecord.freqAdjustment == 10
+    assert nrecord.unused1 == [11]
+    assert nrecord.flags == 0x12L
+    assert nrecord.staticAtten == 13
+    assert nrecord.stopTime == 14
+    assert nrecord.startTime == 15
+    assert nrecord.attenCurve == [16, 17, 18, 19, 20]
+    assert nrecord.reverb == 21
+    assert nrecord.priority == 22
+    assert nrecord.x == 23
+    assert nrecord.y == 24
 
     record = Current.LoadOrderMods[0].SOUN[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.fid == ('FalloutNV.esm', 0x17AE34)
     assert newrecord.flags1 == 0x80000000L
-    assert newrecord.versionControl1 == [9, 76, 1, 0]
+    assert newrecord.versionControl1 == [10, 92, 63, 0]
     assert newrecord.formVersion == 15
     assert newrecord.versionControl2 == [0, 0]
-    assert newrecord.eid == 'DLCPittEyeGreenMut'
-    assert newrecord.eid == 'DLCPittEyEGreenMut'
+    assert newrecord.eid == r'EMTCampfireInactive02'
+    assert newrecord.eid == r'EMTCAmpfireInactive02'
     
-    assert newrecord.full == 'Green'
-    assert newrecord.full != 'GreEn'
-    assert newrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    assert newrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
-    assert newrecord.flags == 0x0
+    assert newrecord.boundX1 == 0
+    assert newrecord.boundY1 == 0
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 0
+    assert newrecord.boundY2 == 0
+    assert newrecord.boundZ2 == 0
+    assert newrecord.soundPath == r'fx\amb\amb_campfireinactive_lp.wav'
+    assert newrecord.soundPath == r'fx\amb\amb_campfireinactive_lp.wAv'
+    assert newrecord.chance == 0
+    assert newrecord.minDistance == 61
+    assert newrecord.maxDistance == 13
+    assert newrecord.freqAdjustment == 0
+    assert newrecord.unused1 == [0]
+    assert newrecord.flags == 0x1010L
+    assert newrecord.staticAtten == 1013
+    assert newrecord.stopTime == 0
+    assert newrecord.startTime == 0
+    assert newrecord.attenCurve == [100, 60, 30, 10, 0]
+    assert newrecord.reverb == 0
+    assert newrecord.priority == 192
+    assert newrecord.x == 0
+    assert newrecord.y == 0
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -3055,11 +3131,29 @@ def assertSOUN(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = 'WarTest'
     
-    newrecord.full = 'Green'
-    newrecord.iconPath = r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    newrecord.flags = 0x0
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.soundPath = r'WAR\amb\amb_campfireinactive_lp.wav'
+    newrecord.chance = 7
+    newrecord.minDistance = 8
+    newrecord.maxDistance = 9
+    newrecord.freqAdjustment = 10
+    newrecord.unused1 = [11]
+    newrecord.flags = 0x12L
+    newrecord.staticAtten = 13
+    newrecord.stopTime = 14
+    newrecord.startTime = 15
+    newrecord.attenCurve = [16, 17, 18, 19, 20]
+    newrecord.reverb = 21
+    newrecord.priority = 22
+    newrecord.x = 23
+    newrecord.y = 24
     
-    assert newrecord.fid == ('FalloutNV.esm', 0x0945BA)
+    assert newrecord.fid == ('FalloutNV.esm', 0x17AE34)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -3067,25 +3161,59 @@ def assertSOUN(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
     
-    assert newrecord.full == 'Green'
-    assert newrecord.full != 'GrEen'
-    assert newrecord.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    assert newrecord.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
-    assert newrecord.flags == 0x0
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.soundPath == r'WAR\amb\amb_campfireinactive_lp.wav'
+    assert newrecord.chance == 7
+    assert newrecord.minDistance == 8
+    assert newrecord.maxDistance == 9
+    assert newrecord.freqAdjustment == 10
+    assert newrecord.unused1 == [11]
+    assert newrecord.flags == 0x12L
+    assert newrecord.staticAtten == 13
+    assert newrecord.stopTime == 14
+    assert newrecord.startTime == 15
+    assert newrecord.attenCurve == [16, 17, 18, 19, 20]
+    assert newrecord.reverb == 21
+    assert newrecord.priority == 22
+    assert newrecord.x == 23
+    assert newrecord.y == 24
 
-    assert record.fid == ('FalloutNV.esm', 0x0945BA)
+
+    assert record.fid == ('FalloutNV.esm', 0x17AE34)
     assert record.flags1 == 0x80000000L
-    assert record.versionControl1 == [9, 76, 1, 0]
+    assert record.versionControl1 == [10, 92, 63, 0]
     assert record.formVersion == 15
     assert record.versionControl2 == [0, 0]
-    assert record.eid == 'DLCPittEyeGreenMut'
-    assert record.eid == 'DLCPittEyEGreenMut'
+    assert record.eid == r'EMTCampfireInactive02'
+    assert record.eid == r'EMTCAmpfireInactive02'
     
-    assert record.full == 'Green'
-    assert record.full != 'GreEn'
-    assert record.iconPath == r'Characters\SOUN\EyeGreenMutantHuman.dds'
-    assert record.iconPath == r'ChAracters\SOUN\EyeGreenMutantHuman.dds'
-    assert record.flags == 0x0
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.soundPath == r'fx\amb\amb_campfireinactive_lp.wav'
+    assert record.soundPath == r'fx\amb\amb_campfireinactive_lp.wAv'
+    assert record.chance == 0
+    assert record.minDistance == 61
+    assert record.maxDistance == 13
+    assert record.freqAdjustment == 0
+    assert record.unused1 == [0]
+    assert record.flags == 0x1010L
+    assert record.staticAtten == 1013
+    assert record.stopTime == 0
+    assert record.startTime == 0
+    assert record.attenCurve == [100, 60, 30, 10, 0]
+    assert record.reverb == 0
+    assert record.priority == 192
+    assert record.x == 0
+    assert record.y == 0
 
     print "SOUN:Finished testing"
 
@@ -3141,4 +3269,4 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-regressionTests()
+TestRegressions()

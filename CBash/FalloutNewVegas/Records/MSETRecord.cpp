@@ -256,140 +256,6 @@ void MSETRecord::SetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 MSETRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM1.IsLoaded())
-        TotSize += NAM1.GetSize() + 6;
-
-    if(NAM2.IsLoaded())
-        {
-        cSize = NAM2.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM3.IsLoaded())
-        {
-        cSize = NAM3.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM4.IsLoaded())
-        {
-        cSize = NAM4.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM5.IsLoaded())
-        {
-        cSize = NAM5.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM6.IsLoaded())
-        {
-        cSize = NAM6.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM7.IsLoaded())
-        {
-        cSize = NAM7.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(NAM8.IsLoaded())
-        TotSize += NAM8.GetSize() + 6;
-
-    if(NAM9.IsLoaded())
-        TotSize += NAM9.GetSize() + 6;
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(ANAM.IsLoaded())
-        TotSize += ANAM.GetSize() + 6;
-
-    if(BNAM.IsLoaded())
-        TotSize += BNAM.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        TotSize += CNAM.GetSize() + 6;
-
-    if(JNAM.IsLoaded())
-        TotSize += JNAM.GetSize() + 6;
-
-    if(KNAM.IsLoaded())
-        TotSize += KNAM.GetSize() + 6;
-
-    if(LNAM.IsLoaded())
-        TotSize += LNAM.GetSize() + 6;
-
-    if(MNAM.IsLoaded())
-        TotSize += MNAM.GetSize() + 6;
-
-    if(NNAM.IsLoaded())
-        TotSize += NNAM.GetSize() + 6;
-
-    if(ONAM.IsLoaded())
-        TotSize += ONAM.GetSize() + 6;
-
-    if(PNAM.IsLoaded())
-        TotSize += PNAM.GetSize() + 6;
-
-    if(DNAM.IsLoaded())
-        TotSize += DNAM.GetSize() + 6;
-
-    if(ENAM.IsLoaded())
-        TotSize += ENAM.GetSize() + 6;
-
-    if(FNAM.IsLoaded())
-        TotSize += FNAM.GetSize() + 6;
-
-    if(GNAM.IsLoaded())
-        TotSize += GNAM.GetSize() + 6;
-
-    if(HNAM.IsLoaded())
-        TotSize += HNAM.GetSize() + 6;
-
-    if(INAM.IsLoaded())
-        TotSize += INAM.GetSize() + 6;
-
-    if(DATA.IsLoaded())
-        {
-        cSize = DATA.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 MSETRecord::GetType()
     {
     return 'TESM';
@@ -559,92 +425,35 @@ SINT32 MSETRecord::Unload()
 
 SINT32 MSETRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(NAM1.IsLoaded())
-        SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
-
-    if(NAM2.IsLoaded())
-        SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
-
-    if(NAM3.IsLoaded())
-        SaveHandler.writeSubRecord('3MAN', NAM3.value, NAM3.GetSize());
-
-    if(NAM4.IsLoaded())
-        SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
-
-    if(NAM5.IsLoaded())
-        SaveHandler.writeSubRecord('5MAN', NAM5.value, NAM5.GetSize());
-
-    if(NAM6.IsLoaded())
-        SaveHandler.writeSubRecord('6MAN', NAM6.value, NAM6.GetSize());
-
-    if(NAM7.IsLoaded())
-        SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
-
-    if(NAM8.IsLoaded())
-        SaveHandler.writeSubRecord('8MAN', NAM8.value, NAM8.GetSize());
-
-    if(NAM9.IsLoaded())
-        SaveHandler.writeSubRecord('9MAN', NAM9.value, NAM9.GetSize());
-
-    if(NAM0.IsLoaded())
-        SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
-
-    if(ANAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANA', ANAM.value, ANAM.GetSize());
-
-    if(BNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANB', BNAM.value, BNAM.GetSize());
-
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
-
-    if(JNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANJ', JNAM.value, JNAM.GetSize());
-
-    if(KNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANK', KNAM.value, KNAM.GetSize());
-
-    if(LNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANL', LNAM.value, LNAM.GetSize());
-
-    if(MNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANM', MNAM.value, MNAM.GetSize());
-
-    if(NNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANN', NNAM.value, NNAM.GetSize());
-
-    if(ONAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
-
-    if(PNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANP', PNAM.value, PNAM.GetSize());
-
-    if(DNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MAND', DNAM.value, DNAM.GetSize());
-
-    if(ENAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANE', ENAM.value, ENAM.GetSize());
-
-    if(FNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANF', FNAM.value, FNAM.GetSize());
-
-    if(GNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANG', GNAM.value, GNAM.GetSize());
-
-    if(HNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANH', HNAM.value, HNAM.GetSize());
-
-    if(INAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANI', INAM.value, INAM.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    WRITE(NAM3);
+    WRITE(NAM4);
+    WRITE(NAM5);
+    WRITE(NAM6);
+    WRITE(NAM7);
+    WRITE(NAM8);
+    WRITE(NAM9);
+    WRITE(NAM0);
+    WRITE(ANAM);
+    WRITE(BNAM);
+    WRITE(CNAM);
+    WRITE(JNAM);
+    WRITE(KNAM);
+    WRITE(LNAM);
+    WRITE(MNAM);
+    WRITE(NNAM);
+    WRITE(ONAM);
+    WRITE(PNAM);
+    WRITE(DNAM);
+    WRITE(ENAM);
+    WRITE(FNAM);
+    WRITE(GNAM);
+    WRITE(HNAM);
+    WRITE(INAM);
+    WRITE(DATA);
 
     return -1;
     }

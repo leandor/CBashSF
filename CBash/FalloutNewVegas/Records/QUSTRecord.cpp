@@ -125,113 +125,6 @@ void QUSTRecord::SetScriptFlagMask(UINT16 Mask)
     SCHR.value.flags = Mask;
     }
 
-UINT32 QUSTRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCRI.IsLoaded())
-        TotSize += SCRI.GetSize() + 6;
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ICON.IsLoaded())
-        {
-        cSize = ICON.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(MICO.IsLoaded())
-        {
-        cSize = MICO.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(DATA.IsLoaded())
-        TotSize += DATA.GetSize() + 6;
-
-    if(CTDA.IsLoaded())
-        TotSize += CTDA.GetSize() + 6;
-
-    if(INDX.IsLoaded())
-        TotSize += INDX.GetSize() + 6;
-
-    if(QSDT.IsLoaded())
-        TotSize += QSDT.GetSize() + 6;
-
-    if(CNAM.IsLoaded())
-        {
-        cSize = CNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            TotSize += SCHR->SCHR.GetSize() + 6;
-        if(SCHR->SCDA.IsLoaded())
-            {
-            cSize = SCHR->SCDA.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCTX.IsLoaded())
-            {
-            cSize = SCHR->SCTX.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SLSD.IsLoaded())
-            TotSize += SCHR->SLSD.GetSize() + 6;
-        if(SCHR->SCVR.IsLoaded())
-            {
-            cSize = SCHR->SCVR.GetSize();
-            if(cSize > 65535) cSize += 10;
-            TotSize += cSize += 6;
-            }
-        if(SCHR->SCRO.IsLoaded())
-            TotSize += SCHR->SCRO.GetSize() + 6;
-        if(SCHR->SCRV.IsLoaded())
-            TotSize += SCHR->SCRV.GetSize() + 6;
-        }
-
-    if(NAM0.IsLoaded())
-        TotSize += NAM0.GetSize() + 6;
-
-    if(QOBJ.IsLoaded())
-        TotSize += QOBJ.GetSize() + 6;
-
-    if(NNAM.IsLoaded())
-        {
-        cSize = NNAM.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(QSTA.IsLoaded())
-        TotSize += QSTA.GetSize() + 6;
-
-    return TotSize;
-    }
-
 UINT32 QUSTRecord::GetType()
     {
     return 'TSUQ';
@@ -370,35 +263,16 @@ SINT32 QUSTRecord::Unload()
 
 SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(SCRI.IsLoaded())
-        SaveHandler.writeSubRecord('IRCS', SCRI.value, SCRI.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(ICON.IsLoaded())
-        SaveHandler.writeSubRecord('NOCI', ICON.value, ICON.GetSize());
-
-    if(MICO.IsLoaded())
-        SaveHandler.writeSubRecord('OCIM', MICO.value, MICO.GetSize());
-
-    if(DATA.IsLoaded())
-        SaveHandler.writeSubRecord('ATAD', DATA.value, DATA.GetSize());
-
-    if(CTDA.IsLoaded())
-        SaveHandler.writeSubRecord('ADTC', CTDA.value, CTDA.GetSize());
-
-    if(INDX.IsLoaded())
-        SaveHandler.writeSubRecord('XDNI', INDX.value, INDX.GetSize());
-
-    if(QSDT.IsLoaded())
-        SaveHandler.writeSubRecord('TDSQ', QSDT.value, QSDT.GetSize());
-
-    if(CNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANC', CNAM.value, CNAM.GetSize());
+    WRITE(EDID);
+    WRITE(SCRI);
+    WRITE(FULL);
+    WRITE(ICON);
+    WRITE(MICO);
+    WRITE(DATA);
+    WRITE(CTDA);
+    WRITE(INDX);
+    WRITE(QSDT);
+    WRITE(CNAM);
 
     if(SCHR.IsLoaded())
         {
@@ -425,17 +299,10 @@ SINT32 QUSTRecord::WriteRecord(_FileHandler &SaveHandler)
 
         }
 
-    if(NAM0.IsLoaded())
-        SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
-
-    if(QOBJ.IsLoaded())
-        SaveHandler.writeSubRecord('JBOQ', QOBJ.value, QOBJ.GetSize());
-
-    if(NNAM.IsLoaded())
-        SaveHandler.writeSubRecord('MANN', NNAM.value, NNAM.GetSize());
-
-    if(QSTA.IsLoaded())
-        SaveHandler.writeSubRecord('ATSQ', QSTA.value, QSTA.GetSize());
+    WRITE(NAM0);
+    WRITE(QOBJ);
+    WRITE(NNAM);
+    WRITE(QSTA);
 
     return -1;
     }

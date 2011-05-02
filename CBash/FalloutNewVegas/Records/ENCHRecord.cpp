@@ -153,44 +153,6 @@ void ENCHRecord::SetType(UINT32 Type)
     Dummy->flags = Mask;
     }
 
-UINT32 ENCHRecord::GetSize(bool forceCalc)
-    {
-    if(!forceCalc && !IsChanged())
-        return *(UINT32*)&recData[-20];
-
-    UINT32 cSize = 0;
-    UINT32 TotSize = 0;
-
-    if(EDID.IsLoaded())
-        {
-        cSize = EDID.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(FULL.IsLoaded())
-        {
-        cSize = FULL.GetSize();
-        if(cSize > 65535) cSize += 10;
-        TotSize += cSize += 6;
-        }
-
-    if(ENIT.IsLoaded())
-        TotSize += ENIT.GetSize() + 6;
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            TotSize += EFID->EFID.GetSize() + 6;
-        if(EFID->EFIT.IsLoaded())
-            TotSize += EFID->EFIT.GetSize() + 6;
-        if(EFID->CTDA.IsLoaded())
-            TotSize += EFID->CTDA.GetSize() + 6;
-        }
-
-    return TotSize;
-    }
-
 UINT32 ENCHRecord::GetType()
     {
     return 'HCNE';
@@ -269,14 +231,9 @@ SINT32 ENCHRecord::Unload()
 
 SINT32 ENCHRecord::WriteRecord(_FileHandler &SaveHandler)
     {
-    if(EDID.IsLoaded())
-        SaveHandler.writeSubRecord('DIDE', EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        SaveHandler.writeSubRecord('LLUF', FULL.value, FULL.GetSize());
-
-    if(ENIT.IsLoaded())
-        SaveHandler.writeSubRecord('TINE', ENIT.value, ENIT.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(ENIT);
 
     if(EFID.IsLoaded())
         {
