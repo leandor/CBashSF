@@ -36,10 +36,7 @@ void PACKRecord::PACKSCRI::IsScriptEnabled(bool value)
 
 bool PACKRecord::PACKSCRI::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void PACKRecord::PACKSCRI::SetScriptFlagMask(UINT16 Mask)

@@ -38,8 +38,8 @@ GPL License and Copyright Notice ============================================
 #include "Records/SOUNRecord.h"
 #include "Records/ASPCRecord.h"
 #include "Records/MGEFRecord.h"
-//#include "Records/SCPTRecord.h"
-//#include "Records/LTEXRecord.h"
+#include "Records/SCPTRecord.h"
+#include "Records/LTEXRecord.h"
 //#include "Records/ENCHRecord.h"
 //#include "Records/SPELRecord.h"
 //#include "Records/ACTIRecord.h"
@@ -143,8 +143,8 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::SOUNRecord> SOUN;
         FNVGRUPRecords<FNV::ASPCRecord> ASPC;
         FNVGRUPRecords<FNV::MGEFRecord> MGEF;
-        //FNVGRUPRecords<FNV::SCPTRecord> SCPT;
-        //FNVGRUPRecords<FNV::LTEXRecord> LTEX;
+        FNVGRUPRecords<FNV::SCPTRecord> SCPT;
+        FNVGRUPRecords<FNV::LTEXRecord> LTEX;
         //FNVGRUPRecords<FNV::ENCHRecord> ENCH;
         //FNVGRUPRecords<FNV::SPELRecord> SPEL;
         //FNVGRUPRecords<FNV::ACTIRecord> ACTI;

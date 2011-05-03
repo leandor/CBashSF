@@ -24,6 +24,31 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+
+LTEXRecord::LTEXHNAM::LTEXHNAM():
+    types(0),
+    friction(0),
+    restitution(0)
+    {
+    //
+    }
+
+LTEXRecord::LTEXHNAM::~LTEXHNAM()
+    {
+    //
+    }
+
+bool LTEXRecord::LTEXHNAM::operator ==(const LTEXHNAM &other) const
+    {
+    return (types == other.types &&
+            friction == other.friction &&
+            restitution == other.restitution);
+    }
+bool LTEXRecord::LTEXHNAM::operator !=(const LTEXHNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 LTEXRecord::LTEXRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -71,407 +96,341 @@ bool LTEXRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(TNAM.IsLoaded())
-        op.Accept(TNAM->value);
-    if(GNAM.IsLoaded())
-        op.Accept(GNAM->value);
+        op.Accept(TNAM.value);
+    for(UINT32 x = 0; x < GNAM.value.size(); ++x)
+        op.Accept(GNAM.value[x]);
 
     return op.Stop();
     }
 
 bool LTEXRecord::IsStone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStone);
+    return (HNAM.value.types == eStone);
     }
 
 void LTEXRecord::IsStone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStone : eDummyDefault;
+    HNAM.value.types = value ? eStone : eCloth;
     }
 
 bool LTEXRecord::IsCloth()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCloth);
+    return (HNAM.value.types == eCloth);
     }
 
 void LTEXRecord::IsCloth(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCloth : eDummyDefault;
+    HNAM.value.types = value ? eCloth : eStone;
     }
 
 bool LTEXRecord::IsDirt()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDirt);
+    return (HNAM.value.types == eDirt);
     }
 
 void LTEXRecord::IsDirt(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDirt : eDummyDefault;
+    HNAM.value.types = value ? eDirt : eStone;
     }
 
 bool LTEXRecord::IsGlass()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGlass);
+    return (HNAM.value.types == eGlass);
     }
 
 void LTEXRecord::IsGlass(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGlass : eDummyDefault;
+    HNAM.value.types = value ? eGlass : eStone;
     }
 
 bool LTEXRecord::IsGrass()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGrass);
+    return (HNAM.value.types == eGrass);
     }
 
 void LTEXRecord::IsGrass(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGrass : eDummyDefault;
+    HNAM.value.types = value ? eGrass : eStone;
     }
 
 bool LTEXRecord::IsMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMetal);
+    return (HNAM.value.types == eMetal);
     }
 
 void LTEXRecord::IsMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMetal : eDummyDefault;
+    HNAM.value.types = value ? eMetal : eStone;
     }
 
 bool LTEXRecord::IsOrganic()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eOrganic);
+    return (HNAM.value.types == eOrganic);
     }
 
 void LTEXRecord::IsOrganic(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eOrganic : eDummyDefault;
+    HNAM.value.types = value ? eOrganic : eStone;
     }
 
 bool LTEXRecord::IsSkin()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSkin);
+    return (HNAM.value.types == eSkin);
     }
 
 void LTEXRecord::IsSkin(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSkin : eDummyDefault;
+    HNAM.value.types = value ? eSkin : eStone;
     }
 
 bool LTEXRecord::IsWater()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWater);
+    return (HNAM.value.types == eWater);
     }
 
 void LTEXRecord::IsWater(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWater : eDummyDefault;
+    HNAM.value.types = value ? eWater : eStone;
     }
 
 bool LTEXRecord::IsWood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWood);
+    return (HNAM.value.types == eWood);
     }
 
 void LTEXRecord::IsWood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWood : eDummyDefault;
+    HNAM.value.types = value ? eWood : eStone;
     }
 
 bool LTEXRecord::IsHeavyStone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeavyStone);
+    return (HNAM.value.types == eHeavyStone);
     }
 
 void LTEXRecord::IsHeavyStone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeavyStone : eDummyDefault;
+    HNAM.value.types = value ? eHeavyStone : eStone;
     }
 
 bool LTEXRecord::IsHeavyMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeavyMetal);
+    return (HNAM.value.types == eHeavyMetal);
     }
 
 void LTEXRecord::IsHeavyMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeavyMetal : eDummyDefault;
+    HNAM.value.types = value ? eHeavyMetal : eStone;
     }
 
 bool LTEXRecord::IsHeavyWood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeavyWood);
+    return (HNAM.value.types == eHeavyWood);
     }
 
 void LTEXRecord::IsHeavyWood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeavyWood : eDummyDefault;
+    HNAM.value.types = value ? eHeavyWood : eStone;
     }
 
 bool LTEXRecord::IsChain()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eChain);
+    return (HNAM.value.types == eChain);
     }
 
 void LTEXRecord::IsChain(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eChain : eDummyDefault;
+    HNAM.value.types = value ? eChain : eStone;
     }
 
 bool LTEXRecord::IsSnow()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSnow);
+    return (HNAM.value.types == eSnow);
     }
 
 void LTEXRecord::IsSnow(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSnow : eDummyDefault;
+    HNAM.value.types = value ? eSnow : eStone;
     }
 
 bool LTEXRecord::IsElevator()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eElevator);
+    return (HNAM.value.types == eElevator);
     }
 
 void LTEXRecord::IsElevator(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eElevator : eDummyDefault;
+    HNAM.value.types = value ? eElevator : eStone;
     }
 
 bool LTEXRecord::IsHollowMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHollowMetal);
+    return (HNAM.value.types == eHollowMetal);
     }
 
 void LTEXRecord::IsHollowMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHollowMetal : eDummyDefault;
+    HNAM.value.types = value ? eHollowMetal : eStone;
     }
 
 bool LTEXRecord::IsSheetMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSheetMetal);
+    return (HNAM.value.types == eSheetMetal);
     }
 
 void LTEXRecord::IsSheetMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSheetMetal : eDummyDefault;
+    HNAM.value.types = value ? eSheetMetal : eStone;
     }
 
 bool LTEXRecord::IsSand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSand);
+    return (HNAM.value.types == eSand);
     }
 
 void LTEXRecord::IsSand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSand : eDummyDefault;
+    HNAM.value.types = value ? eSand : eStone;
     }
 
 bool LTEXRecord::IsBrokenConcrete()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBrokenConcrete);
+    return (HNAM.value.types == eBrokenConcrete);
     }
 
 void LTEXRecord::IsBrokenConcrete(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBrokenConcrete : eDummyDefault;
+    HNAM.value.types = value ? eBrokenConcrete : eStone;
     }
 
 bool LTEXRecord::IsVehicleBody()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVehicleBody);
+    return (HNAM.value.types == eVehicleBody);
     }
 
 void LTEXRecord::IsVehicleBody(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVehicleBody : eDummyDefault;
+    HNAM.value.types = value ? eVehicleBody : eStone;
     }
 
 bool LTEXRecord::IsVehiclePartSolid()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVehiclePartSolid);
+    return (HNAM.value.types == eVehiclePartSolid);
     }
 
 void LTEXRecord::IsVehiclePartSolid(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVehiclePartSolid : eDummyDefault;
+    HNAM.value.types = value ? eVehiclePartSolid : eStone;
     }
 
 bool LTEXRecord::IsVehiclePartHollow()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVehiclePartHollow);
+    return (HNAM.value.types == eVehiclePartHollow);
     }
 
 void LTEXRecord::IsVehiclePartHollow(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVehiclePartHollow : eDummyDefault;
+    HNAM.value.types = value ? eVehiclePartHollow : eStone;
     }
 
 bool LTEXRecord::IsBarrel()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBarrel);
+    return (HNAM.value.types == eBarrel);
     }
 
 void LTEXRecord::IsBarrel(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBarrel : eDummyDefault;
+    HNAM.value.types = value ? eBarrel : eStone;
     }
 
 bool LTEXRecord::IsBottle()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBottle);
+    return (HNAM.value.types == eBottle);
     }
 
 void LTEXRecord::IsBottle(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBottle : eDummyDefault;
+    HNAM.value.types = value ? eBottle : eStone;
     }
 
 bool LTEXRecord::IsSodaCan()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSodaCan);
+    return (HNAM.value.types == eSodaCan);
     }
 
 void LTEXRecord::IsSodaCan(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSodaCan : eDummyDefault;
+    HNAM.value.types = value ? eSodaCan : eStone;
     }
 
 bool LTEXRecord::IsPistol()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePistol);
+    return (HNAM.value.types == ePistol);
     }
 
 void LTEXRecord::IsPistol(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePistol : eDummyDefault;
+    HNAM.value.types = value ? ePistol : eStone;
     }
 
 bool LTEXRecord::IsRifle()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRifle);
+    return (HNAM.value.types == eRifle);
     }
 
 void LTEXRecord::IsRifle(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRifle : eDummyDefault;
+    HNAM.value.types = value ? eRifle : eStone;
     }
 
 bool LTEXRecord::IsShoppingCart()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eShoppingCart);
+    return (HNAM.value.types == eShoppingCart);
     }
 
 void LTEXRecord::IsShoppingCart(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eShoppingCart : eDummyDefault;
+    HNAM.value.types = value ? eShoppingCart : eStone;
     }
 
 bool LTEXRecord::IsLunchBox()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLunchBox);
+    return (HNAM.value.types == eLunchBox);
     }
 
 void LTEXRecord::IsLunchBox(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLunchBox : eDummyDefault;
+    HNAM.value.types = value ? eLunchBox : eStone;
     }
 
 bool LTEXRecord::IsBabyRattle()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBabyRattle);
+    return (HNAM.value.types == eBabyRattle);
     }
 
 void LTEXRecord::IsBabyRattle(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBabyRattle : eDummyDefault;
+    HNAM.value.types = value ? eBabyRattle : eStone;
     }
 
 bool LTEXRecord::IsRubberBall()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRubberBall);
+    return (HNAM.value.types == eRubberBall);
     }
 
 void LTEXRecord::IsRubberBall(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRubberBall : eDummyDefault;
+    HNAM.value.types = value ? eRubberBall : eStone;
     }
 
-bool LTEXRecord::Is0Type(UINT8 Type)
+bool LTEXRecord::IsType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return HNAM.value.types == Type;
     }
 
-void LTEXRecord::Set0Type(UINT8 Type)
+void LTEXRecord::SetType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    HNAM.value.types = Type;
     }
 
 UINT32 LTEXRecord::GetType()
@@ -562,7 +521,6 @@ SINT32 LTEXRecord::WriteRecord(FileWriter &writer)
     WRITE(HNAM);
     WRITE(SNAM);
     WRITE(GNAM);
-
     return -1;
     }
 

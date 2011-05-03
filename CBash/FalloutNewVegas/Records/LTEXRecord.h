@@ -79,9 +79,9 @@ class LTEXRecord : public FNVRecord //Landscape Texture
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> TNAM; //Texture
-        OptSubRecord<LTEXHNAM> HNAM; //Havok Data
-        OptSimpleSubRecord<UINT8> SNAM; //Texture Specular Exponent
-        std::vector<FORMID> GNAM; //Grasses
+        ReqSubRecord<LTEXHNAM> HNAM; //Havok Data
+        ReqSimpleSubRecord<UINT8> SNAM; //Texture Specular Exponent
+        UnorderedSparseArray<FORMID> GNAM; //Grasses
 
         LTEXRecord(unsigned char *_recData=NULL);
         LTEXRecord(LTEXRecord *srcRecord);
@@ -161,7 +161,6 @@ class LTEXRecord : public FNVRecord //Landscape Texture
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 

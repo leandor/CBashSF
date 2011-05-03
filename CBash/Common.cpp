@@ -196,7 +196,7 @@ void FileWriter::record_write(const void *source, UINT32 length)
         delete []record_buffer;
         record_buffer = resized_buffer;
         }
-        
+
     memcpy(record_buffer + record_buffer_used, source, length);
     record_buffer_used += length;
     return;
@@ -247,7 +247,7 @@ UINT32 FileWriter::record_compress()
     record_buffer_used = compSize + 4;
     return record_buffer_used;
     }
-    
+
 UINT32 FileWriter::record_size()
     {
     return record_buffer_used;
@@ -319,7 +319,7 @@ void FileWriter::file_write(UINT32 position, const void *source_buffer, UINT32 s
         return;
         }
     SINT32 curPos = _tell(fh);
-        
+
     if(position < (UINT32)curPos)
         {
         //It has already been written to disk.
@@ -346,7 +346,7 @@ FileReader::FileReader(STRING filename, STRING modname):
     ModName(modname),
     buffer_position(0),
     start(NULL),
-    end(NULL)   
+    end(NULL)
     {
     //
     }
@@ -358,7 +358,7 @@ FileReader::~FileReader()
     delete []ModName;
     close();
     }
-    
+
 STRING const FileReader::getFileName()
     {
     return FileName;
@@ -433,7 +433,7 @@ void FileReader::skip(UINT32 length)
     {
     buffer_position += length;
     }
-    
+
 bool FileReader::IsInFile(void *buffer)
     {
     return (buffer >= start) && (buffer <= end);

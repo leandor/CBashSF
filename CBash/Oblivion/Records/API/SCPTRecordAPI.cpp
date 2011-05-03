@@ -53,7 +53,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 8: //lastIndex
             return UINT32_FIELD;
         case 9: //scriptType
-            return UINT32_FIELD;
+            return UINT32_TYPE_FIELD;
         case 10: //compiled_p
             switch(WhichAttribute)
                 {
@@ -110,7 +110,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             return UNKNOWN_FIELD;
                         }
                 case 5: //name
-                    return STRING_FIELD;
+                    return ISTRING_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -256,7 +256,7 @@ bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 ArraySize -= (UINT32)VARS.size();
                 while((SINT32)ArraySize > 0)
                     {
-                    VARS.push_back(new SCPTVARS);
+                    VARS.push_back(new GENVARS);
                     --ArraySize;
                     }
                 while((SINT32)ArraySize < 0)
@@ -355,7 +355,7 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
     {
     GENSCHR defaultSCHR;
 
-    SCPTVARS defaultVARS;
+    GENVARS defaultVARS;
     GENSCR_ defaultSCR_;
 
     switch(FieldID)

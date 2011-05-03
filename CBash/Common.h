@@ -2307,9 +2307,21 @@ struct OrderedSparseArray<T *, _Pr>
             value[p]->Write(writer);
         }
 
+    void Write(FileWriter &writer, bool)
+        {
+        for(UINT32 p = 0; p < value.size(); p++)
+            value[p]->Write(writer);
+        }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         std::sort(value.begin(), value.end(), _Pr());
+        for(UINT32 p = 0; p < value.size(); p++)
+            writer.record_write_subrecord(_Type, value[p], sizeof(T));
+        }
+
+    void Write(UINT32 _Type, FileWriter &writer, bool)
+        {
         for(UINT32 p = 0; p < value.size(); p++)
             writer.record_write_subrecord(_Type, value[p], sizeof(T));
         }

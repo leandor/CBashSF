@@ -27,35 +27,11 @@ GPL License and Copyright Notice ============================================
 class SCPTRecord : public Record
     {
     private:
-        struct SCPTSLSD
+        enum scriptTypeTypes
             {
-            UINT32  index;
-            UINT8   unused1[12], flags, unused2[7];
-
-            SCPTSLSD();
-            ~SCPTSLSD();
-
-            bool operator ==(const SCPTSLSD &other) const;
-            bool operator !=(const SCPTSLSD &other) const;
-            };
-
-        struct SCPTVARS
-            {
-            ReqSubRecord<SCPTSLSD> SLSD;
-            StringRecord SCVR;
-
-            enum flagsFlags
-                {
-                fIsLongOrShort = 0x00000001
-                };
-
-            bool   IsLongOrShort();
-            void   IsLongOrShort(bool value);
-            bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-            void   SetFlagMask(UINT8 Mask);
-
-            bool operator ==(const SCPTVARS &other) const;
-            bool operator !=(const SCPTVARS &other) const;
+            eObject      = 0x00000000,
+            eQuest       = 0x00000001,
+            eMagicEffect = 0x00000100
             };
 
     public:
@@ -63,7 +39,7 @@ class SCPTRecord : public Record
         ReqSubRecord<GENSCHR> SCHR;
         RawRecord SCDA;
         NonNullStringRecord SCTX;
-        std::vector<SCPTVARS *> VARS;
+        std::vector<GENVARS *> VARS;
         std::vector<ReqSubRecord<GENSCR_> *> SCR_;
 
         SCPTRecord(unsigned char *_recData=NULL);
@@ -72,6 +48,12 @@ class SCPTRecord : public Record
 
         bool   VisitFormIDs(FormIDOp &op);
 
+        bool   IsObject();
+        void   IsObject(bool value);
+        bool   IsQuest();
+        void   IsQuest(bool value);
+        bool   IsMagicEffect();
+        void   IsMagicEffect(bool value);
         bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
 
@@ -80,7 +62,6 @@ class SCPTRecord : public Record
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 

@@ -81,7 +81,95 @@ def TestRegressions():
     assertSOUN(Current, newMod)
     assertASPC(Current, newMod)
     assertMGEF(Current, newMod)
+    assertSCPT(Current, newMod)
+    assertLTEX(Current, newMod)
     newMod.save()
+    ##    assertENCH(Current, newMod)
+    ##    assertSPEL(Current, newMod)
+    ##    assertACTI(Current, newMod)
+    ##    assertTACT(Current, newMod)
+    ##    assertTERM(Current, newMod)
+    ##    assertARMO(Current, newMod)
+    ##    assertBOOK(Current, newMod)
+    ##    assertCONT(Current, newMod)
+    ##    assertDOOR(Current, newMod)
+    ##    assertINGR(Current, newMod)
+    ##    assertLIGH(Current, newMod)
+    ##    assertMISC(Current, newMod)
+    ##    assertSTAT(Current, newMod)
+    ##    assertSCOL(Current, newMod)
+    ##    assertMSTT(Current, newMod)
+    ##    assertPWAT(Current, newMod)
+    ##    assertGRAS(Current, newMod)
+    ##    assertTREE(Current, newMod)
+    ##    assertFURN(Current, newMod)
+    ##    assertWEAP(Current, newMod)
+    ##    assertAMMO(Current, newMod)
+    ##    assertNPC_(Current, newMod)
+    ##    assertCREA(Current, newMod)
+    ##    assertLVLC(Current, newMod)
+    ##    assertLVLN(Current, newMod)
+    ##    assertKEYM(Current, newMod)
+    ##    assertALCH(Current, newMod)
+    ##    assertIDLM(Current, newMod)
+    ##    assertNOTE(Current, newMod)
+    ##    assertCOBJ(Current, newMod)
+    ##    assertPROJ(Current, newMod)
+    ##    assertLVLI(Current, newMod)
+    ##    assertWTHR(Current, newMod)
+    ##    assertCLMT(Current, newMod)
+    ##    assertREGN(Current, newMod)
+    ##    assertNAVI(Current, newMod)
+    ##    assertCELL(Current, newMod)
+    ##    assertWRLD(Current, newMod)
+    ##    assertDIAL(Current, newMod)
+    ##    assertQUST(Current, newMod)
+    ##    assertIDLE(Current, newMod)
+    ##    assertPACK(Current, newMod)
+    ##    assertCSTY(Current, newMod)
+    ##    assertLSCR(Current, newMod)
+    ##    assertANIO(Current, newMod)
+    ##    assertWATR(Current, newMod)
+    ##    assertEFSH(Current, newMod)
+    ##    assertEXPL(Current, newMod)
+    ##    assertDEBR(Current, newMod)
+    ##    assertIMGS(Current, newMod)
+    ##    assertIMAD(Current, newMod)
+    ##    assertFLST(Current, newMod)
+    ##    assertPERK(Current, newMod)
+    ##    assertBPTD(Current, newMod)
+    ##    assertADDN(Current, newMod)
+    ##    assertAVIF(Current, newMod)
+    ##    assertRADS(Current, newMod)
+    ##    assertCAMS(Current, newMod)
+    ##    assertCPTH(Current, newMod)
+    ##    assertVTYP(Current, newMod)
+    ##    assertIPCT(Current, newMod)
+    ##    assertIPDS(Current, newMod)
+    ##    assertARMA(Current, newMod)
+    ##    assertECZN(Current, newMod)
+    ##    assertMESG(Current, newMod)
+    ##    assertRGDL(Current, newMod)
+    ##    assertDOBJ(Current, newMod)
+    ##    assertLGTM(Current, newMod)
+    ##    assertMUSC(Current, newMod)
+    ##    assertIMOD(Current, newMod)
+    ##    assertREPU(Current, newMod)
+    ##    assertRCPE(Current, newMod)
+    ##    assertRCCT(Current, newMod)
+    ##    assertCHIP(Current, newMod)
+    ##    assertCSNO(Current, newMod)
+    ##    assertLSCT(Current, newMod)
+    ##    assertMSET(Current, newMod)
+    ##    assertALOC(Current, newMod)
+    ##    assertCHAL(Current, newMod)
+    ##    assertAMEF(Current, newMod)
+    ##    assertCCRD(Current, newMod)
+    ##    assertCMNY(Current, newMod)
+    ##    assertCDCK(Current, newMod)
+    ##    assertDEHY(Current, newMod)
+    ##    assertHUNG(Current, newMod)
+    ##    assertSLPD(Current, newMod)  
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -3678,6 +3766,918 @@ def assertMGEF(Current, newMod):
     assert record.actorValue == -1
     
     print "MGEF:Finished testing"
+
+def assertSCPT(Current, newMod):
+    record = Current.LoadOrderMods[0].SCPT[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x17B7B9)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [14, 94, 51, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'BeatrixFXSCRIPTDUPLICATE000'
+    assert record.eid == 'BeAtrixFXSCRIPTDUPLICATE000'
+    
+    assert record.unused1 == [0, 0, 0, 0]
+    assert record.numRefs == 10
+    assert record.compiledSize == 690
+    assert record.lastIndex == 3
+    assert record.scriptType == 1
+    assert record.flags == 0x1
+    assert record.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
+                                 9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
+                                 0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1,0, 0, 0, 110, 0, 0, 0, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1, 0, 0, 0, 145, 17, 5, 0, 1, 0, 114, 2, 0, 21, 0,
+                                 7, 0, 102, 1, 0, 2, 0, 32, 48, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 48,
+                                 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 49, 25, 0, 0, 0, 21,0, 17, 0, 102,
+                                 1, 0, 12, 0, 32, 102, 1, 0, 32, 88, 12, 16, 0, 0, 32, 43, 22, 0, 26,
+                                 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 49, 46, 53, 32, 62, 32, 115, 3, 0,
+                                 32, 48, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 3, 0, 21, 0,
+                                 7, 0, 115, 3, 0, 2, 0, 32, 49, 25, 0, 0, 0, 24, 0, 24, 0, 2, 0, 20, 0,
+                                 32, 102, 1, 0, 32, 50, 32, 62, 32, 115, 3, 0, 32, 49, 32, 61, 61, 32,
+                                 38, 38, 38, 16, 5, 0, 1, 0, 114, 4, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0,
+                                 32, 50, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50,
+                                 46, 51, 32, 62, 32, 115, 3, 0, 32, 50, 32, 61, 61, 32, 38, 38, 38, 16,
+                                 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 51, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50, 46, 53, 32, 62,
+                                 32,115, 3, 0, 32, 51, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 4,
+                                 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 52, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0,
+                                 22, 0, 32, 102, 1, 0, 32, 51, 46, 53, 32, 62, 32, 115, 3, 0, 32, 52, 32,
+                                 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3,
+                                 0, 2, 0, 32, 53, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0,
+                                 32, 52, 46, 53, 32, 62, 32, 115, 3, 0, 32, 53, 32, 61, 61, 32, 38, 38, 38,
+                                 16, 5, 0, 1, 0, 114, 6, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 54, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 53, 46, 53, 32, 62, 32,
+                                 115, 3, 0, 32,54, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 7, 0,
+                                 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 55, 25, 0, 0, 0, 22, 0, 12, 0, 12, 0, 8,
+                                 0, 32, 102, 1, 0, 32, 57, 32, 62, 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 48, 96,
+                                 16, 2, 0, 0, 0, 22, 0, 14, 0,1, 0, 10, 0, 32, 71, 8, 0, 32, 50, 51, 32, 60,
+                                 61, 21, 0, 13, 0, 71, 8, 0, 8, 0, 32, 71, 8, 0, 32, 49, 32, 43, 23, 0, 2, 0,
+                                 2, 0, 21, 0, 13, 0, 71, 9, 0, 8, 0, 32, 71, 9, 0, 32, 49, 32, 43, 21, 0, 7,
+                                 0, 71, 8, 0, 2, 0, 32, 49, 25, 0, 0, 0,21, 0, 10, 0, 114, 1, 0, 115, 2, 0, 2,
+                                 0, 32, 48, 28, 0, 1, 0, 243, 16, 7, 0, 1, 0, 110, 0, 0, 0, 0, 28, 0, 1, 0, 94,
+                                 16, 0, 0, 55, 16, 5, 0, 1, 0, 114, 10, 0, 25, 0, 0, 0, 17, 0, 0, 0]
+    assert record.scriptText.splitlines() == ['scn BeatrixFXSCRIPT', '', 'float timer', 'int reset', 'int bump', '', 'begin gamemode', '', '\tif reset == 0', '\t\tVFSBeatrixREF.SetRestrained 1', '\t\tDisablePlayerControls 1 1 1 0 1 1 1', '\t\timod FadeToBlack9sISFX', '\t\tset timer to 0', '\t\tset bump to 0', '\t\tset reset to 1', '\tendif', '', '\tset timer to timer + getsecondspassed', ' ', '\tif timer > 1.5 && bump == 0', '\t\tPlaySound NPCIdleScratchShoulder', '\t\tset bump to 1', '\tendif', '\telseif timer > 2 && bump == 1', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 2', '\tendif', '\telseif timer > 2.3 && bump == 2', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 3', '\tendif', '\telseif timer > 2.5 && bump == 3', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 4', '\tendif', '\telseif timer > 3.5 && bump == 4', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 5', '\tendif', '\telseif timer > 4.5 && bump == 5', '\t\tPlaySound NPCFeralGhoulAlert', '\t\tset bump to 6', '\tendif', '\telseif timer > 5.5 && bump == 6', '\t\tPlaySound NPCFeralGhoulAware', '\t\tset bump to 7', '\tendif', '\tif timer > 9', '\t\tset reset to 0', '\t\tenableplayercontrols', '', '\t\tif GameHour <= 23', '\t\t\tset GameHour to GameHour + 1', '\t\telse', '\t\t\tset GameDaysPassed to GameDaysPassed + 1', '\t\t\tset Gamehour to 1', '\t\tendif', '', '\t\tset VFSBeatrixREF.iWorking to 0', '\t\tVFSBeatrixREF.SetRestrained 0', '\t\tVFSBeatrixREF.evp', '\t\tstopquest BeatrixFX', '\tendif', '', 'end']
+    assert record.vars_list == [(1L, 0, 'timer'), (2L, 1, 'reset'), (3L, 1, 'bump')]
+    assert record.references == [('FalloutNV.esm', 0x124AEA), ('FalloutNV.esm', 0x173904),
+                                 ('FalloutNV.esm', 0x16347A), ('FalloutNV.esm', 0x163474),
+                                 ('FalloutNV.esm', 0x163479), ('FalloutNV.esm', 0x0710BD),
+                                 ('FalloutNV.esm', 0x073811), ('FalloutNV.esm', 0x000038),
+                                 ('FalloutNV.esm', 0x000039), ('FalloutNV.esm', 0x17B7BA)]
+    
+    nrecord = newMod.create_SCPT()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.unused1 = [1, 2, 3, 4]
+    nrecord.numRefs = 5
+    nrecord.compiledSize = 6
+    nrecord.lastIndex = 1
+    nrecord.scriptType = 8
+    nrecord.flags = 9
+    nrecord.compiled_p = [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
+    nrecord.scriptText = '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    nrecord.vars_list = [(1L, 1, 'timer'), (2L, 1, 'reset')]
+    nrecord.references = [('FalloutNV.esm', 0xA), ('FalloutNV.esm', 0xB), ('FalloutNV.esm', 0xC)]
+    
+    assert nrecord.fid == ('TestRegressions.esp', 0x001011)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.unused1 == [1, 2, 3, 4]
+    assert nrecord.numRefs == 5
+    assert nrecord.compiledSize == 10
+    assert nrecord.lastIndex == 1
+    assert nrecord.scriptType == 8
+    assert nrecord.flags == 9
+    assert nrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
+    assert nrecord.scriptText == '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    assert nrecord.scriptText == '''scn WArBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    assert nrecord.vars_list == [(1L, 1, 'timer'), (2L, 1, 'reset')]
+    assert nrecord.references == [('FalloutNV.esm', 0xA), ('FalloutNV.esm', 0xB), ('FalloutNV.esm', 0xC)]
+
+    var = nrecord.create_var()
+    var.index = 12
+    var.unused1 = [1,2,3,4,5,6,7,8,9,10,11,12]
+    var.flags = 13
+    var.unused2 = [1,2,3,4,5,6,7]
+    var.name = 'WarName'
+    
+    assert nrecord.vars_list == [(1L, 1, 'timer'), (2L, 1, 'reset'), (12L, 13, 'WarName')]
+    assert var.index == 12
+    assert var.unused1 == [1,2,3,4,5,6,7,8,9,10,11,12]
+    assert var.flags == 13
+    assert var.unused2 == [1,2,3,4,5,6,7]
+    assert var.name == 'WarName'
+    assert var.name == 'WArName'
+
+    record = Current.LoadOrderMods[0].SCPT[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B7B9)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [14, 94, 51, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'BeatrixFXSCRIPTDUPLICATE000'
+    assert newrecord.eid == 'BeAtrixFXSCRIPTDUPLICATE000'
+    
+    assert newrecord.unused1 == [0, 0, 0, 0]
+    assert newrecord.numRefs == 10
+    assert newrecord.compiledSize == 690
+    assert newrecord.lastIndex == 3
+    assert newrecord.scriptType == 1
+    assert newrecord.flags == 0x1
+    assert newrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
+                                 9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
+                                 0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1,0, 0, 0, 110, 0, 0, 0, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1, 0, 0, 0, 145, 17, 5, 0, 1, 0, 114, 2, 0, 21, 0,
+                                 7, 0, 102, 1, 0, 2, 0, 32, 48, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 48,
+                                 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 49, 25, 0, 0, 0, 21,0, 17, 0, 102,
+                                 1, 0, 12, 0, 32, 102, 1, 0, 32, 88, 12, 16, 0, 0, 32, 43, 22, 0, 26,
+                                 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 49, 46, 53, 32, 62, 32, 115, 3, 0,
+                                 32, 48, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 3, 0, 21, 0,
+                                 7, 0, 115, 3, 0, 2, 0, 32, 49, 25, 0, 0, 0, 24, 0, 24, 0, 2, 0, 20, 0,
+                                 32, 102, 1, 0, 32, 50, 32, 62, 32, 115, 3, 0, 32, 49, 32, 61, 61, 32,
+                                 38, 38, 38, 16, 5, 0, 1, 0, 114, 4, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0,
+                                 32, 50, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50,
+                                 46, 51, 32, 62, 32, 115, 3, 0, 32, 50, 32, 61, 61, 32, 38, 38, 38, 16,
+                                 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 51, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50, 46, 53, 32, 62,
+                                 32,115, 3, 0, 32, 51, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 4,
+                                 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 52, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0,
+                                 22, 0, 32, 102, 1, 0, 32, 51, 46, 53, 32, 62, 32, 115, 3, 0, 32, 52, 32,
+                                 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3,
+                                 0, 2, 0, 32, 53, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0,
+                                 32, 52, 46, 53, 32, 62, 32, 115, 3, 0, 32, 53, 32, 61, 61, 32, 38, 38, 38,
+                                 16, 5, 0, 1, 0, 114, 6, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 54, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 53, 46, 53, 32, 62, 32,
+                                 115, 3, 0, 32,54, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 7, 0,
+                                 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 55, 25, 0, 0, 0, 22, 0, 12, 0, 12, 0, 8,
+                                 0, 32, 102, 1, 0, 32, 57, 32, 62, 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 48, 96,
+                                 16, 2, 0, 0, 0, 22, 0, 14, 0,1, 0, 10, 0, 32, 71, 8, 0, 32, 50, 51, 32, 60,
+                                 61, 21, 0, 13, 0, 71, 8, 0, 8, 0, 32, 71, 8, 0, 32, 49, 32, 43, 23, 0, 2, 0,
+                                 2, 0, 21, 0, 13, 0, 71, 9, 0, 8, 0, 32, 71, 9, 0, 32, 49, 32, 43, 21, 0, 7,
+                                 0, 71, 8, 0, 2, 0, 32, 49, 25, 0, 0, 0,21, 0, 10, 0, 114, 1, 0, 115, 2, 0, 2,
+                                 0, 32, 48, 28, 0, 1, 0, 243, 16, 7, 0, 1, 0, 110, 0, 0, 0, 0, 28, 0, 1, 0, 94,
+                                 16, 0, 0, 55, 16, 5, 0, 1, 0, 114, 10, 0, 25, 0, 0, 0, 17, 0, 0, 0]
+    assert newrecord.scriptText.splitlines() == ['scn BeatrixFXSCRIPT', '', 'float timer', 'int reset', 'int bump', '', 'begin gamemode', '', '\tif reset == 0', '\t\tVFSBeatrixREF.SetRestrained 1', '\t\tDisablePlayerControls 1 1 1 0 1 1 1', '\t\timod FadeToBlack9sISFX', '\t\tset timer to 0', '\t\tset bump to 0', '\t\tset reset to 1', '\tendif', '', '\tset timer to timer + getsecondspassed', ' ', '\tif timer > 1.5 && bump == 0', '\t\tPlaySound NPCIdleScratchShoulder', '\t\tset bump to 1', '\tendif', '\telseif timer > 2 && bump == 1', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 2', '\tendif', '\telseif timer > 2.3 && bump == 2', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 3', '\tendif', '\telseif timer > 2.5 && bump == 3', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 4', '\tendif', '\telseif timer > 3.5 && bump == 4', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 5', '\tendif', '\telseif timer > 4.5 && bump == 5', '\t\tPlaySound NPCFeralGhoulAlert', '\t\tset bump to 6', '\tendif', '\telseif timer > 5.5 && bump == 6', '\t\tPlaySound NPCFeralGhoulAware', '\t\tset bump to 7', '\tendif', '\tif timer > 9', '\t\tset reset to 0', '\t\tenableplayercontrols', '', '\t\tif GameHour <= 23', '\t\t\tset GameHour to GameHour + 1', '\t\telse', '\t\t\tset GameDaysPassed to GameDaysPassed + 1', '\t\t\tset Gamehour to 1', '\t\tendif', '', '\t\tset VFSBeatrixREF.iWorking to 0', '\t\tVFSBeatrixREF.SetRestrained 0', '\t\tVFSBeatrixREF.evp', '\t\tstopquest BeatrixFX', '\tendif', '', 'end']
+    assert newrecord.vars_list == [(1L, 0, 'timer'), (2L, 1, 'reset'), (3L, 1, 'bump')]
+    assert newrecord.references == [('FalloutNV.esm', 0x124AEA), ('FalloutNV.esm', 0x173904),
+                                 ('FalloutNV.esm', 0x16347A), ('FalloutNV.esm', 0x163474),
+                                 ('FalloutNV.esm', 0x163479), ('FalloutNV.esm', 0x0710BD),
+                                 ('FalloutNV.esm', 0x073811), ('FalloutNV.esm', 0x000038),
+                                 ('FalloutNV.esm', 0x000039), ('FalloutNV.esm', 0x17B7BA)]
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.unused1 = [1, 2, 3, 4]
+    newrecord.numRefs = 5
+    newrecord.compiledSize = 6
+    newrecord.lastIndex = 1
+    newrecord.scriptType = 8
+    newrecord.flags = 9
+    newrecord.compiled_p = [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
+    newrecord.scriptText = '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    newrecord.vars_list = [(1L, 1, 'timer'), (2L, 1, 'reset')]
+    newrecord.references = [('FalloutNV.esm', 0xA), ('FalloutNV.esm', 0xB), ('FalloutNV.esm', 0xC)]
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B7B9)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.unused1 == [1, 2, 3, 4]
+    assert newrecord.numRefs == 5
+    assert newrecord.compiledSize == 10
+    assert newrecord.lastIndex == 1
+    assert newrecord.scriptType == 8
+    assert newrecord.flags == 9
+    assert newrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
+    assert newrecord.scriptText == '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    assert newrecord.scriptText == '''scn WArBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
+    assert newrecord.vars_list == [(1L, 1, 'timer'), (2L, 1, 'reset')]
+    assert newrecord.references == [('FalloutNV.esm', 0xA), ('FalloutNV.esm', 0xB), ('FalloutNV.esm', 0xC)]
+
+    assert record.fid == ('FalloutNV.esm', 0x17B7B9)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [14, 94, 51, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'BeatrixFXSCRIPTDUPLICATE000'
+    assert record.eid == 'BeAtrixFXSCRIPTDUPLICATE000'
+    
+    assert record.unused1 == [0, 0, 0, 0]
+    assert record.numRefs == 10
+    assert record.compiledSize == 690
+    assert record.lastIndex == 3
+    assert record.scriptType == 1
+    assert record.flags == 0x1
+    assert record.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
+                                 9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
+                                 0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1,0, 0, 0, 110, 0, 0, 0, 0, 110, 1, 0, 0, 0, 110,
+                                 1, 0, 0, 0, 110, 1, 0, 0, 0, 145, 17, 5, 0, 1, 0, 114, 2, 0, 21, 0,
+                                 7, 0, 102, 1, 0, 2, 0, 32, 48, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 48,
+                                 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 49, 25, 0, 0, 0, 21,0, 17, 0, 102,
+                                 1, 0, 12, 0, 32, 102, 1, 0, 32, 88, 12, 16, 0, 0, 32, 43, 22, 0, 26,
+                                 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 49, 46, 53, 32, 62, 32, 115, 3, 0,
+                                 32, 48, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 3, 0, 21, 0,
+                                 7, 0, 115, 3, 0, 2, 0, 32, 49, 25, 0, 0, 0, 24, 0, 24, 0, 2, 0, 20, 0,
+                                 32, 102, 1, 0, 32, 50, 32, 62, 32, 115, 3, 0, 32, 49, 32, 61, 61, 32,
+                                 38, 38, 38, 16, 5, 0, 1, 0, 114, 4, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0,
+                                 32, 50, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50,
+                                 46, 51, 32, 62, 32, 115, 3, 0, 32, 50, 32, 61, 61, 32, 38, 38, 38, 16,
+                                 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 51, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 50, 46, 53, 32, 62,
+                                 32,115, 3, 0, 32, 51, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 4,
+                                 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 52, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0,
+                                 22, 0, 32, 102, 1, 0, 32, 51, 46, 53, 32, 62, 32, 115, 3, 0, 32, 52, 32,
+                                 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 5, 0, 21, 0, 7, 0, 115, 3,
+                                 0, 2, 0, 32, 53, 25, 0, 0, 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0,
+                                 32, 52, 46, 53, 32, 62, 32, 115, 3, 0, 32, 53, 32, 61, 61, 32, 38, 38, 38,
+                                 16, 5, 0, 1, 0, 114, 6, 0, 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 54, 25, 0, 0,
+                                 0, 24, 0, 26, 0, 2, 0, 22, 0, 32, 102, 1, 0, 32, 53, 46, 53, 32, 62, 32,
+                                 115, 3, 0, 32,54, 32, 61, 61, 32, 38, 38, 38, 16, 5, 0, 1, 0, 114, 7, 0,
+                                 21, 0, 7, 0, 115, 3, 0, 2, 0, 32, 55, 25, 0, 0, 0, 22, 0, 12, 0, 12, 0, 8,
+                                 0, 32, 102, 1, 0, 32, 57, 32, 62, 21, 0, 7, 0, 115, 2, 0, 2, 0, 32, 48, 96,
+                                 16, 2, 0, 0, 0, 22, 0, 14, 0,1, 0, 10, 0, 32, 71, 8, 0, 32, 50, 51, 32, 60,
+                                 61, 21, 0, 13, 0, 71, 8, 0, 8, 0, 32, 71, 8, 0, 32, 49, 32, 43, 23, 0, 2, 0,
+                                 2, 0, 21, 0, 13, 0, 71, 9, 0, 8, 0, 32, 71, 9, 0, 32, 49, 32, 43, 21, 0, 7,
+                                 0, 71, 8, 0, 2, 0, 32, 49, 25, 0, 0, 0,21, 0, 10, 0, 114, 1, 0, 115, 2, 0, 2,
+                                 0, 32, 48, 28, 0, 1, 0, 243, 16, 7, 0, 1, 0, 110, 0, 0, 0, 0, 28, 0, 1, 0, 94,
+                                 16, 0, 0, 55, 16, 5, 0, 1, 0, 114, 10, 0, 25, 0, 0, 0, 17, 0, 0, 0]
+    assert record.scriptText.splitlines() == ['scn BeatrixFXSCRIPT', '', 'float timer', 'int reset', 'int bump', '', 'begin gamemode', '', '\tif reset == 0', '\t\tVFSBeatrixREF.SetRestrained 1', '\t\tDisablePlayerControls 1 1 1 0 1 1 1', '\t\timod FadeToBlack9sISFX', '\t\tset timer to 0', '\t\tset bump to 0', '\t\tset reset to 1', '\tendif', '', '\tset timer to timer + getsecondspassed', ' ', '\tif timer > 1.5 && bump == 0', '\t\tPlaySound NPCIdleScratchShoulder', '\t\tset bump to 1', '\tendif', '\telseif timer > 2 && bump == 1', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 2', '\tendif', '\telseif timer > 2.3 && bump == 2', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 3', '\tendif', '\telseif timer > 2.5 && bump == 3', '\t\tPlaySound NPCIdleSwattingSlap', '\t\tset bump to 4', '\tendif', '\telseif timer > 3.5 && bump == 4', '\t\tPlaySound NPCIdleScratchSelf', '\t\tset bump to 5', '\tendif', '\telseif timer > 4.5 && bump == 5', '\t\tPlaySound NPCFeralGhoulAlert', '\t\tset bump to 6', '\tendif', '\telseif timer > 5.5 && bump == 6', '\t\tPlaySound NPCFeralGhoulAware', '\t\tset bump to 7', '\tendif', '\tif timer > 9', '\t\tset reset to 0', '\t\tenableplayercontrols', '', '\t\tif GameHour <= 23', '\t\t\tset GameHour to GameHour + 1', '\t\telse', '\t\t\tset GameDaysPassed to GameDaysPassed + 1', '\t\t\tset Gamehour to 1', '\t\tendif', '', '\t\tset VFSBeatrixREF.iWorking to 0', '\t\tVFSBeatrixREF.SetRestrained 0', '\t\tVFSBeatrixREF.evp', '\t\tstopquest BeatrixFX', '\tendif', '', 'end']
+    assert record.vars_list == [(1L, 0, 'timer'), (2L, 1, 'reset'), (3L, 1, 'bump')]
+    assert record.references == [('FalloutNV.esm', 0x124AEA), ('FalloutNV.esm', 0x173904),
+                                 ('FalloutNV.esm', 0x16347A), ('FalloutNV.esm', 0x163474),
+                                 ('FalloutNV.esm', 0x163479), ('FalloutNV.esm', 0x0710BD),
+                                 ('FalloutNV.esm', 0x073811), ('FalloutNV.esm', 0x000038),
+                                 ('FalloutNV.esm', 0x000039), ('FalloutNV.esm', 0x17B7BA)]
+
+    print "SCPT:Finished testing"
+
+def assertLTEX(Current, newMod):
+    record = Current.LoadOrderMods[0].LTEX[0]
+
+    assert record.fid == ('FalloutNV.esm', 0x171CE6)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 91, 25, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LSuburbanRubble01'
+    assert record.eid == 'LSUburbanRubble01'
+    
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.texture == ('FalloutNV.esm', 0x171CE2)
+    assert record.types == 2
+    assert record.friction == 30
+    assert record.restitution == 30
+    assert record.specularExponent == 30
+    assert record.grasses == []
+    
+    nrecord = newMod.create_LTEX()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.iconPath = r'War\Path\icon.dds'
+    nrecord.smallIconPath = r'War\SPath\icon.dds'
+    nrecord.texture = ('FalloutNV.esm', 0x1)
+    nrecord.types = 3
+    nrecord.friction = 4
+    nrecord.restitution = 5
+    nrecord.specularExponent = 6
+    nrecord.grasses = [('FalloutNV.esm', 0x2), ('FalloutNV.esm', 0x3), ('FalloutNV.esm', 0x4)]
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001012)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.iconPath == r'War\Path\icon.dds'
+    assert nrecord.iconPath == r'WAr\Path\icon.dds'
+    assert nrecord.smallIconPath == r'WAr\SPath\icon.dds'
+    assert nrecord.smallIconPath == r'War\SPath\icon.dds'
+    assert nrecord.texture == ('FalloutNV.esm', 0x1)
+    assert nrecord.types == 3
+    assert nrecord.friction == 4
+    assert nrecord.restitution == 5
+    assert nrecord.specularExponent == 6
+    assert nrecord.grasses == [('FalloutNV.esm', 0x2), ('FalloutNV.esm', 0x3), ('FalloutNV.esm', 0x4)]
+
+    record = Current.LoadOrderMods[0].LTEX[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x171CE6)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [10, 91, 25, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'LSuburbanRubble01'
+    assert newrecord.eid == 'LSUburbanRubble01'
+    
+    assert newrecord.iconPath == None
+    assert newrecord.smallIconPath == None
+    assert newrecord.texture == ('FalloutNV.esm', 0x171CE2)
+    assert newrecord.types == 2
+    assert newrecord.friction == 30
+    assert newrecord.restitution == 30
+    assert newrecord.specularExponent == 30
+    assert newrecord.grasses == []
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = 'WarTest'
+    
+    newrecord.iconPath = r'War\Path\icon.dds'
+    newrecord.smallIconPath = r'War\SPath\icon.dds'
+    newrecord.texture = ('FalloutNV.esm', 0x1)
+    newrecord.types = 3
+    newrecord.friction = 4
+    newrecord.restitution = 5
+    newrecord.specularExponent = 6
+    newrecord.grasses = [('FalloutNV.esm', 0x2), ('FalloutNV.esm', 0x3), ('FalloutNV.esm', 0x4)]
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x171CE6)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.iconPath == r'War\Path\icon.dds'
+    assert newrecord.iconPath == r'WAr\Path\icon.dds'
+    assert newrecord.smallIconPath == r'War\SPath\icon.dds'
+    assert newrecord.smallIconPath == r'WAr\SPath\icon.dds'
+    assert newrecord.texture == ('FalloutNV.esm', 0x1)
+    assert newrecord.types == 3
+    assert newrecord.friction == 4
+    assert newrecord.restitution == 5
+    assert newrecord.specularExponent == 6
+    assert newrecord.grasses == [('FalloutNV.esm', 0x2), ('FalloutNV.esm', 0x3), ('FalloutNV.esm', 0x4)]
+
+    assert record.fid == ('FalloutNV.esm', 0x171CE6)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 91, 25, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LSuburbanRubble01'
+    assert record.eid == 'LSUburbanRubble01'
+    
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.texture == ('FalloutNV.esm', 0x171CE2)
+    assert record.types == 2
+    assert record.friction == 30
+    assert record.restitution == 30
+    assert record.specularExponent == 30
+    assert record.grasses == []
+
+    print "LTEX:Finished testing"
+
+def assertENCH(Current, newMod):
+    record = Current.LoadOrderMods[0].ENCH[0]
+    d(record)
+    print
+    return
+
+def assertSPEL(Current, newMod):
+    record = Current.LoadOrderMods[0].SPEL[0]
+    d(record)
+    print
+    return
+
+def assertACTI(Current, newMod):
+    record = Current.LoadOrderMods[0].ACTI[0]
+    d(record)
+    print
+    return
+
+def assertTACT(Current, newMod):
+    record = Current.LoadOrderMods[0].TACT[0]
+    d(record)
+    print
+    return
+
+def assertTERM(Current, newMod):
+    record = Current.LoadOrderMods[0].TERM[0]
+    d(record)
+    print
+    return
+
+def assertARMO(Current, newMod):
+    record = Current.LoadOrderMods[0].ARMO[0]
+    d(record)
+    print
+    return
+
+def assertBOOK(Current, newMod):
+    record = Current.LoadOrderMods[0].BOOK[0]
+    d(record)
+    print
+    return
+
+def assertCONT(Current, newMod):
+    record = Current.LoadOrderMods[0].CONT[0]
+    d(record)
+    print
+    return
+
+def assertDOOR(Current, newMod):
+    record = Current.LoadOrderMods[0].DOOR[0]
+    d(record)
+    print
+    return
+
+def assertINGR(Current, newMod):
+    record = Current.LoadOrderMods[0].INGR[0]
+    d(record)
+    print
+    return
+
+def assertLIGH(Current, newMod):
+    record = Current.LoadOrderMods[0].LIGH[0]
+    d(record)
+    print
+    return
+
+def assertMISC(Current, newMod):
+    record = Current.LoadOrderMods[0].MISC[0]
+    d(record)
+    print
+    return
+
+def assertSTAT(Current, newMod):
+    record = Current.LoadOrderMods[0].STAT[0]
+    d(record)
+    print
+    return
+
+def assertSCOL(Current, newMod):
+    record = Current.LoadOrderMods[0].SCOL[0]
+    d(record)
+    print
+    return
+
+def assertMSTT(Current, newMod):
+    record = Current.LoadOrderMods[0].MSTT[0]
+    d(record)
+    print
+    return
+
+def assertPWAT(Current, newMod):
+    record = Current.LoadOrderMods[0].PWAT[0]
+    d(record)
+    print
+    return
+
+def assertGRAS(Current, newMod):
+    record = Current.LoadOrderMods[0].GRAS[0]
+    d(record)
+    print
+    return
+
+def assertTREE(Current, newMod):
+    record = Current.LoadOrderMods[0].TREE[0]
+    d(record)
+    print
+    return
+
+def assertFURN(Current, newMod):
+    record = Current.LoadOrderMods[0].FURN[0]
+    d(record)
+    print
+    return
+
+def assertWEAP(Current, newMod):
+    record = Current.LoadOrderMods[0].WEAP[0]
+    d(record)
+    print
+    return
+
+def assertAMMO(Current, newMod):
+    record = Current.LoadOrderMods[0].AMMO[0]
+    d(record)
+    print
+    return
+
+def assertNPC_(Current, newMod):
+    record = Current.LoadOrderMods[0].NPC_[0]
+    d(record)
+    print
+    return
+
+def assertCREA(Current, newMod):
+    record = Current.LoadOrderMods[0].CREA[0]
+    d(record)
+    print
+    return
+
+def assertLVLC(Current, newMod):
+    record = Current.LoadOrderMods[0].LVLC[0]
+    d(record)
+    print
+    return
+
+def assertLVLN(Current, newMod):
+    record = Current.LoadOrderMods[0].LVLN[0]
+    d(record)
+    print
+    return
+
+def assertKEYM(Current, newMod):
+    record = Current.LoadOrderMods[0].KEYM[0]
+    d(record)
+    print
+    return
+
+def assertALCH(Current, newMod):
+    record = Current.LoadOrderMods[0].ALCH[0]
+    d(record)
+    print
+    return
+
+def assertIDLM(Current, newMod):
+    record = Current.LoadOrderMods[0].IDLM[0]
+    d(record)
+    print
+    return
+
+def assertNOTE(Current, newMod):
+    record = Current.LoadOrderMods[0].NOTE[0]
+    d(record)
+    print
+    return
+
+def assertCOBJ(Current, newMod):
+    record = Current.LoadOrderMods[0].COBJ[0]
+    d(record)
+    print
+    return
+
+def assertPROJ(Current, newMod):
+    record = Current.LoadOrderMods[0].PROJ[0]
+    d(record)
+    print
+    return
+
+def assertLVLI(Current, newMod):
+    record = Current.LoadOrderMods[0].LVLI[0]
+    d(record)
+    print
+    return
+
+def assertWTHR(Current, newMod):
+    record = Current.LoadOrderMods[0].WTHR[0]
+    d(record)
+    print
+    return
+
+def assertCLMT(Current, newMod):
+    record = Current.LoadOrderMods[0].CLMT[0]
+    d(record)
+    print
+    return
+
+def assertREGN(Current, newMod):
+    record = Current.LoadOrderMods[0].REGN[0]
+    d(record)
+    print
+    return
+
+def assertNAVI(Current, newMod):
+    record = Current.LoadOrderMods[0].NAVI[0]
+    d(record)
+    print
+    return
+
+def assertCELL(Current, newMod):
+    record = Current.LoadOrderMods[0].CELL[0]
+    d(record)
+    print
+    return
+
+def assertWRLD(Current, newMod):
+    record = Current.LoadOrderMods[0].WRLD[0]
+    d(record)
+    print
+    return
+
+def assertDIAL(Current, newMod):
+    record = Current.LoadOrderMods[0].DIAL[0]
+    d(record)
+    print
+    return
+
+def assertQUST(Current, newMod):
+    record = Current.LoadOrderMods[0].QUST[0]
+    d(record)
+    print
+    return
+
+def assertIDLE(Current, newMod):
+    record = Current.LoadOrderMods[0].IDLE[0]
+    d(record)
+    print
+    return
+
+def assertPACK(Current, newMod):
+    record = Current.LoadOrderMods[0].PACK[0]
+    d(record)
+    print
+    return
+
+def assertCSTY(Current, newMod):
+    record = Current.LoadOrderMods[0].CSTY[0]
+    d(record)
+    print
+    return
+
+def assertLSCR(Current, newMod):
+    record = Current.LoadOrderMods[0].LSCR[0]
+    d(record)
+    print
+    return
+
+def assertANIO(Current, newMod):
+    record = Current.LoadOrderMods[0].ANIO[0]
+    d(record)
+    print
+    return
+
+def assertWATR(Current, newMod):
+    record = Current.LoadOrderMods[0].WATR[0]
+    d(record)
+    print
+    return
+
+def assertEFSH(Current, newMod):
+    record = Current.LoadOrderMods[0].EFSH[0]
+    d(record)
+    print
+    return
+
+def assertEXPL(Current, newMod):
+    record = Current.LoadOrderMods[0].EXPL[0]
+    d(record)
+    print
+    return
+
+def assertDEBR(Current, newMod):
+    record = Current.LoadOrderMods[0].DEBR[0]
+    d(record)
+    print
+    return
+
+def assertIMGS(Current, newMod):
+    record = Current.LoadOrderMods[0].IMGS[0]
+    d(record)
+    print
+    return
+
+def assertIMAD(Current, newMod):
+    record = Current.LoadOrderMods[0].IMAD[0]
+    d(record)
+    print
+    return
+
+def assertFLST(Current, newMod):
+    record = Current.LoadOrderMods[0].FLST[0]
+    d(record)
+    print
+    return
+
+def assertPERK(Current, newMod):
+    record = Current.LoadOrderMods[0].PERK[0]
+    d(record)
+    print
+    return
+
+def assertBPTD(Current, newMod):
+    record = Current.LoadOrderMods[0].BPTD[0]
+    d(record)
+    print
+    return
+
+def assertADDN(Current, newMod):
+    record = Current.LoadOrderMods[0].ADDN[0]
+    d(record)
+    print
+    return
+
+def assertAVIF(Current, newMod):
+    record = Current.LoadOrderMods[0].AVIF[0]
+    d(record)
+    print
+    return
+
+def assertRADS(Current, newMod):
+    record = Current.LoadOrderMods[0].RADS[0]
+    d(record)
+    print
+    return
+
+def assertCAMS(Current, newMod):
+    record = Current.LoadOrderMods[0].CAMS[0]
+    d(record)
+    print
+    return
+
+def assertCPTH(Current, newMod):
+    record = Current.LoadOrderMods[0].CPTH[0]
+    d(record)
+    print
+    return
+
+def assertVTYP(Current, newMod):
+    record = Current.LoadOrderMods[0].VTYP[0]
+    d(record)
+    print
+    return
+
+def assertIPCT(Current, newMod):
+    record = Current.LoadOrderMods[0].IPCT[0]
+    d(record)
+    print
+    return
+
+def assertIPDS(Current, newMod):
+    record = Current.LoadOrderMods[0].IPDS[0]
+    d(record)
+    print
+    return
+
+def assertARMA(Current, newMod):
+    record = Current.LoadOrderMods[0].ARMA[0]
+    d(record)
+    print
+    return
+
+def assertECZN(Current, newMod):
+    record = Current.LoadOrderMods[0].ECZN[0]
+    d(record)
+    print
+    return
+
+def assertMESG(Current, newMod):
+    record = Current.LoadOrderMods[0].MESG[0]
+    d(record)
+    print
+    return
+
+def assertRGDL(Current, newMod):
+    record = Current.LoadOrderMods[0].RGDL[0]
+    d(record)
+    print
+    return
+
+def assertDOBJ(Current, newMod):
+    record = Current.LoadOrderMods[0].DOBJ[0]
+    d(record)
+    print
+    return
+
+def assertLGTM(Current, newMod):
+    record = Current.LoadOrderMods[0].LGTM[0]
+    d(record)
+    print
+    return
+
+def assertMUSC(Current, newMod):
+    record = Current.LoadOrderMods[0].MUSC[0]
+    d(record)
+    print
+    return
+
+def assertIMOD(Current, newMod):
+    record = Current.LoadOrderMods[0].IMOD[0]
+    d(record)
+    print
+    return
+
+def assertREPU(Current, newMod):
+    record = Current.LoadOrderMods[0].REPU[0]
+    d(record)
+    print
+    return
+
+def assertRCPE(Current, newMod):
+    record = Current.LoadOrderMods[0].RCPE[0]
+    d(record)
+    print
+    return
+
+def assertRCCT(Current, newMod):
+    record = Current.LoadOrderMods[0].RCCT[0]
+    d(record)
+    print
+    return
+
+def assertCHIP(Current, newMod):
+    record = Current.LoadOrderMods[0].CHIP[0]
+    d(record)
+    print
+    return
+
+def assertCSNO(Current, newMod):
+    record = Current.LoadOrderMods[0].CSNO[0]
+    d(record)
+    print
+    return
+
+def assertLSCT(Current, newMod):
+    record = Current.LoadOrderMods[0].LSCT[0]
+    d(record)
+    print
+    return
+
+def assertMSET(Current, newMod):
+    record = Current.LoadOrderMods[0].MSET[0]
+    d(record)
+    print
+    return
+
+def assertALOC(Current, newMod):
+    record = Current.LoadOrderMods[0].ALOC[0]
+    d(record)
+    print
+    return
+
+def assertCHAL(Current, newMod):
+    record = Current.LoadOrderMods[0].CHAL[0]
+    d(record)
+    print
+    return
+
+def assertAMEF(Current, newMod):
+    record = Current.LoadOrderMods[0].AMEF[0]
+    d(record)
+    print
+    return
+
+def assertCCRD(Current, newMod):
+    record = Current.LoadOrderMods[0].CCRD[0]
+    d(record)
+    print
+    return
+
+def assertCMNY(Current, newMod):
+    record = Current.LoadOrderMods[0].CMNY[0]
+    d(record)
+    print
+    return
+
+def assertCDCK(Current, newMod):
+    record = Current.LoadOrderMods[0].CDCK[0]
+    d(record)
+    print
+    return
+
+def assertDEHY(Current, newMod):
+    record = Current.LoadOrderMods[0].DEHY[0]
+    d(record)
+    print
+    return
+
+def assertHUNG(Current, newMod):
+    record = Current.LoadOrderMods[0].HUNG[0]
+    d(record)
+    print
+    return
+
+def assertSLPD(Current, newMod):
+    record = Current.LoadOrderMods[0].SLPD[0]
+    d(record)
+    print
+    return
 
 from timeit import Timer
 

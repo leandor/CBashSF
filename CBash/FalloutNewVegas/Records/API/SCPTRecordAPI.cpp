@@ -58,7 +58,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //schr_p Basic Script Data
+        case 7: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -68,17 +68,17 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 8: //schr Basic Script Data
+        case 8: //numRefs
             return UINT32_FIELD;
-        case 9: //schr Basic Script Data
+        case 9: //compiledSize
             return UINT32_FIELD;
-        case 10: //schr Basic Script Data
+        case 10: //lastIndex
             return UINT32_FIELD;
-        case 11: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 12: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 13: //scda_p Compiled Embedded Script
+        case 11: //scriptType
+            return UINT16_TYPE_FIELD;
+        case 12: //flags
+            return UINT16_FLAG_FIELD;
+        case 13: //compiled_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -88,38 +88,88 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //sctx Embedded Script Source
+        case 14: //scriptText
             return ISTRING_FIELD;
-        case 15: //slsd Local Variable Data
-            return UINT32_FIELD;
-        case 16: //slsd_p Local Variable Data
-            switch(WhichAttribute)
+        case 15: //vars
+            if(ListFieldID == 0) //vars
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 12;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)VARS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= VARS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return UINT32_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 12;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 7;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 5: //name
+                    return ISTRING_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 17: //slsd Local Variable Data
-            return UINT8_FIELD;
-        case 18: //slsd_p Local Variable Data
-            switch(WhichAttribute)
+        case 16: //references
+            if(ListFieldID == 0) //references
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 7;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return FORMID_OR_UINT32_ARRAY_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)SCR_.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= SCR_.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return (SCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 19: //scvr Name
-            return ISTRING_FIELD;
-        case 20: //scro Global Reference
-            return FORMID_FIELD;
-        case 21: //scrv Local Variable
-            return UINT32_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -143,40 +193,50 @@ void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //schr_p Basic Script Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SCHR->value7[0] : NULL;
+        case 7: //unused1
+            *FieldValues = &SCHR.value.unused1[0];
             return NULL;
-        case 8: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value8 : NULL;
-        case 9: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value9 : NULL;
-        case 10: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value10 : NULL;
-        case 11: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value11 : NULL;
-        case 12: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value12 : NULL;
-        case 13: //scda_p Compiled Embedded Script
-            *FieldValues = (SCHR.IsLoaded()) ? SCHR->SCDA.value : NULL;
+        case 8: //numRefs
+            return &SCHR.value.numRefs;
+        case 9: //compiledSize
+            return &SCHR.value.compiledSize;
+        case 10: //lastIndex
+            return &SCHR.value.lastIndex;
+        case 11: //scriptType
+            return &SCHR.value.scriptType;
+        case 12: //flags
+            return &SCHR.value.flags;
+        case 13: //compiled_p
+            *FieldValues = SCDA.value;
             return NULL;
-        case 14: //sctx Embedded Script Source
-            return SCHR.IsLoaded() ? SCHR->SCTX.value : NULL;
-        case 15: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value15 : NULL;
-        case 16: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value16[0] : NULL;
+        case 14: //scriptText
+            return SCTX.value;
+        case 15: //vars
+            if(ListIndex >= VARS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return &VARS.value[ListIndex]->SLSD.value.index;
+                case 2: //unused1
+                    *FieldValues = &VARS.value[ListIndex]->SLSD.value.unused1[0];
+                    return NULL;
+                case 3: //flags
+                    return &VARS.value[ListIndex]->SLSD.value.flags;
+                case 4: //unused2
+                    *FieldValues = &VARS.value[ListIndex]->SLSD.value.unused2[0];
+                    return NULL;
+                case 5: //name
+                    return VARS.value[ListIndex]->SCVR.value;
+                default:
+                    *FieldValues = NULL;
+                    return NULL;
+                }
+        case 16: //references
+            for(UINT32 x = 0; x < SCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = SCR_.value[x]->reference;
             return NULL;
-        case 17: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value17 : NULL;
-        case 18: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value18[0] : NULL;
-            return NULL;
-        case 19: //scvr Name
-            return SCHR.IsLoaded() ? SCHR->SCVR.value : NULL;
-        case 20: //scro Global Reference
-            return SCHR.IsLoaded() ? &SCHR->SCRO->value20 : NULL;
-        case 21: //scrv Local Variable
-            return SCHR.IsLoaded() ? &SCHR->SCRV->value21 : NULL;
         default:
             return NULL;
         }
@@ -209,103 +269,108 @@ bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //schr_p Basic Script Data
+        case 7: //unused1
             if(ArraySize != 4)
                 break;
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value7[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SCHR->value7[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SCHR->value7[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SCHR->value7[3] = ((UINT8 *)FieldValue)[3];
+            SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 8: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value8 = *(UINT32 *)FieldValue;
+        case 8: //numRefs
+            SCHR.value.numRefs = *(UINT32 *)FieldValue;
             break;
-        case 9: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value9 = *(UINT32 *)FieldValue;
+        case 9: //compiledSize
+            SCHR.value.compiledSize = *(UINT32 *)FieldValue;
             break;
-        case 10: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value10 = *(UINT32 *)FieldValue;
+        case 10: //lastIndex
+            SCHR.value.lastIndex = *(UINT32 *)FieldValue;
             break;
-        case 11: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value11 = *(UINT16 *)FieldValue;
+        case 11: //scriptType
+            SetType(*(UINT16 *)FieldValue);
             break;
-        case 12: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value12 = *(UINT16 *)FieldValue;
+        case 12: //flags
+            SetScriptFlagMask(*(UINT16 *)FieldValue);
             break;
-        case 13: //scda_p Compiled Embedded Script
-            SCHR.Load();
-            SCHR->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+        case 13: //compiled_p
+            SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            SCHR.value.compiledSize = ArraySize;
             break;
-        case 14: //sctx Embedded Script Source
-            SCHR.Load();
-            SCHR->SCTX.Copy((STRING)FieldValue);
+        case 14: //scriptText
+            SCTX.Copy((STRING)FieldValue);
             break;
-        case 15: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value15 = *(UINT32 *)FieldValue;
-            break;
-        case 16: //slsd_p Local Variable Data
-            if(ArraySize != 12)
+        case 15: //vars
+            if(ListFieldID == 0) //varsSize
+                {
+                VARS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= VARS.value.size())
                 break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value16[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value16[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value16[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value16[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value16[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value16[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value16[6] = ((UINT8 *)FieldValue)[6];
-            SCHR->SLSD->value16[7] = ((UINT8 *)FieldValue)[7];
-            SCHR->SLSD->value16[8] = ((UINT8 *)FieldValue)[8];
-            SCHR->SLSD->value16[9] = ((UINT8 *)FieldValue)[9];
-            SCHR->SLSD->value16[10] = ((UINT8 *)FieldValue)[10];
-            SCHR->SLSD->value16[11] = ((UINT8 *)FieldValue)[11];
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    VARS.value[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 12)
+                        break;
+                    VARS.value[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    VARS.value[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    VARS.value[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    VARS.value[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    VARS.value[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    VARS.value[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    VARS.value[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    VARS.value[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    VARS.value[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    VARS.value[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    VARS.value[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    VARS.value[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    break;
+                case 3: //flags
+                    VARS.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 4: //unused2
+                    if(ArraySize != 7)
+                        break;
+                    VARS.value[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    VARS.value[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    VARS.value[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    VARS.value[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    VARS.value[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                    VARS.value[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                    VARS.value[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                    break;
+                case 5: //name
+                    VARS.value[ListIndex]->SCVR.Copy((STRING)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 17: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value17 = *(UINT8 *)FieldValue;
-            break;
-        case 18: //slsd_p Local Variable Data
-            if(ArraySize != 7)
+        case 16: //references
+            if(ListFieldID == 0) //referencesSize
+                {
+                SCR_.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= SCR_.value.size())
                 break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value18[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value18[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value18[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value18[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value18[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value18[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value18[6] = ((UINT8 *)FieldValue)[6];
-            break;
-        case 19: //scvr Name
-            SCHR.Load();
-            SCHR->SCVR.Copy((STRING)FieldValue);
-            break;
-        case 20: //scro Global Reference
-            SCHR.Load();
-            SCHR->SCRO.Load();
-            SCHR->SCRO->value20 = *(FORMID *)FieldValue;
-            return true;
-        case 21: //scrv Local Variable
-            SCHR.Load();
-            SCHR->SCRV.Load();
-            SCHR->SCRV->value21 = *(UINT32 *)FieldValue;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    //Borrowing ArraySize to flag if the new value is a formID
+                    SCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    SCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
+                    return ArraySize != 0;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -315,6 +380,10 @@ bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVSCHR defaultSCHR;
+
+    GENVARS defaultVARS;
+    GENSCR_ defaultSCR_;
     switch(FieldID)
         {
         case 1: //flags1
@@ -333,66 +402,99 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //schr_p Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 7: //unused1
+            SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            SCHR.value.unused1[3] = defaultSCHR.unused1[3];
             return;
-        case 8: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 8: //numRefs
+            SCHR.value.numRefs = defaultSCHR.numRefs;
             return;
-        case 9: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 9: //compiledSize
+            SCHR.value.compiledSize = defaultSCHR.compiledSize;
             return;
-        case 10: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 10: //lastIndex
+            SCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
-        case 11: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 11: //scriptType
+            SetType(defaultSCHR.scriptType);
             return;
-        case 12: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 12: //flags
+            SetScriptFlagMask(defaultSCHR.flags);
             return;
-        case 13: //scda_p Compiled Embedded Script
-            if(SCHR.IsLoaded())
-                SCHR->SCDA.Unload();
+        case 13: //compiled_p
+            SCDA.Unload();
             return;
-        case 14: //sctx Embedded Script Source
-            if(SCHR.IsLoaded())
-                SCHR->SCTX.Unload();
+        case 14: //scriptText
+            SCTX.Unload();
             return;
-        case 15: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 16: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 17: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 18: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 19: //scvr Name
-            if(SCHR.IsLoaded())
-                SCHR->SCVR.Unload();
-            return;
-        case 20: //scro Global Reference
-            if(SCHR.IsLoaded())
-                SCHR->SCRO.Unload();
-            return;
-        case 21: //scrv Local Variable
-            if(SCHR.IsLoaded())
-                SCHR->SCRV.Unload();
-            return;
+        case 15: //vars
+            if(ListFieldID == 0) //vars
+                {
+                VARS.Unload();
+                return;
+                }
+
+            if(ListIndex >= VARS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    VARS.value[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    return;
+                case 2: //unused1
+                    VARS.value[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    VARS.value[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    VARS.value[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    VARS.value[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    VARS.value[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    VARS.value[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    VARS.value[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    VARS.value[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    VARS.value[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    VARS.value[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    VARS.value[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    VARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    return;
+                case 3: //flags
+                    VARS.value[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    return;
+                case 4: //unused2
+                    VARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    VARS.value[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    VARS.value[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    VARS.value[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    VARS.value[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    VARS.value[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    VARS.value[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    return;
+                case 5: //name
+                    VARS.value[ListIndex]->SCVR.Unload();
+                    return;
+                default:
+                    return;
+                }
+        case 16: //references
+            if(ListFieldID == 0) //references
+                {
+                SCR_.Unload();
+                return;
+                }
+
+            if(ListIndex >= SCR_.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    SCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    SCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
+                    return;
+                default:
+                    return;
+                }
         default:
             return;
         }

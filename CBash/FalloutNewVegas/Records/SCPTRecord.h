@@ -25,6 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+struct sortVARS;
 class SCPTRecord : public FNVRecord //Script
     {
     private:
@@ -32,13 +33,20 @@ class SCPTRecord : public FNVRecord //Script
             {
             fIsEnabled = 0x0001
             };
+
+        enum scriptTypeTypes
+            {
+            eObject = 0x0000,
+            eQuest  = 0x0001,
+            eEffect = 0x0100
+            };
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<FNVSCHR> SCHR;
         RawRecord SCDA;
         NonNullStringRecord SCTX;
-        std::vector<GENVARS *> VARS;
-        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+        OrderedSparseArray<GENVARS *, sortVARS> VARS;
+        OrderedSparseArray<GENSCR_ *> SCR_;
 
         SCPTRecord(unsigned char *_recData=NULL);
         SCPTRecord(SCPTRecord *srcRecord);
@@ -46,17 +54,25 @@ class SCPTRecord : public FNVRecord //Script
 
         bool   VisitFormIDs(FormIDOp &op);
 
-        bool IsScriptEnabled();
-        void IsScriptEnabled(bool value);
-        bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
-        void SetScriptFlagMask(UINT16 Mask);
+        bool   IsObject();
+        void   IsObject(bool value);
+        bool   IsQuest();
+        void   IsQuest(bool value);
+        bool   IsEffect();
+        void   IsEffect(bool value);
+        bool   IsType(UINT16 Type);
+        void   SetType(UINT16 Type);
+
+        bool   IsScriptEnabled();
+        void   IsScriptEnabled(bool value);
+        bool   IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetScriptFlagMask(UINT16 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 
@@ -66,5 +82,10 @@ class SCPTRecord : public FNVRecord //Script
 
         bool operator ==(const SCPTRecord &other) const;
         bool operator !=(const SCPTRecord &other) const;
+    };
+
+struct sortVARS
+    {
+    bool operator()(const GENVARS *lhs, const GENVARS *rhs) const;
     };
 }

@@ -23,61 +23,6 @@ GPL License and Copyright Notice ============================================
 #include "SCPTRecord.h"
 #include <vector>
 
-SCPTRecord::SCPTSLSD::SCPTSLSD():
-    index(0),
-    flags(0)
-    {
-    memset(&unused1[0], 0, sizeof(unused1));
-    memset(&unused2[0], 0, sizeof(unused2));
-    }
-
-SCPTRecord::SCPTSLSD::~SCPTSLSD()
-    {
-    //
-    }
-
-bool SCPTRecord::SCPTSLSD::operator ==(const SCPTSLSD &other) const
-    {
-    return (index == other.index &&
-            flags == other.flags);
-    }
-
-bool SCPTRecord::SCPTSLSD::operator !=(const SCPTSLSD &other) const
-    {
-    return !(*this == other);
-    }
-
-bool SCPTRecord::SCPTVARS::IsLongOrShort()
-    {
-    return (SLSD.value.flags & fIsLongOrShort) != 0;
-    }
-
-void SCPTRecord::SCPTVARS::IsLongOrShort(bool value)
-    {
-    SLSD.value.flags = value ? (SLSD.value.flags | fIsLongOrShort) : (SLSD.value.flags & ~fIsLongOrShort);
-    }
-
-bool SCPTRecord::SCPTVARS::IsFlagMask(UINT8 Mask, bool Exact)
-    {
-    return Exact ? ((SLSD.value.flags & Mask) == Mask) : ((SLSD.value.flags & Mask) != 0);
-    }
-
-void SCPTRecord::SCPTVARS::SetFlagMask(UINT8 Mask)
-    {
-    SLSD.value.flags = Mask;
-    }
-
-bool SCPTRecord::SCPTVARS::operator ==(const SCPTVARS &other) const
-    {
-    return (SLSD == other.SLSD &&
-            SCVR.equalsi(other.SCVR));
-    }
-
-bool SCPTRecord::SCPTVARS::operator !=(const SCPTVARS &other) const
-    {
-    return !(*this == other);
-    }
-
 SCPTRecord::SCPTRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -109,7 +54,7 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
     VARS.resize(srcRecord->VARS.size());
     for(UINT32 x = 0; x < srcRecord->VARS.size(); x++)
         {
-        VARS[x] = new SCPTVARS;
+        VARS[x] = new GENVARS;
         VARS[x]->SLSD = srcRecord->VARS[x]->SLSD;
         VARS[x]->SCVR = srcRecord->VARS[x]->SCVR;
         }
@@ -140,6 +85,36 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(SCR_[x]->value.reference);
 
     return op.Stop();
+    }
+
+bool SCPTRecord::IsObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void SCPTRecord::IsObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool SCPTRecord::IsQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void SCPTRecord::IsQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool SCPTRecord::IsMagicEffect()
+    {
+    return SCHR.value.scriptType == eMagicEffect;
+    }
+
+void SCPTRecord::IsMagicEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eMagicEffect : eObject;
     }
 
 bool SCPTRecord::IsType(UINT32 Type)
@@ -198,12 +173,12 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'DSLS':
-                VARS.push_back(new SCPTVARS);
+                VARS.push_back(new GENVARS);
                 VARS.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
             case 'RVCS':
                 if(VARS.size() == 0)
-                    VARS.push_back(new SCPTVARS);
+                    VARS.push_back(new GENVARS);
                 VARS.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':

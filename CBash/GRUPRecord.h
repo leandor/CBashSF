@@ -1542,9 +1542,8 @@ class FNVGRUPRecords
     {
     public:
         UINT32 stamp, unknown;
-        bool SkimmedGRUP;
         std::vector<Record *> Records;
-        FNVGRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+        FNVGRUPRecords():stamp(134671) {}
         ~FNVGRUPRecords()
             {
             for(UINT32 p = 0;p < Records.size(); p++)
@@ -1553,12 +1552,11 @@ class FNVGRUPRecords
 
         bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
-            if(SkimmedGRUP || gSize == 0)
+            if(gSize == 0)
                 {
-                printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 return false;
                 }
-            SkimmedGRUP = true;
             Record * curRecord = NULL;
             //UINT32 recordType = 0;
             UINT32 gEnd = reader.tell() + gSize - 24;

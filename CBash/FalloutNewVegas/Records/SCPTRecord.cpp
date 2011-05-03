@@ -24,6 +24,11 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+bool sortVARS::operator()(const GENVARS *lhs, const GENVARS *rhs) const
+    {
+    return lhs->SLSD.value.index < rhs->SLSD.value.index;
+    }
+
 SCPTRecord::SCPTRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -51,17 +56,11 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    if(srcRecord->SCHR.IsLoaded())
-        {
-        SCHR.Load();
-        SCHR->SCHR = srcRecord->SCHR->SCHR;
-        SCHR->SCDA = srcRecord->SCHR->SCDA;
-        SCHR->SCTX = srcRecord->SCHR->SCTX;
-        SCHR->SLSD = srcRecord->SCHR->SLSD;
-        SCHR->SCVR = srcRecord->SCHR->SCVR;
-        SCHR->SCRO = srcRecord->SCHR->SCRO;
-        SCHR->SCRV = srcRecord->SCHR->SCRV;
-        }
+    SCHR = srcRecord->SCHR;
+    SCDA = srcRecord->SCDA;
+    SCTX = srcRecord->SCTX;
+    VARS = srcRecord->VARS;
+    SCR_ = srcRecord->SCR_;
     return;
     }
 
@@ -75,10 +74,51 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(SCHR.IsLoaded() && SCHR->SCRO.IsLoaded())
-        op.Accept(SCHR->SCRO->value);
+    for(UINT32 x = 0; x < SCR_.value.size(); x++)
+        if(SCR_.value[x]->isSCRO)
+            op.Accept(SCR_.value[x]->reference);
 
     return op.Stop();
+    }
+
+bool SCPTRecord::IsObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void SCPTRecord::IsObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool SCPTRecord::IsQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void SCPTRecord::IsQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool SCPTRecord::IsEffect()
+    {
+    return SCHR.value.scriptType == eEffect;
+    }
+
+void SCPTRecord::IsEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eEffect : eObject;
+    }
+
+bool SCPTRecord::IsType(UINT16 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void SCPTRecord::SetType(UINT16 Type)
+    {
+    SCHR.value.scriptType = Type;
     }
 
 bool SCPTRecord::IsScriptEnabled()
@@ -93,10 +133,7 @@ void SCPTRecord::IsScriptEnabled(bool value)
 
 bool SCPTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
@@ -140,32 +177,30 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case 'RHCS':
-                SCHR.Load();
-                SCHR->SCHR.Read(buffer, subSize, curPos);
+                SCHR.Read(buffer, subSize, curPos);
                 break;
             case 'ADCS':
-                SCHR.Load();
-                SCHR->SCDA.Read(buffer, subSize, curPos);
+                SCDA.Read(buffer, subSize, curPos);
                 break;
             case 'XTCS':
-                SCHR.Load();
-                SCHR->SCTX.Read(buffer, subSize, curPos);
+                SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'DSLS':
-                SCHR.Load();
-                SCHR->SLSD.Read(buffer, subSize, curPos);
+                VARS.value.push_back(new GENVARS);
+                VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
             case 'RVCS':
-                SCHR.Load();
-                SCHR->SCVR.Read(buffer, subSize, curPos);
-                break;
-            case 'ORCS':
-                SCHR.Load();
-                SCHR->SCRO.Read(buffer, subSize, curPos);
+                if(VARS.value.size() == 0)
+                    VARS.value.push_back(new GENVARS);
+                VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case 'VRCS':
-                SCHR.Load();
-                SCHR->SCRV.Read(buffer, subSize, curPos);
+                SCR_.Read(buffer, subSize, curPos);
+                SCR_.value.back()->isSCRO = false;
+                break;
+            case 'ORCS':
+                SCR_.Read(buffer, subSize, curPos);
+                SCR_.value.back()->isSCRO = true;
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -185,45 +220,36 @@ SINT32 SCPTRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     SCHR.Unload();
+    SCDA.Unload();
+    SCTX.Unload();
+    VARS.Unload();
+    SCR_.Unload();
     return 1;
     }
 
 SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            SaveHandler.writeSubRecord('RHCS', SCHR->SCHR.value, SCHR->SCHR.GetSize());
-
-        if(SCHR->SCDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADCS', SCHR->SCDA.value, SCHR->SCDA.GetSize());
-
-        if(SCHR->SCTX.IsLoaded())
-            SaveHandler.writeSubRecord('XTCS', SCHR->SCTX.value, SCHR->SCTX.GetSize());
-
-        if(SCHR->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', SCHR->SLSD.value, SCHR->SLSD.GetSize());
-
-        if(SCHR->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', SCHR->SCVR.value, SCHR->SCVR.GetSize());
-
-        if(SCHR->SCRO.IsLoaded())
-            SaveHandler.writeSubRecord('ORCS', SCHR->SCRO.value, SCHR->SCRO.GetSize());
-
-        if(SCHR->SCRV.IsLoaded())
-            SaveHandler.writeSubRecord('VRCS', SCHR->SCRV.value, SCHR->SCRV.GetSize());
-
-        }
-
+    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+        SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    VARS.Write(writer);
+    SCR_.Write(writer, true);
     return -1;
     }
 
 bool SCPTRecord::operator ==(const SCPTRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            SCHR == other.SCHR);
+            SCHR == other.SCHR &&
+            SCDA == other.SCDA &&
+            SCTX.equalsi(other.SCTX) &&
+            VARS == other.VARS &&
+            SCR_ == other.SCR_);
     }
 
 bool SCPTRecord::operator !=(const SCPTRecord &other) const

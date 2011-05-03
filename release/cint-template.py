@@ -2419,6 +2419,518 @@ class FnvMGEFRecord(FnvBaseRecord):
                                              'effectSound', 'boltSound', 'hitSound', 'areaSound',
                                              'archType', 'actorValue'] #'modt_p', 'baseCostUnused', 'schoolUnused', 'unused1', 'cefEnchantmentUnused', 'cefBarterUnused', 
 
+class FnvSCPTRecord(FnvBaseRecord):
+    _Type = 'SCPT'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 15, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 15, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 15, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 15, 4, 7)
+        ISTRING_LISTMACRO(name, 15, 5)
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    UINT8_ARRAY_MACRO(unused1, 7, 4)
+    UINT32_MACRO(numRefs, 8)
+    UINT32_MACRO(compiledSize, 9)
+    UINT32_MACRO(lastIndex, 10)
+    UINT16_TYPE_MACRO(scriptType, 11)
+    UINT16_FLAG_MACRO(flags, 12)
+    UINT8_ARRAY_MACRO(compiled_p, 13)
+    ISTRING_MACRO(scriptText, 14)
+    
+    LIST_MACRO(vars, 15, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 16)
+
+    BasicFlagMACRO(IsEnabled, flags, 0x0001)
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    copyattrs = FnvBaseRecord.baseattrs + ['unused1', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'flags',
+                                           'compiled_p', 'scriptText',
+                                           'vars_list', 'references']
+    exportattrs = FnvBaseRecord.baseattrs + ['numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'flags',
+                                             'scriptText',
+                                             'vars_list', 'references'] #'unused1', 'compiled_p',
+
+class FnvLTEXRecord(FnvBaseRecord):
+    _Type = 'LTEX'
+    ISTRING_MACRO(iconPath, 7)
+    ISTRING_MACRO(smallIconPath, 8)
+    FORMID_MACRO(texture, 9)
+    UINT8_TYPE_MACRO(types, 10)
+    UINT8_MACRO(friction, 11)
+    UINT8_MACRO(restitution, 12)
+    UINT8_MACRO(specularExponent, 13)
+    FORMID_ARRAY_MACRO(grasses, 14)
+    BasicTypeMACRO(IsStone, types, 0, IsCloth)
+    BasicTypeMACRO(IsCloth, types, 1, IsStone)
+    BasicTypeMACRO(IsDirt, types, 2, IsStone)
+    BasicTypeMACRO(IsGlass, types, 3, IsStone)
+    BasicTypeMACRO(IsGrass, types, 4, IsStone)
+    BasicTypeMACRO(IsMetal, types, 5, IsStone)
+    BasicTypeMACRO(IsOrganic, types, 6, IsStone)
+    BasicTypeMACRO(IsSkin, types, 7, IsStone)
+    BasicTypeMACRO(IsWater, types, 8, IsStone)
+    BasicTypeMACRO(IsWood, types, 9, IsStone)
+    BasicTypeMACRO(IsHeavyStone, types, 10, IsStone)
+    BasicTypeMACRO(IsHeavyMetal, types, 11, IsStone)
+    BasicTypeMACRO(IsHeavyWood, types, 12, IsStone)
+    BasicTypeMACRO(IsChain, types, 13, IsStone)
+    BasicTypeMACRO(IsSnow, types, 14, IsStone)
+    BasicTypeMACRO(IsElevator, types, 15, IsStone)
+    BasicTypeMACRO(IsHollowMetal, types, 16, IsStone)
+    BasicTypeMACRO(IsSheetMetal, types, 17, IsStone)
+    BasicTypeMACRO(IsSand, types, 18, IsStone)
+    BasicTypeMACRO(IsBrokenConcrete, types, 19, IsStone)
+    BasicTypeMACRO(IsVehicleBody, types, 20, IsStone)
+    BasicTypeMACRO(IsVehiclePartSolid, types, 21, IsStone)
+    BasicTypeMACRO(IsVehiclePartHollow, types, 22, IsStone)
+    BasicTypeMACRO(IsBarrel, types, 23, IsStone)
+    BasicTypeMACRO(IsBottle, types, 24, IsStone)
+    BasicTypeMACRO(IsSodaCan, types, 25, IsStone)
+    BasicTypeMACRO(IsPistol, types, 26, IsStone)
+    BasicTypeMACRO(IsRifle, types, 27, IsStone)
+    BasicTypeMACRO(IsShoppingCart, types, 28, IsStone)
+    BasicTypeMACRO(IsLunchBox, types, 29, IsStone)
+    BasicTypeMACRO(IsBabyRattle, types, 30, IsStone)
+    BasicTypeMACRO(IsRubberBall, types, 31, IsStone)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath', 'texture',
+                                                         'types', 'friction', 'restitution',
+                                                         'specularExponent', 'grasses']
+
+class FnvENCHRecord(FnvBaseRecord):
+    _Type = 'ENCH'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvSPELRecord(FnvBaseRecord):
+    _Type = 'SPEL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvACTIRecord(FnvBaseRecord):
+    _Type = 'ACTI'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvTACTRecord(FnvBaseRecord):
+    _Type = 'TACT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvTERMRecord(FnvBaseRecord):
+    _Type = 'TERM'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvARMORecord(FnvBaseRecord):
+    _Type = 'ARMO'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvBOOKRecord(FnvBaseRecord):
+    _Type = 'BOOK'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCONTRecord(FnvBaseRecord):
+    _Type = 'CONT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvDOORRecord(FnvBaseRecord):
+    _Type = 'DOOR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvINGRRecord(FnvBaseRecord):
+    _Type = 'INGR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLIGHRecord(FnvBaseRecord):
+    _Type = 'LIGH'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvMISCRecord(FnvBaseRecord):
+    _Type = 'MISC'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvSTATRecord(FnvBaseRecord):
+    _Type = 'STAT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvSCOLRecord(FnvBaseRecord):
+    _Type = 'SCOL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvMSTTRecord(FnvBaseRecord):
+    _Type = 'MSTT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvPWATRecord(FnvBaseRecord):
+    _Type = 'PWAT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvGRASRecord(FnvBaseRecord):
+    _Type = 'GRAS'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvTREERecord(FnvBaseRecord):
+    _Type = 'TREE'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvFURNRecord(FnvBaseRecord):
+    _Type = 'FURN'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvWEAPRecord(FnvBaseRecord):
+    _Type = 'WEAP'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvAMMORecord(FnvBaseRecord):
+    _Type = 'AMMO'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvNPC_Record(FnvBaseRecord):
+    _Type = 'NPC_'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCREARecord(FnvBaseRecord):
+    _Type = 'CREA'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLVLCRecord(FnvBaseRecord):
+    _Type = 'LVLC'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLVLNRecord(FnvBaseRecord):
+    _Type = 'LVLN'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvKEYMRecord(FnvBaseRecord):
+    _Type = 'KEYM'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvALCHRecord(FnvBaseRecord):
+    _Type = 'ALCH'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIDLMRecord(FnvBaseRecord):
+    _Type = 'IDLM'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvNOTERecord(FnvBaseRecord):
+    _Type = 'NOTE'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCOBJRecord(FnvBaseRecord):
+    _Type = 'COBJ'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvPROJRecord(FnvBaseRecord):
+    _Type = 'PROJ'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLVLIRecord(FnvBaseRecord):
+    _Type = 'LVLI'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvWTHRRecord(FnvBaseRecord):
+    _Type = 'WTHR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCLMTRecord(FnvBaseRecord):
+    _Type = 'CLMT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvREGNRecord(FnvBaseRecord):
+    _Type = 'REGN'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvNAVIRecord(FnvBaseRecord):
+    _Type = 'NAVI'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCELLRecord(FnvBaseRecord):
+    _Type = 'CELL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvWRLDRecord(FnvBaseRecord):
+    _Type = 'WRLD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvDIALRecord(FnvBaseRecord):
+    _Type = 'DIAL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvQUSTRecord(FnvBaseRecord):
+    _Type = 'QUST'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIDLERecord(FnvBaseRecord):
+    _Type = 'IDLE'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvPACKRecord(FnvBaseRecord):
+    _Type = 'PACK'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCSTYRecord(FnvBaseRecord):
+    _Type = 'CSTY'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLSCRRecord(FnvBaseRecord):
+    _Type = 'LSCR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvANIORecord(FnvBaseRecord):
+    _Type = 'ANIO'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvWATRRecord(FnvBaseRecord):
+    _Type = 'WATR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvEFSHRecord(FnvBaseRecord):
+    _Type = 'EFSH'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvEXPLRecord(FnvBaseRecord):
+    _Type = 'EXPL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvDEBRRecord(FnvBaseRecord):
+    _Type = 'DEBR'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIMGSRecord(FnvBaseRecord):
+    _Type = 'IMGS'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIMADRecord(FnvBaseRecord):
+    _Type = 'IMAD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvFLSTRecord(FnvBaseRecord):
+    _Type = 'FLST'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvPERKRecord(FnvBaseRecord):
+    _Type = 'PERK'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvBPTDRecord(FnvBaseRecord):
+    _Type = 'BPTD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvADDNRecord(FnvBaseRecord):
+    _Type = 'ADDN'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvAVIFRecord(FnvBaseRecord):
+    _Type = 'AVIF'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvRADSRecord(FnvBaseRecord):
+    _Type = 'RADS'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCAMSRecord(FnvBaseRecord):
+    _Type = 'CAMS'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCPTHRecord(FnvBaseRecord):
+    _Type = 'CPTH'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvVTYPRecord(FnvBaseRecord):
+    _Type = 'VTYP'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIPCTRecord(FnvBaseRecord):
+    _Type = 'IPCT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIPDSRecord(FnvBaseRecord):
+    _Type = 'IPDS'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvARMARecord(FnvBaseRecord):
+    _Type = 'ARMA'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvECZNRecord(FnvBaseRecord):
+    _Type = 'ECZN'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvMESGRecord(FnvBaseRecord):
+    _Type = 'MESG'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvRGDLRecord(FnvBaseRecord):
+    _Type = 'RGDL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvDOBJRecord(FnvBaseRecord):
+    _Type = 'DOBJ'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLGTMRecord(FnvBaseRecord):
+    _Type = 'LGTM'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvMUSCRecord(FnvBaseRecord):
+    _Type = 'MUSC'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvIMODRecord(FnvBaseRecord):
+    _Type = 'IMOD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvREPURecord(FnvBaseRecord):
+    _Type = 'REPU'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvRCPERecord(FnvBaseRecord):
+    _Type = 'RCPE'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvRCCTRecord(FnvBaseRecord):
+    _Type = 'RCCT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCHIPRecord(FnvBaseRecord):
+    _Type = 'CHIP'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCSNORecord(FnvBaseRecord):
+    _Type = 'CSNO'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvLSCTRecord(FnvBaseRecord):
+    _Type = 'LSCT'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvMSETRecord(FnvBaseRecord):
+    _Type = 'MSET'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvALOCRecord(FnvBaseRecord):
+    _Type = 'ALOC'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCHALRecord(FnvBaseRecord):
+    _Type = 'CHAL'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvAMEFRecord(FnvBaseRecord):
+    _Type = 'AMEF'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCCRDRecord(FnvBaseRecord):
+    _Type = 'CCRD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCMNYRecord(FnvBaseRecord):
+    _Type = 'CMNY'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvCDCKRecord(FnvBaseRecord):
+    _Type = 'CDCK'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvDEHYRecord(FnvBaseRecord):
+    _Type = 'DEHY'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvHUNGRecord(FnvBaseRecord):
+    _Type = 'HUNG'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
+class FnvSLPDRecord(FnvBaseRecord):
+    _Type = 'SLPD'
+    
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+
 #--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
@@ -5037,7 +5549,7 @@ class ObSCPTRecord(ObBaseRecord):
         UINT8_ARRAY_LISTMACRO(unused1, 12, 2, 12)
         UINT8_FLAG_LISTMACRO(flags, 12, 3)
         UINT8_ARRAY_LISTMACRO(unused2, 12, 4, 7)
-        STRING_LISTMACRO(name, 12, 5)
+        ISTRING_LISTMACRO(name, 12, 5)
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
 
@@ -5045,12 +5557,16 @@ class ObSCPTRecord(ObBaseRecord):
     UINT32_MACRO(numRefs, 6)
     UINT32_MACRO(compiledSize, 7)
     UINT32_MACRO(lastIndex, 8)
-    UINT32_MACRO(scriptType, 9)
+    UINT32_TYPE_MACRO(scriptType, 9)
     UINT8_ARRAY_MACRO(compiled_p, 10)
     ISTRING_MACRO(scriptText, 11)
 
     LIST_MACRO(vars, 12, self.Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 13)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x00000000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x00000001, IsObject)
+    BasicTypeMACRO(IsMagicEffect, scriptType, 0x00000100, IsObject)
     copyattrs = ObBaseRecord.baseattrs + ['numRefs', 'compiledSize', 'lastIndex',
                                         'scriptType', 'compiled_p', 'scriptText',
                                         'vars_list', 'references']
@@ -5559,7 +6075,36 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
                         ('HDPT',FnvHDPTRecord),('HAIR',FnvHAIRRecord),('EYES',FnvEYESRecord),
                         ('RACE',FnvRACERecord),('SOUN',FnvSOUNRecord),('ASPC',FnvASPCRecord),
-                        ('MGEF',FnvMGEFRecord),])
+                        ('MGEF',FnvMGEFRecord),('SCPT',FnvSCPTRecord),('LTEX',FnvLTEXRecord),
+                        ('ENCH',FnvENCHRecord),('SPEL',FnvSPELRecord),('ACTI',FnvACTIRecord),
+                        ('TACT',FnvTACTRecord),('TERM',FnvTERMRecord),('ARMO',FnvARMORecord),
+                        ('BOOK',FnvBOOKRecord),('CONT',FnvCONTRecord),('DOOR',FnvDOORRecord),
+                        ('INGR',FnvINGRRecord),('LIGH',FnvLIGHRecord),('MISC',FnvMISCRecord),
+                        ('STAT',FnvSTATRecord),('SCOL',FnvSCOLRecord),('MSTT',FnvMSTTRecord),
+                        ('PWAT',FnvPWATRecord),('GRAS',FnvGRASRecord),('TREE',FnvTREERecord),
+                        ('FURN',FnvFURNRecord),('WEAP',FnvWEAPRecord),('AMMO',FnvAMMORecord),
+                        ('NPC_',FnvNPC_Record),('CREA',FnvCREARecord),('LVLC',FnvLVLCRecord),
+                        ('LVLN',FnvLVLNRecord),('KEYM',FnvKEYMRecord),('ALCH',FnvALCHRecord),
+                        ('IDLM',FnvIDLMRecord),('NOTE',FnvNOTERecord),('COBJ',FnvCOBJRecord),
+                        ('PROJ',FnvPROJRecord),('LVLI',FnvLVLIRecord),('WTHR',FnvWTHRRecord),
+                        ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
+                        ('CELL',FnvCELLRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
+                        ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
+                        ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
+                        ('WATR',FnvWATRRecord),('EFSH',FnvEFSHRecord),('EXPL',FnvEXPLRecord),
+                        ('DEBR',FnvDEBRRecord),('IMGS',FnvIMGSRecord),('IMAD',FnvIMADRecord),
+                        ('FLST',FnvFLSTRecord),('PERK',FnvPERKRecord),('BPTD',FnvBPTDRecord),
+                        ('ADDN',FnvADDNRecord),('AVIF',FnvAVIFRecord),('RADS',FnvRADSRecord),
+                        ('CAMS',FnvCAMSRecord),('CPTH',FnvCPTHRecord),('VTYP',FnvVTYPRecord),
+                        ('IPCT',FnvIPCTRecord),('IPDS',FnvIPDSRecord),('ARMA',FnvARMARecord),
+                        ('ECZN',FnvECZNRecord),('MESG',FnvMESGRecord),('RGDL',FnvRGDLRecord),
+                        ('DOBJ',FnvDOBJRecord),('LGTM',FnvLGTMRecord),('MUSC',FnvMUSCRecord),
+                        ('IMOD',FnvIMODRecord),('REPU',FnvREPURecord),('RCPE',FnvRCPERecord),
+                        ('RCCT',FnvRCCTRecord),('CHIP',FnvCHIPRecord),('CSNO',FnvCSNORecord),
+                        ('LSCT',FnvLSCTRecord),('MSET',FnvMSETRecord),('ALOC',FnvALOCRecord),
+                        ('CHAL',FnvCHALRecord),('AMEF',FnvAMEFRecord),('CCRD',FnvCCRDRecord),
+                        ('CMNY',FnvCMNYRecord),('CDCK',FnvCDCKRecord),('DEHY',FnvDEHYRecord),
+                        ('HUNG',FnvHUNGRecord),('SLPD',FnvSLPDRecord),])
 
 class ObModFile(object):
     def __init__(self, CollectionIndex, ModID):
@@ -5912,13 +6457,131 @@ class FnvModFile(object):
     FnvModRecordsMACRO(SOUN)
     FnvModRecordsMACRO(ASPC)
     FnvModRecordsMACRO(MGEF)
+    FnvModRecordsMACRO(SCPT)
+    FnvModRecordsMACRO(LTEX)
+    FnvModRecordsMACRO(ENCH)
+    FnvModRecordsMACRO(SPEL)
+    FnvModRecordsMACRO(ACTI)
+    FnvModRecordsMACRO(TACT)
+    FnvModRecordsMACRO(TERM)
+    FnvModRecordsMACRO(ARMO)
+    FnvModRecordsMACRO(BOOK)
+    FnvModRecordsMACRO(CONT)
+    FnvModRecordsMACRO(DOOR)
+    FnvModRecordsMACRO(INGR)
+    FnvModRecordsMACRO(LIGH)
+    FnvModRecordsMACRO(MISC)
+    FnvModRecordsMACRO(STAT)
+    FnvModRecordsMACRO(SCOL)
+    FnvModRecordsMACRO(MSTT)
+    FnvModRecordsMACRO(PWAT)
+    FnvModRecordsMACRO(GRAS)
+    FnvModRecordsMACRO(TREE)
+    FnvModRecordsMACRO(FURN)
+    FnvModRecordsMACRO(WEAP)
+    FnvModRecordsMACRO(AMMO)
+    FnvModRecordsMACRO(NPC_)
+    FnvModRecordsMACRO(CREA)
+    FnvModRecordsMACRO(LVLC)
+    FnvModRecordsMACRO(LVLN)
+    FnvModRecordsMACRO(KEYM)
+    FnvModRecordsMACRO(ALCH)
+    FnvModRecordsMACRO(IDLM)
+    FnvModRecordsMACRO(NOTE)
+    FnvModRecordsMACRO(COBJ)
+    FnvModRecordsMACRO(PROJ)
+    FnvModRecordsMACRO(LVLI)
+    FnvModRecordsMACRO(WTHR)
+    FnvModRecordsMACRO(CLMT)
+    FnvModRecordsMACRO(REGN)
+    FnvModRecordsMACRO(NAVI)
+    FnvModRecordsMACRO(CELL)
+    FnvModRecordsMACRO(WRLD)
+    FnvModRecordsMACRO(DIAL)
+    FnvModRecordsMACRO(QUST)
+    FnvModRecordsMACRO(IDLE)
+    FnvModRecordsMACRO(PACK)
+    FnvModRecordsMACRO(CSTY)
+    FnvModRecordsMACRO(LSCR)
+    FnvModRecordsMACRO(ANIO)
+    FnvModRecordsMACRO(WATR)
+    FnvModRecordsMACRO(EFSH)
+    FnvModRecordsMACRO(EXPL)
+    FnvModRecordsMACRO(DEBR)
+    FnvModRecordsMACRO(IMGS)
+    FnvModRecordsMACRO(IMAD)
+    FnvModRecordsMACRO(FLST)
+    FnvModRecordsMACRO(PERK)
+    FnvModRecordsMACRO(BPTD)
+    FnvModRecordsMACRO(ADDN)
+    FnvModRecordsMACRO(AVIF)
+    FnvModRecordsMACRO(RADS)
+    FnvModRecordsMACRO(CAMS)
+    FnvModRecordsMACRO(CPTH)
+    FnvModRecordsMACRO(VTYP)
+    FnvModRecordsMACRO(IPCT)
+    FnvModRecordsMACRO(IPDS)
+    FnvModRecordsMACRO(ARMA)
+    FnvModRecordsMACRO(ECZN)
+    FnvModRecordsMACRO(MESG)
+    FnvModRecordsMACRO(RGDL)
+    FnvModRecordsMACRO(DOBJ)
+    FnvModRecordsMACRO(LGTM)
+    FnvModRecordsMACRO(MUSC)
+    FnvModRecordsMACRO(IMOD)
+    FnvModRecordsMACRO(REPU)
+    FnvModRecordsMACRO(RCPE)
+    FnvModRecordsMACRO(RCCT)
+    FnvModRecordsMACRO(CHIP)
+    FnvModRecordsMACRO(CSNO)
+    FnvModRecordsMACRO(LSCT)
+    FnvModRecordsMACRO(MSET)
+    FnvModRecordsMACRO(ALOC)
+    FnvModRecordsMACRO(CHAL)
+    FnvModRecordsMACRO(AMEF)
+    FnvModRecordsMACRO(CCRD)
+    FnvModRecordsMACRO(CMNY)
+    FnvModRecordsMACRO(CDCK)
+    FnvModRecordsMACRO(DEHY)
+    FnvModRecordsMACRO(HUNG)
+    FnvModRecordsMACRO(SLPD)
+  
     @property
     def tops(self):
         return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
                      ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
                      ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
                      ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
-                     ("MGEF", self.MGEF),))
+                     ("MGEF", self.MGEF),("SCPT", self.SCPT),("LTEX", self.LTEX),
+                     ("ENCH", self.ENCH),("SPEL", self.SPEL),("ACTI", self.ACTI),
+                     ("TACT", self.TACT),("TERM", self.TERM),("ARMO", self.ARMO),
+                     ("BOOK", self.BOOK),("CONT", self.CONT),("DOOR", self.DOOR),
+                     ("INGR", self.INGR),("LIGH", self.LIGH),("MISC", self.MISC),
+                     ("STAT", self.STAT),("SCOL", self.SCOL),("MSTT", self.MSTT),
+                     ("PWAT", self.PWAT),("GRAS", self.GRAS),("TREE", self.TREE),
+                     ("FURN", self.FURN),("WEAP", self.WEAP),("AMMO", self.AMMO),
+                     ("NPC_", self.NPC_),("CREA", self.CREA),("LVLC", self.LVLC),
+                     ("LVLN", self.LVLN),("KEYM", self.KEYM),("ALCH", self.ALCH),
+                     ("IDLM", self.IDLM),("NOTE", self.NOTE),("COBJ", self.COBJ),
+                     ("PROJ", self.PROJ),("LVLI", self.LVLI),("WTHR", self.WTHR),
+                     ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
+                     ("CELL", self.CELL),("WRLD", self.WRLD),("DIAL", self.DIAL),
+                     ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
+                     ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),
+                     ("WATR", self.WATR),("EFSH", self.EFSH),("EXPL", self.EXPL),
+                     ("DEBR", self.DEBR),("IMGS", self.IMGS),("IMAD", self.IMAD),
+                     ("FLST", self.FLST),("PERK", self.PERK),("BPTD", self.BPTD),
+                     ("ADDN", self.ADDN),("AVIF", self.AVIF),("RADS", self.RADS),
+                     ("CAMS", self.CAMS),("CPTH", self.CPTH),("VTYP", self.VTYP),
+                     ("IPCT", self.IPCT),("IPDS", self.IPDS),("ARMA", self.ARMA),
+                     ("ECZN", self.ECZN),("MESG", self.MESG),("RGDL", self.RGDL),
+                     ("DOBJ", self.DOBJ),("LGTM", self.LGTM),("MUSC", self.MUSC),
+                     ("IMOD", self.IMOD),("REPU", self.REPU),("RCPE", self.RCPE),
+                     ("RCCT", self.RCCT),("CHIP", self.CHIP),("CSNO", self.CSNO),
+                     ("LSCT", self.LSCT),("MSET", self.MSET),("ALOC", self.ALOC),
+                     ("CHAL", self.CHAL),("AMEF", self.AMEF),("CCRD", self.CCRD),
+                     ("CMNY", self.CMNY),("CDCK", self.CDCK),("DEHY", self.DEHY),
+                     ("HUNG", self.HUNG),("SLPD", self.SLPD),))
 
     @property
     def aggregates(self):
@@ -5926,7 +6589,36 @@ class FnvModFile(object):
                      ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
                      ("HDPT", self.HDPT),("HAIR", self.HAIR),("EYES", self.EYES),
                      ("RACE", self.RACE),("SOUN", self.SOUN),("ASPC", self.ASPC),
-                     ("MGEF", self.MGEF),))
+                     ("MGEF", self.MGEF),("SCPT", self.SCPT),("LTEX", self.LTEX),
+                     ("ENCH", self.ENCH),("SPEL", self.SPEL),("ACTI", self.ACTI),
+                     ("TACT", self.TACT),("TERM", self.TERM),("ARMO", self.ARMO),
+                     ("BOOK", self.BOOK),("CONT", self.CONT),("DOOR", self.DOOR),
+                     ("INGR", self.INGR),("LIGH", self.LIGH),("MISC", self.MISC),
+                     ("STAT", self.STAT),("SCOL", self.SCOL),("MSTT", self.MSTT),
+                     ("PWAT", self.PWAT),("GRAS", self.GRAS),("TREE", self.TREE),
+                     ("FURN", self.FURN),("WEAP", self.WEAP),("AMMO", self.AMMO),
+                     ("NPC_", self.NPC_),("CREA", self.CREA),("LVLC", self.LVLC),
+                     ("LVLN", self.LVLN),("KEYM", self.KEYM),("ALCH", self.ALCH),
+                     ("IDLM", self.IDLM),("NOTE", self.NOTE),("COBJ", self.COBJ),
+                     ("PROJ", self.PROJ),("LVLI", self.LVLI),("WTHR", self.WTHR),
+                     ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
+                     ("CELL", self.CELL),("WRLD", self.WRLD),("DIAL", self.DIAL),
+                     ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
+                     ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),
+                     ("WATR", self.WATR),("EFSH", self.EFSH),("EXPL", self.EXPL),
+                     ("DEBR", self.DEBR),("IMGS", self.IMGS),("IMAD", self.IMAD),
+                     ("FLST", self.FLST),("PERK", self.PERK),("BPTD", self.BPTD),
+                     ("ADDN", self.ADDN),("AVIF", self.AVIF),("RADS", self.RADS),
+                     ("CAMS", self.CAMS),("CPTH", self.CPTH),("VTYP", self.VTYP),
+                     ("IPCT", self.IPCT),("IPDS", self.IPDS),("ARMA", self.ARMA),
+                     ("ECZN", self.ECZN),("MESG", self.MESG),("RGDL", self.RGDL),
+                     ("DOBJ", self.DOBJ),("LGTM", self.LGTM),("MUSC", self.MUSC),
+                     ("IMOD", self.IMOD),("REPU", self.REPU),("RCPE", self.RCPE),
+                     ("RCCT", self.RCCT),("CHIP", self.CHIP),("CSNO", self.CSNO),
+                     ("LSCT", self.LSCT),("MSET", self.MSET),("ALOC", self.ALOC),
+                     ("CHAL", self.CHAL),("AMEF", self.AMEF),("CCRD", self.CCRD),
+                     ("CMNY", self.CMNY),("CDCK", self.CDCK),("DEHY", self.DEHY),
+                     ("HUNG", self.HUNG),("SLPD", self.SLPD),))
 
 class ObCollection:
     """Collection of esm/esp's."""

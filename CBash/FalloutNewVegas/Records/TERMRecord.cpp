@@ -72,10 +72,7 @@ void TERMRecord::TERMMenu::IsScriptEnabled(bool value)
 
 bool TERMRecord::TERMMenu::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void TERMRecord::TERMMenu::SetScriptFlagMask(UINT16 Mask)

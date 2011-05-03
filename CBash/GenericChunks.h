@@ -93,6 +93,8 @@ struct GENSCR_
     GENSCR_();
     ~GENSCR_();
 
+    void Write(FileWriter &writer);
+
     bool operator ==(const GENSCR_ &other) const;
     bool operator !=(const GENSCR_ &other) const;
     };
@@ -123,6 +125,8 @@ struct GENVARS
     void   IsLongOrShort(bool value);
     bool   IsFlagMask(UINT8 Mask, bool Exact=false);
     void   SetFlagMask(UINT8 Mask);
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const GENVARS &other) const;
     bool operator !=(const GENVARS &other) const;

@@ -175,6 +175,22 @@ GENSCR_::~GENSCR_()
     //
     }
 
+void GENSCR_::Write(FileWriter &writer)
+    {
+    writer.record_write_subrecord(isSCRO ? 'ORCS' : 'VRCS', &reference, sizeof(FORMID_OR_UINT32));
+    }
+
+bool GENSCR_::operator ==(const GENSCR_ &other) const
+    {
+    return (reference == other.reference &&
+            isSCRO == other.isSCRO);
+    }
+
+bool GENSCR_::operator !=(const GENSCR_ &other) const
+    {
+    return !(*this == other);
+    }
+
 GENSLSD::GENSLSD():
     index(0),
     flags(0)
@@ -219,6 +235,12 @@ void GENVARS::SetFlagMask(UINT8 Mask)
     SLSD.value.flags = Mask;
     }
 
+void GENVARS::Write(FileWriter &writer)
+    {
+    WRITE(SLSD);
+    WRITE(SCVR);
+    }
+
 bool GENVARS::operator ==(const GENVARS &other) const
     {
     return (SLSD == other.SLSD &&
@@ -226,17 +248,6 @@ bool GENVARS::operator ==(const GENVARS &other) const
     }
 
 bool GENVARS::operator !=(const GENVARS &other) const
-    {
-    return !(*this == other);
-    }
-
-bool GENSCR_::operator ==(const GENSCR_ &other) const
-    {
-    return (reference == other.reference &&
-            isSCRO == other.isSCRO);
-    }
-
-bool GENSCR_::operator !=(const GENSCR_ &other) const
     {
     return !(*this == other);
     }

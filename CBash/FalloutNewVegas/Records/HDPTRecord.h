@@ -56,7 +56,6 @@ class HDPTRecord : public FNVRecord //Head Part
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         void   DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        //UINT32 GetSize(bool forceCalc=false);
         UINT32 GetType();
         STRING GetStrType();
 

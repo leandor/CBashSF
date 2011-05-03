@@ -60,10 +60,7 @@ void PERKRecord::PERKEffect::IsScriptEnabled(bool value)
 
 bool PERKRecord::PERKEffect::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void PERKRecord::PERKEffect::SetScriptFlagMask(UINT16 Mask)
