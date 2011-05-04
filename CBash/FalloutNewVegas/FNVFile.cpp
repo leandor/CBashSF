@@ -308,64 +308,64 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgENCH:
             case 'HCNE':
-                //reader.read(&ENCH.stamp, 4);
-                //reader.read(&ENCH.unknown, 4);
-                //ENCH.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ENCH.stamp, 4);
+                reader.read(&ENCH.unknown, 4);
+                ENCH.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgSPEL: //Same as normal
             case 'LEPS':
-                //reader.read(&SPEL.stamp, 4);
-                //reader.read(&SPEL.unknown, 4);
-                //SPEL.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&SPEL.stamp, 4);
+                reader.read(&SPEL.unknown, 4);
+                SPEL.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgACTI:
             case 'ITCA':
-                //reader.read(&ACTI.stamp, 4);
-                //reader.read(&ACTI.unknown, 4);
-                //ACTI.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ACTI.stamp, 4);
+                reader.read(&ACTI.unknown, 4);
+                ACTI.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgTACT:
             case 'TCAT':
-                //reader.read(&TACT.stamp, 4);
-                //reader.read(&TACT.unknown, 4);
-                //TACT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&TACT.stamp, 4);
+                reader.read(&TACT.unknown, 4);
+                TACT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgTERM:
             case 'MRET':
-                //reader.read(&TERM.stamp, 4);
-                //reader.read(&TERM.unknown, 4);
-                //TERM.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&TERM.stamp, 4);
+                reader.read(&TERM.unknown, 4);
+                TERM.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgARMO: //Same as normal
             case 'OMRA':
-                //reader.read(&ARMO.stamp, 4);
-                //reader.read(&ARMO.unknown, 4);
-                //ARMO.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ARMO.stamp, 4);
+                reader.read(&ARMO.unknown, 4);
+                ARMO.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgBOOK:
             case 'KOOB':
-                //reader.read(&BOOK.stamp, 4);
-                //reader.read(&BOOK.unknown, 4);
-                //BOOK.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&BOOK.stamp, 4);
+                reader.read(&BOOK.unknown, 4);
+                BOOK.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgCONT:
             case 'TNOC':
-                //reader.read(&CONT.stamp, 4);
-                //reader.read(&CONT.unknown, 4);
-                //CONT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&CONT.stamp, 4);
+                reader.read(&CONT.unknown, 4);
+                CONT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgDOOR:
             case 'ROOD':
-                //reader.read(&DOOR.stamp, 4);
-                //reader.read(&DOOR.unknown, 4);
-                //DOOR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&DOOR.stamp, 4);
+                reader.read(&DOOR.unknown, 4);
+                DOOR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgINGR:
             case 'RGNI':
-                //reader.read(&INGR.stamp, 4);
-                //reader.read(&INGR.unknown, 4);
-                //INGR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&INGR.stamp, 4);
+                reader.read(&INGR.unknown, 4);
+                INGR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgLIGH:
             case 'HGIL':
                 //reader.read(&LIGH.stamp, 4);
@@ -885,25 +885,25 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'XETL':
             return (UINT32)LTEX.Records.size();
         case 'HCNE':
-            //return (UINT32)ENCH.Records.size();
+            return (UINT32)ENCH.Records.size();
         case 'LEPS':
-            //return (UINT32)SPEL.Records.size();
+            return (UINT32)SPEL.Records.size();
         case 'ITCA':
-            //return (UINT32)ACTI.Records.size();
+            return (UINT32)ACTI.Records.size();
         case 'TCAT':
-            //return (UINT32)TACT.Records.size();
+            return (UINT32)TACT.Records.size();
         case 'MRET':
-            //return (UINT32)TERM.Records.size();
+            return (UINT32)TERM.Records.size();
         case 'OMRA':
-            //return (UINT32)ARMO.Records.size();
+            return (UINT32)ARMO.Records.size();
         case 'KOOB':
-            //return (UINT32)BOOK.Records.size();
+            return (UINT32)BOOK.Records.size();
         case 'TNOC':
-            //return (UINT32)CONT.Records.size();
+            return (UINT32)CONT.Records.size();
         case 'ROOD':
-            //return (UINT32)DOOR.Records.size();
+            return (UINT32)DOOR.Records.size();
         case 'RGNI':
-            //return (UINT32)INGR.Records.size();
+            return (UINT32)INGR.Records.size();
         case 'HGIL':
             //return (UINT32)LIGH.Records.size();
         case 'CSIM':
@@ -1150,45 +1150,45 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = LTEX.Records.back();
             break;
         case 'HCNE':
-            //ENCH.Records.push_back(new FNV::ENCHRecord((FNV::ENCHRecord *)SourceRecord));
-            //newRecord = ENCH.Records.back();
-            //break;
+            ENCH.Records.push_back(new FNV::ENCHRecord((FNV::ENCHRecord *)SourceRecord));
+            newRecord = ENCH.Records.back();
+            break;
         case 'LEPS':
-            //SPEL.Records.push_back(new FNV::SPELRecord((FNV::SPELRecord *)SourceRecord));
-            //newRecord = SPEL.Records.back();
-            //break;
+            SPEL.Records.push_back(new FNV::SPELRecord((FNV::SPELRecord *)SourceRecord));
+            newRecord = SPEL.Records.back();
+            break;
         case 'ITCA':
-            //ACTI.Records.push_back(new FNV::ACTIRecord((FNV::ACTIRecord *)SourceRecord));
-            //newRecord = ACTI.Records.back();
-            //break;
+            ACTI.Records.push_back(new FNV::ACTIRecord((FNV::ACTIRecord *)SourceRecord));
+            newRecord = ACTI.Records.back();
+            break;
         case 'TCAT':
-            //TACT.Records.push_back(new FNV::TACTRecord((FNV::TACTRecord *)SourceRecord));
-            //newRecord = TACT.Records.back();
-            //break;
+            TACT.Records.push_back(new FNV::TACTRecord((FNV::TACTRecord *)SourceRecord));
+            newRecord = TACT.Records.back();
+            break;
         case 'MRET':
-            //TERM.Records.push_back(new FNV::TERMRecord((FNV::TERMRecord *)SourceRecord));
-            //newRecord = TERM.Records.back();
-            //break;
+            TERM.Records.push_back(new FNV::TERMRecord((FNV::TERMRecord *)SourceRecord));
+            newRecord = TERM.Records.back();
+            break;
         case 'OMRA':
-            //ARMO.Records.push_back(new FNV::ARMORecord((FNV::ARMORecord *)SourceRecord));
-            //newRecord = ARMO.Records.back();
-            //break;
+            ARMO.Records.push_back(new FNV::ARMORecord((FNV::ARMORecord *)SourceRecord));
+            newRecord = ARMO.Records.back();
+            break;
         case 'KOOB':
-            //BOOK.Records.push_back(new FNV::BOOKRecord((FNV::BOOKRecord *)SourceRecord));
-            //newRecord = BOOK.Records.back();
-            //break;
+            BOOK.Records.push_back(new FNV::BOOKRecord((FNV::BOOKRecord *)SourceRecord));
+            newRecord = BOOK.Records.back();
+            break;
         case 'TNOC':
-            //CONT.Records.push_back(new FNV::CONTRecord((FNV::CONTRecord *)SourceRecord));
-            //newRecord = CONT.Records.back();
-            //break;
+            CONT.Records.push_back(new FNV::CONTRecord((FNV::CONTRecord *)SourceRecord));
+            newRecord = CONT.Records.back();
+            break;
         case 'ROOD':
-            //DOOR.Records.push_back(new FNV::DOORRecord((FNV::DOORRecord *)SourceRecord));
-            //newRecord = DOOR.Records.back();
-            //break;
+            DOOR.Records.push_back(new FNV::DOORRecord((FNV::DOORRecord *)SourceRecord));
+            newRecord = DOOR.Records.back();
+            break;
         case 'RGNI':
-            //INGR.Records.push_back(new FNV::INGRRecord((FNV::INGRRecord *)SourceRecord));
-            //newRecord = INGR.Records.back();
-            //break;
+            INGR.Records.push_back(new FNV::INGRRecord((FNV::INGRRecord *)SourceRecord));
+            newRecord = INGR.Records.back();
+            break;
         case 'HGIL':
             //LIGH.Records.push_back(new FNV::LIGHRecord((FNV::LIGHRecord *)SourceRecord));
             //newRecord = LIGH.Records.back();
@@ -1539,16 +1539,16 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(MGEF.VisitRecords(NULL, checker, false)) continue;
         if(SCPT.VisitRecords(NULL, checker, false)) continue;
         if(LTEX.VisitRecords(NULL, checker, false)) continue;
-        //if(ENCH.VisitRecords(NULL, checker, false)) continue;
-        //if(SPEL.VisitRecords(NULL, checker, false)) continue;
-        //if(ACTI.VisitRecords(NULL, checker, false)) continue;
-        //if(TACT.VisitRecords(NULL, checker, false)) continue;
-        //if(TERM.VisitRecords(NULL, checker, false)) continue;
-        //if(ARMO.VisitRecords(NULL, checker, false)) continue;
-        //if(BOOK.VisitRecords(NULL, checker, false)) continue;
-        //if(CONT.VisitRecords(NULL, checker, false)) continue;
-        //if(DOOR.VisitRecords(NULL, checker, false)) continue;
-        //if(INGR.VisitRecords(NULL, checker, false)) continue;
+        if(ENCH.VisitRecords(NULL, checker, false)) continue;
+        if(SPEL.VisitRecords(NULL, checker, false)) continue;
+        if(ACTI.VisitRecords(NULL, checker, false)) continue;
+        if(TACT.VisitRecords(NULL, checker, false)) continue;
+        if(TERM.VisitRecords(NULL, checker, false)) continue;
+        if(ARMO.VisitRecords(NULL, checker, false)) continue;
+        if(BOOK.VisitRecords(NULL, checker, false)) continue;
+        if(CONT.VisitRecords(NULL, checker, false)) continue;
+        if(DOOR.VisitRecords(NULL, checker, false)) continue;
+        if(INGR.VisitRecords(NULL, checker, false)) continue;
         //if(LIGH.VisitRecords(NULL, checker, false)) continue;
         //if(MISC.VisitRecords(NULL, checker, false)) continue;
         //if(STAT.VisitRecords(NULL, checker, false)) continue;
@@ -1677,16 +1677,16 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += MGEF.WriteGRUP('FEGM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += SCPT.WriteGRUP('TPCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += LTEX.WriteGRUP('XETL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ENCH.WriteGRUP('HCNE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SPEL.WriteGRUP('LEPS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ACTI.WriteGRUP('ITCA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TACT.WriteGRUP('TCAT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TERM.WriteGRUP('MRET', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ARMO.WriteGRUP('OMRA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += BOOK.WriteGRUP('KOOB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CONT.WriteGRUP('TNOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DOOR.WriteGRUP('ROOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += INGR.WriteGRUP('RGNI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ENCH.WriteGRUP('HCNE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SPEL.WriteGRUP('LEPS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ACTI.WriteGRUP('ITCA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TACT.WriteGRUP('TCAT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TERM.WriteGRUP('MRET', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ARMO.WriteGRUP('OMRA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BOOK.WriteGRUP('KOOB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CONT.WriteGRUP('TNOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DOOR.WriteGRUP('ROOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += INGR.WriteGRUP('RGNI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += LIGH.WriteGRUP('HGIL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += MISC.WriteGRUP('CSIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1800,16 +1800,16 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     MGEF.VisitRecords(NULL, op, true);
     SCPT.VisitRecords(NULL, op, true);
     LTEX.VisitRecords(NULL, op, true);
-    //ENCH.VisitRecords(NULL, op, true);
-    //SPEL.VisitRecords(NULL, op, true);
-    //ACTI.VisitRecords(NULL, op, true);
-    //TACT.VisitRecords(NULL, op, true);
-    //TERM.VisitRecords(NULL, op, true);
-    //ARMO.VisitRecords(NULL, op, true);
-    //BOOK.VisitRecords(NULL, op, true);
-    //CONT.VisitRecords(NULL, op, true);
-    //DOOR.VisitRecords(NULL, op, true);
-    //INGR.VisitRecords(NULL, op, true);
+    ENCH.VisitRecords(NULL, op, true);
+    SPEL.VisitRecords(NULL, op, true);
+    ACTI.VisitRecords(NULL, op, true);
+    TACT.VisitRecords(NULL, op, true);
+    TERM.VisitRecords(NULL, op, true);
+    ARMO.VisitRecords(NULL, op, true);
+    BOOK.VisitRecords(NULL, op, true);
+    CONT.VisitRecords(NULL, op, true);
+    DOOR.VisitRecords(NULL, op, true);
+    INGR.VisitRecords(NULL, op, true);
     //LIGH.VisitRecords(NULL, op, true);
     //MISC.VisitRecords(NULL, op, true);
     //STAT.VisitRecords(NULL, op, true);
@@ -1953,35 +1953,35 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             LTEX.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'HCNE':
-            //ENCH.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            /ENCH.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'LEPS':
-            //SPEL.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            SPEL.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'ITCA':
-            //ACTI.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            ACTI.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TCAT':
-            //TACT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            TACT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'MRET':
-            //TERM.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            TERM.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'OMRA':
-            //ARMO.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            ARMO.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'KOOB':
-            //BOOK.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            BOOK.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TNOC':
-            //CONT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            CONT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'ROOD':
-            //DOOR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            DOOR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'RGNI':
-            //INGR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            INGR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'HGIL':
             //LIGH.VisitRecords(RecordType, op, DeepVisit);
             //break;

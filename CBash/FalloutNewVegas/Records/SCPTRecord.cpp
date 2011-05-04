@@ -24,11 +24,6 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-bool sortVARS::operator()(const GENVARS *lhs, const GENVARS *rhs) const
-    {
-    return lhs->SLSD.value.index < rhs->SLSD.value.index;
-    }
-
 SCPTRecord::SCPTRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {

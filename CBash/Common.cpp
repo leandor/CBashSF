@@ -1034,6 +1034,28 @@ bool RawRecord::operator !=(const RawRecord &other) const
     return !(*this == other);
     }
 
+const UINT32 VATSFunction_Argument[] =
+    {
+    eFORMID,
+    eFORMID,
+    eFORMID,
+    eFORMID,
+    eNONE,
+    eUINT32,
+    eUINT32,
+    eNONE,
+    eNONE,
+    eFORMID,
+    eFORMID,
+    eNONE,
+    eNONE,
+    eNONE,
+    eNONE,
+    eUINT32,
+    eNONE,
+    eNONE
+    };
+#define VATSFUNCTIONSIZE 18
 Function_ArgumentsType FNVFunction_ArgumentsInit[] =
     {
     Function_ArgumentsType(1,std::make_pair(eFORMID,eNONE)),      //GetDistance
@@ -1219,7 +1241,7 @@ Function_ArgumentsType FNVFunction_ArgumentsInit[] =
     Function_ArgumentsType(398,std::make_pair(eUINT32,eNONE)),    //IsLimbGone
     Function_ArgumentsType(399,std::make_pair(eFORMID,eNONE)),    //IsWeaponInList
     Function_ArgumentsType(403,std::make_pair(eNONE,eNONE)),      //HasFriendDisposition
-    Function_ArgumentsType(408,std::make_pair(eUINT32,eUINT32)),  //GetVATSValue
+    Function_ArgumentsType(408,std::make_pair(eUINT32,eVATSPARAM)),//GetVATSValue
     Function_ArgumentsType(409,std::make_pair(eFORMID,eNONE)),    //IsKiller
     Function_ArgumentsType(410,std::make_pair(eFORMID,eNONE)),    //IsKillerObject
     Function_ArgumentsType(411,std::make_pair(eFORMID,eFORMID)),  //GetFactionCombatReaction
@@ -1285,9 +1307,8 @@ Function_ArgumentsType FNVFunction_ArgumentsInit[] =
     Function_ArgumentsType(610,std::make_pair(eFORMID,eNONE)),    //GetCasinoWinningStage
     Function_ArgumentsType(612,std::make_pair(eFORMID,eNONE)),    //PlayerInRegion
     Function_ArgumentsType(614,std::make_pair(eFORMID,eNONE)),    //GetChallengeCompleted
-    Function_ArgumentsType(619,std::make_pair(eNONE,eNONE))      //IsAlwaysHardcore
+    Function_ArgumentsType(619,std::make_pair(eNONE,eNONE))       //IsAlwaysHardcore
     };
-
 
 Function_ArgumentsType Function_ArgumentsInit[] =
     {

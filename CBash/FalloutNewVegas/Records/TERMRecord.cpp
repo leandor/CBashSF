@@ -24,40 +24,80 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+
+TERMRecord::TERMDNAM():
+    difficultyType(eVeryEasy),
+    flags(0),
+    serverType(0),
+    unused1(0)
+    {
+    //
+    }
+
+TERMRecord::~TERMDNAM()
+    {
+    //
+    }
+
+bool TERMRecord::operator ==(const TERMDNAM &other) const
+    {
+    return (difficultyType == other.difficultyType &&
+            flags == other.flags &&
+            serverType == other.serverType);
+    }
+
+bool TERMRecord::operator !=(const TERMDNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+void TERMRecord::TERMMenu::Write(FileWriter &writer)
+    {
+    WRITE(ITXT);
+    WRITE(RNAM);
+    WRITE(ANAM);
+    WRITE(INAM);
+    WRITE(TNAM);
+    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+        SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    VARS.Write(writer);
+    SCR_.Write(writer, true);
+    CTDA.Write(REV32(CTDA), writer, true);
+    }
+
 bool TERMRecord::TERMMenu::IsAddNote()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAddNote) != 0;
+    return (ANAM.value & fIsAddNote) != 0;
     }
 
 void TERMRecord::TERMMenu::IsAddNote(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAddNote) : (Dummy->flags & ~fIsAddNote);
+    ANAM.value = value ? (ANAM.value | fIsAddNote) : (ANAM.value & ~fIsAddNote);
     }
 
 bool TERMRecord::TERMMenu::IsForceRedraw()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsForceRedraw) != 0;
+    return (ANAM.value & fIsForceRedraw) != 0;
     }
 
 void TERMRecord::TERMMenu::IsForceRedraw(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsForceRedraw) : (Dummy->flags & ~fIsForceRedraw);
+    ANAM.value = value ? (ANAM.value | fIsForceRedraw) : (ANAM.value & ~fIsForceRedraw);
     }
 
 bool TERMRecord::TERMMenu::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((ANAM.value & Mask) == Mask) : ((ANAM.value & Mask) != 0);
     }
 
 void TERMRecord::TERMMenu::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ANAM.value = Mask;
     }
 
 bool TERMRecord::TERMMenu::IsScriptEnabled()
@@ -109,44 +149,14 @@ TERMRecord::TERMRecord(TERMRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     DESC = srcRecord->DESC;
     SNAM = srcRecord->SNAM;
     PNAM = srcRecord->PNAM;
     DNAM = srcRecord->DNAM;
-    if(srcRecord->ITXT.IsLoaded())
-        {
-        ITXT.Load();
-        ITXT->ITXT = srcRecord->ITXT->ITXT;
-        ITXT->RNAM = srcRecord->ITXT->RNAM;
-        ITXT->ANAM = srcRecord->ITXT->ANAM;
-        }
-    INAM = srcRecord->INAM;
-    TNAM = srcRecord->TNAM;
-    if(srcRecord->SCHR.IsLoaded())
-        {
-        SCHR.Load();
-        SCHR->SCHR = srcRecord->SCHR->SCHR;
-        SCHR->SCDA = srcRecord->SCHR->SCDA;
-        SCHR->SCTX = srcRecord->SCHR->SCTX;
-        SCHR->SLSD = srcRecord->SCHR->SLSD;
-        SCHR->SCVR = srcRecord->SCHR->SCVR;
-        SCHR->SCRO = srcRecord->SCHR->SCRO;
-        SCHR->SCRV = srcRecord->SCHR->SCRV;
-        }
-    CTDA = srcRecord->CTDA;
+    Menus = srcRecord->Menus;
     return;
     }
 
@@ -166,299 +176,264 @@ bool TERMRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+        op.Accept(SCRI.value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(PNAM.IsLoaded())
-        op.Accept(PNAM->value);
-    if(INAM.IsLoaded())
-        op.Accept(INAM->value);
-    if(TNAM.IsLoaded())
-        op.Accept(TNAM->value);
-    if(SCHR.IsLoaded() && SCHR->SCRO.IsLoaded())
-        op.Accept(SCHR->SCRO->value);
-    //if(CTDA.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(CTDA->value);
+        op.Accept(PNAM.value);
+
+    for(UINT32 x = 0; x < Menus.value.size(); ++x)
+        {
+        if(Menus.value[x]->INAM.IsLoaded())
+            op.Accept(Menus.value[x]->INAM.value);
+        if(Menus.value[x]->INAM.IsLoaded())
+            op.Accept(Menus.value[x]->TNAM.value);
+        for(UINT32 p = 0; p < Menus.value[x]->SCR_.value.size(); p++)
+            if(Menus.value[x]->SCR_.value[p]->isSCRO)
+                op.Accept(Menus.value[x]->SCR_.value[p]->reference);
+        for(UINT32 p = 0; p < Menus.value[x]->CTDA.value.size(); p++)
+            Menus.value[x]->CTDA.value[p]->VisitFormIDs(op);
+        }
 
     return op.Stop();
     }
 
 bool TERMRecord::IsLeveled()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsLeveled) != 0;
+    return (DNAM.value.flags & fIsLeveled) != 0;
     }
 
 void TERMRecord::IsLeveled(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsLeveled) : (Dummy->flags & ~fIsLeveled);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsLeveled) : (DNAM.value.flags & ~fIsLeveled);
     }
 
 bool TERMRecord::IsUnlocked()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUnlocked) != 0;
+    return (DNAM.value.flags & fIsUnlocked) != 0;
     }
 
 void TERMRecord::IsUnlocked(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUnlocked) : (Dummy->flags & ~fIsUnlocked);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsUnlocked) : (DNAM.value.flags & ~fIsUnlocked);
     }
 
 bool TERMRecord::IsAlternateColors()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAlternateColors) != 0;
+    return (DNAM.value.flags & fIsAlternateColors) != 0;
     }
 
 void TERMRecord::IsAlternateColors(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAlternateColors) : (Dummy->flags & ~fIsAlternateColors);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsAlternateColors) : (DNAM.value.flags & ~fIsAlternateColors);
     }
 
 bool TERMRecord::IsHideWelcomeTextWhenDisplayingImage()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHideWelcomeTextWhenDisplayingImage) != 0;
+    return (DNAM.value.flags & fIsHideWelcomeTextWhenDisplayingImage) != 0;
     }
 
 void TERMRecord::IsHideWelcomeTextWhenDisplayingImage(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHideWelcomeTextWhenDisplayingImage) : (Dummy->flags & ~fIsHideWelcomeTextWhenDisplayingImage);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsHideWelcomeTextWhenDisplayingImage) : (DNAM.value.flags & ~fIsHideWelcomeTextWhenDisplayingImage);
     }
 
 bool TERMRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DNAM.value.flags & Mask) == Mask) : ((DNAM.value.flags & Mask) != 0);
     }
 
 void TERMRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.flags = Mask;
     }
 
 bool TERMRecord::IsVeryEasy()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVeryEasy);
+    return (DNAM.value.difficultyType == eVeryEasy);
     }
 
 void TERMRecord::IsVeryEasy(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVeryEasy : eDummyDefault;
+    DNAM.value.difficultyType = value ? eVeryEasy : eEasy;
     }
 
 bool TERMRecord::IsEasy()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEasy);
+    return (DNAM.value.difficultyType == eEasy);
     }
 
 void TERMRecord::IsEasy(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEasy : eDummyDefault;
+    DNAM.value.difficultyType = value ? eEasy : eVeryEasy;
     }
 
 bool TERMRecord::IsAverage()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAverage);
+    return (DNAM.value.difficultyType == eAverage);
     }
 
 void TERMRecord::IsAverage(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAverage : eDummyDefault;
+    DNAM.value.difficultyType = value ? eAverage : eVeryEasy;
     }
 
 bool TERMRecord::IsHard()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHard);
+    return (DNAM.value.difficultyType == eHard);
     }
 
 void TERMRecord::IsHard(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHard : eDummyDefault;
+    DNAM.value.difficultyType = value ? eHard : eVeryEasy;
     }
 
 bool TERMRecord::IsVeryHard()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVeryHard);
+    return (DNAM.value.difficultyType == eVeryHard);
     }
 
 void TERMRecord::IsVeryHard(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVeryHard : eDummyDefault;
+    DNAM.value.difficultyType = value ? eVeryHard : eVeryEasy;
     }
 
 bool TERMRecord::IsRequiresKey()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRequiresKey);
+    return (DNAM.value.difficultyType == eRequiresKey);
     }
 
 void TERMRecord::IsRequiresKey(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRequiresKey : eDummyDefault;
+    DNAM.value.difficultyType = value ? eRequiresKey : eVeryEasy;
     }
 
 bool TERMRecord::IsLockType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.difficultyType == Type;
     }
 
 void TERMRecord::SetLockType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.difficultyType = Mask;
     }
 
 bool TERMRecord::IsServer1()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer1);
+    return (DNAM.value.serverType == eServer1);
     }
 
 void TERMRecord::IsServer1(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer1 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer1 : eServer2;
     }
 
 bool TERMRecord::IsServer2()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer2);
+    return (DNAM.value.serverType == eServer2);
     }
 
 void TERMRecord::IsServer2(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer2 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer2 : eServer1;
     }
 
 bool TERMRecord::IsServer3()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer3);
+    return (DNAM.value.serverType == eServer3);
     }
 
 void TERMRecord::IsServer3(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer3 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer3 : eServer1;
     }
 
 bool TERMRecord::IsServer4()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer4);
+    return (DNAM.value.serverType == eServer4);
     }
 
 void TERMRecord::IsServer4(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer4 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer4 : eServer1;
     }
 
 bool TERMRecord::IsServer5()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer5);
+    return (DNAM.value.serverType == eServer5);
     }
 
 void TERMRecord::IsServer5(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer5 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer5 : eServer1;
     }
 
 bool TERMRecord::IsServer6()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer6);
+    return (DNAM.value.serverType == eServer6);
     }
 
 void TERMRecord::IsServer6(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer6 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer6 : eServer1;
     }
 
 bool TERMRecord::IsServer7()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer7);
+    return (DNAM.value.serverType == eServer7);
     }
 
 void TERMRecord::IsServer7(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer7 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer7 : eServer1;
     }
 
 bool TERMRecord::IsServer8()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer8);
+    return (DNAM.value.serverType == eServer8);
     }
 
 void TERMRecord::IsServer8(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer8 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer8 : eServer1;
     }
 
 bool TERMRecord::IsServer9()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer9);
+    return (DNAM.value.serverType == eServer9);
     }
 
 void TERMRecord::IsServer9(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer9 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer9 : eServer1;
     }
 
 bool TERMRecord::IsServer10()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eServer10);
+    return (DNAM.value.serverType == eServer10);
     }
 
 void TERMRecord::IsServer10(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eServer10 : eDummyDefault;
+    DNAM.value.serverType = value ? eServer10 : eServer1;
     }
 
 bool TERMRecord::IsServerType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.serverType == Type;
     }
 
 void TERMRecord::SetServerType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.serverType = Mask;
     }
 
 UINT32 TERMRecord::GetType()
@@ -526,24 +501,28 @@ SINT32 TERMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'CSED':
                 DESC.Read(buffer, subSize, curPos);
@@ -558,53 +537,77 @@ SINT32 TERMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             case 'TXTI':
-                ITXT.Load();
-                ITXT->ITXT.Read(buffer, subSize, curPos);
+                Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->ITXT.Read(buffer, subSize, curPos);
                 break;
             case 'MANR':
-                ITXT.Load();
-                ITXT->RNAM.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->RNAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANA':
-                ITXT.Load();
-                ITXT->ANAM.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->ANAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANI':
-                INAM.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->INAM.Read(buffer, subSize, curPos);
                 break;
             case 'MANT':
-                TNAM.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->TNAM.Read(buffer, subSize, curPos);
                 break;
             case 'RHCS':
-                SCHR.Load();
-                SCHR->SCHR.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->SCHR.Read(buffer, subSize, curPos);
                 break;
             case 'ADCS':
-                SCHR.Load();
-                SCHR->SCDA.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->SCDA.Read(buffer, subSize, curPos);
                 break;
             case 'XTCS':
-                SCHR.Load();
-                SCHR->SCTX.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->SCTX.Read(buffer, subSize, curPos);
                 break;
             case 'DSLS':
-                SCHR.Load();
-                SCHR->SLSD.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->VARS.value.push_back(new GENVARS);
+                Menus.value.back()->VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
             case 'RVCS':
-                SCHR.Load();
-                SCHR->SCVR.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                if(Menus.value.back()->VARS.value.size() == 0)
+                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
+                Menus.value.back()->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case 'ORCS':
-                SCHR.Load();
-                SCHR->SCRO.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                if(Menus.value.back()->VARS.value.size() == 0)
+                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
+                Menus.value.back()->VARS.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Menus.value.back()->VARS.value.back()->SCR_.value.back()->isSCRO = true;
                 break;
             case 'VRCS':
-                SCHR.Load();
-                SCHR->SCRV.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                if(Menus.value.back()->VARS.value.size() == 0)
+                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
+                Menus.value.back()->VARS.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Menus.value.back()->VARS.value.back()->SCR_.value.back()->isSCRO = false;
                 break;
             case 'ADTC':
-                CTDA.Read(buffer, subSize, curPos);
+                if(Menus.value.size() == 0)
+                    Menus.value.push_back(new TERMMenu);
+                Menus.value.back()->CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -627,16 +630,12 @@ SINT32 TERMRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     SCRI.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     DESC.Unload();
     SNAM.Unload();
     PNAM.Unload();
     DNAM.Unload();
-    ITXT.Unload();
-    INAM.Unload();
-    TNAM.Unload();
-    SCHR.Unload();
-    CTDA.Unload();
+    Menus.Unload();
     return 1;
     }
 
@@ -645,78 +644,14 @@ SINT32 TERMRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
-
+    Destructable.Write(writer);
     WRITE(DESC);
     WRITE(SNAM);
     WRITE(PNAM);
     WRITE(DNAM);
-
-    if(ITXT.IsLoaded())
-        {
-        if(ITXT->ITXT.IsLoaded())
-            SaveHandler.writeSubRecord('TXTI', ITXT->ITXT.value, ITXT->ITXT.GetSize());
-
-        if(ITXT->RNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANR', ITXT->RNAM.value, ITXT->RNAM.GetSize());
-
-        if(ITXT->ANAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANA', ITXT->ANAM.value, ITXT->ANAM.GetSize());
-
-        }
-
-    WRITE(INAM);
-    WRITE(TNAM);
-
-    if(SCHR.IsLoaded())
-        {
-        if(SCHR->SCHR.IsLoaded())
-            SaveHandler.writeSubRecord('RHCS', SCHR->SCHR.value, SCHR->SCHR.GetSize());
-
-        if(SCHR->SCDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADCS', SCHR->SCDA.value, SCHR->SCDA.GetSize());
-
-        if(SCHR->SCTX.IsLoaded())
-            SaveHandler.writeSubRecord('XTCS', SCHR->SCTX.value, SCHR->SCTX.GetSize());
-
-        if(SCHR->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', SCHR->SLSD.value, SCHR->SLSD.GetSize());
-
-        if(SCHR->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', SCHR->SCVR.value, SCHR->SCVR.GetSize());
-
-        if(SCHR->SCRO.IsLoaded())
-            SaveHandler.writeSubRecord('ORCS', SCHR->SCRO.value, SCHR->SCRO.GetSize());
-
-        if(SCHR->SCRV.IsLoaded())
-            SaveHandler.writeSubRecord('VRCS', SCHR->SCRV.value, SCHR->SCRV.GetSize());
-
-        }
-
-    WRITE(CTDA);
-
+    Menus.Write(writer);
     return -1;
     }
 
@@ -724,19 +659,15 @@ bool TERMRecord::operator ==(const TERMRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
             OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
             SCRI == other.SCRI &&
-            DEST == other.DEST &&
-            DESC.equals(other.DESC) &&
             SNAM == other.SNAM &&
             PNAM == other.PNAM &&
             DNAM == other.DNAM &&
-            ITXT == other.ITXT &&
-            INAM == other.INAM &&
-            TNAM == other.TNAM &&
-            SCHR == other.SCHR &&
-            CTDA == other.CTDA);
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            MODL == other.MODL &&
+            Menus == other.Menus &&
+            Destructable == other.Destructable);
     }
 
 bool TERMRecord::operator !=(const TERMRecord &other) const

@@ -58,19 +58,25 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //full
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //full
             return STRING_FIELD;
-        case 11: //modPath
+        case 14: //modPath
             return ISTRING_FIELD;
-        case 12: //modb
+        case 15: //modb
             return FLOAT32_FIELD;
-        case 13: //modt_p
+        case 16: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -80,7 +86,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 14: //altTextures
+        case 17: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
 
@@ -91,13 +97,13 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -111,68 +117,92 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 18: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 19: //script
+            return FORMID_FIELD;
+        case 20: //destructableHealth
+            return SINT32_FIELD;
+        case 21: //destructableCount
+            return UINT8_FIELD;
+        case 22: //destructableFlags
+            return UINT8_FLAG_FIELD;
+        case 23: //destructableUnused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return Destructable.IsLoaded() ? 2 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+        case 24: //destructableStages
+            if(!Destructable.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 17: //modelFlags
-            return UINT8_FIELD;
-        case 18: //scri Script
-            return FORMID_FIELD;
-        case 19: //dest Header
-            return SINT32_FIELD;
-        case 20: //dest Header
-            return UINT8_FIELD;
-        case 21: //dest Header
-            return UINT8_FIELD;
-        case 22: //dest_p Header
-            switch(WhichAttribute)
+            if(ListFieldID == 0) //destructableStages
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return Destructable->Stages.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return UINT8_FIELD;
+                case 2: //index
+                    return UINT8_FIELD;
+                case 3: //stage
+                    return UINT8_FIELD;
+                case 4: //flags
+                    return UINT8_FLAG_FIELD;
+                case 5: //dps
+                    return SINT32_FIELD;
+                case 6: //explosion
+                    return FORMID_FIELD;
+                case 7: //debris
+                    return FORMID_FIELD;
+                case 8: //debrisCount
+                    return SINT32_FIELD;
+                case 9: //modPath
+                    return ISTRING_FIELD;
+                case 10: //modt_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Destructable->Stages.value[ListIndex]->DMDT.GetSize() : 0;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 23: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 24: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 25: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 26: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 27: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 28: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 29: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 30: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 31: //dmdl Model Filename
-            return ISTRING_FIELD;
-        case 32: //dmdt_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return DMDT.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 33: //description
+        case 25: //description
             return STRING_FIELD;
-        case 34: //snam Sound - Looping
+        case 26: //loopSound
             return FORMID_FIELD;
-        case 35: //pnam Password Note
+        case 27: //passNote
             return FORMID_FIELD;
-        case 36: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 37: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 38: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 39: //dnam_p DNAM ,, Struct
+        case 28: //difficultyType
+            return UINT8_TYPE_FIELD;
+        case 29: //flags
+            return UINT8_FLAG_FIELD;
+        case 30: //serverType
+            return UINT8_TYPE_FIELD;
+        case 31: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -182,118 +212,273 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 40: //itxt Item Text
-            return ISTRING_FIELD;
-        case 41: //rnam Result Text
-            return ISTRING_FIELD;
-        case 42: //anam Flags
-            return UINT8_FIELD;
-        case 43: //inam Display Note
-            return FORMID_FIELD;
-        case 44: //tnam Sub Menu
-            return FORMID_FIELD;
-        case 45: //schr_p Basic Script Data
-            switch(WhichAttribute)
+        case 32: //menus
+            if(ListFieldID == 0) //menus
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return Menus.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Menus.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //text
+                    return STRING_FIELD;
+                case 2: //resultText
+                    return STRING_FIELD;
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //displayNote
+                    return FORMID_FIELD;
+                case 5: //subMenu
+                    return FORMID_FIELD;
+                case 6: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 4;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 7: //numRefs
+                    return UINT32_FIELD;
+                case 8: //compiledSize
+                    return UINT32_FIELD;
+                case 9: //lastIndex
+                    return UINT32_FIELD;
+                case 10: //scriptType
+                    return UINT16_TYPE_FIELD;
+                case 11: //flags
+                    return UINT16_FLAG_FIELD;
+                case 12: //compiled_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Menus.value[ListIndex]->SCDA.GetSize();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 13: //scriptText
+                    return ISTRING_FIELD;
+                case 14: //vars
+                    if(ListX2FieldID == 0) //vars
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Menus.value[ListIndex]->VARS.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->VARS.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListFieldID)
+                        {
+                        case 1: //index
+                            return UINT32_FIELD;
+                        case 2: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 12;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 3: //flags
+                            return UINT8_FLAG_FIELD;
+                        case 4: //unused2
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 7;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 5: //name
+                            return ISTRING_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 15: //references
+                    if(ListX2FieldID == 0) //references
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return FORMID_OR_UINT32_ARRAY_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Menus.value[ListIndex]->SCR_.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= SCR_.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListFieldID)
+                        {
+                        case 1: //reference
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    return (Menus.value[ListIndex]->SCR_.value[ListX2Index]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 16: //conditions
+                    if(ListX2FieldID == 0) //conditions
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Menus.value[ListIndex]->CTDA.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->CTDA.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            return UINT8_FLAG_TYPE_FIELD;
+                        case 2: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 3;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 3: //compValue
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return FORMID_OR_FLOAT32_FIELD;
+                                case 2: //WhichType
+                                    return Menus.value[ListIndex]->CTDA.value[ListX2Index]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 4: //ifunc
+                            return UINT32_TYPE_FIELD;
+                        case 5: //param1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    {
+                                    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
+                                    if(curCTDAFunction != FNVFunction_Arguments.end())
+                                        {
+                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        switch(CTDAFunction.first)
+                                            {
+                                            case eFORMID:
+                                                return FORMID_FIELD;
+                                            case eUINT32:
+                                                return UINT32_FIELD;
+                                            default:
+                                                return UNKNOWN_FIELD;
+                                            }
+                                        }
+                                    }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 6: //param2
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    {
+                                    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
+                                    if(curCTDAFunction != FNVFunction_Arguments.end())
+                                        {
+                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        switch(CTDAFunction.second)
+                                            {
+                                            case eFORMID:
+                                                return FORMID_FIELD;
+                                            case eUINT32:
+                                                return UINT32_FIELD;
+                                            case eVATSPARAM:
+                                                if(Menus.value[ListIndex]->CTDA.value[ListX2Index]->param1 < VATSFUNCTIONSIZE)
+                                                    {
+                                                    switch(VATSFunction_Argument[Menus.value[ListIndex]->CTDA.value[ListX2Index]->param1])
+                                                        {
+                                                        case eFORMID:
+                                                            return FORMID_FIELD;
+                                                        case eUINT32:
+                                                            return UINT32_FIELD;
+                                                        default:
+                                                            return UNKNOWN_FIELD;
+                                                        }
+                                                    }
+                                            default:
+                                                return UNKNOWN_FIELD;
+                                            }
+                                        }
+                                    }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 7: //runOnType
+                            return UINT32_TYPE_FIELD;
+                        case 8: //reference
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    return Menus.value[ListIndex]->CTDA.value[ListX2Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 46: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 47: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 48: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 49: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 50: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 51: //scda_p Compiled Embedded Script
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return SCDA.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 52: //sctx Embedded Script Source
-            return ISTRING_FIELD;
-        case 53: //slsd Local Variable Data
-            return UINT32_FIELD;
-        case 54: //slsd_p Local Variable Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 12;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 55: //slsd Local Variable Data
-            return UINT8_FIELD;
-        case 56: //slsd_p Local Variable Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 7;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 57: //scvr Name
-            return ISTRING_FIELD;
-        case 58: //scro Global Reference
-            return FORMID_FIELD;
-        case 59: //scrv Local Variable
-            return UINT32_FIELD;
-        case 60: //ctda Conditions
-            return UINT8_FIELD;
-        case 61: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 62: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 63: //ctda Conditions
-            return UINT32_FIELD;
-        case 64: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 65: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 66: //ctda Conditions
-            return UINT32_FIELD;
-        case 67: //ctda Conditions
-            return UNPARSED_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -317,139 +502,199 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //full
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //full
             return FULL.value;
-        case 11: //modPath
+        case 14: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 12: //modb
+        case 15: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
-        case 13: //modt_p
+        case 16: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 14: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 15: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
-        case 16: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
-        case 17: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value17 : NULL;
-        case 18: //scri Script
-            return SCRI.IsLoaded() ? &SCRI->value18 : NULL;
-        case 19: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value19 : NULL;
-        case 20: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value20 : NULL;
-        case 21: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value21 : NULL;
-        case 22: //dest_p Header
-            *FieldValues = DEST.IsLoaded() ? &DEST->DEST->value22[0] : NULL;
+        case 17: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 23: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value23 : NULL;
-        case 24: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value24 : NULL;
-        case 25: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value25 : NULL;
-        case 26: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value26 : NULL;
-        case 27: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value27 : NULL;
-        case 28: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value28 : NULL;
-        case 29: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value29 : NULL;
-        case 30: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value30 : NULL;
-        case 31: //dmdl Model Filename
-            return DEST.IsLoaded() ? DEST->DMDL.value : NULL;
-        case 32: //dmdt_p Texture Files Hashes
-            *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
+        case 18: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 19: //script
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
+        case 20: //destructableHealth
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.health : NULL;
+        case 21: //destructableCount
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.count : NULL;
+        case 22: //destructableFlags
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.flags : NULL;
+        case 23: //destructableUnused1
+            *FieldValues = Destructable.IsLoaded() ? &Destructable->DEST.value.unused1[0] : NULL;
             return NULL;
-        case 33: //description
+        case 24: //destructableStages
+            if(!Destructable.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.health;
+                case 2: //index
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.index;
+                case 3: //stage
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.stage;
+                case 4: //flags
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.flags;
+                case 5: //dps
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.dps;
+                case 6: //explosion
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.explosion;
+                case 7: //debris
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debris;
+                case 8: //debrisCount
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount;
+                case 9: //modPath
+                    return Destructable->Stages.value[ListIndex]->DMDL.value;
+                case 10: //modt_p
+                    *FieldValues = Destructable->Stages.value[ListIndex]->DMDT.value;
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 25: //description
             return DESC.value;
-        case 34: //snam Sound - Looping
-            return SNAM.IsLoaded() ? &SNAM->value34 : NULL;
-        case 35: //pnam Password Note
-            return PNAM.IsLoaded() ? &PNAM->value35 : NULL;
-        case 36: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value36 : NULL;
-        case 37: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value37 : NULL;
-        case 38: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value38 : NULL;
-        case 39: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value39[0] : NULL;
+        case 26: //loopSound
+            return SNAM.IsLoaded() ? &SNAM.value : NULL;
+        case 27: //passNote
+            return PNAM.IsLoaded() ? &PNAM.value : NULL;
+        case 28: //difficultyType
+            return &DNAM.value.difficultyType;
+        case 29: //flags
+            return &DNAM.value.flags;
+        case 30: //serverType
+            return &DNAM.value.serverType;
+        case 31: //unused1
+            *FieldValues = &DNAM.value.unused1[0];
             return NULL;
-        case 40: //itxt Item Text
-            return ITXT.IsLoaded() ? ITXT->ITXT.value : NULL;
-        case 41: //rnam Result Text
-            return ITXT.IsLoaded() ? ITXT->RNAM.value : NULL;
-        case 42: //anam Flags
-            return ITXT.IsLoaded() ? &ITXT->ANAM->value42 : NULL;
-        case 43: //inam Display Note
-            return INAM.IsLoaded() ? &INAM->value43 : NULL;
-        case 44: //tnam Sub Menu
-            return TNAM.IsLoaded() ? &TNAM->value44 : NULL;
-        case 45: //schr_p Basic Script Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SCHR->value45[0] : NULL;
+        case 32: //menus
+            if(ListIndex >= Menus.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //text
+                    return &Menus.value[ListIndex]->ITXT.value;
+                case 2: //resultText
+                    return &Menus.value[ListIndex]->RNAM.value;
+                case 3: //flags
+                    return &Menus.value[ListIndex]->ANAM.value;
+                case 4: //displayNote
+                    return Menus.value[ListIndex]->INAM.IsLoaded() ? &Menus.value[ListIndex]->INAM.value : NULL;
+                case 5: //subMenu
+                    return Menus.value[ListIndex]->INAM.IsLoaded() ? &Menus.value[ListIndex]->TNAM.value : NULL;
+                case 6: //unused1
+                    *FieldValues = &Menus.value[ListIndex]->SCHR.value.unused1[0];
+                    return NULL;
+                case 7: //numRefs
+                    return &Menus.value[ListIndex]->SCHR.value.numRefs;
+                case 8: //compiledSize
+                    return &Menus.value[ListIndex]->SCHR.value.compiledSize;
+                case 9: //lastIndex
+                    return &Menus.value[ListIndex]->SCHR.value.lastIndex;
+                case 10: //scriptType
+                    return &Menus.value[ListIndex]->SCHR.value.scriptType;
+                case 11: //flags
+                    return &Menus.value[ListIndex]->SCHR.value.flags;
+                case 12: //compiled_p
+                    *FieldValues = Menus.value[ListIndex]->SCDA.value;
+                    return NULL;
+                case 13: //scriptText
+                    return Menus.value[ListIndex]->SCTX.value;
+                case 14: //vars
+                    if(ListX2Index >= Menus.value[ListIndex]->VARS.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //index
+                            return &Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.index;
+                        case 2: //unused1
+                            *FieldValues = &Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[0];
+                            return NULL;
+                        case 3: //flags
+                            return &Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.flags;
+                        case 4: //unused2
+                            *FieldValues = &Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[0];
+                            return NULL;
+                        case 5: //name
+                            return Menus.value[ListIndex]->VARS.value[ListX2Index]->SCVR.value;
+                        default:
+                            return NULL;
+                        }
             return NULL;
-        case 46: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value46 : NULL;
-        case 47: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value47 : NULL;
-        case 48: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value48 : NULL;
-        case 49: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value49 : NULL;
-        case 50: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value50 : NULL;
-        case 51: //scda_p Compiled Embedded Script
-            *FieldValues = (SCHR.IsLoaded()) ? SCHR->SCDA.value : NULL;
+                case 15: //references
+                    for(UINT32 x = 0; x < Menus.value[ListIndex]->SCR_.value.size(); ++x)
+                        ((FORMIDARRAY)FieldValues)[x] = Menus.value[ListIndex]->SCR_.value[x]->reference;
+                    return NULL;
+                case 16: //conditions
+                    if(ListX2Index >= Menus.value[ListIndex]->CTDA.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->operType;
+                        case 2: //unused1
+                            *FieldValues = &Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0];
+                            return NULL;
+                        case 3: //compValue
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->compValue;
+                        case 4: //ifunc
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc;
+                        case 5: //param1
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->param1;
+                        case 6: //param2
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->param2;
+                        case 7: //runOnType
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->runOnType;
+                        case 8: //reference
+                            return &Menus.value[ListIndex]->CTDA.value[ListX2Index]->reference;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 52: //sctx Embedded Script Source
-            return SCHR.IsLoaded() ? SCHR->SCTX.value : NULL;
-        case 53: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value53 : NULL;
-        case 54: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value54[0] : NULL;
-            return NULL;
-        case 55: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value55 : NULL;
-        case 56: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value56[0] : NULL;
-            return NULL;
-        case 57: //scvr Name
-            return SCHR.IsLoaded() ? SCHR->SCVR.value : NULL;
-        case 58: //scro Global Reference
-            return SCHR.IsLoaded() ? &SCHR->SCRO->value58 : NULL;
-        case 59: //scrv Local Variable
-            return SCHR.IsLoaded() ? &SCHR->SCRV->value59 : NULL;
-        case 60: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value60 : NULL;
-        case 61: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value61[0] : NULL;
-            return NULL;
-        case 62: //ctda Conditions
-            return UNPARSEDGET_FIELD62;
-        case 63: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value63 : NULL;
-        case 64: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value64[0] : NULL;
-            return NULL;
-        case 65: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value65[0] : NULL;
-            return NULL;
-        case 66: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value66 : NULL;
-        case 67: //ctda Conditions
-            return UNPARSEDGET_FIELD67;
         default:
             return NULL;
         }
@@ -482,317 +727,346 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8 *)FieldValue)[0];
             versionControl2[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //full
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
+            break;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
+            break;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
+            break;
+        case 13: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 11: //modPath
+        case 14: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 12: //modb
+        case 15: //modb
             MODL.Load();
             MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //modt_p
+        case 16: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 15: //mods Alternate Textures
+        case 18: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value15 = *(FORMID *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 19: //script
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
-        case 16: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value16 = *(SINT32 *)FieldValue;
+        case 20: //destructableHealth
+            Destructable.Load();
+            Destructable->DEST.value.health = *(SINT32 *)FieldValue;
             break;
-        case 17: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value17 = *(UINT8 *)FieldValue;
+        case 21: //destructableCount
+            Destructable.Load();
+            Destructable->DEST.value.count = *(UINT8 *)FieldValue;
             break;
-        case 18: //scri Script
-            SCRI.Load();
-            SCRI->value18 = *(FORMID *)FieldValue;
-            return true;
-        case 19: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value19 = *(SINT32 *)FieldValue;
+        case 22: //destructableFlags
+            Destructable.Load();
+            Destructable->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 20: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value20 = *(UINT8 *)FieldValue;
-            break;
-        case 21: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value21 = *(UINT8 *)FieldValue;
-            break;
-        case 22: //dest_p Header
+        case 23: //destructableUnused1
             if(ArraySize != 2)
                 break;
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value22[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value22[1] = ((UINT8 *)FieldValue)[1];
+            Destructable.Load();
+            Destructable->DEST.value.unused1[0] = ((UINT8 *)FieldValue)[0];
+            Destructable->DEST.value.unused1[1] = ((UINT8 *)FieldValue)[1];
             break;
-        case 23: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value23 = *(UINT8 *)FieldValue;
+        case 24: //destructableStages
+            Destructable.Load();
+            if(ListFieldID == 0) //destructableStagesSize
+                {
+                Destructable->Stages.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    Destructable->Stages.value[ListIndex]->DSTD.value.health = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //index
+                    Destructable->Stages.value[ListIndex]->DSTD.value.index = *(UINT8 *)FieldValue;
+                    break;
+                case 3: //stage
+                    Destructable->Stages.value[ListIndex]->DSTD.value.stage = *(UINT8 *)FieldValue;
+                    break;
+                case 4: //flags
+                    Destructable->Stages.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 5: //dps
+                    Destructable->Stages.value[ListIndex]->DSTD.value.dps = *(SINT32 *)FieldValue;
+                    break;
+                case 6: //explosion
+                    Destructable->Stages.value[ListIndex]->DSTD.value.explosion = *(FORMID *)FieldValue;
+                    return true;
+                case 7: //debris
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debris = *(FORMID *)FieldValue;
+                    return true;
+                case 8: //debrisCount
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = *(SINT32 *)FieldValue;
+                    break;
+                case 9: //modPath
+                    Destructable->Stages.value[ListIndex]->DMDL.Copy((STRING)FieldValue);
+                    break;
+                case 10: //modt_p
+                    Destructable->Stages.value[ListIndex]->DMDT.Copy((STRING)FieldValue, ArraySize);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 24: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value24 = *(UINT8 *)FieldValue;
-            break;
-        case 25: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value25 = *(UINT8 *)FieldValue;
-            break;
-        case 26: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value26 = *(UINT8 *)FieldValue;
-            break;
-        case 27: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value27 = *(SINT32 *)FieldValue;
-            break;
-        case 28: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value28 = *(FORMID *)FieldValue;
-            return true;
-        case 29: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value29 = *(FORMID *)FieldValue;
-            return true;
-        case 30: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value30 = *(SINT32 *)FieldValue;
-            break;
-        case 31: //dmdl Model Filename
-            DEST.Load();
-            DEST->DMDL.Copy((STRING)FieldValue);
-            break;
-        case 32: //dmdt_p Texture Files Hashes
-            DEST.Load();
-            DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 33: //description
+        case 25: //description
             DESC.Copy((STRING)FieldValue);
             break;
-        case 34: //snam Sound - Looping
-            SNAM.Load();
-            SNAM->value34 = *(FORMID *)FieldValue;
+        case 26: //loopSound
+            SNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 35: //pnam Password Note
-            PNAM.Load();
-            PNAM->value35 = *(FORMID *)FieldValue;
+        case 27: //passNote
+            PNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 36: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value36 = *(UINT8 *)FieldValue;
+        case 28: //difficultyType
+            DNAM.value.difficultyType = *(UINT8 *)FieldValue;
             break;
-        case 37: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value37 = *(UINT8 *)FieldValue;
+        case 29: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 38: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value38 = *(UINT8 *)FieldValue;
+        case 30: //serverType
+            SetServerType(*(UINT8 *)FieldValue);
             break;
-        case 39: //dnam_p DNAM ,, Struct
+        case 31: //unused1
             if(ArraySize != 1)
                 break;
-            DNAM.Load();
-            DNAM->value39[0] = ((UINT8 *)FieldValue)[0];
+            DNAM.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 40: //itxt Item Text
-            ITXT.Load();
-            ITXT->ITXT.Copy((STRING)FieldValue);
-            break;
-        case 41: //rnam Result Text
-            ITXT.Load();
-            ITXT->RNAM.Copy((STRING)FieldValue);
-            break;
-        case 42: //anam Flags
-            ITXT.Load();
-            ITXT->ANAM.Load();
-            ITXT->ANAM->value42 = *(UINT8 *)FieldValue;
-            break;
-        case 43: //inam Display Note
-            INAM.Load();
-            INAM->value43 = *(FORMID *)FieldValue;
-            return true;
-        case 44: //tnam Sub Menu
-            TNAM.Load();
-            TNAM->value44 = *(FORMID *)FieldValue;
-            return true;
-        case 45: //schr_p Basic Script Data
-            if(ArraySize != 4)
+        case 32: //menus
+            if(ListFieldID == 0) //menus
+                {
+                Menus.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Menus.value.size())
                 break;
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value45[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SCHR->value45[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SCHR->value45[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SCHR->value45[3] = ((UINT8 *)FieldValue)[3];
+
+            switch(ListFieldID)
+                {
+                case 1: //text
+                    Menus.value[ListIndex]->ITXT.Copy((STRING)FieldValue);
+                    break;
+                case 2: //resultText
+                    Menus.value[ListIndex]->RNAM.Copy((STRING)FieldValue);
+                    break;
+                case 3: //flags
+                    Menus.value[ListIndex]->ANAM.value = *(UINT8 *)FieldValue;
+                    break;
+                case 4: //displayNote
+                    Menus.value[ListIndex]->INAM.value = *(FORMID *)FieldValue;
+                    return true;
+                case 5: //subMenu
+                    Menus.value[ListIndex]->TNAM.value = *(FORMID *)FieldValue;
+                    return true;
+                case 6: //unused1
+                    if(ArraySize != 4)
+                        break;
+                    Menus.value[ListIndex]->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Menus.value[ListIndex]->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Menus.value[ListIndex]->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Menus.value[ListIndex]->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    break;
+                case 7: //numRefs
+                    Menus.value[ListIndex]->SCHR.value.numRefs = *(UINT32 *)FieldValue;
+                    break;
+                case 8: //compiledSize
+                    Menus.value[ListIndex]->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
+                    break;
+                case 9: //lastIndex
+                    Menus.value[ListIndex]->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
+                    break;
+                case 10: //scriptType
+                    Menus.value[ListIndex]->SetType(*(UINT16 *)FieldValue);
+                    break;
+                case 11: //flags
+                    Menus.value[ListIndex]->SetScriptFlagMask(*(UINT16 *)FieldValue);
+                    break;
+                case 12: //compiled_p
+                    Menus.value[ListIndex]->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                    Menus.value[ListIndex]->SCHR.value.compiledSize = ArraySize;
+                    break;
+                case 13: //scriptText
+                    Menus.value[ListIndex]->SCTX.Copy((STRING)FieldValue);
+                    break;
+                case 14: //vars
+                    if(ListX2FieldID == 0) //varsSize
+                        {
+                        Menus.value[ListIndex]->VARS.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->VARS.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //index
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.index = *(UINT32 *)FieldValue;
+                            break;
+                        case 2: //unused1
+                            if(ArraySize != 12)
+                                break;
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                            break;
+                        case 3: //flags
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SetFlagMask(*(UINT8 *)FieldValue);
+                            break;
+                        case 4: //unused2
+                            if(ArraySize != 7)
+                                break;
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                            break;
+                        case 5: //name
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SCVR.Copy((STRING)FieldValue);
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                case 15: //references
+                    if(ListX2FieldID == 0) //referencesSize
+                        {
+                        Menus.value[ListIndex]->SCR_.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->SCR_.value.size())
+                        break;
+
+                    switch(ListFieldID)
+                        {
+                        case 1: //reference
+                            //Borrowing ArraySize to flag if the new value is a formID
+                            Menus.value[ListIndex]->SCR_.value[ListX2Index]->reference = *(UINT32 *)FieldValue;
+                            Menus.value[ListIndex]->SCR_.value[ListX2Index]->isSCRO = ArraySize ? true : false;
+                            return ArraySize != 0;
+                        default:
+                            break;
+                        }
+                    break;
+                case 16: //conditions
+                    if(ListX2FieldID == 0) //conditionsSize
+                        {
+                        Menus.value[ListIndex]->CTDA.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->CTDA.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->operType = *(UINT8 *)FieldValue;
+                            break;
+                        case 2: //unused1
+                            if(ArraySize != 3)
+                                break;
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            break;
+                        case 3: //compValue
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
+                            return true;
+                        case 4: //ifunc
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc = *(UINT32 *)FieldValue;
+                            return true;
+                        case 5: //param1
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->param1 = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        case 6: //param2
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->param2 = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        case 7: //runOnType
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->runOnType = *(UINT32 *)FieldValue;
+                            return true;
+                        case 8: //reference
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->reference = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 46: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value46 = *(UINT32 *)FieldValue;
-            break;
-        case 47: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value47 = *(UINT32 *)FieldValue;
-            break;
-        case 48: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value48 = *(UINT32 *)FieldValue;
-            break;
-        case 49: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value49 = *(UINT16 *)FieldValue;
-            break;
-        case 50: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value50 = *(UINT16 *)FieldValue;
-            break;
-        case 51: //scda_p Compiled Embedded Script
-            SCHR.Load();
-            SCHR->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 52: //sctx Embedded Script Source
-            SCHR.Load();
-            SCHR->SCTX.Copy((STRING)FieldValue);
-            break;
-        case 53: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value53 = *(UINT32 *)FieldValue;
-            break;
-        case 54: //slsd_p Local Variable Data
-            if(ArraySize != 12)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value54[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value54[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value54[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value54[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value54[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value54[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value54[6] = ((UINT8 *)FieldValue)[6];
-            SCHR->SLSD->value54[7] = ((UINT8 *)FieldValue)[7];
-            SCHR->SLSD->value54[8] = ((UINT8 *)FieldValue)[8];
-            SCHR->SLSD->value54[9] = ((UINT8 *)FieldValue)[9];
-            SCHR->SLSD->value54[10] = ((UINT8 *)FieldValue)[10];
-            SCHR->SLSD->value54[11] = ((UINT8 *)FieldValue)[11];
-            break;
-        case 55: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value55 = *(UINT8 *)FieldValue;
-            break;
-        case 56: //slsd_p Local Variable Data
-            if(ArraySize != 7)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value56[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value56[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value56[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value56[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value56[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value56[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value56[6] = ((UINT8 *)FieldValue)[6];
-            break;
-        case 57: //scvr Name
-            SCHR.Load();
-            SCHR->SCVR.Copy((STRING)FieldValue);
-            break;
-        case 58: //scro Global Reference
-            SCHR.Load();
-            SCHR->SCRO.Load();
-            SCHR->SCRO->value58 = *(FORMID *)FieldValue;
-            return true;
-        case 59: //scrv Local Variable
-            SCHR.Load();
-            SCHR->SCRV.Load();
-            SCHR->SCRV->value59 = *(UINT32 *)FieldValue;
-            break;
-        case 60: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value60 = *(UINT8 *)FieldValue;
-            break;
-        case 61: //ctda_p Conditions
-            if(ArraySize != 3)
-                break;
-            CTDAs.Load();
-            CTDAs->value61[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value61[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value61[2] = ((UINT8 *)FieldValue)[2];
-            break;
-        case 62: //ctda Conditions
-            return UNPARSEDGET_FIELD62;
-        case 63: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value63 = *(UINT32 *)FieldValue;
-            break;
-        case 64: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            CTDAs.Load();
-            CTDAs->value64[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value64[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value64[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value64[3] = ((UINT8 *)FieldValue)[3];
-            break;
-        case 65: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            CTDAs.Load();
-            CTDAs->value65[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value65[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value65[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value65[3] = ((UINT8 *)FieldValue)[3];
-            break;
-        case 66: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value66 = *(UINT32 *)FieldValue;
-            break;
-        case 67: //ctda Conditions
-            return UNPARSEDGET_FIELD67;
         default:
             break;
         }
@@ -801,6 +1075,16 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
+    FNVMODS defaultMODS;
+    GENDEST defaultDEST;
+    DESTDSTD defaultDSTD;
+    TERMDNAM defaultDNAM;
+
+    FNVSCHR defaultSCHR;
+    GENVARS defaultVARS;
+    GENSCR_ defaultSCR_;
+    FNVCTDA defaultCTDA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -819,229 +1103,331 @@ void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //full
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
+            return;
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //full
             FULL.Unload();
             return;
-        case 11: //modPath
+        case 14: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 12: //modb
+        case 15: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 13: //modt_p
+        case 16: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 15: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 16: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 17: //modelFlags
+        case 18: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 18: //scri Script
+        case 19: //script
             SCRI.Unload();
             return;
-        case 19: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 20: //destructableHealth
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.health = defaultDEST.health;
             return;
-        case 20: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 21: //destructableCount
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.count = defaultDEST.count;
             return;
-        case 21: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 22: //destructableFlags
+            if(Destructable.IsLoaded())
+                Destructable->SetFlagMask(defaultDEST.flags);
             return;
-        case 22: //dest_p Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 23: //destructableUnused1
+            if(Destructable.IsLoaded())
+                {
+                Destructable->DEST.value.unused1[0] = defaultDSTD.health;
+                }
             return;
-        case 23: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 24: //destructableStages
+            if(Destructable.IsLoaded())
+                {
+                if(ListFieldID == 0) //destructableStages
+                    {
+                    Destructable->Stages.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= Destructable->Stages.value.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //health
+                        Destructable->Stages.value[ListIndex]->DSTD.value.health = defaultDSTD.health;
+                        return;
+                    case 2: //index
+                        Destructable->Stages.value[ListIndex]->DSTD.value.index = defaultDSTD.index;
+                        return;
+                    case 3: //stage
+                        Destructable->Stages.value[ListIndex]->DSTD.value.stage = defaultDSTD.stage;
+                        return;
+                    case 4: //flags
+                        Destructable->Stages.value[ListIndex]->SetFlagMask(defaultDSTD.flags);
+                        return;
+                    case 5: //dps
+                        Destructable->Stages.value[ListIndex]->DSTD.value.dps = defaultDSTD.dps;
+                        return;
+                    case 6: //explosion
+                        Destructable->Stages.value[ListIndex]->DSTD.value.explosion = defaultDSTD.explosion;
+                        return;
+                    case 7: //debris
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debris = defaultDSTD.debris;
+                        return;
+                    case 8: //debrisCount
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = defaultDSTD.debrisCount;
+                        return;
+                    case 9: //modPath
+                        Destructable->Stages.value[ListIndex]->DMDL.Unload();
+                        return;
+                    case 10: //modt_p
+                        Destructable->Stages.value[ListIndex]->DMDT.Unload();
+                        return;
+                    default:
+                        return NULL;
+                    }
+                }
             return;
-        case 24: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 25: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 26: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 27: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 28: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 29: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 30: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 31: //dmdl Model Filename
-            if(DEST.IsLoaded())
-                DEST->DMDL.Unload();
-            return;
-        case 32: //dmdt_p Texture Files Hashes
-            if(DEST.IsLoaded())
-                DEST->DMDT.Unload();
-            return;
-        case 33: //description
+        case 25: //description
             DESC.Unload();
             return;
-        case 34: //snam Sound - Looping
+        case 26: //loopSound
             SNAM.Unload();
             return;
-        case 35: //pnam Password Note
+        case 27: //passNote
             PNAM.Unload();
             return;
-        case 36: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 28: //difficultyType
+            DNAM.value.difficultyType = defaultDNAM.difficultyType;
             return;
-        case 37: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 29: //flags
+            DNAM.value.flags = defaultDNAM.flags;
             return;
-        case 38: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 30: //serverType
+            DNAM.value.serverType = defaultDNAM.serverType;
             return;
-        case 39: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 31: //unused1
+            DNAM.value.unused1 = defaultDNAM.unused1;
             return;
-        case 40: //itxt Item Text
-            if(ITXT.IsLoaded())
-                ITXT->ITXT.Unload();
+        case 32: //menus
+            if(ListFieldID == 0) //menus
+                {
+                Menus.Unload();
+                return;
+                }
+
+            if(ListIndex >= Menus.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //text
+                    Menus.value[ListIndex]->ITXT.Unload();
+                    return;
+                case 2: //resultText
+                    Menus.value[ListIndex]->RNAM.Unload();
+                    return;
+                case 3: //flags
+                    Menus.value[ListIndex]->ANAM.Unload();
+                    return;
+                case 4: //displayNote
+                    Menus.value[ListIndex]->INAM.Unload();
+                    return;
+                case 5: //subMenu
+                    Menus.value[ListIndex]->TNAM.Unload();
+                    return;
+                case 6: //unused1
+                    Menus.value[ListIndex]->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+                    Menus.value[ListIndex]->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+                    Menus.value[ListIndex]->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+                    Menus.value[ListIndex]->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+                    return;
+                case 7: //numRefs
+                    Menus.value[ListIndex]->SCHR.value.numRefs = defaultSCHR.numRefs;
+                    return;
+                case 8: //compiledSize
+                    Menus.value[ListIndex]->SCHR.value.compiledSize = defaultSCHR.compiledSize;
+                    return;
+                case 9: //lastIndex
+                    Menus.value[ListIndex]->SCHR.value.lastIndex = defaultSCHR.lastIndex;
+                    return;
+                case 10: //scriptType
+                    Menus.value[ListIndex]->SetType(defaultSCHR.scriptType);
+                    return;
+                case 11: //flags
+                    Menus.value[ListIndex]->SetScriptFlagMask(defaultSCHR.flags);
+                    return;
+                case 12: //compiled_p
+                    Menus.value[ListIndex]->SCDA.Unload();
+                    return;
+                case 13: //scriptText
+                    Menus.value[ListIndex]->SCTX.Unload();
+                    return;
+                case 14: //vars
+                    if(ListX2FieldID == 0) //vars
+                        {
+                        Menus.value[ListIndex]->VARS.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->VARS.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //index
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                            return;
+                        case 2: //unused1
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                            return;
+                        case 3: //flags
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                            return;
+                        case 4: //unused2
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                            return;
+                        case 5: //name
+                            Menus.value[ListIndex]->VARS.value[ListX2Index]->SCVR.Unload();
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 15: //references
+                    if(ListX2FieldID == 0) //references
+                        {
+                        Menus.value[ListIndex]->SCR_.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->SCR_.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //reference
+                            Menus.value[ListIndex]->SCR_.value[ListX2Index]->reference = defaultSCR_.reference;
+                            Menus.value[ListIndex]->SCR_.value[ListX2Index]->isSCRO = defaultSCR_.isSCRO;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 16: //conditions
+                    if(ListX2FieldID == 0) //conditionsSize
+                        {
+                        Menus.value[ListIndex]->CTDA.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Menus.value[ListIndex]->CTDA.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->operType = defaultCTDA.operType;
+                            return;
+                        case 2: //unused1
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0] = defaultCTDA.unused1[0];
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[1] = defaultCTDA.unused1[1];
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->unused1[2] = defaultCTDA.unused1[2];
+                            return;
+                        case 3: //compValue
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->compValue = defaultCTDA.compValue;
+                            return;
+                        case 4: //ifunc
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc = defaultCTDA.ifunc;
+                            return;
+                        case 5: //param1
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->param1 = defaultCTDA.param1;
+                            return;
+                        case 6: //param2
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->param2 = defaultCTDA.param2;
+                            return;
+                        case 7: //runOnType
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->runOnType = defaultCTDA.runOnType;
+                            return;
+                        case 8: //reference
+                            Menus.value[ListIndex]->CTDA.value[ListX2Index]->reference = defaultCTDA.reference;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 41: //rnam Result Text
-            if(ITXT.IsLoaded())
-                ITXT->RNAM.Unload();
-            return;
-        case 42: //anam Flags
-            if(ITXT.IsLoaded())
-                ITXT->ANAM.Unload();
-            return;
-        case 43: //inam Display Note
-            INAM.Unload();
-            return;
-        case 44: //tnam Sub Menu
-            TNAM.Unload();
-            return;
-        case 45: //schr_p Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 46: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 47: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 48: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 49: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 50: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 51: //scda_p Compiled Embedded Script
-            if(SCHR.IsLoaded())
-                SCHR->SCDA.Unload();
-            return;
-        case 52: //sctx Embedded Script Source
-            if(SCHR.IsLoaded())
-                SCHR->SCTX.Unload();
-            return;
-        case 53: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 54: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 55: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 56: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 57: //scvr Name
-            if(SCHR.IsLoaded())
-                SCHR->SCVR.Unload();
-            return;
-        case 58: //scro Global Reference
-            if(SCHR.IsLoaded())
-                SCHR->SCRO.Unload();
-            return;
-        case 59: //scrv Local Variable
-            if(SCHR.IsLoaded())
-                SCHR->SCRV.Unload();
-            return;
-        case 60: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 61: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 62: //ctda Conditions
-            return UNPARSEDDEL_FIELD62;
-        case 63: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 64: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 65: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 66: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 67: //ctda Conditions
-            return UNPARSEDDEL_FIELD67;
         default:
             return;
         }

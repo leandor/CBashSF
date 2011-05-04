@@ -84,6 +84,7 @@ enum API_FieldTypes {
     MGEFCODE_FIELD,
     ACTORVALUE_FIELD,
     FORMID_OR_UINT32_FIELD,
+    FORMID_OR_FLOAT32_FIELD,
     UINT8_OR_UINT32_FIELD,
     UNKNOWN_OR_FORMID_OR_UINT32_FIELD,
     UNKNOWN_OR_SINT32_FIELD,
@@ -153,7 +154,8 @@ enum TopTypes {
 enum varType {
     eNONE,
     eUINT32,
-    eFORMID
+    eFORMID,
+    eVATSPARAM
     };
 
 class Ex_NULL : public std::exception
@@ -225,6 +227,7 @@ extern const std::map<UINT32, STRING> PACKTargetType_Name;
 extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
 
 extern const std::map<UINT32, FunctionArguments> FNVFunction_Arguments;
+extern const UINT32 VATSFunction_Argument[];
 
 #ifdef CBASH_CALLTIMING
     extern std::map<char *, double> CallTime;

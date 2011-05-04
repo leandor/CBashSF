@@ -383,9 +383,11 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 default:
                     return NULL;
                 }
+            return NULL;
         case 12: //entries
             if(ListIndex >= Entries.size())
                 return NULL;
@@ -454,6 +456,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 case 6: //mapName
                     return Entries[ListIndex]->RDMP.value;
                 case 7: //iconPath
@@ -472,6 +475,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 case 9: //musicType
                     return Entries[ListIndex]->RDMD.value;
                 case 10: //sounds
@@ -489,6 +493,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 case 11: //weathers
                     if(ListX2Index >= Entries[ListIndex]->RDWT.size())
                         return NULL;
@@ -502,9 +507,11 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -528,11 +535,13 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 6: //mapRed
             RCLR.value.red = *(UINT8 *)FieldValue;
+            break;
         case 7: //mapGreen
             RCLR.value.green = *(UINT8 *)FieldValue;
             break;
         case 8: //mapBlue
             RCLR.value.blue = *(UINT8 *)FieldValue;
+            break;
         case 9: //unused1
             if(ArraySize != 1)
                 break;
@@ -1070,6 +1079,7 @@ void REGNRecord::DeleteField(FIELD_IDENTIFIERS)
                         default:
                             return;
                         }
+                    return;
                 case 11: //weathers
                     if(ListX2FieldID == 0) //weathers
                         {
@@ -1091,6 +1101,7 @@ void REGNRecord::DeleteField(FIELD_IDENTIFIERS)
                         default:
                             return;
                         }
+                    return;
                 default:
                     return;
                 }

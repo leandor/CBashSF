@@ -40,16 +40,16 @@ GPL License and Copyright Notice ============================================
 #include "Records/MGEFRecord.h"
 #include "Records/SCPTRecord.h"
 #include "Records/LTEXRecord.h"
-//#include "Records/ENCHRecord.h"
-//#include "Records/SPELRecord.h"
-//#include "Records/ACTIRecord.h"
-//#include "Records/TACTRecord.h"
-//#include "Records/TERMRecord.h"
-//#include "Records/ARMORecord.h"
-//#include "Records/BOOKRecord.h"
-//#include "Records/CONTRecord.h"
-//#include "Records/DOORRecord.h"
-//#include "Records/INGRRecord.h"
+#include "Records/ENCHRecord.h"
+#include "Records/SPELRecord.h"
+#include "Records/ACTIRecord.h"
+#include "Records/TACTRecord.h"
+#include "Records/TERMRecord.h"
+#include "Records/ARMORecord.h"
+#include "Records/BOOKRecord.h"
+#include "Records/CONTRecord.h"
+#include "Records/DOORRecord.h"
+#include "Records/INGRRecord.h"
 //#include "Records/LIGHRecord.h"
 //#include "Records/MISCRecord.h"
 //#include "Records/STATRecord.h"
@@ -145,16 +145,16 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::MGEFRecord> MGEF;
         FNVGRUPRecords<FNV::SCPTRecord> SCPT;
         FNVGRUPRecords<FNV::LTEXRecord> LTEX;
-        //FNVGRUPRecords<FNV::ENCHRecord> ENCH;
-        //FNVGRUPRecords<FNV::SPELRecord> SPEL;
-        //FNVGRUPRecords<FNV::ACTIRecord> ACTI;
-        //FNVGRUPRecords<FNV::TACTRecord> TACT;
-        //FNVGRUPRecords<FNV::TERMRecord> TERM;
-        //FNVGRUPRecords<FNV::ARMORecord> ARMO;
-        //FNVGRUPRecords<FNV::BOOKRecord> BOOK;
-        //FNVGRUPRecords<FNV::CONTRecord> CONT;
-        //FNVGRUPRecords<FNV::DOORRecord> DOOR;
-        //FNVGRUPRecords<FNV::INGRRecord> INGR;
+        FNVGRUPRecords<FNV::ENCHRecord> ENCH;
+        FNVGRUPRecords<FNV::SPELRecord> SPEL;
+        FNVGRUPRecords<FNV::ACTIRecord> ACTI;
+        FNVGRUPRecords<FNV::TACTRecord> TACT;
+        FNVGRUPRecords<FNV::TERMRecord> TERM;
+        FNVGRUPRecords<FNV::ARMORecord> ARMO;
+        FNVGRUPRecords<FNV::BOOKRecord> BOOK;
+        FNVGRUPRecords<FNV::CONTRecord> CONT;
+        FNVGRUPRecords<FNV::DOORRecord> DOOR;
+        FNVGRUPRecords<FNV::INGRRecord> INGR;
         //FNVGRUPRecords<FNV::LIGHRecord> LIGH;
         //FNVGRUPRecords<FNV::MISCRecord> MISC;
         //FNVGRUPRecords<FNV::STATRecord> STAT;

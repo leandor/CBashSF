@@ -252,6 +252,11 @@ bool GENVARS::operator !=(const GENVARS &other) const
     return !(*this == other);
     }
 
+bool sortVARS::operator()(const GENVARS *lhs, const GENVARS *rhs) const
+    {
+    return lhs->SLSD.value.index < rhs->SLSD.value.index;
+    }
+
 FNVMINSCRIPT::FNVMINSCRIPT()
     {
     //
@@ -2421,6 +2426,576 @@ bool FNVMODEL::operator !=(const FNVMODEL &other) const
     {
     return !(*this == other);
     }
+
+bool FNVCTDA::VisitFormIDs(FormIDOp &op)
+    {
+    Function_Arguments_Iterator curCTDAFunction;
+
+    if(IsUseGlobal())
+        op.Accept(compValue);
+
+    curCTDAFunction = FNVFunction_Arguments.find(ifunc);
+    if(curCTDAFunction != FNVFunction_Arguments.end())
+        {
+        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+        if(CTDAFunction.first == eFORMID)
+            op.Accept(param1);
+        if(CTDAFunction.second == eFORMID)
+            op.Accept(param2);
+        else if(CTDAFunction.second == eVATSPARAM)
+            {
+            if(param1 < VATSFUNCTIONSIZE)
+                {
+                if(VATSFunction_Argument[param1] == eFORMID)
+                    op.Accept(param2);
+                }
+            else
+                printf("Warning: CTDA uses an unknown VATS function (%d)!\n", param1);
+            }
+        }
+    else
+        printf("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
+
+    if(IsResultOnReference())
+        op.Accept(reference);
+    return op.Stop();
+    }
+
+FNVCTDA::FNVCTDA():
+    operType(0),
+    compValue(0.0f),
+    ifunc(0),
+    param1(0),
+    param2(0),
+    runOnType(0),
+    reference(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+FNVCTDA::~FNVCTDA()
+    {
+    //
+    }
+
+bool FNVCTDA::operator ==(const FNVCTDA &other) const
+    {
+    return (operType == other.operType &&
+            AlmostEqual(compValue,other.compValue,2) &&
+            ifunc == other.ifunc &&
+            param1 == other.param1 &&
+            param2 == other.param2 &&
+            runOnType == other.runOnType &&
+            reference == other.reference);
+    }
+
+bool FNVCTDA::operator !=(const FNVCTDA &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FNVCTDA::IsEqual()
+    {
+    return ((operType & 0xF0) == eEqual);
+    }
+
+void FNVCTDA::IsEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    else if(IsEqual())
+        {
+        operType &= 0x0F;
+        operType |= eNotEqual;
+        }
+    }
+
+bool FNVCTDA::IsNotEqual()
+    {
+    return ((operType & 0xF0) == eNotEqual);
+    }
+
+void FNVCTDA::IsNotEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eNotEqual;
+        }
+    else if(IsNotEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool FNVCTDA::IsGreater()
+    {
+    return ((operType & 0xF0) == eGreater);
+    }
+
+void FNVCTDA::IsGreater(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eGreater;
+        }
+    else if(IsGreater())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool FNVCTDA::IsGreaterOrEqual()
+    {
+    return ((operType & 0xF0) == eGreaterOrEqual);
+    }
+
+void FNVCTDA::IsGreaterOrEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eGreaterOrEqual;
+        }
+    else if(IsGreaterOrEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool FNVCTDA::IsLess()
+    {
+    return ((operType & 0xF0) == eLess);
+    }
+
+void FNVCTDA::IsLess(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eLess;
+        }
+    else if(IsLess())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool FNVCTDA::IsLessOrEqual()
+    {
+    return ((operType & 0xF0) == eLessOrEqual);
+    }
+
+void FNVCTDA::IsLessOrEqual(bool value)
+    {
+    if(value)
+        {
+        operType &= 0x0F;
+        operType |= eLessOrEqual;
+        }
+    else if(IsNotEqual())
+        {
+        operType &= 0x0F;
+        operType |= eEqual;
+        }
+    }
+
+bool FNVCTDA::IsType(UINT8 Type)
+    {
+    return ((operType & 0xF0) == (Type & 0xF0));
+    }
+
+void FNVCTDA::SetType(UINT8 Type)
+    {
+    Type &= 0xF0;
+    operType &= 0x0F;
+    operType |= Type;
+    }
+
+bool FNVCTDA::IsNone()
+    {
+    return ((operType & 0x0F) == fIsNone);
+    }
+
+void FNVCTDA::IsNone(bool value)
+    {
+    if(value)
+        operType &= 0xF0;
+    }
+
+bool FNVCTDA::IsOr()
+    {
+    return ((operType & 0x0F) & fIsOr) != 0;
+    }
+
+void FNVCTDA::IsOr(bool value)
+    {
+    operType = value ? (operType | fIsOr) : (operType & ~fIsOr);
+    }
+
+bool FNVCTDA::IsRunOnTarget()
+    {
+    return ((operType & 0x0F) & fIsRunOnTarget) != 0;
+    }
+
+void FNVCTDA::IsRunOnTarget(bool value)
+    {
+    operType = value ? (operType | fIsRunOnTarget) : (operType & ~fIsRunOnTarget);
+    }
+
+bool FNVCTDA::IsUseGlobal()
+    {
+    return ((operType & 0x0F) & fIsUseGlobal) != 0;
+    }
+
+void FNVCTDA::IsUseGlobal(bool value)
+    {
+    operType = value ? (operType | fIsUseGlobal) : (operType & ~fIsUseGlobal);
+    }
+
+bool FNVCTDA::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(Exact)
+        return ((operType & 0x0F) & (Mask & 0x0F)) == Mask;
+    else
+        return ((operType & 0x0F) & (Mask & 0x0F)) != 0;
+    }
+
+void FNVCTDA::SetFlagMask(UINT8 Mask)
+    {
+    Mask &= 0x0F;
+    operType &= 0xF0;
+    operType |= Mask;
+    }
+
+bool FNVCTDA::IsResultOnSubject()
+    {
+    return (runOnType == eSubject);
+    }
+
+void FNVCTDA::IsResultOnSubject(bool value)
+    {
+    runOnType = value ? eSubject : eTarget;
+    }
+
+bool FNVCTDA::IsResultOnTarget()
+    {
+    return (runOnType == eTarget);
+    }
+
+void FNVCTDA::IsResultOnTarget(bool value)
+    {
+    runOnType = value ? eTarget : eSubject;
+    }
+
+bool FNVCTDA::IsResultOnReference()
+    {
+    return (runOnType == eReference);
+    }
+
+void FNVCTDA::IsResultOnReference(bool value)
+    {
+    runOnType = value ? eReference : eSubject;
+    }
+
+bool FNVCTDA::IsResultOnCombatTarget()
+    {
+    return (runOnType == eCombatTarget);
+    }
+
+void FNVCTDA::IsResultOnCombatTarget(bool value)
+    {
+    runOnType = value ? eCombatTarget : eSubject;
+    }
+
+bool FNVCTDA::IsResultOnLinkedReference()
+    {
+    return (runOnType == eLinkedReference);
+    }
+
+void FNVCTDA::IsResultOnLinkedReference(bool value)
+    {
+    runOnType = value ? eLinkedReference : eSubject;
+    }
+
+bool FNVCTDA::IsResultOnType(UINT32 Type)
+    {
+    return runOnType == Type;
+    }
+
+void FNVCTDA::SetResultOnType(UINT32 Type)
+    {
+    runOnType = Mask;
+    }
+
+FNVEFIT::FNVEFIT():
+    magnitude(0),
+    area(0),
+    duration(0),
+    rangeType(0),
+    actorValue(-1)
+    {
+    //
+    }
+
+FNVEFIT::~FNVEFIT()
+    {
+    //
+    }
+
+bool FNVEFIT::operator ==(const FNVEFIT &other) const
+    {
+    return (magnitude == other.magnitude &&
+            area == other.area &&
+            duration == other.duration &&
+            rangeType == other.rangeType &&
+            actorValue == other.actorValue);
+    }
+
+bool FNVEFIT::operator !=(const FNVEFIT &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FNVEffect::VisitFormIDs(FormIDOp &op)
+    {
+    op.Accept(EFID.value);
+    for(UINT32 p = 0; p < CTDA.value.size(); p++)
+        CTDA.value[p]->VisitFormIDs(op);
+    return op.Stop();
+    }
+
+void FNVEffect::Write(FileWriter &writer)
+    {
+    WRITE(EFID);
+    WRITE(EFIT);
+    CTDA.Write(REV32(CTDA), writer, true);
+    }
+
+bool FNVEffect::IsRangeSelf()
+    {
+    return (EFIT.value.rangeType == eRangeSelf);
+    }
+
+void FNVEffect::IsRangeSelf(bool value)
+    {
+    EFIT.value.rangeType = value ? eRangeSelf : eRangeTouch;
+    }
+
+bool FNVEffect::IsRangeTouch()
+    {
+    return (EFIT.value.rangeType == eRangeTouch);
+    }
+
+void FNVEffect::IsRangeTouch(bool value)
+    {
+    EFIT.value.rangeType = value ? eRangeTouch : eRangeSelf;
+    }
+
+bool FNVEffect::IsRangeTarget()
+    {
+    return (EFIT.value.rangeType == eRangeTarget);
+    }
+
+void FNVEffect::IsRangeTarget(bool value)
+    {
+    EFIT.value.rangeType = value ? eRangeTarget : eRangeSelf;
+    }
+
+bool FNVEffect::IsRange(UINT32 Mask)
+    {
+    return (EFIT.value.rangeType == Mask);
+    }
+
+void FNVEffect::SetRange(UINT32 Mask)
+    {
+    EFIT.value.rangeType = Mask;
+    }
+
+bool FNVEffect::operator ==(const FNVEffect &other) const
+    {
+    return (EFID == other.EFID &&
+            EFIT == other.EFIT &&
+            CTDA == other.CTDA);
+    }
+
+bool FNVEffect::operator !=(const FNVEffect &other) const
+    {
+    return !(*this == other);
+    }
+
+DESTDSTD::DESTDSTD():
+    health(0),
+    index(0),
+    stage(0),
+    flags(0),
+    dps(0),
+    explosion(0),
+    debris(0),
+    debrisCount(0)
+    {
+    //
+    }
+
+DESTDSTD::~DESTDSTD()
+    {
+    //
+    }
+
+bool DESTDSTD::operator ==(const DESTDSTD &other) const
+    {
+    return (health == other.health &&
+            index == other.index &&
+            stage == other.stage &&
+            flags == other.flags &&
+            dps == other.dps &&
+            explosion == other.explosion &&
+            debris == other.debris &&
+            debrisCount == other.debrisCount);
+    }
+
+bool DESTDSTD::operator !=(const DESTDSTD &other) const
+    {
+    return !(*this == other);
+    }
+
+void DESTSTAGE::Write(FileWriter &writer)
+    {
+    WRITE(DSTD);
+    if(DMDL.IsLoaded())
+        {
+        WRITE(DMDL);
+        WRITE(DMDT);
+        }
+    writer.record_write_subheader('FTSD', 0);
+    }
+
+bool DESTSTAGE::IsCapDamage()
+    {
+    return (DSTD.value.flags & fIsCapDamage) != 0;
+    }
+
+void DESTSTAGE::IsCapDamage(bool value)
+    {
+    DSTD.value.flags = value ? (DSTD.value.flags | fIsCapDamage) : (DSTD.value.flags & ~fIsCapDamage);
+    }
+
+bool DESTSTAGE::IsDisable()
+    {
+    return (DSTD.value.flags & fIsDisable) != 0;
+    }
+
+void DESTSTAGE::IsDisable(bool value)
+    {
+    DSTD.value.flags = value ? (DSTD.value.flags | fIsDisable) : (DSTD.value.flags & ~fIsDisable);
+    }
+
+bool DESTSTAGE::IsDestroy()
+    {
+    return (DSTD.value.flags & fIsDestroy) != 0;
+    }
+
+void DESTSTAGE::IsDestroy(bool value)
+    {
+    DSTD.value.flags = value ? (DSTD.value.flags | fIsDestroy) : (DSTD.value.flags & ~fIsDestroy);
+    }
+
+bool DESTSTAGE::IsFlagMask(UINT8 Mask, bool Exact=false)
+    {
+    return Exact ? ((DSTD.value.flags & Mask) == Mask) : ((DSTD.value.flags & Mask) != 0);
+    }
+
+void DESTSTAGE::SetFlagMask(UINT8 Mask)
+    {
+    DSTD.value.flags = Mask;
+    }
+
+bool DESTSTAGE::operator ==(const DESTSTAGE &other) const
+    {
+    return (DSTD == other.DSTD &&
+            DMDL.equalsi(other.DMDL) &&
+            DMDT == other.DMDT);
+    }
+
+bool DESTSTAGE::operator !=(const DESTSTAGE &other) const
+    {
+    return !(*this == other);
+    }
+
+bool sortDESTStages::operator()(const DESTSTAGE *lhs, const DESTSTAGE *rhs) const
+    {
+    return lhs->DSTD.value.index < rhs->DSTD.value.index;
+    }
+
+GENDEST::GENDEST():
+    health(),
+    count(),
+    flags()
+    {
+    memset(&unused1[0], 0x00, 2);
+    }
+
+GENDEST::~GENDEST()
+    {
+    //
+    }
+
+bool GENDEST::operator ==(const GENDEST &other) const
+    {
+    return (health == other.health &&
+            count == other.count &&
+            flags == other.flags);
+    }
+bool GENDEST::operator !=(const GENDEST &other) const
+    {
+    return !(*this == other);
+    }
+
+void GENDESTRUCT::Write(FileWriter &writer)
+    {
+    WRITE(DEST);
+    Stages.Write(writer);
+    }
+
+bool GENDESTRUCT::IsVATSTargetable()
+    {
+    return (DEST.value.flags & fIsVATSTargetable) != 0;
+    }
+
+void GENDESTRUCT::IsVATSTargetable(bool value)
+    {
+    DEST.value.flags = value ? (DEST.value.flags | fIsVATSTargetable) : (DEST.value.flags & ~fIsVATSTargetable);
+    }
+
+bool GENDESTRUCT::IsFlagMask(UINT8 Mask, bool Exact=false)
+    {
+    return Exact ? ((DEST.value.flags & Mask) == Mask) : ((DEST.value.flags & Mask) != 0);
+    }
+
+void GENDESTRUCT::SetFlagMask(UINT8 Mask)
+    {
+    DEST.value.flags = Mask;
+    }
+
+bool GENDESTRUCT::operator ==(const GENDESTRUCT &other) const
+    {
+    return (DEST == other.DEST &&
+            Stages == other.Stages);
+    }
+bool GENDESTRUCT::operator !=(const GENDESTRUCT &other) const
+    {
+    return !(*this == other);
+    }
+
+
 
 bool GENXCLP::operator ==(const GENXCLP &other) const
     {

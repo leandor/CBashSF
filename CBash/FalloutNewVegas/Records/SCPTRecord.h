@@ -25,7 +25,6 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-struct sortVARS;
 class SCPTRecord : public FNVRecord //Script
     {
     private:
@@ -82,10 +81,5 @@ class SCPTRecord : public FNVRecord //Script
 
         bool operator ==(const SCPTRecord &other) const;
         bool operator !=(const SCPTRecord &other) const;
-    };
-
-struct sortVARS
-    {
-    bool operator()(const GENVARS *lhs, const GENVARS *rhs) const;
     };
 }

@@ -251,6 +251,7 @@ void * PACKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -495,6 +496,7 @@ void PACKRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

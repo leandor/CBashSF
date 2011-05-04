@@ -24,6 +24,34 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+
+ENCHRecord::ENCHENIT::ENCHENIT():
+    itemType(0),
+    chargeAmount(0),
+    enchantCost(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+ENCHRecord::ENCHENIT::~ENCHENIT()
+    {
+    //
+    }
+
+bool ENCHRecord::ENCHENIT::operator ==(const ENCHENIT &other) const
+    {
+    return (itemType == other.itemType &&
+            //chargeAmount == other.chargeAmount && //unused in FNV
+            //enchantCost == other.enchantCost && //unused in FNV
+            flags == other.flags);
+    }
+
+bool ENCHRecord::ENCHENIT::operator !=(const ENCHENIT &other) const
+    {
+    return !(*this == other);
+    }
+
 ENCHRecord::ENCHRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -53,13 +81,7 @@ ENCHRecord::ENCHRecord(ENCHRecord *srcRecord):
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     ENIT = srcRecord->ENIT;
-    if(srcRecord->EFID.IsLoaded())
-        {
-        EFID.Load();
-        EFID->EFID = srcRecord->EFID->EFID;
-        EFID->EFIT = srcRecord->EFID->EFIT;
-        EFID->CTDA = srcRecord->EFID->CTDA;
-        }
+    Effects = srcRecord->Effects;
     return;
     }
 
@@ -73,84 +95,70 @@ bool ENCHRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(EFID.IsLoaded() && EFID->EFID.IsLoaded())
-        op.Accept(EFID->EFID->value);
-    if(EFID.IsLoaded() && EFID->CTDA.IsLoaded())
-        op.Accept(EFID->CTDA->value);
+    for(UINT32 x = 0; x < Effects.value.size(); x++)
+        Effects.value[x]->VisitFormIDs(op);
 
     return op.Stop();
     }
 
 bool ENCHRecord::IsNoAutoCalc()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoAutoCalc) != 0;
+    return (ENIT.value.flags & fIsNoAutoCalc) != 0;
     }
 
 void ENCHRecord::IsNoAutoCalc(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoAutoCalc) : (Dummy->flags & ~fIsNoAutoCalc);
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsNoAutoCalc) : (ENIT.value.flags & ~fIsNoAutoCalc);
     }
 
 bool ENCHRecord::IsHideEffect()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHideEffect) != 0;
+    return (ENIT.value.flags & fIsHideEffect) != 0;
     }
 
 void ENCHRecord::IsHideEffect(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHideEffect) : (Dummy->flags & ~fIsHideEffect);
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsHideEffect) : (ENIT.value.flags & ~fIsHideEffect);
     }
 
 bool ENCHRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((ENIT.value.flags & Mask) == Mask) : ((ENIT.value.flags & Mask) != 0);
     }
 
 void ENCHRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ENIT.value.flags = Mask;
     }
 
 bool ENCHRecord::IsWeapon()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWeapon);
+    return (ENIT.value.itemType == eWeapon);
     }
 
 void ENCHRecord::IsWeapon(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWeapon : eDummyDefault;
+    ENIT.value.itemType = value ? eWeapon : eScroll;
     }
 
 bool ENCHRecord::IsApparel()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eApparel);
+    return (ENIT.value.itemType == eApparel);
     }
 
 void ENCHRecord::IsApparel(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eApparel : eDummyDefault;
+    ENIT.value.itemType = value ? eApparel : eScroll;
     }
 
 bool ENCHRecord::IsType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return (ENIT.value.itemType == Type);
     }
 
 void ENCHRecord::SetType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ENIT.value.itemType = Type;
     }
 
 UINT32 ENCHRecord::GetType()
@@ -195,16 +203,18 @@ SINT32 ENCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 ENIT.Read(buffer, subSize, curPos);
                 break;
             case 'DIFE':
-                EFID.Load();
-                EFID->EFID.Read(buffer, subSize, curPos);
+                Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFID.Read(buffer, subSize, curPos);
                 break;
             case 'TIFE':
-                EFID.Load();
-                EFID->EFIT.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
                 break;
             case 'ADTC':
-                EFID.Load();
-                EFID->CTDA.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -225,7 +235,7 @@ SINT32 ENCHRecord::Unload()
     EDID.Unload();
     FULL.Unload();
     ENIT.Unload();
-    EFID.Unload();
+    Effects.Unload();
     return 1;
     }
 
@@ -234,20 +244,7 @@ SINT32 ENCHRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(FULL);
     WRITE(ENIT);
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            SaveHandler.writeSubRecord('DIFE', EFID->EFID.value, EFID->EFID.GetSize());
-
-        if(EFID->EFIT.IsLoaded())
-            SaveHandler.writeSubRecord('TIFE', EFID->EFIT.value, EFID->EFIT.GetSize());
-
-        if(EFID->CTDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADTC', EFID->CTDA.value, EFID->CTDA.GetSize());
-
-        }
-
+    Effects.Write(writer);
     return -1;
     }
 
@@ -256,7 +253,7 @@ bool ENCHRecord::operator ==(const ENCHRecord &other) const
     return (EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             ENIT == other.ENIT &&
-            EFID == other.EFID);
+            Effects == other.Effects);
     }
 
 bool ENCHRecord::operator !=(const ENCHRecord &other) const

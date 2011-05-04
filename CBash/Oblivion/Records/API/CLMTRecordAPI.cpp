@@ -122,6 +122,7 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 6: //sunPath
             return FNAM.value;
         case 7: //glarePath
@@ -264,6 +265,7 @@ void CLMTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 6: //sunPath
             FNAM.Unload();
             return;

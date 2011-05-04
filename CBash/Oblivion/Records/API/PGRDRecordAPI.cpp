@@ -210,6 +210,7 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 7: //pgag_p
             *FieldValues = PGAG.value;
             return NULL;
@@ -234,9 +235,9 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 case 5: //z
                     return &PGRI[ListIndex].z;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 10: //pgrl
             if(ListIndex >= PGRL.size())
                 return NULL;
@@ -249,9 +250,9 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     *FieldValues = (PGRL[ListIndex]->points.size() > 1) ? &PGRL[ListIndex]->points[1] : NULL;
                     return NULL;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -336,10 +337,13 @@ bool PGRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     break;
                 case 3: //x
                     PGRI[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    break;
                 case 4: //y
                     PGRI[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    break;
                 case 5: //z
                     PGRI[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    break;
                 default:
                     break;
                 }
@@ -441,6 +445,7 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 7: //pgag_p
             PGAG.Unload();
             return;
@@ -478,6 +483,7 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 10: //pgrl
             if(ListFieldID == 0) //pgrl
                 {
@@ -503,6 +509,7 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

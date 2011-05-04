@@ -230,9 +230,9 @@ void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 case 5: //name
                     return VARS.value[ListIndex]->SCVR.value;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 16: //references
             for(UINT32 x = 0; x < SCR_.value.size(); ++x)
                 ((FORMIDARRAY)FieldValues)[x] = SCR_.value[x]->reference;
@@ -476,6 +476,7 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 16: //references
             if(ListFieldID == 0) //references
                 {
@@ -495,6 +496,7 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

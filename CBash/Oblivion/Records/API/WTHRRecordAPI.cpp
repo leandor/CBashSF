@@ -1253,6 +1253,7 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -2631,6 +2632,7 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 204: //convenience deleter
             NAM0.value.upperSky = defaultColors;
             return;

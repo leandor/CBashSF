@@ -132,6 +132,11 @@ struct GENVARS
     bool operator !=(const GENVARS &other) const;
     };
 
+struct sortVARS
+    {
+    bool operator()(const GENVARS *lhs, const GENVARS *rhs) const;
+    };
+
 struct FNVSCHR
     {
     UINT8   unused1[4];
@@ -1175,6 +1180,213 @@ struct FNVMODEL
     bool operator !=(const FNVMODEL &other) const;
     };
 
+struct FNVCTDA //Condition
+    {
+    UINT8   operType, unused1[3]; //Type, Unused
+    FORMID_OR_FLOAT32 compValue; //Float or Global (if fIsUseGlobal is true)
+    UINT32  ifunc;
+    FORMID_OR_UINT32 param1, param2;
+    UINT32  runOnType; //Run On
+    FORMID_OR_UINT32 reference; //Reference (if runOn == 2) or Unused
+
+    enum operTypeType
+        {
+        eEqual          = 0x00,
+        eNotEqual       = 0x20,
+        eGreater        = 0x40,
+        eGreaterOrEqual = 0x60,
+        eLess           = 0x80,
+        eLessOrEqual    = 0xA0
+        };
+
+    enum operTypeFlag
+        {
+        fIsNone        = 0x00,
+        fIsOr          = 0x01,
+        fIsRunOnTarget = 0x02,
+        fIsUseGlobal   = 0x04
+        };
+
+    enum operRunOnType
+        {
+        eSubject = 0,
+        eTarget,
+        eReference,
+        eCombatTarget,
+        eLinkedReference
+        };
+
+    FNVCTDA();
+    ~FNVCTDA();
+
+    bool VisitFormIDs(FormIDOp &op);
+
+    bool operator ==(const FNVCTDA &other) const;
+    bool operator !=(const FNVCTDA &other) const;
+
+    bool IsEqual();
+    void IsEqual(bool value);
+    bool IsNotEqual();
+    void IsNotEqual(bool value);
+    bool IsGreater();
+    void IsGreater(bool value);
+    bool IsGreaterOrEqual();
+    void IsGreaterOrEqual(bool value);
+    bool IsLess();
+    void IsLess(bool value);
+    bool IsLessOrEqual();
+    void IsLessOrEqual(bool value);
+    bool IsType(UINT8 Type);
+    void SetType(UINT8 Type);
+
+    bool IsNone();
+    void IsNone(bool value);
+    bool IsOr();
+    void IsOr(bool value);
+    bool IsRunOnTarget();
+    void IsRunOnTarget(bool value);
+    bool IsUseGlobal();
+    void IsUseGlobal(bool value);
+    bool IsFlagMask(UINT8 Mask, bool Exact=false);
+    void SetFlagMask(UINT8 Mask);
+
+    bool IsResultOnSubject();
+    void IsResultOnSubject(bool value);
+    bool IsResultOnTarget();
+    void IsResultOnTarget(bool value);
+    bool IsResultOnReference();
+    void IsResultOnReference(bool value);
+    bool IsResultOnCombatTarget();
+    void IsResultOnCombatTarget(bool value);
+    bool IsResultOnLinkedReference();
+    void IsResultOnLinkedReference(bool value);
+    bool IsResultOnType(UINT32 Type);
+    void SetResultOnType(UINT32 Type);
+    };
+
+struct FNVEFIT
+    {
+    UINT32  magnitude, area, duration, rangeType;
+    SINT32 actorValue;
+
+    FNVEFIT();
+    ~FNVEFIT();
+
+    bool operator ==(const FNVEFIT &other) const;
+    bool operator !=(const FNVEFIT &other) const;
+    };
+
+struct FNVEffect
+    {
+    ReqSimpleSubRecord<FORMID> EFID; //Effect ID
+    ReqSubRecord<FNVEFIT> EFIT; //Effect Data
+    OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
+
+    enum eRanges
+        {
+        eRangeSelf   = 0,
+        eRangeTouch  = 1,
+        eRangeTarget = 2
+        };
+
+    bool VisitFormIDs(FormIDOp &op);
+    void Write(FileWriter &writer);
+
+    bool IsRangeSelf();
+    void IsRangeSelf(bool value);
+    bool IsRangeTouch();
+    void IsRangeTouch(bool value);
+    bool IsRangeTarget();
+    void IsRangeTarget(bool value);
+    bool IsRange(UINT32 Mask);
+    void SetRange(UINT32 Mask);
+
+    bool operator ==(const FNVEffect &other) const;
+    bool operator !=(const FNVEffect &other) const;
+    };
+
+struct DESTDSTD //Destruction Stage Data
+    {
+    UINT8   health, index, stage, flags; //Health, Index, Damage Stage, Flags
+    SINT32  dps; //Self Damage per Second
+    FORMID  explosion, debris;
+    SINT32  debrisCount;
+
+    DESTDSTD();
+    ~DESTDSTD();
+
+    bool operator ==(const DESTDSTD &other) const;
+    bool operator !=(const DESTDSTD &other) const;
+    };
+
+struct DESTSTAGE //Destructable Stage
+    {
+    ReqSubRecord<DESTDSTD> DSTD; //Destruction Stage Data
+    StringRecord DMDL; //Model Filename
+    RawRecord DMDT; //Texture Files Hashes
+
+    enum flagsFlags
+        {
+        fIsCapDamage = 0x01,
+        fIsDisable   = 0x02,
+        fIsDestroy   = 0x04
+        };
+
+    void Write(FileWriter &writer);
+
+    bool   IsCapDamage();
+    void   IsCapDamage(bool value);
+    bool   IsDisable();
+    void   IsDisable(bool value);
+    bool   IsDestroy();
+    void   IsDestroy(bool value);
+    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+    void   SetFlagMask(UINT8 Mask);
+
+    bool operator ==(const DESTSTAGE &other) const;
+    bool operator !=(const DESTSTAGE &other) const;
+    };
+
+struct sortDESTStages
+    {
+    bool operator()(const DESTSTAGE *lhs, const DESTSTAGE *rhs) const;
+    };
+
+struct GENDEST //Destructable Header
+    {
+    SINT32  health; //Health
+    UINT8   count; //Count
+    UINT8   flags; //Flags
+    UINT8   unused1[2]; //Unused
+
+    GENDEST();
+    ~GENDEST();
+
+    bool operator ==(const GENDEST &other) const;
+    bool operator !=(const GENDEST &other) const;
+    };
+
+struct GENDESTRUCT //Destructable
+    {
+    ReqSubRecord<GENDEST> DEST; //Destructable Header
+    OrderedSparseArray<DESTSTAGE *, sortDESTStages> Stages; //Destructable Stages
+
+    enum flagsFlags
+        {
+        fIsVATSTargetable = 0x01
+        };
+
+    void Write(FileWriter &writer);
+
+    bool   IsVATSTargetable();
+    void   IsVATSTargetable(bool value);
+    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+    void   SetFlagMask(UINT8 Mask);
+
+    bool operator ==(const GENDESTRUCT &other) const;
+    bool operator !=(const GENDESTRUCT &other) const;
+    };
+
 //Unfilled
 struct FNVXOWN
     {
@@ -1275,210 +1487,6 @@ struct GENBMDT
 
     bool operator ==(const GENBMDT &other) const;
     bool operator !=(const GENBMDT &other) const;
-    };
-
-struct GENDEST //Destructable Header
-    {
-    SINT32  health; //Health
-    UINT8   count; //Count
-    UINT8   flags; //Flags
-    UINT8   unused[2]; //Unused
-
-    GENDEST();
-    ~GENDEST();
-
-    bool operator ==(const GENDEST &other) const;
-    bool operator !=(const GENDEST &other) const;
-    };
-
-struct DESTDSTD //Destruction Stage Data
-    {
-    UINT8   health, index, stage, flags; //Health, Index, Damage Stage, Flags
-    SINT32  dps; //Self Damage per Second
-    FORMID  explosion, debris;
-    SINT32  debrisCount;
-
-    DESTDSTD();
-    ~DESTDSTD();
-
-    bool operator ==(const DESTDSTD &other) const;
-    bool operator !=(const DESTDSTD &other) const;
-    };
-
-struct DESTMODEL
-    {
-    StringRecord MODL; //Model Filename
-    RawRecord MODT; //Texture Files Hashes
-
-    bool operator ==(const DESTMODEL &other) const;
-    bool operator !=(const DESTMODEL &other) const;
-    };
-
-struct DESTSTAGE //Destructable Stage
-    {
-    OptSubRecord<DESTDSTD> DSTD; //Destruction Stage Data
-    std::vector<DESTMODEL *> Models;
-
-    bool operator ==(const DESTSTAGE &other) const;
-    bool operator !=(const DESTSTAGE &other) const;
-    };
-
-struct GENDESTRUCT //Destructable
-    {
-    OptSubRecord<GENDEST> DEST; //Destructable Header
-    std::vector<DESTSTAGE *> Stages; //Destructable Stages
-
-    enum flagsFlags
-        {
-        fIsVATSTargetable = 0x01
-        };
-
-    GENDESTRUCT();
-    ~GENDESTRUCT();
-
-    bool   IsVATSTargetable();
-    void   IsVATSTargetable(bool value);
-    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-    void   SetFlagMask(UINT8 Mask);
-
-    bool operator ==(const GENDESTRUCT &other) const;
-    bool operator !=(const GENDESTRUCT &other) const;
-    };
-
-struct FNVCTDA //Condition
-    {
-    UINT8   operType, unused1[3]; //Type, Unused
-    FORMID_OR_FLOAT32 compValue; //Float or Global (if fIsUseGlobal is true)
-    UINT32  ifunc;
-    FORMID_OR_UINT32 param1, param2;
-    UINT32  runOn; //Run On
-    FORMID_OR_UINT32 reference; //Reference (if runOn == 2) or Unused
-
-    enum operTypeType
-        {
-        eEqual          = 0x00,
-        eNotEqual       = 0x20,
-        eGreater        = 0x40,
-        eGreaterOrEqual = 0x60,
-        eLess           = 0x80,
-        eLessOrEqual    = 0xA0
-        };
-
-    enum operTypeFlag
-        {
-        fIsNone        = 0x00,
-        fIsOr          = 0x01,
-        fIsRunOnTarget = 0x02,
-        fIsUseGlobal   = 0x04
-        };
-
-    enum operRunOnType
-        {
-        eSubject = 0,
-        eTarget,
-        eReference,
-        eCombatTarget,
-        eLinkedReference
-        };
-
-    FNVCTDA();
-    ~FNVCTDA();
-
-    bool operator ==(const FNVCTDA &other) const;
-    bool operator !=(const FNVCTDA &other) const;
-
-    bool IsEqual();
-    void IsEqual(bool value);
-    bool IsNotEqual();
-    void IsNotEqual(bool value);
-    bool IsGreater();
-    void IsGreater(bool value);
-    bool IsGreaterOrEqual();
-    void IsGreaterOrEqual(bool value);
-    bool IsLess();
-    void IsLess(bool value);
-    bool IsLessOrEqual();
-    void IsLessOrEqual(bool value);
-    bool IsType(UINT8 Type);
-    void SetType(UINT8 Type);
-
-    bool IsNone();
-    void IsNone(bool value);
-    bool IsOr();
-    void IsOr(bool value);
-    bool IsRunOnTarget();
-    void IsRunOnTarget(bool value);
-    bool IsUseGlobal();
-    void IsUseGlobal(bool value);
-    bool IsFlagMask(UINT8 Mask, bool Exact=false);
-    void SetFlagMask(UINT8 Mask);
-
-    bool   IsResultOnSubject();
-    void   IsResultOnSubject(bool value);
-    bool   IsResultOnTarget();
-    void   IsResultOnTarget(bool value);
-    bool   IsResultOnReference();
-    void   IsResultOnReference(bool value);
-    bool   IsResultOnCombatTarget();
-    void   IsResultOnCombatTarget(bool value);
-    bool   IsResultOnLinkedReference();
-    void   IsResultOnLinkedReference(bool value);
-    bool   IsResultOnType(UINT8 Type, bool Exact=false);
-    void   SetResultOnType(UINT8 Type);
-    };
-
-struct FNVENIT //Effect Data
-    {
-    SINT32  value; //Value
-    UINT8   flags; //Flags?
-    UINT8   unused1[3]; //Unused
-    FORMID  withdrawalEffect; //Withdrawal Effect
-    FLOAT32 addictionChance; //Addiction Chance
-    FORMID  consumeSound; //Sound - Consume
-
-    FNVENIT();
-    ~FNVENIT();
-
-    bool operator ==(const FNVENIT &other) const;
-    bool operator !=(const FNVENIT &other) const;
-    };
-
-struct FNVEFIT
-    {
-    UINT32  magnitude, area, duration, rangeType;
-    ACTORVALUE actorValue;
-
-    FNVEFIT();
-    ~FNVEFIT();
-
-    bool operator ==(const FNVEFIT &other) const;
-    bool operator !=(const FNVEFIT &other) const;
-    };
-
-struct FNVEffect
-    {
-    ReqSimpleSubRecord<UINT32> EFID; //Effect ID
-    ReqSubRecord<FNVEFIT> EFIT; //Effect Data
-    std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
-
-    enum eRanges
-        {
-        eRangeSelf   = 0,
-        eRangeTouch  = 1,
-        eRangeTarget = 2
-        };
-
-    bool operator ==(const FNVEffect &other) const;
-    bool operator !=(const FNVEffect &other) const;
-
-    bool IsRangeSelf();
-    void IsRangeSelf(bool value);
-    bool IsRangeTouch();
-    void IsRangeTouch(bool value);
-    bool IsRangeTarget();
-    void IsRangeTarget(bool value);
-    bool IsRange(UINT32  Mask);
-    void SetRange(UINT32  Mask);
     };
 
 struct FNVAIDT

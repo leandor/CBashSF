@@ -258,6 +258,10 @@
     #define ACTORVALUE unsigned long
 #endif
 
+#ifndef FORMID_OR_ACTORVALUE_OR_UINT32
+    #define FORMID_OR_ACTORVALUE_OR_UINT32 unsigned long
+#endif
+
 #ifndef FORMIDARRAY
     #define FORMIDARRAY unsigned long *
 #endif

@@ -136,9 +136,9 @@ void * LVLCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     *FieldValues = &Entries[ListIndex]->value.unused2[0];
                     return NULL;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -289,6 +289,7 @@ void LVLCRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

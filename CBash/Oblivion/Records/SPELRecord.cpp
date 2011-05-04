@@ -208,7 +208,7 @@ void SPELRecord::IsStartSpell(bool value)
 
 bool SPELRecord::IsSilenceImmune()
     {
-    return (SPIT.value.flags & fIsSilenceImmune) != fIsSilenceImmune;
+    return (SPIT.value.flags & fIsSilenceImmune) == fIsSilenceImmune;
     }
 
 void SPELRecord::IsSilenceImmune(bool value)

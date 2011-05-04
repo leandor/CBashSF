@@ -392,6 +392,7 @@ void * SPELRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         //OBME Fields
         case 12: //recordVersion
             return OBME.IsLoaded() ? &OBME->OBME.value.recordVersion : NULL;
@@ -771,6 +772,7 @@ void SPELRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         //OBME Fields
         case 12: //recordVersion
             if(OBME.IsLoaded())

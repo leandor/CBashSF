@@ -459,6 +459,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 9: //skill1
             return &DATA.value.skills[0].value;
         case 10: //skill1Boost
@@ -1166,6 +1167,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 9: //skill1
             DATA.value.skills[0].value = defaultDATA.skills[0].value;
             return;

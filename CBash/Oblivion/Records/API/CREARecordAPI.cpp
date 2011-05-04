@@ -352,10 +352,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &ACBS.value.calcMax;
         case 19: //factions
             if(ListIndex >= SNAM.size())
-                {
-                *FieldValues = NULL;
                 return NULL;
-                }
 
             switch(ListFieldID)
                 {
@@ -367,9 +364,9 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     *FieldValues = &SNAM[ListIndex]->value.unused1[0];
                     return NULL;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 20: //deathItem
             return INAM.IsLoaded() ? &INAM.value : NULL;
         case 21: //script
@@ -387,6 +384,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 23: //aggression
             return &AIDT.value.aggression;
         case 24: //confidence
@@ -478,6 +476,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -875,6 +874,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 20: //deathItem
             INAM.Unload();
             return;
@@ -904,6 +904,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 23: //aggression
             AIDT.value.aggression = defaultAIDT.aggression;
             return;

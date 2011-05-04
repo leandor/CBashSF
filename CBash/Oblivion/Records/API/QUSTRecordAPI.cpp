@@ -518,6 +518,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 11: //stages
             if(ListIndex >= Stages.size())
                 return NULL;
@@ -528,10 +529,8 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return &Stages[ListIndex]->INDX.value;
                 case 2: //entries
                     if(ListX2Index >= Stages[ListIndex]->Entries.size())
-                        {
-                        *FieldValues = NULL;
                         return NULL;
-                        }
+
                     switch(ListX2FieldID)
                         {
                         case 1: //flags
@@ -561,6 +560,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                                 default:
                                     return NULL;
                                 }
+                            return NULL;
                         case 3: //text
                             return Stages[ListIndex]->Entries[ListX2Index]->CNAM.value;
                         case 4: //unused1
@@ -586,9 +586,11 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 default:
                     return NULL;
                 }
+            return NULL;
         case 12: //targets
             if(ListIndex >= Targets.size())
                 return NULL;
@@ -627,9 +629,11 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
+                    return NULL;
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -1081,6 +1085,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 11: //stages
             if(ListFieldID == 0) //stages
                 {
@@ -1158,6 +1163,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 default:
                                     return;
                                 }
+                            return;
                         case 3: //text
                             Stages[ListIndex]->Entries[ListX2Index]->CNAM.Unload();
                             return;
@@ -1206,9 +1212,11 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 default:
                                     return;
                                 }
+                            return;
                         default:
                             return;
                         }
+                    return;
                 default:
                     return;
                 }
@@ -1281,6 +1289,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                         default:
                             return;
                         }
+                    return;
                 default:
                     return;
                 }

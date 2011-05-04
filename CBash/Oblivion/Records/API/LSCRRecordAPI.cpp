@@ -108,6 +108,7 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }

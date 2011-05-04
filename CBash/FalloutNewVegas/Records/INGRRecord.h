@@ -28,6 +28,19 @@ namespace FNV
 class INGRRecord : public FNVRecord //Ingredient
     {
     private:
+        struct INGRENIT //Effect Data
+            {
+            SINT32  value; //Value
+            UINT8   flags; //Flags
+            UINT8   unused1[3]; //Unused
+
+            INGRENIT();
+            ~INGRENIT();
+
+            bool operator ==(const INGRENIT &other) const;
+            bool operator !=(const INGRENIT &other) const;
+            };
+
         enum eEquipTypes
             {
             eNone    = -1,
@@ -56,8 +69,8 @@ class INGRRecord : public FNVRecord //Ingredient
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSimpleSubRecord<FLOAT32> DATA; //Weight
-        OptSubRecord<FNVENIT> ENIT; //Effect Data
-        std::vector<FNVEffect *> Effects; //Effects
+        OptSubRecord<INGRENIT> ENIT; //Effect Data
+        UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         INGRRecord(unsigned char *_recData=NULL);
         INGRRecord(INGRRecord *srcRecord);

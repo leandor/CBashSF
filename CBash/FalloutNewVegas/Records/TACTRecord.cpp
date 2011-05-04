@@ -53,19 +53,9 @@ TACTRecord::TACTRecord(TACTRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     SNAM = srcRecord->SNAM;
     VNAM = srcRecord->VNAM;
     INAM = srcRecord->INAM;
@@ -87,23 +77,30 @@ bool TACTRecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
+
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+        op.Accept(SCRI.value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(VNAM.IsLoaded())
-        op.Accept(VNAM->value);
+        op.Accept(VNAM.value);
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
 
     return op.Stop();
     }
 
 UINT32 TACTRecord::GetType()
     {
-    return 'TCAT';
+    return 'ITCA';
     }
 
 STRING TACTRecord::GetStrType()
@@ -166,24 +163,28 @@ SINT32 TACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'MANS':
                 SNAM.Read(buffer, subSize, curPos);
@@ -215,7 +216,7 @@ SINT32 TACTRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     SCRI.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     SNAM.Unload();
     VNAM.Unload();
     INAM.Unload();
@@ -227,34 +228,12 @@ SINT32 TACTRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
-
+    Destructable.Write(writer);
     WRITE(SNAM);
     WRITE(VNAM);
     WRITE(INAM);
-
     return -1;
     }
 
@@ -263,12 +242,12 @@ bool TACTRecord::operator ==(const TACTRecord &other) const
     return (EDID.equalsi(other.EDID) &&
             OBND == other.OBND &&
             FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
             SCRI == other.SCRI &&
-            DEST == other.DEST &&
             SNAM == other.SNAM &&
             VNAM == other.VNAM &&
-            INAM == other.INAM);
+            INAM == other.INAM &&
+            MODL == other.MODL &&
+            Destructable == other.Destructable);
     }
 
 bool TACTRecord::operator !=(const TACTRecord &other) const

@@ -30,8 +30,8 @@ class ENCHRecord : public FNVRecord //Object Effect
     private:
         struct ENCHENIT
             {
-            UINT32 itemType;
-            UINT8  unused1[4], unused2[4], flags, unused1[3];
+            UINT32 itemType, chargeAmount, enchantCost;
+            UINT8  flags, unused1[3];
 
             ENCHENIT();
             ~ENCHENIT();
@@ -54,8 +54,8 @@ class ENCHRecord : public FNVRecord //Object Effect
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<ENCHENIT> ENIT; //Effect Data
-        std::vector<FNVEffect *> Effects; //Effects
+        ReqSubRecord<ENCHENIT> ENIT; //Effect Data
+        UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         ENCHRecord(unsigned char *_recData=NULL);
         ENCHRecord(ENCHRecord *srcRecord);

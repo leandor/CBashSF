@@ -358,10 +358,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &ACBS.value.calcMax;
         case 16: //factions
             if(ListIndex >= SNAM.size())
-                {
-                *FieldValues = NULL;
                 return NULL;
-                }
 
             switch(ListFieldID)
                 {
@@ -373,9 +370,9 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     *FieldValues = &SNAM[ListIndex]->value.unused1[0];
                     return NULL;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 17: //deathItem
             return INAM.IsLoaded() ? &INAM.value : NULL;
         case 18: //race
@@ -398,6 +395,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 22: //aggression
             return &AIDT.value.aggression;
         case 23: //confidence
@@ -929,6 +927,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 17: //deathItem
             INAM.Unload();
             return;
@@ -964,6 +963,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 22: //aggression
             AIDT.value.aggression = defaultAIDT.aggression;
             return;

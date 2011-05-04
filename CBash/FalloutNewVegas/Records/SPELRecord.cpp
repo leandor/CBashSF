@@ -24,6 +24,33 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+SPELRecord::SPELSPIT::SPELSPIT():
+    spellType(0),
+    cost(0),
+    levelType(0),
+    flags(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+SPELRecord::SPELSPIT::~SPELSPIT()
+    {
+    //
+    }
+
+bool SPELRecord::SPELSPIT::operator ==(const SPELSPIT &other) const
+    {
+    return (spellType == other.spellType &&
+            //cost == other.cost && //Unused in FNV
+            //levelType == other.levelType && //Unused in FNV
+            flags == other.flags);
+    }
+
+bool SPELRecord::SPELSPIT::operator !=(const SPELSPIT &other) const
+    {
+    return !(*this == other);
+    }
+
 SPELRecord::SPELRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -53,13 +80,7 @@ SPELRecord::SPELRecord(SPELRecord *srcRecord):
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     SPIT = srcRecord->SPIT;
-    if(srcRecord->EFID.IsLoaded())
-        {
-        EFID.Load();
-        EFID->EFID = srcRecord->EFID->EFID;
-        EFID->EFIT = srcRecord->EFID->EFIT;
-        EFID->CTDA = srcRecord->EFID->CTDA;
-        }
+    Effects = srcRecord->Effects;
     return;
     }
 
@@ -73,10 +94,8 @@ bool SPELRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(EFID.IsLoaded() && EFID->EFID.IsLoaded())
-        op.Accept(EFID->EFID->value);
-    if(EFID.IsLoaded() && EFID->CTDA.IsLoaded())
-        op.Accept(EFID->CTDA->value);
+    for(UINT32 x = 0; x < Effects.value.size(); x++)
+        Effects.value[x]->VisitFormIDs(op);
 
     return op.Stop();
     }
@@ -103,7 +122,7 @@ void SPELRecord::IsStartSpell(bool value)
 
 bool SPELRecord::IsSilenceImmune()
     {
-    return (SPIT.value.flags & fIsSilenceImmune) != fIsSilenceImmune;
+    return (SPIT.value.flags & fIsSilenceImmune) == fIsSilenceImmune;
     }
 
 void SPELRecord::IsSilenceImmune(bool value)
@@ -210,7 +229,7 @@ void SPELRecord::IsActorEffect(bool value)
     {
     if(value)
         SPIT.value.spellType = eActorEffect;
-    else if(IsSpell())
+    else if(IsActorEffect())
         SPIT.value.spellType = eDisease;
     }
 
@@ -288,7 +307,7 @@ void SPELRecord::IsAddiction(bool value)
     {
     if(value)
         SPIT.value.spellType = eAddiction;
-    else if(IsPoison())
+    else if(IsAddiction())
         SPIT.value.spellType = eActorEffect;
     }
 
@@ -301,8 +320,6 @@ void SPELRecord::SetType(UINT32 Type)
     {
     SPIT.value.spellType = Type;
     }
-
-
 
 UINT32 SPELRecord::GetType()
     {
@@ -346,16 +363,18 @@ SINT32 SPELRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SPIT.Read(buffer, subSize, curPos);
                 break;
             case 'DIFE':
-                EFID.Load();
-                EFID->EFID.Read(buffer, subSize, curPos);
+                Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFID.Read(buffer, subSize, curPos);
                 break;
             case 'TIFE':
-                EFID.Load();
-                EFID->EFIT.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
                 break;
             case 'ADTC':
-                EFID.Load();
-                EFID->CTDA.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -376,7 +395,7 @@ SINT32 SPELRecord::Unload()
     EDID.Unload();
     FULL.Unload();
     SPIT.Unload();
-    EFID.Unload();
+    Effects.Unload();
     return 1;
     }
 
@@ -385,20 +404,7 @@ SINT32 SPELRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(FULL);
     WRITE(SPIT);
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            SaveHandler.writeSubRecord('DIFE', EFID->EFID.value, EFID->EFID.GetSize());
-
-        if(EFID->EFIT.IsLoaded())
-            SaveHandler.writeSubRecord('TIFE', EFID->EFIT.value, EFID->EFIT.GetSize());
-
-        if(EFID->CTDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADTC', EFID->CTDA.value, EFID->CTDA.GetSize());
-
-        }
-
+    Effects.Write(writer);
     return -1;
     }
 
@@ -407,7 +413,7 @@ bool SPELRecord::operator ==(const SPELRecord &other) const
     return (EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             SPIT == other.SPIT &&
-            EFID == other.EFID);
+            Effects == other.Effects);
     }
 
 bool SPELRecord::operator !=(const SPELRecord &other) const

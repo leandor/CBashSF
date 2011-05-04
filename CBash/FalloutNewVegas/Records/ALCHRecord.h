@@ -28,6 +28,22 @@ namespace FNV
 class ALCHRecord : public FNVRecord //Ingestible
     {
     private:
+        struct ALCHENIT //Effect Data
+            {
+            SINT32  value; //Value
+            UINT8   flags; //Flags?
+            UINT8   unused1[3]; //Unused
+            FORMID  withdrawalEffect; //Withdrawal Effect
+            FLOAT32 addictionChance; //Addiction Chance
+            FORMID  consumeSound; //Sound - Consume
+
+            ALCHENIT();
+            ~ALCHENIT();
+
+            bool operator ==(const ALCHENIT &other) const;
+            bool operator !=(const ALCHENIT &other) const;
+            };
+
         enum eEquipTypes
             {
             eNone    = -1,
@@ -59,8 +75,8 @@ class ALCHRecord : public FNVRecord //Ingestible
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSimpleSubRecord<FLOAT32> DATA; //Weight
-        OptSubRecord<FNVENIT> ENIT; //Effect Data
-        std::vector<FNVEffect *> Effects; //Effects
+        OptSubRecord<ALCHENIT> ENIT; //Effect Data
+        UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         ALCHRecord(unsigned char *_recData=NULL);
         ALCHRecord(ALCHRecord *srcRecord);

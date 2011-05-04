@@ -169,6 +169,7 @@ void * HDPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 12: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         case 13: //flags

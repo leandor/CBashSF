@@ -335,9 +335,9 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 case 7: //actorNotes
                     return Responses[ListIndex]->NAM2.value;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 12: //conditions
             if(ListIndex >= CTDA.size())
                 return NULL;
@@ -363,6 +363,7 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 13: //choices
             *FieldValues = TCLT.size() ? &TCLT[0] : NULL;
             return NULL;
@@ -741,6 +742,7 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 13: //choices
             TCLT.clear();
             return;
@@ -792,6 +794,7 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

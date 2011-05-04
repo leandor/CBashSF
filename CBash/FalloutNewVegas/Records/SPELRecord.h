@@ -64,8 +64,8 @@ class SPELRecord : public FNVRecord //Actor Effect
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSubRecord<SPELSPIT> SPIT; //Data
-        std::vector<FNVEffect *> Effects; //Effects
+        ReqSubRecord<SPELSPIT> SPIT; //Data
+        UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         SPELRecord(unsigned char *_recData=NULL);
         SPELRecord(SPELRecord *srcRecord);

@@ -174,6 +174,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 9: //flags
             return &DATA.value.flags;
         case 10: //unused1
@@ -198,6 +199,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 13: //reputation
             return WMI1.IsLoaded() ? &WMI1.value : NULL;
         default:
@@ -361,6 +363,7 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 9: //flags
             DATA.value.flags = defaultDATA.flags;
             return;
@@ -398,6 +401,7 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 13: //reputation
             WMI1.Unload();
             return;

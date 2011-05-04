@@ -43,15 +43,15 @@ class TERMRecord : public FNVRecord //Terminal
             {
             StringRecord ITXT; //Text
             StringRecord RNAM; //Result Text
-            OptSimpleSubRecord<UINT8> ANAM; //Flags
+            ReqSimpleSubRecord<UINT8> ANAM; //Flags
             OptSimpleSubRecord<FORMID> INAM; //Display Note
             OptSimpleSubRecord<FORMID> TNAM; //Sub Menu
             ReqSubRecord<FNVSCHR> SCHR;
             RawRecord SCDA;
             NonNullStringRecord SCTX;
-            std::vector<GENVARS *> VARS;
-            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
-            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+            OrderedSparseArray<GENVARS *, sortVARS> VARS;
+            OrderedSparseArray<GENSCR_ *> SCR_;
+            OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
 
             enum flagFlags
                 {
@@ -64,12 +64,14 @@ class TERMRecord : public FNVRecord //Terminal
                 fIsEnabled = 0x0001
                 };
 
-            bool   IsAddNote();
-            void   IsAddNote(bool value);
-            bool   IsForceRedraw();
-            void   IsForceRedraw(bool value);
-            bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-            void   SetFlagMask(UINT8 Mask);
+            void Write(FileWriter &writer);
+
+            bool IsAddNote();
+            void IsAddNote(bool value);
+            bool IsForceRedraw();
+            void IsForceRedraw(bool value);
+            bool IsFlagMask(UINT8 Mask, bool Exact=false);
+            void SetFlagMask(UINT8 Mask);
 
             bool IsScriptEnabled();
             void IsScriptEnabled(bool value);
@@ -122,8 +124,8 @@ class TERMRecord : public FNVRecord //Terminal
         StringRecord DESC; //Description
         OptSimpleSubRecord<FORMID> SNAM; //Sound - Looping
         OptSimpleSubRecord<FORMID> PNAM; //Password Note
-        OptSubRecord<TERMDNAM> DNAM; //Data
-        std::vector<TERMMenu *> Menus; // Menu Items;
+        ReqSubRecord<TERMDNAM> DNAM; //Data
+        UnorderedSparseArray<TERMMenu *> Menus; // Menu Items;
 
         TERMRecord(unsigned char *_recData=NULL);
         TERMRecord(TERMRecord *srcRecord);

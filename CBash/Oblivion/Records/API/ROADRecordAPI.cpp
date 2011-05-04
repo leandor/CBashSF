@@ -139,6 +139,7 @@ void * ROADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 6: //pgrr
             if(ListIndex >= PGRR.size())
                 return NULL;
@@ -154,6 +155,7 @@ void * ROADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -280,6 +282,7 @@ void ROADRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 6: //pgrr
             if(ListFieldID == 0) //pgrr
                 {
@@ -304,6 +307,7 @@ void ROADRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

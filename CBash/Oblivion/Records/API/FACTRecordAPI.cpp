@@ -130,6 +130,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 7: //flags
             return &DATA.value;
         case 8: //crimeGoldMultiplier
@@ -151,6 +152,7 @@ void * FACTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -299,6 +301,7 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 7: //flags
             DATA.Unload();
             return;
@@ -334,6 +337,7 @@ void FACTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

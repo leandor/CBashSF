@@ -60,31 +60,15 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
         case 7: //full
             return STRING_FIELD;
-        case 8: //enit ENIT ,, Struct
+        case 8: //itemType
+            return UINT32_TYPE_FIELD;
+        case 9: //chargeAmountUnused
             return UINT32_FIELD;
-        case 9: //enit_p ENIT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 10: //enit_p ENIT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 11: //enit ENIT ,, Struct
-            return UINT8_FIELD;
-        case 12: //enit_p ENIT ,, Struct
+        case 10: //enchantCostUnused
+            return UINT32_FIELD;
+        case 11: //flags
+            return UINT8_FLAG_FIELD;
+        case 12: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -94,58 +78,164 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 13: //efid Base Effect
-            return FORMID_FIELD;
-        case 14: //efit Effect Item
-            return UINT32_FIELD;
-        case 15: //efit Effect Item
-            return UINT32_FIELD;
-        case 16: //efit Effect Item
-            return UINT32_FIELD;
-        case 17: //efit Effect Item
-            return UINT32_FIELD;
-        case 18: //efit Effect Item
-            return UNPARSED_FIELD;
-        case 19: //ctda Conditions
-            return UINT8_FIELD;
-        case 20: //ctda_p Conditions
-            switch(WhichAttribute)
+        case 13: //effects
+            if(ListFieldID == 0) //effects
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Effects.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Effects.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //effect
+                    return FORMID_FIELD;
+                case 2: //magnitude
+                    return UINT32_FIELD;
+                case 3: //area
+                    return UINT32_FIELD;
+                case 4: //duration
+                    return UINT32_FIELD;
+                case 5: //rangeType
+                    return UINT32_FIELD;
+                case 6: //actorValue
+                    return SINT32_FIELD;
+                case 7: //conditions
+                    if(ListX2FieldID == 0) //conditions
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Effects.value[ListIndex]->CTDA.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Effects.value[ListIndex]->CTDA.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            return UINT8_FLAG_TYPE_FIELD;
+                        case 2: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 3;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 3: //compValue
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return FORMID_OR_FLOAT32_FIELD;
+                                case 2: //WhichType
+                                    return Effects.value[ListIndex]->CTDA.value[ListX2Index]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 4: //ifunc
+                            return UINT32_TYPE_FIELD;
+                        case 5: //param1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    {
+                                    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
+                                    if(curCTDAFunction != FNVFunction_Arguments.end())
+                                        {
+                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        switch(CTDAFunction.first)
+                                            {
+                                            case eFORMID:
+                                                return FORMID_FIELD;
+                                            case eUINT32:
+                                                return UINT32_FIELD;
+                                            default:
+                                                return UNKNOWN_FIELD;
+                                            }
+                                        }
+                                    }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 6: //param2
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    {
+                                    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
+                                    if(curCTDAFunction != FNVFunction_Arguments.end())
+                                        {
+                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        switch(CTDAFunction.second)
+                                            {
+                                            case eFORMID:
+                                                return FORMID_FIELD;
+                                            case eUINT32:
+                                                return UINT32_FIELD;
+                                            case eVATSPARAM:
+                                                if(Effects.value[ListIndex]->CTDA.value[ListX2Index]->param1 < VATSFUNCTIONSIZE)
+                                                    {
+                                                    switch(VATSFunction_Argument[Effects.value[ListIndex]->CTDA.value[ListX2Index]->param1])
+                                                        {
+                                                        case eFORMID:
+                                                            return FORMID_FIELD;
+                                                        case eUINT32:
+                                                            return UINT32_FIELD;
+                                                        default:
+                                                            return UNKNOWN_FIELD;
+                                                        }
+
+                                                    }
+                                            default:
+                                                return UNKNOWN_FIELD;
+                                            }
+                                        }
+                                    }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 7: //runOnType
+                            return UINT32_TYPE_FIELD;
+                        case 8: //reference
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return FORMID_OR_UINT32_FIELD;
+                                case 2: //WhichType
+                                    return Effects.value[ListIndex]->CTDA.value[ListX2Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 21: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 22: //ctda Conditions
-            return UINT32_FIELD;
-        case 23: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 24: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-        case 25: //ctda Conditions
-            return UINT32_FIELD;
-        case 26: //ctda Conditions
-            return UNPARSED_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -171,50 +261,66 @@ void * ENCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //enit ENIT ,, Struct
-            return ENIT.IsLoaded() ? &ENIT->value8 : NULL;
-        case 9: //enit_p ENIT ,, Struct
-            *FieldValues = ENIT.IsLoaded() ? &ENIT->value9[0] : NULL;
+        case 8: //itemType
+            return &ENIT.value.itemType;
+        case 9: //chargeAmountUnused
+            return &ENIT.value.chargeAmount;
+        case 10: //enchantCostUnused
+            return &ENIT.value.enchantCost;
+        case 11: //flags
+            return &ENIT.value.flags;
+        case 12: //unused1
+            *FieldValues = &ENIT.value.unused1[0];
             return NULL;
-        case 10: //enit_p ENIT ,, Struct
-            *FieldValues = ENIT.IsLoaded() ? &ENIT->value10[0] : NULL;
+        case 13: //effects
+            if(ListIndex >= Effects.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //effect
+                    return &Effects.value[ListIndex]->EFID.value;
+                case 2: //magnitude
+                    return &Effects.value[ListIndex]->EFIT.value.magnitude;
+                case 3: //area
+                    return &Effects.value[ListIndex]->EFIT.value.area;
+                case 4: //duration
+                    return &Effects.value[ListIndex]->EFIT.value.duration;
+                case 5: //rangeType
+                    return &Effects.value[ListIndex]->EFIT.value.rangeType;
+                case 6: //actorValue
+                    return &Effects.value[ListIndex]->EFIT.value.actorValue;
+                case 7: //conditions
+                    if(ListX2Index >= Effects.value[ListIndex]->CTDA.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->operType;
+                        case 2: //unused1
+                            *FieldValues = &Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0];
+                            return NULL;
+                        case 3: //compValue
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->compValue;
+                        case 4: //ifunc
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc;
+                        case 5: //param1
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->param1;
+                        case 6: //param2
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->param2;
+                        case 7: //runOnType
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->runOnType;
+                        case 8: //reference
+                            return &Effects.value[ListIndex]->CTDA.value[ListX2Index]->reference;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 11: //enit ENIT ,, Struct
-            return ENIT.IsLoaded() ? &ENIT->value11 : NULL;
-        case 12: //enit_p ENIT ,, Struct
-            *FieldValues = ENIT.IsLoaded() ? &ENIT->value12[0] : NULL;
-            return NULL;
-        case 13: //efid Base Effect
-            return EFID.IsLoaded() ? &EFID->EFID->value13 : NULL;
-        case 14: //efit Effect Item
-            return EFID.IsLoaded() ? &EFID->EFIT->value14 : NULL;
-        case 15: //efit Effect Item
-            return EFID.IsLoaded() ? &EFID->EFIT->value15 : NULL;
-        case 16: //efit Effect Item
-            return EFID.IsLoaded() ? &EFID->EFIT->value16 : NULL;
-        case 17: //efit Effect Item
-            return EFID.IsLoaded() ? &EFID->EFIT->value17 : NULL;
-        case 18: //efit Effect Item
-            return UNPARSEDGET_FIELD18;
-        case 19: //ctda Conditions
-            return EFID.IsLoaded() ? &EFID->CTDA->value19 : NULL;
-        case 20: //ctda_p Conditions
-            *FieldValues = EFID.IsLoaded() ? &EFID->CTDA->value20[0] : NULL;
-            return NULL;
-        case 21: //ctda Conditions
-            return UNPARSEDGET_FIELD21;
-        case 22: //ctda Conditions
-            return EFID.IsLoaded() ? &EFID->CTDA->value22 : NULL;
-        case 23: //ctda_p Conditions
-            *FieldValues = EFID.IsLoaded() ? &EFID->CTDA->value23[0] : NULL;
-            return NULL;
-        case 24: //ctda_p Conditions
-            *FieldValues = EFID.IsLoaded() ? &EFID->CTDA->value24[0] : NULL;
-            return NULL;
-        case 25: //ctda Conditions
-            return EFID.IsLoaded() ? &EFID->CTDA->value25 : NULL;
-        case 26: //ctda Conditions
-            return UNPARSEDGET_FIELD26;
         default:
             return NULL;
         }
@@ -250,115 +356,103 @@ bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //enit ENIT ,, Struct
-            ENIT.Load();
-            ENIT->value8 = *(UINT32 *)FieldValue;
+        case 8: //itemType
+            SetType(*(UINT32 *)FieldValue);
             break;
-        case 9: //enit_p ENIT ,, Struct
-            if(ArraySize != 4)
-                break;
-            ENIT.Load();
-            ENIT->value9[0] = ((UINT8 *)FieldValue)[0];
-            ENIT->value9[1] = ((UINT8 *)FieldValue)[1];
-            ENIT->value9[2] = ((UINT8 *)FieldValue)[2];
-            ENIT->value9[3] = ((UINT8 *)FieldValue)[3];
+        case 9: //chargeAmountUnused
+            ENIT.value.chargeAmount = *(UINT32 *)FieldValue;
             break;
-        case 10: //enit_p ENIT ,, Struct
-            if(ArraySize != 4)
-                break;
-            ENIT.Load();
-            ENIT->value10[0] = ((UINT8 *)FieldValue)[0];
-            ENIT->value10[1] = ((UINT8 *)FieldValue)[1];
-            ENIT->value10[2] = ((UINT8 *)FieldValue)[2];
-            ENIT->value10[3] = ((UINT8 *)FieldValue)[3];
+        case 10: //enchantCostUnused
+            ENIT.value.enchantCost = *(UINT32 *)FieldValue;
             break;
-        case 11: //enit ENIT ,, Struct
-            ENIT.Load();
-            ENIT->value11 = *(UINT8 *)FieldValue;
+        case 11: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 12: //enit_p ENIT ,, Struct
+        case 12: //unused1
             if(ArraySize != 3)
                 break;
-            ENIT.Load();
-            ENIT->value12[0] = ((UINT8 *)FieldValue)[0];
-            ENIT->value12[1] = ((UINT8 *)FieldValue)[1];
-            ENIT->value12[2] = ((UINT8 *)FieldValue)[2];
+            ENIT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            ENIT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            ENIT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 13: //efid Base Effect
-            EFID.Load();
-            EFID->EFID.Load();
-            EFID->EFID->value13 = *(FORMID *)FieldValue;
-            return true;
-        case 14: //efit Effect Item
-            EFID.Load();
-            EFID->EFIT.Load();
-            EFID->EFIT->value14 = *(UINT32 *)FieldValue;
-            break;
-        case 15: //efit Effect Item
-            EFID.Load();
-            EFID->EFIT.Load();
-            EFID->EFIT->value15 = *(UINT32 *)FieldValue;
-            break;
-        case 16: //efit Effect Item
-            EFID.Load();
-            EFID->EFIT.Load();
-            EFID->EFIT->value16 = *(UINT32 *)FieldValue;
-            break;
-        case 17: //efit Effect Item
-            EFID.Load();
-            EFID->EFIT.Load();
-            EFID->EFIT->value17 = *(UINT32 *)FieldValue;
-            break;
-        case 18: //efit Effect Item
-            return UNPARSEDGET_FIELD18;
-        case 19: //ctda Conditions
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value19 = *(UINT8 *)FieldValue;
-            break;
-        case 20: //ctda_p Conditions
-            if(ArraySize != 3)
+        case 13: //effects
+            if(ListFieldID == 0) //effectsSize
+                {
+                Effects.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Effects.value.size())
                 break;
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value20[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value20[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value20[2] = ((UINT8 *)FieldValue)[2];
+
+            switch(ListFieldID)
+                {
+                case 1: //effect
+                    Effects.value[ListIndex]->EFID.value = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //magnitude
+                    Effects.value[ListIndex]->EFIT.value.magnitude = *(UINT32 *)FieldValue;
+                    break;
+                case 3: //area
+                    Effects.value[ListIndex]->EFIT.value.area = *(UINT32 *)FieldValue;
+                    break;
+                case 4: //duration
+                    Effects.value[ListIndex]->EFIT.value.duration = *(UINT32 *)FieldValue;
+                    break;
+                case 5: //rangeType
+                    Effects.value[ListIndex]->SetRange(*(UINT32 *)FieldValue);
+                    break;
+                case 6: //actorValue
+                    Effects.value[ListIndex]->EFIT.value.actorValue = *(SINT32 *)FieldValue;
+                    break;
+                case 7: //conditions
+                    if(ListX2FieldID == 0) //conditionsSize
+                        {
+                        Effects.value[ListIndex]->CTDA.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Effects.value[ListIndex]->CTDA.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->operType = *(UINT8 *)FieldValue;
+                            break;
+                        case 2: //unused1
+                            if(ArraySize != 3)
+                                break;
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            break;
+                        case 3: //compValue
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
+                            return true;
+                        case 4: //ifunc
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc = *(UINT32 *)FieldValue;
+                            return true;
+                        case 5: //param1
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->param1 = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        case 6: //param2
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->param2 = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        case 7: //runOnType
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->runOnType = *(UINT32 *)FieldValue;
+                            return true;
+                        case 8: //reference
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->reference = *(FORMID_OR_UINT32 *)FieldValue;
+                            return true;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 21: //ctda Conditions
-            return UNPARSEDGET_FIELD21;
-        case 22: //ctda Conditions
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value22 = *(UINT32 *)FieldValue;
-            break;
-        case 23: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value23[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value23[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value23[2] = ((UINT8 *)FieldValue)[2];
-            EFID->CTDA->value23[3] = ((UINT8 *)FieldValue)[3];
-            break;
-        case 24: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value24[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value24[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value24[2] = ((UINT8 *)FieldValue)[2];
-            EFID->CTDA->value24[3] = ((UINT8 *)FieldValue)[3];
-            break;
-        case 25: //ctda Conditions
-            EFID.Load();
-            EFID->CTDA.Load();
-            EFID->CTDA->value25 = *(UINT32 *)FieldValue;
-            break;
-        case 26: //ctda Conditions
-            return UNPARSEDGET_FIELD26;
         default:
             break;
         }
@@ -367,6 +461,9 @@ bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void ENCHRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    ENCHENIT defaultENIT;
+    FNVCTDA defaultCTDA;
+    FNVEffect defaultEffect;
     switch(FieldID)
         {
         case 1: //flags1
@@ -388,71 +485,99 @@ void ENCHRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //enit ENIT ,, Struct
-            ENIT.Unload();
+        case 8: //itemType
+            SetType(defaultENIT.itemType);
             return;
-        case 9: //enit_p ENIT ,, Struct
-            ENIT.Unload();
+        case 9: //chargeAmountUnused
+            ENIT.value.chargeAmount = defaultENIT.chargeAmount;
             return;
-        case 10: //enit_p ENIT ,, Struct
-            ENIT.Unload();
+        case 10: //enchantCostUnused
+            ENIT.value.enchantCost = defaultENIT.enchantCost;
             return;
-        case 11: //enit ENIT ,, Struct
-            ENIT.Unload();
+        case 11: //flags
+            SetFlagMask(defaultENIT.flags);
             return;
-        case 12: //enit_p ENIT ,, Struct
-            ENIT.Unload();
+        case 12: //unused1
+            ENIT.value.unused1[0] = defaultENIT.unused1[0];
+            ENIT.value.unused1[1] = defaultENIT.unused1[1];
+            ENIT.value.unused1[2] = defaultENIT.unused1[2];
             return;
-        case 13: //efid Base Effect
-            if(EFID.IsLoaded())
-                EFID->EFID.Unload();
+        case 13: //effects
+            if(ListFieldID == 0) //effectsSize
+                {
+                Effects.Unload;
+                return;
+                }
+
+            if(ListIndex >= Effects.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //effect
+                    Effects.value[ListIndex]->EFID.value = defaultEffect.EFID.value;
+                    return;
+                case 2: //magnitude
+                    Effects.value[ListIndex]->EFIT.value.magnitude = defaultEffect.EFIT.value.magnitude;
+                    return;
+                case 3: //area
+                    Effects.value[ListIndex]->EFIT.value.area = defaultEffect.EFIT.value.area;
+                    return;
+                case 4: //duration
+                    Effects.value[ListIndex]->EFIT.value.duration = defaultEffect.EFIT.value.duration;
+                    return;
+                case 5: //rangeType
+                    Effects.value[ListIndex]->SetRange(defaultEffect.EFIT.value.rangeType);
+                    return;
+                case 6: //actorValue
+                    Effects.value[ListIndex]->EFIT.value.actorValue = defaultEffect.EFIT.value.actorValue;
+                    return;
+                case 7: //conditions
+                    if(ListX2FieldID == 0) //conditionsSize
+                        {
+                        Effects.value[ListIndex]->CTDA.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Effects.value[ListIndex]->CTDA.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //operType
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->operType = defaultCTDA.operType;
+                            return;
+                        case 2: //unused1
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[0] = defaultCTDA.unused1[0];
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[1] = defaultCTDA.unused1[1];
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->unused1[2] = defaultCTDA.unused1[2];
+                            return;
+                        case 3: //compValue
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->compValue = defaultCTDA.compValue;
+                            return;
+                        case 4: //ifunc
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc = defaultCTDA.ifunc;
+                            return;
+                        case 5: //param1
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->param1 = defaultCTDA.param1;
+                            return;
+                        case 6: //param2
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->param2 = defaultCTDA.param2;
+                            return;
+                        case 7: //runOnType
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->runOnType = defaultCTDA.runOnType;
+                            return;
+                        case 8: //reference
+                            Effects.value[ListIndex]->CTDA.value[ListX2Index]->reference = defaultCTDA.reference;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 14: //efit Effect Item
-            if(EFID.IsLoaded())
-                EFID->EFIT.Unload();
-            return;
-        case 15: //efit Effect Item
-            if(EFID.IsLoaded())
-                EFID->EFIT.Unload();
-            return;
-        case 16: //efit Effect Item
-            if(EFID.IsLoaded())
-                EFID->EFIT.Unload();
-            return;
-        case 17: //efit Effect Item
-            if(EFID.IsLoaded())
-                EFID->EFIT.Unload();
-            return;
-        case 18: //efit Effect Item
-            return UNPARSEDDEL_FIELD18;
-        case 19: //ctda Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 20: //ctda_p Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 21: //ctda Conditions
-            return UNPARSEDDEL_FIELD21;
-        case 22: //ctda Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 23: //ctda_p Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 24: //ctda_p Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 25: //ctda Conditions
-            if(EFID.IsLoaded())
-                EFID->CTDA.Unload();
-            return;
-        case 26: //ctda Conditions
-            return UNPARSEDDEL_FIELD26;
         default:
             return;
         }

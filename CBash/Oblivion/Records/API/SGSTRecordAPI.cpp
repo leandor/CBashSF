@@ -398,6 +398,7 @@ void * SGSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 12: //uses
             return &DATA.value.uses;
         case 13: //value
@@ -792,6 +793,7 @@ void SGSTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 12: //uses
             DATA.value.uses = defaultDATA.uses;
             return;

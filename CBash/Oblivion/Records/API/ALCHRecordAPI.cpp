@@ -417,6 +417,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         //OBME Fields
         case 16: //recordVersion
             return OBME.IsLoaded() ? &OBME->OBME.value.recordVersion : NULL;

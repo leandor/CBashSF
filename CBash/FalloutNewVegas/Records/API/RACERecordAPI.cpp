@@ -1534,6 +1534,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 10: //skill1
             return &DATA.value.skills[0].value;
         case 11: //skill1Boost
@@ -1623,6 +1624,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 45: //maleHead_modelFlags
             return MHMOD0.MODL.IsLoaded() ? (MHMOD0.MODL->MODD.IsLoaded() ? &MHMOD0.MODL->MODD.value : NULL) : NULL;
         case 46: //maleHead_iconPath
@@ -1654,6 +1656,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 52: //maleEars_modelFlags
             return MHMOD1.MODL.IsLoaded() ? (MHMOD1.MODL->MODD.IsLoaded() ? &MHMOD1.MODL->MODD.value : NULL) : NULL;
         case 53: //maleEars_iconPath
@@ -1685,6 +1688,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 59: //maleMouth_modelFlags
             return MHMOD2.MODL.IsLoaded() ? (MHMOD2.MODL->MODD.IsLoaded() ? &MHMOD2.MODL->MODD.value : NULL) : NULL;
         case 60: //maleMouth_iconPath
@@ -1716,6 +1720,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 66: //maleTeethLower_modelFlags
             return MHMOD3.MODL.IsLoaded() ? (MHMOD3.MODL->MODD.IsLoaded() ? &MHMOD3.MODL->MODD.value : NULL) : NULL;
         case 67: //maleTeethLower_iconPath
@@ -1747,6 +1752,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 73: //maleTeethUpper_modelFlags
             return MHMOD4.MODL.IsLoaded() ? (MHMOD4.MODL->MODD.IsLoaded() ? &MHMOD4.MODL->MODD.value : NULL) : NULL;
         case 74: //maleTeethUpper_iconPath
@@ -1778,6 +1784,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 80: //maleTongue_modelFlags
             return MHMOD5.MODL.IsLoaded() ? (MHMOD5.MODL->MODD.IsLoaded() ? &MHMOD5.MODL->MODD.value : NULL) : NULL;
         case 81: //maleTongue_iconPath
@@ -1809,6 +1816,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 87: //maleLeftEye_modelFlags
             return MHMOD6.MODL.IsLoaded() ? (MHMOD6.MODL->MODD.IsLoaded() ? &MHMOD6.MODL->MODD.value : NULL) : NULL;
         case 88: //maleLeftEye_iconPath
@@ -1840,6 +1848,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 94: //maleRightEye_modelFlags
             return MHMOD7.MODL.IsLoaded() ? (MHMOD7.MODL->MODD.IsLoaded() ? &MHMOD7.MODL->MODD.value : NULL) : NULL;
         case 95: //maleRightEye_iconPath
@@ -1871,6 +1880,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 101: //femaleHead_modelFlags
             return FHMOD0.MODL.IsLoaded() ? (FHMOD0.MODL->MODD.IsLoaded() ? &FHMOD0.MODL->MODD.value : NULL) : NULL;
         case 102: //femaleHead_iconPath
@@ -1902,6 +1912,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 108: //femaleEars_modelFlags
             return FHMOD1.MODL.IsLoaded() ? (FHMOD1.MODL->MODD.IsLoaded() ? &FHMOD1.MODL->MODD.value : NULL) : NULL;
         case 109: //femaleEars_iconPath
@@ -1933,6 +1944,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 115: //femaleMouth_modelFlags
             return FHMOD2.MODL.IsLoaded() ? (FHMOD2.MODL->MODD.IsLoaded() ? &FHMOD2.MODL->MODD.value : NULL) : NULL;
         case 116: //femaleMouth_iconPath
@@ -1964,6 +1976,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 122: //femaleTeethLower_modelFlags
             return FHMOD3.MODL.IsLoaded() ? (FHMOD3.MODL->MODD.IsLoaded() ? &FHMOD3.MODL->MODD.value : NULL) : NULL;
         case 123: //femaleTeethLower_iconPath
@@ -1995,6 +2008,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 129: //femaleTeethUpper_modelFlags
             return FHMOD4.MODL.IsLoaded() ? (FHMOD4.MODL->MODD.IsLoaded() ? &FHMOD4.MODL->MODD.value : NULL) : NULL;
         case 130: //femaleTeethUpper_iconPath
@@ -2026,6 +2040,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 136: //femaleTongue_modelFlags
             return FHMOD5.MODL.IsLoaded() ? (FHMOD5.MODL->MODD.IsLoaded() ? &FHMOD5.MODL->MODD.value : NULL) : NULL;
         case 137: //femaleTongue_iconPath
@@ -2057,6 +2072,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 143: //femaleLeftEye_modelFlags
             return FHMOD6.MODL.IsLoaded() ? (FHMOD6.MODL->MODD.IsLoaded() ? &FHMOD6.MODL->MODD.value : NULL) : NULL;
         case 144: //femaleLeftEye_iconPath
@@ -2088,6 +2104,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 150: //femaleRightEye_modelFlags
             return FHMOD7.MODL.IsLoaded() ? (FHMOD7.MODL->MODD.IsLoaded() ? &FHMOD7.MODL->MODD.value : NULL) : NULL;
         case 151: //femaleRightEye_iconPath
@@ -2119,6 +2136,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 157: //maleUpperBody_modelFlags
             return MBMOD0.MODL.IsLoaded() ? (MBMOD0.MODL->MODD.IsLoaded() ? &MBMOD0.MODL->MODD.value : NULL) : NULL;
         case 158: //maleUpperBody_iconPath
@@ -2150,6 +2168,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 164: //maleLeftHand_modelFlags
             return MBMOD1.MODL.IsLoaded() ? (MBMOD1.MODL->MODD.IsLoaded() ? &MBMOD1.MODL->MODD.value : NULL) : NULL;
         case 165: //maleLeftHand_iconPath
@@ -2181,6 +2200,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 171: //maleRightHand_modelFlags
             return MBMOD2.MODL.IsLoaded() ? (MBMOD2.MODL->MODD.IsLoaded() ? &MBMOD2.MODL->MODD.value : NULL) : NULL;
         case 172: //maleRightHand_iconPath
@@ -2212,6 +2232,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 178: //maleUpperBodyTexture_modelFlags
             return MBMOD3.MODL.IsLoaded() ? (MBMOD3.MODL->MODD.IsLoaded() ? &MBMOD3.MODL->MODD.value : NULL) : NULL;
         case 179: //maleUpperBodyTexture_iconPath
@@ -2243,6 +2264,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 185: //femaleUpperBody_modelFlags
             return FBMOD0.MODL.IsLoaded() ? (FBMOD0.MODL->MODD.IsLoaded() ? &FBMOD0.MODL->MODD.value : NULL) : NULL;
         case 186: //femaleUpperBody_iconPath
@@ -2274,6 +2296,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 192: //femaleLeftHand_modelFlags
             return FBMOD1.MODL.IsLoaded() ? (FBMOD1.MODL->MODD.IsLoaded() ? &FBMOD1.MODL->MODD.value : NULL) : NULL;
         case 193: //femaleLeftHand_iconPath
@@ -2305,6 +2328,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 199: //femaleRightHand_modelFlags
             return FBMOD2.MODL.IsLoaded() ? (FBMOD2.MODL->MODD.IsLoaded() ? &FBMOD2.MODL->MODD.value : NULL) : NULL;
         case 200: //femaleRightHand_iconPath
@@ -2336,6 +2360,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 206: //femaleUpperBodyTexture_modelFlags
             return FBMOD3.MODL.IsLoaded() ? (FBMOD3.MODL->MODD.IsLoaded() ? &FBMOD3.MODL->MODD.value : NULL) : NULL;
         case 207: //femaleUpperBodyTexture_iconPath
@@ -3972,6 +3997,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 10: //skill1
             DATA.value.skills[0].value = defaultDATA.skills[0].value;
             return;

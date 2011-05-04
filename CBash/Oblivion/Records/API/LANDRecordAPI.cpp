@@ -451,6 +451,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 7: //heightOffset
             return VHGT.IsLoaded() ? &VHGT->offset : NULL;
         case 8: //heights
@@ -467,6 +468,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 9: //unused1
             *FieldValues = VHGT.IsLoaded() ? &VHGT->unused1[0] : NULL;
             return NULL;
@@ -488,6 +490,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 11: //baseTextures
             if(ListIndex >= BTXT.size())
                 return NULL;
@@ -504,9 +507,9 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 case 4: //layer
                     return &BTXT[ListIndex]->value.layer;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 12: //alphaLayers
             if(ListIndex >= Layers.size())
                 return NULL;
@@ -536,13 +539,13 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 3: //opacity
                             return &Layers[ListIndex]->VTXT[ListX2Index].opacity;
                         default:
-                            *FieldValues = NULL;
                             return NULL;
                         }
+                    return NULL;
                 default:
-                    *FieldValues = NULL;
                     return NULL;
                 }
+            return NULL;
         case 13: //vertexTextures
             if(ListIndex >= VTEX.size())
                 return NULL;
@@ -554,6 +557,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         case 14: //Position
             if(ListIndex >= 33)
                 return NULL;
@@ -711,6 +715,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -1211,7 +1216,6 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     VCLR.Load();
                     VCLR->VCLR[ListIndex][ListX2Index].blue = *(UINT8 *)FieldValue;
                     break;
-
                 case 8: //baseTexture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     for(UINT32 x = 0; x < BTXT.size(); ++x)
@@ -1593,6 +1597,7 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 7: //heightOffset
             if(VHGT.IsLoaded())
                 VHGT->offset = defaultVHGT.offset;
@@ -1678,6 +1683,7 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 11: //baseTextures
             if(ListFieldID == 0) //baseTexturesSize
                 {
@@ -1711,6 +1717,7 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 12: //alphaLayers
             if(ListFieldID == 0) //alphaLayersSize
                 {
@@ -1766,9 +1773,11 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                         default:
                             return;
                         }
+                    return;
                 default:
                     return;
                 }
+            return;
         case 13: //vertexTextures
             if(ListFieldID == 0) //vertexTexturesSize
                 {
@@ -1787,6 +1796,7 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         case 14: //Position
 
             if(ListIndex >= 33)
@@ -2028,6 +2038,7 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

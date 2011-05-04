@@ -24,6 +24,35 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+ALCHRecord::ALCHENIT::ALCHENIT():
+    value(0),
+    flags(0),
+    withdrawalEffect(0),
+    addictionChance(0.0f),
+    consumeSound(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+ALCHRecord::ALCHENIT::~ALCHENIT()
+    {
+    //
+    }
+
+bool ALCHRecord::ALCHENIT::operator ==(const ALCHENIT &other) const
+    {
+    return (value == other.value &&
+            flags == other.flags &&
+            withdrawalEffect == other.withdrawalEffect &&
+            addictionChance == other.addictionChance &&
+            consumeSound == other.consumeSound);
+    }
+
+bool ALCHRecord::ALCHENIT::operator !=(const ALCHENIT &other) const
+    {
+    return !(*this == other);
+    }
+
 ALCHRecord::ALCHRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {

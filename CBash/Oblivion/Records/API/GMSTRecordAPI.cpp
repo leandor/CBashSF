@@ -14,7 +14,7 @@ GPL License and Copyright Notice ============================================
 
  You should have received a copy of the GNU General Public License
  along with CBash; if not, write to the Free Software Foundation,
- Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ 3Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  CBash copyright (C) 2010 Waruddar
 =============================================================================
@@ -85,6 +85,7 @@ void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 default:
                     return NULL;
                 }
+            return NULL;
         default:
             return NULL;
         }
@@ -170,6 +171,7 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
                 default:
                     return;
                 }
+            return;
         default:
             return;
         }

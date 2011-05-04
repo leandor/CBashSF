@@ -336,53 +336,53 @@ void SOUNRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 13: //soundPath
             FNAM.Unload();
-            break;
+            return;
         case 14: //chance
             RNAM.Unload();
-            break;
+            return;
         case 15: //minDistance
             SNDD.value.minDistance = defaultSNDD.minDistance;
-            break;
+            return;
         case 16: //maxDistance
             SNDD.value.maxDistance = defaultSNDD.maxDistance;
-            break;
+            return;
         case 17: //freqAdjustment
             SNDD.value.freqAdjustment = defaultSNDD.freqAdjustment;
-            break;
+            return;
         case 18: //unused1
             SNDD.value.unused1 = defaultSNDD.unused1;
-            break;
+            return;
         case 19: //flags
             SetFlagMask(defaultSNDD.flags);
-            break;
+            return;
         case 20: //staticAtten
             SNDD.value.staticAtten = defaultSNDD.staticAtten;
-            break;
+            return;
         case 21: //stopTime
             SNDD.value.stopTime = defaultSNDD.stopTime;
-            break;
+            return;
         case 22: //startTime
             SNDD.value.startTime = defaultSNDD.startTime;
-            break;
+            return;
         case 23: //attenCurve
             SNDD.value.attenCurve[0] = defaultSNDD.attenCurve[0];
             SNDD.value.attenCurve[1] = defaultSNDD.attenCurve[1];
             SNDD.value.attenCurve[2] = defaultSNDD.attenCurve[2];
             SNDD.value.attenCurve[3] = defaultSNDD.attenCurve[3];
             SNDD.value.attenCurve[4] = defaultSNDD.attenCurve[4];
-            break;
+            return;
         case 24: //reverb
             SNDD.value.reverb = defaultSNDD.reverb;
-            break;
+            return;
         case 25: //priority
             SNDD.value.priority = defaultSNDD.priority;
-            break;
+            return;
         case 26: //x
             SNDD.value.x = defaultSNDD.x;
-            break;
+            return;
         case 27: //y
             SNDD.value.y = defaultSNDD.y;
-            break;
+            return;
         default:
             return;
         }
