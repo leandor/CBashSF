@@ -52,6 +52,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //spells
             switch(WhichAttribute)
                 {
@@ -62,6 +63,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //bodyParts
             switch(WhichAttribute)
                 {
@@ -72,6 +74,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //nift_p
             switch(WhichAttribute)
                 {
@@ -82,6 +85,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 12: //flags
             return UINT32_FLAG_FIELD;
         case 13: //baseSpell
@@ -132,6 +136,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //deathItem
             return FORMID_FIELD;
         case 21: //script
@@ -162,6 +167,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //aggression
             return UINT8_FIELD;
         case 24: //confidence
@@ -186,6 +192,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 31: //aiPackages
             switch(WhichAttribute)
                 {
@@ -196,6 +203,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //animations
             switch(WhichAttribute)
                 {
@@ -206,6 +214,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 33: //creatureType
             return UINT8_TYPE_FIELD;
         case 34: //combat
@@ -226,6 +235,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 39: //health
             return UINT16_FIELD;
         case 40: //unused3
@@ -238,6 +248,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //attackDamage
             return UINT16_FIELD;
         case 42: //strength
@@ -303,6 +314,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -480,6 +492,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -1042,4 +1055,5 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

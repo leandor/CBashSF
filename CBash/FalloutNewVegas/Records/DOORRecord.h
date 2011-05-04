@@ -30,10 +30,10 @@ class DOORRecord : public FNVRecord //Door
     private:
         enum flagsFlags
             {
-            fIsAutomatic   = 0x00000002,
-            fIsHidden      = 0x00000004,
-            fIsMinimalUse  = 0x00000008,
-            fIsSlidingDoor = 0x00000010
+            fIsAutomatic   = 0x02,
+            fIsHidden      = 0x04,
+            fIsMinimalUse  = 0x08,
+            fIsSlidingDoor = 0x10
             };
 
     public:
@@ -46,7 +46,7 @@ class DOORRecord : public FNVRecord //Door
         OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
         OptSimpleSubRecord<FORMID> ANAM; //Sound - Close
         OptSimpleSubRecord<FORMID> BNAM; //Sound - Looping
-        OptSimpleSubRecord<UINT8> FNAM; //Flags
+        ReqSimpleSubRecord<UINT8> FNAM; //Flags
 
         DOORRecord(unsigned char *_recData=NULL);
         DOORRecord(DOORRecord *srcRecord);

@@ -44,6 +44,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //nver Version
             return UINT32_FIELD;
         case 8: //data DATA ,, Struct
@@ -72,6 +74,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //data DATA ,, Struct
             return UINT8_FIELD;
         case 11: //data DATA ,, Struct
@@ -92,6 +95,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //xnam Actor Base
             return FORMID_FIELD;
         case 17: //tnam Body Part Data
@@ -142,6 +146,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 37: //raps RAPS ,, Struct
             return FLOAT32_FIELD;
         case 38: //raps RAPS ,, Struct
@@ -155,6 +160,7 @@ UINT32 RGDLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * RGDLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -251,6 +257,7 @@ void * RGDLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -263,10 +270,10 @@ bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -277,8 +284,8 @@ bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //nver Version
             NVER.Load();
@@ -292,10 +299,10 @@ bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             DATA.Load();
-            DATA->value9[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value9[1] = ((UINT8 *)FieldValue)[1];
-            DATA->value9[2] = ((UINT8 *)FieldValue)[2];
-            DATA->value9[3] = ((UINT8 *)FieldValue)[3];
+            DATA->value9[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value9[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA->value9[2] = ((UINT8ARRAY)FieldValue)[2];
+            DATA->value9[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 10: //data DATA ,, Struct
             DATA.Load();
@@ -321,7 +328,7 @@ bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value15[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value15[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 16: //xnam Actor Base
             XNAM.Load();
@@ -405,7 +412,7 @@ bool RGDLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             RAPS.Load();
-            RAPS->value36[0] = ((UINT8 *)FieldValue)[0];
+            RAPS->value36[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 37: //raps RAPS ,, Struct
             RAPS.Load();

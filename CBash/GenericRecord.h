@@ -228,8 +228,7 @@ class FNVRecord : public Record
             fUnknown7                           = 0x00800000,
             fUnknown8                           = 0x01000000,
             fIsObstacleOrNoAIAcquire            = 0x02000000, // (FNV)
-            fIsNavMeshFilter                    = 0x03000000, //? (FNV)
-            //fIsNavMeshBoundBox                = 0x04000000, //? (FNV)
+            fIsNavMeshFilter                    = 0x04000000, // (FNV)
             fIsNavMeshBoundBox                  = 0x08000000, // (FNV)
             fIsNonPipboyOrAutoReflected         = 0x10000000, // (FNV)
             fIsChildUsableOrAutoRefracted       = 0x20000000, // (FNV)

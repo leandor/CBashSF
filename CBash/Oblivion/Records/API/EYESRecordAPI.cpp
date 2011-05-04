@@ -45,6 +45,7 @@ UINT32 EYESRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * EYESRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -68,6 +69,7 @@ void * EYESRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool EYESRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -123,4 +125,5 @@ void EYESRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

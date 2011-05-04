@@ -59,7 +59,7 @@ class ALCHRecord : public FNVRecord //Ingestible
             eHandWear,
             eChems,
             eStimpack,
-            eFood,
+            eEdible,
             eAlcohol
             };
     public:
@@ -110,11 +110,11 @@ class ALCHRecord : public FNVRecord //Ingestible
         void   IsChems(bool value);
         bool   IsStimpack();
         void   IsStimpack(bool value);
-        bool   IsFood();
-        void   IsFood(bool value);
+        bool   IsEdible();
+        void   IsEdible(bool value);
         bool   IsAlcohol();
         void   IsAlcohol(bool value);
-        bool   IsEquipmentType(SINT32 Type, bool Exact=false);
+        bool   IsEquipmentType(SINT32 Type);
         void   SetEquipmentType(SINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);

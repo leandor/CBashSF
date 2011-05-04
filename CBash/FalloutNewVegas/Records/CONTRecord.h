@@ -45,7 +45,7 @@ class CONTRecord : public FNVRecord //Container
 
         enum flagsFlags
             {
-            fIsRespawn = 0x00000001
+            fIsRespawn = 0x01
             };
     public:
         StringRecord EDID; //Editor ID
@@ -53,9 +53,9 @@ class CONTRecord : public FNVRecord //Container
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> SCRI; //Script
-        std::vector<FNVCNTO *> CNTO;  //Items
+        UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<CONTDATA> DATA; //DATA ,, Struct
+        ReqSubRecord<CONTDATA> DATA; //Data
         OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
         OptSimpleSubRecord<FORMID> QNAM; //Sound - Close
         OptSimpleSubRecord<FORMID> RNAM; //Sound - Random/Looping

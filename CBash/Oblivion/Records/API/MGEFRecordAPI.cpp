@@ -56,6 +56,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //flags
             return UINT32_FLAG_FIELD;
         case 12: //baseCost
@@ -78,6 +79,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //light
             return FORMID_FIELD;
         case 19: //projectileSpeed
@@ -158,6 +160,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //handlerCode
             return UINT32_FIELD;
         case 37: //OBMEFlags
@@ -174,6 +177,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 40: //mgefCode
             switch(WhichAttribute)
                 {
@@ -191,6 +195,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //datx_p
             switch(WhichAttribute)
                 {
@@ -204,6 +209,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -302,6 +308,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -621,4 +628,5 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

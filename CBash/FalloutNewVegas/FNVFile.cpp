@@ -1953,7 +1953,7 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             LTEX.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'HCNE':
-            /ENCH.VisitRecords(RecordType, op, DeepVisit);
+            ENCH.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'LEPS':
             SPEL.VisitRecords(RecordType, op, DeepVisit);

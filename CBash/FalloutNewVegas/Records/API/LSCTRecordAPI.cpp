@@ -44,6 +44,7 @@ UINT32 LSCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 LSCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //data DATA ,, Struct
             return UINT32_FIELD;
         case 8: //data DATA ,, Struct
@@ -90,6 +92,7 @@ UINT32 LSCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //data DATA ,, Struct
             return UINT32_FIELD;
         case 20: //data DATA ,, Struct
@@ -108,11 +111,13 @@ UINT32 LSCTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //data DATA ,, Struct
             return UINT32_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * LSCTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -174,6 +179,7 @@ void * LSCTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool LSCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -186,10 +192,10 @@ bool LSCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -200,8 +206,8 @@ bool LSCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //data DATA ,, Struct
             DATA.Load();
@@ -251,26 +257,26 @@ bool LSCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 20)
                 break;
             DATA.Load();
-            DATA->value18[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value18[1] = ((UINT8 *)FieldValue)[1];
-            DATA->value18[2] = ((UINT8 *)FieldValue)[2];
-            DATA->value18[3] = ((UINT8 *)FieldValue)[3];
-            DATA->value18[4] = ((UINT8 *)FieldValue)[4];
-            DATA->value18[5] = ((UINT8 *)FieldValue)[5];
-            DATA->value18[6] = ((UINT8 *)FieldValue)[6];
-            DATA->value18[7] = ((UINT8 *)FieldValue)[7];
-            DATA->value18[8] = ((UINT8 *)FieldValue)[8];
-            DATA->value18[9] = ((UINT8 *)FieldValue)[9];
-            DATA->value18[10] = ((UINT8 *)FieldValue)[10];
-            DATA->value18[11] = ((UINT8 *)FieldValue)[11];
-            DATA->value18[12] = ((UINT8 *)FieldValue)[12];
-            DATA->value18[13] = ((UINT8 *)FieldValue)[13];
-            DATA->value18[14] = ((UINT8 *)FieldValue)[14];
-            DATA->value18[15] = ((UINT8 *)FieldValue)[15];
-            DATA->value18[16] = ((UINT8 *)FieldValue)[16];
-            DATA->value18[17] = ((UINT8 *)FieldValue)[17];
-            DATA->value18[18] = ((UINT8 *)FieldValue)[18];
-            DATA->value18[19] = ((UINT8 *)FieldValue)[19];
+            DATA->value18[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value18[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA->value18[2] = ((UINT8ARRAY)FieldValue)[2];
+            DATA->value18[3] = ((UINT8ARRAY)FieldValue)[3];
+            DATA->value18[4] = ((UINT8ARRAY)FieldValue)[4];
+            DATA->value18[5] = ((UINT8ARRAY)FieldValue)[5];
+            DATA->value18[6] = ((UINT8ARRAY)FieldValue)[6];
+            DATA->value18[7] = ((UINT8ARRAY)FieldValue)[7];
+            DATA->value18[8] = ((UINT8ARRAY)FieldValue)[8];
+            DATA->value18[9] = ((UINT8ARRAY)FieldValue)[9];
+            DATA->value18[10] = ((UINT8ARRAY)FieldValue)[10];
+            DATA->value18[11] = ((UINT8ARRAY)FieldValue)[11];
+            DATA->value18[12] = ((UINT8ARRAY)FieldValue)[12];
+            DATA->value18[13] = ((UINT8ARRAY)FieldValue)[13];
+            DATA->value18[14] = ((UINT8ARRAY)FieldValue)[14];
+            DATA->value18[15] = ((UINT8ARRAY)FieldValue)[15];
+            DATA->value18[16] = ((UINT8ARRAY)FieldValue)[16];
+            DATA->value18[17] = ((UINT8ARRAY)FieldValue)[17];
+            DATA->value18[18] = ((UINT8ARRAY)FieldValue)[18];
+            DATA->value18[19] = ((UINT8ARRAY)FieldValue)[19];
             break;
         case 19: //data DATA ,, Struct
             DATA.Load();
@@ -292,10 +298,10 @@ bool LSCTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             DATA.Load();
-            DATA->value23[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value23[1] = ((UINT8 *)FieldValue)[1];
-            DATA->value23[2] = ((UINT8 *)FieldValue)[2];
-            DATA->value23[3] = ((UINT8 *)FieldValue)[3];
+            DATA->value23[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value23[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA->value23[2] = ((UINT8ARRAY)FieldValue)[2];
+            DATA->value23[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 24: //data DATA ,, Struct
             DATA.Load();

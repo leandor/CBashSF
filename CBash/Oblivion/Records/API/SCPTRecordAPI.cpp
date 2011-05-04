@@ -46,6 +46,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 6: //numRefs
             return UINT32_FIELD;
         case 7: //compiledSize
@@ -64,6 +65,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //scriptText
             return ISTRING_FIELD;
         case 12: //vars
@@ -114,6 +116,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //references
             if(ListFieldID == 0) //references
                 {
@@ -149,6 +152,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -208,6 +212,7 @@ void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)

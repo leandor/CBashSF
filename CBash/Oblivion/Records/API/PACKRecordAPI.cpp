@@ -52,6 +52,7 @@ UINT32 PACKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //locType
             return SINT32_TYPE_FIELD;
         case 9: //locId
@@ -64,6 +65,7 @@ UINT32 PACKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //locRadius
             return SINT32_FIELD;
         case 11: //month
@@ -88,6 +90,7 @@ UINT32 PACKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //targetCount
             return SINT32_FIELD;
         case 19: //conditions
@@ -183,6 +186,7 @@ UINT32 PACKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * PACKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -255,6 +259,7 @@ void * PACKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool PACKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -500,4 +505,5 @@ void PACKRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

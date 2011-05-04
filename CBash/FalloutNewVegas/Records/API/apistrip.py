@@ -68,9 +68,14 @@ for infile in glob.glob('*.cpp'):
                     print '\t', testLines[-3],
                     print '\t', testLines[-2],
                     print '\t', l
+                if 'return ' in l:
+                    print 'Return found in ', infile, 'DeleteField'
+                    print '\t', testLines[-3],
+                    print '\t', testLines[-2],
+                    print '\t', l
             if inGet:
-                if 'UNKNOWN_FIELD' in l:
-                    print 'UNKNOWN_FIELD found in ', infile, 'GetField'
+                if '_FIELD' in l:
+                    print '_FIELD found in ', infile, 'GetField'
                     print '\t', testLines[-3],
                     print '\t', testLines[-2],
                     print '\t', l

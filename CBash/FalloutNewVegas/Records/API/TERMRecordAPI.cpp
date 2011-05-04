@@ -44,6 +44,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX1
             return SINT16_FIELD;
         case 8: //boundY1
@@ -86,6 +88,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -117,6 +120,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //modelFlags
             return UINT8_FLAG_FIELD;
         case 19: //script
@@ -137,6 +141,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //destructableStages
             if(!Destructable.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -183,13 +188,14 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return Destructable->Stages.value[ListIndex]->DMDT.GetSize() : 0;
+                            return Destructable->Stages.value[ListIndex]->DMDT.GetSize();
                         default:
                             return UNKNOWN_FIELD;
                         }
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //description
             return STRING_FIELD;
         case 26: //loopSound
@@ -212,6 +218,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //menus
             if(ListFieldID == 0) //menus
                 {
@@ -259,7 +266,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UINT32_FIELD;
                 case 10: //scriptType
                     return UINT16_TYPE_FIELD;
-                case 11: //flags
+                case 11: //scriptFlags
                     return UINT16_FLAG_FIELD;
                 case 12: //compiled_p
                     switch(WhichAttribute)
@@ -335,7 +342,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             }
                         }
 
-                    if(ListX2Index >= SCR_.value.size())
+                    if(ListX2Index >= Menus.value[ListIndex]->SCR_.value.size())
                         return UNKNOWN_FIELD;
 
                     switch(ListFieldID)
@@ -406,7 +413,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
                                     if(curCTDAFunction != FNVFunction_Arguments.end())
                                         {
-                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
                                         switch(CTDAFunction.first)
                                             {
                                             case eFORMID:
@@ -432,7 +439,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Menus.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
                                     if(curCTDAFunction != FNVFunction_Arguments.end())
                                         {
-                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
                                         switch(CTDAFunction.second)
                                             {
                                             case eFORMID:
@@ -467,7 +474,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             switch(WhichAttribute)
                                 {
                                 case 0: //fieldType
-                                    return FORMID_OR_UINT32_FIELD;
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                                 case 2: //WhichType
                                     return Menus.value[ListIndex]->CTDA.value[ListX2Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
                                 default:
@@ -482,6 +489,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -602,7 +610,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 30: //serverType
             return &DNAM.value.serverType;
         case 31: //unused1
-            *FieldValues = &DNAM.value.unused1[0];
+            *FieldValues = &DNAM.value.unused1;
             return NULL;
         case 32: //menus
             if(ListIndex >= Menus.value.size())
@@ -631,7 +639,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return &Menus.value[ListIndex]->SCHR.value.lastIndex;
                 case 10: //scriptType
                     return &Menus.value[ListIndex]->SCHR.value.scriptType;
-                case 11: //flags
+                case 11: //scriptFlags
                     return &Menus.value[ListIndex]->SCHR.value.flags;
                 case 12: //compiled_p
                     *FieldValues = Menus.value[ListIndex]->SCDA.value;
@@ -698,6 +706,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -710,10 +719,10 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -724,8 +733,8 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX1
             OBND.value.x1 = *(SINT16 *)FieldValue;
@@ -816,8 +825,8 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             Destructable.Load();
-            Destructable->DEST.value.unused1[0] = ((UINT8 *)FieldValue)[0];
-            Destructable->DEST.value.unused1[1] = ((UINT8 *)FieldValue)[1];
+            Destructable->DEST.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Destructable->DEST.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 24: //destructableStages
             Destructable.Load();
@@ -860,7 +869,7 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     Destructable->Stages.value[ListIndex]->DMDL.Copy((STRING)FieldValue);
                     break;
                 case 10: //modt_p
-                    Destructable->Stages.value[ListIndex]->DMDT.Copy((STRING)FieldValue, ArraySize);
+                    Destructable->Stages.value[ListIndex]->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
                     break;
                 default:
                     break;
@@ -936,7 +945,7 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 case 10: //scriptType
                     Menus.value[ListIndex]->SetType(*(UINT16 *)FieldValue);
                     break;
-                case 11: //flags
+                case 11: //scriptFlags
                     Menus.value[ListIndex]->SetScriptFlagMask(*(UINT16 *)FieldValue);
                     break;
                 case 12: //compiled_p
@@ -1235,7 +1244,7 @@ void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
                         Destructable->Stages.value[ListIndex]->DMDT.Unload();
                         return;
                     default:
-                        return NULL;
+                        return;
                     }
                 }
             return;
@@ -1305,7 +1314,7 @@ void TERMRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 10: //scriptType
                     Menus.value[ListIndex]->SetType(defaultSCHR.scriptType);
                     return;
-                case 11: //flags
+                case 11: //scriptFlags
                     Menus.value[ListIndex]->SetScriptFlagMask(defaultSCHR.flags);
                     return;
                 case 12: //compiled_p

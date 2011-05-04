@@ -466,7 +466,6 @@ class StringRecord
         virtual ~StringRecord();
 
         virtual UINT32 GetSize() const;
-        UINT32 CalcSize() const;
 
         bool IsLoaded() const;
         void Load();
@@ -507,7 +506,6 @@ class RawRecord
         ~RawRecord();
 
         UINT32 GetSize() const;
-        UINT32 CalcSize() const;
 
         bool IsLoaded() const;
         void Load();
@@ -936,10 +934,6 @@ struct OptSimpleSubRecord
         {
         return sizeof(T);
         }
-    UINT32 CalcSize() const
-        {
-        return value != significand ? sizeof(T) + 6 : 0;
-        }
 
     bool IsLoaded() const
         {
@@ -1032,10 +1026,6 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
     UINT32 GetSize() const
         {
         return sizeof(FLOAT32);
-        }
-    UINT32 CalcSize() const
-        {
-        return IsLoaded() ? sizeof(FLOAT32) + 6 : 0;
         }
 
     bool IsLoaded() const
@@ -1553,10 +1543,6 @@ struct OptSubRecord
     UINT32 GetSize() const
         {
         return sizeof(T);
-        }
-    UINT32 CalcSize() const
-        {
-        return value != NULL ? value->CalcSize() : 0;
         }
 
     bool IsLoaded() const
@@ -2130,10 +2116,6 @@ struct OrderedSparseArray
         //
         }
 
-    UINT32 GetSize() const
-        {
-        return sizeof(T) * (UINT32)value.size();
-        }
 
     bool IsLoaded() const
         {
@@ -2373,16 +2355,6 @@ struct UnorderedSparseArray
         //
         }
 
-    UINT32 GetSize() const
-        {
-        return (UINT32)value.size() * (sizeof(T) + 6);
-        }
-
-    UINT32 CalcSize() const
-        {
-        return (UINT32)value.size() * (sizeof(T) + 6);
-        }
-
     bool IsLoaded() const
         {
         return value.size() != 0;
@@ -2580,15 +2552,21 @@ struct UnorderedSparseArray<T *>
 
     bool operator ==(const UnorderedSparseArray<T *> &other) const
         {
+        //Hack
+        //Equality testing should use a set or somesuch
+        //For now, testing also tests ordering
         if(value.size() == other.value.size())
             {
-            std::multiset<T> self1, other1;
+            //std::multiset<T> self1, other1;
             for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
                 {
-                self1.insert(*value[x]);
-                other1.insert(*other.value[x]);
+                if(*value[x] != *other.value[x])
+                    return false;
+                //self1.insert(*value[x]);
+                //other1.insert(*other.value[x]);
                 }
-            return self1 == other1;
+            //return self1 == other1;
+            return true;
             }
         return false;
         }

@@ -44,6 +44,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //cstd CSTD ,, Struct
             return UINT8_FIELD;
         case 8: //cstd CSTD ,, Struct
@@ -72,6 +74,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //cstd CSTD ,, Struct
             return FLOAT32_FIELD;
         case 11: //cstd CSTD ,, Struct
@@ -102,6 +105,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 21: //cstd CSTD ,, Struct
             return FLOAT32_FIELD;
         case 22: //cstd CSTD ,, Struct
@@ -120,6 +124,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 26: //cstd CSTD ,, Struct
             return FLOAT32_FIELD;
         case 27: //cstd CSTD ,, Struct
@@ -144,6 +149,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 34: //cstd CSTD ,, Struct
             return FLOAT32_FIELD;
         case 35: //cstd CSTD ,, Struct
@@ -160,6 +166,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //cstd CSTD ,, Struct
             return UINT8_FIELD;
         case 39: //cstd CSTD ,, Struct
@@ -174,6 +181,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //cstd CSTD ,, Struct
             return FLOAT32_FIELD;
         case 42: //csad CSAD ,, Struct
@@ -246,6 +254,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 73: //cssd CSSD ,, Struct
             return UINT32_FIELD;
         case 74: //cssd CSSD ,, Struct
@@ -261,6 +270,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CSTYRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -435,6 +445,7 @@ void * CSTYRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -447,10 +458,10 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -461,8 +472,8 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -476,8 +487,8 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             CSTD.Load();
-            CSTD->value9[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value9[1] = ((UINT8 *)FieldValue)[1];
+            CSTD->value9[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value9[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 10: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -523,8 +534,8 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             CSTD.Load();
-            CSTD->value20[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value20[1] = ((UINT8 *)FieldValue)[1];
+            CSTD->value20[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value20[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 21: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -546,9 +557,9 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CSTD.Load();
-            CSTD->value25[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value25[1] = ((UINT8 *)FieldValue)[1];
-            CSTD->value25[2] = ((UINT8 *)FieldValue)[2];
+            CSTD->value25[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value25[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD->value25[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 26: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -582,9 +593,9 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CSTD.Load();
-            CSTD->value33[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value33[1] = ((UINT8 *)FieldValue)[1];
-            CSTD->value33[2] = ((UINT8 *)FieldValue)[2];
+            CSTD->value33[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value33[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD->value33[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 34: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -602,8 +613,8 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             CSTD.Load();
-            CSTD->value37[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value37[1] = ((UINT8 *)FieldValue)[1];
+            CSTD->value37[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value37[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 38: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -617,8 +628,8 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             CSTD.Load();
-            CSTD->value40[0] = ((UINT8 *)FieldValue)[0];
-            CSTD->value40[1] = ((UINT8 *)FieldValue)[1];
+            CSTD->value40[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD->value40[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 41: //cstd CSTD ,, Struct
             CSTD.Load();
@@ -748,10 +759,10 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CSSD.Load();
-            CSSD->value72[0] = ((UINT8 *)FieldValue)[0];
-            CSSD->value72[1] = ((UINT8 *)FieldValue)[1];
-            CSSD->value72[2] = ((UINT8 *)FieldValue)[2];
-            CSSD->value72[3] = ((UINT8 *)FieldValue)[3];
+            CSSD->value72[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSSD->value72[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSSD->value72[2] = ((UINT8ARRAY)FieldValue)[2];
+            CSSD->value72[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 73: //cssd CSSD ,, Struct
             CSSD.Load();

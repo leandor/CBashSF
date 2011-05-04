@@ -44,6 +44,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //rclr_p Unused
             switch(WhichAttribute)
                 {
@@ -68,6 +70,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //name Base
             return FORMID_FIELD;
         case 9: //xezn Encounter Zone
@@ -82,6 +85,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //xrgb_p Ragdoll Biped Data
             switch(WhichAttribute)
                 {
@@ -92,6 +96,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 12: //xprm XPRM ,, Struct
             return FLOAT32_FIELD;
         case 13: //xprm XPRM ,, Struct
@@ -148,6 +153,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //wmi1 Reputation
             return FORMID_FIELD;
         case 37: //full_p Unknown
@@ -160,6 +166,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //cnam Audio Location
             return FORMID_FIELD;
         case 39: //bnam_p Unknown
@@ -172,6 +179,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 40: //mnam
             return FLOAT32_FIELD;
         case 41: //nnam
@@ -186,6 +194,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 43: //xsrd_p Unknown
             switch(WhichAttribute)
                 {
@@ -196,6 +205,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 44: //xtrg Target
             return FORMID_FIELD;
         case 45: //xlcm Level Modifier
@@ -214,6 +224,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 49: //schr Basic Script Data
             return UINT32_FIELD;
         case 50: //schr Basic Script Data
@@ -234,6 +245,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 55: //sctx Embedded Script Source
             return ISTRING_FIELD;
         case 56: //slsd Local Variable Data
@@ -248,6 +260,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 58: //slsd Local Variable Data
             return UINT8_FIELD;
         case 59: //slsd_p Local Variable Data
@@ -260,6 +273,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 60: //scvr Name
             return ISTRING_FIELD;
         case 61: //scro Global Reference
@@ -292,6 +306,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 72: //xloc XLOC ,, Struct
             return FORMID_FIELD;
         case 73: //xloc XLOC ,, Struct
@@ -306,6 +321,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 75: //xloc_p XLOC ,, Struct
             switch(WhichAttribute)
                 {
@@ -316,6 +332,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 76: //xcnt Count
             return SINT32_FIELD;
         case 77: //xrds Radius
@@ -348,6 +365,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 88: //xlkr Linked Reference
             return FORMID_FIELD;
         case 89: //xclp XCLP ,, Struct
@@ -366,6 +384,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 93: //xclp XCLP ,, Struct
             return UINT8_FIELD;
         case 94: //xclp XCLP ,, Struct
@@ -382,6 +401,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 97: //xapd Flags
             return UINT8_FIELD;
         case 98: //xapr XAPR ,, Struct
@@ -404,6 +424,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 104: //xemi Emittance
             return FORMID_FIELD;
         case 105: //xmbr MultiBound Reference
@@ -424,6 +445,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 110: //xpod Portal Data
             return UNPARSED_FIELD;
         case 111: //xptl XPTL ,, Struct
@@ -458,6 +480,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 123: //xlrm Linked Room
             return FORMID_FIELD;
         case 124: //xocp XOCP ,, Struct
@@ -503,6 +526,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -821,6 +845,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -833,10 +858,10 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -847,8 +872,8 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //rclr_p Unused
             RCLR.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -963,7 +988,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             TNAM.Load();
-            TNAM->value35[0] = ((UINT8 *)FieldValue)[0];
+            TNAM->value35[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 36: //wmi1 Reputation
             WMI1.Load();
@@ -1022,10 +1047,10 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value48[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SCHR->value48[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SCHR->value48[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SCHR->value48[3] = ((UINT8 *)FieldValue)[3];
+            XPRD->SCHR->SCHR->value48[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SCHR->value48[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SCHR->value48[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SCHR->value48[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 49: //schr Basic Script Data
             XPRD.Load();
@@ -1079,18 +1104,18 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value57[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SLSD->value57[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SLSD->value57[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SLSD->value57[3] = ((UINT8 *)FieldValue)[3];
-            XPRD->SCHR->SLSD->value57[4] = ((UINT8 *)FieldValue)[4];
-            XPRD->SCHR->SLSD->value57[5] = ((UINT8 *)FieldValue)[5];
-            XPRD->SCHR->SLSD->value57[6] = ((UINT8 *)FieldValue)[6];
-            XPRD->SCHR->SLSD->value57[7] = ((UINT8 *)FieldValue)[7];
-            XPRD->SCHR->SLSD->value57[8] = ((UINT8 *)FieldValue)[8];
-            XPRD->SCHR->SLSD->value57[9] = ((UINT8 *)FieldValue)[9];
-            XPRD->SCHR->SLSD->value57[10] = ((UINT8 *)FieldValue)[10];
-            XPRD->SCHR->SLSD->value57[11] = ((UINT8 *)FieldValue)[11];
+            XPRD->SCHR->SLSD->value57[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SLSD->value57[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SLSD->value57[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SLSD->value57[3] = ((UINT8ARRAY)FieldValue)[3];
+            XPRD->SCHR->SLSD->value57[4] = ((UINT8ARRAY)FieldValue)[4];
+            XPRD->SCHR->SLSD->value57[5] = ((UINT8ARRAY)FieldValue)[5];
+            XPRD->SCHR->SLSD->value57[6] = ((UINT8ARRAY)FieldValue)[6];
+            XPRD->SCHR->SLSD->value57[7] = ((UINT8ARRAY)FieldValue)[7];
+            XPRD->SCHR->SLSD->value57[8] = ((UINT8ARRAY)FieldValue)[8];
+            XPRD->SCHR->SLSD->value57[9] = ((UINT8ARRAY)FieldValue)[9];
+            XPRD->SCHR->SLSD->value57[10] = ((UINT8ARRAY)FieldValue)[10];
+            XPRD->SCHR->SLSD->value57[11] = ((UINT8ARRAY)FieldValue)[11];
             break;
         case 58: //slsd Local Variable Data
             XPRD.Load();
@@ -1104,13 +1129,13 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value59[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SLSD->value59[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SLSD->value59[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SLSD->value59[3] = ((UINT8 *)FieldValue)[3];
-            XPRD->SCHR->SLSD->value59[4] = ((UINT8 *)FieldValue)[4];
-            XPRD->SCHR->SLSD->value59[5] = ((UINT8 *)FieldValue)[5];
-            XPRD->SCHR->SLSD->value59[6] = ((UINT8 *)FieldValue)[6];
+            XPRD->SCHR->SLSD->value59[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SLSD->value59[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SLSD->value59[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SLSD->value59[3] = ((UINT8ARRAY)FieldValue)[3];
+            XPRD->SCHR->SLSD->value59[4] = ((UINT8ARRAY)FieldValue)[4];
+            XPRD->SCHR->SLSD->value59[5] = ((UINT8ARRAY)FieldValue)[5];
+            XPRD->SCHR->SLSD->value59[6] = ((UINT8ARRAY)FieldValue)[6];
             break;
         case 60: //scvr Name
             XPRD.Load();
@@ -1168,9 +1193,9 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             XLOC.Load();
-            XLOC->value71[0] = ((UINT8 *)FieldValue)[0];
-            XLOC->value71[1] = ((UINT8 *)FieldValue)[1];
-            XLOC->value71[2] = ((UINT8 *)FieldValue)[2];
+            XLOC->value71[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->value71[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->value71[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 72: //xloc XLOC ,, Struct
             XLOC.Load();
@@ -1184,22 +1209,22 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             XLOC.Load();
-            XLOC->value74[0] = ((UINT8 *)FieldValue)[0];
-            XLOC->value74[1] = ((UINT8 *)FieldValue)[1];
-            XLOC->value74[2] = ((UINT8 *)FieldValue)[2];
+            XLOC->value74[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->value74[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->value74[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 75: //xloc_p XLOC ,, Struct
             if(ArraySize != 8)
                 break;
             XLOC.Load();
-            XLOC->value75[0] = ((UINT8 *)FieldValue)[0];
-            XLOC->value75[1] = ((UINT8 *)FieldValue)[1];
-            XLOC->value75[2] = ((UINT8 *)FieldValue)[2];
-            XLOC->value75[3] = ((UINT8 *)FieldValue)[3];
-            XLOC->value75[4] = ((UINT8 *)FieldValue)[4];
-            XLOC->value75[5] = ((UINT8 *)FieldValue)[5];
-            XLOC->value75[6] = ((UINT8 *)FieldValue)[6];
-            XLOC->value75[7] = ((UINT8 *)FieldValue)[7];
+            XLOC->value75[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->value75[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->value75[2] = ((UINT8ARRAY)FieldValue)[2];
+            XLOC->value75[3] = ((UINT8ARRAY)FieldValue)[3];
+            XLOC->value75[4] = ((UINT8ARRAY)FieldValue)[4];
+            XLOC->value75[5] = ((UINT8ARRAY)FieldValue)[5];
+            XLOC->value75[6] = ((UINT8ARRAY)FieldValue)[6];
+            XLOC->value75[7] = ((UINT8ARRAY)FieldValue)[7];
             break;
         case 76: //xcnt Count
             XCNT.Load();
@@ -1270,7 +1295,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLP.Load();
-            XCLP->value92[0] = ((UINT8 *)FieldValue)[0];
+            XCLP->value92[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 93: //xclp XCLP ,, Struct
             XCLP.Load();
@@ -1288,7 +1313,7 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLP.Load();
-            XCLP->value96[0] = ((UINT8 *)FieldValue)[0];
+            XCLP->value96[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 97: //xapd Flags
             XAPD.Load();
@@ -1317,9 +1342,9 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             XESP.Load();
-            XESP->value103[0] = ((UINT8 *)FieldValue)[0];
-            XESP->value103[1] = ((UINT8 *)FieldValue)[1];
-            XESP->value103[2] = ((UINT8 *)FieldValue)[2];
+            XESP->value103[0] = ((UINT8ARRAY)FieldValue)[0];
+            XESP->value103[1] = ((UINT8ARRAY)FieldValue)[1];
+            XESP->value103[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 104: //xemi Emittance
             XEMI.Load();
@@ -1345,8 +1370,8 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             XNDP.Load();
-            XNDP->value109[0] = ((UINT8 *)FieldValue)[0];
-            XNDP->value109[1] = ((UINT8 *)FieldValue)[1];
+            XNDP->value109[0] = ((UINT8ARRAY)FieldValue)[0];
+            XNDP->value109[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 110: //xpod Portal Data
             return UNPARSEDGET_FIELD110;
@@ -1398,8 +1423,8 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             XRMR.Load();
-            XRMR->value122[0] = ((UINT8 *)FieldValue)[0];
-            XRMR->value122[1] = ((UINT8 *)FieldValue)[1];
+            XRMR->value122[0] = ((UINT8ARRAY)FieldValue)[0];
+            XRMR->value122[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 123: //xlrm Linked Room
             XLRM.Load();

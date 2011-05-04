@@ -59,6 +59,7 @@ UINT32 GMSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -89,6 +90,7 @@ void * GMSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool GMSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -175,4 +177,5 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

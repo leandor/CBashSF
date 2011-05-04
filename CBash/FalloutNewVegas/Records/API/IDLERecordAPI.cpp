@@ -44,6 +44,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //modPath
             return ISTRING_FIELD;
         case 8: //modb
@@ -72,6 +74,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //mods Alternate Textures
             return ISTRING_FIELD;
 
@@ -89,6 +92,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //ctda Conditions
             return UNPARSED_FIELD;
         case 17: //ctda Conditions
@@ -103,6 +107,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -113,6 +118,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //ctda Conditions
             return UINT32_FIELD;
         case 21: //ctda Conditions
@@ -135,6 +141,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 27: //data DATA ,, Struct
             return SINT16_FIELD;
         case 28: //data DATA ,, Struct
@@ -152,6 +159,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -227,6 +235,7 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -239,10 +248,10 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -253,8 +262,8 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //modPath
             MODL.Load();
@@ -295,9 +304,9 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value15[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value15[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value15[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value15[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value15[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value15[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 16: //ctda Conditions
             return UNPARSEDGET_FIELD16;
@@ -309,19 +318,19 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value18[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value18[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value18[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value18[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value18[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value18[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value18[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value18[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 19: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value19[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value19[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value19[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value19[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value19[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value19[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value19[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value19[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 20: //ctda Conditions
             CTDAs.Load();
@@ -347,7 +356,7 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value26[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value26[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 27: //data DATA ,, Struct
             DATA.Load();
@@ -361,7 +370,7 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value29[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value29[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         default:
             break;

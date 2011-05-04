@@ -46,6 +46,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 6: //removedQuests
             switch(WhichAttribute)
                 {
@@ -56,6 +57,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //dialType
@@ -73,6 +75,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -104,6 +107,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -169,4 +173,5 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

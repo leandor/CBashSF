@@ -44,6 +44,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //modPath
             return ISTRING_FIELD;
         case 15: //modt_p
@@ -92,6 +95,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //mods Alternate Texture
             return ISTRING_FIELD;
         case 17: //mods Alternate Texture
@@ -112,6 +116,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 22: //mo2s Alternate Texture
             return ISTRING_FIELD;
         case 23: //mo2s Alternate Texture
@@ -134,6 +139,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 29: //mo3s Alternate Texture
             return ISTRING_FIELD;
         case 30: //mo3s Alternate Texture
@@ -154,6 +160,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 35: //mo4s Alternate Texture
             return ISTRING_FIELD;
         case 36: //mo4s Alternate Texture
@@ -189,6 +196,7 @@ UINT32 ARMARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -298,6 +306,7 @@ void * ARMARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -310,10 +319,10 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -324,8 +333,8 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -354,9 +363,9 @@ bool ARMARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             BMDT.Load();
-            BMDT->value13[0] = ((UINT8 *)FieldValue)[0];
-            BMDT->value13[1] = ((UINT8 *)FieldValue)[1];
-            BMDT->value13[2] = ((UINT8 *)FieldValue)[2];
+            BMDT->value13[0] = ((UINT8ARRAY)FieldValue)[0];
+            BMDT->value13[1] = ((UINT8ARRAY)FieldValue)[1];
+            BMDT->value13[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 14: //modPath
             MODL.Load();

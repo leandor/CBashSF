@@ -131,31 +131,31 @@ LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
 class API_FIELDS(object):
     """These fields MUST be defined in the same order as in CBash's Common.h"""
     __slots__ = ['UNKNOWN', 'MISSING', 'JUNK', 'BOOL',
-                 'SINT8', 'UINT8', 'SINT16', 'UINT16',
-                 'SINT32', 'UINT32', 'FLOAT32',
-                 'RADIAN', 'FORMID', 'MGEFCODE',
-                 'ACTORVALUE', 'FORMID_OR_UINT32',
-                 'UINT8_OR_UINT32',
-                 'UNKNOWN_OR_FORMID_OR_UINT32',
-                 'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
-                 'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
-                 'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
-                 'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
-                 'CHAR', 'CHAR4', 'STRING', 'ISTRING',
-                 'STRING_OR_FLOAT32_OR_SINT32','LIST',
-                 'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
-                 'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
-                 'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
-                 'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
-                 'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
-                 'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
-                 'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
-                 'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
-                 'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
-                 'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
-                 'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
-                 'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
-                 'UNDEFINED']
+                  'SINT8', 'UINT8', 'SINT16', 'UINT16',
+                  'SINT32', 'UINT32', 'FLOAT32',
+                  'RADIAN', 'FORMID', 'MGEFCODE',
+                  'ACTORVALUE', 'FORMID_OR_UINT32',
+                  'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
+                  'UNKNOWN_OR_FORMID_OR_UINT32',
+                  'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
+                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
+                  'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
+                  'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
+                  'CHAR', 'CHAR4', 'STRING', 'ISTRING',
+                  'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
+                  'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
+                  'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
+                  'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
+                  'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
+                  'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
+                  'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
+                  'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
+                  'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
+                  'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
+                  'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
+                  'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
+                  'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
+                  'UNDEFINED']
 
 for value, attr in enumerate(API_FIELDS.__slots__):
     setattr(API_FIELDS, attr, value)
@@ -1125,6 +1125,36 @@ class CBashUINT32ARRAY_LIST(object):
             cRecords = (c_ulong * length)(*nValue)
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords), length)
 
+class CBashFORMID_OR_UINT32_ARRAY_LIST(object):
+    def __init__(self, ListFieldID, Size=None):
+        self._ListFieldID = ListFieldID
+        self._Size = Size
+    def __get__(self, instance, owner):
+        values = []
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1)
+        if(numRecords > 0):
+            cRecords = (c_ulong * numRecords)()
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
+            for x in range(numRecords):
+                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, 2)
+                if type == API_FIELDS.UINT32:
+                    values.append(cRecords[x])
+                elif type == API_FIELDS.FORMID:
+                    values.append(MakeLongFid(instance._CollectionID, instance._ModID, cRecords[x]))
+        return values
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
+        else:
+            length = len(nValue)
+            if self._Size and length != self._Size: return
+            #Each element can be either a formID or UINT32, so they have to be set separately
+            #Resize the list
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 0, c_long(length))
+            for x, value in enumerate(nValue):
+                #Borrowing ArraySize to flag if the new value is a formID
+                IsFormID = isinstance(value, tuple)
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
+
 class CBashFLOAT32_LIST(object):
     def __init__(self, ListFieldID):
         self._ListFieldID = ListFieldID
@@ -1163,165 +1193,178 @@ class CBashISTRING_LIST(object):
 
 # ListX2 Descriptors
 class CBashLIST_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, Type, AsList=False):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID, Type, AsList=False):
         self._ListX2FieldID = ListX2FieldID
         self._Type = Type
         self._AsList = AsList
     def __get__(self, instance, owner):
-        numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
-        oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(0, numElements)]
+        numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
+        oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(0, numElements)]
         if(self._AsList): return ExtractCopyList(oElements)
         return oElements
     def __set__(self, instance, nElements):
         if nElements is None or not len(nElements):
-            _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+            _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
         else:
             length = len(nElements)
             if isinstance(nElements[0], tuple): nValues = nElements
             else: nValues = ExtractCopyList(nElements)
             ##Resizes the list
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
-            numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
-            oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(0, numElements)]
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
+            numElements = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
+            oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(0, numElements)]
             SetCopyList(oElements, nValues)
 
 class CBashGeneric_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, Type):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID, Type):
         self._ListX2FieldID = ListX2FieldID
         self._Type = Type
         self._ResType = POINTER(Type)
     def __get__(self, instance, owner):
         _CGetField.restype = self._ResType
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
         if(retValue): return retValue.contents.value
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(self._Type(nValue)), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(self._Type(nValue)), 0)
 
 class CBashFLOAT32_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID):
         self._ListX2FieldID = ListX2FieldID
     def __get__(self, instance, owner):
         _CGetField.restype = POINTER(c_float)
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
         if(retValue): return round(retValue.contents.value,6)
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(nValue,6))), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(nValue,6))), 0)
 
 class CBashUINT8ARRAY_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, Size=None):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID, Size=None):
         self._ListX2FieldID = ListX2FieldID
         self._Size = Size
     def __get__(self, instance, owner):
-        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
-            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords))
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def __set__(self, instance, nValue):
-        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
         else:
             length = len(nValue)
             if self._Size and length != self._Size: return
             cRecords = (c_ubyte * length)(*nValue)
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords), length)
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords), length)
 
 class CBashFORMID_OR_UINT32_ARRAY_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, Size=None):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID, Size=None):
         self._ListX2FieldID = ListX2FieldID
         self._Size = Size
     def __get__(self, instance, owner):
         values = []
-        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1)
         if(numRecords > 0):
             cRecords = (c_ulong * numRecords)()
-            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords))
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(cRecords))
             for x in range(numRecords):
-                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x, 1, 2)
+                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x, 1, 2)
                 if type == API_FIELDS.UINT32:
                     values.append(cRecords[x])
                 elif type == API_FIELDS.FORMID:
                     values.append(MakeLongFid(instance._CollectionID, instance._ModID, cRecords[x]))
         return values
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
         else:
             length = len(nValue)
             if self._Size and length != self._Size: return
             #Each element can be either a formID or UINT32, so they have to be set separately
             #Resize the list
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
             for x, value in enumerate(nValue):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, tuple)
-                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x, 1, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x, 1, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
 
 class CBashFORMID_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID):
         self._ListX2FieldID = ListX2FieldID
     def __get__(self, instance, owner):
         _CGetField.restype = POINTER(c_ulong)
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
         if(retValue): return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+
+class CBashFORMID_OR_FLOAT32_LISTX2(object):
+    def __init__(self, ListX2FieldID):
+        self._ListX2FieldID = ListX2FieldID
+    def __get__(self, instance, owner):
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
+        if type == API_FIELDS.FLOAT32:
+            _CGetField.restype = POINTER(c_float)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+            if(retValue): return round(retValue.contents.value,6)
+        else:
+            _CGetField.restype = POINTER(c_ulong)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+            if(retValue): return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else:
+            type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
+            if type == API_FIELDS.FLOAT32:
+                try:
+                    value = float(nValue)
+                except TypeError:
+                    return
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(value,6))), 0)
+            else:
+                try:
+                    value = MakeShortFid(instance._CollectionID, nValue)
+                except TypeError:
+                    return
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(value)), 0)
 
 class CBashSTRING_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID):
         self._ListX2FieldID = ListX2FieldID
     def __get__(self, instance, owner):
         _CGetField.restype = c_char_p
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
         if(retValue): return retValue
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
 
 class CBashISTRING_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID):
         self._ListX2FieldID = ListX2FieldID
     def __get__(self, instance, owner):
         _CGetField.restype = c_char_p
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
         if(retValue): return ISTRING(retValue)
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
 
 class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
+    def __init__(self, ListX2FieldID):
         self._ListX2FieldID = ListX2FieldID
     def __get__(self, instance, owner):
-        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
         if type != API_FIELDS.UNKNOWN:
             _CGetField.restype = POINTER(c_long)
-            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
             if(retValue):
                 if type == API_FIELDS.UINT32:
                     return retValue.contents.value
@@ -1329,79 +1372,66 @@ class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(object):
                     return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
         return None
     def __set__(self, instance, nValue):
-        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 2)
         if type != API_FIELDS.UNKNOWN:
-            if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+            if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
             else:
-                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
-
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
 
 # ListX3 Descriptors
 class CBashGeneric_LISTX3(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, ListX3FieldID, Type):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
-        self._ListX2FieldID = ListX2FieldID
+    def __init__(self, ListX3FieldID, Type):
         self._ListX3FieldID = ListX3FieldID
         self._Type = Type
         self._ResType = POINTER(Type)
     def __get__(self, instance, owner):
         _CGetField.restype = self._ResType
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
         if(retValue): return retValue.contents.value
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(self._Type(nValue)), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(self._Type(nValue)), 0)
 
 class CBashUINT8ARRAY_LISTX3(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, ListX3FieldID, Size=None):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
-        self._ListX2FieldID = ListX2FieldID
+    def __init__(self, ListX3FieldID, Size=None):
         self._ListX3FieldID = ListX3FieldID
         self._Size = Size
     def __get__(self, instance, owner):
-        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 1)
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 1)
         if(numRecords > 0):
             cRecords = POINTER(c_ubyte * numRecords)()
-            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords))
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords))
             return [cRecords.contents[x] for x in range(0, numRecords)]
         return []
     def __set__(self, instance, nValue):
-        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        if nValue is None or not len(nValue): _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
         else:
             length = len(nValue)
             if self._Size and length != self._Size: return
             cRecords = (c_ubyte * length)(*nValue)
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords), length)
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords), length)
 
 class CBashFLOAT32_LISTX3(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, ListX3FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
-        self._ListX2FieldID = ListX2FieldID
+    def __init__(self, ListX3FieldID):
         self._ListX3FieldID = ListX3FieldID
     def __get__(self, instance, owner):
         _CGetField.restype = POINTER(c_float)
-        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
         if(retValue): return round(retValue.contents.value,6)
         return None
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
-        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_float(round(nValue,6))), 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_float(round(nValue,6))), 0)
 
 class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(object):
-    def __init__(self, FieldID, ListFieldID, ListX2FieldID, ListX3FieldID):
-        self._FieldID = FieldID
-        self._ListFieldID = ListFieldID
-        self._ListX2FieldID = ListX2FieldID
+    def __init__(self, ListX3FieldID):
         self._ListX3FieldID = ListX3FieldID
     def __get__(self, instance, owner):
-        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
         if type != API_FIELDS.UNKNOWN:
             _CGetField.restype = POINTER(c_long)
-            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
             if(retValue):
                 if type == API_FIELDS.UINT32:
                     return retValue.contents.value
@@ -1409,11 +1439,11 @@ class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(object):
                     return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
         return None
     def __set__(self, instance, nValue):
-        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
         if type != API_FIELDS.UNKNOWN:
-            if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+            if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
             else:
-                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, instance._ListX2Index, self._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
 
 #Record accessors
 #--Accessor Components
@@ -1466,6 +1496,15 @@ class Item(ListComponent):
     count = CBashGeneric_LIST(2, c_long)
     exportattrs = copyattrs = ['item', 'count']
 
+class FNVItem(ListComponent):
+    item = CBashFORMID_LIST(1)
+    count = CBashGeneric_LIST(2, c_long)
+    owner = CBashFORMID_LIST(3)
+    globalOrRank = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(4)
+    condition = CBashFLOAT32_LIST(5)
+    exportattrs = copyattrs = ['item', 'count', 'owner',
+                               'globalOrRank', 'condition']
+
 class Condition(ListComponent):
     operType = CBashGeneric_LIST(1, c_ubyte)
     unused1 = CBashUINT8ARRAY_LIST(2, 3)
@@ -1484,6 +1523,58 @@ class Condition(ListComponent):
     IsRunOnTarget = CBashBasicFlag('operType', 0x02)
     IsUseGlobal = CBashBasicFlag('operType', 0x04)
     exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1', 'param2']
+
+class FNVCondition(ListComponent):
+    operType = CBashGeneric_LIST(1, c_ubyte)
+    unused1 = CBashUINT8ARRAY_LIST(2, 3)
+    compValue = CBashFLOAT32_LIST(3)
+    ifunc = CBashGeneric_LIST(4, c_ulong)
+    param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(5)
+    param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(6)
+    runOn = CBashGeneric_LIST(7, c_ulong)
+    reference = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(8)
+    IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
+    IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
+    IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
+    IsGreaterOrEqual = CBashMaskedType('operType', 0xF0, 0x60, 'IsEqual')
+    IsLess = CBashMaskedType('operType', 0xF0, 0x80, 'IsEqual')
+    IsLessOrEqual = CBashMaskedType('operType', 0xF0, 0xA0, 'IsEqual')
+    IsOr = CBashBasicFlag('operType', 0x01)
+    IsRunOnTarget = CBashBasicFlag('operType', 0x02)
+    IsUseGlobal = CBashBasicFlag('operType', 0x04)
+    IsResultOnSubject = CBashBasicType('runOn', 0, 'IsResultOnTarget')
+    IsResultOnTarget = CBashBasicType('runOn', 1, 'IsResultOnSubject')
+    IsResultOnReference = CBashBasicType('runOn', 2, 'IsResultOnSubject')
+    IsResultOnCombatTarget = CBashBasicType('runOn', 3, 'IsResultOnSubject')
+    IsResultOnLinkedReference = CBashBasicType('runOn', 4, 'IsResultOnSubject')
+    exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
+                               'param2', 'runOn', 'reference']
+
+class FNVConditionX2(ListX2Component):
+    operType = CBashGeneric_LISTX2(1, c_ubyte)
+    unused1 = CBashUINT8ARRAY_LISTX2(2, 3)
+    compValue = CBashFORMID_OR_FLOAT32_LISTX2(3)
+    ifunc = CBashGeneric_LISTX2(4, c_ulong)
+    param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(5)
+    param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(6)
+    runOn = CBashGeneric_LISTX2(7, c_ulong)
+    reference = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(8)
+    IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
+    IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
+    IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
+    IsGreaterOrEqual = CBashMaskedType('operType', 0xF0, 0x60, 'IsEqual')
+    IsLess = CBashMaskedType('operType', 0xF0, 0x80, 'IsEqual')
+    IsLessOrEqual = CBashMaskedType('operType', 0xF0, 0xA0, 'IsEqual')
+    IsOr = CBashBasicFlag('operType', 0x01)
+    IsRunOnTarget = CBashBasicFlag('operType', 0x02)
+    IsUseGlobal = CBashBasicFlag('operType', 0x04)
+    IsResultOnSubject = CBashBasicType('runOn', 0, 'IsResultOnTarget')
+    IsResultOnTarget = CBashBasicType('runOn', 1, 'IsResultOnSubject')
+    IsResultOnReference = CBashBasicType('runOn', 2, 'IsResultOnSubject')
+    IsResultOnCombatTarget = CBashBasicType('runOn', 3, 'IsResultOnSubject')
+    IsResultOnLinkedReference = CBashBasicType('runOn', 4, 'IsResultOnSubject')
+    exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
+                               'param2', 'runOn', 'reference']
 
 class Effect(ListComponent):
     ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
@@ -1577,6 +1668,28 @@ class Effect(ListComponent):
                                  'reserved1', 'iconPath', 'efixOverrides',
                                  'efixFlags', 'baseCost', 'resistAV',
                                  'reserved2']
+    
+class FNVEffect(ListComponent):
+    effect = CBashFORMID_LIST(1)
+    magnitude = CBashGeneric_LIST(2, c_ulong)
+    area = CBashGeneric_LIST(3, c_ulong)
+    duration = CBashGeneric_LIST(4, c_ulong)
+    rangeType = CBashGeneric_LIST(5, c_ulong)
+    actorValue = CBashGeneric_LIST(6, c_long)
+    
+    def create_condition(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 7, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 7, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVConditionX2(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 7, length)
+    conditions = CBashLIST_LIST(7, FNVConditionX2)
+    conditions_list = CBashLIST_LIST(7, FNVConditionX2, True)
+
+    
+    IsSelf = CBashBasicType('rangeType', 0, 'IsTouch')
+    IsTouch = CBashBasicType('rangeType', 1, 'IsSelf')
+    IsTarget = CBashBasicType('rangeType', 2, 'IsSelf')
+    exportattrs = copyattrs = ['effect', 'magnitude', 'area', 'duration',
+                               'rangeType', 'actorValue', 'conditions_list']
 
 class Faction(ListComponent):
     faction = CBashFORMID_LIST(1)
@@ -1593,6 +1706,7 @@ class FNVRelation(ListComponent):
     faction = CBashFORMID_LIST(1)
     mod = CBashGeneric_LIST(2, c_long)
     groupReactionType = CBashGeneric_LIST(3, c_ulong)
+    
     IsNeutral = CBashBasicType('groupReactionType', 0, 'IsEnemy')
     IsEnemy = CBashBasicType('groupReactionType', 1, 'IsNeutral')
     IsAlly = CBashBasicType('groupReactionType', 2, 'IsNeutral')
@@ -1604,6 +1718,43 @@ class FNVAltTexture(ListComponent):
     texture = CBashFORMID_LIST(2)
     index = CBashGeneric_LIST(3, c_long)
     exportattrs = copyattrs = ['name', 'texture', 'index']
+
+class FNVDestructable(BaseComponent):
+    class Stage(ListComponent):
+        health = CBashGeneric_LIST(1, c_ubyte)
+        index = CBashGeneric_LIST(2, c_ubyte)
+        stage = CBashGeneric_LIST(3, c_ubyte)
+        flags = CBashGeneric_LIST(4, c_ubyte)
+        dps = CBashGeneric_LIST(5, c_long)
+        explosion = CBashFORMID_LIST(6)
+        debris = CBashFORMID_LIST(7)
+        debrisCount = CBashGeneric_LIST(8, c_long)
+        modPath = CBashISTRING_LIST(9)
+        modt_p = CBashUINT8ARRAY_LIST(10)
+        
+        IsCapDamage = CBashBasicFlag('flags', 0x01)
+        IsDisable = CBashBasicFlag('flags', 0x02)
+        IsDestroy = CBashBasicFlag('flags', 0x04)
+        exportattrs = copyattrs = ['health', 'index', 'stage',
+                                   'flags', 'dps', 'explosion',
+                                   'debris', 'debrisCount',
+                                   'modPath', 'modt_p']
+
+    health = CBashGeneric_GROUP(0, c_long)
+    count = CBashGeneric_GROUP(1, c_ubyte)
+    flags = CBashGeneric_GROUP(2, c_ubyte)
+    unused1 = CBashUINT8ARRAY_GROUP(3, 2)
+
+    def create_stage(self):
+        FieldID = self._FieldID + 4
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return Stage(self._CollectionID, self._ModID, self._RecordID, FieldID, length)
+    stages = CBashLIST_GROUP(4, Stage)
+    stages_list = CBashLIST_GROUP(4, Stage, True)
+    IsVATSTargetable = CBashBasicFlag('flags', 0x01)
+    exportattrs = copyattrs = ['health', 'count', 'flags', 'stages_list']
+
 
 class PGRP(ListComponent):
     x = CBashFLOAT32_LIST(1)
@@ -1825,8 +1976,7 @@ class FnvBaseRecord(object):
     IsObstacleOrNoAIAcquire = CBashBasicFlag('flags1', 0x02000000)
     IsObstacle = CBashAlias('IsObstacleOrNoAIAcquire')
     IsNoAIAcquire = CBashAlias('IsObstacleOrNoAIAcquire')
-    IsNavMeshFilter = CBashBasicFlag('flags1', 0x03000000) #?
-##    IsNavMeshBoundBox = CBashBasicFlag('flags1', 0x04000000) #?
+    IsNavMeshFilter = CBashBasicFlag('flags1', 0x04000000)
     IsNavMeshBoundBox = CBashBasicFlag('flags1', 0x08000000)
     IsNonPipboyOrAutoReflected = CBashBasicFlag('flags1', 0x10000000)
     IsNonPipboy = CBashAlias('IsNonPipboyOrAutoReflected')
@@ -1867,6 +2017,7 @@ class FnvTES4Record(object):
     DATA = CBashJunk(13)
     overrides = CBashFORMIDARRAY(16)
     screenshot_p = CBashUINT8ARRAY(17)
+    
     IsESM = CBashBasicFlag('flags1', 0x00000001)
     exportattrs = copyattrs = ['flags1', 'versionControl1', 'formVersion', 'versionControl2', 'version', 'numRecords', 'nextObject',
                  'author', 'description', 'masters', 'overrides', 'screenshot_p']
@@ -1938,7 +2089,6 @@ class FnvTXSTRecord(FnvBaseRecord):
     IsObjectParallax = CBashBasicFlag('decalFlags', 0x00000001)
     IsObjectAlphaBlending = CBashBasicFlag('decalFlags', 0x00000002)
     IsObjectAlphaTesting = CBashBasicFlag('decalFlags', 0x00000004)
-    
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
                                            'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
@@ -2010,8 +2160,7 @@ class FnvCLASRecord(FnvBaseRecord):
     IsServicesPotions = CBashBasicFlag('services', 0x00002000)
     IsServicesTraining = CBashBasicFlag('services', 0x00004000)
     IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
-    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
-    
+    IsServicesRepair = CBashBasicFlag('services', 0x00020000)    
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
                                                          'tagSkills1', 'tagSkills2', 'tagSkills3',
                                                          'tagSkills4', 'flags', 'services',
@@ -2064,6 +2213,7 @@ class FnvHDPTRecord(FnvBaseRecord):
     modPath = CBashISTRING(8)
     modb = CBashFLOAT32(9)
     modt_p = CBashUINT8ARRAY(10)
+    
     def create_altTexture(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2076,6 +2226,7 @@ class FnvHDPTRecord(FnvBaseRecord):
     parts = CBashFORMIDARRAY(14)
     
     IsPlayable = CBashBasicFlag('flags', 0x01)
+    
     IsHead = CBashBasicFlag('modelFlags', 0x01)
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
@@ -2083,12 +2234,14 @@ class FnvHDPTRecord(FnvBaseRecord):
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
                                                          'modt_p', 'altTextures_list',
                                                          'modelFlags', 'flags', 'parts']
+
 class FnvHAIRRecord(FnvBaseRecord):
     _Type = 'HAIR'
     full = CBashSTRING(7)
     modPath = CBashISTRING(8)
     modb = CBashFLOAT32(9)
     modt_p = CBashUINT8ARRAY(10)
+    
     def create_altTexture(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2106,6 +2259,7 @@ class FnvHAIRRecord(FnvBaseRecord):
     IsNotFemale = CBashBasicFlag('flags', 0x04)
     IsFemale = CBashInvertedFlag('IsNotFemale')
     IsFixedColor = CBashBasicFlag('flags', 0x08)
+    
     IsHead = CBashBasicFlag('modelFlags', 0x01)
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
@@ -2113,6 +2267,7 @@ class FnvHAIRRecord(FnvBaseRecord):
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
                                                          'modt_p', 'altTextures_list',
                                                          'modelFlags', 'iconPath', 'flags']
+    
 class FnvEYESRecord(FnvBaseRecord):
     _Type = 'EYES'
     full = CBashSTRING(7)
@@ -2132,6 +2287,7 @@ class FnvRACERecord(FnvBaseRecord):
         modPath = CBashISTRING_GROUP(0)
         modb = CBashFLOAT32_GROUP(1)
         modt_p = CBashUINT8ARRAY_GROUP(2)
+        
         def create_altTexture(self):
             FieldID = self._FieldID + 3
             length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
@@ -2142,6 +2298,7 @@ class FnvRACERecord(FnvBaseRecord):
         flags = CBashGeneric_GROUP(4, c_ubyte)
         iconPath = CBashISTRING_GROUP(5)
         smallIconPath = CBashISTRING_GROUP(6)
+        
         IsHead = CBashBasicFlag('flags', 0x01)
         IsTorso = CBashBasicFlag('flags', 0x02)
         IsRightHand = CBashBasicFlag('flags', 0x04)
@@ -2153,6 +2310,7 @@ class FnvRACERecord(FnvBaseRecord):
 
     full = CBashSTRING(7)
     description = CBashSTRING(8)
+    
     def create_relation(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2273,6 +2431,7 @@ class FnvRACERecord(FnvBaseRecord):
     femaleFgga_p = CBashUINT8ARRAY(216, 120)
     femaleFgts_p = CBashUINT8ARRAY(217, 200)
     femaleSnam_p = CBashUINT8ARRAY(218, 2)
+    
     IsPlayable = CBashBasicFlag('flags', 0x00000001)
     IsChild = CBashBasicFlag('flags', 0x00000004)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description',
@@ -2330,6 +2489,7 @@ class FnvSOUNRecord(FnvBaseRecord):
     priority = CBashGeneric(25, c_long)
     x = CBashGeneric(26, c_long)
     y = CBashGeneric(27, c_long)
+    
     IsRandomFrequencyShift = CBashBasicFlag('flags', 0x00000001)
     IsPlayAtRandom = CBashBasicFlag('flags', 0x00000002)
     IsEnvironmentIgnored = CBashBasicFlag('flags', 0x00000004)
@@ -2342,8 +2502,7 @@ class FnvSOUNRecord(FnvBaseRecord):
     IsEnvelopeFast = CBashBasicFlag('flags', 0x00000200)
     IsEnvelopeSlow = CBashBasicFlag('flags', 0x00000400)
     Is2DRadius = CBashBasicFlag('flags', 0x00000800)
-    IsMuteWhenSubmerged = CBashBasicFlag('flags', 0x00001000)
-    
+    IsMuteWhenSubmerged = CBashBasicFlag('flags', 0x00001000)    
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2', 'soundPath',
                                            'chance', 'minDistance', 'maxDistance',
@@ -2377,6 +2536,7 @@ class FnvASPCRecord(FnvBaseRecord):
     regionSound = CBashFORMID(19)
     environmentType = CBashGeneric(20, c_ulong)
     spaceType = CBashGeneric(21, c_ulong)
+    
     IsEnvironmentNone = CBashBasicType('environmentType', 0, 'IsEnvironmentDefault')
     IsEnvironmentDefault = CBashBasicType('environmentType', 1, 'IsEnvironmentNone')
     IsEnvironmentGeneric = CBashBasicType('environmentType', 2, 'IsEnvironmentNone')
@@ -2408,6 +2568,7 @@ class FnvASPCRecord(FnvBaseRecord):
     IsEnvironmentMediumHall = CBashBasicType('environmentType', 28, 'IsEnvironmentNone')
     IsEnvironmentLargeHall = CBashBasicType('environmentType', 29, 'IsEnvironmentNone')
     IsEnvironmentPlate = CBashBasicType('environmentType', 30, 'IsEnvironmentNone')
+    
     IsSpaceExterior = CBashBasicType('spaceType', 0, 'IsSpaceInterior')
     IsSpaceInterior = CBashBasicType('spaceType', 1, 'IsSpaceExterior')
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
@@ -2426,6 +2587,7 @@ class FnvMGEFRecord(FnvBaseRecord):
     modPath = CBashISTRING(11)
     modb = CBashFLOAT32(12)
     modt_p = CBashUINT8ARRAY(13)
+    
     def create_altTexture(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2453,6 +2615,7 @@ class FnvMGEFRecord(FnvBaseRecord):
     cefBarterUnused = CBashFLOAT32(32)
     archType = CBashGeneric(33, c_ulong)
     actorValue = CBashGeneric(34, c_long)
+    
     IsHostile = CBashBasicFlag('flags', 0x00000001)
     IsRecover = CBashBasicFlag('flags', 0x00000002)
     IsDetrimental = CBashBasicFlag('flags', 0x00000004)
@@ -2475,6 +2638,7 @@ class FnvMGEFRecord(FnvBaseRecord):
     IsNoHitEffect = CBashBasicFlag('flags', 0x08000000)
     IsPersistOnDeath = CBashBasicFlag('flags', 0x10000000)
     IsUnknown1 = CBashBasicFlag('flags', 0x20000000)
+    
     IsValueModifier = CBashBasicType('archType', 0, 'IsScript')
     IsScript = CBashBasicType('archType', 1, 'IsValueModifier')
     IsDispel = CBashBasicType('archType', 2, 'IsValueModifier')
@@ -2517,6 +2681,7 @@ class FnvSCPTRecord(FnvBaseRecord):
         flags = CBashGeneric_LIST(3, c_ubyte)
         unused2 = CBashUINT8ARRAY_LIST(4, 7)
         name = CBashISTRING_LIST(5)
+        
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
         
@@ -2525,7 +2690,7 @@ class FnvSCPTRecord(FnvBaseRecord):
     compiledSize = CBashGeneric(9, c_ulong)
     lastIndex = CBashGeneric(10, c_ulong)
     scriptType = CBashGeneric(11, c_ushort)
-    flags = CBashGeneric(12, c_ushort)
+    scriptFlags = CBashGeneric(12, c_ushort)
     compiled_p = CBashUINT8ARRAY(13)
     scriptText = CBashISTRING(14)
     
@@ -2538,7 +2703,8 @@ class FnvSCPTRecord(FnvBaseRecord):
 
     references = CBashFORMID_OR_UINT32_ARRAY(16)
 
-    IsEnabled = CBashBasicFlag('flags', 0x0001)
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
@@ -2561,6 +2727,7 @@ class FnvLTEXRecord(FnvBaseRecord):
     restitution = CBashGeneric(12, c_ubyte)
     specularExponent = CBashGeneric(13, c_ubyte)
     grasses = CBashFORMIDARRAY(14)
+    
     IsStone = CBashBasicType('types', 0, 'IsCloth')
     IsCloth = CBashBasicType('types', 1, 'IsStone')
     IsDirt = CBashBasicType('types', 2, 'IsStone')
@@ -2599,53 +2766,694 @@ class FnvLTEXRecord(FnvBaseRecord):
 
 class FnvENCHRecord(FnvBaseRecord):
     _Type = 'ENCH'
+    full = CBashSTRING(7)
+    itemType = CBashGeneric(8, c_ulong)
+    chargeAmountUnused = CBashGeneric(9, c_ulong)
+    enchantCostUnused = CBashGeneric(10, c_ulong)
+    flags = CBashGeneric(11, c_ubyte)
+    unused1 = CBashUINT8ARRAY(12, 3)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_effect(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVEffect(self._CollectionID, self._ModID, self._RecordID, 13, length)
+    effects = CBashLIST(13, FNVEffect)
+    effects_list = CBashLIST(13, FNVEffect, True)
+
+    
+    IsNoAutoCalc = CBashBasicFlag('flags', 0x01)
+    IsHideEffect = CBashBasicFlag('flags', 0x04)
+    IsWeapon = CBashBasicType('itemType', 2, 'IsApparel')
+    IsApparel = CBashBasicType('itemType', 3, 'IsWeapon')
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'itemType', 'chargeAmountUnused',
+                                                         'enchantCostUnused', 'flags', 'effects_list']
 
 class FnvSPELRecord(FnvBaseRecord):
     _Type = 'SPEL'
+    full = CBashSTRING(7)
+    spellType = CBashGeneric(8, c_ulong)
+    costUnused = CBashGeneric(9, c_ulong)
+    levelTypeUnused = CBashGeneric(10, c_ulong)
+    flags = CBashGeneric(11, c_ubyte)
+    unused1 = CBashUINT8ARRAY(12, 3)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_effect(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVEffect(self._CollectionID, self._ModID, self._RecordID, 13, length)
+    effects = CBashLIST(13, FNVEffect)
+    effects_list = CBashLIST(13, FNVEffect, True)
+
+    
+    IsManualCost = CBashBasicFlag('flags', 0x01)
+    IsStartSpell = CBashBasicFlag('flags', 0x04)
+    IsSilenceImmune = CBashBasicFlag('flags', 0x0A)
+    IsAreaEffectIgnoresLOS = CBashBasicFlag('flags', 0x10)
+    IsAEIgnoresLOS = CBashAlias('IsAreaEffectIgnoresLOS')
+    IsScriptAlwaysApplies = CBashBasicFlag('flags', 0x20)
+    IsDisallowAbsorbReflect = CBashBasicFlag('flags', 0x40)
+    IsDisallowAbsorb = CBashAlias('IsDisallowAbsorbReflect')
+    IsDisallowReflect = CBashAlias('IsDisallowAbsorbReflect')
+    IsTouchExplodesWOTarget = CBashBasicFlag('flags', 0x80)
+    IsTouchExplodes = CBashAlias('IsTouchExplodesWOTarget')
+
+    IsActorEffect = CBashBasicType('spellType', 0, 'IsDisease')
+    IsDisease = CBashBasicType('spellType', 1, 'IsActorEffect')
+    IsPower = CBashBasicType('spellType', 2, 'IsActorEffect')
+    IsLesserPower = CBashBasicType('spellType', 3, 'IsActorEffect')
+    IsAbility = CBashBasicType('spellType', 4, 'IsActorEffect')
+    IsPoison = CBashBasicType('spellType', 5, 'IsActorEffect')
+    IsAddiction = CBashBasicType('spellType', 10, 'IsActorEffect')
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'spellType', 'costUnused',
+                                                         'levelTypeUnused', 'flags', 'effects_list']
 
 class FnvACTIRecord(FnvBaseRecord):
     _Type = 'ACTI'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    script = CBashFORMID(19)
+    destructable = CBashGrouped(20, FNVDestructable)
+    destructable_list = CBashGrouped(20, FNVDestructable, True)
+
+    loopSound = CBashFORMID(25)
+    actSound = CBashFORMID(26)
+    radioTemplate = CBashFORMID(27)
+    radioStation = CBashFORMID(28)
+    water = CBashFORMID(29)
+    prompt = CBashSTRING(30)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'full', 'modPath', 'modb', 'modt_p',
+                                                         'altTextures_list', 'modelFlags',
+                                                         'script', 'destructable_list',
+                                                         'loopSound', 'actSound',
+                                                         'radioTemplate', 'radioStation',
+                                                         'water', 'prompt']
 
 class FnvTACTRecord(FnvBaseRecord):
     _Type = 'TACT'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    script = CBashFORMID(19)
+    destructable = CBashGrouped(20, FNVDestructable)
+    destructable_list = CBashGrouped(20, FNVDestructable, True)
+
+    loopSound = CBashFORMID(25)
+    voice = CBashFORMID(26)
+    radioTemplate = CBashFORMID(27)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'full', 'modPath', 'modb', 'modt_p',
+                                                         'altTextures_list', 'modelFlags',
+                                                         'script', 'destructable_list',
+                                                         'loopSound', 'voice', 'radioTemplate']
 
 class FnvTERMRecord(FnvBaseRecord):
     _Type = 'TERM'
+    class Menu(ListComponent):
+        class Var(ListX2Component):
+            index = CBashGeneric_LISTX2(1, c_ulong)
+            unused1 = CBashUINT8ARRAY_LISTX2(2, 12)
+            flags = CBashGeneric_LISTX2(3, c_ubyte)
+            unused2 = CBashUINT8ARRAY_LISTX2(4, 7)
+            name = CBashISTRING_LISTX2(5)
+
+            IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+            exportattrs = copyattrs = ['index', 'flags', 'name']
+
+        text = CBashSTRING_LIST(1)
+        resultText = CBashSTRING_LIST(2)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        displayNote = CBashFORMID_LIST(4)
+        subMenu = CBashFORMID_LIST(5)
+        unused1 = CBashUINT8ARRAY_LIST(6, 4)
+        numRefs = CBashGeneric_LIST(7, c_ulong)
+        compiledSize = CBashGeneric_LIST(8, c_ulong)
+        lastIndex = CBashGeneric_LIST(9, c_ulong)
+        scriptType = CBashGeneric_LIST(10, c_ushort)
+        scriptFlags = CBashGeneric_LIST(11, c_ushort)
+        compiled_p = CBashUINT8ARRAY_LIST(12)
+        scriptText = CBashISTRING_LIST(13)
+        
+        def create_var(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Var(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, length)
+        vars = CBashLIST_LIST(14, Var)
+        vars_list = CBashLIST_LIST(14, Var, True)
+
+        
+        references = CBashFORMID_OR_UINT32_ARRAY_LIST(15)
+        def create_condition(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 16, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 16, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return FNVConditionX2(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 16, length)
+        conditions = CBashLIST_LIST(16, FNVConditionX2)
+        conditions_list = CBashLIST_LIST(16, FNVConditionX2, True)
+
+        
+        IsAddNote = CBashBasicFlag('flags', 0x01)
+        IsForceRedraw = CBashBasicFlag('flags', 0x02)
+
+        IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+
+        IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+        IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+        IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+        copyattrs = ['text', 'resultText', 'flags',
+                     'displayNote', 'subMenu', 'numRefs',
+                     'compiledSize', 'lastIndex',
+                     'scriptType', 'flags', 'compiled_p',
+                     'scriptText', 'vars_list',
+                     'references', 'conditions_list',]
+        exportattrs = ['text', 'resultText', 'flags',
+                       'displayNote', 'subMenu', 'numRefs',
+                       'compiledSize', 'lastIndex',
+                       'scriptType', 'flags',
+                       'scriptText', 'vars_list',
+                       'references', 'conditions_list',] # 'compiled_p',
+        
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    script = CBashFORMID(19)
+    destructable = CBashGrouped(20, FNVDestructable)
+    destructable_list = CBashGrouped(20, FNVDestructable, True)
+
+    description = CBashSTRING(25)
+    loopSound = CBashFORMID(26)
+    passNote = CBashFORMID(27)
+    difficultyType = CBashGeneric(28, c_ubyte)
+    flags = CBashGeneric(29, c_ubyte)
+    serverType = CBashGeneric(30, c_ubyte)
+    unused1 = CBashUINT8ARRAY(31, 1)
+    
+    def create_menu(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 32, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 32, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Menu(self._CollectionID, self._ModID, self._RecordID, 32, length)
+    menus = CBashLIST(32, Menu)
+    menus_list = CBashLIST(32, Menu, True)
+
+    
+    IsVeryEasy = CBashBasicType('difficultyType', 0, 'IsEasy')
+    IsEasy = CBashBasicType('difficultyType', 1, 'IsVeryEasy')
+    IsAverage = CBashBasicType('difficultyType', 2, 'IsVeryEasy')
+    IsHard = CBashBasicType('difficultyType', 3, 'IsVeryEasy')
+    IsVeryHard = CBashBasicType('difficultyType', 4, 'IsVeryEasy')
+    IsRequiresKey = CBashBasicType('difficultyType', 5, 'IsVeryEasy')
+    
+    IsLeveled = CBashBasicFlag('flags', 0x01)
+    IsUnlocked = CBashBasicFlag('flags', 0x02)
+    IsAlternateColors = CBashBasicFlag('flags', 0x04)
+    IsHideWelcomeTextWhenDisplayingImage = CBashBasicFlag('flags', 0x08)
+    
+    IsServer1 = CBashBasicType('serverType', 0, 'IsServer2')
+    IsServer2 = CBashBasicType('serverType', 1, 'IsServer1')
+    IsServer3 = CBashBasicType('serverType', 2, 'IsServer1')
+    IsServer4 = CBashBasicType('serverType', 3, 'IsServer1')
+    IsServer5 = CBashBasicType('serverType', 4, 'IsServer1')
+    IsServer6 = CBashBasicType('serverType', 5, 'IsServer1')
+    IsServer7 = CBashBasicType('serverType', 6, 'IsServer1')
+    IsServer8 = CBashBasicType('serverType', 7, 'IsServer1')
+    IsServer9 = CBashBasicType('serverType', 8, 'IsServer1')
+    IsServer10 = CBashBasicType('serverType', 9, 'IsServer1')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'script', 'destructable_list',
+                                           'description', 'loopSound',
+                                           'passNote', 'difficultyType',
+                                           'flags', 'serverType', 'menus_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'script', 'destructable_list',
+                                             'description', 'loopSound',
+                                             'passNote', 'difficultyType',
+                                             'flags', 'serverType', 'menus_list'] # 'modt_p',
 
 class FnvARMORecord(FnvBaseRecord):
     _Type = 'ARMO'
+    class BipedModel(BaseComponent):
+        modPath = CBashISTRING_GROUP(0)
+        modt_p = CBashUINT8ARRAY_GROUP(1)
+
+        def create_altTexture(self):
+            FieldID = self._FieldID + 2
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, FieldID, length)
+        altTextures = CBashLIST_GROUP(2, FNVAltTexture)
+        altTextures_list = CBashLIST_GROUP(2, FNVAltTexture, True)
+        flags = CBashGeneric_GROUP(3, c_ubyte)
+
+        IsHead = CBashBasicFlag('flags', 0x01)
+        IsTorso = CBashBasicFlag('flags', 0x02)
+        IsRightHand = CBashBasicFlag('flags', 0x04)
+        IsLeftHand = CBashBasicFlag('flags', 0x08)
+        copyattrs = ['modPath', 'modt_p', 'altTextures_list',
+                     'flags']
+        exportattrs = ['modPath', 'altTextures_list', 'flags']#, 'modt_p']
+
+    class WorldModel(BaseComponent):
+        modPath = CBashISTRING_GROUP(0)
+        modt_p = CBashUINT8ARRAY_GROUP(1)
+
+        def create_altTexture(self):
+            FieldID = self._FieldID + 2
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, FieldID, length)
+        altTextures = CBashLIST_GROUP(2, FNVAltTexture)
+        altTextures_list = CBashLIST_GROUP(2, FNVAltTexture, True)
+        copyattrs = ['modPath', 'modt_p', 'altTextures_list']
+        exportattrs = ['modPath', 'altTextures_list']#, 'modt_p']
+
+    class Sound(ListComponent):
+        sound = CBashFORMID_LIST(1)
+        chance = CBashGeneric_LIST(2, c_ubyte)
+        unused1 = CBashUINT8ARRAY_LIST(3, 3)
+        type = CBashGeneric_LIST(4, c_ulong)
+        IsWalk = CBashBasicType('type', 17, 'IsSneak')
+        IsSneak = CBashBasicType('type', 18, 'IsWalk')
+        IsRun = CBashBasicType('type', 19, 'IsWalk')
+        IsSneakArmor = CBashBasicType('type', 20, 'IsWalk')
+        IsRunArmor = CBashBasicType('type', 21, 'IsWalk')
+        IsWalkArmor = CBashBasicType('type', 22, 'IsWalk')
+        exportattrs = copyattrs = ['sound', 'chance', 'type']
+
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    script = CBashFORMID(14)
+    effect = CBashFORMID(15)
+    flags = CBashGeneric(16, c_ulong)
+    extraFlags = CBashGeneric(17, c_ubyte)
+    unused1 = CBashUINT8ARRAY(18, 3)
+    male = CBashGrouped(19, BipedModel)
+    male_list = CBashGrouped(19, BipedModel, True)
+
+    maleWorld = CBashGrouped(23, WorldModel)
+    maleWorld_list = CBashGrouped(23, WorldModel, True)
+
+    maleIconPath = CBashISTRING(26)
+    maleSmallIconPath = CBashISTRING(27)
+    female = CBashGrouped(28, BipedModel)
+    female_list = CBashGrouped(28, BipedModel, True)
+
+    femaleWorld = CBashGrouped(32, WorldModel)
+    femaleWorld_list = CBashGrouped(32, WorldModel, True)
+
+    femaleIconPath = CBashISTRING(35)
+    femaleSmallIconPath = CBashISTRING(36)
+    ragdollTemplate = CBashISTRING(37)
+    repairList = CBashFORMID(38)
+    modelList = CBashFORMID(39)
+    equipmentType = CBashGeneric(40, c_long)
+    pickupSound = CBashFORMID(41)
+    dropSound = CBashFORMID(42)
+    value = CBashGeneric(43, c_long)
+    health = CBashGeneric(44, c_long)
+    weight = CBashFLOAT32(45)
+    AR = CBashGeneric(46, c_short)
+    voiceFlags = CBashGeneric(47, c_ushort)
+    DT = CBashFLOAT32(48)
+    unknown1 = CBashUINT8ARRAY(49, 4)
+    overrideSounds = CBashGeneric(50, c_ulong)
+    def create_sound(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 51, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 51, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Sound(self._CollectionID, self._ModID, self._RecordID, 51, length)
+    sounds = CBashLIST(51, Sound)
+    sounds_list = CBashLIST(51, Sound, True)
+
+    soundsTemplate = CBashFORMID(52)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    IsHead = CBashBasicFlag('flags', 0x00000001)
+    IsHair = CBashBasicFlag('flags', 0x00000002)
+    IsUpperBody = CBashBasicFlag('flags', 0x00000004)
+    IsLeftHand = CBashBasicFlag('flags', 0x00000008)
+    IsRightHand = CBashBasicFlag('flags', 0x00000010)
+    IsWeapon = CBashBasicFlag('flags', 0x00000020)
+    IsPipBoy = CBashBasicFlag('flags', 0x00000040)
+    IsBackpack = CBashBasicFlag('flags', 0x00000080)
+    IsNecklace = CBashBasicFlag('flags', 0x00000100)
+    IsHeadband = CBashBasicFlag('flags', 0x00000200)
+    IsHat = CBashBasicFlag('flags', 0x00000400)
+    IsEyeGlasses = CBashBasicFlag('flags', 0x00000800)
+    IsNoseRing = CBashBasicFlag('flags', 0x00001000)
+    IsEarrings = CBashBasicFlag('flags', 0x00002000)
+    IsMask = CBashBasicFlag('flags', 0x00004000)
+    IsChoker = CBashBasicFlag('flags', 0x00008000)
+    IsMouthObject = CBashBasicFlag('flags', 0x00010000)
+    IsBodyAddon1 = CBashBasicFlag('flags', 0x00020000)
+    IsBodyAddon2 = CBashBasicFlag('flags', 0x00040000)
+    IsBodyAddon3 = CBashBasicFlag('flags', 0x00080000)
+
+    IsUnknown1 = CBashBasicFlag('extraFlags', 0x0001)
+    IsUnknown2 = CBashBasicFlag('extraFlags', 0x0002)
+    IsHasBackpack = CBashBasicFlag('extraFlags', 0x0004)
+    IsMedium = CBashBasicFlag('extraFlags', 0x0008)
+    IsUnknown3 = CBashBasicFlag('extraFlags', 0x0010)
+    IsPowerArmor = CBashBasicFlag('extraFlags', 0x0020)
+    IsNonPlayable = CBashBasicFlag('extraFlags', 0x0040)
+    IsHeavy = CBashBasicFlag('extraFlags', 0x0080)
+
+    IsNone = CBashBasicType('equipmentType', -1, 'IsBigGuns')
+    IsBigGuns = CBashBasicType('equipmentType', 0, 'IsNone')
+    IsEnergyWeapons = CBashBasicType('equipmentType', 1, 'IsNone')
+    IsSmallGuns = CBashBasicType('equipmentType', 2, 'IsNone')
+    IsMeleeWeapons = CBashBasicType('equipmentType', 3, 'IsNone')
+    IsUnarmedWeapon = CBashBasicType('equipmentType', 4, 'IsNone')
+    IsThrownWeapons = CBashBasicType('equipmentType', 5, 'IsNone')
+    IsMine = CBashBasicType('equipmentType', 6, 'IsNone')
+    IsBodyWear = CBashBasicType('equipmentType', 7, 'IsNone')
+    IsHeadWear = CBashBasicType('equipmentType', 8, 'IsNone')
+    IsHandWear = CBashBasicType('equipmentType', 9, 'IsNone')
+    IsChems = CBashBasicType('equipmentType', 10, 'IsNone')
+    IsStimpack = CBashBasicType('equipmentType', 11, 'IsNone')
+    IsEdible = CBashBasicType('equipmentType', 12, 'IsNone')
+    IsAlcohol = CBashBasicType('equipmentType', 13, 'IsNone')
+    
+    IsNotOverridingSounds = CBashBasicType('overrideSounds', 0, 'IsOverridingSounds')
+    IsOverridingSounds = CBashBasicType('overrideSounds', 1, 'IsNotOverridingSounds')
+    
+    IsModulatesVoice = CBashBasicFlag('voiceFlags', 0x0001)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'full', 'script', 'effect',
+                                                         'flags', 'extraFlags',
+                                                         'male_list', 'maleWorld_list',
+                                                         'maleIconPath', 'maleSmallIconPath',
+                                                         'female_list', 'femaleWorld_list',
+                                                         'femaleIconPath', 'femaleSmallIconPath',
+                                                         'ragdollTemplate', 'repairList',
+                                                         'modelList', 'equipmentType',
+                                                         'pickupSound', 'dropSound', 'value',
+                                                         'health', 'weight', 'AR', 'voiceFlags',
+                                                         'DT', 'unknown1', 'overrideSounds',
+                                                         'sounds_list', 'soundsTemplate']
 
 class FnvBOOKRecord(FnvBaseRecord):
     _Type = 'BOOK'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    script = CBashFORMID(21)
+    description = CBashSTRING(22)
+    destructable = CBashGrouped(23, FNVDestructable)
+    destructable_list = CBashGrouped(23, FNVDestructable, True)
+
+    flags = CBashGeneric(28, c_ubyte)
+    teaches = CBashGeneric(29, c_byte)
+    value = CBashGeneric(30, c_long)
+    weight = CBashFLOAT32(31)
+    
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    
+    IsFixed = CBashBasicFlag('flags', 0x00000002)
+    IsCantBeTaken = CBashAlias('IsFixed')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'description',
+                                           'destructable_list', 'flags',
+                                           'teaches', 'value', 'weight']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'description',
+                                             'destructable_list', 'flags',
+                                             'teaches', 'value', 'weight'] # 'modt_p',
 
 class FnvCONTRecord(FnvBaseRecord):
     _Type = 'CONT'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet.
+        Filters items."""
+        self.items = [x for x in self.items if x.item[0] in modSet]
+        
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    script = CBashFORMID(19)
+
+    def create_item(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 20, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 20, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVItem(self._CollectionID, self._ModID, self._RecordID, 20, length)
+    items = CBashLIST(20, FNVItem)
+    items_list = CBashLIST(20, FNVItem, True)
+
+    destructable = CBashGrouped(21, FNVDestructable)
+    destructable_list = CBashGrouped(21, FNVDestructable, True)
+
+    flags = CBashGeneric(26, c_ubyte)
+    weight = CBashFLOAT32(27)
+    openSound = CBashFORMID(28)
+    closeSound = CBashFORMID(29)
+    loopSound = CBashFORMID(30)
+    
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+
+    IsRespawn = CBashBasicFlag('flags', 0x00000001)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'script', 'items_list',
+                                           'destructable_list', 'flags',
+                                           'weight', 'openSound',
+                                           'closeSound', 'loopSound', ]
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'script', 'items_list',
+                                             'destructable_list', 'flags',
+                                             'weight', 'openSound',
+                                             'closeSound', 'loopSound', ] #'modt_p', 
+
 
 class FnvDOORRecord(FnvBaseRecord):
     _Type = 'DOOR'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    script = CBashFORMID(19)
+    destructable = CBashGrouped(20, FNVDestructable)
+    destructable_list = CBashGrouped(20, FNVDestructable, True)
+
+    openSound = CBashFORMID(25)
+    closeSound = CBashFORMID(26)
+    loopSound = CBashFORMID(27)
+    flags = CBashGeneric(28, c_ubyte)
+    
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    
+    IsAutomatic = CBashBasicFlag('flags', 0x02)
+    IsHidden = CBashBasicFlag('flags', 0x04)
+    IsMinimalUse = CBashBasicFlag('flags', 0x08)
+    IsSlidingDoor = CBashBasicFlag('flags', 0x10)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'full', 'modPath', 'modb', 'modt_p',
+                                                         'altTextures_list', 'modelFlags',
+                                                         'script', 'destructable_list',
+                                                         'openSound', 'closeSound',
+                                                         'loopSound', 'flags']
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'full', 'modPath', 'modb',
+                                                         'altTextures_list', 'modelFlags',
+                                                         'script', 'destructable_list',
+                                                         'openSound', 'closeSound',
+                                                         'loopSound', 'flags'] #'modt_p', 
 
 class FnvINGRRecord(FnvBaseRecord):
     _Type = 'INGR'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
     
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    script = CBashFORMID(21)
+    equipmentType = CBashGeneric(22, c_long)
+    weight = CBashFLOAT32(23)
+    value = CBashGeneric(24, c_long)
+    flags = CBashGeneric(25, c_ubyte)
+    unused1 = CBashUINT8ARRAY(26, 3)
+                   
+    def create_effect(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 27, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 27, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVEffect(self._CollectionID, self._ModID, self._RecordID, 27, length)
+    effects = CBashLIST(27, FNVEffect)
+    effects_list = CBashLIST(27, FNVEffect, True)
+
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'equipmentType',
+                                           'weight', 'value', 'flags',
+                                           'effects_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'equipmentType',
+                                             'weight', 'value', 'flags',
+                                             'effects_list'] # 'modt_p',
 
 class FnvLIGHRecord(FnvBaseRecord):
     _Type = 'LIGH'
@@ -3470,9 +4278,9 @@ class ObINFORecord(ObBaseRecord):
     class Response(ListComponent):
         emotionType = CBashGeneric_LIST(1, c_ulong)
         emotionValue = CBashGeneric_LIST(2, c_long)
-        unused1 = CBashUINT8ARRAY_LIST(3)
+        unused1 = CBashUINT8ARRAY_LIST(3, 4)
         responseNum = CBashGeneric_LIST(4, c_ubyte)
-        unused2 = CBashUINT8ARRAY_LIST(5)
+        unused2 = CBashUINT8ARRAY_LIST(5, 3)
         responseText = CBashSTRING_LIST(6)
         actorNotes = CBashISTRING_LIST(7)
         IsNeutral = CBashBasicType('emotionType', 0, 'IsAnger')
@@ -3550,19 +4358,19 @@ class ObLANDRecord(ObBaseRecord):
 
     _Type = 'LAND'
     class Normal(ListX2Component):
-        x = CBashGeneric_LISTX2(6, 0, 1, c_ubyte)
-        y = CBashGeneric_LISTX2(6, 0, 2, c_ubyte)
-        z = CBashGeneric_LISTX2(6, 0, 3, c_ubyte)
+        x = CBashGeneric_LISTX2(1, c_ubyte)
+        y = CBashGeneric_LISTX2(2, c_ubyte)
+        z = CBashGeneric_LISTX2(3, c_ubyte)
         exportattrs = copyattrs = ['x', 'y', 'z']
 
     class Height(ListX2Component):
-        height = CBashGeneric_LISTX2(8, 0, 1, c_byte)
+        height = CBashGeneric_LISTX2(1, c_byte)
         exportattrs = copyattrs = ['height']
 
     class Color(ListX2Component):
-        red = CBashGeneric_LISTX2(11, 0, 1, c_ubyte)
-        green = CBashGeneric_LISTX2(11, 0, 2, c_ubyte)
-        blue = CBashGeneric_LISTX2(11, 0, 3, c_ubyte)
+        red = CBashGeneric_LISTX2(1, c_ubyte)
+        green = CBashGeneric_LISTX2(2, c_ubyte)
+        blue = CBashGeneric_LISTX2(3, c_ubyte)
         exportattrs = copyattrs = ['red', 'green', 'blue']
 
     class BaseTexture(ListComponent):
@@ -3574,9 +4382,9 @@ class ObLANDRecord(ObBaseRecord):
 
     class AlphaLayer(ListComponent):
         class Opacity(ListX2Component):
-            position = CBashGeneric_LISTX2(12, 5, 1, c_ushort)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 5, 2, 2)
-            opacity = CBashFLOAT32_LISTX2(12, 5, 3)
+            position = CBashGeneric_LISTX2(1, c_ushort)
+            unused1 = CBashUINT8ARRAY_LISTX2(2, 2)
+            opacity = CBashFLOAT32_LISTX2(3)
             exportattrs = copyattrs = ['position', 'opacity']
         texture = CBashFORMID_LIST(1)
         quadrant = CBashGeneric_LIST(2, c_byte)
@@ -3584,9 +4392,9 @@ class ObLANDRecord(ObBaseRecord):
         layer = CBashGeneric_LIST(4, c_short)
 
         def create_opacity(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Opacity(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Opacity(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, length)
         opacities = CBashLIST_LIST(5, Opacity)
         opacities_list = CBashLIST_LIST(5, Opacity, True)
 
@@ -3597,30 +4405,30 @@ class ObLANDRecord(ObBaseRecord):
         exportattrs = copyattrs = ['texture']
 
     class Position(ListX2Component):
-        height = CBashFLOAT32_LISTX2(14, 0, 1)
-        normalX = CBashGeneric_LISTX2(14, 0, 2, c_ubyte)
-        normalY = CBashGeneric_LISTX2(14, 0, 3, c_ubyte)
-        normalZ = CBashGeneric_LISTX2(14, 0, 4, c_ubyte)
-        red = CBashGeneric_LISTX2(14, 0, 5, c_ubyte)
-        green = CBashGeneric_LISTX2(14, 0, 6, c_ubyte)
-        blue = CBashGeneric_LISTX2(14, 0, 7, c_ubyte)
-        baseTexture = CBashFORMID_LISTX2(14, 0, 8)
-        alphaLayer1Texture = CBashFORMID_LISTX2(14, 0, 9)
-        alphaLayer1Opacity = CBashFLOAT32_LISTX2(14, 0, 10)
-        alphaLayer2Texture = CBashFORMID_LISTX2(14, 0, 11)
-        alphaLayer2Opacity = CBashFLOAT32_LISTX2(14, 0, 12)
-        alphaLayer3Texture = CBashFORMID_LISTX2(14, 0, 13)
-        alphaLayer3Opacity = CBashFLOAT32_LISTX2(14, 0, 14)
-        alphaLayer4Texture = CBashFORMID_LISTX2(14, 0, 15)
-        alphaLayer4Opacity = CBashFLOAT32_LISTX2(14, 0, 16)
-        alphaLayer5Texture = CBashFORMID_LISTX2(14, 0, 17)
-        alphaLayer5Opacity = CBashFLOAT32_LISTX2(14, 0, 18)
-        alphaLayer6Texture = CBashFORMID_LISTX2(14, 0, 19)
-        alphaLayer6Opacity = CBashFLOAT32_LISTX2(14, 0, 20)
-        alphaLayer7Texture = CBashFORMID_LISTX2(14, 0, 21)
-        alphaLayer7Opacity = CBashFLOAT32_LISTX2(14, 0, 22)
-        alphaLayer8Texture = CBashFORMID_LISTX2(14, 0, 23)
-        alphaLayer8Opacity = CBashFLOAT32_LISTX2(14, 0, 24)
+        height = CBashFLOAT32_LISTX2(1)
+        normalX = CBashGeneric_LISTX2(2, c_ubyte)
+        normalY = CBashGeneric_LISTX2(3, c_ubyte)
+        normalZ = CBashGeneric_LISTX2(4, c_ubyte)
+        red = CBashGeneric_LISTX2(5, c_ubyte)
+        green = CBashGeneric_LISTX2(6, c_ubyte)
+        blue = CBashGeneric_LISTX2(7, c_ubyte)
+        baseTexture = CBashFORMID_LISTX2(8)
+        alphaLayer1Texture = CBashFORMID_LISTX2(9)
+        alphaLayer1Opacity = CBashFLOAT32_LISTX2(10)
+        alphaLayer2Texture = CBashFORMID_LISTX2(11)
+        alphaLayer2Opacity = CBashFLOAT32_LISTX2(12)
+        alphaLayer3Texture = CBashFORMID_LISTX2(13)
+        alphaLayer3Opacity = CBashFLOAT32_LISTX2(14)
+        alphaLayer4Texture = CBashFORMID_LISTX2(15)
+        alphaLayer4Opacity = CBashFLOAT32_LISTX2(16)
+        alphaLayer5Texture = CBashFORMID_LISTX2(17)
+        alphaLayer5Opacity = CBashFLOAT32_LISTX2(18)
+        alphaLayer6Texture = CBashFORMID_LISTX2(19)
+        alphaLayer6Opacity = CBashFLOAT32_LISTX2(20)
+        alphaLayer7Texture = CBashFORMID_LISTX2(21)
+        alphaLayer7Opacity = CBashFLOAT32_LISTX2(22)
+        alphaLayer8Texture = CBashFORMID_LISTX2(23)
+        alphaLayer8Opacity = CBashFLOAT32_LISTX2(24)
         exportattrs = copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
                      'red', 'green', 'blue', 'baseTexture',
                      'alphaLayer1Texture', 'alphaLayer1Opacity',
@@ -5518,13 +6326,13 @@ class ObQUSTRecord(ObBaseRecord):
     class Stage(ListComponent):
         class Entry(ListX2Component):
             class ConditionX3(ListX3Component):
-                operType = CBashGeneric_LISTX3(11, 2, 2, 1, c_ubyte)
-                unused1 = CBashUINT8ARRAY_LISTX3(11, 2, 2, 2, 3)
-                compValue = CBashFLOAT32_LISTX3(11, 2, 2, 3)
-                ifunc = CBashGeneric_LISTX3(11, 2, 2, 4, c_ulong)
-                param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(11, 2, 2, 5)
-                param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(11, 2, 2, 6)
-                unused2 = CBashUINT8ARRAY_LISTX3(11, 2, 2, 7, 4)
+                operType = CBashGeneric_LISTX3(1, c_ubyte)
+                unused1 = CBashUINT8ARRAY_LISTX3(2, 3)
+                compValue = CBashFLOAT32_LISTX3(3)
+                ifunc = CBashGeneric_LISTX3(4, c_ulong)
+                param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(5)
+                param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(6)
+                unused2 = CBashUINT8ARRAY_LISTX3(7, 4)
                 IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
                 IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
                 IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
@@ -5537,24 +6345,24 @@ class ObQUSTRecord(ObBaseRecord):
                 exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                              'param2']
 
-            flags = CBashGeneric_LISTX2(11, 2, 1, c_ubyte)
+            flags = CBashGeneric_LISTX2(1, c_ubyte)
 
             def create_condition(self):
-                length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, self._ListX2Index, 2, 0, 0, 1)
-                CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, self._ListX2Index, 2, 0, 0, 0, c_ulong(length + 1))
-                return self.ConditionX3(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, self._ListX2Index, 2, length)
-            conditions = CBashLIST_LISTX2(11, 2, 2, ConditionX3)
-            conditions_list = CBashLIST_LISTX2(11, 2, 2, ConditionX3, True)
+                length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, 2, 0, 0, 1)
+                CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, 2, 0, 0, 0, c_ulong(length + 1))
+                return self.ConditionX3(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, 2, length)
+            conditions = CBashLIST_LISTX2(2, ConditionX3)
+            conditions_list = CBashLIST_LISTX2(2, ConditionX3, True)
 
-            text = CBashSTRING_LISTX2(11, 2, 3)
-            unused1 = CBashUINT8ARRAY_LISTX2(11, 2, 4, 4)
-            numRefs = CBashGeneric_LISTX2(11, 2, 5, c_ulong)
-            compiledSize = CBashGeneric_LISTX2(11, 2, 6, c_ulong)
-            lastIndex = CBashGeneric_LISTX2(11, 2, 7, c_ulong)
-            scriptType = CBashGeneric_LISTX2(11, 2, 8, c_ulong)
-            compiled_p = CBashUINT8ARRAY_LISTX2(11, 2, 9)
-            scriptText = CBashISTRING_LISTX2(11, 2, 10)
-            references = CBashFORMID_OR_UINT32_ARRAY_LISTX2(11, 2, 11)
+            text = CBashSTRING_LISTX2(3)
+            unused1 = CBashUINT8ARRAY_LISTX2(4, 4)
+            numRefs = CBashGeneric_LISTX2(5, c_ulong)
+            compiledSize = CBashGeneric_LISTX2(6, c_ulong)
+            lastIndex = CBashGeneric_LISTX2(7, c_ulong)
+            scriptType = CBashGeneric_LISTX2(8, c_ulong)
+            compiled_p = CBashUINT8ARRAY_LISTX2(9)
+            scriptText = CBashISTRING_LISTX2(10)
+            references = CBashFORMID_OR_UINT32_ARRAY_LISTX2(11)
             IsCompletes = CBashBasicFlag('flags', 0x00000001)
             copyattrs = ['flags', 'conditions_list', 'text', 'numRefs', 'compiledSize',
                          'lastIndex', 'scriptType', 'compiled_p', 'scriptText',
@@ -5566,9 +6374,9 @@ class ObQUSTRecord(ObBaseRecord):
         stage = CBashGeneric_LIST(1, c_ushort)
 
         def create_entry(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Entry(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Entry(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, length)
         entries = CBashLIST_LIST(2, Entry)
         entries_list = CBashLIST_LIST(2, Entry, True)
 
@@ -5576,13 +6384,13 @@ class ObQUSTRecord(ObBaseRecord):
 
     class Target(ListComponent):
         class ConditionX2(ListX2Component):
-            operType = CBashGeneric_LISTX2(12, 4, 1, c_ubyte)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 4, 2, 3)
-            compValue = CBashFLOAT32_LISTX2(12, 4, 3)
-            ifunc = CBashGeneric_LISTX2(12, 4, 4, c_ulong)
-            param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(12, 4, 5)
-            param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(12, 4, 6)
-            unused2 = CBashUINT8ARRAY_LISTX2(12, 4, 7, 4)
+            operType = CBashGeneric_LISTX2(1, c_ubyte)
+            unused1 = CBashUINT8ARRAY_LISTX2(2, 3)
+            compValue = CBashFLOAT32_LISTX2(3)
+            ifunc = CBashGeneric_LISTX2(4, c_ulong)
+            param1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(5)
+            param2 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(6)
+            unused2 = CBashUINT8ARRAY_LISTX2(7, 4)
             IsEqual = CBashMaskedType('operType', 0xF0, 0x00, 'IsNotEqual')
             IsNotEqual = CBashMaskedType('operType', 0xF0, 0x20, 'IsEqual')
             IsGreater = CBashMaskedType('operType', 0xF0, 0x40, 'IsEqual')
@@ -5597,12 +6405,12 @@ class ObQUSTRecord(ObBaseRecord):
 
         targetId = CBashFORMID_LIST(1)
         flags = CBashGeneric_LIST(2, c_ubyte)
-        unused1 = CBashUINT8ARRAY_LIST(3)
+        unused1 = CBashUINT8ARRAY_LIST(3, 3)
 
         def create_condition(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 4, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 4, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.ConditionX2(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 4, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 4, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 4, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.ConditionX2(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 4, length)
         conditions = CBashLIST_LIST(4, ConditionX2)
         conditions_list = CBashLIST_LIST(4, ConditionX2, True)
 
@@ -5823,16 +6631,16 @@ class ObREGNRecord(ObBaseRecord):
     _Type = 'REGN'
     class Area(ListComponent):
         class Point(ListX2Component):
-            posX = CBashFLOAT32_LISTX2(11, 2, 1)
-            posY = CBashFLOAT32_LISTX2(11, 2, 2)
+            posX = CBashFLOAT32_LISTX2(1)
+            posY = CBashFLOAT32_LISTX2(2)
             exportattrs = copyattrs = ['posX', 'posY']
 
         edgeFalloff = CBashFORMID_LIST(1)
 
         def create_point(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Point(self._CollectionID, self._ModID, self._RecordID, 11, self._ListIndex, 2, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Point(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, length)
         points = CBashLIST_LIST(2, Point)
         points_list = CBashLIST_LIST(2, Point, True)
 
@@ -5840,26 +6648,26 @@ class ObREGNRecord(ObBaseRecord):
 
     class Entry(ListComponent):
         class Object(ListX2Component):
-            objectId = CBashFORMID_LISTX2(12, 5, 1)
-            parentIndex = CBashGeneric_LISTX2(12, 5, 2, c_ushort)
-            unused1 = CBashUINT8ARRAY_LISTX2(12, 5, 3, 2)
-            density = CBashFLOAT32_LISTX2(12, 5, 4)
-            clustering = CBashGeneric_LISTX2(12, 5, 5, c_ubyte)
-            minSlope = CBashGeneric_LISTX2(12, 5, 6, c_ubyte)
-            maxSlope = CBashGeneric_LISTX2(12, 5, 7, c_ubyte)
-            flags = CBashGeneric_LISTX2(12, 5, 8, c_ubyte)
-            radiusWRTParent = CBashGeneric_LISTX2(12, 5, 9, c_ushort)
-            radius = CBashGeneric_LISTX2(12, 5, 10, c_ushort)
-            unk1 = CBashUINT8ARRAY_LISTX2(12, 5, 11, 4)
-            maxHeight = CBashFLOAT32_LISTX2(12, 5, 12)
-            sink = CBashFLOAT32_LISTX2(12, 5, 13)
-            sinkVar = CBashFLOAT32_LISTX2(12, 5, 14)
-            sizeVar = CBashFLOAT32_LISTX2(12, 5, 15)
-            angleVarX = CBashGeneric_LISTX2(12, 5, 16, c_ushort)
-            angleVarY = CBashGeneric_LISTX2(12, 5, 17, c_ushort)
-            angleVarZ = CBashGeneric_LISTX2(12, 5, 18, c_ushort)
-            unused2 = CBashUINT8ARRAY_LISTX2(12, 5, 19, 1)
-            unk2 = CBashUINT8ARRAY_LISTX2(12, 5, 20, 4)
+            objectId = CBashFORMID_LISTX2(1)
+            parentIndex = CBashGeneric_LISTX2(2, c_ushort)
+            unused1 = CBashUINT8ARRAY_LISTX2(3, 2)
+            density = CBashFLOAT32_LISTX2(4)
+            clustering = CBashGeneric_LISTX2(5, c_ubyte)
+            minSlope = CBashGeneric_LISTX2(6, c_ubyte)
+            maxSlope = CBashGeneric_LISTX2(7, c_ubyte)
+            flags = CBashGeneric_LISTX2(8, c_ubyte)
+            radiusWRTParent = CBashGeneric_LISTX2(9, c_ushort)
+            radius = CBashGeneric_LISTX2(10, c_ushort)
+            unk1 = CBashUINT8ARRAY_LISTX2(11, 4)
+            maxHeight = CBashFLOAT32_LISTX2(12)
+            sink = CBashFLOAT32_LISTX2(13)
+            sinkVar = CBashFLOAT32_LISTX2(14)
+            sizeVar = CBashFLOAT32_LISTX2(15)
+            angleVarX = CBashGeneric_LISTX2(16, c_ushort)
+            angleVarY = CBashGeneric_LISTX2(17, c_ushort)
+            angleVarZ = CBashGeneric_LISTX2(18, c_ushort)
+            unused2 = CBashUINT8ARRAY_LISTX2(19, 1)
+            unk2 = CBashUINT8ARRAY_LISTX2(20, 4)
             IsConformToSlope = CBashBasicFlag('flags', 0x00000001)
             IsPaintVertices = CBashBasicFlag('flags', 0x00000002)
             IsSizeVariance = CBashBasicFlag('flags', 0x00000004)
@@ -5875,14 +6683,14 @@ class ObREGNRecord(ObBaseRecord):
                          'unk2']
 
         class Grass(ListX2Component):
-            grass = CBashFORMID_LISTX2(12, 8, 1)
-            unk1 = CBashUINT8ARRAY_LISTX2(12, 8, 2, 4)
+            grass = CBashFORMID_LISTX2(1)
+            unk1 = CBashUINT8ARRAY_LISTX2(2, 4)
             exportattrs = copyattrs = ['grass', 'unk1']
 
         class Sound(ListX2Component):
-            sound = CBashFORMID_LISTX2(12, 10, 1)
-            flags = CBashGeneric_LISTX2(12, 10, 2, c_ulong)
-            chance = CBashGeneric_LISTX2(12, 10, 3, c_ulong)
+            sound = CBashFORMID_LISTX2(1)
+            flags = CBashGeneric_LISTX2(2, c_ulong)
+            chance = CBashGeneric_LISTX2(3, c_ulong)
             IsPleasant = CBashBasicFlag('flags', 0x00000001)
             IsCloudy = CBashBasicFlag('flags', 0x00000002)
             IsRainy = CBashBasicFlag('flags', 0x00000004)
@@ -5890,19 +6698,19 @@ class ObREGNRecord(ObBaseRecord):
             exportattrs = copyattrs = ['sound', 'flags', 'chance']
 
         class Weather(ListX2Component):
-            weather = CBashFORMID_LISTX2(12, 11, 1)
-            chance = CBashGeneric_LISTX2(12, 11, 2, c_ulong)
+            weather = CBashFORMID_LISTX2(1)
+            chance = CBashGeneric_LISTX2(2, c_ulong)
             exportattrs = copyattrs = ['weather', 'chance']
 
         entryType = CBashGeneric_LIST(1, c_ulong)
         flags = CBashGeneric_LIST(2, c_ubyte)
         priority = CBashGeneric_LIST(3, c_ubyte)
-        unused1 = CBashUINT8ARRAY_LIST(4)
+        unused1 = CBashUINT8ARRAY_LIST(4, 4)
 
         def create_object(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Object(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 5, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Object(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, length)
         objects = CBashLIST_LIST(5, Object)
         objects_list = CBashLIST_LIST(5, Object, True)
 
@@ -5910,25 +6718,25 @@ class ObREGNRecord(ObBaseRecord):
         iconPath = CBashISTRING_LIST(7)
 
         def create_grass(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 8, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 8, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Grass(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 8, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Grass(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, length)
         grasses = CBashLIST_LIST(8, Grass)
         grasses_list = CBashLIST_LIST(8, Grass, True)
 
         musicType = CBashGeneric_LIST(9, c_ulong)
 
         def create_sound(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 10, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 10, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Sound(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 10, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 10, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 10, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Sound(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 10, length)
         sounds = CBashLIST_LIST(10, Sound)
         sounds_list = CBashLIST_LIST(10, Sound, True)
 
         def create_weather(self):
-            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 11, 0, 0, 0, 0, 1)
-            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 11, 0, 0, 0, 0, 0, c_ulong(length + 1))
-            return self.Weather(self._CollectionID, self._ModID, self._RecordID, 12, self._ListIndex, 11, length)
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 11, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 11, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Weather(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 11, length)
         weathers = CBashLIST_LIST(11, Weather)
         weathers_list = CBashLIST_LIST(11, Weather, True)
 

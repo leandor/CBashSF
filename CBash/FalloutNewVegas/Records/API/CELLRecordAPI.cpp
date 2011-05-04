@@ -44,6 +44,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //flags
@@ -84,6 +86,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //xcll XCLL ,, Struct
             return UINT8_FIELD;
         case 17: //xcll XCLL ,, Struct
@@ -100,6 +103,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //xcll XCLL ,, Struct
             return UINT8_FIELD;
         case 21: //xcll XCLL ,, Struct
@@ -116,6 +120,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //xcll XCLL ,, Struct
             return FLOAT32_FIELD;
         case 25: //xcll XCLL ,, Struct
@@ -154,6 +159,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 39: //xezn Encounter Zone
             return FORMID_FIELD;
         case 40: //xccm Climate
@@ -176,11 +182,13 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //xcmo Music Type
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -289,6 +297,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -301,10 +310,10 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -315,8 +324,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -353,7 +362,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLL.Load();
-            XCLL->value15[0] = ((UINT8 *)FieldValue)[0];
+            XCLL->value15[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 16: //xcll XCLL ,, Struct
             XCLL.Load();
@@ -371,7 +380,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLL.Load();
-            XCLL->value19[0] = ((UINT8 *)FieldValue)[0];
+            XCLL->value19[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 20: //xcll XCLL ,, Struct
             XCLL.Load();
@@ -389,7 +398,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLL.Load();
-            XCLL->value23[0] = ((UINT8 *)FieldValue)[0];
+            XCLL->value23[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 24: //xcll XCLL ,, Struct
             XCLL.Load();
@@ -448,7 +457,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCET.Load();
-            XCET->value38[0] = ((UINT8 *)FieldValue)[0];
+            XCET->value38[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 39: //xezn Encounter Zone
             XEZN.Load();
@@ -480,7 +489,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCMT.Load();
-            XCMT->value45[0] = ((UINT8 *)FieldValue)[0];
+            XCMT->value45[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 46: //xcmo Music Type
             XCMO.Load();

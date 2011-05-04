@@ -44,6 +44,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //dnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -68,6 +70,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //bnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -78,6 +81,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //vnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -88,6 +92,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //tnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -98,6 +103,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //nam3_p Unknown
             switch(WhichAttribute)
                 {
@@ -108,6 +114,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 12: //rnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -118,6 +125,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //snam_p Unknown
             switch(WhichAttribute)
                 {
@@ -128,6 +136,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //unam_p Unknown
             switch(WhichAttribute)
                 {
@@ -138,6 +147,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 15: //nam1_p Unknown
             switch(WhichAttribute)
                 {
@@ -148,6 +158,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //nam2_p Unknown
             switch(WhichAttribute)
                 {
@@ -158,6 +169,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //wnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -168,6 +180,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //xnam_p Unknown
             switch(WhichAttribute)
                 {
@@ -178,6 +191,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //ynam_p Unknown
             switch(WhichAttribute)
                 {
@@ -188,6 +202,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //nam4_p Unknown
             switch(WhichAttribute)
                 {
@@ -198,6 +213,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 21: //_00__p Unknown
             switch(WhichAttribute)
                 {
@@ -208,6 +224,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 22: //_40__p Unknown
             switch(WhichAttribute)
                 {
@@ -218,6 +235,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //_01__p Unknown
             switch(WhichAttribute)
                 {
@@ -228,6 +246,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //_41__p Unknown
             switch(WhichAttribute)
                 {
@@ -238,6 +257,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //_02__p Unknown
             switch(WhichAttribute)
                 {
@@ -248,6 +268,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 26: //_42__p Unknown
             switch(WhichAttribute)
                 {
@@ -258,6 +279,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 27: //_03__p Unknown
             switch(WhichAttribute)
                 {
@@ -268,6 +290,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 28: //_43__p Unknown
             switch(WhichAttribute)
                 {
@@ -278,6 +301,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 29: //_04__p Unknown
             switch(WhichAttribute)
                 {
@@ -288,6 +312,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 30: //_44__p Unknown
             switch(WhichAttribute)
                 {
@@ -298,6 +323,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 31: //_05__p Unknown
             switch(WhichAttribute)
                 {
@@ -308,6 +334,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //_45__p Unknown
             switch(WhichAttribute)
                 {
@@ -318,6 +345,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 33: //_06__p Unknown
             switch(WhichAttribute)
                 {
@@ -328,6 +356,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 34: //_46__p Unknown
             switch(WhichAttribute)
                 {
@@ -338,6 +367,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 35: //_07__p Unknown
             switch(WhichAttribute)
                 {
@@ -348,6 +378,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //_47__p Unknown
             switch(WhichAttribute)
                 {
@@ -358,6 +389,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 37: //_08__p Unknown
             switch(WhichAttribute)
                 {
@@ -368,6 +400,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //_48__p Unknown
             switch(WhichAttribute)
                 {
@@ -378,6 +411,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 39: //_09__p Unknown
             switch(WhichAttribute)
                 {
@@ -388,6 +422,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 40: //_49__p Unknown
             switch(WhichAttribute)
                 {
@@ -398,6 +433,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //_0a__p Unknown
             switch(WhichAttribute)
                 {
@@ -408,6 +444,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //_4a__p Unknown
             switch(WhichAttribute)
                 {
@@ -418,6 +455,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 43: //_0b__p Unknown
             switch(WhichAttribute)
                 {
@@ -428,6 +466,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 44: //_4b__p Unknown
             switch(WhichAttribute)
                 {
@@ -438,6 +477,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 45: //_0c__p Unknown
             switch(WhichAttribute)
                 {
@@ -448,6 +488,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //_4c__p Unknown
             switch(WhichAttribute)
                 {
@@ -458,6 +499,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 47: //_0d__p Unknown
             switch(WhichAttribute)
                 {
@@ -468,6 +510,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 48: //_4d__p Unknown
             switch(WhichAttribute)
                 {
@@ -478,6 +521,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 49: //_0e__p Unknown
             switch(WhichAttribute)
                 {
@@ -488,6 +532,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 50: //_4e__p Unknown
             switch(WhichAttribute)
                 {
@@ -498,6 +543,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 51: //_0f__p Unknown
             switch(WhichAttribute)
                 {
@@ -508,6 +554,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 52: //_4f__p Unknown
             switch(WhichAttribute)
                 {
@@ -518,6 +565,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 53: //_10__p Unknown
             switch(WhichAttribute)
                 {
@@ -528,6 +576,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 54: //_50__p Unknown
             switch(WhichAttribute)
                 {
@@ -538,6 +587,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 55: //_11__p Unknown
             switch(WhichAttribute)
                 {
@@ -548,6 +598,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 56: //_51__p Unknown
             switch(WhichAttribute)
                 {
@@ -558,6 +609,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 57: //_12__p Unknown
             switch(WhichAttribute)
                 {
@@ -568,6 +620,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 58: //_52__p Unknown
             switch(WhichAttribute)
                 {
@@ -578,6 +631,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 59: //_13__p Unknown
             switch(WhichAttribute)
                 {
@@ -588,6 +642,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 60: //_53__p Unknown
             switch(WhichAttribute)
                 {
@@ -598,6 +653,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 61: //_14__p Unknown
             switch(WhichAttribute)
                 {
@@ -608,6 +664,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 62: //_54__p Unknown
             switch(WhichAttribute)
                 {
@@ -618,6 +675,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 63: //rdsd Sound - Intro
             return FORMID_FIELD;
         case 64: //rdsi Sound - Outro
@@ -625,6 +683,7 @@ UINT32 IMADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * IMADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -820,6 +879,7 @@ void * IMADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool IMADRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -832,10 +892,10 @@ bool IMADRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -846,8 +906,8 @@ bool IMADRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //dnam_p Unknown
             DNAM.Copy((UINT8ARRAY)FieldValue, ArraySize);

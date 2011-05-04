@@ -44,6 +44,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,7 +59,8 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 7: //scri Script
+            return UNKNOWN_FIELD;
+        case 7: //script
             return FORMID_FIELD;
         case 8: //full
             return STRING_FIELD;
@@ -80,6 +82,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //data DATA ,, Struct
             return FLOAT32_FIELD;
         case 15: //ctda Conditions
@@ -94,6 +97,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //ctda Conditions
             return UNPARSED_FIELD;
         case 18: //ctda Conditions
@@ -108,6 +112,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -118,6 +123,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 21: //ctda Conditions
             return UINT32_FIELD;
         case 22: //ctda Conditions
@@ -138,6 +144,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 27: //schr Basic Script Data
             return UINT32_FIELD;
         case 28: //schr Basic Script Data
@@ -158,6 +165,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 33: //sctx Embedded Script Source
             return ISTRING_FIELD;
         case 34: //slsd Local Variable Data
@@ -172,6 +180,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //slsd Local Variable Data
             return UINT8_FIELD;
         case 37: //slsd_p Local Variable Data
@@ -184,6 +193,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //scvr Name
             return ISTRING_FIELD;
         case 39: //scro Global Reference
@@ -213,6 +223,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -233,7 +244,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //scri Script
+        case 7: //script
             return SCRI.IsLoaded() ? &SCRI->value7 : NULL;
         case 8: //full
             return FULL.value;
@@ -325,6 +336,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -337,10 +349,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -351,10 +363,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //scri Script
+        case 7: //script
             SCRI.Load();
             SCRI->value7 = *(FORMID *)FieldValue;
             return true;
@@ -379,8 +391,8 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             DATA.Load();
-            DATA->value13[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value13[1] = ((UINT8 *)FieldValue)[1];
+            DATA->value13[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value13[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 14: //data DATA ,, Struct
             DATA.Load();
@@ -394,9 +406,9 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value16[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value16[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value16[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value16[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value16[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value16[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 17: //ctda Conditions
             return UNPARSEDGET_FIELD17;
@@ -408,19 +420,19 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value19[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value19[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value19[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value19[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value19[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value19[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value19[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value19[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 20: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value20[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value20[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value20[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value20[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value20[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value20[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value20[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value20[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 21: //ctda Conditions
             CTDAs.Load();
@@ -444,10 +456,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SCHR.Load();
-            SCHR->SCHR->value26[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SCHR->value26[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SCHR->value26[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SCHR->value26[3] = ((UINT8 *)FieldValue)[3];
+            SCHR->SCHR->value26[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SCHR->value26[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SCHR->value26[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SCHR->value26[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 27: //schr Basic Script Data
             SCHR.Load();
@@ -492,18 +504,18 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value35[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value35[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value35[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value35[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value35[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value35[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value35[6] = ((UINT8 *)FieldValue)[6];
-            SCHR->SLSD->value35[7] = ((UINT8 *)FieldValue)[7];
-            SCHR->SLSD->value35[8] = ((UINT8 *)FieldValue)[8];
-            SCHR->SLSD->value35[9] = ((UINT8 *)FieldValue)[9];
-            SCHR->SLSD->value35[10] = ((UINT8 *)FieldValue)[10];
-            SCHR->SLSD->value35[11] = ((UINT8 *)FieldValue)[11];
+            SCHR->SLSD->value35[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value35[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value35[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value35[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value35[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value35[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value35[6] = ((UINT8ARRAY)FieldValue)[6];
+            SCHR->SLSD->value35[7] = ((UINT8ARRAY)FieldValue)[7];
+            SCHR->SLSD->value35[8] = ((UINT8ARRAY)FieldValue)[8];
+            SCHR->SLSD->value35[9] = ((UINT8ARRAY)FieldValue)[9];
+            SCHR->SLSD->value35[10] = ((UINT8ARRAY)FieldValue)[10];
+            SCHR->SLSD->value35[11] = ((UINT8ARRAY)FieldValue)[11];
             break;
         case 36: //slsd Local Variable Data
             SCHR.Load();
@@ -515,13 +527,13 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value37[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value37[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value37[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value37[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value37[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value37[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value37[6] = ((UINT8 *)FieldValue)[6];
+            SCHR->SLSD->value37[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value37[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value37[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value37[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value37[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value37[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value37[6] = ((UINT8ARRAY)FieldValue)[6];
             break;
         case 38: //scvr Name
             SCHR.Load();
@@ -560,9 +572,9 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             QSTA.Load();
-            QSTA->value46[0] = ((UINT8 *)FieldValue)[0];
-            QSTA->value46[1] = ((UINT8 *)FieldValue)[1];
-            QSTA->value46[2] = ((UINT8 *)FieldValue)[2];
+            QSTA->value46[0] = ((UINT8ARRAY)FieldValue)[0];
+            QSTA->value46[1] = ((UINT8ARRAY)FieldValue)[1];
+            QSTA->value46[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         default:
             break;
@@ -590,7 +602,7 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //scri Script
+        case 7: //script
             SCRI.Unload();
             return;
         case 8: //full

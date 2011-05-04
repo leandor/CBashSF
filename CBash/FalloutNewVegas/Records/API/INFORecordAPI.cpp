@@ -44,6 +44,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return MISSING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //data DATA ,, Struct
             return UINT8_FIELD;
         case 8: //data DATA ,, Struct
@@ -88,6 +90,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //trdt TRDT ,, Struct
             return UINT8_FIELD;
         case 19: //trdt_p TRDT ,, Struct
@@ -100,6 +103,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //trdt TRDT ,, Struct
             return FORMID_FIELD;
         case 21: //trdt TRDT ,, Struct
@@ -114,6 +118,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //nam1 Response Text
             return ISTRING_FIELD;
         case 24: //nam2 Script Notes
@@ -136,6 +141,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 30: //ctda Conditions
             return UNPARSED_FIELD;
         case 31: //ctda Conditions
@@ -150,6 +156,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 33: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -160,6 +167,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 34: //ctda Conditions
             return UINT32_FIELD;
         case 35: //ctda Conditions
@@ -180,6 +188,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 40: //schr Basic Script Data
             return UINT32_FIELD;
         case 41: //schr Basic Script Data
@@ -200,6 +209,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //sctx Embedded Script Source
             return ISTRING_FIELD;
         case 47: //slsd Local Variable Data
@@ -214,6 +224,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 49: //slsd Local Variable Data
             return UINT8_FIELD;
         case 50: //slsd_p Local Variable Data
@@ -226,6 +237,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 51: //scvr Name
             return ISTRING_FIELD;
         case 52: //scro Global Reference
@@ -245,6 +257,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -380,6 +393,7 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -392,10 +406,10 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 5: //formVersion
             formVersion = *(UINT16 *)FieldValue;
@@ -403,8 +417,8 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //data DATA ,, Struct
             DATA.Load();
@@ -450,10 +464,10 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             TRDT.Load();
-            TRDT->value16[0] = ((UINT8 *)FieldValue)[0];
-            TRDT->value16[1] = ((UINT8 *)FieldValue)[1];
-            TRDT->value16[2] = ((UINT8 *)FieldValue)[2];
-            TRDT->value16[3] = ((UINT8 *)FieldValue)[3];
+            TRDT->value16[0] = ((UINT8ARRAY)FieldValue)[0];
+            TRDT->value16[1] = ((UINT8ARRAY)FieldValue)[1];
+            TRDT->value16[2] = ((UINT8ARRAY)FieldValue)[2];
+            TRDT->value16[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 18: //trdt TRDT ,, Struct
             TRDT.Load();
@@ -463,9 +477,9 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             TRDT.Load();
-            TRDT->value18[0] = ((UINT8 *)FieldValue)[0];
-            TRDT->value18[1] = ((UINT8 *)FieldValue)[1];
-            TRDT->value18[2] = ((UINT8 *)FieldValue)[2];
+            TRDT->value18[0] = ((UINT8ARRAY)FieldValue)[0];
+            TRDT->value18[1] = ((UINT8ARRAY)FieldValue)[1];
+            TRDT->value18[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 20: //trdt TRDT ,, Struct
             TRDT.Load();
@@ -479,9 +493,9 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             TRDT.Load();
-            TRDT->value21[0] = ((UINT8 *)FieldValue)[0];
-            TRDT->value21[1] = ((UINT8 *)FieldValue)[1];
-            TRDT->value21[2] = ((UINT8 *)FieldValue)[2];
+            TRDT->value21[0] = ((UINT8ARRAY)FieldValue)[0];
+            TRDT->value21[1] = ((UINT8ARRAY)FieldValue)[1];
+            TRDT->value21[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 23: //nam1 Response Text
             NAM1.Copy((STRING)FieldValue);
@@ -508,9 +522,9 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value28[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value28[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value28[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value28[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value28[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value28[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 30: //ctda Conditions
             return UNPARSEDGET_FIELD29;
@@ -522,19 +536,19 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value31[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value31[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value31[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value31[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value31[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value31[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value31[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value31[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 33: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value32[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value32[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value32[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value32[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value32[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value32[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value32[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value32[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 34: //ctda Conditions
             CTDAs.Load();
@@ -559,10 +573,10 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SCHR.Load();
-            SCHR->SCHR->value38[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SCHR->value38[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SCHR->value38[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SCHR->value38[3] = ((UINT8 *)FieldValue)[3];
+            SCHR->SCHR->value38[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SCHR->value38[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SCHR->value38[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SCHR->value38[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 40: //schr Basic Script Data
             SCHR.Load();
@@ -607,18 +621,18 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value47[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value47[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value47[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value47[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value47[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value47[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value47[6] = ((UINT8 *)FieldValue)[6];
-            SCHR->SLSD->value47[7] = ((UINT8 *)FieldValue)[7];
-            SCHR->SLSD->value47[8] = ((UINT8 *)FieldValue)[8];
-            SCHR->SLSD->value47[9] = ((UINT8 *)FieldValue)[9];
-            SCHR->SLSD->value47[10] = ((UINT8 *)FieldValue)[10];
-            SCHR->SLSD->value47[11] = ((UINT8 *)FieldValue)[11];
+            SCHR->SLSD->value47[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value47[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value47[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value47[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value47[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value47[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value47[6] = ((UINT8ARRAY)FieldValue)[6];
+            SCHR->SLSD->value47[7] = ((UINT8ARRAY)FieldValue)[7];
+            SCHR->SLSD->value47[8] = ((UINT8ARRAY)FieldValue)[8];
+            SCHR->SLSD->value47[9] = ((UINT8ARRAY)FieldValue)[9];
+            SCHR->SLSD->value47[10] = ((UINT8ARRAY)FieldValue)[10];
+            SCHR->SLSD->value47[11] = ((UINT8ARRAY)FieldValue)[11];
             break;
         case 49: //slsd Local Variable Data
             SCHR.Load();
@@ -630,13 +644,13 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value49[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value49[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value49[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value49[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value49[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value49[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value49[6] = ((UINT8 *)FieldValue)[6];
+            SCHR->SLSD->value49[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value49[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value49[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value49[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value49[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value49[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value49[6] = ((UINT8ARRAY)FieldValue)[6];
             break;
         case 51: //scvr Name
             SCHR.Load();

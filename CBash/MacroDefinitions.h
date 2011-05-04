@@ -166,6 +166,10 @@
     #define END_HARDCODED_IDS    0x00000800
 #endif
 
+#ifndef VATSFUNCTIONSIZE
+    #define VATSFUNCTIONSIZE 18
+#endif
+
 #ifndef EXPORT_FUNC
     #define EXPORT_FUNC extern "C" __declspec(dllexport)
 #endif

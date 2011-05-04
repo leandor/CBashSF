@@ -64,6 +64,13 @@ class TERMRecord : public FNVRecord //Terminal
                 fIsEnabled = 0x0001
                 };
 
+            enum scriptTypeTypes
+                {
+                eObject = 0x0000,
+                eQuest  = 0x0001,
+                eEffect = 0x0100
+                };
+
             void Write(FileWriter &writer);
 
             bool IsAddNote();
@@ -78,8 +85,17 @@ class TERMRecord : public FNVRecord //Terminal
             bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
             void SetScriptFlagMask(UINT16 Mask);
 
-            bool operator ==(const TERMMenus &other) const;
-            bool operator !=(const TERMMenus &other) const;
+            bool IsObject();
+            void IsObject(bool value);
+            bool IsQuest();
+            void IsQuest(bool value);
+            bool IsEffect();
+            void IsEffect(bool value);
+            bool IsType(UINT16 Type);
+            void SetType(UINT16 Type);
+
+            bool operator ==(const TERMMenu &other) const;
+            bool operator !=(const TERMMenu &other) const;
             };
 
         enum difficultyTypes

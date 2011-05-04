@@ -1127,7 +1127,6 @@ struct FNVAlternateTextures
     ~FNVAlternateTextures();
 
     UINT32 GetSize() const;
-    UINT32 CalcSize() const;
 
     bool IsLoaded() const;
     void Load();
@@ -1137,6 +1136,7 @@ struct FNVAlternateTextures
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
     void Write(FileWriter &writer);
+    void Write(UINT32 _Type, FileWriter &writer);
 
     FNVAlternateTextures& operator = (const FNVAlternateTextures &rhs);
     bool operator ==(const FNVAlternateTextures &other) const;
@@ -1173,11 +1173,54 @@ struct FNVMODEL
     bool   IsFlagMask(UINT8 Mask, bool Exact=false);
     void   SetFlagMask(UINT8 Mask);
 
-    UINT32 CalcSize() const;
-    void Write(FileWriter &writer);
+    void   Write(FileWriter &writer);
 
     bool operator ==(const FNVMODEL &other) const;
     bool operator !=(const FNVMODEL &other) const;
+    };
+
+struct FNVBIPEDMODEL
+    {
+    StringRecord MODL; //Model Filename
+    RawRecord MODT; //Texture Files Hashes
+    FNVAlternateTextures Textures; //Alternate Textures
+    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
+
+    enum moddFlags
+        {
+        fIsHead      = 0x00000001,
+        fIsTorso     = 0x00000002,
+        fIsRightHand = 0x00000004,
+        fIsLeftHand  = 0x00000008
+        };
+
+    bool   IsHead();
+    void   IsHead(bool value);
+    bool   IsTorso();
+    void   IsTorso(bool value);
+    bool   IsRightHand();
+    void   IsRightHand(bool value);
+    bool   IsLeftHand();
+    void   IsLeftHand(bool value);
+    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+    void   SetFlagMask(UINT8 Mask);
+
+    void Write(FileWriter &writer);
+
+    bool operator ==(const FNVBIPEDMODEL &other) const;
+    bool operator !=(const FNVBIPEDMODEL &other) const;
+    };
+
+struct FNVWORLDMODEL
+    {
+    StringRecord MODL; //Model Filename
+    RawRecord MODT; //Texture Files Hashes
+    FNVAlternateTextures Textures; //Alternate Textures
+
+    void Write(FileWriter &writer);
+
+    bool operator ==(const FNVWORLDMODEL &other) const;
+    bool operator !=(const FNVWORLDMODEL &other) const;
     };
 
 struct FNVCTDA //Condition
@@ -1267,7 +1310,7 @@ struct FNVCTDA //Condition
 struct FNVEFIT
     {
     UINT32  magnitude, area, duration, rangeType;
-    SINT32 actorValue;
+    SINT32  actorValue;
 
     FNVEFIT();
     ~FNVEFIT();
@@ -1387,67 +1430,16 @@ struct GENDESTRUCT //Destructable
     bool operator !=(const GENDESTRUCT &other) const;
     };
 
-//Unfilled
-struct FNVXOWN
+struct GENBMDT
     {
-    ReqSimpleSubRecord<FORMID> XOWN;
-    SemiOptSimpleSubRecord<SINT32> XRNK; //Faction Rank
+    UINT32  bipedFlags; //Type
+    UINT8   generalFlags, unused1[3]; //Flags, Unused
 
-    bool operator ==(const FNVXOWN &other) const;
-    bool operator !=(const FNVXOWN &other) const;
-    };
+    GENBMDT();
+    ~GENBMDT();
 
-struct FNVXLOC
-    {
-    UINT8   level, unused1[3];
-    FORMID  key;
-    UINT8   flags, unused2[3], unknown[8];
-
-    FNVXLOC();
-    ~FNVXLOC();
-
-    bool operator ==(const FNVXLOC &other) const;
-    bool operator !=(const FNVXLOC &other) const;
-    };
-
-struct FNVBIPEDMODEL
-    {
-    StringRecord MODL; //Model Filename
-    RawRecord MODT; //Texture Files Hashes
-    std::vector<FNVMODS *> MODS; //Alternate Textures
-    OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
-
-    enum moddFlags
-        {
-        fIsHead      = 0x00000001,
-        fIsTorso     = 0x00000002,
-        fIsRightHand = 0x00000004,
-        fIsLeftHand  = 0x00000008
-        };
-
-    bool   IsHead();
-    void   IsHead(bool value);
-    bool   IsTorso();
-    void   IsTorso(bool value);
-    bool   IsRightHand();
-    void   IsRightHand(bool value);
-    bool   IsLeftHand();
-    void   IsLeftHand(bool value);
-    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-    void   SetFlagMask(UINT8 Mask);
-
-    bool operator ==(const FNVBIPEDMODEL &other) const;
-    bool operator !=(const FNVBIPEDMODEL &other) const;
-    };
-
-struct FNVWORLDMODEL
-    {
-    StringRecord MODL; //Model Filename
-    RawRecord MODT; //Texture Files Hashes
-    std::vector<FNVMODS *> MODS; //Alternate Textures
-
-    bool operator ==(const FNVWORLDMODEL &other) const;
-    bool operator !=(const FNVWORLDMODEL &other) const;
+    bool operator ==(const GENBMDT &other) const;
+    bool operator !=(const GENBMDT &other) const;
     };
 
 struct FNVEQUIPDATA
@@ -1476,17 +1468,54 @@ struct FNVEQUIPDNAM
     bool operator !=(const FNVEQUIPDNAM &other) const;
     };
 
-
-struct GENBMDT
+struct GENCOED // Extra Data
     {
-    UINT32  bipedFlags; //Type
-    UINT8   generalFlags; //Flags
+    FORMID  owner; // Owner
+    FORMID_OR_UINT32 globalOrRank; // Global Variable / Required Rank (global if owner is NPC_, rank if owner is FACT)
+    FLOAT32 condition; // Item Condition
 
-    GENBMDT();
-    ~GENBMDT();
+    GENCOED();
+    ~GENCOED();
 
-    bool operator ==(const GENBMDT &other) const;
-    bool operator !=(const GENBMDT &other) const;
+    bool operator ==(const GENCOED &other) const;
+    bool operator !=(const GENCOED &other) const;
+    };
+
+struct FNVCNTO
+    {
+    ReqSubRecord<GENCNTO> CNTO;
+    OptSubRecord<GENCOED> COED;
+
+    bool IsGlobal(); //Hack
+    bool IsRank();   //Hack
+
+    void Write(FileWriter &writer);
+
+    bool operator ==(const FNVCNTO &other) const;
+    bool operator !=(const FNVCNTO &other) const;
+    };
+
+//Unfilled
+struct FNVXOWN
+    {
+    ReqSimpleSubRecord<FORMID> XOWN;
+    SemiOptSimpleSubRecord<SINT32> XRNK; //Faction Rank
+
+    bool operator ==(const FNVXOWN &other) const;
+    bool operator !=(const FNVXOWN &other) const;
+    };
+
+struct FNVXLOC
+    {
+    UINT8   level, unused1[3];
+    FORMID  key;
+    UINT8   flags, unused2[3], unknown[8];
+
+    FNVXLOC();
+    ~FNVXLOC();
+
+    bool operator ==(const FNVXLOC &other) const;
+    bool operator !=(const FNVXLOC &other) const;
     };
 
 struct FNVAIDT
@@ -1519,32 +1548,6 @@ struct FNVACBS // Configuration
 
     bool operator ==(const FNVACBS &other) const;
     bool operator !=(const FNVACBS &other) const;
-    };
-
-struct GENCOED // Extra Data
-    {
-    FORMID  owner; // Owner
-    FORMID_OR_UINT32 globalOrRank; // Global Variable / Required Rank (global if owner is NPC_, rank if owner is FACT)
-    FLOAT32 condition; // Item Condition
-
-    GENCOED();
-    ~GENCOED();
-
-    bool operator ==(const GENCOED &other) const;
-    bool operator !=(const GENCOED &other) const;
-    };
-
-struct FNVCNTO
-    {
-    ReqSubRecord<GENCNTO> CNTO;
-    OptSubRecord<GENCOED> COED;
-
-    bool IsGlobal();
-    bool IsRank();
-    bool IsUnused();
-
-    bool operator ==(const FNVCNTO &other) const;
-    bool operator !=(const FNVCNTO &other) const;
     };
 
 struct FNVLVLO

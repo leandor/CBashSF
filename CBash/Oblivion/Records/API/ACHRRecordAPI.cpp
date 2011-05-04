@@ -62,6 +62,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //merchantContainer
             return FORMID_FIELD;
         case 15: //horse
@@ -76,6 +77,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //scale
             return FLOAT32_FIELD;
         case 18: //posX
@@ -93,6 +95,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -150,6 +153,7 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -199,9 +203,9 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             XESP.Load();
-            XESP->unused1[0] = ((UINT8 *)FieldValue)[0];
-            XESP->unused1[1] = ((UINT8 *)FieldValue)[1];
-            XESP->unused1[2] = ((UINT8 *)FieldValue)[2];
+            XESP->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            XESP->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            XESP->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 14: //merchantContainer
             XMRC.value = *(FORMID *)FieldValue;
@@ -330,4 +334,5 @@ void ACHRRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

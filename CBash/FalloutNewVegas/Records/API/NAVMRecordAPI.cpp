@@ -44,6 +44,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //nver Version
             return UINT32_FIELD;
         case 8: //data DATA ,, Struct
@@ -100,6 +102,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //nvgd_p NVGD ,, Struct
             switch(WhichAttribute)
                 {
@@ -110,6 +113,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //nvgd_p NVGD ,, Struct
             switch(WhichAttribute)
                 {
@@ -120,6 +124,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 26: //nvgd NVGD ,, Struct
             return FLOAT32_FIELD;
         case 27: //nvgd NVGD ,, Struct
@@ -148,6 +153,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //nvex NVEX ,, Struct
             return FORMID_FIELD;
         case 37: //nvex NVEX ,, Struct
@@ -155,6 +161,7 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * NAVMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -244,6 +251,7 @@ void * NAVMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -256,10 +264,10 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -270,8 +278,8 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //nver Version
             NVER.Load();
@@ -339,8 +347,8 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             NVDP.Load();
-            NVDP->value23[0] = ((UINT8 *)FieldValue)[0];
-            NVDP->value23[1] = ((UINT8 *)FieldValue)[1];
+            NVDP->value23[0] = ((UINT8ARRAY)FieldValue)[0];
+            NVDP->value23[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 24: //nvgd_p NVGD ,, Struct
             NVGD.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -349,10 +357,10 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             NVGD.Load();
-            NVGD->value25[0] = ((UINT8 *)FieldValue)[0];
-            NVGD->value25[1] = ((UINT8 *)FieldValue)[1];
-            NVGD->value25[2] = ((UINT8 *)FieldValue)[2];
-            NVGD->value25[3] = ((UINT8 *)FieldValue)[3];
+            NVGD->value25[0] = ((UINT8ARRAY)FieldValue)[0];
+            NVGD->value25[1] = ((UINT8ARRAY)FieldValue)[1];
+            NVGD->value25[2] = ((UINT8ARRAY)FieldValue)[2];
+            NVGD->value25[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 26: //nvgd NVGD ,, Struct
             NVGD.Load();
@@ -394,10 +402,10 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             NVEX.Load();
-            NVEX->value35[0] = ((UINT8 *)FieldValue)[0];
-            NVEX->value35[1] = ((UINT8 *)FieldValue)[1];
-            NVEX->value35[2] = ((UINT8 *)FieldValue)[2];
-            NVEX->value35[3] = ((UINT8 *)FieldValue)[3];
+            NVEX->value35[0] = ((UINT8ARRAY)FieldValue)[0];
+            NVEX->value35[1] = ((UINT8ARRAY)FieldValue)[1];
+            NVEX->value35[2] = ((UINT8ARRAY)FieldValue)[2];
+            NVEX->value35[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 36: //nvex NVEX ,, Struct
             NVEX.Load();

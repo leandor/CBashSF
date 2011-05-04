@@ -44,6 +44,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //description
@@ -78,6 +80,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //ctda Conditions
             return UNPARSED_FIELD;
         case 14: //ctda Conditions
@@ -92,6 +95,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -102,6 +106,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //ctda Conditions
             return UINT32_FIELD;
         case 18: //ctda Conditions
@@ -146,6 +151,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 35: //ctda Conditions
             return UNPARSED_FIELD;
         case 36: //ctda Conditions
@@ -160,6 +166,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -170,6 +177,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 39: //ctda Conditions
             return UINT32_FIELD;
         case 40: //ctda Conditions
@@ -192,6 +200,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //schr Basic Script Data
             return UINT32_FIELD;
         case 47: //schr Basic Script Data
@@ -212,6 +221,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 52: //sctx Embedded Script Source
             return ISTRING_FIELD;
         case 53: //slsd Local Variable Data
@@ -226,6 +236,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 55: //slsd Local Variable Data
             return UINT8_FIELD;
         case 56: //slsd_p Local Variable Data
@@ -238,6 +249,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 57: //scvr Name
             return ISTRING_FIELD;
         case 58: //scro Global Reference
@@ -247,6 +259,7 @@ UINT32 PERKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * PERKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -386,6 +399,7 @@ void * PERKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -398,10 +412,10 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -412,8 +426,8 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -435,9 +449,9 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value12[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value12[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value12[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value12[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value12[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value12[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 13: //ctda Conditions
             return UNPARSEDGET_FIELD13;
@@ -449,19 +463,19 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value15[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value15[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value15[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value15[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value15[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value15[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value15[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value15[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 16: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value16[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value16[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value16[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value16[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value16[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value16[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value16[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value16[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 17: //ctda Conditions
             CTDAs.Load();
@@ -533,9 +547,9 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAsReq->value34[0] = ((UINT8 *)FieldValue)[0];
-            CTDAsReq->value34[1] = ((UINT8 *)FieldValue)[1];
-            CTDAsReq->value34[2] = ((UINT8 *)FieldValue)[2];
+            CTDAsReq->value34[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAsReq->value34[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAsReq->value34[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 35: //ctda Conditions
             return UNPARSEDGET_FIELD35;
@@ -547,19 +561,19 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAsReq->value37[0] = ((UINT8 *)FieldValue)[0];
-            CTDAsReq->value37[1] = ((UINT8 *)FieldValue)[1];
-            CTDAsReq->value37[2] = ((UINT8 *)FieldValue)[2];
-            CTDAsReq->value37[3] = ((UINT8 *)FieldValue)[3];
+            CTDAsReq->value37[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAsReq->value37[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAsReq->value37[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAsReq->value37[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 38: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAsReq->value38[0] = ((UINT8 *)FieldValue)[0];
-            CTDAsReq->value38[1] = ((UINT8 *)FieldValue)[1];
-            CTDAsReq->value38[2] = ((UINT8 *)FieldValue)[2];
-            CTDAsReq->value38[3] = ((UINT8 *)FieldValue)[3];
+            CTDAsReq->value38[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAsReq->value38[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAsReq->value38[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAsReq->value38[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 39: //ctda Conditions
             CTDAs.Load();
@@ -589,10 +603,10 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SCHR.Load();
-            SCHR->SCHR->value45[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SCHR->value45[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SCHR->value45[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SCHR->value45[3] = ((UINT8 *)FieldValue)[3];
+            SCHR->SCHR->value45[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SCHR->value45[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SCHR->value45[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SCHR->value45[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 46: //schr Basic Script Data
             SCHR.Load();
@@ -637,18 +651,18 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value54[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value54[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value54[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value54[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value54[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value54[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value54[6] = ((UINT8 *)FieldValue)[6];
-            SCHR->SLSD->value54[7] = ((UINT8 *)FieldValue)[7];
-            SCHR->SLSD->value54[8] = ((UINT8 *)FieldValue)[8];
-            SCHR->SLSD->value54[9] = ((UINT8 *)FieldValue)[9];
-            SCHR->SLSD->value54[10] = ((UINT8 *)FieldValue)[10];
-            SCHR->SLSD->value54[11] = ((UINT8 *)FieldValue)[11];
+            SCHR->SLSD->value54[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value54[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value54[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value54[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value54[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value54[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value54[6] = ((UINT8ARRAY)FieldValue)[6];
+            SCHR->SLSD->value54[7] = ((UINT8ARRAY)FieldValue)[7];
+            SCHR->SLSD->value54[8] = ((UINT8ARRAY)FieldValue)[8];
+            SCHR->SLSD->value54[9] = ((UINT8ARRAY)FieldValue)[9];
+            SCHR->SLSD->value54[10] = ((UINT8ARRAY)FieldValue)[10];
+            SCHR->SLSD->value54[11] = ((UINT8ARRAY)FieldValue)[11];
             break;
         case 55: //slsd Local Variable Data
             SCHR.Load();
@@ -660,13 +674,13 @@ bool PERKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             SCHR.Load();
             SCHR->SLSD.Load();
-            SCHR->SLSD->value56[0] = ((UINT8 *)FieldValue)[0];
-            SCHR->SLSD->value56[1] = ((UINT8 *)FieldValue)[1];
-            SCHR->SLSD->value56[2] = ((UINT8 *)FieldValue)[2];
-            SCHR->SLSD->value56[3] = ((UINT8 *)FieldValue)[3];
-            SCHR->SLSD->value56[4] = ((UINT8 *)FieldValue)[4];
-            SCHR->SLSD->value56[5] = ((UINT8 *)FieldValue)[5];
-            SCHR->SLSD->value56[6] = ((UINT8 *)FieldValue)[6];
+            SCHR->SLSD->value56[0] = ((UINT8ARRAY)FieldValue)[0];
+            SCHR->SLSD->value56[1] = ((UINT8ARRAY)FieldValue)[1];
+            SCHR->SLSD->value56[2] = ((UINT8ARRAY)FieldValue)[2];
+            SCHR->SLSD->value56[3] = ((UINT8ARRAY)FieldValue)[3];
+            SCHR->SLSD->value56[4] = ((UINT8ARRAY)FieldValue)[4];
+            SCHR->SLSD->value56[5] = ((UINT8ARRAY)FieldValue)[5];
+            SCHR->SLSD->value56[6] = ((UINT8ARRAY)FieldValue)[6];
             break;
         case 57: //scvr Name
             SCHR.Load();

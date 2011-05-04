@@ -44,6 +44,7 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,9 +59,10 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
-        case 8: //scri Script
+        case 8: //script
             return FORMID_FIELD;
         case 9: //description
             return STRING_FIELD;
@@ -82,6 +84,7 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 15: //data_p DATA ,, Struct
             switch(WhichAttribute)
                 {
@@ -92,6 +95,7 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 16: //data_p DATA ,, Struct
             switch(WhichAttribute)
                 {
@@ -102,6 +106,7 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //snam (depends on type)
             return FORMID_FIELD;
         case 18: //xnam (depends on type)
@@ -109,6 +114,7 @@ UINT32 CHALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CHALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -131,7 +137,7 @@ void * CHALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //scri Script
+        case 8: //script
             return SCRI.IsLoaded() ? &SCRI->value8 : NULL;
         case 9: //description
             return DESC.value;
@@ -159,6 +165,7 @@ void * CHALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CHALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -171,10 +178,10 @@ bool CHALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -185,13 +192,13 @@ bool CHALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //scri Script
+        case 8: //script
             SCRI.Load();
             SCRI->value8 = *(FORMID *)FieldValue;
             return true;
@@ -218,24 +225,24 @@ bool CHALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             DATA.Load();
-            DATA->value14[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value14[1] = ((UINT8 *)FieldValue)[1];
+            DATA->value14[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value14[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 15: //data_p DATA ,, Struct
             if(ArraySize != 2)
                 break;
             DATA.Load();
-            DATA->value15[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value15[1] = ((UINT8 *)FieldValue)[1];
+            DATA->value15[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value15[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 16: //data_p DATA ,, Struct
             if(ArraySize != 4)
                 break;
             DATA.Load();
-            DATA->value16[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value16[1] = ((UINT8 *)FieldValue)[1];
-            DATA->value16[2] = ((UINT8 *)FieldValue)[2];
-            DATA->value16[3] = ((UINT8 *)FieldValue)[3];
+            DATA->value16[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value16[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA->value16[2] = ((UINT8ARRAY)FieldValue)[2];
+            DATA->value16[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 17: //snam (depends on type)
             SNAM.Load();
@@ -274,7 +281,7 @@ void CHALRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //scri Script
+        case 8: //script
             SCRI.Unload();
             return;
         case 9: //description

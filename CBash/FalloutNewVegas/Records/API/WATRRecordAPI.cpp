@@ -44,6 +44,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //nnam Noise Map
@@ -98,6 +100,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //dnam DNAM ,, Struct
             return FLOAT32_FIELD;
         case 24: //dnam DNAM ,, Struct
@@ -118,6 +121,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 29: //dnam DNAM ,, Struct
             return UINT8_FIELD;
         case 30: //dnam DNAM ,, Struct
@@ -134,6 +138,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 33: //dnam DNAM ,, Struct
             return UINT8_FIELD;
         case 34: //dnam DNAM ,, Struct
@@ -150,6 +155,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 37: //dnam_p DNAM ,, Struct
             switch(WhichAttribute)
                 {
@@ -160,6 +166,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //dnam DNAM ,, Struct
             return FLOAT32_FIELD;
         case 39: //dnam DNAM ,, Struct
@@ -239,6 +246,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * WATRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -405,6 +413,7 @@ void * WATRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -417,10 +426,10 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -431,8 +440,8 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -495,10 +504,10 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value22[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value22[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value22[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value22[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value22[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value22[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value22[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value22[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 23: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -524,7 +533,7 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DNAM.Load();
-            DNAM->value28[0] = ((UINT8 *)FieldValue)[0];
+            DNAM->value28[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 29: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -542,7 +551,7 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DNAM.Load();
-            DNAM->value32[0] = ((UINT8 *)FieldValue)[0];
+            DNAM->value32[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 33: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -560,16 +569,16 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DNAM.Load();
-            DNAM->value36[0] = ((UINT8 *)FieldValue)[0];
+            DNAM->value36[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 37: //dnam_p DNAM ,, Struct
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value37[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value37[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value37[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value37[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value37[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value37[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value37[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value37[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 38: //dnam DNAM ,, Struct
             DNAM.Load();

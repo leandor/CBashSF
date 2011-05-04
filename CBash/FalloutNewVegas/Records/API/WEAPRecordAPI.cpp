@@ -44,6 +44,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -118,9 +121,9 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 19: //smallIconPath
             return ISTRING_FIELD;
-        case 20: //scri Script
+        case 20: //script
             return FORMID_FIELD;
-        case 21: //eitm Object Effect
+        case 21: //effect
             return FORMID_FIELD;
         case 22: //eamt Enchantment Charge Amount
             return SINT16_FIELD;
@@ -142,6 +145,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 28: //dstd Destruction Stage Data
             return UINT8_FIELD;
         case 29: //dstd Destruction Stage Data
@@ -170,6 +174,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //repl Repair List
             return FORMID_FIELD;
         case 39: //etyp Equipment Type
@@ -192,6 +197,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 45: //mo2s Alternate Texture
             return ISTRING_FIELD;
         case 46: //mo2s Alternate Texture
@@ -210,6 +216,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 50: //mo3s Alternate Texture
             return ISTRING_FIELD;
         case 51: //mo3s Alternate Texture
@@ -230,6 +237,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 56: //mo4s Alternate Texture
             return ISTRING_FIELD;
         case 57: //mo4s Alternate Texture
@@ -416,6 +424,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 145: //dnam DNAM ,, Struct
             return UINT8_FIELD;
         case 146: //dnam_p DNAM ,, Struct
@@ -428,6 +437,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 147: //dnam DNAM ,, Struct
             return FLOAT32_FIELD;
         case 148: //dnam DNAM ,, Struct
@@ -454,6 +464,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 156: //crdt CRDT ,, Struct
             return FLOAT32_FIELD;
         case 157: //crdt CRDT ,, Struct
@@ -468,6 +479,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 159: //crdt CRDT ,, Struct
             return FORMID_FIELD;
         case 160: //vats VATS ,, Struct
@@ -492,11 +504,13 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 167: //vnam Sound Level
             return UINT32_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -544,9 +558,9 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 19: //smallIconPath
             return MICO.value;
-        case 20: //scri Script
+        case 20: //script
             return SCRI.IsLoaded() ? &SCRI->value20 : NULL;
-        case 21: //eitm Object Effect
+        case 21: //effect
             return EITM.IsLoaded() ? &EITM->value21 : NULL;
         case 22: //eamt Enchantment Charge Amount
             return EAMT.IsLoaded() ? &EAMT->value22 : NULL;
@@ -853,6 +867,7 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -865,10 +880,10 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -879,8 +894,8 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -934,11 +949,11 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 19: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Load();
             SCRI->value20 = *(FORMID *)FieldValue;
             return true;
-        case 21: //eitm Object Effect
+        case 21: //effect
             EITM.Load();
             EITM->value21 = *(FORMID *)FieldValue;
             return true;
@@ -970,8 +985,8 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             DEST.Load();
             DEST->DEST.Load();
-            DEST->DEST->value27[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value27[1] = ((UINT8 *)FieldValue)[1];
+            DEST->DEST->value27[0] = ((UINT8ARRAY)FieldValue)[0];
+            DEST->DEST->value27[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 28: //dstd Destruction Stage Data
             DEST.Load();
@@ -1459,7 +1474,7 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DNAM.Load();
-            DNAM->value144[0] = ((UINT8 *)FieldValue)[0];
+            DNAM->value144[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 145: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -1469,8 +1484,8 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             DNAM.Load();
-            DNAM->value146[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value146[1] = ((UINT8 *)FieldValue)[1];
+            DNAM->value146[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value146[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 147: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -1508,8 +1523,8 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             CRDT.Load();
-            CRDT->value155[0] = ((UINT8 *)FieldValue)[0];
-            CRDT->value155[1] = ((UINT8 *)FieldValue)[1];
+            CRDT->value155[0] = ((UINT8ARRAY)FieldValue)[0];
+            CRDT->value155[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 156: //crdt CRDT ,, Struct
             CRDT.Load();
@@ -1523,9 +1538,9 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CRDT.Load();
-            CRDT->value158[0] = ((UINT8 *)FieldValue)[0];
-            CRDT->value158[1] = ((UINT8 *)FieldValue)[1];
-            CRDT->value158[2] = ((UINT8 *)FieldValue)[2];
+            CRDT->value158[0] = ((UINT8ARRAY)FieldValue)[0];
+            CRDT->value158[1] = ((UINT8ARRAY)FieldValue)[1];
+            CRDT->value158[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 159: //crdt CRDT ,, Struct
             CRDT.Load();
@@ -1559,8 +1574,8 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             VATS.Load();
-            VATS->value166[0] = ((UINT8 *)FieldValue)[0];
-            VATS->value166[1] = ((UINT8 *)FieldValue)[1];
+            VATS->value166[0] = ((UINT8ARRAY)FieldValue)[0];
+            VATS->value166[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 167: //vnam Sound Level
             VNAM.Load();
@@ -1641,10 +1656,10 @@ void WEAPRecord::DeleteField(FIELD_IDENTIFIERS)
         case 19: //smallIconPath
             MICO.Unload();
             return;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Unload();
             return;
-        case 21: //eitm Object Effect
+        case 21: //effect
             EITM.Unload();
             return;
         case 22: //eamt Enchantment Charge Amount

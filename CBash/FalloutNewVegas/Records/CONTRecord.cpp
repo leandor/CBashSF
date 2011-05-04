@@ -24,6 +24,29 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+CONTRecord::CONTDATA::CONTDATA():
+    flags(0),
+    weight(0.0f)
+    {
+    //
+    }
+
+CONTRecord::CONTDATA::~CONTDATA()
+    {
+    //
+    }
+
+bool CONTRecord::CONTDATA::operator ==(const CONTDATA &other) const
+    {
+    return (flags == other.flags &&
+            AlmostEqual(weight,other.weight,2));
+    }
+
+bool CONTRecord::CONTDATA::operator !=(const CONTDATA &other) const
+    {
+    return !(*this == other);
+    }
+
 CONTRecord::CONTRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -53,20 +76,10 @@ CONTRecord::CONTRecord(CONTRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
     CNTO = srcRecord->CNTO;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     DATA = srcRecord->DATA;
     SNAM = srcRecord->SNAM;
     QNAM = srcRecord->QNAM;
@@ -90,17 +103,27 @@ bool CONTRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    //if(CNTO.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(CNTO->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+        op.Accept(SCRI.value);
+    for(UINT32 x = 0; x < CNTO.value.size(); ++x)
+        {
+        op.Accept(CNTO.value[x]->CNTO.value.item);
+        if(CNTO.value[x]->IsGlobal())
+            op.Accept(CNTO.value[x]->COED->globalOrRank);
+        }
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(QNAM.IsLoaded())
-        op.Accept(QNAM->value);
+        op.Accept(QNAM.value);
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->value);
+        op.Accept(RNAM.value);
 
     return op.Stop();
     }
@@ -190,27 +213,37 @@ SINT32 CONTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case 'OTNC':
-                CNTO.Read(buffer, subSize, curPos);
+                CNTO.value.push_back(new FNVCNTO);
+                CNTO.value.back()->CNTO.Read(buffer, subSize, curPos);
+                break;
+            case 'DEOC':
+                if(CNTO.value.size() == 0)
+                    CNTO.value.push_back(new FNVCNTO);
+                CNTO.value.back()->COED.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -246,7 +279,7 @@ SINT32 CONTRecord::Unload()
     MODL.Unload();
     SCRI.Unload();
     CNTO.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     DATA.Unload();
     SNAM.Unload();
     QNAM.Unload();
@@ -259,52 +292,30 @@ SINT32 CONTRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
-    WRITE(CNTO);
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
-
+    CNTO.Write(writer);
+    Destructable.Write(writer);
     WRITE(DATA);
     WRITE(SNAM);
     WRITE(QNAM);
     WRITE(RNAM);
-
     return -1;
     }
 
 bool CONTRecord::operator ==(const CONTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
-            CNTO == other.CNTO &&
-            DEST == other.DEST &&
             DATA == other.DATA &&
             SNAM == other.SNAM &&
             QNAM == other.QNAM &&
-            RNAM == other.RNAM);
+            RNAM == other.RNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            CNTO == other.CNTO &&
+            MODL == other.MODL &&
+            Destructable == other.Destructable);
     }
 
 bool CONTRecord::operator !=(const CONTRecord &other) const

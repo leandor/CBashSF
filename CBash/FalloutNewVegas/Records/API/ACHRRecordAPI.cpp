@@ -44,6 +44,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //name Base
             return FORMID_FIELD;
         case 8: //xezn Encounter Zone
@@ -72,6 +74,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //xrgb_p Ragdoll Biped Data
             switch(WhichAttribute)
                 {
@@ -82,6 +85,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //xprd Idle Time
             return FLOAT32_FIELD;
         case 12: //inam Idle
@@ -96,6 +100,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //schr Basic Script Data
             return UINT32_FIELD;
         case 15: //schr Basic Script Data
@@ -116,6 +121,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //sctx Embedded Script Source
             return ISTRING_FIELD;
         case 21: //slsd Local Variable Data
@@ -130,6 +136,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //slsd Local Variable Data
             return UINT8_FIELD;
         case 24: //slsd_p Local Variable Data
@@ -142,6 +149,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //scvr Name
             return ISTRING_FIELD;
         case 26: //scro Global Reference
@@ -172,6 +180,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //xlkr Linked Reference
             return FORMID_FIELD;
         case 37: //xclp XCLP ,, Struct
@@ -190,6 +199,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //xclp XCLP ,, Struct
             return UINT8_FIELD;
         case 42: //xclp XCLP ,, Struct
@@ -206,6 +216,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 45: //xapd Flags
             return UINT8_FIELD;
         case 46: //xapr XAPR ,, Struct
@@ -228,6 +239,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 52: //xemi Emittance
             return FORMID_FIELD;
         case 53: //xmbr MultiBound Reference
@@ -249,6 +261,7 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -390,6 +403,7 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -402,10 +416,10 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -416,8 +430,8 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //name Base
             NAME.Load();
@@ -449,10 +463,10 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value13[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SCHR->value13[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SCHR->value13[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SCHR->value13[3] = ((UINT8 *)FieldValue)[3];
+            XPRD->SCHR->SCHR->value13[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SCHR->value13[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SCHR->value13[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SCHR->value13[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 14: //schr Basic Script Data
             XPRD.Load();
@@ -506,18 +520,18 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value22[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SLSD->value22[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SLSD->value22[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SLSD->value22[3] = ((UINT8 *)FieldValue)[3];
-            XPRD->SCHR->SLSD->value22[4] = ((UINT8 *)FieldValue)[4];
-            XPRD->SCHR->SLSD->value22[5] = ((UINT8 *)FieldValue)[5];
-            XPRD->SCHR->SLSD->value22[6] = ((UINT8 *)FieldValue)[6];
-            XPRD->SCHR->SLSD->value22[7] = ((UINT8 *)FieldValue)[7];
-            XPRD->SCHR->SLSD->value22[8] = ((UINT8 *)FieldValue)[8];
-            XPRD->SCHR->SLSD->value22[9] = ((UINT8 *)FieldValue)[9];
-            XPRD->SCHR->SLSD->value22[10] = ((UINT8 *)FieldValue)[10];
-            XPRD->SCHR->SLSD->value22[11] = ((UINT8 *)FieldValue)[11];
+            XPRD->SCHR->SLSD->value22[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SLSD->value22[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SLSD->value22[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SLSD->value22[3] = ((UINT8ARRAY)FieldValue)[3];
+            XPRD->SCHR->SLSD->value22[4] = ((UINT8ARRAY)FieldValue)[4];
+            XPRD->SCHR->SLSD->value22[5] = ((UINT8ARRAY)FieldValue)[5];
+            XPRD->SCHR->SLSD->value22[6] = ((UINT8ARRAY)FieldValue)[6];
+            XPRD->SCHR->SLSD->value22[7] = ((UINT8ARRAY)FieldValue)[7];
+            XPRD->SCHR->SLSD->value22[8] = ((UINT8ARRAY)FieldValue)[8];
+            XPRD->SCHR->SLSD->value22[9] = ((UINT8ARRAY)FieldValue)[9];
+            XPRD->SCHR->SLSD->value22[10] = ((UINT8ARRAY)FieldValue)[10];
+            XPRD->SCHR->SLSD->value22[11] = ((UINT8ARRAY)FieldValue)[11];
             break;
         case 23: //slsd Local Variable Data
             XPRD.Load();
@@ -531,13 +545,13 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XPRD.Load();
             XPRD->SCHR.Load();
             XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value24[0] = ((UINT8 *)FieldValue)[0];
-            XPRD->SCHR->SLSD->value24[1] = ((UINT8 *)FieldValue)[1];
-            XPRD->SCHR->SLSD->value24[2] = ((UINT8 *)FieldValue)[2];
-            XPRD->SCHR->SLSD->value24[3] = ((UINT8 *)FieldValue)[3];
-            XPRD->SCHR->SLSD->value24[4] = ((UINT8 *)FieldValue)[4];
-            XPRD->SCHR->SLSD->value24[5] = ((UINT8 *)FieldValue)[5];
-            XPRD->SCHR->SLSD->value24[6] = ((UINT8 *)FieldValue)[6];
+            XPRD->SCHR->SLSD->value24[0] = ((UINT8ARRAY)FieldValue)[0];
+            XPRD->SCHR->SLSD->value24[1] = ((UINT8ARRAY)FieldValue)[1];
+            XPRD->SCHR->SLSD->value24[2] = ((UINT8ARRAY)FieldValue)[2];
+            XPRD->SCHR->SLSD->value24[3] = ((UINT8ARRAY)FieldValue)[3];
+            XPRD->SCHR->SLSD->value24[4] = ((UINT8ARRAY)FieldValue)[4];
+            XPRD->SCHR->SLSD->value24[5] = ((UINT8ARRAY)FieldValue)[5];
+            XPRD->SCHR->SLSD->value24[6] = ((UINT8ARRAY)FieldValue)[6];
             break;
         case 25: //scvr Name
             XPRD.Load();
@@ -608,7 +622,7 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLP.Load();
-            XCLP->value40[0] = ((UINT8 *)FieldValue)[0];
+            XCLP->value40[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 41: //xclp XCLP ,, Struct
             XCLP.Load();
@@ -626,7 +640,7 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             XCLP.Load();
-            XCLP->value44[0] = ((UINT8 *)FieldValue)[0];
+            XCLP->value44[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 45: //xapd Flags
             XAPD.Load();
@@ -655,9 +669,9 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             XESP.Load();
-            XESP->value51[0] = ((UINT8 *)FieldValue)[0];
-            XESP->value51[1] = ((UINT8 *)FieldValue)[1];
-            XESP->value51[2] = ((UINT8 *)FieldValue)[2];
+            XESP->value51[0] = ((UINT8ARRAY)FieldValue)[0];
+            XESP->value51[1] = ((UINT8ARRAY)FieldValue)[1];
+            XESP->value51[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 52: //xemi Emittance
             XEMI.Load();

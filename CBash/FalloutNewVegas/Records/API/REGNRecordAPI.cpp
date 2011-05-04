@@ -44,6 +44,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //iconPath
             return ISTRING_FIELD;
         case 8: //smallIconPath
@@ -78,6 +80,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //wnam Worldspace
             return FORMID_FIELD;
         case 14: //rpli Edge Fall-off
@@ -102,6 +105,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 21: //rdot RDOT ,, Struct
             return FORMID_FIELD;
         case 22: //rdot RDOT ,, Struct
@@ -116,6 +120,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //rdot RDOT ,, Struct
             return FLOAT32_FIELD;
         case 25: //rdot RDOT ,, Struct
@@ -140,6 +145,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //rdot RDOT ,, Struct
             return FLOAT32_FIELD;
         case 33: //rdot RDOT ,, Struct
@@ -164,6 +170,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 40: //rdot_p RDOT ,, Struct
             switch(WhichAttribute)
                 {
@@ -174,6 +181,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //rdmp Map Name
             return ISTRING_FIELD;
         case 42: //rdgs RDGS ,, Struct
@@ -188,6 +196,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 44: //rdmd Music Type
             return UINT32_FIELD;
         case 45: //rdmo Music
@@ -213,6 +222,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -339,6 +349,7 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -351,10 +362,10 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -365,8 +376,8 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //iconPath
             ICON.Copy((STRING)FieldValue);
@@ -390,7 +401,7 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             RCLR.Load();
-            RCLR->value12[0] = ((UINT8 *)FieldValue)[0];
+            RCLR->value12[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 13: //wnam Worldspace
             WNAM.Load();
@@ -437,8 +448,8 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             RDOT.Load();
-            RDOT->value23[0] = ((UINT8 *)FieldValue)[0];
-            RDOT->value23[1] = ((UINT8 *)FieldValue)[1];
+            RDOT->value23[0] = ((UINT8ARRAY)FieldValue)[0];
+            RDOT->value23[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 24: //rdot RDOT ,, Struct
             RDOT.Load();
@@ -472,10 +483,10 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             RDOT.Load();
-            RDOT->value31[0] = ((UINT8 *)FieldValue)[0];
-            RDOT->value31[1] = ((UINT8 *)FieldValue)[1];
-            RDOT->value31[2] = ((UINT8 *)FieldValue)[2];
-            RDOT->value31[3] = ((UINT8 *)FieldValue)[3];
+            RDOT->value31[0] = ((UINT8ARRAY)FieldValue)[0];
+            RDOT->value31[1] = ((UINT8ARRAY)FieldValue)[1];
+            RDOT->value31[2] = ((UINT8ARRAY)FieldValue)[2];
+            RDOT->value31[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 32: //rdot RDOT ,, Struct
             RDOT.Load();
@@ -509,17 +520,17 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             RDOT.Load();
-            RDOT->value39[0] = ((UINT8 *)FieldValue)[0];
-            RDOT->value39[1] = ((UINT8 *)FieldValue)[1];
+            RDOT->value39[0] = ((UINT8ARRAY)FieldValue)[0];
+            RDOT->value39[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 40: //rdot_p RDOT ,, Struct
             if(ArraySize != 4)
                 break;
             RDOT.Load();
-            RDOT->value40[0] = ((UINT8 *)FieldValue)[0];
-            RDOT->value40[1] = ((UINT8 *)FieldValue)[1];
-            RDOT->value40[2] = ((UINT8 *)FieldValue)[2];
-            RDOT->value40[3] = ((UINT8 *)FieldValue)[3];
+            RDOT->value40[0] = ((UINT8ARRAY)FieldValue)[0];
+            RDOT->value40[1] = ((UINT8ARRAY)FieldValue)[1];
+            RDOT->value40[2] = ((UINT8ARRAY)FieldValue)[2];
+            RDOT->value40[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 41: //rdmp Map Name
             RDMP.Copy((STRING)FieldValue);
@@ -532,10 +543,10 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             RDGS.Load();
-            RDGS->value43[0] = ((UINT8 *)FieldValue)[0];
-            RDGS->value43[1] = ((UINT8 *)FieldValue)[1];
-            RDGS->value43[2] = ((UINT8 *)FieldValue)[2];
-            RDGS->value43[3] = ((UINT8 *)FieldValue)[3];
+            RDGS->value43[0] = ((UINT8ARRAY)FieldValue)[0];
+            RDGS->value43[1] = ((UINT8ARRAY)FieldValue)[1];
+            RDGS->value43[2] = ((UINT8ARRAY)FieldValue)[2];
+            RDGS->value43[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 44: //rdmd Music Type
             RDMD.Load();

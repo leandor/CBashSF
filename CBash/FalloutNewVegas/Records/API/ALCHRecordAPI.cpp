@@ -44,6 +44,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -118,7 +121,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 19: //smallIconPath
             return ISTRING_FIELD;
-        case 20: //scri Script
+        case 20: //script
             return FORMID_FIELD;
         case 21: //dest Header
             return SINT32_FIELD;
@@ -136,6 +139,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //dstd Destruction Stage Data
             return UINT8_FIELD;
         case 26: //dstd Destruction Stage Data
@@ -164,6 +168,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 35: //ynam Sound - Pick Up
             return FORMID_FIELD;
         case 36: //znam Sound - Drop
@@ -186,6 +191,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //enit ENIT ,, Struct
             return FORMID_FIELD;
         case 43: //enit ENIT ,, Struct
@@ -216,6 +222,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 53: //ctda Conditions
             return UNPARSED_FIELD;
         case 54: //ctda Conditions
@@ -230,6 +237,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 56: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -240,6 +248,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 57: //ctda Conditions
             return UINT32_FIELD;
         case 58: //ctda Conditions
@@ -247,6 +256,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -294,7 +304,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 19: //smallIconPath
             return MICO.value;
-        case 20: //scri Script
+        case 20: //script
             return SCRI.IsLoaded() ? &SCRI->value20 : NULL;
         case 21: //dest Header
             return DEST.IsLoaded() ? &DEST->DEST->value21 : NULL;
@@ -381,6 +391,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -393,10 +404,10 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -407,8 +418,8 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -462,7 +473,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 19: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Load();
             SCRI->value20 = *(FORMID *)FieldValue;
             return true;
@@ -486,8 +497,8 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             DEST.Load();
             DEST->DEST.Load();
-            DEST->DEST->value24[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value24[1] = ((UINT8 *)FieldValue)[1];
+            DEST->DEST->value24[0] = ((UINT8ARRAY)FieldValue)[0];
+            DEST->DEST->value24[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 25: //dstd Destruction Stage Data
             DEST.Load();
@@ -565,9 +576,9 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             ENIT.Load();
-            ENIT->value41[0] = ((UINT8 *)FieldValue)[0];
-            ENIT->value41[1] = ((UINT8 *)FieldValue)[1];
-            ENIT->value41[2] = ((UINT8 *)FieldValue)[2];
+            ENIT->value41[0] = ((UINT8ARRAY)FieldValue)[0];
+            ENIT->value41[1] = ((UINT8ARRAY)FieldValue)[1];
+            ENIT->value41[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 42: //enit ENIT ,, Struct
             ENIT.Load();
@@ -618,9 +629,9 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             EFID.Load();
             EFID->CTDA.Load();
-            EFID->CTDA->value52[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value52[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value52[2] = ((UINT8 *)FieldValue)[2];
+            EFID->CTDA->value52[0] = ((UINT8ARRAY)FieldValue)[0];
+            EFID->CTDA->value52[1] = ((UINT8ARRAY)FieldValue)[1];
+            EFID->CTDA->value52[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 53: //ctda Conditions
             return UNPARSEDGET_FIELD53;
@@ -634,20 +645,20 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             EFID.Load();
             EFID->CTDA.Load();
-            EFID->CTDA->value55[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value55[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value55[2] = ((UINT8 *)FieldValue)[2];
-            EFID->CTDA->value55[3] = ((UINT8 *)FieldValue)[3];
+            EFID->CTDA->value55[0] = ((UINT8ARRAY)FieldValue)[0];
+            EFID->CTDA->value55[1] = ((UINT8ARRAY)FieldValue)[1];
+            EFID->CTDA->value55[2] = ((UINT8ARRAY)FieldValue)[2];
+            EFID->CTDA->value55[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 56: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             EFID.Load();
             EFID->CTDA.Load();
-            EFID->CTDA->value56[0] = ((UINT8 *)FieldValue)[0];
-            EFID->CTDA->value56[1] = ((UINT8 *)FieldValue)[1];
-            EFID->CTDA->value56[2] = ((UINT8 *)FieldValue)[2];
-            EFID->CTDA->value56[3] = ((UINT8 *)FieldValue)[3];
+            EFID->CTDA->value56[0] = ((UINT8ARRAY)FieldValue)[0];
+            EFID->CTDA->value56[1] = ((UINT8ARRAY)FieldValue)[1];
+            EFID->CTDA->value56[2] = ((UINT8ARRAY)FieldValue)[2];
+            EFID->CTDA->value56[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 57: //ctda Conditions
             EFID.Load();
@@ -731,7 +742,7 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
         case 19: //smallIconPath
             MICO.Unload();
             return;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Unload();
             return;
         case 21: //dest Header

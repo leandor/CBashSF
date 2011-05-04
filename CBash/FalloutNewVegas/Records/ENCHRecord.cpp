@@ -138,7 +138,7 @@ bool ENCHRecord::IsWeapon()
 
 void ENCHRecord::IsWeapon(bool value)
     {
-    ENIT.value.itemType = value ? eWeapon : eScroll;
+    ENIT.value.itemType = value ? eWeapon : eApparel;
     }
 
 bool ENCHRecord::IsApparel()
@@ -148,7 +148,7 @@ bool ENCHRecord::IsApparel()
 
 void ENCHRecord::IsApparel(bool value)
     {
-    ENIT.value.itemType = value ? eApparel : eScroll;
+    ENIT.value.itemType = value ? eApparel : eWeapon;
     }
 
 bool ENCHRecord::IsType(UINT32 Type)

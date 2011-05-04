@@ -44,6 +44,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //description
@@ -90,6 +92,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //skill1
             return SINT8_FIELD;
         case 11: //skill1Boost
@@ -128,6 +131,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //maleHeight
             return FLOAT32_FIELD;
         case 26: //femaleHeight
@@ -168,6 +172,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //maleHead_modPath
             return ISTRING_FIELD;
         case 42: //maleHead_modb
@@ -182,6 +187,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 44: //maleHead_altTextures
             if(!MHMOD0.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -213,6 +219,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 45: //maleHead_modelFlags
             return UINT8_FLAG_FIELD;
         case 46: //maleHead_iconPath
@@ -233,6 +240,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 51: //maleEars_altTextures
             if(!MHMOD1.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -264,6 +272,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 52: //maleEars_modelFlags
             return UINT8_FLAG_FIELD;
         case 53: //maleEars_iconPath
@@ -284,6 +293,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 58: //maleMouth_altTextures
             if(!MHMOD2.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -315,6 +325,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 59: //maleMouth_modelFlags
             return UINT8_FLAG_FIELD;
         case 60: //maleMouth_iconPath
@@ -335,6 +346,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 65: //maleTeethLower_altTextures
             if(!MHMOD3.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -366,6 +378,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 66: //maleTeethLower_modelFlags
             return UINT8_FLAG_FIELD;
         case 67: //maleTeethLower_iconPath
@@ -386,6 +399,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 72: //maleTeethUpper_altTextures
             if(!MHMOD4.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -417,6 +431,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 73: //maleTeethUpper_modelFlags
             return UINT8_FLAG_FIELD;
         case 74: //maleTeethUpper_iconPath
@@ -437,6 +452,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 79: //maleTongue_altTextures
             if(!MHMOD5.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -468,6 +484,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 80: //maleTongue_modelFlags
             return UINT8_FLAG_FIELD;
         case 81: //maleTongue_iconPath
@@ -488,6 +505,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 86: //maleLeftEye_altTextures
             if(!MHMOD6.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -519,6 +537,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 87: //maleLeftEye_modelFlags
             return UINT8_FLAG_FIELD;
         case 88: //maleLeftEye_iconPath
@@ -539,6 +558,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 93: //maleRightEye_altTextures
             if(!MHMOD7.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -570,6 +590,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 94: //maleRightEye_modelFlags
             return UINT8_FLAG_FIELD;
         case 95: //maleRightEye_iconPath
@@ -590,6 +611,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 100: //femaleHead_altTextures
             if(!FHMOD0.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -621,6 +643,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 101: //femaleHead_modelFlags
             return UINT8_FLAG_FIELD;
         case 102: //femaleHead_iconPath
@@ -641,6 +664,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 107: //femaleEars_altTextures
             if(!FHMOD1.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -672,6 +696,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 108: //femaleEars_modelFlags
             return UINT8_FLAG_FIELD;
         case 109: //femaleEars_iconPath
@@ -692,6 +717,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 114: //femaleMouth_altTextures
             if(!FHMOD2.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -723,6 +749,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 115: //femaleMouth_modelFlags
             return UINT8_FLAG_FIELD;
         case 116: //femaleMouth_iconPath
@@ -743,6 +770,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 121: //femaleTeethLower_altTextures
             if(!FHMOD3.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -774,6 +802,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 122: //femaleTeethLower_modelFlags
             return UINT8_FLAG_FIELD;
         case 123: //femaleTeethLower_iconPath
@@ -794,6 +823,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 128: //femaleTeethUpper_altTextures
             if(!FHMOD4.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -825,6 +855,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 129: //femaleTeethUpper_modelFlags
             return UINT8_FLAG_FIELD;
         case 130: //femaleTeethUpper_iconPath
@@ -845,6 +876,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 135: //femaleTongue_altTextures
             if(!FHMOD5.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -876,6 +908,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 136: //femaleTongue_modelFlags
             return UINT8_FLAG_FIELD;
         case 137: //femaleTongue_iconPath
@@ -896,6 +929,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 142: //femaleLeftEye_altTextures
             if(!FHMOD6.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -927,6 +961,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 143: //femaleLeftEye_modelFlags
             return UINT8_FLAG_FIELD;
         case 144: //femaleLeftEye_iconPath
@@ -947,6 +982,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 149: //femaleRightEye_altTextures
             if(!FHMOD7.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -978,6 +1014,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 150: //femaleRightEye_modelFlags
             return UINT8_FLAG_FIELD;
         case 151: //femaleRightEye_iconPath
@@ -998,6 +1035,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 156: //maleUpperBody_altTextures
             if(!MBMOD0.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1029,6 +1067,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 157: //maleUpperBody_modelFlags
             return UINT8_FLAG_FIELD;
         case 158: //maleUpperBody_iconPath
@@ -1049,6 +1088,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 163: //maleLeftHand_altTextures
             if(!MBMOD1.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1080,6 +1120,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 164: //maleLeftHand_modelFlags
             return UINT8_FLAG_FIELD;
         case 165: //maleLeftHand_iconPath
@@ -1100,6 +1141,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 170: //maleRightHand_altTextures
             if(!MBMOD2.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1131,6 +1173,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 171: //maleRightHand_modelFlags
             return UINT8_FLAG_FIELD;
         case 172: //maleRightHand_iconPath
@@ -1151,6 +1194,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 177: //maleUpperBodyTexture_altTextures
             if(!MBMOD3.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1182,6 +1226,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 178: //maleUpperBodyTexture_modelFlags
             return UINT8_FLAG_FIELD;
         case 179: //maleUpperBodyTexture_iconPath
@@ -1202,6 +1247,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 184: //femaleUpperBody_altTextures
             if(!FBMOD0.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1233,6 +1279,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 185: //femaleUpperBody_modelFlags
             return UINT8_FLAG_FIELD;
         case 186: //femaleUpperBody_iconPath
@@ -1253,6 +1300,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 191: //femaleLeftHand_altTextures
             if(!FBMOD1.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1284,6 +1332,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 192: //femaleLeftHand_modelFlags
             return UINT8_FLAG_FIELD;
         case 193: //femaleLeftHand_iconPath
@@ -1304,6 +1353,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 198: //femaleRightHand_altTextures
             if(!FBMOD2.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1335,6 +1385,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 199: //femaleRightHand_modelFlags
             return UINT8_FLAG_FIELD;
         case 200: //femaleRightHand_iconPath
@@ -1355,6 +1406,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 205: //femaleUpperBodyTexture_altTextures
             if(!FBMOD3.MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -1386,6 +1438,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 206: //femaleUpperBodyTexture_modelFlags
             return UINT8_FLAG_FIELD;
         case 207: //femaleUpperBodyTexture_iconPath
@@ -1402,6 +1455,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 210: //eyes
             switch(WhichAttribute)
                 {
@@ -1412,6 +1466,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 211: //maleFggs_p
             switch(WhichAttribute)
                 {
@@ -1422,6 +1477,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 212: //maleFgga_p
             switch(WhichAttribute)
                 {
@@ -1432,6 +1488,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 213: //maleFgts_p
             switch(WhichAttribute)
                 {
@@ -1442,6 +1499,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 214: //maleSnam_p
             switch(WhichAttribute)
                 {
@@ -1452,6 +1510,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 215: //femaleFggs_p
             switch(WhichAttribute)
                 {
@@ -1462,6 +1521,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 216: //femaleFgga_p
             switch(WhichAttribute)
                 {
@@ -1472,6 +1532,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 217: //femaleFgts_p
             switch(WhichAttribute)
                 {
@@ -1482,6 +1543,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 218: //femaleSnam_p
             switch(WhichAttribute)
                 {
@@ -1495,6 +1557,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -2400,6 +2463,7 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -2412,10 +2476,10 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -2426,8 +2490,8 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -4115,9 +4179,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD0.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD0.MODL->Textures.MODS[x];
-                    MHMOD0.MODL->Textures.MODS.clear();
+                    MHMOD0.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4168,9 +4230,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD1.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD1.MODL->Textures.MODS[x];
-                    MHMOD1.MODL->Textures.MODS.clear();
+                    MHMOD1.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4221,9 +4281,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD2.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD2.MODL->Textures.MODS[x];
-                    MHMOD2.MODL->Textures.MODS.clear();
+                    MHMOD2.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4274,9 +4332,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD3.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD3.MODL->Textures.MODS[x];
-                    MHMOD3.MODL->Textures.MODS.clear();
+                    MHMOD3.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4327,9 +4383,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD4.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD4.MODL->Textures.MODS[x];
-                    MHMOD4.MODL->Textures.MODS.clear();
+                    MHMOD4.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4380,9 +4434,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD5.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD5.MODL->Textures.MODS[x];
-                    MHMOD5.MODL->Textures.MODS.clear();
+                    MHMOD5.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4433,9 +4485,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD6.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD6.MODL->Textures.MODS[x];
-                    MHMOD6.MODL->Textures.MODS.clear();
+                    MHMOD6.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4486,9 +4536,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MHMOD7.MODL->Textures.MODS.size(); x++)
-                        delete MHMOD7.MODL->Textures.MODS[x];
-                    MHMOD7.MODL->Textures.MODS.clear();
+                    MHMOD7.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4539,9 +4587,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD0.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD0.MODL->Textures.MODS[x];
-                    FHMOD0.MODL->Textures.MODS.clear();
+                    FHMOD0.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4592,9 +4638,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD1.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD1.MODL->Textures.MODS[x];
-                    FHMOD1.MODL->Textures.MODS.clear();
+                    FHMOD1.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4645,9 +4689,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD2.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD2.MODL->Textures.MODS[x];
-                    FHMOD2.MODL->Textures.MODS.clear();
+                    FHMOD2.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4698,9 +4740,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD3.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD3.MODL->Textures.MODS[x];
-                    FHMOD3.MODL->Textures.MODS.clear();
+                    FHMOD3.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4751,9 +4791,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD4.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD4.MODL->Textures.MODS[x];
-                    FHMOD4.MODL->Textures.MODS.clear();
+                    FHMOD4.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4804,9 +4842,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD5.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD5.MODL->Textures.MODS[x];
-                    FHMOD5.MODL->Textures.MODS.clear();
+                    FHMOD5.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4857,9 +4893,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD6.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD6.MODL->Textures.MODS[x];
-                    FHMOD6.MODL->Textures.MODS.clear();
+                    FHMOD6.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4910,9 +4944,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FHMOD7.MODL->Textures.MODS.size(); x++)
-                        delete FHMOD7.MODL->Textures.MODS[x];
-                    FHMOD7.MODL->Textures.MODS.clear();
+                    FHMOD7.MODL->Textures.Unload();
                     return;
                     }
 
@@ -4963,9 +4995,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MBMOD0.MODL->Textures.MODS.size(); x++)
-                        delete MBMOD0.MODL->Textures.MODS[x];
-                    MBMOD0.MODL->Textures.MODS.clear();
+                    MBMOD0.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5016,9 +5046,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MBMOD1.MODL->Textures.MODS.size(); x++)
-                        delete MBMOD1.MODL->Textures.MODS[x];
-                    MBMOD1.MODL->Textures.MODS.clear();
+                    MBMOD1.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5069,9 +5097,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MBMOD2.MODL->Textures.MODS.size(); x++)
-                        delete MBMOD2.MODL->Textures.MODS[x];
-                    MBMOD2.MODL->Textures.MODS.clear();
+                    MBMOD2.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5122,9 +5148,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)MBMOD3.MODL->Textures.MODS.size(); x++)
-                        delete MBMOD3.MODL->Textures.MODS[x];
-                    MBMOD3.MODL->Textures.MODS.clear();
+                    MBMOD3.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5175,9 +5199,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FBMOD0.MODL->Textures.MODS.size(); x++)
-                        delete FBMOD0.MODL->Textures.MODS[x];
-                    FBMOD0.MODL->Textures.MODS.clear();
+                    FBMOD0.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5228,9 +5250,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FBMOD1.MODL->Textures.MODS.size(); x++)
-                        delete FBMOD1.MODL->Textures.MODS[x];
-                    FBMOD1.MODL->Textures.MODS.clear();
+                    FBMOD1.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5281,9 +5301,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FBMOD2.MODL->Textures.MODS.size(); x++)
-                        delete FBMOD2.MODL->Textures.MODS[x];
-                    FBMOD2.MODL->Textures.MODS.clear();
+                    FBMOD2.MODL->Textures.Unload();
                     return;
                     }
 
@@ -5334,9 +5352,7 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 if(ListFieldID == 0) //altTextures
                     {
-                    for(UINT32 x = 0; x < (UINT32)FBMOD3.MODL->Textures.MODS.size(); x++)
-                        delete FBMOD3.MODL->Textures.MODS[x];
-                    FBMOD3.MODL->Textures.MODS.clear();
+                    FBMOD3.MODL->Textures.Unload();
                     return;
                     }
 

@@ -1,0 +1,104 @@
+// This is a recorded macro. First, check over the
+// commands to make sure this is what you intended. Then,
+// save this buffer, and the macro should appear in the
+// Macros menu.
+
+//Top Level Attributes
+SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            return SUBRECORD_FIELD;");
+SearchAndReplace.setReplaceString("    SUBRECORD_MACRO($2, $1, Ob$2Record)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            if\\(ListFieldID == 0\\).*?\n                \\{.*?\n                switch\\(WhichAttribute\\).*?\n                    \\{.*?\n                    case 0\\:.*?\n                        return (.*?)FIELD;.*?\n                    case 1\\:.*?\n                        .*?\n                    default\\:.*?\n                        .*?\n                    \\}.*?\n                \\}.*?\n.*?\n.*?\n.*?\n.*?\n            switch\\(ListFieldID\\).*?\n                \\{.*?");
+SearchAndReplace.setReplaceString("    $3MACRO($2, $1, )");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            switch\\(WhichAttribute\\)\n                \\{\n                case 0\\: .*?\n                    return SUBRECORD_ARRAY_FIELD;(?s).*?                \\}");
+SearchAndReplace.setReplaceString("    SUBRECORD_ARRAY_MACRO($2, $1, Ob$2Record)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            switch\\(WhichAttribute\\)\n                \\{\n                case 0\\: .*?\n                    return (.*?)FIELD;(?s).*?                \\}");
+SearchAndReplace.setReplaceString("    $3MACRO($2, $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            return (.*?)FIELD;");
+SearchAndReplace.setReplaceString("    $3MACRO($2, $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//List Attributes
+SearchAndReplace.setSearchString("^                case (.*?)\\: //(.*?)\n                    return SUBRECORD_FIELD;");
+SearchAndReplace.setReplaceString("    SUBRECORD_LISTMACRO($2, , $1, Ob$2Record)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^                case (.*?)\\: //(.*?)\n                    switch\\(WhichAttribute\\)\n                        \\{(?s).*?\n                        case 0\\: .*?\n                            return SUBRECORD_ARRAY_FIELD;.*?                        \\}");
+SearchAndReplace.setReplaceString("        SUBRECORD_ARRAY_LISTMACRO($2, , $1, Ob$2Record)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^                case (.*?)\\: //(.*?)\n                    switch\\(WhichAttribute\\)\n                        \\{(?s).*?\n                        case 0\\: .*?\n                            return LIST_FIELD;.*?                        \\}");
+SearchAndReplace.setReplaceString("        LIST_LISTMACRO($2, , $1, )");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^                case (.*?)\\: //(.*?)\n                    switch\\(WhichAttribute\\)\n                        \\{(?s).*?\n                        case 0\\: .*?\n                            return (.*?)FIELD;.*?                        \\}");
+SearchAndReplace.setReplaceString("        $3LISTMACRO($2, , $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^                case (.*?)\\: //(.*?)\n                    return (.*?)FIELD;");
+SearchAndReplace.setReplaceString("        $3LISTMACRO($2, , $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//List X2 Attributes
+SearchAndReplace.setSearchString("^                        case (.*?)\\: //(.*?)\n                            return (.*?)FIELD;");
+SearchAndReplace.setReplaceString("            $3LISTX2MACRO($2, , , $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+//List X3 Attributes
+SearchAndReplace.setSearchString("^                                case (.*?)\\: //(.*?)\n                                    return (.*?)FIELD;");
+SearchAndReplace.setReplaceString("                $3LISTX3MACRO($2, , , , $1)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

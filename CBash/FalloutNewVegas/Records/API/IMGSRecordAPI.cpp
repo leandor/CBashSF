@@ -44,6 +44,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //dnam DNAM ,, Struct
             return FLOAT32_FIELD;
         case 8: //dnam DNAM ,, Struct
@@ -134,6 +136,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 41: //dnam_p DNAM ,, Struct
             switch(WhichAttribute)
                 {
@@ -144,6 +147,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //dnam_p DNAM ,, Struct
             switch(WhichAttribute)
                 {
@@ -154,6 +158,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 43: //dnam_p DNAM ,, Struct
             switch(WhichAttribute)
                 {
@@ -164,6 +169,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 44: //dnam DNAM ,, Struct
             return UINT8_FIELD;
         case 45: //dnam_p DNAM ,, Struct
@@ -179,6 +185,7 @@ UINT32 IMGSRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * IMGSRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -285,6 +292,7 @@ void * IMGSRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool IMGSRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -297,10 +305,10 @@ bool IMGSRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -311,8 +319,8 @@ bool IMGSRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -450,37 +458,37 @@ bool IMGSRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value40[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value40[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value40[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value40[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value40[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value40[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value40[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value40[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 41: //dnam_p DNAM ,, Struct
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value41[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value41[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value41[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value41[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value41[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value41[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value41[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value41[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 42: //dnam_p DNAM ,, Struct
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value42[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value42[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value42[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value42[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value42[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value42[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value42[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value42[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 43: //dnam_p DNAM ,, Struct
             if(ArraySize != 4)
                 break;
             DNAM.Load();
-            DNAM->value43[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value43[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value43[2] = ((UINT8 *)FieldValue)[2];
-            DNAM->value43[3] = ((UINT8 *)FieldValue)[3];
+            DNAM->value43[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value43[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value43[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM->value43[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 44: //dnam DNAM ,, Struct
             DNAM.Load();
@@ -490,9 +498,9 @@ bool IMGSRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             DNAM.Load();
-            DNAM->value45[0] = ((UINT8 *)FieldValue)[0];
-            DNAM->value45[1] = ((UINT8 *)FieldValue)[1];
-            DNAM->value45[2] = ((UINT8 *)FieldValue)[2];
+            DNAM->value45[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM->value45[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM->value45[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         default:
             break;

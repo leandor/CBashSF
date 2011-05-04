@@ -44,6 +44,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -132,6 +135,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 23: //acbs ACBS ,, Struct
             return UINT32_FIELD;
         case 24: //acbs ACBS ,, Struct
@@ -166,6 +170,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //inam Death item
             return FORMID_FIELD;
         case 37: //vtck Voice
@@ -188,6 +193,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 43: //dstd Destruction Stage Data
             return UINT8_FIELD;
         case 44: //dstd Destruction Stage Data
@@ -216,7 +222,8 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 53: //scri Script
+            return UNKNOWN_FIELD;
+        case 53: //script
             return FORMID_FIELD;
         case 54: //cnto Item
             return FORMID_FIELD;
@@ -242,6 +249,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 62: //aidt AI Data
             return UINT32_FIELD;
         case 63: //aidt AI Data
@@ -278,6 +286,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 76: //data DATA ,, Struct
             return SINT16_FIELD;
         case 77: //data DATA ,, Struct
@@ -313,6 +322,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -430,7 +440,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 52: //dmdt_p Texture Files Hashes
             *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
             return NULL;
-        case 53: //scri Script
+        case 53: //script
             return SCRIActor.IsLoaded() ? &SCRIActor->value53 : NULL;
         case 54: //cnto Item
             return CNTO.IsLoaded() ? &CNTO->value54 : NULL;
@@ -513,6 +523,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -525,10 +536,10 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -539,8 +550,8 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -657,9 +668,9 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             SNAM.Load();
-            SNAM->value35[0] = ((UINT8 *)FieldValue)[0];
-            SNAM->value35[1] = ((UINT8 *)FieldValue)[1];
-            SNAM->value35[2] = ((UINT8 *)FieldValue)[2];
+            SNAM->value35[0] = ((UINT8ARRAY)FieldValue)[0];
+            SNAM->value35[1] = ((UINT8ARRAY)FieldValue)[1];
+            SNAM->value35[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 36: //inam Death item
             INAM.Load();
@@ -693,8 +704,8 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             DEST.Load();
             DEST->DEST.Load();
-            DEST->DEST->value42[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value42[1] = ((UINT8 *)FieldValue)[1];
+            DEST->DEST->value42[0] = ((UINT8ARRAY)FieldValue)[0];
+            DEST->DEST->value42[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 43: //dstd Destruction Stage Data
             DEST.Load();
@@ -744,7 +755,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DEST.Load();
             DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 53: //scri Script
+        case 53: //script
             SCRIActor.Load();
             SCRIActor->value53 = *(FORMID *)FieldValue;
             return true;
@@ -780,9 +791,9 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             AIDT.Load();
-            AIDT->value61[0] = ((UINT8 *)FieldValue)[0];
-            AIDT->value61[1] = ((UINT8 *)FieldValue)[1];
-            AIDT->value61[2] = ((UINT8 *)FieldValue)[2];
+            AIDT->value61[0] = ((UINT8ARRAY)FieldValue)[0];
+            AIDT->value61[1] = ((UINT8ARRAY)FieldValue)[1];
+            AIDT->value61[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 62: //aidt AI Data
             AIDT.Load();
@@ -838,8 +849,8 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 2)
                 break;
             DATA.Load();
-            DATA->value75[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value75[1] = ((UINT8 *)FieldValue)[1];
+            DATA->value75[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value75[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 76: //data DATA ,, Struct
             DATA.Load();
@@ -1095,7 +1106,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             if(DEST.IsLoaded())
                 DEST->DMDT.Unload();
             return;
-        case 53: //scri Script
+        case 53: //script
             SCRIActor.Unload();
             return;
         case 54: //cnto Item

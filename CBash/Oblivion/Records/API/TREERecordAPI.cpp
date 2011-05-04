@@ -50,6 +50,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //iconPath
             return ISTRING_FIELD;
         case 9: //speedTree
@@ -62,6 +63,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //curvature
             return FLOAT32_FIELD;
         case 11: //minAngle
@@ -85,6 +87,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * TREERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -134,6 +137,7 @@ void * TREERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool TREERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)

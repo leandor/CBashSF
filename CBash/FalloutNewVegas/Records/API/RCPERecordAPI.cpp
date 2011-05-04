@@ -44,6 +44,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //ctda Conditions
@@ -72,6 +74,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //ctda Conditions
             return UNPARSED_FIELD;
         case 11: //ctda Conditions
@@ -86,6 +89,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -96,6 +100,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //ctda Conditions
             return UINT32_FIELD;
         case 15: //ctda Conditions
@@ -117,6 +122,7 @@ UINT32 RCPERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * RCPERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -175,6 +181,7 @@ void * RCPERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool RCPERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -187,10 +194,10 @@ bool RCPERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -201,8 +208,8 @@ bool RCPERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -215,9 +222,9 @@ bool RCPERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value9[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value9[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value9[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value9[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value9[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value9[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 10: //ctda Conditions
             return UNPARSEDGET_FIELD10;
@@ -229,19 +236,19 @@ bool RCPERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value12[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value12[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value12[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value12[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value12[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value12[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value12[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value12[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 13: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value13[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value13[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value13[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value13[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value13[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value13[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value13[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value13[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 14: //ctda Conditions
             CTDAs.Load();

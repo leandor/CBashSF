@@ -24,8 +24,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-
-TERMRecord::TERMDNAM():
+TERMRecord::TERMDNAM::TERMDNAM():
     difficultyType(eVeryEasy),
     flags(0),
     serverType(0),
@@ -34,19 +33,19 @@ TERMRecord::TERMDNAM():
     //
     }
 
-TERMRecord::~TERMDNAM()
+TERMRecord::TERMDNAM::~TERMDNAM()
     {
     //
     }
 
-bool TERMRecord::operator ==(const TERMDNAM &other) const
+bool TERMRecord::TERMDNAM::operator ==(const TERMDNAM &other) const
     {
     return (difficultyType == other.difficultyType &&
             flags == other.flags &&
             serverType == other.serverType);
     }
 
-bool TERMRecord::operator !=(const TERMDNAM &other) const
+bool TERMRecord::TERMDNAM::operator !=(const TERMDNAM &other) const
     {
     return !(*this == other);
     }
@@ -118,6 +117,66 @@ bool TERMRecord::TERMMenu::IsScriptFlagMask(UINT16 Mask, bool Exact)
 void TERMRecord::TERMMenu::SetScriptFlagMask(UINT16 Mask)
     {
     SCHR.value.flags = Mask;
+    }
+
+bool TERMRecord::TERMMenu::IsObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void TERMRecord::TERMMenu::IsObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool TERMRecord::TERMMenu::IsQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void TERMRecord::TERMMenu::IsQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool TERMRecord::TERMMenu::IsEffect()
+    {
+    return SCHR.value.scriptType == eEffect;
+    }
+
+void TERMRecord::TERMMenu::IsEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eEffect : eObject;
+    }
+
+bool TERMRecord::TERMMenu::IsType(UINT16 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void TERMRecord::TERMMenu::SetType(UINT16 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
+bool TERMRecord::TERMMenu::operator ==(const TERMMenu &other) const
+    {
+    return (ANAM == other.ANAM &&
+            INAM == other.INAM &&
+            TNAM == other.TNAM &&
+            SCHR == other.SCHR &&
+            SCDA == other.SCDA &&
+            ITXT.equals(other.ITXT) &&
+            RNAM.equals(other.RNAM) &&
+            SCTX.equalsi(other.SCTX) &&
+            VARS == other.VARS &&
+            SCR_ == other.SCR_ &&
+            CTDA == other.CTDA);
+    }
+
+bool TERMRecord::TERMMenu::operator !=(const TERMMenu &other) const
+    {
+    return !(*this == other);
     }
 
 TERMRecord::TERMRecord(unsigned char *_recData):
@@ -323,7 +382,7 @@ bool TERMRecord::IsLockType(UINT8 Type)
 
 void TERMRecord::SetLockType(UINT8 Type)
     {
-    DNAM.value.difficultyType = Mask;
+    DNAM.value.difficultyType = Type;
     }
 
 bool TERMRecord::IsServer1()
@@ -433,7 +492,7 @@ bool TERMRecord::IsServerType(UINT8 Type)
 
 void TERMRecord::SetServerType(UINT8 Type)
     {
-    DNAM.value.serverType = Mask;
+    DNAM.value.serverType = Type;
     }
 
 UINT32 TERMRecord::GetType()
@@ -585,24 +644,20 @@ SINT32 TERMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 if(Menus.value.size() == 0)
                     Menus.value.push_back(new TERMMenu);
                 if(Menus.value.back()->VARS.value.size() == 0)
-                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
+                    Menus.value.back()->VARS.value.push_back(new GENVARS);
                 Menus.value.back()->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case 'ORCS':
                 if(Menus.value.size() == 0)
                     Menus.value.push_back(new TERMMenu);
-                if(Menus.value.back()->VARS.value.size() == 0)
-                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
-                Menus.value.back()->VARS.value.back()->SCR_.Read(buffer, subSize, curPos);
-                Menus.value.back()->VARS.value.back()->SCR_.value.back()->isSCRO = true;
+                Menus.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Menus.value.back()->SCR_.value.back()->isSCRO = true;
                 break;
             case 'VRCS':
                 if(Menus.value.size() == 0)
                     Menus.value.push_back(new TERMMenu);
-                if(Menus.value.back()->VARS.value.size() == 0)
-                    Menus.value.back()->VARS.value.push_back(new TERMMenu);
-                Menus.value.back()->VARS.value.back()->SCR_.Read(buffer, subSize, curPos);
-                Menus.value.back()->VARS.value.back()->SCR_.value.back()->isSCRO = false;
+                Menus.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Menus.value.back()->SCR_.value.back()->isSCRO = false;
                 break;
             case 'ADTC':
                 if(Menus.value.size() == 0)

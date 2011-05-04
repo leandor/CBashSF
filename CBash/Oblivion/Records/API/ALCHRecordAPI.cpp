@@ -52,6 +52,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //iconPath
             return ISTRING_FIELD;
         case 10: //script
@@ -72,6 +73,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 15: //effects
             if(ListFieldID == 0) //effects
                 {
@@ -304,6 +306,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 21: //datx_p
             switch(WhichAttribute)
                 {
@@ -317,6 +320,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -436,6 +440,7 @@ void * ALCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -484,9 +489,9 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 14: //unused1
             if(ArraySize != 3)
                 break;
-            ENIT.value.unused1[0] = ((UINT8 *)FieldValue)[0];
-            ENIT.value.unused1[1] = ((UINT8 *)FieldValue)[1];
-            ENIT.value.unused1[2] = ((UINT8 *)FieldValue)[2];
+            ENIT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            ENIT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            ENIT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 15: //effects
             if(ListFieldID == 0) //effectsSize
@@ -550,9 +555,9 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     if(ArraySize != 3)
                         break;
                     Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->unused1[0] = ((UINT8 *)FieldValue)[0];
-                    Effects[ListIndex]->SCIT->unused1[1] = ((UINT8 *)FieldValue)[1];
-                    Effects[ListIndex]->SCIT->unused1[2] = ((UINT8 *)FieldValue)[2];
+                    Effects[ListIndex]->SCIT->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Effects[ListIndex]->SCIT->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Effects[ListIndex]->SCIT->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 13: //full
                     Effects[ListIndex]->FULL.Copy((STRING)FieldValue);
@@ -856,4 +861,5 @@ void ALCHRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

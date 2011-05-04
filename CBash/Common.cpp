@@ -787,17 +787,6 @@ UINT32 StringRecord::GetSize() const
     return (UINT32)strlen(value) + 1;
     }
 
-UINT32 StringRecord::CalcSize() const
-    {
-    if(value != NULL)
-        {
-        UINT32 cSize = (UINT32)strlen(value) + 1;
-        cSize += (cSize > 65535) ? 16 : 6;
-        return cSize;
-        }
-    return 0;
-    }
-
 bool StringRecord::IsLoaded() const
     {
     return value != NULL;
@@ -953,13 +942,6 @@ UINT32 RawRecord::GetSize() const
     return size;
     }
 
-UINT32 RawRecord::CalcSize() const
-    {
-    if(value != NULL)
-        return (size > 65535) ? size + 16 : size + 6;;
-    return 0;
-    }
-
 bool RawRecord::IsLoaded() const
     {
     return value != NULL;
@@ -1055,7 +1037,7 @@ const UINT32 VATSFunction_Argument[] =
     eNONE,
     eNONE
     };
-#define VATSFUNCTIONSIZE 18
+
 Function_ArgumentsType FNVFunction_ArgumentsInit[] =
     {
     Function_ArgumentsType(1,std::make_pair(eFORMID,eNONE)),      //GetDistance

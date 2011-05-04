@@ -52,6 +52,7 @@ UINT32 ACTIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //script
             return FORMID_FIELD;
         case 10: //sound
@@ -59,6 +60,7 @@ UINT32 ACTIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ACTIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -89,6 +91,7 @@ void * ACTIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ACTIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -168,4 +171,5 @@ void ACTIRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

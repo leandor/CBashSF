@@ -1,0 +1,18 @@
+// This is a recorded macro. First, check over the
+// commands to make sure this is what you intended. Then,
+// save this buffer, and the macro should appear in the
+// Macros menu.
+SearchAndReplace.setSearchString("^ *f(.*?) *= (.*?)(,|$| |\\\\).*");
+SearchAndReplace.setReplaceString("BasicFlagMACRO($1, flags, $2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+SearchAndReplace.setSearchString("^ *e(.*?) *= (.*?)(,|$| |\\\\).*");
+SearchAndReplace.setReplaceString("BasicTypeMACRO(Is$1, flags, $2, )");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

@@ -101,6 +101,7 @@ UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * LVLIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -144,6 +145,7 @@ void * LVLIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool LVLIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -283,4 +285,5 @@ void LVLIRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

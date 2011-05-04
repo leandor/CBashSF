@@ -53,19 +53,9 @@ DOORRecord::DOORRecord(DOORRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     SNAM = srcRecord->SNAM;
     ANAM = srcRecord->ANAM;
     BNAM = srcRecord->BNAM;
@@ -89,77 +79,73 @@ bool DOORRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+        op.Accept(SCRI.value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
     if(ANAM.IsLoaded())
-        op.Accept(ANAM->value);
+        op.Accept(ANAM.value);
     if(BNAM.IsLoaded())
-        op.Accept(BNAM->value);
+        op.Accept(BNAM.value);
 
     return op.Stop();
     }
 
 bool DOORRecord::IsAutomatic()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAutomatic) != 0;
+    return (FNAM.value & fIsAutomatic) != 0;
     }
 
 void DOORRecord::IsAutomatic(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAutomatic) : (Dummy->flags & ~fIsAutomatic);
+    FNAM.value = value ? (FNAM.value | fIsAutomatic) : (FNAM.value & ~fIsAutomatic);
     }
 
 bool DOORRecord::IsHidden()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHidden) != 0;
+    return (FNAM.value & fIsHidden) != 0;
     }
 
 void DOORRecord::IsHidden(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHidden) : (Dummy->flags & ~fIsHidden);
+    FNAM.value = value ? (FNAM.value | fIsHidden) : (FNAM.value & ~fIsHidden);
     }
 
 bool DOORRecord::IsMinimalUse()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsMinimalUse) != 0;
+    return (FNAM.value & fIsMinimalUse) != 0;
     }
 
 void DOORRecord::IsMinimalUse(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsMinimalUse) : (Dummy->flags & ~fIsMinimalUse);
+    FNAM.value = value ? (FNAM.value | fIsMinimalUse) : (FNAM.value & ~fIsMinimalUse);
     }
 
 bool DOORRecord::IsSlidingDoor()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsSlidingDoor) != 0;
+    return (FNAM.value & fIsSlidingDoor) != 0;
     }
 
 void DOORRecord::IsSlidingDoor(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsSlidingDoor) : (Dummy->flags & ~fIsSlidingDoor);
+    FNAM.value = value ? (FNAM.value | fIsSlidingDoor) : (FNAM.value & ~fIsSlidingDoor);
     }
 
 bool DOORRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((FNAM.value & Mask) == Mask) : ((FNAM.value & Mask) != 0);
     }
 
 void DOORRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    FNAM.value = Mask;
     }
 
 UINT32 DOORRecord::GetType()
@@ -227,24 +213,28 @@ SINT32 DOORRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'MANS':
                 SNAM.Read(buffer, subSize, curPos);
@@ -279,7 +269,7 @@ SINT32 DOORRecord::Unload()
     FULL.Unload();
     MODL.Unload();
     SCRI.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     SNAM.Unload();
     ANAM.Unload();
     BNAM.Unload();
@@ -292,50 +282,28 @@ SINT32 DOORRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
-
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
-
+    Destructable.Write(writer);
     WRITE(SNAM);
     WRITE(ANAM);
     WRITE(BNAM);
     WRITE(FNAM);
-
     return -1;
     }
 
 bool DOORRecord::operator ==(const DOORRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
-            DEST == other.DEST &&
             SNAM == other.SNAM &&
             ANAM == other.ANAM &&
             BNAM == other.BNAM &&
-            FNAM == other.FNAM);
+            FNAM == other.FNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            Destructable == other.Destructable);
     }
 
 bool DOORRecord::operator !=(const DOORRecord &other) const

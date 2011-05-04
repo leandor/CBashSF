@@ -53,22 +53,14 @@ INGRRecord::INGRRecord(INGRRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
     ETYP = srcRecord->ETYP;
     DATA = srcRecord->DATA;
     ENIT = srcRecord->ENIT;
-    if(srcRecord->EFID.IsLoaded())
-        {
-        EFID.Load();
-        EFID->EFID = srcRecord->EFID->EFID;
-        EFID->EFIT = srcRecord->EFID->EFIT;
-        EFID->CTDA = srcRecord->EFID->CTDA;
-        }
+    Effects = srcRecord->Effects;
     return;
     }
 
@@ -88,205 +80,201 @@ bool INGRRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    if(EFID.IsLoaded() && EFID->EFID.IsLoaded())
-        op.Accept(EFID->EFID->value);
-    if(EFID.IsLoaded() && EFID->CTDA.IsLoaded())
-        op.Accept(EFID->CTDA->value);
+        op.Accept(SCRI.value);
+    for(UINT32 x = 0; x < Effects.value.size(); x++)
+        Effects.value[x]->VisitFormIDs(op);
 
     return op.Stop();
     }
 
-bool INGRRecord::IsNone()
+bool INGRRecord::IsNoAutoCalc()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return (ENIT.value.flags & fIsNoAutoCalc) != 0;
     }
 
-void INGRRecord::IsNone(bool value)
+void INGRRecord::IsNoAutoCalc(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
-    }
-
-bool INGRRecord::IsBigGuns()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBigGuns);
-    }
-
-void INGRRecord::IsBigGuns(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBigGuns : eDummyDefault;
-    }
-
-bool INGRRecord::IsEnergyWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEnergyWeapons);
-    }
-
-void INGRRecord::IsEnergyWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
-    }
-
-bool INGRRecord::IsSmallGuns()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSmallGuns);
-    }
-
-void INGRRecord::IsSmallGuns(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSmallGuns : eDummyDefault;
-    }
-
-bool INGRRecord::IsMeleeWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMeleeWeapons);
-    }
-
-void INGRRecord::IsMeleeWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
-    }
-
-bool INGRRecord::IsUnarmedWeapon()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnarmedWeapon);
-    }
-
-void INGRRecord::IsUnarmedWeapon(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
-    }
-
-bool INGRRecord::IsThrownWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eThrownWeapons);
-    }
-
-void INGRRecord::IsThrownWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
-    }
-
-bool INGRRecord::IsMine()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMine);
-    }
-
-void INGRRecord::IsMine(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMine : eDummyDefault;
-    }
-
-bool INGRRecord::IsBodyWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBodyWear);
-    }
-
-void INGRRecord::IsBodyWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBodyWear : eDummyDefault;
-    }
-
-bool INGRRecord::IsHeadWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeadWear);
-    }
-
-void INGRRecord::IsHeadWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeadWear : eDummyDefault;
-    }
-
-bool INGRRecord::IsHandWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandWear);
-    }
-
-void INGRRecord::IsHandWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandWear : eDummyDefault;
-    }
-
-bool INGRRecord::IsChems()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eChems);
-    }
-
-void INGRRecord::IsChems(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eChems : eDummyDefault;
-    }
-
-bool INGRRecord::IsStimpack()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStimpack);
-    }
-
-void INGRRecord::IsStimpack(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStimpack : eDummyDefault;
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsNoAutoCalc) : (ENIT.value.flags & ~fIsNoAutoCalc);
     }
 
 bool INGRRecord::IsFood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFood);
+    return (ENIT.value.flags & fIsFood) != 0;
     }
 
 void INGRRecord::IsFood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFood : eDummyDefault;
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsFood) : (ENIT.value.flags & ~fIsFood);
+    }
+
+bool INGRRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((ENIT.value.flags & Mask) == Mask) : ((ENIT.value.flags & Mask) != 0);
+    }
+
+void INGRRecord::SetFlagMask(UINT8 Mask)
+    {
+    ENIT.value.flags = Mask;
+    }
+
+bool INGRRecord::IsNone()
+    {
+    return (ETYP.value == eNone);
+    }
+
+void INGRRecord::IsNone(bool value)
+    {
+    ETYP.value = value ? eNone : eBigGuns;
+    }
+
+bool INGRRecord::IsBigGuns()
+    {
+    return (ETYP.value == eBigGuns);
+    }
+
+void INGRRecord::IsBigGuns(bool value)
+    {
+    ETYP.value = value ? eBigGuns : eNone;
+    }
+
+bool INGRRecord::IsEnergyWeapons()
+    {
+    return (ETYP.value == eEnergyWeapons);
+    }
+
+void INGRRecord::IsEnergyWeapons(bool value)
+    {
+    ETYP.value = value ? eEnergyWeapons : eNone;
+    }
+
+bool INGRRecord::IsSmallGuns()
+    {
+    return (ETYP.value == eSmallGuns);
+    }
+
+void INGRRecord::IsSmallGuns(bool value)
+    {
+    ETYP.value = value ? eSmallGuns : eNone;
+    }
+
+bool INGRRecord::IsMeleeWeapons()
+    {
+    return (ETYP.value == eMeleeWeapons);
+    }
+
+void INGRRecord::IsMeleeWeapons(bool value)
+    {
+    ETYP.value = value ? eMeleeWeapons : eNone;
+    }
+
+bool INGRRecord::IsUnarmedWeapon()
+    {
+    return (ETYP.value == eUnarmedWeapon);
+    }
+
+void INGRRecord::IsUnarmedWeapon(bool value)
+    {
+    ETYP.value = value ? eUnarmedWeapon : eNone;
+    }
+
+bool INGRRecord::IsThrownWeapons()
+    {
+    return (ETYP.value == eThrownWeapons);
+    }
+
+void INGRRecord::IsThrownWeapons(bool value)
+    {
+    ETYP.value = value ? eThrownWeapons : eNone;
+    }
+
+bool INGRRecord::IsMine()
+    {
+    return (ETYP.value == eMine);
+    }
+
+void INGRRecord::IsMine(bool value)
+    {
+    ETYP.value = value ? eMine : eNone;
+    }
+
+bool INGRRecord::IsBodyWear()
+    {
+    return (ETYP.value == eBodyWear);
+    }
+
+void INGRRecord::IsBodyWear(bool value)
+    {
+    ETYP.value = value ? eBodyWear : eNone;
+    }
+
+bool INGRRecord::IsHeadWear()
+    {
+    return (ETYP.value == eHeadWear);
+    }
+
+void INGRRecord::IsHeadWear(bool value)
+    {
+    ETYP.value = value ? eHeadWear : eNone;
+    }
+
+bool INGRRecord::IsHandWear()
+    {
+    return (ETYP.value == eHandWear);
+    }
+
+void INGRRecord::IsHandWear(bool value)
+    {
+    ETYP.value = value ? eHandWear : eNone;
+    }
+
+bool INGRRecord::IsChems()
+    {
+    return (ETYP.value == eChems);
+    }
+
+void INGRRecord::IsChems(bool value)
+    {
+    ETYP.value = value ? eChems : eNone;
+    }
+
+bool INGRRecord::IsStimpack()
+    {
+    return (ETYP.value == eStimpack);
+    }
+
+void INGRRecord::IsStimpack(bool value)
+    {
+    ETYP.value = value ? eStimpack : eNone;
+    }
+
+bool INGRRecord::IsEdible()
+    {
+    return (ETYP.value == eEdible);
+    }
+
+void INGRRecord::IsEdible(bool value)
+    {
+    ETYP.value = value ? eEdible : eNone;
     }
 
 bool INGRRecord::IsAlcohol()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAlcohol);
+    return (ETYP.value == eAlcohol);
     }
 
 void INGRRecord::IsAlcohol(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAlcohol : eDummyDefault;
+    ETYP.value = value ? eAlcohol : eNone;
     }
 
-bool INGRRecord::IsEquipmentType(UINT32 Type)
+bool INGRRecord::IsEquipmentType(SINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return ETYP.value == Type;
     }
 
-void INGRRecord::SetEquipmentType(UINT32 Type)
+void INGRRecord::SetEquipmentType(SINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ETYP.value = Type;
     }
 
 UINT32 INGRRecord::GetType()
@@ -369,16 +357,18 @@ SINT32 INGRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 ENIT.Read(buffer, subSize, curPos);
                 break;
             case 'DIFE':
-                EFID.Load();
-                EFID->EFID.Read(buffer, subSize, curPos);
+                Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFID.Read(buffer, subSize, curPos);
                 break;
             case 'TIFE':
-                EFID.Load();
-                EFID->EFIT.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
                 break;
             case 'ADTC':
-                EFID.Load();
-                EFID->CTDA.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -406,7 +396,7 @@ SINT32 INGRRecord::Unload()
     ETYP.Unload();
     DATA.Unload();
     ENIT.Unload();
-    EFID.Unload();
+    Effects.Unload();
     return 1;
     }
 
@@ -415,45 +405,30 @@ SINT32 INGRRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SCRI);
     WRITE(ETYP);
     WRITE(DATA);
     WRITE(ENIT);
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            SaveHandler.writeSubRecord('DIFE', EFID->EFID.value, EFID->EFID.GetSize());
-
-        if(EFID->EFIT.IsLoaded())
-            SaveHandler.writeSubRecord('TIFE', EFID->EFIT.value, EFID->EFIT.GetSize());
-
-        if(EFID->CTDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADTC', EFID->CTDA.value, EFID->CTDA.GetSize());
-
-        }
-
+    Effects.Write(writer);
     return -1;
     }
 
 bool INGRRecord::operator ==(const INGRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
             ETYP == other.ETYP &&
             DATA == other.DATA &&
             ENIT == other.ENIT &&
-            EFID == other.EFID);
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
+            MODL == other.MODL &&
+            Effects == other.Effects);
     }
 
 bool INGRRecord::operator !=(const INGRRecord &other) const

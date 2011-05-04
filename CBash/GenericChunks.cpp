@@ -2186,14 +2186,6 @@ UINT32 FNVAlternateTextures::GetSize() const
     return 0;
     }
 
-UINT32 FNVAlternateTextures::CalcSize() const
-    {
-    UINT32 cSize = GetSize();
-    if(cSize)
-        cSize += (cSize > 65535) ? 16 : 6;
-    return cSize;
-    }
-
 bool FNVAlternateTextures::IsLoaded() const
     {
     return (MODS.size() != 0);
@@ -2275,6 +2267,27 @@ void FNVAlternateTextures::Write(FileWriter &writer)
        }
     }
 
+void FNVAlternateTextures::Write(UINT32 _Type, FileWriter &writer)
+    {
+    UINT32 cSize = MODS.size();
+    if(cSize)
+        {
+        writer.record_write_subheader(_Type, GetSize());
+        writer.record_write(&cSize, 4);
+        for(UINT32 p = 0; p < MODS.size(); ++p)
+            {
+            if(MODS[p]->name != NULL)
+                {
+                cSize = (UINT32)strlen(MODS[p]->name);
+                writer.record_write(&cSize, 4);
+                writer.record_write(MODS[p]->name, cSize);
+                }
+            writer.record_write(&MODS[p]->texture, 4);
+            writer.record_write(&MODS[p]->index, 4);
+            }
+       }
+    }
+
 FNVAlternateTextures& FNVAlternateTextures::operator = (const FNVAlternateTextures &rhs)
     {
     if(this != &rhs)
@@ -2335,73 +2348,52 @@ FNVMODEL::~FNVMODEL()
 
 bool FNVMODEL::IsHead()
     {
-    if(!MODD.IsLoaded()) return false;
     return (MODD.value & fIsHead) != 0;
     }
 
 void FNVMODEL::IsHead(bool value)
     {
-    if(!MODD.IsLoaded()) return;
     MODD.value = value ? (MODD.value | fIsHead) : (MODD.value & ~fIsHead);
     }
 
 bool FNVMODEL::IsTorso()
     {
-    if(!MODD.IsLoaded()) return false;
     return (MODD.value & fIsTorso) != 0;
     }
 
 void FNVMODEL::IsTorso(bool value)
     {
-    if(!MODD.IsLoaded()) return;
     MODD.value = value ? (MODD.value | fIsTorso) : (MODD.value & ~fIsTorso);
     }
 
 bool FNVMODEL::IsRightHand()
     {
-    if(!MODD.IsLoaded()) return false;
     return (MODD.value & fIsRightHand) != 0;
     }
 
 void FNVMODEL::IsRightHand(bool value)
     {
-    if(!MODD.IsLoaded()) return;
     MODD.value = value ? (MODD.value | fIsRightHand) : (MODD.value & ~fIsRightHand);
     }
 
 bool FNVMODEL::IsLeftHand()
     {
-    if(!MODD.IsLoaded()) return false;
     return (MODD.value & fIsLeftHand) != 0;
     }
 
 void FNVMODEL::IsLeftHand(bool value)
     {
-    if(!MODD.IsLoaded()) return;
     MODD.value = value ? (MODD.value | fIsLeftHand) : (MODD.value & ~fIsLeftHand);
     }
 
 bool FNVMODEL::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!MODD.IsLoaded()) return false;
     return Exact ? ((MODD.value & Mask) == Mask) : ((MODD.value & Mask) != 0);
     }
 
 void FNVMODEL::SetFlagMask(UINT8 Mask)
     {
-    MODD.Load();
     MODD.value = Mask;
-    }
-
-UINT32 FNVMODEL::CalcSize() const
-    {
-    UINT32 cSize = 0;
-    cSize += MODL.CalcSize();
-    cSize += MODB.CalcSize();
-    cSize += MODT.CalcSize();
-    cSize += Textures.CalcSize();
-    cSize += MODD.CalcSize();
-    return cSize;
     }
 
 void FNVMODEL::Write(FileWriter &writer)
@@ -2427,6 +2419,97 @@ bool FNVMODEL::operator !=(const FNVMODEL &other) const
     return !(*this == other);
     }
 
+bool FNVBIPEDMODEL::IsHead()
+    {
+    return (MODD.value & fIsHead) != 0;
+    }
+
+void FNVBIPEDMODEL::IsHead(bool value)
+    {
+    MODD.value = value ? (MODD.value | fIsHead) : (MODD.value & ~fIsHead);
+    }
+
+bool FNVBIPEDMODEL::IsTorso()
+    {
+    return (MODD.value & fIsTorso) != 0;
+    }
+
+void FNVBIPEDMODEL::IsTorso(bool value)
+    {
+    MODD.value = value ? (MODD.value | fIsTorso) : (MODD.value & ~fIsTorso);
+    }
+
+bool FNVBIPEDMODEL::IsRightHand()
+    {
+    return (MODD.value & fIsRightHand) != 0;
+    }
+
+void FNVBIPEDMODEL::IsRightHand(bool value)
+    {
+    MODD.value = value ? (MODD.value | fIsRightHand) : (MODD.value & ~fIsRightHand);
+    }
+
+bool FNVBIPEDMODEL::IsLeftHand()
+    {
+    return (MODD.value & fIsLeftHand) != 0;
+    }
+
+void FNVBIPEDMODEL::IsLeftHand(bool value)
+    {
+    MODD.value = value ? (MODD.value | fIsLeftHand) : (MODD.value & ~fIsLeftHand);
+    }
+
+bool FNVBIPEDMODEL::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((MODD.value & Mask) == Mask) : ((MODD.value & Mask) != 0);
+    }
+
+void FNVBIPEDMODEL::SetFlagMask(UINT8 Mask)
+    {
+    MODD.value = Mask;
+    }
+
+void FNVBIPEDMODEL::Write(FileWriter &writer)
+    {
+    WRITE(MODL);
+    WRITE(MODT);
+    Textures.Write(writer);
+    WRITE(MODD);
+    }
+
+bool FNVBIPEDMODEL::operator ==(const FNVBIPEDMODEL &other) const
+    {
+    return (MODD == other.MODD &&
+            MODL.equalsi(other.MODL) &&
+            MODT == other.MODT &&
+            Textures == other.Textures);
+    }
+
+bool FNVBIPEDMODEL::operator !=(const FNVBIPEDMODEL &other) const
+    {
+    return !(*this == other);
+    }
+
+void FNVWORLDMODEL::Write(FileWriter &writer)
+    {
+    WRITE(MODL);
+    WRITE(MODT);
+    Textures.Write(writer);
+    }
+
+bool FNVWORLDMODEL::operator ==(const FNVWORLDMODEL &other) const
+    {
+    return (MODL.equalsi(other.MODL) &&
+            MODT == other.MODT &&
+            Textures == other.Textures);
+    }
+
+bool FNVWORLDMODEL::operator !=(const FNVWORLDMODEL &other) const
+    {
+    return !(*this == other);
+    }
+
+
 bool FNVCTDA::VisitFormIDs(FormIDOp &op)
     {
     Function_Arguments_Iterator curCTDAFunction;
@@ -2437,7 +2520,7 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
     curCTDAFunction = FNVFunction_Arguments.find(ifunc);
     if(curCTDAFunction != FNVFunction_Arguments.end())
         {
-        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
         if(CTDAFunction.first == eFORMID)
             op.Accept(param1);
         if(CTDAFunction.second == eFORMID)
@@ -2733,7 +2816,7 @@ bool FNVCTDA::IsResultOnType(UINT32 Type)
 
 void FNVCTDA::SetResultOnType(UINT32 Type)
     {
-    runOnType = Mask;
+    runOnType = Type;
     }
 
 FNVEFIT::FNVEFIT():
@@ -2908,7 +2991,7 @@ void DESTSTAGE::IsDestroy(bool value)
     DSTD.value.flags = value ? (DSTD.value.flags | fIsDestroy) : (DSTD.value.flags & ~fIsDestroy);
     }
 
-bool DESTSTAGE::IsFlagMask(UINT8 Mask, bool Exact=false)
+bool DESTSTAGE::IsFlagMask(UINT8 Mask, bool Exact)
     {
     return Exact ? ((DSTD.value.flags & Mask) == Mask) : ((DSTD.value.flags & Mask) != 0);
     }
@@ -2975,7 +3058,7 @@ void GENDESTRUCT::IsVATSTargetable(bool value)
     DEST.value.flags = value ? (DEST.value.flags | fIsVATSTargetable) : (DEST.value.flags & ~fIsVATSTargetable);
     }
 
-bool GENDESTRUCT::IsFlagMask(UINT8 Mask, bool Exact=false)
+bool GENDESTRUCT::IsFlagMask(UINT8 Mask, bool Exact)
     {
     return Exact ? ((DEST.value.flags & Mask) == Mask) : ((DEST.value.flags & Mask) != 0);
     }
@@ -2994,6 +3077,173 @@ bool GENDESTRUCT::operator !=(const GENDESTRUCT &other) const
     {
     return !(*this == other);
     }
+
+GENBMDT::GENBMDT():
+    bipedFlags(0),
+    generalFlags(0)
+    {
+    memset(&unused1[0], 0x00, 3);
+    }
+
+GENBMDT::~GENBMDT()
+    {
+    //
+    }
+
+bool GENBMDT::operator ==(const GENBMDT &other) const
+    {
+    return (bipedFlags == other.bipedFlags &&
+            generalFlags == other.generalFlags);
+    }
+
+bool GENBMDT::operator !=(const GENBMDT &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVEQUIPDATA::FNVEQUIPDATA():
+    value(0),
+    health(0),
+    weight(0)
+    {
+    //
+    }
+
+FNVEQUIPDATA::~FNVEQUIPDATA()
+    {
+    //
+    }
+
+bool FNVEQUIPDATA::operator ==(const FNVEQUIPDATA &other) const
+    {
+    return (value == other.value &&
+            health == other.health &&
+            weight == other.weight);
+    }
+
+bool FNVEQUIPDATA::operator !=(const FNVEQUIPDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVEQUIPDNAM::FNVEQUIPDNAM():
+    AR(0),
+    flags(0),
+    DT(0)
+    {
+    memset(&unknown[0], 0x00, 4);
+    }
+
+FNVEQUIPDNAM::~FNVEQUIPDNAM()
+    {
+    //
+    }
+
+bool FNVEQUIPDNAM::operator ==(const FNVEQUIPDNAM &other) const
+    {
+    return (AR == other.AR &&
+            flags == other.flags &&
+            DT == other.DT &&
+            unknown[0] == other.unknown[0] &&
+            unknown[1] == other.unknown[1] &&
+            unknown[2] == other.unknown[2] &&
+            unknown[3] == other.unknown[3]);
+    }
+
+bool FNVEQUIPDNAM::operator !=(const FNVEQUIPDNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENCOED::GENCOED():
+    owner(0), 
+    globalOrRank(0),
+    condition(0)
+    {
+    //
+    }
+
+GENCOED::~GENCOED()
+    {
+    //
+    }
+
+bool GENCOED::operator ==(const GENCOED &other) const
+    {
+    return (owner == other.owner &&
+            globalOrRank == other.globalOrRank &&
+            condition == other.condition);
+    }
+
+bool GENCOED::operator !=(const GENCOED &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FNVCNTO::IsGlobal()
+    {
+    //Not properly implemented, requires being able to tell if COED->owner is a npc record
+    //...the current model doesn't allow a record to lookup another record...
+    //As well, the geck wiki states that the global variable isn't even used by FO3/FNV
+
+    //So the current hack is to see if the globalOrRank is likely to be a rank or global
+    //It seems highly unlikely that any faction will have anywhere close to END_HARDCODED_IDS ranks (0x800)
+    //So CBash assumes that if globalOrRank is > END_HARDCODED_IDS, then it must be a global
+    //So false positives shouldn't be a problem
+    //False negatives could occur though...
+    //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37), 
+    //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
+    //PlayCredits (0x63)
+    //It seems unlikely that these specific globals would be used in this context
+    if(COED.IsLoaded())
+        return COED->globalOrRank > END_HARDCODED_IDS;
+    return false;
+    }
+
+bool FNVCNTO::IsRank()
+    {
+    //Not properly implemented, requires being able to tell if COED->owner is a faction record
+    //...the current model doesn't allow a record to lookup another record...
+    //As well, the geck wiki states that the global variable isn't even used by FO3/FNV
+
+    //So the current hack is to see if the globalOrRank is likely to be a rank or global
+    //It seems highly unlikely that any faction will have anywhere close to END_HARDCODED_IDS ranks (0x800)
+    //So CBash assumes that if globalOrRank is < END_HARDCODED_IDS, then it must be a rank
+    //So false negatives shouldn't be a problem
+    //False positives could occur though...
+    //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37), 
+    //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
+    //PlayCredits (0x63)
+    //It seems unlikely that these specific globals would be used in this context
+    if(COED.IsLoaded())
+        return COED->globalOrRank < END_HARDCODED_IDS;
+    return false;
+    }
+
+void FNVCNTO::Write(FileWriter &writer)
+    {
+    WRITE(CNTO);
+    WRITE(COED);
+    }
+
+bool FNVCNTO::operator ==(const FNVCNTO &other) const
+    {
+    return (CNTO == other.CNTO &&
+            COED == other.COED);
+    }
+bool FNVCNTO::operator !=(const FNVCNTO &other) const
+    {
+    return !(*this == other);
+    }
+
+
+
+
+
+
+
 
 
 

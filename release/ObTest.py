@@ -1473,8 +1473,8 @@ def assertRACE(Current, newMod):
     record.femaleHandPath = r"female\Hand\Path"
     record.femaleFootPath = r"female\Foot\Path"
     record.femaleTailPath = r"female\Tail\Path"
-    record.hairs = [0x00000001, 0x01000002]
-    record.eyes = [0x00000003, 0x01000004]
+    record.hairs = [0x00000001, 0x01000802]
+    record.eyes = [0x00000003, 0x01000804]
     record.fggs_p = [0x01, 0x20]
     record.fgga_p = [0x01, 0x21]
     record.fgts_p = [0x01, 0x22]
@@ -1618,9 +1618,9 @@ def assertRACE(Current, newMod):
     assert record.femaleTailPath == r'female\Tail\Path'
     assert record.femaleTailPath == r'femAle\Tail\Path'
     assert len(record.hairs) == 2
-    assert record.hairs == [('Oblivion.esm', 1), ('RegressionTests.esp', 2)]
+    assert record.hairs == [('Oblivion.esm', 0x1), ('RegressionTests.esp', 0x802)]
     assert len(record.eyes) == 2
-    assert record.eyes == [('Oblivion.esm', 3), ('RegressionTests.esp', 4)]
+    assert record.eyes == [('Oblivion.esm', 0x3), ('RegressionTests.esp', 0x804)]
     assert record.fggs_p == []
     assert record.fgga_p == []
     assert record.fgts_p == []
@@ -10359,7 +10359,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-##regressionTests()
+regressionTests()
 
 ##TestTemp()
 ##TestAttrReport()
@@ -10379,7 +10379,7 @@ from timeit import Timer
 ##TestEYES()
 ##TestRACE()
 ##TestSOUN()
-TestSKIL()
+##TestSKIL()
 ##TestMGEF()
 ##TestSCPT()
 ##TestLTEX()
@@ -10418,7 +10418,7 @@ TestSKIL()
 ##TestCELL()
 ##TestWRLD()
 ##TestDIAL()
-##TestQUST()
+TestQUST()
 ##TestIDLE()
 ##TestPACK()
 ##TestCSTY()

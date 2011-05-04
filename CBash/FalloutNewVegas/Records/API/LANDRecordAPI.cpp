@@ -44,6 +44,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return MISSING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //data_p Unknown
             switch(WhichAttribute)
                 {
@@ -68,6 +70,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //vnml_p Vertex Normals
             switch(WhichAttribute)
                 {
@@ -78,6 +81,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //vhgt_p Vertext Height Map
             switch(WhichAttribute)
                 {
@@ -88,6 +92,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //vclr_p Vertex Colours
             switch(WhichAttribute)
                 {
@@ -98,6 +103,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //btxt BTXT ,, Struct
             return FORMID_FIELD;
         case 12: //btxt BTXT ,, Struct
@@ -112,6 +118,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //btxt BTXT ,, Struct
             return SINT16_FIELD;
         case 15: //atxt ATXT ,, Struct
@@ -128,6 +135,7 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //atxt ATXT ,, Struct
             return SINT16_FIELD;
         case 19: //vtxt_p Alpha Layer Data
@@ -140,11 +148,13 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //vtex Textures
             return UNPARSED_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -201,6 +211,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -213,10 +224,10 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 5: //formVersion
             formVersion = *(UINT16 *)FieldValue;
@@ -224,8 +235,8 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //data_p Unknown
             DATA.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -251,7 +262,7 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             BTXT.Load();
-            BTXT->value12[0] = ((UINT8 *)FieldValue)[0];
+            BTXT->value12[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 14: //btxt BTXT ,, Struct
             BTXT.Load();
@@ -269,7 +280,7 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             ATXT.Load();
-            ATXT->value16[0] = ((UINT8 *)FieldValue)[0];
+            ATXT->value16[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 18: //atxt ATXT ,, Struct
             ATXT.Load();

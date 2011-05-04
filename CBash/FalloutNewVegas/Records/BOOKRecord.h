@@ -59,7 +59,7 @@ class BOOKRecord : public FNVRecord //Book
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord DESC; //Description
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<BOOKDATA> DATA; //Data
+        ReqSubRecord<BOOKDATA> DATA; //Data
 
         BOOKRecord(unsigned char *_recData=NULL);
         BOOKRecord(BOOKRecord *srcRecord);

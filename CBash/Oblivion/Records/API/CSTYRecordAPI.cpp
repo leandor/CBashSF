@@ -50,6 +50,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //lrTimerMin
             return FLOAT32_FIELD;
         case 9: //lrTimerMax
@@ -80,6 +81,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //atkBRecoil
             return FLOAT32_FIELD;
         case 20: //atkBUnc
@@ -98,6 +100,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 24: //pAtkBRecoil
             return FLOAT32_FIELD;
         case 25: //pAtkBUnc
@@ -122,6 +125,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //holdTimerMin
             return FLOAT32_FIELD;
         case 33: //holdTimerMax
@@ -140,6 +144,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 37: //rMultOpt
             return FLOAT32_FIELD;
         case 38: //rMultMax
@@ -166,6 +171,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //rushMult
             return FLOAT32_FIELD;
         case 47: //flagsB
@@ -215,6 +221,7 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * CSTYRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -366,6 +373,7 @@ void * CSTYRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -862,4 +870,5 @@ void CSTYRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

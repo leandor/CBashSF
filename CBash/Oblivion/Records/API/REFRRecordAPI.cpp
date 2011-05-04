@@ -64,6 +64,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 15: //lockKey
             return FORMID_FIELD;
         case 16: //unused2
@@ -76,6 +77,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //lockFlags
             return UINT8_FLAG_FIELD;
         case 18: //unused3
@@ -88,6 +90,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //owner
             return FORMID_FIELD;
         case 20: //rank
@@ -108,6 +111,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 25: //target
             return FORMID_FIELD;
         case 26: //seed
@@ -122,6 +126,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 27: //lod1
             return FLOAT32_FIELD;
         case 28: //lod2
@@ -160,6 +165,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //scale
             return FLOAT32_FIELD;
         case 43: //soulType
@@ -179,6 +185,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -297,6 +304,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)

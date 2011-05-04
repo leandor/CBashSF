@@ -56,15 +56,7 @@ PROJRecord::PROJRecord(PROJRecord *srcRecord):
 
     MODL = srcRecord->MODL;
 
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     DATA = srcRecord->DATA;
     NAM1 = srcRecord->NAM1;
     NAM2 = srcRecord->NAM2;
@@ -87,8 +79,14 @@ bool PROJRecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     //if(DATA.IsLoaded()) //FILL IN MANUALLY
     //    op.Accept(DATA->value);
 
@@ -421,24 +419,28 @@ SINT32 PROJRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'ATAD':
                 DATA.Read(buffer, subSize, curPos);
@@ -472,7 +474,7 @@ SINT32 PROJRecord::Unload()
     OBND.Unload();
     FULL.Unload();
     MODL.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     DATA.Unload();
     NAM1.Unload();
     NAM2.Unload();
@@ -488,24 +490,7 @@ SINT32 PROJRecord::WriteRecord(FileWriter &writer)
 
     MODL.Write(writer);
 
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
+    Destructable.Write(writer);
 
     WRITE(DATA);
     WRITE(NAM1);
@@ -521,7 +506,7 @@ bool PROJRecord::operator ==(const PROJRecord &other) const
             OBND == other.OBND &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            DEST == other.DEST &&
+            Destructable == other.Destructable &&
             DATA == other.DATA &&
             NAM1.equalsi(other.NAM1) &&
             NAM2 == other.NAM2 &&

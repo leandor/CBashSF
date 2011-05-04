@@ -44,6 +44,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -118,7 +121,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 19: //smallIconPath
             return ISTRING_FIELD;
-        case 20: //scri Script
+        case 20: //script
             return FORMID_FIELD;
         case 21: //description
             return STRING_FIELD;
@@ -138,6 +141,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 26: //dstd Destruction Stage Data
             return UINT8_FIELD;
         case 27: //dstd Destruction Stage Data
@@ -166,6 +170,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 36: //ynam Sound - Pick Up
             return FORMID_FIELD;
         case 37: //znam Sound - Drop
@@ -177,6 +182,7 @@ UINT32 IMODRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * IMODRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -224,7 +230,7 @@ void * IMODRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 19: //smallIconPath
             return MICO.value;
-        case 20: //scri Script
+        case 20: //script
             return SCRI.IsLoaded() ? &SCRI->value20 : NULL;
         case 21: //description
             return DESC.value;
@@ -269,6 +275,7 @@ void * IMODRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool IMODRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -281,10 +288,10 @@ bool IMODRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -295,8 +302,8 @@ bool IMODRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -350,7 +357,7 @@ bool IMODRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 19: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Load();
             SCRI->value20 = *(FORMID *)FieldValue;
             return true;
@@ -377,8 +384,8 @@ bool IMODRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             DEST.Load();
             DEST->DEST.Load();
-            DEST->DEST->value25[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value25[1] = ((UINT8 *)FieldValue)[1];
+            DEST->DEST->value25[0] = ((UINT8ARRAY)FieldValue)[0];
+            DEST->DEST->value25[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 26: //dstd Destruction Stage Data
             DEST.Load();
@@ -519,7 +526,7 @@ void IMODRecord::DeleteField(FIELD_IDENTIFIERS)
         case 19: //smallIconPath
             MICO.Unload();
             return;
-        case 20: //scri Script
+        case 20: //script
             SCRI.Unload();
             return;
         case 21: //description

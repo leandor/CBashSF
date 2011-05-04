@@ -44,6 +44,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //icon Fill Texture
             return ISTRING_FIELD;
         case 8: //ico2 Particle Shader Texture
@@ -76,6 +78,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 12: //data DATA ,, Struct
             return UINT32_FIELD;
         case 13: //data DATA ,, Struct
@@ -98,6 +101,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //data DATA ,, Struct
             return FLOAT32_FIELD;
         case 20: //data DATA ,, Struct
@@ -132,6 +136,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //data DATA ,, Struct
             return FLOAT32_FIELD;
         case 33: //data DATA ,, Struct
@@ -212,6 +217,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 68: //data DATA ,, Struct
             return UINT8_FIELD;
         case 69: //data DATA ,, Struct
@@ -228,6 +234,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 72: //data DATA ,, Struct
             return UINT8_FIELD;
         case 73: //data DATA ,, Struct
@@ -244,6 +251,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 76: //data DATA ,, Struct
             return FLOAT32_FIELD;
         case 77: //data DATA ,, Struct
@@ -294,6 +302,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 97: //data DATA ,, Struct
             return FLOAT32_FIELD;
         case 98: //data DATA ,, Struct
@@ -315,6 +324,7 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * EFSHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -543,6 +553,7 @@ void * EFSHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -555,10 +566,10 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -569,8 +580,8 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //icon Fill Texture
             ICON.Copy((STRING)FieldValue);
@@ -589,9 +600,9 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             DATA.Load();
-            DATA->value11[0] = ((UINT8 *)FieldValue)[0];
-            DATA->value11[1] = ((UINT8 *)FieldValue)[1];
-            DATA->value11[2] = ((UINT8 *)FieldValue)[2];
+            DATA->value11[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA->value11[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA->value11[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 12: //data DATA ,, Struct
             DATA.Load();
@@ -621,7 +632,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value18[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value18[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 19: //data DATA ,, Struct
             DATA.Load();
@@ -675,7 +686,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value31[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value31[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 32: //data DATA ,, Struct
             DATA.Load();
@@ -821,7 +832,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value67[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value67[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 68: //data DATA ,, Struct
             DATA.Load();
@@ -839,7 +850,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value71[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value71[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 72: //data DATA ,, Struct
             DATA.Load();
@@ -857,7 +868,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value75[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value75[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 76: //data DATA ,, Struct
             DATA.Load();
@@ -943,7 +954,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             DATA.Load();
-            DATA->value96[0] = ((UINT8 *)FieldValue)[0];
+            DATA->value96[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 97: //data DATA ,, Struct
             DATA.Load();

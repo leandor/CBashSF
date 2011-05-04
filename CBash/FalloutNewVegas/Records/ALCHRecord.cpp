@@ -88,15 +88,7 @@ ALCHRecord::ALCHRecord(ALCHRecord *srcRecord):
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     YNAM = srcRecord->YNAM;
     ZNAM = srcRecord->ZNAM;
     ETYP = srcRecord->ETYP;
@@ -129,8 +121,14 @@ bool ALCHRecord::VisitFormIDs(FormIDOp &op)
         }
     if(SCRI.IsLoaded())
         op.Accept(SCRI->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(YNAM.IsLoaded())
         op.Accept(YNAM->value);
     if(ZNAM.IsLoaded())
@@ -408,24 +406,28 @@ SINT32 ALCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'MANY':
                 YNAM.Read(buffer, subSize, curPos);
@@ -477,7 +479,7 @@ SINT32 ALCHRecord::Unload()
     ICON.Unload();
     MICO.Unload();
     SCRI.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     YNAM.Unload();
     ZNAM.Unload();
     ETYP.Unload();
@@ -499,24 +501,7 @@ SINT32 ALCHRecord::WriteRecord(FileWriter &writer)
     WRITE(MICO);
     WRITE(SCRI);
 
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
+    Destructable.Write(writer);
 
     WRITE(YNAM);
     WRITE(ZNAM);
@@ -549,7 +534,7 @@ bool ALCHRecord::operator ==(const ALCHRecord &other) const
             ICON.equalsi(other.ICON) &&
             MICO.equalsi(other.MICO) &&
             SCRI == other.SCRI &&
-            DEST == other.DEST &&
+            Destructable == other.Destructable &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
             ETYP == other.ETYP &&

@@ -62,15 +62,7 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     EITM = srcRecord->EITM;
     EAMT = srcRecord->EAMT;
     NAM0 = srcRecord->NAM0;
-    if(srcRecord->DEST.IsLoaded())
-        {
-        DEST.Load();
-        DEST->DEST = srcRecord->DEST->DEST;
-        DEST->DSTD = srcRecord->DEST->DSTD;
-        DEST->DMDL = srcRecord->DEST->DMDL;
-        DEST->DMDT = srcRecord->DEST->DMDT;
-        DEST->DSTF = srcRecord->DEST->DSTF;
-        }
+    Destructable = srcRecord->Destructable;
     REPL = srcRecord->REPL;
     ETYP = srcRecord->ETYP;
     BIPL = srcRecord->BIPL;
@@ -170,8 +162,14 @@ bool WEAPRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(EITM->value);
     if(NAM0.IsLoaded())
         op.Accept(NAM0->value);
-    if(DEST.IsLoaded() && DEST->DSTD.IsLoaded())
-        op.Accept(DEST->DSTD->value);
+    if(Destructable.IsLoaded())
+        {
+        for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
+            {
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.explosion);
+            op.Accept(Destructable->Stages.value[x]->DSTD.value.debris);
+            }
+        }
     if(REPL.IsLoaded())
         op.Accept(REPL->value);
     if(BIPL.IsLoaded())
@@ -2398,24 +2396,28 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 NAM0.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
-                DEST.Load();
-                DEST->DEST.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
             case 'DTSD':
-                DEST.Load();
-                DEST->DSTD.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
             case 'LDMD':
-                DEST.Load();
-                DEST->DMDL.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
             case 'TDMD':
-                DEST.Load();
-                DEST->DMDT.Read(buffer, subSize, curPos);
+                Destructable.Load();
+                if(Destructable->Stages.value.size() == 0)
+                    Destructable->Stages.value.push_back(new DESTSTAGE);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
             case 'FTSD':
-                //DEST.Load();
-                //DEST->DSTF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //Marks end of a destruction stage
                 break;
             case 'LPER':
                 REPL.Read(buffer, subSize, curPos);
@@ -2622,7 +2624,7 @@ SINT32 WEAPRecord::Unload()
     EITM.Unload();
     EAMT.Unload();
     NAM0.Unload();
-    DEST.Unload();
+    Destructable.Unload();
     REPL.Unload();
     ETYP.Unload();
     BIPL.Unload();
@@ -2672,24 +2674,7 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(EAMT);
     WRITE(NAM0);
 
-    if(DEST.IsLoaded())
-        {
-        if(DEST->DEST.IsLoaded())
-            SaveHandler.writeSubRecord('TSED', DEST->DEST.value, DEST->DEST.GetSize());
-
-        if(DEST->DSTD.IsLoaded())
-            SaveHandler.writeSubRecord('DTSD', DEST->DSTD.value, DEST->DSTD.GetSize());
-
-        if(DEST->DMDL.IsLoaded())
-            SaveHandler.writeSubRecord('LDMD', DEST->DMDL.value, DEST->DMDL.GetSize());
-
-        if(DEST->DMDT.IsLoaded())
-            SaveHandler.writeSubRecord('TDMD', DEST->DMDT.value, DEST->DMDT.GetSize());
-
-        //if(DEST->DSTF.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('FTSD', DEST->DSTF.value, DEST->DSTF.GetSize());
-
-        }
+    Destructable.Write(writer);
 
     WRITE(REPL);
     WRITE(ETYP);
@@ -2838,7 +2823,7 @@ bool WEAPRecord::operator ==(const WEAPRecord &other) const
             EITM == other.EITM &&
             EAMT == other.EAMT &&
             NAM0 == other.NAM0 &&
-            DEST == other.DEST &&
+            Destructable == other.Destructable &&
             REPL == other.REPL &&
             ETYP == other.ETYP &&
             BIPL == other.BIPL &&

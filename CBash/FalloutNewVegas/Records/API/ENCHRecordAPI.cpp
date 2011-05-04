@@ -44,6 +44,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
         case 8: //itemType
@@ -78,6 +80,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 13: //effects
             if(ListFieldID == 0) //effects
                 {
@@ -90,6 +93,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     default:
                         return UNKNOWN_FIELD;
                     }
+                return UNKNOWN_FIELD;
                 }
 
             if(ListIndex >= Effects.value.size())
@@ -121,6 +125,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             default:
                                 return UNKNOWN_FIELD;
                             }
+                        return UNKNOWN_FIELD;
                         }
 
                     if(ListX2Index >= Effects.value[ListIndex]->CTDA.value.size())
@@ -140,6 +145,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 3: //compValue
                             switch(WhichAttribute)
                                 {
@@ -150,6 +156,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 4: //ifunc
                             return UINT32_TYPE_FIELD;
                         case 5: //param1
@@ -162,7 +169,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
                                     if(curCTDAFunction != FNVFunction_Arguments.end())
                                         {
-                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
                                         switch(CTDAFunction.first)
                                             {
                                             case eFORMID:
@@ -178,6 +185,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 6: //param2
                             switch(WhichAttribute)
                                 {
@@ -188,7 +196,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Effects.value[ListIndex]->CTDA.value[ListX2Index]->ifunc);
                                     if(curCTDAFunction != FNVFunction_Arguments.end())
                                         {
-                                        FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
                                         switch(CTDAFunction.second)
                                             {
                                             case eFORMID:
@@ -209,6 +217,7 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                                         }
 
                                                     }
+                                                return UNKNOWN_FIELD;
                                             default:
                                                 return UNKNOWN_FIELD;
                                             }
@@ -218,27 +227,32 @@ UINT32 ENCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 7: //runOnType
                             return UINT32_TYPE_FIELD;
                         case 8: //reference
                             switch(WhichAttribute)
                                 {
                                 case 0: //fieldType
-                                    return FORMID_OR_UINT32_FIELD;
+                                    return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                                 case 2: //WhichType
                                     return Effects.value[ListIndex]->CTDA.value[ListX2Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * ENCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -324,6 +338,7 @@ void * ENCHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -336,10 +351,10 @@ bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -350,8 +365,8 @@ bool ENCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //full
             FULL.Copy((STRING)FieldValue);
@@ -505,7 +520,7 @@ void ENCHRecord::DeleteField(FIELD_IDENTIFIERS)
         case 13: //effects
             if(ListFieldID == 0) //effectsSize
                 {
-                Effects.Unload;
+                Effects.Unload();
                 return;
                 }
 

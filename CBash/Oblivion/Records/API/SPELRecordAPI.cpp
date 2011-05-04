@@ -56,6 +56,7 @@ UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 11: //effects
             if(ListFieldID == 0) //effects
                 {
@@ -288,6 +289,7 @@ UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //datx_p
             switch(WhichAttribute)
                 {
@@ -301,6 +303,7 @@ UINT32 SPELRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * SPELRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -411,6 +414,7 @@ void * SPELRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool SPELRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -510,9 +514,9 @@ bool SPELRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     if(ArraySize != 3)
                         break;
                     Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->unused1[0] = ((UINT8 *)FieldValue)[0];
-                    Effects[ListIndex]->SCIT->unused1[1] = ((UINT8 *)FieldValue)[1];
-                    Effects[ListIndex]->SCIT->unused1[2] = ((UINT8 *)FieldValue)[2];
+                    Effects[ListIndex]->SCIT->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Effects[ListIndex]->SCIT->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Effects[ListIndex]->SCIT->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 13: //full
                     Effects[ListIndex]->FULL.Copy((STRING)FieldValue);
@@ -801,4 +805,5 @@ void SPELRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

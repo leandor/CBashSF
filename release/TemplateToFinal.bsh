@@ -4,48 +4,48 @@
 // Macros menu.        
 
 //ListX3 Level Macros
-SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, $3, $4, $5, c_ubyte)");
+SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX3($2, $3, $4, $5, $6)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX3MACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX3($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX3($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX3($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FLOAT32_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LISTX3($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" FLOAT32_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LISTX3($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_TYPE_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, $3, $4, $5, c_ulong)");
+SearchAndReplace.setSearchString(" UINT32_TYPE_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -53,160 +53,168 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 //ListX2 Level Macros
-SearchAndReplace.setSearchString(" UINT8_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ubyte)");
+SearchAndReplace.setSearchString(" UINT8_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT8_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_byte)");
+SearchAndReplace.setSearchString(" SINT8_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_byte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT16_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ushort)");
+SearchAndReplace.setSearchString(" UINT16_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ushort)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FLOAT32_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" FLOAT32_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" FORMID_OR_FLOAT32_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_FLOAT32_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_FLAG_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ubyte)");
+SearchAndReplace.setSearchString(" FORMID_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ubyte)");
+SearchAndReplace.setSearchString(" UINT8_FLAG_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), (.*?), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, self._ListX2Index, $6, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, self._ListX2Index, $6, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$7(self._CollectionID, self._ModID, self._RecordID, $4, self._ListIndex, $5, self._ListX2Index, $6, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5, $6, $7)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, $6, $7, True)\n");
+SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, self._ListX2Index, $6, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, self._ListX2Index, $6, 0, 0, 0, c_ulong(length + 1))\n$1     return $7(self._CollectionID, self._ModID, self._RecordID, $4, self._ListIndex, $5, self._ListX2Index, $6, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5, $6, $7)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, $6, $7, True)\n");
+SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" STRING_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ulong)");
+SearchAndReplace.setSearchString(" STRING_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" ISTRING_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" UINT32_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" ISTRING_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LISTX2($2, $3, $4, $5)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LISTX2($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LISTX2($2, $3, $4)");
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTX2MACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LISTX2($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_FLAG_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ulong)");
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_TYPE_LISTX2MACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, $3, $4, c_ulong)");
+SearchAndReplace.setSearchString(" UINT32_FLAG_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ulong)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT32_TYPE_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -214,72 +222,64 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 //ListX1 Level Macros
-SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$6(self._CollectionID, self._ModID, self._RecordID, $4, self._ListIndex, $5, length)\n$1 $2$3 = CBashLIST_LIST($5, $6)\n$1 $2$3_list = CBashLIST_LIST($5, $6, True)\n");
+SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, self._ListIndex, $5, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $6(self._CollectionID, self._ModID, self._RecordID, $4, self._ListIndex, $5, length)\n$1 $2$3 = CBashLIST_LIST($5, $6)\n$1 $2$3_list = CBashLIST_LIST($5, $6, True)\n");
+SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" ISTRING_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LIST($3)");
+SearchAndReplace.setSearchString(" ISTRING_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEISTRING_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LIST($3) #OBME");
+SearchAndReplace.setSearchString(" OBMEISTRING_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" STRING_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LIST($3)");
+SearchAndReplace.setSearchString(" STRING_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMESTRING_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LIST($3) #OBME");
+SearchAndReplace.setSearchString(" OBMESTRING_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FLOAT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LIST($3)");
+SearchAndReplace.setSearchString(" FLOAT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEFLOAT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LIST($3) #OBME");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(false);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
-SearchAndReplace.setSearchString(" UINT32_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT32ARRAY_LIST($3, $4)");
+SearchAndReplace.setSearchString(" OBMEFLOAT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -287,23 +287,15 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT32_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT32ARRAY_LIST($3)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT32ARRAY_LIST($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($3, $4)");
-SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(false);
-SearchAndReplace.setRegexp(true);
-SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-SearchAndReplace.replaceAll(view);
-
-SearchAndReplace.setSearchString(" OBMEUINT8_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($3, $4) #OBME");
+SearchAndReplace.setSearchString(" UINT32_ARRAY_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT32ARRAY_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -311,7 +303,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($3)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -319,247 +311,280 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT8_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($3) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($2, $3) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_LIST($3)");
+SearchAndReplace.setSearchString(" UINT8_ARRAY_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMIDARRAY_LIST($3)");
+SearchAndReplace.setSearchString(" OBMEUINT8_ARRAY_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST($3)");
+SearchAndReplace.setSearchString(" FORMID_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" MGEFCODE_OR_UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_LIST($3)");
+SearchAndReplace.setSearchString(" FORMID_ARRAY_LISTMACRO\\((.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMIDARRAY_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEMGEFCODE_OR_UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_LIST($3) #OBME");
+
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LIST($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" ACTORVALUE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashACTORVALUE_LIST($3)");
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEACTORVALUE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashACTORVALUE_LIST($3) #OBME");
+SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST($3)");
+SearchAndReplace.setSearchString(" MGEFCODE_OR_UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST($3) #OBME");
+SearchAndReplace.setSearchString(" OBMEMGEFCODE_OR_UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ulong)");
+SearchAndReplace.setSearchString(" ACTORVALUE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashACTORVALUE_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEUINT32_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ulong) #OBME");
+SearchAndReplace.setSearchString(" OBMEACTORVALUE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashACTORVALUE_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT16_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ushort)");
+SearchAndReplace.setSearchString(" FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ubyte)");
+SearchAndReplace.setSearchString(" OBMEFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT32_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_long)");
+SearchAndReplace.setSearchString(" UINT32_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT16_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_short)");
+SearchAndReplace.setSearchString(" OBMEUINT32_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ulong) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT8_FLAG_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_byte)");
+SearchAndReplace.setSearchString(" UINT16_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ushort)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ulong)");
+SearchAndReplace.setSearchString(" UINT8_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT16_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ushort)");
+SearchAndReplace.setSearchString(" SINT32_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_long)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ubyte)");
+SearchAndReplace.setSearchString(" SINT16_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_short)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT32_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_long)");
+SearchAndReplace.setSearchString(" SINT8_FLAG_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_byte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT16_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_short)");
+SearchAndReplace.setSearchString(" UINT32_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT8_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_byte)");
+SearchAndReplace.setSearchString(" UINT16_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ushort)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ulong)");
+SearchAndReplace.setSearchString(" UINT8_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT16_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ushort)");
+SearchAndReplace.setSearchString(" SINT32_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_long)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ubyte)");
+SearchAndReplace.setSearchString(" SINT16_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_short)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ubyte)");
+SearchAndReplace.setSearchString(" SINT8_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_byte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" OBMEUINT8_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_ubyte) #OBME");
+SearchAndReplace.setSearchString(" UINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT32_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_long)");
+SearchAndReplace.setSearchString(" UINT16_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ushort)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT16_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_short)");
+SearchAndReplace.setSearchString(" UINT8_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ubyte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT8_LISTMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($3, c_byte)");
+SearchAndReplace.setSearchString(" UINT8_FLAG_TYPE_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ubyte)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" OBMEUINT8_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_ubyte) #OBME");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" SINT32_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_long)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" SINT16_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_short)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" SINT8_LISTMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LIST($2, c_byte)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -568,7 +593,7 @@ SearchAndReplace.replaceAll(view);
 
 //Top Level Macros
 SearchAndReplace.setSearchString("( *) SUBRECORD_MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, $6)\n$1     if(FID): return $5(self._CollectionID, self._ModID, FID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORD($4, $5, $3, $6)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, $6)\n$1     if(RecordID): return $5(self._CollectionID, self._ModID, RecordID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORD($4, $5, $3, $6)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -576,7 +601,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) SUBRECORD_ARRAY_MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, 0, 0, self._RecordID, $6)\n$1     if(FID): return $5(self._CollectionID, self._ModID, FID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3, $6)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, $6)\n$1     if(RecordID): return $5(self._CollectionID, self._ModID, RecordID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3, $6)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -592,7 +617,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_MACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -600,7 +625,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_MACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 0, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 0, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -623,8 +648,8 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" GroupedValuesMACRO\\((.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashGrouped($2, $3)");
+SearchAndReplace.setSearchString("(.*?) GroupedValuesMACRO\\((.*?), (.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 $2 = CBashGrouped($3, $4)\n$1 $2_list = CBashGrouped($3, $4, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -775,6 +800,14 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
+SearchAndReplace.setSearchString(" SINT16_ARRAY_MACRO\\((.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashSINT16ARRAY($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 SearchAndReplace.setSearchString(" UINT32_FLAG_MACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
@@ -911,6 +944,14 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
+SearchAndReplace.setSearchString(" ACTORVALUE_MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 SearchAndReplace.setSearchString(" OBMEUINT32_MACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
@@ -1016,7 +1057,15 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModEDIDRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, RecordID):\n$1     if(CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, 0, RecordID, 0, 0)):\n$1         return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashEDIDRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("( *) FnvModEDIDRecordsMACRO\\((.*?)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Fnv$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\', 0)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1024,23 +1073,23 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, 0, 0, 0, 0)\n$1     if(RecordID): return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("( *)(.*?) = CBash(.*?)\\(self\\._FieldID, (.*?)\\)");
-SearchAndReplace.setReplaceString("$1self.$2 = CBash$3(self._FieldID, $4)");
+SearchAndReplace.setSearchString("( *) FnvModRecordsMACRO\\((.*?)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Fnv$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\', 0)\n");
 SearchAndReplace.setBeanShellReplace(false);
-SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT32_FLAG_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ulong)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1048,7 +1097,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" FORMID_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDFORMID($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1056,7 +1105,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" STRING_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDSTRING($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashSTRING($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1064,7 +1113,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" ISTRING_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDISTRING($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashISTRING($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1072,7 +1121,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" FLOAT32_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDFLOAT32($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1080,7 +1129,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT8_ARRAY_EDIDMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDUINT8ARRAY($2, $3)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1088,7 +1137,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT8_ARRAY_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDUINT8ARRAY($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1096,7 +1145,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" SINT32_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_long)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_long)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1104,7 +1153,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT32_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ulong)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1112,7 +1161,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" UINT16_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ushort)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ushort)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1120,7 +1169,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" MGEFCODE_OR_UINT32_ARRAY_EDIDMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDMGEFCODE_OR_UINT32_ARRAY($2, $3)");
+SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_ARRAY($2, $3)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1128,7 +1177,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" MGEFCODE_OR_UINT32_ARRAY_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDMGEFCODE_OR_UINT32_ARRAY($2)");
+SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE_OR_UINT32_ARRAY($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1136,7 +1185,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT8_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ubyte) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ubyte) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1144,7 +1193,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT8_ARRAY_EDIDMACRO\\((.*?), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDUINT8ARRAY($2, $3) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY($2, $3) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1152,7 +1201,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT8_ARRAY_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDUINT8ARRAY($2) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashUINT8ARRAY($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1160,7 +1209,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEMGEFCODE_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDMGEFCODE($2) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashMGEFCODE($2) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1168,7 +1217,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT32_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ulong) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1176,7 +1225,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" OBMEUINT32_FLAG_EDIDMACRO\\((.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashEDIDGeneric($2, c_ulong) #OBME");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_ulong) #OBME");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1184,8 +1233,32 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 //Grouped
+SearchAndReplace.setSearchString("(.*?) LIST_GROUPEDMACRO\\((.*?)(s|es|), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FieldID = self._FieldID + $4\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, FieldID, length)\n$1 $2$3 = CBashLIST_GROUP($4, $5)\n$1 $2$3_list = CBashLIST_GROUP($4, $5, True)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 SearchAndReplace.setSearchString(" UINT8_GROUPEDMACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_ubyte)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT8_FLAG_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_ubyte)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" SINT32_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_long)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1265,7 +1338,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("create_baseTextur");
-SearchAndReplace.setReplaceString("create_baseTextures");
+SearchAndReplace.setReplaceString("create_baseTexture");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -1273,7 +1346,15 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("create_vertexTextur");
-SearchAndReplace.setReplaceString("create_vertexTextures");
+SearchAndReplace.setReplaceString("create_vertexTexture");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_altTextur");
+SearchAndReplace.setReplaceString("create_altTexture");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);

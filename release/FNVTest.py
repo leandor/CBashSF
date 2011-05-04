@@ -83,17 +83,17 @@ def TestRegressions():
     assertMGEF(Current, newMod)
     assertSCPT(Current, newMod)
     assertLTEX(Current, newMod)
-    newMod.save()
-    ##    assertENCH(Current, newMod)
-    ##    assertSPEL(Current, newMod)
-    ##    assertACTI(Current, newMod)
-    ##    assertTACT(Current, newMod)
-    ##    assertTERM(Current, newMod)
-    ##    assertARMO(Current, newMod)
-    ##    assertBOOK(Current, newMod)
-    ##    assertCONT(Current, newMod)
-    ##    assertDOOR(Current, newMod)
-    ##    assertINGR(Current, newMod)
+    assertENCH(Current, newMod)
+    assertSPEL(Current, newMod)
+    assertACTI(Current, newMod)
+    assertTACT(Current, newMod)
+    assertTERM(Current, newMod)
+    assertARMO(Current, newMod)
+    assertBOOK(Current, newMod)
+    assertCONT(Current, newMod)
+    assertDOOR(Current, newMod)
+    assertINGR(Current, newMod)
+##    newMod.save()
     ##    assertLIGH(Current, newMod)
     ##    assertMISC(Current, newMod)
     ##    assertSTAT(Current, newMod)
@@ -3783,7 +3783,7 @@ def assertSCPT(Current, newMod):
     assert record.compiledSize == 690
     assert record.lastIndex == 3
     assert record.scriptType == 1
-    assert record.flags == 0x1
+    assert record.scriptFlags == 0x1
     assert record.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
                                  9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
                                  0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,
@@ -3839,7 +3839,7 @@ def assertSCPT(Current, newMod):
     nrecord.compiledSize = 6
     nrecord.lastIndex = 1
     nrecord.scriptType = 8
-    nrecord.flags = 9
+    nrecord.scriptFlags = 9
     nrecord.compiled_p = [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
     nrecord.scriptText = '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
     nrecord.vars_list = [(1L, 1, 'timer'), (2L, 1, 'reset')]
@@ -3858,7 +3858,7 @@ def assertSCPT(Current, newMod):
     assert nrecord.compiledSize == 10
     assert nrecord.lastIndex == 1
     assert nrecord.scriptType == 8
-    assert nrecord.flags == 9
+    assert nrecord.scriptFlags == 9
     assert nrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
     assert nrecord.scriptText == '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
     assert nrecord.scriptText == '''scn WArBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
@@ -3896,7 +3896,7 @@ def assertSCPT(Current, newMod):
     assert newrecord.compiledSize == 690
     assert newrecord.lastIndex == 3
     assert newrecord.scriptType == 1
-    assert newrecord.flags == 0x1
+    assert newrecord.scriptFlags == 0x1
     assert newrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
                                  9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
                                  0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,
@@ -3950,7 +3950,7 @@ def assertSCPT(Current, newMod):
     newrecord.compiledSize = 6
     newrecord.lastIndex = 1
     newrecord.scriptType = 8
-    newrecord.flags = 9
+    newrecord.scriptFlags = 9
     newrecord.compiled_p = [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
     newrecord.scriptText = '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
     newrecord.vars_list = [(1L, 1, 'timer'), (2L, 1, 'reset')]
@@ -3969,7 +3969,7 @@ def assertSCPT(Current, newMod):
     assert newrecord.compiledSize == 10
     assert newrecord.lastIndex == 1
     assert newrecord.scriptType == 8
-    assert newrecord.flags == 9
+    assert newrecord.scriptFlags == 9
     assert newrecord.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0]
     assert newrecord.scriptText == '''scn WarBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
     assert newrecord.scriptText == '''scn WArBeatrixFXSCRIPT\n\nbegin gamemode\n\nend'''
@@ -3989,7 +3989,7 @@ def assertSCPT(Current, newMod):
     assert record.compiledSize == 690
     assert record.lastIndex == 3
     assert record.scriptType == 1
-    assert record.flags == 0x1
+    assert record.scriptFlags == 0x1
     assert record.compiled_p == [29, 0, 0, 0, 16, 0, 6, 0, 0, 0, 164, 2, 0, 0, 22, 0, 13, 0, 6, 0,
                                  9, 0, 32, 115, 2, 0, 32, 48, 32, 61, 61, 28, 0, 1, 0, 243, 16, 7,
                                  0, 1, 0, 110, 1, 0, 0, 0, 97, 16, 37, 0, 7, 0, 110, 1, 0, 0, 0, 110,

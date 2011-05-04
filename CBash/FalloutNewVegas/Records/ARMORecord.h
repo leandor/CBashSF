@@ -32,7 +32,7 @@ class ARMORecord : public FNVRecord //Armor
             {
             FORMID  sound; //Sound
             UINT8   chance; //Chance
-            UINT8   unused[3]; //Unused
+            UINT8   unused1[3]; //Unused
             UINT32  type; //Type
 
             enum typeTypes
@@ -118,8 +118,14 @@ class ARMORecord : public FNVRecord //Armor
             eHandWear,
             eChems,
             eStimpack,
-            eFood,
+            eEdible,
             eAlcohol
+            };
+
+        enum eOverridesSoundsType
+            {
+            eNotOverridingSounds = 0,
+            eOverridingSounds    = 1
             };
 
         enum dnamFlags
@@ -132,7 +138,7 @@ class ARMORecord : public FNVRecord //Armor
         StringRecord FULL; //Name
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<FORMID> EITM; //Object Effect
-        OptSubRecord<GENBMDT> BMDT; //Biped Data
+        ReqSubRecord<GENBMDT> BMDT; //Biped Data
         OptSubRecord<FNVBIPEDMODEL> MODL; //Male Biped Model
         OptSubRecord<FNVWORLDMODEL> MOD2; //Male World Model
         StringRecord ICON; //Male icon filename
@@ -144,13 +150,13 @@ class ARMORecord : public FNVRecord //Armor
         StringRecord BMCT; //Ragdoll Constraint Template
         OptSimpleSubRecord<FORMID> REPL; //Repair List
         OptSimpleSubRecord<FORMID> BIPL; //Biped Model List
-        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        ReqSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSubRecord<FNVEQUIPDATA> DATA; //Equipment Data
-        OptSubRecord<FNVEQUIPDNAM> DNAM; //Extra Equipment Data
-        OptSimpleSubRecord<UINT32> BNAM; //Overrides Animation Sounds
-        std::vector<ReqSubRecord<FNVSNAM> *> Sounds; //Animation Sounds
+        ReqSubRecord<FNVEQUIPDATA> DATA; //Equipment Data
+        ReqSubRecord<FNVEQUIPDNAM> DNAM; //Extra Equipment Data
+        ReqSimpleSubRecord<UINT32> BNAM; //Overrides Animation Sounds
+        UnorderedSparseArray<FNVSNAM *> Sounds; //Animation Sounds
         OptSimpleSubRecord<FORMID> TNAM; //Animation Sounds Template
 
         ARMORecord(unsigned char *_recData=NULL);
@@ -221,6 +227,11 @@ class ARMORecord : public FNVRecord //Armor
         bool   IsExtraFlagMask(UINT8 Mask, bool Exact=false);
         void   SetExtraFlagMask(UINT8 Mask);
 
+        bool   IsModulatesVoice();
+        void   IsModulatesVoice(bool value);
+        bool   IsVoiceFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetVoiceFlagMask(UINT16 Mask);
+
         bool   IsNone();
         void   IsNone(bool value);
         bool   IsBigGuns();
@@ -247,17 +258,19 @@ class ARMORecord : public FNVRecord //Armor
         void   IsChems(bool value);
         bool   IsStimpack();
         void   IsStimpack(bool value);
-        bool   IsFood();
-        void   IsFood(bool value);
+        bool   IsEdible();
+        void   IsEdible(bool value);
         bool   IsAlcohol();
         void   IsAlcohol(bool value);
-        bool   IsEquipmentType(SINT32 Type, bool Exact=false);
+        bool   IsEquipmentType(SINT32 Type);
         void   SetEquipmentType(SINT32 Type);
 
-        bool   IsModulatesVoice();
-        void   IsModulatesVoice(bool value);
-        bool   IsDNAMFlagMask(UINT16 Mask, bool Exact=false);
-        void   SetDNAMFlagMask(UINT16 Mask);
+        bool   IsNotOverridingSounds();
+        void   IsNotOverridingSounds(bool value);
+        bool   IsOverridingSounds();
+        void   IsOverridingSounds(bool value);
+        bool   IsOverrideType(UINT32 Type);
+        void   SetOverrideType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

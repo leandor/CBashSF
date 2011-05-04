@@ -198,7 +198,7 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
         time(&ltime);
         if(ltime - lastSave < 60)
             ltime = lastSave + 60;
-        lastSave =  ltime;
+        lastSave = ltime;
 
         switch(_localtime64_s(&currentTime, &ltime))
             {

@@ -52,6 +52,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //flags
             return UINT32_FLAG_FIELD;
         case 10: //baseSpell
@@ -102,6 +103,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 17: //deathItem
             return FORMID_FIELD;
         case 18: //race
@@ -116,6 +118,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 20: //script
             return FORMID_FIELD;
         case 21: //items
@@ -144,6 +147,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 22: //aggression
             return UINT8_FIELD;
         case 23: //confidence
@@ -168,6 +172,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 30: //aiPackages
             switch(WhichAttribute)
                 {
@@ -178,6 +183,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 31: //animations
             switch(WhichAttribute)
                 {
@@ -188,6 +194,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 32: //iclass
             return FORMID_FIELD;
         case 33: //armorer
@@ -244,6 +251,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 56: //strength
             return UINT8_FIELD;
         case 57: //intelligence
@@ -282,6 +290,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 71: //combatStyle
             return FORMID_FIELD;
         case 72: //fggs_p
@@ -294,6 +303,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 73: //fgga_p
             switch(WhichAttribute)
                 {
@@ -304,6 +314,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 74: //fgts_p
             switch(WhichAttribute)
                 {
@@ -314,11 +325,13 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 75: //fnam
             return UINT16_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -516,6 +529,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -1131,4 +1145,5 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

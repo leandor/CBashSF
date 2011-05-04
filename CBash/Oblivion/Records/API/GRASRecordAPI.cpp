@@ -50,6 +50,7 @@ UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 8: //density
             return UINT8_FIELD;
         case 9: //minSlope
@@ -66,6 +67,7 @@ UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 12: //waterDistance
             return UINT16_FIELD;
         case 13: //unused2
@@ -78,6 +80,7 @@ UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //waterOp
             return UINT32_FIELD;
         case 15: //posRange
@@ -103,6 +106,7 @@ UINT32 GRASRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * GRASRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -156,6 +160,7 @@ void * GRASRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool GRASRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -309,4 +314,5 @@ void GRASRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

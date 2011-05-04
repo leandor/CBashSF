@@ -44,6 +44,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //description
             return STRING_FIELD;
         case 8: //full
@@ -82,6 +84,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 15: //ctda Conditions
             return UNPARSED_FIELD;
         case 16: //ctda Conditions
@@ -96,6 +99,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //ctda_p Conditions
             switch(WhichAttribute)
                 {
@@ -106,6 +110,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 19: //ctda Conditions
             return UINT32_FIELD;
         case 20: //ctda Conditions
@@ -113,6 +118,7 @@ UINT32 MESGRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * MESGRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -167,6 +173,7 @@ void * MESGRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -179,10 +186,10 @@ bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -193,8 +200,8 @@ bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //description
             DESC.Copy((STRING)FieldValue);
@@ -225,9 +232,9 @@ bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             CTDAs.Load();
-            CTDAs->value14[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value14[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value14[2] = ((UINT8 *)FieldValue)[2];
+            CTDAs->value14[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value14[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value14[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 15: //ctda Conditions
             return UNPARSEDGET_FIELD15;
@@ -239,19 +246,19 @@ bool MESGRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value17[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value17[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value17[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value17[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value17[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value17[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value17[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value17[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 18: //ctda_p Conditions
             if(ArraySize != 4)
                 break;
             CTDAs.Load();
-            CTDAs->value18[0] = ((UINT8 *)FieldValue)[0];
-            CTDAs->value18[1] = ((UINT8 *)FieldValue)[1];
-            CTDAs->value18[2] = ((UINT8 *)FieldValue)[2];
-            CTDAs->value18[3] = ((UINT8 *)FieldValue)[3];
+            CTDAs->value18[0] = ((UINT8ARRAY)FieldValue)[0];
+            CTDAs->value18[1] = ((UINT8ARRAY)FieldValue)[1];
+            CTDAs->value18[2] = ((UINT8ARRAY)FieldValue)[2];
+            CTDAs->value18[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 19: //ctda Conditions
             CTDAs.Load();

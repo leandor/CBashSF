@@ -42,8 +42,8 @@ class ENCHRecord : public FNVRecord //Object Effect
 
         enum flagsFlags
             {
-            fIsNoAutoCalc = 0x00000001,
-            fIsHideEffect = 0x00000004
+            fIsNoAutoCalc = 0x01,
+            fIsHideEffect = 0x04
             };
 
         enum eItemType

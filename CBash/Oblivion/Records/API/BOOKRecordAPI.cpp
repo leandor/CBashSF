@@ -52,6 +52,7 @@ UINT32 BOOKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 9: //iconPath
             return ISTRING_FIELD;
         case 10: //text
@@ -73,6 +74,7 @@ UINT32 BOOKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -117,6 +119,7 @@ void * BOOKRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool BOOKRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -241,4 +244,5 @@ void BOOKRecord::DeleteField(FIELD_IDENTIFIERS)
         default:
             return;
         }
+    return;
     }

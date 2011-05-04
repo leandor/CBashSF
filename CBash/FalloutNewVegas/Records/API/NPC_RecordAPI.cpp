@@ -44,6 +44,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 4: //eid
             return ISTRING_FIELD;
         case 5: //formVersion
@@ -58,6 +59,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 7: //boundX
             return SINT16_FIELD;
         case 8: //boundY
@@ -80,6 +82,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
@@ -148,6 +151,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 31: //inam Death item
             return FORMID_FIELD;
         case 32: //vtck Voice
@@ -178,6 +182,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //dstd Destruction Stage Data
             return UINT8_FIELD;
         case 43: //dstd Destruction Stage Data
@@ -206,7 +211,8 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-        case 52: //scri Script
+            return UNKNOWN_FIELD;
+        case 52: //script
             return FORMID_FIELD;
         case 53: //cnto Item
             return FORMID_FIELD;
@@ -232,6 +238,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 61: //aidt AI Data
             return UINT32_FIELD;
         case 62: //aidt AI Data
@@ -262,6 +269,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 72: //dnam DNAM ,, Struct
             return UINT8_FIELD;
         case 73: //dnam DNAM ,, Struct
@@ -290,6 +298,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 82: //znam Combat Style
             return FORMID_FIELD;
         case 83: //nam4 Impact Material Type
@@ -304,6 +313,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 85: //fgga_p FaceGen Geometry-Asymmetric
             switch(WhichAttribute)
                 {
@@ -314,6 +324,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 86: //fgts_p FaceGen Texture-Symmetric
             switch(WhichAttribute)
                 {
@@ -324,6 +335,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 87: //nam5 Unknown
             return UINT16_FIELD;
         case 88: //nam6 Height
@@ -333,6 +345,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -447,7 +460,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 51: //dmdt_p Texture Files Hashes
             *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
             return NULL;
-        case 52: //scri Script
+        case 52: //script
             return SCRIActor.IsLoaded() ? &SCRIActor->value52 : NULL;
         case 53: //cnto Item
             return CNTO.IsLoaded() ? &CNTO->value53 : NULL;
@@ -532,6 +545,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
@@ -544,10 +558,10 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 3: //versionControl1
             if(ArraySize != 4)
                 break;
-            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8 *)FieldValue)[0];
-            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8 *)FieldValue)[1];
-            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8 *)FieldValue)[2];
-            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8 *)FieldValue)[3];
+            ((UINT8ARRAY)&flagsUnk)[0] = ((UINT8ARRAY)FieldValue)[0];
+            ((UINT8ARRAY)&flagsUnk)[1] = ((UINT8ARRAY)FieldValue)[1];
+            ((UINT8ARRAY)&flagsUnk)[2] = ((UINT8ARRAY)FieldValue)[2];
+            ((UINT8ARRAY)&flagsUnk)[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 4: //eid
             EDID.Copy((STRING)FieldValue);
@@ -558,8 +572,8 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 6: //versionControl2
             if(ArraySize != 2)
                 break;
-            versionControl2[0] = ((UINT8 *)FieldValue)[0];
-            versionControl2[1] = ((UINT8 *)FieldValue)[1];
+            versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
+            versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //boundX
             OBND.Load();
@@ -659,9 +673,9 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             SNAM.Load();
-            SNAM->value30[0] = ((UINT8 *)FieldValue)[0];
-            SNAM->value30[1] = ((UINT8 *)FieldValue)[1];
-            SNAM->value30[2] = ((UINT8 *)FieldValue)[2];
+            SNAM->value30[0] = ((UINT8ARRAY)FieldValue)[0];
+            SNAM->value30[1] = ((UINT8ARRAY)FieldValue)[1];
+            SNAM->value30[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 31: //inam Death item
             INAM.Load();
@@ -711,8 +725,8 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 break;
             DEST.Load();
             DEST->DEST.Load();
-            DEST->DEST->value41[0] = ((UINT8 *)FieldValue)[0];
-            DEST->DEST->value41[1] = ((UINT8 *)FieldValue)[1];
+            DEST->DEST->value41[0] = ((UINT8ARRAY)FieldValue)[0];
+            DEST->DEST->value41[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 42: //dstd Destruction Stage Data
             DEST.Load();
@@ -762,7 +776,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DEST.Load();
             DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 52: //scri Script
+        case 52: //script
             SCRIActor.Load();
             SCRIActor->value52 = *(FORMID *)FieldValue;
             return true;
@@ -798,9 +812,9 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 3)
                 break;
             AIDT.Load();
-            AIDT->value60[0] = ((UINT8 *)FieldValue)[0];
-            AIDT->value60[1] = ((UINT8 *)FieldValue)[1];
-            AIDT->value60[2] = ((UINT8 *)FieldValue)[2];
+            AIDT->value60[0] = ((UINT8ARRAY)FieldValue)[0];
+            AIDT->value60[1] = ((UINT8ARRAY)FieldValue)[1];
+            AIDT->value60[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 61: //aidt AI Data
             AIDT.Load();
@@ -887,7 +901,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 1)
                 break;
             HCLR.Load();
-            HCLR->value81[0] = ((UINT8 *)FieldValue)[0];
+            HCLR->value81[0] = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 82: //znam Combat Style
             ZNAM.Load();
@@ -1106,7 +1120,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             if(DEST.IsLoaded())
                 DEST->DMDT.Unload();
             return;
-        case 52: //scri Script
+        case 52: //script
             SCRIActor.Unload();
             return;
         case 53: //cnto Item

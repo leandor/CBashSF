@@ -42,13 +42,13 @@ class SPELRecord : public FNVRecord //Actor Effect
 
         enum flagsFlags
             {
-            fIsManualCost            = 0x00000001,
-            fIsStartSpell            = 0x00000004,
-            fIsSilenceImmune         = 0x0000000A,
-            fIsAreaEffectIgnoresLOS  = 0x00000010,
-            fIsScriptAlwaysApplies   = 0x00000020,
-            fIsDisallowAbsorbReflect = 0x00000040,
-            fIsTouchExplodesWOTarget = 0x00000080
+            fIsManualCost            = 0x01,
+            fIsStartSpell            = 0x04,
+            fIsSilenceImmune         = 0x0A,
+            fIsAreaEffectIgnoresLOS  = 0x10,
+            fIsScriptAlwaysApplies   = 0x20,
+            fIsDisallowAbsorbReflect = 0x40,
+            fIsTouchExplodesWOTarget = 0x80
             };
 
         enum eSpellType

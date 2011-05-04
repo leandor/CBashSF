@@ -54,6 +54,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 10: //upperSky.rise.red
             return UINT8_FIELD;
         case 11: //upperSky.rise.green
@@ -70,6 +71,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 14: //upperSky.day.red
             return UINT8_FIELD;
         case 15: //upperSky.day.green
@@ -86,6 +88,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 18: //upperSky.set.red
             return UINT8_FIELD;
         case 19: //upperSky.set.green
@@ -102,6 +105,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 22: //upperSky.night.red
             return UINT8_FIELD;
         case 23: //upperSky.night.green
@@ -118,6 +122,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 26: //fog.rise.red
             return UINT8_FIELD;
         case 27: //fog.rise.green
@@ -134,6 +139,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 30: //fog.day.red
             return UINT8_FIELD;
         case 31: //fog.day.green
@@ -150,6 +156,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 34: //fog.set.red
             return UINT8_FIELD;
         case 35: //fog.set.green
@@ -166,6 +173,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 38: //fog.night.red
             return UINT8_FIELD;
         case 39: //fog.night.green
@@ -182,6 +190,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 42: //lowerClouds.rise.red
             return UINT8_FIELD;
         case 43: //lowerClouds.rise.green
@@ -198,6 +207,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 46: //lowerClouds.day.red
             return UINT8_FIELD;
         case 47: //lowerClouds.day.green
@@ -214,6 +224,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 50: //lowerClouds.set.red
             return UINT8_FIELD;
         case 51: //lowerClouds.set.green
@@ -230,6 +241,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 54: //lowerClouds.night.red
             return UINT8_FIELD;
         case 55: //lowerClouds.night.green
@@ -246,6 +258,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 58: //ambient.rise.red
             return UINT8_FIELD;
         case 59: //ambient.rise.green
@@ -262,6 +275,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 62: //ambient.day.red
             return UINT8_FIELD;
         case 63: //ambient.day.green
@@ -278,6 +292,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 66: //ambient.set.red
             return UINT8_FIELD;
         case 67: //ambient.set.green
@@ -294,6 +309,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 70: //ambient.night.red
             return UINT8_FIELD;
         case 71: //ambient.night.green
@@ -310,6 +326,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 74: //sunlight.rise.red
             return UINT8_FIELD;
         case 75: //sunlight.rise.green
@@ -326,6 +343,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 78: //sunlight.day.red
             return UINT8_FIELD;
         case 79: //sunlight.day.green
@@ -342,6 +360,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 82: //sunlight.set.red
             return UINT8_FIELD;
         case 83: //sunlight.set.green
@@ -358,6 +377,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 86: //sunlight.night.red
             return UINT8_FIELD;
         case 87: //sunlight.night.green
@@ -374,6 +394,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 90: //sun.rise.red
             return UINT8_FIELD;
         case 91: //sun.rise.green
@@ -390,6 +411,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 94: //sun.day.red
             return UINT8_FIELD;
         case 95: //sun.day.green
@@ -406,6 +428,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 98: //sun.set.red
             return UINT8_FIELD;
         case 99: //sun.set.green
@@ -422,6 +445,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 102: //sun.night.red
             return UINT8_FIELD;
         case 103: //sun.night.green
@@ -438,6 +462,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 106: //stars.rise.red
             return UINT8_FIELD;
         case 107: //stars.rise.green
@@ -454,6 +479,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 110: //stars.day.red
             return UINT8_FIELD;
         case 111: //stars.day.green
@@ -470,6 +496,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 114: //stars.set.red
             return UINT8_FIELD;
         case 115: //stars.set.green
@@ -486,6 +513,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 118: //stars.night.red
             return UINT8_FIELD;
         case 119: //stars.night.green
@@ -502,6 +530,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 122: //lowerSky.rise.red
             return UINT8_FIELD;
         case 123: //lowerSky.rise.green
@@ -518,6 +547,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 126: //lowerSky.day.red
             return UINT8_FIELD;
         case 127: //lowerSky.day.green
@@ -534,6 +564,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 130: //lowerSky.set.red
             return UINT8_FIELD;
         case 131: //lowerSky.set.green
@@ -550,6 +581,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 134: //lowerSky.night.red
             return UINT8_FIELD;
         case 135: //lowerSky.night.green
@@ -566,6 +598,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 138: //horizon.rise.red
             return UINT8_FIELD;
         case 139: //horizon.rise.green
@@ -582,6 +615,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 142: //horizon.day.red
             return UINT8_FIELD;
         case 143: //horizon.day.green
@@ -598,6 +632,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 146: //horizon.set.red
             return UINT8_FIELD;
         case 147: //horizon.set.green
@@ -614,6 +649,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 150: //horizon.night.red
             return UINT8_FIELD;
         case 151: //horizon.night.green
@@ -630,6 +666,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 154: //upperClouds.rise.red
             return UINT8_FIELD;
         case 155: //upperClouds.rise.green
@@ -646,6 +683,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 158: //upperClouds.day.red
             return UINT8_FIELD;
         case 159: //upperClouds.day.green
@@ -662,6 +700,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 162: //upperClouds.set.red
             return UINT8_FIELD;
         case 163: //upperClouds.set.green
@@ -678,6 +717,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 166: //upperClouds.night.red
             return UINT8_FIELD;
         case 167: //upperClouds.night.green
@@ -694,6 +734,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         case 170: //fogDayNear
             return FLOAT32_FIELD;
         case 171: //fogDayFar
@@ -789,6 +830,7 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         default:
             return UNKNOWN_FIELD;
         }
+    return UNKNOWN_FIELD;
     }
 
 void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
@@ -1257,6 +1299,7 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         default:
             return NULL;
         }
+    return NULL;
     }
 
 bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)

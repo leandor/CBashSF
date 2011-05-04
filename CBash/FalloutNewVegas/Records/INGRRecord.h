@@ -28,17 +28,10 @@ namespace FNV
 class INGRRecord : public FNVRecord //Ingredient
     {
     private:
-        struct INGRENIT //Effect Data
+        enum flagsFlags
             {
-            SINT32  value; //Value
-            UINT8   flags; //Flags
-            UINT8   unused1[3]; //Unused
-
-            INGRENIT();
-            ~INGRENIT();
-
-            bool operator ==(const INGRENIT &other) const;
-            bool operator !=(const INGRENIT &other) const;
+            fIsNoAutoCalc = 0x00000001,
+            fIsFood       = 0x00000002
             };
 
         enum eEquipTypes
@@ -56,7 +49,7 @@ class INGRRecord : public FNVRecord //Ingredient
             eHandWear,
             eChems,
             eStimpack,
-            eFood,
+            eEdible,
             eAlcohol
             };
     public:
@@ -68,8 +61,8 @@ class INGRRecord : public FNVRecord //Ingredient
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
-        OptSimpleSubRecord<FLOAT32> DATA; //Weight
-        OptSubRecord<INGRENIT> ENIT; //Effect Data
+        ReqSimpleSubRecord<FLOAT32> DATA; //Weight
+        ReqSubRecord<GENENIT> ENIT; //Effect Data
         UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         INGRRecord(unsigned char *_recData=NULL);
@@ -77,6 +70,13 @@ class INGRRecord : public FNVRecord //Ingredient
         ~INGRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoAutoCalc();
+        void   IsNoAutoCalc(bool value);
+        bool   IsFood();
+        void   IsFood(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         bool   IsNone();
         void   IsNone(bool value);
@@ -104,11 +104,11 @@ class INGRRecord : public FNVRecord //Ingredient
         void   IsChems(bool value);
         bool   IsStimpack();
         void   IsStimpack(bool value);
-        bool   IsFood();
-        void   IsFood(bool value);
+        bool   IsEdible();
+        void   IsEdible(bool value);
         bool   IsAlcohol();
         void   IsAlcohol(bool value);
-        bool   IsEquipmentType(SINT32 Type, bool Exact=false);
+        bool   IsEquipmentType(SINT32 Type);
         void   SetEquipmentType(SINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
