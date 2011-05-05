@@ -311,6 +311,7 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 3: //flags
                             return UINT8_FLAG_FIELD;
                         case 4: //unused2
@@ -323,11 +324,13 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         case 5: //name
                             return ISTRING_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 case 15: //references
                     if(ListX2FieldID == 0) //references
                         {
@@ -340,12 +343,13 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             default:
                                 return UNKNOWN_FIELD;
                             }
+                        return UNKNOWN_FIELD;
                         }
 
                     if(ListX2Index >= Menus.value[ListIndex]->SCR_.value.size())
                         return UNKNOWN_FIELD;
 
-                    switch(ListFieldID)
+                    switch(ListX2FieldID)
                         {
                         case 1: //reference
                             switch(WhichAttribute)
@@ -357,9 +361,11 @@ UINT32 TERMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                 default:
                                     return UNKNOWN_FIELD;
                                 }
+                            return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 case 16: //conditions
                     if(ListX2FieldID == 0) //conditions
                         {
@@ -619,9 +625,9 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             switch(ListFieldID)
                 {
                 case 1: //text
-                    return &Menus.value[ListIndex]->ITXT.value;
+                    return Menus.value[ListIndex]->ITXT.value;
                 case 2: //resultText
-                    return &Menus.value[ListIndex]->RNAM.value;
+                    return Menus.value[ListIndex]->RNAM.value;
                 case 3: //flags
                     return &Menus.value[ListIndex]->ANAM.value;
                 case 4: //displayNote
@@ -667,7 +673,7 @@ void * TERMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         default:
                             return NULL;
                         }
-            return NULL;
+                    return NULL;
                 case 15: //references
                     for(UINT32 x = 0; x < Menus.value[ListIndex]->SCR_.value.size(); ++x)
                         ((FORMIDARRAY)FieldValues)[x] = Menus.value[ListIndex]->SCR_.value[x]->reference;
@@ -917,7 +923,7 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     Menus.value[ListIndex]->RNAM.Copy((STRING)FieldValue);
                     break;
                 case 3: //flags
-                    Menus.value[ListIndex]->ANAM.value = *(UINT8 *)FieldValue;
+                    Menus.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
                     break;
                 case 4: //displayNote
                     Menus.value[ListIndex]->INAM.value = *(FORMID *)FieldValue;
@@ -1017,7 +1023,7 @@ bool TERMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     if(ListX2Index >= Menus.value[ListIndex]->SCR_.value.size())
                         break;
 
-                    switch(ListFieldID)
+                    switch(ListX2FieldID)
                         {
                         case 1: //reference
                             //Borrowing ArraySize to flag if the new value is a formID

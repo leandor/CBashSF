@@ -287,7 +287,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 36: //femaleSmallIconPath
             return ISTRING_FIELD;
-        case 37: //ragdollTemplate
+        case 37: //ragdollTemplatePath
             return ISTRING_FIELD;
         case 38: //repairList
             return FORMID_FIELD;
@@ -524,7 +524,7 @@ void * ARMORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICO2.value;
         case 36: //femaleSmallIconPath
             return MIC2.value;
-        case 37: //ragdollTemplate
+        case 37: //ragdollTemplatePath
             return BMCT.value;
         case 38: //repairList
             return REPL.IsLoaded() ? &REPL.value : NULL;
@@ -831,7 +831,7 @@ bool ARMORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 36: //femaleSmallIconPath
             MIC2.Copy((STRING)FieldValue);
             break;
-        case 37: //ragdollTemplate
+        case 37: //ragdollTemplatePath
             BMCT.Copy((STRING)FieldValue);
             break;
         case 38: //repairList
@@ -1152,7 +1152,7 @@ void ARMORecord::DeleteField(FIELD_IDENTIFIERS)
         case 36: //femaleSmallIconPath
             MIC2.Unload();
             return;
-        case 37: //ragdollTemplate
+        case 37: //ragdollTemplatePath
             BMCT.Unload();
             return;
         case 38: //repairList

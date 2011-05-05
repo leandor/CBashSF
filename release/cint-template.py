@@ -273,14 +273,14 @@ class PrintFormID(object):
     def __repr__(self):
         if(self._FormID):
             if isinstance(self._FormID, tuple):
-                return '(%s, 0x%06X)' % (str(self._FormID[0]),self._FormID[1])
+                return "('%s', 0x%06X)" % (str(self._FormID[0]),self._FormID[1])
             return "%08X" % self._FormID
         return "None"
 
     def __str__(self):
         if(self._FormID):
             if isinstance(self._FormID, tuple):
-                return '(%s, 0x%06X)' % (str(self._FormID[0]),self._FormID[1])
+                return "('%s', 0x%06X)" % (str(self._FormID[0]),self._FormID[1])
             return "%08X" % self._FormID
         return "None"
 
@@ -1134,26 +1134,26 @@ class CBashFORMID_OR_UINT32_ARRAY_LIST(object):
         numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1)
         if(numRecords > 0):
             cRecords = (c_ulong * numRecords)()
-            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords))
             for x in range(numRecords):
-                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, 2)
+                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, 2)
                 if type == API_FIELDS.UINT32:
                     values.append(cRecords[x])
                 elif type == API_FIELDS.FORMID:
                     values.append(MakeLongFid(instance._CollectionID, instance._ModID, cRecords[x]))
         return values
     def __set__(self, instance, nValue):
-        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
             length = len(nValue)
             if self._Size and length != self._Size: return
             #Each element can be either a formID or UINT32, so they have to be set separately
             #Resize the list
-            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 0, c_long(length))
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 0, c_long(length))
             for x, value in enumerate(nValue):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, tuple)
-                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
 
 class CBashFLOAT32_LIST(object):
     def __init__(self, ListFieldID):
@@ -2601,11 +2601,11 @@ class FnvSCPTRecord(FnvBaseRecord):
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
     copyattrs = FnvBaseRecord.baseattrs + ['unused1', 'numRefs', 'compiledSize',
-                                           'lastIndex', 'scriptType', 'flags',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
                                            'compiled_p', 'scriptText',
                                            'vars_list', 'references']
     exportattrs = FnvBaseRecord.baseattrs + ['numRefs', 'compiledSize',
-                                             'lastIndex', 'scriptType', 'flags',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
                                              'scriptText',
                                              'vars_list', 'references'] #'unused1', 'compiled_p',
 
@@ -2819,13 +2819,13 @@ class FnvTERMRecord(FnvBaseRecord):
         copyattrs = ['text', 'resultText', 'flags',
                      'displayNote', 'subMenu', 'numRefs',
                      'compiledSize', 'lastIndex',
-                     'scriptType', 'flags', 'compiled_p',
+                     'scriptType', 'scriptFlags', 'compiled_p',
                      'scriptText', 'vars_list',
                      'references', 'conditions_list',]
         exportattrs = ['text', 'resultText', 'flags',
                        'displayNote', 'subMenu', 'numRefs',
                        'compiledSize', 'lastIndex',
-                       'scriptType', 'flags',
+                       'scriptType', 'scriptFlags',
                        'scriptText', 'vars_list',
                        'references', 'conditions_list',] # 'compiled_p',
         
@@ -2951,7 +2951,7 @@ class FnvARMORecord(FnvBaseRecord):
     GroupedValuesMACRO(femaleWorld, 32, WorldModel)
     ISTRING_MACRO(femaleIconPath, 35)
     ISTRING_MACRO(femaleSmallIconPath, 36)
-    ISTRING_MACRO(ragdollTemplate, 37)
+    ISTRING_MACRO(ragdollTemplatePath, 37)
     FORMID_MACRO(repairList, 38)
     FORMID_MACRO(modelList, 39)
     SINT32_TYPE_MACRO(equipmentType, 40)
@@ -3026,7 +3026,7 @@ class FnvARMORecord(FnvBaseRecord):
                                                          'maleIconPath', 'maleSmallIconPath',
                                                          'female_list', 'femaleWorld_list',
                                                          'femaleIconPath', 'femaleSmallIconPath',
-                                                         'ragdollTemplate', 'repairList',
+                                                         'ragdollTemplatePath', 'repairList',
                                                          'modelList', 'equipmentType',
                                                          'pickupSound', 'dropSound', 'value',
                                                          'health', 'weight', 'AR', 'voiceFlags',

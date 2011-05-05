@@ -100,7 +100,7 @@ bool TACTRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 TACTRecord::GetType()
     {
-    return 'ITCA';
+    return 'TCAT';
     }
 
 STRING TACTRecord::GetStrType()

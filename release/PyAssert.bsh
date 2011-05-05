@@ -3,7 +3,15 @@
 // save this buffer, and the macro should appear in the
 // Macros menu.
 
-SearchAndReplace.setSearchString("    (.*?) = (.*?)");
+SearchAndReplace.setSearchString("^ *(.*?) *: (.*)");
+SearchAndReplace.setReplaceString("    assert record.$1 == $2");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("^    (.*?) = (.*)");
 SearchAndReplace.setReplaceString("    assert $1 == $2");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
