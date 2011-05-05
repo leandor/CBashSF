@@ -2547,7 +2547,7 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
 FNVCTDA::FNVCTDA():
     operType(0),
     compValue(0.0f),
-    ifunc(0),
+    ifunc(5), //GetLocked, for its eNone, eNone param types...so that new conditions don't try to resolve either param1 or param2 until ifunc is set
     param1(0),
     param2(0),
     runOnType(0),

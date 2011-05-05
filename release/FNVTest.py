@@ -6,16 +6,26 @@ def fflags(y):
         if y & z == z:
             print hex(z)
             
-RecIndent = -2
+RecIndent = 2
+LastIndent = RecIndent
+expandLists = True
 def printRecord(record):
     global RecIndent
-    RecIndent += 2
+    global LastIndent
     if hasattr(record, 'copyattrs'):
-        msize = max([len(attr) for attr in record.copyattrs])
+        msize = max([len(attr) for attr in record.copyattrs if not attr.endswith('_list') ])
         for attr in record.copyattrs:
+            wasList = False
+            if expandLists == True:
+                if attr.endswith('_list'):
+                    attr = attr[:-5]
+                    wasList = True
             rec = getattr(record, attr)
             if RecIndent: print " " * (RecIndent - 1),
-            print attr + " " * (msize - len(attr)), ":",
+            if wasList:
+                print attr
+            else:
+                print attr + " " * (msize - len(attr)), ":",
             if rec is None:
                 print rec
             elif 'flag' in attr.lower() or 'service' in attr.lower():
@@ -23,7 +33,7 @@ def printRecord(record):
                 for x in range(32):
                     z = pow(2, x)
                     if rec & z == z:
-                        print "  Active" + " " * (msize - len("  Active")), "  :", hex(z)
+                        print " " * RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z)
 
             elif isinstance(rec, tuple) and len(rec) == 2 and isinstance(rec[0], basestring) and isinstance(rec[1], int):
                 print PrintFormID(rec)
@@ -36,26 +46,31 @@ def printRecord(record):
                             break
                     if IsFidList:
                         print [PrintFormID(x) for x in rec]
-                    else:
+                    elif not wasList:
                         print rec
-                else:
+                elif not wasList:
                     print rec
-            else:
+            elif not wasList:
                 print rec
+            RecIndent += 2
             printRecord(rec)
+            RecIndent -= 2
     elif isinstance(record, list):
         if len(record) > 0:
             if hasattr(record[0], 'copyattrs'):
+                LastIndent = RecIndent
                 for rec in record:
                     printRecord(rec)
+                    if LastIndent == RecIndent:
+                        print
                     
-    RecIndent -= 2
-
-def d(record):
+def d(record, expand=False):
+    global expandLists
+    expandLists = expand
     try:
         fid = record.fid
         msize = max([len(attr) for attr in record.copyattrs])
-        print "fid" + " " * (msize - len("fid")), ":", PrintFormID(fid)
+        print "  fid" + " " * (msize - len("fid")), ":", PrintFormID(fid)
     except AttributeError:
         pass
     printRecord(record)
@@ -85,15 +100,15 @@ def TestRegressions():
     assertLTEX(Current, newMod)
     assertENCH(Current, newMod)
     assertSPEL(Current, newMod)
-    assertACTI(Current, newMod)
-    assertTACT(Current, newMod)
-    assertTERM(Current, newMod)
-    assertARMO(Current, newMod)
-    assertBOOK(Current, newMod)
-    assertCONT(Current, newMod)
-    assertDOOR(Current, newMod)
-    assertINGR(Current, newMod)
-##    newMod.save()
+##    assertACTI(Current, newMod)
+##    assertTACT(Current, newMod)
+##    assertTERM(Current, newMod)
+##    assertARMO(Current, newMod)
+##    assertBOOK(Current, newMod)
+##    assertCONT(Current, newMod)
+##    assertDOOR(Current, newMod)
+##    assertINGR(Current, newMod)
+    newMod.save()
     ##    assertLIGH(Current, newMod)
     ##    assertMISC(Current, newMod)
     ##    assertSTAT(Current, newMod)
@@ -4164,20 +4179,253 @@ def assertLTEX(Current, newMod):
     print "LTEX:Finished testing"
 
 def assertENCH(Current, newMod):
-    record = Current.LoadOrderMods[0].ENCH[0]
-    d(record)
-    print
-    return
+    record = Current.LoadOrderMods[0].LookupRecord(0x3A36B)
+
+    assert record.fid == ('FalloutNV.esm', 0x03A36B)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [12, 92, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [7, 0]
+    assert record.eid == 'EMP'
+    assert record.eid == 'eMP'
+    
+    assert record.full == 'Electromagnetic Pulse'
+    assert record.full != 'ElEctromagnetic Pulse'
+    assert record.itemType == 2
+    assert record.chargeAmountUnused == 0
+    assert record.enchantCostUnused == 0
+    assert record.flags == 0x0
+    assert record.effects_list == [(('FalloutNV.esm', 210325), 200L, 0L, 0L, 1L, 16, [(0, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 373062), 0L, 0L, 8L, 1L, -1, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0), (1, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 210325), 80L, 0L, 0L, 1L, 16, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, 0, None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0)]), (('FalloutNV.esm', 1184088), 0L, 0L, 0L, 1L, -1, [])]
+
+    nrecord = newMod.create_ENCH()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = 'WarElectromagnetic Pulse'
+    nrecord.itemType = 1
+    nrecord.chargeAmountUnused = 2
+    nrecord.enchantCostUnused = 3
+    nrecord.flags = 0x4
+    nrecord.effects_list = [(('FalloutNV.esm', 1), 1L, 2L, 3L, 4L, 5, [(0, 1.0, 438L, 6, None, 0L, 0)]),
+                            (('FalloutNV.esm', 2), 0L, 0L, 8L, 1L, -1, []),
+                            (('FalloutNV.esm', 4), 0L, 0L, 0L, 1L, -1, [(0, 1.0, 438L, 6, None, 0L, 0), (0, 0.0, 438L, 6, None, 0L, 0)])]
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001013)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'WarElectromagnetic Pulse'
+    assert nrecord.full != 'WArElectromagnetic Pulse'
+    assert nrecord.itemType == 1
+    assert nrecord.chargeAmountUnused == 2
+    assert nrecord.enchantCostUnused == 3
+    assert nrecord.flags == 0x4
+    assert nrecord.effects_list == [(('FalloutNV.esm', 1), 1L, 2L, 3L, 4L, 5, [(0, 1.0, 438L, 6, None, 0L, 0)]),
+                                    (('FalloutNV.esm', 2), 0L, 0L, 8L, 1L, -1, []),
+                                    (('FalloutNV.esm', 4), 0L, 0L, 0L, 1L, -1, [(0, 1.0, 438L, 6, None, 0L, 0), (0, 0.0, 438L, 6, None, 0L, 0)])]
+
+    record = Current.LoadOrderMods[0].LookupRecord(0x3A36B)
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x03A36B)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [12, 92, 22, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [7, 0]
+    assert newrecord.eid == 'EMP'
+    assert newrecord.eid == 'eMP'
+    
+    assert newrecord.full == 'Electromagnetic Pulse'
+    assert newrecord.full != 'ElEctromagnetic Pulse'
+    assert newrecord.itemType == 2
+    assert newrecord.chargeAmountUnused == 0
+    assert newrecord.enchantCostUnused == 0
+    assert newrecord.flags == 0x0
+    assert newrecord.effects_list == [(('FalloutNV.esm', 210325), 200L, 0L, 0L, 1L, 16, [(0, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 373062), 0L, 0L, 8L, 1L, -1, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0), (1, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 210325), 80L, 0L, 0L, 1L, 16, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, 0, None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0)]), (('FalloutNV.esm', 1184088), 0L, 0L, 0L, 1L, -1, [])]
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+    
+    newrecord.full = 'WarElectromagnetic Pulse'
+    newrecord.itemType = 1
+    newrecord.chargeAmountUnused = 2
+    newrecord.enchantCostUnused = 3
+    newrecord.flags = 0x4
+    newrecord.effects_list = [(('FalloutNV.esm', 1), 1L, 2L, 3L, 4L, 5, [(0, 1.0, 438L, 6, None, 0L, 0)]),
+                            (('FalloutNV.esm', 2), 0L, 0L, 8L, 1L, -1, []),
+                            (('FalloutNV.esm', 4), 0L, 0L, 0L, 1L, -1, [(0, 1.0, 438L, 6, None, 0L, 0), (0, 0.0, 438L, 6, None, 0L, 0)])]
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x03A36B)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'WarElectromagnetic Pulse'
+    assert newrecord.full != 'WArElectromagnetic Pulse'
+    assert newrecord.itemType == 1
+    assert newrecord.chargeAmountUnused == 2
+    assert newrecord.enchantCostUnused == 3
+    assert newrecord.flags == 0x4
+    assert newrecord.effects_list == [(('FalloutNV.esm', 1), 1L, 2L, 3L, 4L, 5, [(0, 1.0, 438L, 6, None, 0L, 0)]),
+                                    (('FalloutNV.esm', 2), 0L, 0L, 8L, 1L, -1, []),
+                                    (('FalloutNV.esm', 4), 0L, 0L, 0L, 1L, -1, [(0, 1.0, 438L, 6, None, 0L, 0), (0, 0.0, 438L, 6, None, 0L, 0)])]
+
+    assert record.fid == ('FalloutNV.esm', 0x03A36B)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [12, 92, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [7, 0]
+    assert record.eid == 'EMP'
+    assert record.eid == 'eMP'
+    
+    assert record.full == 'Electromagnetic Pulse'
+    assert record.full != 'ElEctromagnetic Pulse'
+    assert record.itemType == 2
+    assert record.chargeAmountUnused == 0
+    assert record.enchantCostUnused == 0
+    assert record.flags == 0x0
+    assert record.effects_list == [(('FalloutNV.esm', 210325), 200L, 0L, 0L, 1L, 16, [(0, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 373062), 0L, 0L, 8L, 1L, -1, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0), (1, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 210325), 80L, 0L, 0L, 1L, 16, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, 0, None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0)]), (('FalloutNV.esm', 1184088), 0L, 0L, 0L, 1L, -1, [])]
+
+    print "ENCH:Finished testing"
 
 def assertSPEL(Current, newMod):
-    record = Current.LoadOrderMods[0].SPEL[0]
-    d(record)
-    print
-    return
+    record = Current.LoadOrderMods[0].LookupRecord(0x31D94)
+
+    assert record.fid == ('FalloutNV.esm', 0x031D94)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [4, 64, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [5, 0]
+    assert record.eid == 'PerkSolarPowered'
+    assert record.eid == 'PErkSolarPowered'
+
+    assert record.full == 'Solar Powered'
+    assert record.full != 'SolAr Powered'
+    assert record.spellType == 4
+    assert record.costUnused == 0
+    assert record.levelTypeUnused == 0
+    assert record.flags == 0x0
+    assert record.effects_list == [(('FalloutNV.esm', 86364), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0),(160, 18.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0), (0, 0.0, 300L, None, None, 0L, 0)]),
+                                   (('FalloutNV.esm', 436234), 0L, 0L, 0L, 0L, -1, [])]
+
+    nrecord = newMod.create_SPEL()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+    
+    nrecord.full = 'WarSolar Powered'
+    nrecord.spellType = 1
+    nrecord.costUnused = 2
+    nrecord.levelTypeUnused = 3
+    nrecord.flags = 0x4
+    nrecord.effects_list = [(('FalloutNV.esm', 1), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), (1, 1.0, 5L, None, None, 2L, 3)]),
+                            (('FalloutNV.esm', 2), 0L, 0L, 0L, 0L, -1, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), ])]
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001014)
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+    
+    assert nrecord.full == 'WarSolar Powered'
+    assert nrecord.full != 'WArSolar Powered'
+    assert nrecord.spellType == 1
+    assert nrecord.costUnused == 2
+    assert nrecord.levelTypeUnused == 3
+    assert nrecord.flags == 0x4
+    assert nrecord.effects_list == [(('FalloutNV.esm', 1), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), (1, 1.0, 5L, None, None, 2L, ('FalloutNV.esm', 3))]),
+                                    (('FalloutNV.esm', 2), 0L, 0L, 0L, 0L, -1, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0)])]
+
+    record = Current.LoadOrderMods[0].LookupRecord(0x31D94)
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x031D94)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [4, 64, 63, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [5, 0]
+    assert newrecord.eid == 'PerkSolarPowered'
+    assert newrecord.eid == 'PErkSolarPowered'
+
+    assert newrecord.full == 'Solar Powered'
+    assert newrecord.full != 'SolAr Powered'
+    assert newrecord.spellType == 4
+    assert newrecord.costUnused == 0
+    assert newrecord.levelTypeUnused == 0
+    assert newrecord.flags == 0x0
+    assert newrecord.effects_list == [(('FalloutNV.esm', 86364), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0),(160, 18.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0), (0, 0.0, 300L, None, None, 0L, 0)]), (('FalloutNV.esm', 436234), 0L, 0L, 0L, 0L, -1, [])]
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+    
+    newrecord.full = 'WarSolar Powered'
+    newrecord.spellType = 1
+    newrecord.costUnused = 2
+    newrecord.levelTypeUnused = 3
+    newrecord.flags = 0x4
+    newrecord.effects_list = [(('FalloutNV.esm', 1), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), (1, 1.0, 5L, None, None, 2L, ('FalloutNV.esm', 3))]),
+                            (('FalloutNV.esm', 2), 0L, 0L, 0L, 0L, -1, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), ])]
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+    
+    assert newrecord.full == 'WarSolar Powered'
+    assert newrecord.full != 'WArSolar Powered'
+    assert newrecord.spellType == 1
+    assert newrecord.costUnused == 2
+    assert newrecord.levelTypeUnused == 3
+    assert newrecord.flags == 0x4
+    assert newrecord.effects_list == [(('FalloutNV.esm', 1), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), (1, 1.0, 5L, None, None, 2L, ('FalloutNV.esm', 3))]),
+                            (('FalloutNV.esm', 2), 0L, 0L, 0L, 0L, -1, [(96, 6.0, 74L, ('FalloutNV.esm', 12), None, 0L, 0), ])]
+
+    assert record.fid == ('FalloutNV.esm', 0x031D94)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [4, 64, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [5, 0]
+    assert record.eid == 'PerkSolarPowered'
+    assert record.eid == 'PErkSolarPowered'
+
+    assert record.full == 'Solar Powered'
+    assert record.full != 'SolAr Powered'
+    assert record.spellType == 4
+    assert record.costUnused == 0
+    assert record.levelTypeUnused == 0
+    assert record.flags == 0x0
+    assert record.effects_list == [(('FalloutNV.esm', 86364), 2L, 0L, 0L, 0L, 5, [(96, 6.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0),(160, 18.0, 74L, ('FalloutNV.esm', 56), None, 0L, 0), (0, 0.0, 300L, None, None, 0L, 0)]), (('FalloutNV.esm', 436234), 0L, 0L, 0L, 0L, -1, [])]
+
+    print "SPEL:Finished testing"
 
 def assertACTI(Current, newMod):
-    record = Current.LoadOrderMods[0].ACTI[0]
-    d(record)
+    record = Current.LoadOrderMods[0].LookupRecord(0x176AB3)
+    d(record, True)
     print
     return
 
