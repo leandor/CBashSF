@@ -398,16 +398,16 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgPWAT: //Same as normal
             case 'TAWP':
-                //reader.read(&PWAT.stamp, 4);
-                //reader.read(&PWAT.unknown, 4);
-                //PWAT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&PWAT.stamp, 4);
+                reader.read(&PWAT.unknown, 4);
+                PWAT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgGRAS: //Same as normal
             case 'SARG':
-                //reader.read(&GRAS.stamp, 4);
-                //reader.read(&GRAS.unknown, 4);
-                //GRAS.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&GRAS.stamp, 4);
+                reader.read(&GRAS.unknown, 4);
+                GRAS.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgTREE: //Same as normal
             case 'EERT':
                 //reader.read(&TREE.stamp, 4);
@@ -915,9 +915,9 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'TTSM':
             return (UINT32)MSTT.Records.size();
         case 'TAWP':
-            //return (UINT32)PWAT.Records.size();
+            return (UINT32)PWAT.Records.size();
         case 'SARG':
-            //return (UINT32)GRAS.Records.size();
+            return (UINT32)GRAS.Records.size();
         case 'EERT':
             //return (UINT32)TREE.Records.size();
         case 'NRUF':
@@ -1210,13 +1210,13 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = MSTT.Records.back();
             break;
         case 'TAWP':
-            //PWAT.Records.push_back(new FNV::PWATRecord((FNV::PWATRecord *)SourceRecord));
-            //newRecord = PWAT.Records.back();
-            //break;
+            PWAT.Records.push_back(new FNV::PWATRecord((FNV::PWATRecord *)SourceRecord));
+            newRecord = PWAT.Records.back();
+            break;
         case 'SARG':
-            //GRAS.Records.push_back(new FNV::GRASRecord((FNV::GRASRecord *)SourceRecord));
-            //newRecord = GRAS.Records.back();
-            //break;
+            GRAS.Records.push_back(new FNV::GRASRecord((FNV::GRASRecord *)SourceRecord));
+            newRecord = GRAS.Records.back();
+            break;
         case 'EERT':
             //TREE.Records.push_back(new FNV::TREERecord((FNV::TREERecord *)SourceRecord));
             //newRecord = TREE.Records.back();
@@ -1554,8 +1554,8 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(STAT.VisitRecords(NULL, checker, false)) continue;
         if(SCOL.VisitRecords(NULL, checker, false)) continue;
         if(MSTT.VisitRecords(NULL, checker, false)) continue;
-        //if(PWAT.VisitRecords(NULL, checker, false)) continue;
-        //if(GRAS.VisitRecords(NULL, checker, false)) continue;
+        if(PWAT.VisitRecords(NULL, checker, false)) continue;
+        if(GRAS.VisitRecords(NULL, checker, false)) continue;
         //if(TREE.VisitRecords(NULL, checker, false)) continue;
         //if(FURN.VisitRecords(NULL, checker, false)) continue;
         //if(WEAP.VisitRecords(NULL, checker, false)) continue;
@@ -1692,8 +1692,8 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += SCOL.WriteGRUP('LOCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += MSTT.WriteGRUP('TTSM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PWAT.WriteGRUP('TAWP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PWAT.WriteGRUP('TAWP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += FURN.WriteGRUP('NRUF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1815,8 +1815,8 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     STAT.VisitRecords(NULL, op, true);
     SCOL.VisitRecords(NULL, op, true);
     MSTT.VisitRecords(NULL, op, true);
-    //PWAT.VisitRecords(NULL, op, true);
-    //GRAS.VisitRecords(NULL, op, true);
+    PWAT.VisitRecords(NULL, op, true);
+    GRAS.VisitRecords(NULL, op, true);
     //TREE.VisitRecords(NULL, op, true);
     //FURN.VisitRecords(NULL, op, true);
     //WEAP.VisitRecords(NULL, op, true);
@@ -1998,11 +1998,11 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             MSTT.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'TAWP':
-            //PWAT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            PWAT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'SARG':
-            //GRAS.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            GRAS.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'EERT':
             //TREE.VisitRecords(RecordType, op, DeepVisit);
             //break;

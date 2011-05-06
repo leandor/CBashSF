@@ -122,7 +122,7 @@ UINT32 MSTTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
             return UNKNOWN_FIELD;
         case 18: //modelFlags
-            return UINT8_FLAG_FIELD;            
+            return UINT8_FLAG_FIELD;
         case 19: //destructableHealth
             return SINT32_FIELD;
         case 20: //destructableCount
@@ -272,7 +272,7 @@ void * MSTTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 18: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;            
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         case 19: //destructableHealth
             return Destructable.IsLoaded() ? &Destructable->DEST.value.health : NULL;
         case 20: //destructableCount
@@ -423,7 +423,7 @@ bool MSTTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 18: //modelFlags
             MODL.Load();
             MODL->SetFlagMask(*(UINT8 *)FieldValue);
-            break;            
+            break;
         case 19: //destructableHealth
             Destructable.Load();
             Destructable->DEST.value.health = *(SINT32 *)FieldValue;
@@ -591,7 +591,7 @@ void MSTTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 18: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
-            return;            
+            return;
         case 19: //destructableHealth
             if(Destructable.IsLoaded())
                 Destructable->DEST.value.health = defaultDEST.health;

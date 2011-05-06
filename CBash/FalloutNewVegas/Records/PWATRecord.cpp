@@ -24,6 +24,29 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+PWATRecord::PWATDNAM::PWATDNAM():
+    flags(0),
+    water(0)
+    {
+    //
+    }
+
+PWATRecord::PWATDNAM::~PWATDNAM()
+    {
+    //
+    }
+
+bool PWATRecord::PWATDNAM::operator ==(const PWATDNAM &other) const
+    {
+    return (flags == other.flags &&
+            water == other.water);
+    }
+
+bool PWATRecord::PWATDNAM::operator !=(const PWATDNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 PWATRecord::PWATRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,9 +75,7 @@ PWATRecord::PWATRecord(PWATRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
     DNAM = srcRecord->DNAM;
     return;
     }
@@ -74,238 +95,199 @@ bool PWATRecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
-    //if(DNAM.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(DNAM->value);
+    op.Accept(DNAM.value.water);
 
     return op.Stop();
     }
 
 bool PWATRecord::IsReflects()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflects) != 0;
+    return (DNAM.value.flags & fIsReflects) != 0;
     }
 
 void PWATRecord::IsReflects(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflects) : (Dummy->flags & ~fIsReflects);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflects) : (DNAM.value.flags & ~fIsReflects);
     }
 
 bool PWATRecord::IsReflectsActors()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsActors) != 0;
+    return (DNAM.value.flags & fIsReflectsActors) != 0;
     }
 
 void PWATRecord::IsReflectsActors(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsActors) : (Dummy->flags & ~fIsReflectsActors);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsActors) : (DNAM.value.flags & ~fIsReflectsActors);
     }
 
 bool PWATRecord::IsReflectsLand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsLand) != 0;
+    return (DNAM.value.flags & fIsReflectsLand) != 0;
     }
 
 void PWATRecord::IsReflectsLand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsLand) : (Dummy->flags & ~fIsReflectsLand);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsLand) : (DNAM.value.flags & ~fIsReflectsLand);
     }
 
 bool PWATRecord::IsReflectsLODLand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsLODLand) != 0;
+    return (DNAM.value.flags & fIsReflectsLODLand) != 0;
     }
 
 void PWATRecord::IsReflectsLODLand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsLODLand) : (Dummy->flags & ~fIsReflectsLODLand);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsLODLand) : (DNAM.value.flags & ~fIsReflectsLODLand);
     }
 
 bool PWATRecord::IsReflectsLODBuildings()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsLODBuildings) != 0;
+    return (DNAM.value.flags & fIsReflectsLODBuildings) != 0;
     }
 
 void PWATRecord::IsReflectsLODBuildings(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsLODBuildings) : (Dummy->flags & ~fIsReflectsLODBuildings);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsLODBuildings) : (DNAM.value.flags & ~fIsReflectsLODBuildings);
     }
 
 bool PWATRecord::IsReflectsTrees()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsTrees) != 0;
+    return (DNAM.value.flags & fIsReflectsTrees) != 0;
     }
 
 void PWATRecord::IsReflectsTrees(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsTrees) : (Dummy->flags & ~fIsReflectsTrees);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsTrees) : (DNAM.value.flags & ~fIsReflectsTrees);
     }
 
 bool PWATRecord::IsReflectsSky()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsSky) != 0;
+    return (DNAM.value.flags & fIsReflectsSky) != 0;
     }
 
 void PWATRecord::IsReflectsSky(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsSky) : (Dummy->flags & ~fIsReflectsSky);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsSky) : (DNAM.value.flags & ~fIsReflectsSky);
     }
 
 bool PWATRecord::IsReflectsDynamicObjects()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsDynamicObjects) != 0;
+    return (DNAM.value.flags & fIsReflectsDynamicObjects) != 0;
     }
 
 void PWATRecord::IsReflectsDynamicObjects(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsDynamicObjects) : (Dummy->flags & ~fIsReflectsDynamicObjects);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsDynamicObjects) : (DNAM.value.flags & ~fIsReflectsDynamicObjects);
     }
 
 bool PWATRecord::IsReflectsDeadBodies()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsReflectsDeadBodies) != 0;
+    return (DNAM.value.flags & fIsReflectsDeadBodies) != 0;
     }
 
 void PWATRecord::IsReflectsDeadBodies(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsReflectsDeadBodies) : (Dummy->flags & ~fIsReflectsDeadBodies);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsReflectsDeadBodies) : (DNAM.value.flags & ~fIsReflectsDeadBodies);
     }
 
 bool PWATRecord::IsRefracts()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRefracts) != 0;
+    return (DNAM.value.flags & fIsRefracts) != 0;
     }
 
 void PWATRecord::IsRefracts(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRefracts) : (Dummy->flags & ~fIsRefracts);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsRefracts) : (DNAM.value.flags & ~fIsRefracts);
     }
 
 bool PWATRecord::IsRefractsActors()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRefractsActors) != 0;
+    return (DNAM.value.flags & fIsRefractsActors) != 0;
     }
 
 void PWATRecord::IsRefractsActors(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRefractsActors) : (Dummy->flags & ~fIsRefractsActors);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsRefractsActors) : (DNAM.value.flags & ~fIsRefractsActors);
     }
 
-bool PWATRecord::IsRefractsDeadBodies()
+bool PWATRecord::IsRefractsLand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRefractsDeadBodies) != 0;
+    return (DNAM.value.flags & fIsRefractsLand) != 0;
     }
 
-void PWATRecord::IsRefractsDeadBodies(bool value)
+void PWATRecord::IsRefractsLand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRefractsDeadBodies) : (Dummy->flags & ~fIsRefractsDeadBodies);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsRefractsLand) : (DNAM.value.flags & ~fIsRefractsLand);
     }
 
 bool PWATRecord::IsRefractsDynamicObjects()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRefractsDynamicObjects) != 0;
+    return (DNAM.value.flags & fIsRefractsDynamicObjects) != 0;
     }
 
 void PWATRecord::IsRefractsDynamicObjects(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRefractsDynamicObjects) : (Dummy->flags & ~fIsRefractsDynamicObjects);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsRefractsDynamicObjects) : (DNAM.value.flags & ~fIsRefractsDynamicObjects);
     }
 
 bool PWATRecord::IsRefractsDeadBodies()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRefractsDeadBodies) != 0;
+    return (DNAM.value.flags & fIsRefractsDeadBodies) != 0;
     }
 
 void PWATRecord::IsRefractsDeadBodies(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRefractsDeadBodies) : (Dummy->flags & ~fIsRefractsDeadBodies);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsRefractsDeadBodies) : (DNAM.value.flags & ~fIsRefractsDeadBodies);
     }
 
 bool PWATRecord::IsSilhouetteReflections()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsSilhouetteReflections) != 0;
+    return (DNAM.value.flags & fIsSilhouetteReflections) != 0;
     }
 
 void PWATRecord::IsSilhouetteReflections(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsSilhouetteReflections) : (Dummy->flags & ~fIsSilhouetteReflections);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsSilhouetteReflections) : (DNAM.value.flags & ~fIsSilhouetteReflections);
     }
 
 bool PWATRecord::IsDepth()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDepth) != 0;
+    return (DNAM.value.flags & fIsDepth) != 0;
     }
 
 void PWATRecord::IsDepth(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDepth) : (Dummy->flags & ~fIsDepth);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsDepth) : (DNAM.value.flags & ~fIsDepth);
     }
 
 bool PWATRecord::IsObjectTextureCoordinates()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsObjectTextureCoordinates) != 0;
+    return (DNAM.value.flags & fIsObjectTextureCoordinates) != 0;
     }
 
 void PWATRecord::IsObjectTextureCoordinates(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsObjectTextureCoordinates) : (Dummy->flags & ~fIsObjectTextureCoordinates);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsObjectTextureCoordinates) : (DNAM.value.flags & ~fIsObjectTextureCoordinates);
     }
 
 bool PWATRecord::IsNoUnderwaterFog()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoUnderwaterFog) != 0;
+    return (DNAM.value.flags & fIsNoUnderwaterFog) != 0;
     }
 
 void PWATRecord::IsNoUnderwaterFog(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoUnderwaterFog) : (Dummy->flags & ~fIsNoUnderwaterFog);
+    DNAM.value.flags = value ? (DNAM.value.flags | fIsNoUnderwaterFog) : (DNAM.value.flags & ~fIsNoUnderwaterFog);
     }
 
 bool PWATRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DNAM.value.flags & Mask) == Mask) : ((DNAM.value.flags & Mask) != 0);
     }
 
 void PWATRecord::SetFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.flags = Mask;
     }
 
 UINT32 PWATRecord::GetType()
@@ -396,20 +378,17 @@ SINT32 PWATRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
     WRITE(DNAM);
-
     return -1;
     }
 
 bool PWATRecord::operator ==(const PWATRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            MODL == other.MODL &&
-            DNAM == other.DNAM);
+    return (OBND == other.OBND &&
+            DNAM == other.DNAM &&
+            EDID.equalsi(other.EDID) &&
+            MODL == other.MODL);
     }
 
 bool PWATRecord::operator !=(const PWATRecord &other) const

@@ -514,10 +514,10 @@ bool MISCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 27: //pickupSound
-            YNAM.value = *(FORMID *)FieldValue; 
+            YNAM.value = *(FORMID *)FieldValue;
             return true;
         case 28: //dropSound
-            ZNAM.value = *(FORMID *)FieldValue; 
+            ZNAM.value = *(FORMID *)FieldValue;
             return true;
         case 29: //value
             DATA.value.value = *(UINT32 *)FieldValue;
@@ -526,7 +526,7 @@ bool MISCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.weight = *(FLOAT32 *)FieldValue;
             break;
         case 31: //loopSound
-            RNAM.value = *(FORMID *)FieldValue; 
+            RNAM.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;

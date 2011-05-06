@@ -93,9 +93,7 @@ GRASRecord::GRASRecord(GRASRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
     DATA = srcRecord->DATA;
     return;
     }
@@ -247,20 +245,17 @@ SINT32 GRASRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
     WRITE(DATA);
-
     return -1;
     }
 
 bool GRASRecord::operator ==(const GRASRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            MODL == other.MODL &&
-            DATA == other.DATA);
+    return (OBND == other.OBND &&
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            MODL == other.MODL);
     }
 
 bool GRASRecord::operator !=(const GRASRecord &other) const

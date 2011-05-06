@@ -3498,18 +3498,118 @@ class FnvMSTTRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'full', 'modPath', 'modb',
                                              'altTextures_list', 'modelFlags',
-                                             'destructable_list', 'data_p',
-                                             'sound']# 'modt_p',
+                                             'destructable_list',
+                                             'sound']# 'modt_p', 'data_p',
 
 class FnvPWATRecord(FnvBaseRecord):
     _Type = 'PWAT'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(modPath, 13)
+    FLOAT32_MACRO(modb, 14)
+    UINT8_ARRAY_MACRO(modt_p, 15)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 16, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 17)
+    UINT32_FLAG_MACRO(flags, 18)
+    FORMID_MACRO(water, 19)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
+    BasicFlagMACRO(IsReflects, flags, 0x00000001)
+    BasicFlagMACRO(IsReflectsActors, flags, 0x00000002)
+    BasicFlagMACRO(IsReflectsLand, flags, 0x00000004)
+    BasicFlagMACRO(IsReflectsLODLand, flags, 0x00000008)
+    BasicFlagMACRO(IsReflectsLODBuildings, flags, 0x00000010)
+    BasicFlagMACRO(IsReflectsTrees, flags, 0x00000020)
+    BasicFlagMACRO(IsReflectsSky, flags, 0x00000040)
+    BasicFlagMACRO(IsReflectsDynamicObjects, flags, 0x00000080)
+    BasicFlagMACRO(IsReflectsDeadBodies, flags, 0x00000100)
+    BasicFlagMACRO(IsRefracts, flags, 0x00000200)
+    BasicFlagMACRO(IsRefractsActors, flags, 0x00000400)
+    BasicFlagMACRO(IsRefractsLand, flags, 0x00000800)
+    BasicFlagMACRO(IsRefractsDynamicObjects, flags, 0x00010000)
+    BasicFlagMACRO(IsRefractsDeadBodies, flags, 0x00020000)
+    BasicFlagMACRO(IsSilhouetteReflections, flags, 0x00040000)
+    BasicFlagMACRO(IsDepth, flags, 0x10000000)
+    BasicFlagMACRO(IsObjectTextureCoordinates, flags, 0x20000000)
+    BasicFlagMACRO(IsNoUnderwaterFog, flags, 0x80000000)
+    BasicInvertedFlagMACRO(IsUnderwaterFog, IsNoUnderwaterFog)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'flags', 'water', ]
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'flags', 'water', ]# 'modt_p',
 
 class FnvGRASRecord(FnvBaseRecord):
     _Type = 'GRAS'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(modPath, 13)
+    FLOAT32_MACRO(modb, 14)
+    UINT8_ARRAY_MACRO(modt_p, 15)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 16, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 17)
+    UINT8_MACRO(density, 18)
+    UINT8_MACRO(minSlope, 19)
+    UINT8_MACRO(maxSlope, 20)
+    UINT8_ARRAY_MACRO(unused1, 21, 1)
+    UINT16_MACRO(waterDistance, 22)
+    UINT8_ARRAY_MACRO(unused2, 23, 2)
+    UINT32_MACRO(waterOp, 24)
+    FLOAT32_MACRO(posRange, 25)
+    FLOAT32_MACRO(heightRange, 26)
+    FLOAT32_MACRO(colorRange, 27)
+    FLOAT32_MACRO(wavePeriod, 28)
+    UINT8_FLAG_MACRO(flags, 29)
+    UINT8_ARRAY_MACRO(unused3, 30, 3)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
+    BasicFlagMACRO(IsVLighting, flags, 0x00000001)
+    BasicAliasMACRO(IsVertexLighting, IsVLighting)
+    BasicFlagMACRO(IsUScaling, flags, 0x00000002)
+    BasicAliasMACRO(IsUniformScaling, IsUScaling)
+    BasicFlagMACRO(IsFitSlope, flags, 0x00000004)
+    BasicAliasMACRO(IsFitToSlope, IsFitSlope)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'density', 'minSlope', 'maxSlope',
+                                           'waterDistance', 'waterOp',
+                                           'posRange', 'heightRange',
+                                           'colorRange', 'wavePeriod',
+                                           'flags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'density', 'minSlope', 'maxSlope',
+                                             'waterDistance', 'waterOp',
+                                             'posRange', 'heightRange',
+                                             'colorRange', 'wavePeriod',
+                                             'flags']# 'modt_p',
 
 class FnvTREERecord(FnvBaseRecord):
     _Type = 'TREE'

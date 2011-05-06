@@ -120,7 +120,7 @@ UINT32 STATRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
             return UNKNOWN_FIELD;
         case 17: //modelFlags
-            return UINT8_FLAG_FIELD;            
+            return UINT8_FLAG_FIELD;
         case 18: //passSound
             return SINT8_TYPE_FIELD;
         case 19: //loopSound
@@ -188,7 +188,7 @@ void * STATRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 17: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;            
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         case 18: //passSound
             return BRUS.IsLoaded() ? &BRUS.value : NULL;
         case 19: //loopSound
@@ -292,7 +292,7 @@ bool STATRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 17: //modelFlags
             MODL.Load();
             MODL->SetFlagMask(*(UINT8 *)FieldValue);
-            break;            
+            break;
         case 18: //passSound
             BRUS.value = *(SINT8 *)FieldValue;
             break;
@@ -389,7 +389,7 @@ void STATRecord::DeleteField(FIELD_IDENTIFIERS)
         case 17: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
-            return;            
+            return;
         case 18: //passSound
             BRUS.Unload();
             return;

@@ -3156,7 +3156,7 @@ bool FNVEQUIPDNAM::operator !=(const FNVEQUIPDNAM &other) const
     }
 
 GENCOED::GENCOED():
-    owner(0), 
+    owner(0),
     globalOrRank(0),
     condition(0)
     {
@@ -3192,7 +3192,7 @@ bool FNVCNTO::IsGlobal()
     //So false positives shouldn't be a problem
     //False negatives could occur though...
     //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
-    //GameYear (0x35), GameMonth (0x36), GameDay (0x37), 
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37),
     //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
     //PlayCredits (0x63)
     //It seems unlikely that these specific globals would be used in this context
@@ -3213,7 +3213,7 @@ bool FNVCNTO::IsRank()
     //So false negatives shouldn't be a problem
     //False positives could occur though...
     //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
-    //GameYear (0x35), GameMonth (0x36), GameDay (0x37), 
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37),
     //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
     //PlayCredits (0x63)
     //It seems unlikely that these specific globals would be used in this context

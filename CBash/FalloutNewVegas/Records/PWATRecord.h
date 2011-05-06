@@ -33,18 +33,18 @@ class PWATRecord : public FNVRecord //Placeable Water
             UINT32  flags;
             FORMID  water;
 
-            CREADATA();
-            ~CREADATA();
+            PWATDNAM();
+            ~PWATDNAM();
 
-            bool operator ==(const CREADATA &other) const;
-            bool operator !=(const CREADATA &other) const;
+            bool operator ==(const PWATDNAM &other) const;
+            bool operator !=(const PWATDNAM &other) const;
             };
 
         enum flagsFlags
             {
             fIsReflects                 = 0x00000001,
             fIsReflectsActors           = 0x00000002,
-            fIsReflectsLand             = 0x00000004
+            fIsReflectsLand             = 0x00000004,
             fIsReflectsLODLand          = 0x00000008,
             fIsReflectsLODBuildings     = 0x00000010,
             fIsReflectsTrees            = 0x00000020,
@@ -53,7 +53,7 @@ class PWATRecord : public FNVRecord //Placeable Water
             fIsReflectsDeadBodies       = 0x00000100,
             fIsRefracts                 = 0x00000200,
             fIsRefractsActors           = 0x00000400,
-            fIsRefractsDeadBodies       = 0x00000800,
+            fIsRefractsLand             = 0x00000800,
             fIsRefractsDynamicObjects   = 0x00010000,
             fIsRefractsDeadBodies       = 0x00020000,
             fIsSilhouetteReflections    = 0x00040000,
@@ -66,7 +66,7 @@ class PWATRecord : public FNVRecord //Placeable Water
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<PWATDNAM> DNAM; //Data
+        ReqSubRecord<PWATDNAM> DNAM; //Data
 
         PWATRecord(unsigned char *_recData=NULL);
         PWATRecord(PWATRecord *srcRecord);
@@ -96,8 +96,8 @@ class PWATRecord : public FNVRecord //Placeable Water
         void   IsRefracts(bool value);
         bool   IsRefractsActors();
         void   IsRefractsActors(bool value);
-        bool   IsRefractsDeadBodies();
-        void   IsRefractsDeadBodies(bool value);
+        bool   IsRefractsLand();
+        void   IsRefractsLand(bool value);
         bool   IsRefractsDynamicObjects();
         void   IsRefractsDynamicObjects(bool value);
         bool   IsRefractsDeadBodies();
@@ -112,8 +112,6 @@ class PWATRecord : public FNVRecord //Placeable Water
         void   IsNoUnderwaterFog(bool value);
         bool   IsFlagMask(UINT32 Mask, bool Exact=false);
         void   SetFlagMask(UINT32 Mask);
-
-
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

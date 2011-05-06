@@ -389,7 +389,7 @@ bool SCOLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 Parts.resize(ArraySize);
                 return false;
                 }
-                
+
             if(ListIndex >= Parts.value.size())
                 break;
 
@@ -404,7 +404,7 @@ bool SCOLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                         Parts.value[ListIndex]->DATA.resize(ArraySize);
                         return false;
                         }
-                        
+
                     if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
                         break;
 
@@ -537,7 +537,7 @@ void SCOLRecord::DeleteField(FIELD_IDENTIFIERS)
                 Parts.Unload();
                 return;
                 }
-                
+
             if(ListIndex >= Parts.value.size())
                 return;
 
@@ -552,7 +552,7 @@ void SCOLRecord::DeleteField(FIELD_IDENTIFIERS)
                         Parts.value[ListIndex]->DATA.Unload();
                         return;
                         }
-                        
+
                     if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
                         return;
 

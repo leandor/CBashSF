@@ -3777,18 +3777,130 @@ class FnvMSTTRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'full', 'modPath', 'modb',
                                              'altTextures_list', 'modelFlags',
-                                             'destructable_list', 'data_p',
-                                             'sound']# 'modt_p',
+                                             'destructable_list',
+                                             'sound']# 'modt_p', 'data_p',
 
 class FnvPWATRecord(FnvBaseRecord):
     _Type = 'PWAT'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    modPath = CBashISTRING(13)
+    modb = CBashFLOAT32(14)
+    modt_p = CBashUINT8ARRAY(15)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 16, length)
+    altTextures = CBashLIST(16, FNVAltTexture)
+    altTextures_list = CBashLIST(16, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(17, c_ubyte)
+    flags = CBashGeneric(18, c_ulong)
+    water = CBashFORMID(19)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+
+    IsReflects = CBashBasicFlag('flags', 0x00000001)
+    IsReflectsActors = CBashBasicFlag('flags', 0x00000002)
+    IsReflectsLand = CBashBasicFlag('flags', 0x00000004)
+    IsReflectsLODLand = CBashBasicFlag('flags', 0x00000008)
+    IsReflectsLODBuildings = CBashBasicFlag('flags', 0x00000010)
+    IsReflectsTrees = CBashBasicFlag('flags', 0x00000020)
+    IsReflectsSky = CBashBasicFlag('flags', 0x00000040)
+    IsReflectsDynamicObjects = CBashBasicFlag('flags', 0x00000080)
+    IsReflectsDeadBodies = CBashBasicFlag('flags', 0x00000100)
+    IsRefracts = CBashBasicFlag('flags', 0x00000200)
+    IsRefractsActors = CBashBasicFlag('flags', 0x00000400)
+    IsRefractsLand = CBashBasicFlag('flags', 0x00000800)
+    IsRefractsDynamicObjects = CBashBasicFlag('flags', 0x00010000)
+    IsRefractsDeadBodies = CBashBasicFlag('flags', 0x00020000)
+    IsSilhouetteReflections = CBashBasicFlag('flags', 0x00040000)
+    IsDepth = CBashBasicFlag('flags', 0x10000000)
+    IsObjectTextureCoordinates = CBashBasicFlag('flags', 0x20000000)
+    IsNoUnderwaterFog = CBashBasicFlag('flags', 0x80000000)
+    IsUnderwaterFog = CBashInvertedFlag('IsNoUnderwaterFog')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'flags', 'water', ]
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'flags', 'water', ]# 'modt_p',
 
 class FnvGRASRecord(FnvBaseRecord):
     _Type = 'GRAS'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    modPath = CBashISTRING(13)
+    modb = CBashFLOAT32(14)
+    modt_p = CBashUINT8ARRAY(15)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 16, length)
+    altTextures = CBashLIST(16, FNVAltTexture)
+    altTextures_list = CBashLIST(16, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(17, c_ubyte)
+    density = CBashGeneric(18, c_ubyte)
+    minSlope = CBashGeneric(19, c_ubyte)
+    maxSlope = CBashGeneric(20, c_ubyte)
+    unused1 = CBashUINT8ARRAY(21, 1)
+    waterDistance = CBashGeneric(22, c_ushort)
+    unused2 = CBashUINT8ARRAY(23, 2)
+    waterOp = CBashGeneric(24, c_ulong)
+    posRange = CBashFLOAT32(25)
+    heightRange = CBashFLOAT32(26)
+    colorRange = CBashFLOAT32(27)
+    wavePeriod = CBashFLOAT32(28)
+    flags = CBashGeneric(29, c_ubyte)
+    unused3 = CBashUINT8ARRAY(30, 3)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+
+    IsVLighting = CBashBasicFlag('flags', 0x00000001)
+    IsVertexLighting = CBashAlias('IsVLighting')
+    IsUScaling = CBashBasicFlag('flags', 0x00000002)
+    IsUniformScaling = CBashAlias('IsUScaling')
+    IsFitSlope = CBashBasicFlag('flags', 0x00000004)
+    IsFitToSlope = CBashAlias('IsFitSlope')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'density', 'minSlope', 'maxSlope',
+                                           'waterDistance', 'waterOp',
+                                           'posRange', 'heightRange',
+                                           'colorRange', 'wavePeriod',
+                                           'flags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'density', 'minSlope', 'maxSlope',
+                                             'waterDistance', 'waterOp',
+                                             'posRange', 'heightRange',
+                                             'colorRange', 'wavePeriod',
+                                             'flags']# 'modt_p',
 
 class FnvTREERecord(FnvBaseRecord):
     _Type = 'TREE'

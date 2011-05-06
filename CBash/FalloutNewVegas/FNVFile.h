@@ -55,8 +55,8 @@ GPL License and Copyright Notice ============================================
 #include "Records/STATRecord.h"
 #include "Records/SCOLRecord.h"
 #include "Records/MSTTRecord.h"
-//#include "Records/PWATRecord.h"
-//#include "Records/GRASRecord.h"
+#include "Records/PWATRecord.h"
+#include "Records/GRASRecord.h"
 //#include "Records/TREERecord.h"
 //#include "Records/FURNRecord.h"
 //#include "Records/WEAPRecord.h"
@@ -160,8 +160,8 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::STATRecord> STAT;
         FNVGRUPRecords<FNV::SCOLRecord> SCOL;
         FNVGRUPRecords<FNV::MSTTRecord> MSTT;
-        //FNVGRUPRecords<FNV::PWATRecord> PWAT;
-        //FNVGRUPRecords<FNV::GRASRecord> GRAS;
+        FNVGRUPRecords<FNV::PWATRecord> PWAT;
+        FNVGRUPRecords<FNV::GRASRecord> GRAS;
         //FNVGRUPRecords<FNV::TREERecord> TREE;
         //FNVGRUPRecords<FNV::FURNRecord> FURN;
         //FNVGRUPRecords<FNV::WEAPRecord> WEAP;

@@ -132,9 +132,9 @@ def TestRegressions():
     assertSTAT(Current, newMod)
     assertSCOL(Current, newMod)
     assertMSTT(Current, newMod)
+    assertPWAT(Current, newMod)
+    assertGRAS(Current, newMod)
     newMod.save()
-    ##    assertPWAT(Current, newMod)
-    ##    assertGRAS(Current, newMod)
     ##    assertTREE(Current, newMod)
     ##    assertFURN(Current, newMod)
     ##    assertWEAP(Current, newMod)
@@ -6261,7 +6261,7 @@ def assertLIGH(Current, newMod):
     assert record.versionControl2 == [1, 0]
     assert record.eid == 'LightFungusStalkYellowAMB'
     assert record.eid == 'LightFungusStAlkYellowAMB'
-    
+
     assert record.boundX1 == -38
     assert record.boundY1 == -40
     assert record.boundZ1 == -74
@@ -6297,7 +6297,7 @@ def assertLIGH(Current, newMod):
     nrecord.formVersion = 1
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
-    
+
     nrecord.boundX1 = 1
     nrecord.boundY1 = 2
     nrecord.boundZ1 = 3
@@ -6376,7 +6376,7 @@ def assertLIGH(Current, newMod):
     assert newrecord.versionControl2 == [1, 0]
     assert newrecord.eid == 'LightFungusStalkYellowAMB'
     assert newrecord.eid == 'LightFungusStAlkYellowAMB'
-    
+
     assert newrecord.boundX1 == -38
     assert newrecord.boundY1 == -40
     assert newrecord.boundZ1 == -74
@@ -6438,7 +6438,7 @@ def assertLIGH(Current, newMod):
     newrecord.weight = 18.0
     newrecord.fade = 19.0
     newrecord.sound = ('FalloutNV.esm', 2)
-    
+
     assert newrecord.fid == ('FalloutNV.esm', 0x177ADD)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
@@ -6525,7 +6525,7 @@ def assertMISC(Current, newMod):
     assert record.versionControl2 == [1, 0]
     assert record.eid == 'RecipesCookCooksFiendStewItem'
     assert record.eid == 'RecipesCookCooksFiendStEwItem'
-    
+
     assert record.boundX1 == -12
     assert record.boundY1 == -18
     assert record.boundZ1 == 0
@@ -6558,7 +6558,7 @@ def assertMISC(Current, newMod):
     nrecord.formVersion = 1
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
-    
+
     nrecord.boundX1 = 1
     nrecord.boundY1 = 2
     nrecord.boundZ1 = 3
@@ -6588,7 +6588,7 @@ def assertMISC(Current, newMod):
     assert nrecord.versionControl2 == [2, 3]
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
-    
+
     assert nrecord.boundX1 == 1
     assert nrecord.boundY1 == 2
     assert nrecord.boundZ1 == 3
@@ -6625,7 +6625,7 @@ def assertMISC(Current, newMod):
     assert newrecord.versionControl2 == [1, 0]
     assert newrecord.eid == 'RecipesCookCooksFiendStewItem'
     assert newrecord.eid == 'RecipesCookCooksFiendStEwItem'
-    
+
     assert newrecord.boundX1 == -12
     assert newrecord.boundY1 == -18
     assert newrecord.boundZ1 == 0
@@ -6720,7 +6720,7 @@ def assertMISC(Current, newMod):
     assert record.versionControl2 == [1, 0]
     assert record.eid == 'RecipesCookCooksFiendStewItem'
     assert record.eid == 'RecipesCookCooksFiendStEwItem'
-    
+
     assert record.boundX1 == -12
     assert record.boundY1 == -18
     assert record.boundZ1 == 0
@@ -6758,7 +6758,7 @@ def assertSTAT(Current, newMod):
     assert record.versionControl2 == [0, 0]
     assert record.eid == 'ParadiseFallsDoorframe'
     assert record.eid == 'ParAdiseFallsDoorframe'
-    
+
     assert record.boundX1 == -5
     assert record.boundY1 == -56
     assert record.boundZ1 == 0
@@ -6773,7 +6773,7 @@ def assertSTAT(Current, newMod):
     assert record.modelFlags == 0x0
     assert record.passSound == -1
     assert record.loopSound == None
-    
+
     nrecord = newMod.create_STAT()
 
     nrecord.flags1 = 10
@@ -6829,7 +6829,7 @@ def assertSTAT(Current, newMod):
     assert newrecord.versionControl2 == [0, 0]
     assert newrecord.eid == 'ParadiseFallsDoorframe'
     assert newrecord.eid == 'ParAdiseFallsDoorframe'
-    
+
     assert newrecord.boundX1 == -5
     assert newrecord.boundY1 == -56
     assert newrecord.boundZ1 == 0
@@ -6844,7 +6844,7 @@ def assertSTAT(Current, newMod):
     assert newrecord.modelFlags == 0x0
     assert newrecord.passSound == -1
     assert newrecord.loopSound == None
-    
+
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
     newrecord.formVersion = 1
@@ -6895,7 +6895,7 @@ def assertSTAT(Current, newMod):
     assert record.versionControl2 == [0, 0]
     assert record.eid == 'ParadiseFallsDoorframe'
     assert record.eid == 'ParAdiseFallsDoorframe'
-    
+
     assert record.boundX1 == -5
     assert record.boundY1 == -56
     assert record.boundZ1 == 0
@@ -6910,7 +6910,7 @@ def assertSTAT(Current, newMod):
     assert record.modelFlags == 0x0
     assert record.passSound == -1
     assert record.loopSound == None
-    
+
     print "STAT:Finished testing"
 
 def assertSCOL(Current, newMod):
@@ -6923,7 +6923,7 @@ def assertSCOL(Current, newMod):
     assert record.versionControl2 == [0, 0]
     assert record.eid == 'SCOLGoodpringsFenceB01'
     assert record.eid == 'SCOLGoodpringsFEnceB01'
-    
+
     assert record.boundX1 == -793
     assert record.boundY1 == -294
     assert record.boundZ1 == -60
@@ -7025,7 +7025,7 @@ def assertSCOL(Current, newMod):
     assert newrecord.versionControl2 == [0, 0]
     assert newrecord.eid == 'SCOLGoodpringsFenceB01'
     assert newrecord.eid == 'SCOLGoodpringsFEnceB01'
-    
+
     assert newrecord.boundX1 == -793
     assert newrecord.boundY1 == -294
     assert newrecord.boundZ1 == -60
@@ -7114,7 +7114,7 @@ def assertSCOL(Current, newMod):
                             (('FalloutNV.esm', 5),
                                  [(1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3),
                                   (1.140625, 2.132813, 3.999023, 4.0, 5.0, 6, 7.0)])]
-                                      
+
     assert record.fid == ('FalloutNV.esm', 0x17B667)
     assert record.flags1 == 0x80000000L
     assert record.versionControl1 == [16, 92, 5, 0]
@@ -7122,7 +7122,7 @@ def assertSCOL(Current, newMod):
     assert record.versionControl2 == [0, 0]
     assert record.eid == 'SCOLGoodpringsFenceB01'
     assert record.eid == 'SCOLGoodpringsFEnceB01'
-    
+
     assert record.boundX1 == -793
     assert record.boundY1 == -294
     assert record.boundZ1 == -60
@@ -7149,7 +7149,7 @@ def assertMSTT(Current, newMod):
     assert record.versionControl2 == [1, 0]
     assert record.eid == 'VFSSilverRushScorchMark'
     assert record.eid == 'VFSSilverRushScoRchMark'
-    
+
     assert record.boundX1 == -1377
     assert record.boundY1 == -1499
     assert record.boundZ1 == 7
@@ -7227,7 +7227,7 @@ def assertMSTT(Current, newMod):
     assert newrecord.versionControl2 == [1, 0]
     assert newrecord.eid == 'VFSSilverRushScorchMark'
     assert newrecord.eid == 'VFSSilverRushScoRchMark'
-    
+
     assert newrecord.boundX1 == -1377
     assert newrecord.boundY1 == -1499
     assert newrecord.boundZ1 == 7
@@ -7300,7 +7300,7 @@ def assertMSTT(Current, newMod):
     assert record.versionControl2 == [1, 0]
     assert record.eid == 'VFSSilverRushScorchMark'
     assert record.eid == 'VFSSilverRushScoRchMark'
-    
+
     assert record.boundX1 == -1377
     assert record.boundY1 == -1499
     assert record.boundZ1 == 7
@@ -7322,11 +7322,29 @@ def assertMSTT(Current, newMod):
 
 def assertPWAT(Current, newMod):
     record = Current.LoadOrderMods[0].PWAT[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x174A0E)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [26, 91, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == 'WaterUtilitySafe'
+    assert record.eid == 'WAterUtilitySafe'
+
+    assert record.boundX1 == -256
+    assert record.boundY1 == -1024
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 256
+    assert record.boundY2 == 1024
+    assert record.boundZ2 == 0
+    assert record.modPath == 'Water_Placeable\\WaterP1x4.NIF'
+    assert record.modPath == 'WAter_Placeable\\WaterP1x4.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.flags == 0x10030703L
+    assert record.water == ('FalloutNV.esm', 0x176E40)
 
     nrecord = newMod.create_PWAT()
 
@@ -7336,6 +7354,19 @@ def assertPWAT(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
 
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.modPath = 'WarWater_Placeable\\WaterP1x4.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 0x8
+    nrecord.flags = 9
+    nrecord.water = ('FalloutNV.esm', 1)
 
     assert nrecord.fid == ('TestRegressions.esp', 0x001022)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -7345,11 +7376,46 @@ def assertPWAT(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.modPath == 'WarWater_Placeable\\WaterP1x4.NIF'
+    assert nrecord.modPath == 'WArWater_Placeable\\WaterP1x4.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 0x8
+    assert nrecord.flags == 9
+    assert nrecord.water == ('FalloutNV.esm', 1)
 
     record = Current.LoadOrderMods[0].PWAT[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x174A0E)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [26, 91, 63, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [2, 0]
+    assert newrecord.eid == 'WaterUtilitySafe'
+    assert newrecord.eid == 'WAterUtilitySafe'
+
+    assert newrecord.boundX1 == -256
+    assert newrecord.boundY1 == -1024
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 256
+    assert newrecord.boundY2 == 1024
+    assert newrecord.boundZ2 == 0
+    assert newrecord.modPath == 'Water_Placeable\\WaterP1x4.NIF'
+    assert newrecord.modPath == 'WAter_Placeable\\WaterP1x4.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.flags == 0x10030703L
+    assert newrecord.water == ('FalloutNV.esm', 0x176E40)
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -7357,8 +7423,21 @@ def assertPWAT(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.modPath = 'WarWater_Placeable\\WaterP1x4.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 0x8
+    newrecord.flags = 9
+    newrecord.water = ('FalloutNV.esm', 1)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x174A0E)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -7366,19 +7445,79 @@ def assertPWAT(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.modPath == 'WarWater_Placeable\\WaterP1x4.NIF'
+    assert newrecord.modPath == 'WArWater_Placeable\\WaterP1x4.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 0x8
+    assert newrecord.flags == 9
+    assert newrecord.water == ('FalloutNV.esm', 1)
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x174A0E)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [26, 91, 63, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == 'WaterUtilitySafe'
+    assert record.eid == 'WAterUtilitySafe'
 
+    assert record.boundX1 == -256
+    assert record.boundY1 == -1024
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 256
+    assert record.boundY2 == 1024
+    assert record.boundZ2 == 0
+    assert record.modPath == 'Water_Placeable\\WaterP1x4.NIF'
+    assert record.modPath == 'WAter_Placeable\\WaterP1x4.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.flags == 0x10030703L
+    assert record.water == ('FalloutNV.esm', 0x176E40)
 
     print "PWAT:Finished testing"
 
 def assertGRAS(Current, newMod):
     record = Current.LoadOrderMods[0].GRAS[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x16ACCC)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 91, 25, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == 'GrassWastelandGreen03'
+    assert record.eid == 'GrAssWastelandGreen03'
+
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.modPath == 'landscape\\grass\\NVGreenGrass03.NIF'
+    assert record.modPath == 'lAndscape\\grass\\NVGreenGrass03.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.density == 25
+    assert record.minSlope == 0
+    assert record.maxSlope == 50
+    assert record.waterDistance == 0
+    assert record.waterOp == 0
+    assert record.posRange == 32.0
+    assert record.heightRange == 0.42
+    assert record.colorRange == 0.195
+    assert record.wavePeriod == 50.0
+    assert record.flags == 0x6
 
     nrecord = newMod.create_GRAS()
 
@@ -7388,6 +7527,27 @@ def assertGRAS(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
 
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.modPath = 'Warlandscape\\grass\\NVGreenGrass03.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 0x8
+    nrecord.density = 9
+    nrecord.minSlope = 10
+    nrecord.maxSlope = 11
+    nrecord.waterDistance = 12
+    nrecord.waterOp = 13
+    nrecord.posRange = 14.0
+    nrecord.heightRange = 15.0
+    nrecord.colorRange = 16.0
+    nrecord.wavePeriod = 17.0
+    nrecord.flags = 18
 
     assert nrecord.fid == ('TestRegressions.esp', 0x001023)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -7397,11 +7557,62 @@ def assertGRAS(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.modPath == 'Warlandscape\\grass\\NVGreenGrass03.NIF'
+    assert nrecord.modPath == 'WArlandscape\\grass\\NVGreenGrass03.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 0x8
+    assert nrecord.density == 9
+    assert nrecord.minSlope == 10
+    assert nrecord.maxSlope == 11
+    assert nrecord.waterDistance == 12
+    assert nrecord.waterOp == 13
+    assert nrecord.posRange == 14.0
+    assert nrecord.heightRange == 15.0
+    assert nrecord.colorRange == 16.0
+    assert nrecord.wavePeriod == 17.0
+    assert nrecord.flags == 18
 
     record = Current.LoadOrderMods[0].GRAS[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x16ACCC)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [10, 91, 25, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [2, 0]
+    assert newrecord.eid == 'GrassWastelandGreen03'
+    assert newrecord.eid == 'GrAssWastelandGreen03'
+
+    assert newrecord.boundX1 == 0
+    assert newrecord.boundY1 == 0
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 0
+    assert newrecord.boundY2 == 0
+    assert newrecord.boundZ2 == 0
+    assert newrecord.modPath == 'landscape\\grass\\NVGreenGrass03.NIF'
+    assert newrecord.modPath == 'lAndscape\\grass\\NVGreenGrass03.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.density == 25
+    assert newrecord.minSlope == 0
+    assert newrecord.maxSlope == 50
+    assert newrecord.waterDistance == 0
+    assert newrecord.waterOp == 0
+    assert newrecord.posRange == 32.0
+    assert newrecord.heightRange == 0.42
+    assert newrecord.colorRange == 0.195
+    assert newrecord.wavePeriod == 50.0
+    assert newrecord.flags == 0x6
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -7409,8 +7620,29 @@ def assertGRAS(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.modPath = 'Warlandscape\\grass\\NVGreenGrass03.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 0x8
+    newrecord.density = 9
+    newrecord.minSlope = 10
+    newrecord.maxSlope = 11
+    newrecord.waterDistance = 12
+    newrecord.waterOp = 13
+    newrecord.posRange = 14.0
+    newrecord.heightRange = 15.0
+    newrecord.colorRange = 16.0
+    newrecord.wavePeriod = 17.0
+    newrecord.flags = 18
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x16ACCC)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -7418,9 +7650,59 @@ def assertGRAS(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.modPath == 'Warlandscape\\grass\\NVGreenGrass03.NIF'
+    assert newrecord.modPath == 'WArlandscape\\grass\\NVGreenGrass03.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 0x8
+    assert newrecord.density == 9
+    assert newrecord.minSlope == 10
+    assert newrecord.maxSlope == 11
+    assert newrecord.waterDistance == 12
+    assert newrecord.waterOp == 13
+    assert newrecord.posRange == 14.0
+    assert newrecord.heightRange == 15.0
+    assert newrecord.colorRange == 16.0
+    assert newrecord.wavePeriod == 17.0
+    assert newrecord.flags == 18
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x16ACCC)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [10, 91, 25, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [2, 0]
+    assert record.eid == 'GrassWastelandGreen03'
+    assert record.eid == 'GrAssWastelandGreen03'
 
+    assert record.boundX1 == 0
+    assert record.boundY1 == 0
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 0
+    assert record.boundY2 == 0
+    assert record.boundZ2 == 0
+    assert record.modPath == 'landscape\\grass\\NVGreenGrass03.NIF'
+    assert record.modPath == 'lAndscape\\grass\\NVGreenGrass03.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.density == 25
+    assert record.minSlope == 0
+    assert record.maxSlope == 50
+    assert record.waterDistance == 0
+    assert record.waterOp == 0
+    assert record.posRange == 32.0
+    assert record.heightRange == 0.42
+    assert record.colorRange == 0.195
+    assert record.wavePeriod == 50.0
+    assert record.flags == 0x6
 
     print "GRAS:Finished testing"
 
