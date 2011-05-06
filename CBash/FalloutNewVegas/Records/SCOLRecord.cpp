@@ -24,6 +24,55 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+SCOLRecord::SCOLDATA::SCOLDATA():
+    posX(0.0f),
+    posY(0.0f),
+    posZ(0.0f),
+    rotX(0.0f),
+    rotY(0.0f),
+    rotZ(0.0f),
+    scale(1.0f)
+    {
+    //
+    }
+
+SCOLRecord::SCOLDATA::~SCOLDATA()
+    {
+    //
+    }
+
+bool SCOLRecord::SCOLDATA::operator ==(const SCOLDATA &other) const
+    {
+    return (AlmostEqual(posX, other.posX, 2) &&
+            AlmostEqual(posY, other.posY, 2) &&
+            AlmostEqual(posZ, other.posZ, 2) &&
+            AlmostEqual(rotX, other.rotX, 2) &&
+            AlmostEqual(rotY, other.rotY, 2) &&
+            AlmostEqual(rotZ, other.rotZ, 2) &&
+            AlmostEqual(scale, other.scale, 2));
+    }
+
+bool SCOLRecord::SCOLDATA::operator !=(const SCOLDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+void SCOLRecord::SCOLPart::Write(FileWriter &writer)
+    {
+    WRITE(ONAM);
+    WRITE(DATA);
+    }
+
+bool SCOLRecord::SCOLPart::operator ==(const SCOLPart &other) const
+    {
+    return (ONAM == other.ONAM &&
+            DATA == other.DATA);
+    }
+bool SCOLRecord::SCOLPart::operator !=(const SCOLPart &other) const
+    {
+    return !(*this == other);
+    }
+
 SCOLRecord::SCOLRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,11 +101,8 @@ SCOLRecord::SCOLRecord(SCOLRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
-    ONAM = srcRecord->ONAM;
-    DATA = srcRecord->DATA;
+    Parts = srcRecord->Parts;
     return;
     }
 
@@ -75,8 +121,8 @@ bool SCOLRecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
-    if(ONAM.IsLoaded())
-        op.Accept(ONAM->value);
+    for(UINT32 x = 0; x < Parts.value.size(); x++)
+        op.Accept(Parts.value[x]->ONAM.value);
 
     return op.Stop();
     }
@@ -140,10 +186,13 @@ SINT32 SCOLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             case 'MANO':
-                ONAM.Read(buffer, subSize, curPos);
+                Parts.value.push_back(new SCOLPart);
+                Parts.value.back()->ONAM.Read(buffer, subSize, curPos);
                 break;
             case 'ATAD':
-                DATA.Read(buffer, subSize, curPos);
+                if(Parts.value.size() == 0)
+                    Parts.value.push_back(new SCOLPart);
+                Parts.value.back()->DATA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -164,8 +213,7 @@ SINT32 SCOLRecord::Unload()
     EDID.Unload();
     OBND.Unload();
     MODL.Unload();
-    ONAM.Unload();
-    DATA.Unload();
+    Parts.Unload();
     return 1;
     }
 
@@ -173,22 +221,17 @@ SINT32 SCOLRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
-    WRITE(ONAM);
-    WRITE(DATA);
-
+    Parts.Write(writer);
     return -1;
     }
 
 bool SCOLRecord::operator ==(const SCOLRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
+    return (OBND == other.OBND &&
+            EDID.equalsi(other.EDID) &&
             MODL == other.MODL &&
-            ONAM == other.ONAM &&
-            DATA == other.DATA);
+            Parts == other.Parts);
     }
 
 bool SCOLRecord::operator !=(const SCOLRecord &other) const

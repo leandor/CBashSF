@@ -52,9 +52,7 @@ STATRecord::STATRecord(STATRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
     BRUS = srcRecord->BRUS;
     RNAM = srcRecord->RNAM;
     return;
@@ -76,153 +74,129 @@ bool STATRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->value);
+        op.Accept(RNAM.value);
 
     return op.Stop();
     }
 
-bool STATRecord::IsNone()
+bool STATRecord::IsSoundNone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return (BRUS.value == eNone);
     }
 
-void STATRecord::IsNone(bool value)
+void STATRecord::IsSoundNone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
+    BRUS.value = value ? eNone : eBushA;
     }
 
-bool STATRecord::IsBushA()
+bool STATRecord::IsSoundBushA()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushA);
+    return (BRUS.value == eBushA);
     }
 
-void STATRecord::IsBushA(bool value)
+void STATRecord::IsSoundBushA(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushA : eDummyDefault;
+    BRUS.value = value ? eBushA : eNone;
     }
 
-bool STATRecord::IsBushB()
+bool STATRecord::IsSoundBushB()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushB);
+    return (BRUS.value == eBushB);
     }
 
-void STATRecord::IsBushB(bool value)
+void STATRecord::IsSoundBushB(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushB : eDummyDefault;
+    BRUS.value = value ? eBushB : eNone;
     }
 
-bool STATRecord::IsBushC()
+bool STATRecord::IsSoundBushC()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushC);
+    return (BRUS.value == eBushC);
     }
 
-void STATRecord::IsBushC(bool value)
+void STATRecord::IsSoundBushC(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushC : eDummyDefault;
+    BRUS.value = value ? eBushC : eNone;
     }
 
-bool STATRecord::IsBushD()
+bool STATRecord::IsSoundBushD()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushD);
+    return (BRUS.value == eBushD);
     }
 
-void STATRecord::IsBushD(bool value)
+void STATRecord::IsSoundBushD(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushD : eDummyDefault;
+    BRUS.value = value ? eBushD : eNone;
     }
 
-bool STATRecord::IsBushE()
+bool STATRecord::IsSoundBushE()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushE);
+    return (BRUS.value == eBushE);
     }
 
-void STATRecord::IsBushE(bool value)
+void STATRecord::IsSoundBushE(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushE : eDummyDefault;
+    BRUS.value = value ? eBushE : eNone;
     }
 
-bool STATRecord::IsBushF()
+bool STATRecord::IsSoundBushF()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushF);
+    return (BRUS.value == eBushF);
     }
 
-void STATRecord::IsBushF(bool value)
+void STATRecord::IsSoundBushF(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushF : eDummyDefault;
+    BRUS.value = value ? eBushF : eNone;
     }
 
-bool STATRecord::IsBushG()
+bool STATRecord::IsSoundBushG()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushG);
+    return (BRUS.value == eBushG);
     }
 
-void STATRecord::IsBushG(bool value)
+void STATRecord::IsSoundBushG(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushG : eDummyDefault;
+    BRUS.value = value ? eBushG : eNone;
     }
 
-bool STATRecord::IsBushH()
+bool STATRecord::IsSoundBushH()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushH);
+    return (BRUS.value == eBushH);
     }
 
-void STATRecord::IsBushH(bool value)
+void STATRecord::IsSoundBushH(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushH : eDummyDefault;
+    BRUS.value = value ? eBushH : eNone;
     }
 
-bool STATRecord::IsBushI()
+bool STATRecord::IsSoundBushI()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushI);
+    return (BRUS.value == eBushI);
     }
 
-void STATRecord::IsBushI(bool value)
+void STATRecord::IsSoundBushI(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushI : eDummyDefault;
+    BRUS.value = value ? eBushI : eNone;
     }
 
-bool STATRecord::IsBushJ()
+bool STATRecord::IsSoundBushJ()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBushJ);
+    return (BRUS.value == eBushJ);
     }
 
-void STATRecord::IsBushJ(bool value)
+void STATRecord::IsSoundBushJ(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBushJ : eDummyDefault;
+    BRUS.value = value ? eBushJ : eNone;
     }
 
-bool STATRecord::IsType(SINT8 Type, bool Exact)
+bool STATRecord::IsSoundType(SINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return BRUS.value == Type;
     }
 
-void STATRecord::SetType(SINT8 Type)
+void STATRecord::SetSoundType(SINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    BRUS.value = Type;
     }
 
 UINT32 STATRecord::GetType()
@@ -317,22 +291,19 @@ SINT32 STATRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
     WRITE(BRUS);
     WRITE(RNAM);
-
     return -1;
     }
 
 bool STATRecord::operator ==(const STATRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            MODL == other.MODL &&
+    return (OBND == other.OBND &&
             BRUS == other.BRUS &&
-            RNAM == other.RNAM);
+            RNAM == other.RNAM &&
+            EDID.equalsi(other.EDID) &&
+            MODL == other.MODL);
     }
 
 bool STATRecord::operator !=(const STATRecord &other) const

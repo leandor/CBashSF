@@ -50,11 +50,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/CONTRecord.h"
 #include "Records/DOORRecord.h"
 #include "Records/INGRRecord.h"
-//#include "Records/LIGHRecord.h"
-//#include "Records/MISCRecord.h"
-//#include "Records/STATRecord.h"
-//#include "Records/SCOLRecord.h"
-//#include "Records/MSTTRecord.h"
+#include "Records/LIGHRecord.h"
+#include "Records/MISCRecord.h"
+#include "Records/STATRecord.h"
+#include "Records/SCOLRecord.h"
+#include "Records/MSTTRecord.h"
 //#include "Records/PWATRecord.h"
 //#include "Records/GRASRecord.h"
 //#include "Records/TREERecord.h"
@@ -155,11 +155,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::CONTRecord> CONT;
         FNVGRUPRecords<FNV::DOORRecord> DOOR;
         FNVGRUPRecords<FNV::INGRRecord> INGR;
-        //FNVGRUPRecords<FNV::LIGHRecord> LIGH;
-        //FNVGRUPRecords<FNV::MISCRecord> MISC;
-        //FNVGRUPRecords<FNV::STATRecord> STAT;
-        //FNVGRUPRecords<FNV::SCOLRecord> SCOL;
-        //FNVGRUPRecords<FNV::MSTTRecord> MSTT;
+        FNVGRUPRecords<FNV::LIGHRecord> LIGH;
+        FNVGRUPRecords<FNV::MISCRecord> MISC;
+        FNVGRUPRecords<FNV::STATRecord> STAT;
+        FNVGRUPRecords<FNV::SCOLRecord> SCOL;
+        FNVGRUPRecords<FNV::MSTTRecord> MSTT;
         //FNVGRUPRecords<FNV::PWATRecord> PWAT;
         //FNVGRUPRecords<FNV::GRASRecord> GRAS;
         //FNVGRUPRecords<FNV::TREERecord> TREE;

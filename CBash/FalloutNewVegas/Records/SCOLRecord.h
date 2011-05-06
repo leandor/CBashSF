@@ -41,20 +41,20 @@ class SCOLRecord : public FNVRecord //Static Collection
 
         struct SCOLPart // Part
             {
-            OptSimpleSubRecord<FORMID> ONAM; //Static
-            std::vector<ReqSubRecord<SCOLDATA> *> DATA; //Placements
+            ReqSimpleSubRecord<FORMID> ONAM; //Static
+            UnorderedPackedArray<SCOLDATA> DATA; //Placements
 
-            SCOLPart();
-            ~SCOLPart();
+            void Write(FileWriter &writer);
 
             bool operator ==(const SCOLPart &other) const;
             bool operator !=(const SCOLPart &other) const;
             };
+
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        std::vector<SCOLPart *> Parts; //Parts
+        UnorderedSparseArray<SCOLPart *> Parts; //Parts
 
         SCOLRecord(unsigned char *_recData=NULL);
         SCOLRecord(SCOLRecord *srcRecord);

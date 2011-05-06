@@ -9,3 +9,11 @@ SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("    assert nrecord.(.*?) == (.*?)");
+SearchAndReplace.setReplaceString("    newrecord.$1 = $2");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

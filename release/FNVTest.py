@@ -97,7 +97,7 @@ def d(record, expand=False):
 def TestRegressions():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("TestRegressions.esp")
+    Current.addMod("TestRegressions.esp", IgnoreExisting=True)
     Current.load()
     newMod = Current.LookupModFile("TestRegressions.esp")
 
@@ -127,12 +127,12 @@ def TestRegressions():
     assertCONT(Current, newMod)
     assertDOOR(Current, newMod)
     assertINGR(Current, newMod)
+    assertLIGH(Current, newMod)
+    assertMISC(Current, newMod)
+    assertSTAT(Current, newMod)
+    assertSCOL(Current, newMod)
+    assertMSTT(Current, newMod)
     newMod.save()
-    ##    assertLIGH(Current, newMod)
-    ##    assertMISC(Current, newMod)
-    ##    assertSTAT(Current, newMod)
-    ##    assertSCOL(Current, newMod)
-    ##    assertMSTT(Current, newMod)
     ##    assertPWAT(Current, newMod)
     ##    assertGRAS(Current, newMod)
     ##    assertTREE(Current, newMod)
@@ -6253,11 +6253,42 @@ def assertINGR(Current, newMod):
 
 def assertLIGH(Current, newMod):
     record = Current.LoadOrderMods[0].LIGH[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x177ADD)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [29, 91, 17, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LightFungusStalkYellowAMB'
+    assert record.eid == 'LightFungusStAlkYellowAMB'
+    
+    assert record.boundX1 == -38
+    assert record.boundY1 == -40
+    assert record.boundZ1 == -74
+    assert record.boundX2 == 38
+    assert record.boundY2 == 40
+    assert record.boundZ2 == 48
+    assert record.full == None
+    assert record.modPath == None
+    assert record.modb == None
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.script == None
+    assert record.duration == -1
+    assert record.radius == 256
+    assert record.red == 218
+    assert record.green == 217
+    assert record.blue == 165
+    assert record.flags == 0x0L
+    assert record.falloff == 2.0
+    assert record.fov == 90.0
+    assert record.value == 0
+    assert record.weight == 0.0
+    assert record.fade == 0.75
+    assert record.sound == None
 
     nrecord = newMod.create_LIGH()
 
@@ -6266,7 +6297,34 @@ def assertLIGH(Current, newMod):
     nrecord.formVersion = 1
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
-
+    
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.full = 'WarFull'
+    nrecord.modPath = 'WarPath'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 8
+    nrecord.iconPath = 'WarIcon'
+    nrecord.smallIconPath = 'WarSIcon'
+    nrecord.script = ('FalloutNV.esm', 1)
+    nrecord.duration = 9
+    nrecord.radius = 10
+    nrecord.red = 11
+    nrecord.green = 12
+    nrecord.blue = 13
+    nrecord.flags = 14
+    nrecord.falloff = 15.0
+    nrecord.fov = 16.0
+    nrecord.value = 17
+    nrecord.weight = 18.0
+    nrecord.fade = 19.0
+    nrecord.sound = ('FalloutNV.esm', 2)
 
     assert nrecord.fid == ('TestRegressions.esp', 0x00101D)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -6276,11 +6334,76 @@ def assertLIGH(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.full == 'WarFull'
+    assert nrecord.full != 'WArFull'
+    assert nrecord.modPath == 'WarPath'
+    assert nrecord.modPath == 'WArPath'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 8
+    assert nrecord.iconPath == 'WarIcon'
+    assert nrecord.iconPath == 'WArIcon'
+    assert nrecord.smallIconPath == 'WarSIcon'
+    assert nrecord.smallIconPath == 'WArSIcon'
+    assert nrecord.script == ('FalloutNV.esm', 1)
+    assert nrecord.duration == 9
+    assert nrecord.radius == 10
+    assert nrecord.red == 11
+    assert nrecord.green == 12
+    assert nrecord.blue == 13
+    assert nrecord.flags == 14
+    assert nrecord.falloff == 15.0
+    assert nrecord.fov == 16.0
+    assert nrecord.value == 17
+    assert nrecord.weight == 18.0
+    assert nrecord.fade == 19.0
+    assert nrecord.sound == ('FalloutNV.esm', 2)
 
     record = Current.LoadOrderMods[0].LIGH[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x177ADD)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [29, 91, 17, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'LightFungusStalkYellowAMB'
+    assert newrecord.eid == 'LightFungusStAlkYellowAMB'
+    
+    assert newrecord.boundX1 == -38
+    assert newrecord.boundY1 == -40
+    assert newrecord.boundZ1 == -74
+    assert newrecord.boundX2 == 38
+    assert newrecord.boundY2 == 40
+    assert newrecord.boundZ2 == 48
+    assert newrecord.full == None
+    assert newrecord.modPath == None
+    assert newrecord.modb == None
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == None
+    assert newrecord.iconPath == None
+    assert newrecord.smallIconPath == None
+    assert newrecord.script == None
+    assert newrecord.duration == -1
+    assert newrecord.radius == 256
+    assert newrecord.red == 218
+    assert newrecord.green == 217
+    assert newrecord.blue == 165
+    assert newrecord.flags == 0x0L
+    assert newrecord.falloff == 2.0
+    assert newrecord.fov == 90.0
+    assert newrecord.value == 0
+    assert newrecord.weight == 0.0
+    assert newrecord.fade == 0.75
+    assert newrecord.sound == None
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -6288,8 +6411,35 @@ def assertLIGH(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
-
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.full = 'WarFull'
+    newrecord.modPath = 'WarPath'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 8
+    newrecord.iconPath = 'WarIcon'
+    newrecord.smallIconPath = 'WarSIcon'
+    newrecord.script = ('FalloutNV.esm', 1)
+    newrecord.duration = 9
+    newrecord.radius = 10
+    newrecord.red = 11
+    newrecord.green = 12
+    newrecord.blue = 13
+    newrecord.flags = 14
+    newrecord.falloff = 15.0
+    newrecord.fov = 16.0
+    newrecord.value = 17
+    newrecord.weight = 18.0
+    newrecord.fade = 19.0
+    newrecord.sound = ('FalloutNV.esm', 2)
+    
+    assert newrecord.fid == ('FalloutNV.esm', 0x177ADD)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -6297,19 +6447,109 @@ def assertLIGH(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.full == 'WarFull'
+    assert newrecord.full != 'WArFull'
+    assert newrecord.modPath == 'WarPath'
+    assert newrecord.modPath == 'WArPath'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 8
+    assert newrecord.iconPath == 'WarIcon'
+    assert newrecord.iconPath == 'WArIcon'
+    assert newrecord.smallIconPath == 'WarSIcon'
+    assert newrecord.smallIconPath == 'WArSIcon'
+    assert newrecord.script == ('FalloutNV.esm', 1)
+    assert newrecord.duration == 9
+    assert newrecord.radius == 10
+    assert newrecord.red == 11
+    assert newrecord.green == 12
+    assert newrecord.blue == 13
+    assert newrecord.flags == 14
+    assert newrecord.falloff == 15.0
+    assert newrecord.fov == 16.0
+    assert newrecord.value == 17
+    assert newrecord.weight == 18.0
+    assert newrecord.fade == 19.0
+    assert newrecord.sound == ('FalloutNV.esm', 2)
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert record.fid == ('FalloutNV.esm', 0x177ADD)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [29, 91, 17, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'LightFungusStalkYellowAMB'
+    assert record.boundX1 == -38
+    assert record.boundY1 == -40
+    assert record.boundZ1 == -74
+    assert record.boundX2 == 38
+    assert record.boundY2 == 40
+    assert record.boundZ2 == 48
+    assert record.full == None
+    assert record.modPath == None
+    assert record.modb == None
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == None
+    assert record.iconPath == None
+    assert record.smallIconPath == None
+    assert record.script == None
+    assert record.duration == -1
+    assert record.radius == 256
+    assert record.red == 218
+    assert record.green == 217
+    assert record.blue == 165
+    assert record.flags == 0x0L
+    assert record.falloff == 2.0
+    assert record.fov == 90.0
+    assert record.value == 0
+    assert record.weight == 0.0
+    assert record.fade == 0.75
+    assert record.sound == None
 
     print "LIGH:Finished testing"
 
 def assertMISC(Current, newMod):
     record = Current.LoadOrderMods[0].MISC[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x175AB2)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [22, 91, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'RecipesCookCooksFiendStewItem'
+    assert record.eid == 'RecipesCookCooksFiendStEwItem'
+    
+    assert record.boundX1 == -12
+    assert record.boundY1 == -18
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 18
+    assert record.boundY2 == 18
+    assert record.boundZ2 == 8
+    assert record.full == "Recipes - Cook-Cook's Fiend Stew"
+    assert record.full != "Recipes - Cook-Cook's Fiend StEw"
+    assert record.modPath == 'Clutter\\Junk\\BluePrintPaper01.NIF'
+    assert record.modPath == 'CluttEr\\Junk\\BluePrintPaper01.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.iconPath == 'Interface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert record.iconPath == 'InterfAce\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert record.smallIconPath == None
+    assert record.script == ('FalloutNV.esm', 0x175AB1)
+    assert record.destructable_list == (None, None, None, [])
+    assert record.pickupSound == None
+    assert record.dropSound == None
+    assert record.value == 400
+    assert record.weight == 0.0
+    assert record.loopSound == None
 
     nrecord = newMod.create_MISC()
 
@@ -6318,7 +6558,28 @@ def assertMISC(Current, newMod):
     nrecord.formVersion = 1
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
-
+    
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.full = "WarRecipes - Cook-Cook's Fiend Stew"
+    nrecord.modPath = 'WarClutter\\Junk\\BluePrintPaper01.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 8
+    nrecord.iconPath = 'WarInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    nrecord.smallIconPath = 'WarSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    nrecord.script = ('FalloutNV.esm', 1)
+    nrecord.destructable_list = TestDestructable
+    nrecord.pickupSound = ('FalloutNV.esm', 2)
+    nrecord.dropSound = ('FalloutNV.esm', 3)
+    nrecord.value = 9
+    nrecord.weight = 10.0
+    nrecord.loopSound = ('FalloutNV.esm', 4)
 
     assert nrecord.fid == ('TestRegressions.esp', 0x00101E)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -6327,12 +6588,68 @@ def assertMISC(Current, newMod):
     assert nrecord.versionControl2 == [2, 3]
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
-
+    
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.full == "WarRecipes - Cook-Cook's Fiend Stew"
+    assert nrecord.full != "WArRecipes - Cook-Cook's Fiend Stew"
+    assert nrecord.modPath == 'WarClutter\\Junk\\BluePrintPaper01.NIF'
+    assert nrecord.modPath == 'WArClutter\\Junk\\BluePrintPaper01.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 8
+    assert nrecord.iconPath == 'WarInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert nrecord.iconPath == 'WArInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert nrecord.smallIconPath == 'WarSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert nrecord.smallIconPath == 'WArSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert nrecord.script == ('FalloutNV.esm', 1)
+    assert nrecord.destructable_list == TestDestructable
+    assert nrecord.pickupSound == ('FalloutNV.esm', 2)
+    assert nrecord.dropSound == ('FalloutNV.esm', 3)
+    assert nrecord.value == 9
+    assert nrecord.weight == 10.0
+    assert nrecord.loopSound == ('FalloutNV.esm', 4)
 
     record = Current.LoadOrderMods[0].MISC[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x175AB2)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [22, 91, 22, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'RecipesCookCooksFiendStewItem'
+    assert newrecord.eid == 'RecipesCookCooksFiendStEwItem'
+    
+    assert newrecord.boundX1 == -12
+    assert newrecord.boundY1 == -18
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 18
+    assert newrecord.boundY2 == 18
+    assert newrecord.boundZ2 == 8
+    assert newrecord.full == "Recipes - Cook-Cook's Fiend Stew"
+    assert newrecord.full != "Recipes - Cook-Cook's Fiend StEw"
+    assert newrecord.modPath == 'Clutter\\Junk\\BluePrintPaper01.NIF'
+    assert newrecord.modPath == 'CluttEr\\Junk\\BluePrintPaper01.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.iconPath == 'Interface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.iconPath == 'InterfAce\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.smallIconPath == None
+    assert newrecord.script == ('FalloutNV.esm', 0x175AB1)
+    assert newrecord.destructable_list == (None, None, None, [])
+    assert newrecord.pickupSound == None
+    assert newrecord.dropSound == None
+    assert newrecord.value == 400
+    assert newrecord.weight == 0.0
+    assert newrecord.loopSound == None
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -6340,8 +6657,29 @@ def assertMISC(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.full = "WarRecipes - Cook-Cook's Fiend Stew"
+    newrecord.modPath = 'WarClutter\\Junk\\BluePrintPaper01.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 8
+    newrecord.iconPath = 'WarInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    newrecord.smallIconPath = 'WarSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    newrecord.script = ('FalloutNV.esm', 1)
+    newrecord.destructable_list = TestDestructable
+    newrecord.pickupSound = ('FalloutNV.esm', 2)
+    newrecord.dropSound = ('FalloutNV.esm', 3)
+    newrecord.value = 9
+    newrecord.weight = 10.0
+    newrecord.loopSound = ('FalloutNV.esm', 4)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x175AB2)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -6349,20 +6687,93 @@ def assertMISC(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.full == "WarRecipes - Cook-Cook's Fiend Stew"
+    assert newrecord.full != "WArRecipes - Cook-Cook's Fiend Stew"
+    assert newrecord.modPath == 'WarClutter\\Junk\\BluePrintPaper01.NIF'
+    assert newrecord.modPath == 'WArClutter\\Junk\\BluePrintPaper01.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 8
+    assert newrecord.iconPath == 'WarInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.iconPath == 'WArInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.smallIconPath == 'WarSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.smallIconPath == 'WArSInterface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert newrecord.script == ('FalloutNV.esm', 1)
+    assert newrecord.destructable_list == TestDestructable
+    assert newrecord.pickupSound == ('FalloutNV.esm', 2)
+    assert newrecord.dropSound == ('FalloutNV.esm', 3)
+    assert newrecord.value == 9
+    assert newrecord.weight == 10.0
+    assert newrecord.loopSound == ('FalloutNV.esm', 4)
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert record.fid == ('FalloutNV.esm', 0x175AB2)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [22, 91, 22, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'RecipesCookCooksFiendStewItem'
+    assert record.eid == 'RecipesCookCooksFiendStEwItem'
+    
+    assert record.boundX1 == -12
+    assert record.boundY1 == -18
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 18
+    assert record.boundY2 == 18
+    assert record.boundZ2 == 8
+    assert record.full == "Recipes - Cook-Cook's Fiend Stew"
+    assert record.full != "Recipes - Cook-Cook's Fiend StEw"
+    assert record.modPath == 'Clutter\\Junk\\BluePrintPaper01.NIF'
+    assert record.modPath == 'CluttEr\\Junk\\BluePrintPaper01.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.iconPath == 'Interface\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert record.iconPath == 'InterfAce\\Icons\\PipboyImages\\Items\\items_schematics_dart_gun.dds'
+    assert record.smallIconPath == None
+    assert record.script == ('FalloutNV.esm', 0x175AB1)
+    assert record.destructable_list == (None, None, None, [])
+    assert record.pickupSound == None
+    assert record.dropSound == None
+    assert record.value == 400
+    assert record.weight == 0.0
+    assert record.loopSound == None
 
     print "MISC:Finished testing"
 
 def assertSTAT(Current, newMod):
     record = Current.LoadOrderMods[0].STAT[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert record.fid == ('FalloutNV.esm', 0x17B364)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [12, 92, 20, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'ParadiseFallsDoorframe'
+    assert record.eid == 'ParAdiseFallsDoorframe'
+    
+    assert record.boundX1 == -5
+    assert record.boundY1 == -56
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 5
+    assert record.boundY2 == 56
+    assert record.boundZ2 == 166
+    assert record.modPath == 'architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert record.modPath == 'Architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.passSound == -1
+    assert record.loopSound == None
+    
     nrecord = newMod.create_STAT()
 
     nrecord.flags1 = 10
@@ -6371,6 +6782,19 @@ def assertSTAT(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
 
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.modPath = 'Wararchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 8
+    nrecord.passSound = 9
+    nrecord.loopSound = ('FalloutNV.esm', 1)
 
     assert nrecord.fid == ('TestRegressions.esp', 0x00101F)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -6380,20 +6804,68 @@ def assertSTAT(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.modPath == 'Wararchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert nrecord.modPath == 'WArarchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 8
+    assert nrecord.passSound == 9
+    assert nrecord.loopSound == ('FalloutNV.esm', 1)
 
     record = Current.LoadOrderMods[0].STAT[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B364)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [12, 92, 20, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'ParadiseFallsDoorframe'
+    assert newrecord.eid == 'ParAdiseFallsDoorframe'
+    
+    assert newrecord.boundX1 == -5
+    assert newrecord.boundY1 == -56
+    assert newrecord.boundZ1 == 0
+    assert newrecord.boundX2 == 5
+    assert newrecord.boundY2 == 56
+    assert newrecord.boundZ2 == 166
+    assert newrecord.modPath == 'architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert newrecord.modPath == 'Architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.passSound == -1
+    assert newrecord.loopSound == None
+    
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
     newrecord.formVersion = 1
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.modPath = 'Wararchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 8
+    newrecord.passSound = 9
+    newrecord.loopSound = ('FalloutNV.esm', 1)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B364)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -6401,19 +6873,70 @@ def assertSTAT(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.modPath == 'Wararchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert newrecord.modPath == 'WArarchitecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 8
+    assert newrecord.passSound == 9
+    assert newrecord.loopSound == ('FalloutNV.esm', 1)
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
-
+    assert record.fid == ('FalloutNV.esm', 0x17B364)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [12, 92, 20, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'ParadiseFallsDoorframe'
+    assert record.eid == 'ParAdiseFallsDoorframe'
+    
+    assert record.boundX1 == -5
+    assert record.boundY1 == -56
+    assert record.boundZ1 == 0
+    assert record.boundX2 == 5
+    assert record.boundY2 == 56
+    assert record.boundZ2 == 166
+    assert record.modPath == 'architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert record.modPath == 'Architecture\\paradisefalls\\doors\\ParadiseFallsDoorframe.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.passSound == -1
+    assert record.loopSound == None
+    
     print "STAT:Finished testing"
 
 def assertSCOL(Current, newMod):
     record = Current.LoadOrderMods[0].SCOL[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x17B667)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [16, 92, 5, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'SCOLGoodpringsFenceB01'
+    assert record.eid == 'SCOLGoodpringsFEnceB01'
+    
+    assert record.boundX1 == -793
+    assert record.boundY1 == -294
+    assert record.boundZ1 == -60
+    assert record.boundX2 == 6
+    assert record.boundY2 == 188
+    assert record.boundZ2 == 56
+    assert record.modPath == 'SCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert record.modPath == 'SCOL\\SCOLGoodpringsFEnceB01.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.statics_list == [(('FalloutNV.esm', 1071217), [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0), (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]), (('FalloutNV.esm', 1071218), [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0), (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0), (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0), (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0), (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]), (('FalloutNV.esm', 1071213), [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0), (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0), (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]), (('FalloutNV.esm', 1074779), [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)])]
 
     nrecord = newMod.create_SCOL()
 
@@ -6423,6 +6946,35 @@ def assertSCOL(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
 
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.modPath = 'WarSCOL\\SCOLGoodpringsFenceB01.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 8
+    nrecord.statics_list = [(('FalloutNV.esm', 1),
+                                 [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0),
+                                  (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]),
+                            (('FalloutNV.esm', 2),
+                                 [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0),
+                                  (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0),
+                                  (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0),
+                                  (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0),
+                                  (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]),
+                            (('FalloutNV.esm', 3),
+                                 [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0),
+                                  (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0),
+                                  (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]),
+                            (('FalloutNV.esm', 4),
+                                 [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)]),
+                            (('FalloutNV.esm', 5),
+                                 [(1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3),
+                                  (1.140625, 2.132813, 3.999023, 4.0, 5.0, 6, 7.0)])]
 
     assert nrecord.fid == ('TestRegressions.esp', 0x001020)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -6432,11 +6984,61 @@ def assertSCOL(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.modPath == 'WarSCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert nrecord.modPath == 'WArSCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 8
+    assert nrecord.statics_list == [(('FalloutNV.esm', 1),
+                                 [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0),
+                                  (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]),
+                            (('FalloutNV.esm', 2),
+                                 [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0),
+                                  (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0),
+                                  (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0),
+                                  (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0),
+                                  (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]),
+                            (('FalloutNV.esm', 3),
+                                 [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0),
+                                  (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0),
+                                  (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]),
+                            (('FalloutNV.esm', 4),
+                                 [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)]),
+                            (('FalloutNV.esm', 5),
+                                 [(1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3),
+                                  (1.140625, 2.132813, 3.999023, 4.0, 5.0, 6, 7.0)])]
 
     record = Current.LoadOrderMods[0].SCOL[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B667)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [16, 92, 5, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [0, 0]
+    assert newrecord.eid == 'SCOLGoodpringsFenceB01'
+    assert newrecord.eid == 'SCOLGoodpringsFEnceB01'
+    
+    assert newrecord.boundX1 == -793
+    assert newrecord.boundY1 == -294
+    assert newrecord.boundZ1 == -60
+    assert newrecord.boundX2 == 6
+    assert newrecord.boundY2 == 188
+    assert newrecord.boundZ2 == 56
+    assert newrecord.modPath == 'SCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert newrecord.modPath == 'SCOL\\SCOLGoodpringsFEnceB01.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.statics_list == [(('FalloutNV.esm', 1071217), [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0), (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]), (('FalloutNV.esm', 1071218), [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0), (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0), (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0), (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0), (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]), (('FalloutNV.esm', 1071213), [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0), (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0), (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]), (('FalloutNV.esm', 1074779), [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)])]
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -6444,8 +7046,37 @@ def assertSCOL(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.modPath = 'WarSCOL\\SCOLGoodpringsFenceB01.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 8
+    newrecord.statics_list = [(('FalloutNV.esm', 1),
+                                 [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0),
+                                  (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]),
+                            (('FalloutNV.esm', 2),
+                                 [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0),
+                                  (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0),
+                                  (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0),
+                                  (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0),
+                                  (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]),
+                            (('FalloutNV.esm', 3),
+                                 [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0),
+                                  (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0),
+                                  (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]),
+                            (('FalloutNV.esm', 4),
+                                 [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)]),
+                            (('FalloutNV.esm', 5),
+                                 [(1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3),
+                                  (1.140625, 2.132813, 3.999023, 4.0, 5.0, 6, 7.0)])]
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x17B667)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -6453,19 +7084,88 @@ def assertSCOL(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
-
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.modPath == 'WarSCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert newrecord.modPath == 'WArSCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 8
+    assert newrecord.statics_list == [(('FalloutNV.esm', 1),
+                                 [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0),
+                                  (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]),
+                            (('FalloutNV.esm', 2),
+                                 [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0),
+                                  (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0),
+                                  (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0),
+                                  (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0),
+                                  (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]),
+                            (('FalloutNV.esm', 3),
+                                 [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0),
+                                  (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0),
+                                  (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]),
+                            (('FalloutNV.esm', 4),
+                                 [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)]),
+                            (('FalloutNV.esm', 5),
+                                 [(1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3),
+                                  (1.140625, 2.132813, 3.999023, 4.0, 5.0, 6, 7.0)])]
+                                      
+    assert record.fid == ('FalloutNV.esm', 0x17B667)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [16, 92, 5, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [0, 0]
+    assert record.eid == 'SCOLGoodpringsFenceB01'
+    assert record.eid == 'SCOLGoodpringsFEnceB01'
+    
+    assert record.boundX1 == -793
+    assert record.boundY1 == -294
+    assert record.boundZ1 == -60
+    assert record.boundX2 == 6
+    assert record.boundY2 == 188
+    assert record.boundZ2 == 56
+    assert record.modPath == 'SCOL\\SCOLGoodpringsFenceB01.NIF'
+    assert record.modPath == 'SCOL\\SCOLGoodpringsFEnceB01.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.statics_list == [(('FalloutNV.esm', 1071217), [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0), (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]), (('FalloutNV.esm', 1071218), [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0), (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0), (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0), (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0), (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]), (('FalloutNV.esm', 1071213), [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0), (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0), (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]), (('FalloutNV.esm', 1074779), [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)])]
 
     print "SCOL:Finished testing"
 
 def assertMSTT(Current, newMod):
     record = Current.LoadOrderMods[0].MSTT[0]
-    d(record)
-    print
-    return
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+    assert record.fid == ('FalloutNV.esm', 0x1791AC)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [3, 92, 2, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'VFSSilverRushScorchMark'
+    assert record.eid == 'VFSSilverRushScoRchMark'
+    
+    assert record.boundX1 == -1377
+    assert record.boundY1 == -1499
+    assert record.boundZ1 == 7
+    assert record.boundX2 == 1590
+    assert record.boundY2 == 1377
+    assert record.boundZ2 == 27
+    assert record.full == None
+    assert record.modPath == 'effects\\NV\\FXScorchNV.NIF'
+    assert record.modPath == 'Effects\\NV\\FXScorchNV.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.destructable_list == (None, None, None, [])
+    assert record.data_p == [0]
+    assert record.sound == None
 
     nrecord = newMod.create_MSTT()
 
@@ -6475,6 +7175,21 @@ def assertMSTT(Current, newMod):
     nrecord.versionControl2 = [2, 3]
     nrecord.eid = r'WarTest'
 
+    nrecord.boundX1 = 1
+    nrecord.boundY1 = 2
+    nrecord.boundZ1 = 3
+    nrecord.boundX2 = 4
+    nrecord.boundY2 = 5
+    nrecord.boundZ2 = 6
+    nrecord.full = 'WarFull'
+    nrecord.modPath = 'Wareffects\\NV\\FXScorchNV.NIF'
+    nrecord.modb = 7.0
+    nrecord.modt_p = TestModt
+    nrecord.altTextures_list = TestAltTextures
+    nrecord.modelFlags = 8
+    nrecord.destructable_list = TestDestructable
+    nrecord.data_p = [25]
+    nrecord.sound = ('FalloutNV.esm', 1)
 
     assert nrecord.fid == ('TestRegressions.esp', 0x001021)#xx
     assert nrecord.flags1 == 0x80000000 | 10
@@ -6484,11 +7199,51 @@ def assertMSTT(Current, newMod):
     assert nrecord.eid == 'WarTest'
     assert nrecord.eid == 'WArTest'
 
+    assert nrecord.boundX1 == 1
+    assert nrecord.boundY1 == 2
+    assert nrecord.boundZ1 == 3
+    assert nrecord.boundX2 == 4
+    assert nrecord.boundY2 == 5
+    assert nrecord.boundZ2 == 6
+    assert nrecord.full == 'WarFull'
+    assert nrecord.full != 'WArFull'
+    assert nrecord.modPath == 'Wareffects\\NV\\FXScorchNV.NIF'
+    assert nrecord.modPath == 'WAreffects\\NV\\FXScorchNV.NIF'
+    assert nrecord.modb == 7.0
+    assert nrecord.modt_p == TestModt
+    assert nrecord.altTextures_list == TestAltTextures
+    assert nrecord.modelFlags == 8
+    assert nrecord.destructable_list == TestDestructable
+    assert nrecord.data_p == [25]
+    assert nrecord.sound == ('FalloutNV.esm', 1)
 
     record = Current.LoadOrderMods[0].MSTT[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+    assert newrecord.fid == ('FalloutNV.esm', 0x1791AC)
+    assert newrecord.flags1 == 0x80000000L
+    assert newrecord.versionControl1 == [3, 92, 2, 0]
+    assert newrecord.formVersion == 15
+    assert newrecord.versionControl2 == [1, 0]
+    assert newrecord.eid == 'VFSSilverRushScorchMark'
+    assert newrecord.eid == 'VFSSilverRushScoRchMark'
+    
+    assert newrecord.boundX1 == -1377
+    assert newrecord.boundY1 == -1499
+    assert newrecord.boundZ1 == 7
+    assert newrecord.boundX2 == 1590
+    assert newrecord.boundY2 == 1377
+    assert newrecord.boundZ2 == 27
+    assert newrecord.full == None
+    assert newrecord.modPath == 'effects\\NV\\FXScorchNV.NIF'
+    assert newrecord.modPath == 'Effects\\NV\\FXScorchNV.NIF'
+    assert newrecord.modb == 0.0
+    assert newrecord.modt_p == []
+    assert newrecord.altTextures_list == []
+    assert newrecord.modelFlags == 0x0
+    assert newrecord.destructable_list == (None, None, None, [])
+    assert newrecord.data_p == [0]
+    assert newrecord.sound == None
 
     newrecord.flags1 = 10
     newrecord.versionControl1 = [1, 3, 2, 6]
@@ -6496,8 +7251,23 @@ def assertMSTT(Current, newMod):
     newrecord.versionControl2 = [2, 3]
     newrecord.eid = r'WarTest'
 
+    newrecord.boundX1 = 1
+    newrecord.boundY1 = 2
+    newrecord.boundZ1 = 3
+    newrecord.boundX2 = 4
+    newrecord.boundY2 = 5
+    newrecord.boundZ2 = 6
+    newrecord.full = 'WarFull'
+    newrecord.modPath = 'Wareffects\\NV\\FXScorchNV.NIF'
+    newrecord.modb = 7.0
+    newrecord.modt_p = TestModt
+    newrecord.altTextures_list = TestAltTextures
+    newrecord.modelFlags = 8
+    newrecord.destructable_list = TestDestructable
+    newrecord.data_p = [25]
+    newrecord.sound = ('FalloutNV.esm', 1)
 
-    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.fid == ('FalloutNV.esm', 0x1791AC)
     assert newrecord.flags1 == 0x80000000 | 10
     assert newrecord.versionControl1 == [1, 3, 2, 6]
     assert newrecord.formVersion == 1
@@ -6505,9 +7275,48 @@ def assertMSTT(Current, newMod):
     assert newrecord.eid == 'WarTest'
     assert newrecord.eid == 'WArTest'
 
+    assert newrecord.boundX1 == 1
+    assert newrecord.boundY1 == 2
+    assert newrecord.boundZ1 == 3
+    assert newrecord.boundX2 == 4
+    assert newrecord.boundY2 == 5
+    assert newrecord.boundZ2 == 6
+    assert newrecord.full == 'WarFull'
+    assert newrecord.full != 'WArFull'
+    assert newrecord.modPath == 'Wareffects\\NV\\FXScorchNV.NIF'
+    assert newrecord.modPath == 'WAreffects\\NV\\FXScorchNV.NIF'
+    assert newrecord.modb == 7.0
+    assert newrecord.modt_p == TestModt
+    assert newrecord.altTextures_list == TestAltTextures
+    assert newrecord.modelFlags == 8
+    assert newrecord.destructable_list == TestDestructable
+    assert newrecord.data_p == [25]
+    assert newrecord.sound == ('FalloutNV.esm', 1)
 
-    assert record.fid == ('FalloutNV.esm', 0x0)#xx
-
+    assert record.fid == ('FalloutNV.esm', 0x1791AC)
+    assert record.flags1 == 0x80000000L
+    assert record.versionControl1 == [3, 92, 2, 0]
+    assert record.formVersion == 15
+    assert record.versionControl2 == [1, 0]
+    assert record.eid == 'VFSSilverRushScorchMark'
+    assert record.eid == 'VFSSilverRushScoRchMark'
+    
+    assert record.boundX1 == -1377
+    assert record.boundY1 == -1499
+    assert record.boundZ1 == 7
+    assert record.boundX2 == 1590
+    assert record.boundY2 == 1377
+    assert record.boundZ2 == 27
+    assert record.full == None
+    assert record.modPath == 'effects\\NV\\FXScorchNV.NIF'
+    assert record.modPath == 'Effects\\NV\\FXScorchNV.NIF'
+    assert record.modb == 0.0
+    assert record.modt_p == []
+    assert record.altTextures_list == []
+    assert record.modelFlags == 0x0
+    assert record.destructable_list == (None, None, None, [])
+    assert record.data_p == [0]
+    assert record.sound == None
 
     print "MSTT:Finished testing"
 

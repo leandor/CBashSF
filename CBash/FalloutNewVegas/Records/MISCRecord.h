@@ -38,7 +38,7 @@ class MISCRecord : public FNVRecord //Misc. Item
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSubRecord<GENVALUEWEIGHT> DATA; //Data
+        ReqSubRecord<GENVALUEWEIGHT> DATA; //Data
         OptSimpleSubRecord<FORMID> RNAM; //Sound - Random/Looping
 
         MISCRecord(unsigned char *_recData=NULL);

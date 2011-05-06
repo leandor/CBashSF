@@ -368,34 +368,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgLIGH:
             case 'HGIL':
-                //reader.read(&LIGH.stamp, 4);
-                //reader.read(&LIGH.unknown, 4);
-                //LIGH.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&LIGH.stamp, 4);
+                reader.read(&LIGH.unknown, 4);
+                LIGH.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgMISC:
             case 'CSIM':
-                //reader.read(&MISC.stamp, 4);
-                //reader.read(&MISC.unknown, 4);
-                //MISC.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&MISC.stamp, 4);
+                reader.read(&MISC.unknown, 4);
+                MISC.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgSTAT: //Same as normal
             case 'TATS':
-                //reader.read(&STAT.stamp, 4);
-                //reader.read(&STAT.unknown, 4);
-                //STAT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&STAT.stamp, 4);
+                reader.read(&STAT.unknown, 4);
+                STAT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgSCOL:
             case 'LOCS':
-                //reader.read(&SCOL.stamp, 4);
-                //reader.read(&SCOL.unknown, 4);
-                //SCOL.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&SCOL.stamp, 4);
+                reader.read(&SCOL.unknown, 4);
+                SCOL.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgMSTT: //Same as normal
             case 'TTSM':
-                //reader.read(&MSTT.stamp, 4);
-                //reader.read(&MSTT.unknown, 4);
-                //MSTT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&MSTT.stamp, 4);
+                reader.read(&MSTT.unknown, 4);
+                MSTT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgPWAT: //Same as normal
             case 'TAWP':
                 //reader.read(&PWAT.stamp, 4);
@@ -905,15 +905,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'RGNI':
             return (UINT32)INGR.Records.size();
         case 'HGIL':
-            //return (UINT32)LIGH.Records.size();
+            return (UINT32)LIGH.Records.size();
         case 'CSIM':
-            //return (UINT32)MISC.Records.size();
+            return (UINT32)MISC.Records.size();
         case 'TATS':
-            //return (UINT32)STAT.Records.size();
+            return (UINT32)STAT.Records.size();
         case 'LOCS':
-            //return (UINT32)SCOL.Records.size();
+            return (UINT32)SCOL.Records.size();
         case 'TTSM':
-            //return (UINT32)MSTT.Records.size();
+            return (UINT32)MSTT.Records.size();
         case 'TAWP':
             //return (UINT32)PWAT.Records.size();
         case 'SARG':
@@ -1190,25 +1190,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = INGR.Records.back();
             break;
         case 'HGIL':
-            //LIGH.Records.push_back(new FNV::LIGHRecord((FNV::LIGHRecord *)SourceRecord));
-            //newRecord = LIGH.Records.back();
-            //break;
+            LIGH.Records.push_back(new FNV::LIGHRecord((FNV::LIGHRecord *)SourceRecord));
+            newRecord = LIGH.Records.back();
+            break;
         case 'CSIM':
-            //MISC.Records.push_back(new FNV::MISCRecord((FNV::MISCRecord *)SourceRecord));
-            //newRecord = MISC.Records.back();
-            //break;
+            MISC.Records.push_back(new FNV::MISCRecord((FNV::MISCRecord *)SourceRecord));
+            newRecord = MISC.Records.back();
+            break;
         case 'TATS':
-            //STAT.Records.push_back(new FNV::STATRecord((FNV::STATRecord *)SourceRecord));
-            //newRecord = STAT.Records.back();
-            //break;
+            STAT.Records.push_back(new FNV::STATRecord((FNV::STATRecord *)SourceRecord));
+            newRecord = STAT.Records.back();
+            break;
         case 'LOCS':
-            //SCOL.Records.push_back(new FNV::SCOLRecord((FNV::SCOLRecord *)SourceRecord));
-            //newRecord = SCOL.Records.back();
-            //break;
+            SCOL.Records.push_back(new FNV::SCOLRecord((FNV::SCOLRecord *)SourceRecord));
+            newRecord = SCOL.Records.back();
+            break;
         case 'TTSM':
-            //MSTT.Records.push_back(new FNV::MSTTRecord((FNV::MSTTRecord *)SourceRecord));
-            //newRecord = MSTT.Records.back();
-            //break;
+            MSTT.Records.push_back(new FNV::MSTTRecord((FNV::MSTTRecord *)SourceRecord));
+            newRecord = MSTT.Records.back();
+            break;
         case 'TAWP':
             //PWAT.Records.push_back(new FNV::PWATRecord((FNV::PWATRecord *)SourceRecord));
             //newRecord = PWAT.Records.back();
@@ -1549,11 +1549,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(CONT.VisitRecords(NULL, checker, false)) continue;
         if(DOOR.VisitRecords(NULL, checker, false)) continue;
         if(INGR.VisitRecords(NULL, checker, false)) continue;
-        //if(LIGH.VisitRecords(NULL, checker, false)) continue;
-        //if(MISC.VisitRecords(NULL, checker, false)) continue;
-        //if(STAT.VisitRecords(NULL, checker, false)) continue;
-        //if(SCOL.VisitRecords(NULL, checker, false)) continue;
-        //if(MSTT.VisitRecords(NULL, checker, false)) continue;
+        if(LIGH.VisitRecords(NULL, checker, false)) continue;
+        if(MISC.VisitRecords(NULL, checker, false)) continue;
+        if(STAT.VisitRecords(NULL, checker, false)) continue;
+        if(SCOL.VisitRecords(NULL, checker, false)) continue;
+        if(MSTT.VisitRecords(NULL, checker, false)) continue;
         //if(PWAT.VisitRecords(NULL, checker, false)) continue;
         //if(GRAS.VisitRecords(NULL, checker, false)) continue;
         //if(TREE.VisitRecords(NULL, checker, false)) continue;
@@ -1687,11 +1687,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += CONT.WriteGRUP('TNOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += DOOR.WriteGRUP('ROOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += INGR.WriteGRUP('RGNI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LIGH.WriteGRUP('HGIL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MISC.WriteGRUP('CSIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SCOL.WriteGRUP('LOCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MSTT.WriteGRUP('TTSM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LIGH.WriteGRUP('HGIL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MISC.WriteGRUP('CSIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCOL.WriteGRUP('LOCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MSTT.WriteGRUP('TTSM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += PWAT.WriteGRUP('TAWP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1810,11 +1810,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     CONT.VisitRecords(NULL, op, true);
     DOOR.VisitRecords(NULL, op, true);
     INGR.VisitRecords(NULL, op, true);
-    //LIGH.VisitRecords(NULL, op, true);
-    //MISC.VisitRecords(NULL, op, true);
-    //STAT.VisitRecords(NULL, op, true);
-    //SCOL.VisitRecords(NULL, op, true);
-    //MSTT.VisitRecords(NULL, op, true);
+    LIGH.VisitRecords(NULL, op, true);
+    MISC.VisitRecords(NULL, op, true);
+    STAT.VisitRecords(NULL, op, true);
+    SCOL.VisitRecords(NULL, op, true);
+    MSTT.VisitRecords(NULL, op, true);
     //PWAT.VisitRecords(NULL, op, true);
     //GRAS.VisitRecords(NULL, op, true);
     //TREE.VisitRecords(NULL, op, true);
@@ -1983,20 +1983,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             INGR.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'HGIL':
-            //LIGH.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            LIGH.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'CSIM':
-            //MISC.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            MISC.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TATS':
-            //STAT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            STAT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'LOCS':
-            //SCOL.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            SCOL.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TTSM':
-            //MSTT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            MSTT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TAWP':
             //PWAT.VisitRecords(RecordType, op, DeepVisit);
             //break;

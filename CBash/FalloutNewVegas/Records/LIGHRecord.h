@@ -62,12 +62,12 @@ class LIGHRecord : public FNVRecord //Light
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
-        OptSubRecord<FNVMODEL> MODL; //Model
-        OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
+        OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSubRecord<LIGHDATA> DATA; //Data
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        ReqSubRecord<LIGHDATA> DATA; //Data
         OptSimpleSubRecord<FLOAT32> FNAM; //Fade value
         OptSimpleSubRecord<FORMID> SNAM; //Sound
 

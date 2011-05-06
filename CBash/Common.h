@@ -2084,15 +2084,21 @@ struct UnorderedPackedArray
         }
     bool operator ==(const UnorderedPackedArray<T> &other) const
         {
+        //Hack
+        //Equality testing should use a set or somesuch
+        //For now, testing also tests ordering
         if(value.size() == other.value.size())
             {
-            std::multiset<T> self1, other1;
+            //std::multiset<T> self1, other1;
             for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
                 {
-                self1.insert(value[x]);
-                other1.insert(other.value[x]);
+                if(value[x] != other.value[x])
+                    return false;
+                //self1.insert(value[x]);
+                //other1.insert(other.value[x]);
                 }
-            return self1 == other1;
+            //return self1 == other1;
+            return true;
             }
         return false;
         }

@@ -1241,6 +1241,26 @@ class CBashFLOAT32_LISTX2(object):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
         else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(nValue,6))), 0)
 
+class CBashDEGREES_LISTX2(object):
+    def __init__(self, ListX2FieldID):
+        self._ListX2FieldID = ListX2FieldID
+    def __get__(self, instance, owner):
+        _CGetField.restype = POINTER(c_float)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0)
+        if(retValue):
+            try:
+                return round(math.degrees(retValue.contents.value),6)
+            except TypeError:
+                return None
+        return None
+    def __set__(self, instance, nValue):
+        try:
+            nValue = math.radians(nValue)
+        except TypeError:
+            nValue = None
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(nValue,6))), 0)
+
 class CBashUINT8ARRAY_LISTX2(object):
     def __init__(self, ListX2FieldID, Size=None):
         self._ListX2FieldID = ListX2FieldID
@@ -1668,7 +1688,7 @@ class Effect(ListComponent):
                                  'reserved1', 'iconPath', 'efixOverrides',
                                  'efixFlags', 'baseCost', 'resistAV',
                                  'reserved2']
-    
+
 class FNVEffect(ListComponent):
     FORMID_LISTMACRO(effect, 1)
     UINT32_LISTMACRO(magnitude, 2)
@@ -1676,9 +1696,9 @@ class FNVEffect(ListComponent):
     UINT32_LISTMACRO(duration, 4)
     UINT32_LISTMACRO(rangeType, 5)
     SINT32_LISTMACRO(actorValue, 6)
-    
+
     LIST_LISTMACRO(conditions, 7, FNVConditionX2)
-    
+
     BasicTypeMACRO(IsSelf, rangeType, 0, IsTouch)
     BasicTypeMACRO(IsTouch, rangeType, 1, IsSelf)
     BasicTypeMACRO(IsTarget, rangeType, 2, IsSelf)
@@ -1695,12 +1715,12 @@ class Relation(ListComponent):
     FORMID_LISTMACRO(faction, 1)
     SINT32_LISTMACRO(mod, 2)
     exportattrs = copyattrs = ['faction', 'mod']
-    
+
 class FNVRelation(ListComponent):
     FORMID_LISTMACRO(faction, 1)
     SINT32_LISTMACRO(mod, 2)
     UINT32_TYPE_LISTMACRO(groupReactionType, 3)
-    
+
     BasicTypeMACRO(IsNeutral, groupReactionType, 0, IsEnemy)
     BasicTypeMACRO(IsEnemy, groupReactionType, 1, IsNeutral)
     BasicTypeMACRO(IsAlly, groupReactionType, 2, IsNeutral)
@@ -1725,7 +1745,7 @@ class FNVDestructable(BaseComponent):
         SINT32_LISTMACRO(debrisCount, 8)
         ISTRING_LISTMACRO(modPath, 9)
         UINT8_ARRAY_LISTMACRO(modt_p, 10)
-        
+
         BasicFlagMACRO(IsCapDamage, flags, 0x01)
         BasicFlagMACRO(IsDisable, flags, 0x02)
         BasicFlagMACRO(IsDestroy, flags, 0x04)
@@ -2005,11 +2025,11 @@ class FnvTES4Record(object):
     JUNK_MACRO(DATA, 13)
     FORMID_ARRAY_MACRO(overrides, 16)
     UINT8_ARRAY_MACRO(screenshot_p, 17)
-    
+
     BasicFlagMACRO(IsESM, flags1, 0x00000001)
     exportattrs = copyattrs = ['flags1', 'versionControl1', 'formVersion', 'versionControl2', 'version', 'numRecords', 'nextObject',
                  'author', 'description', 'masters', 'overrides', 'screenshot_p']
-    
+
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -2040,7 +2060,7 @@ class FnvGMSTRecord(FnvBaseRecord):
                 _CSetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, nValue, 0)
     value = property(get_value, set_value)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['value']
-    
+
 class FnvTXSTRecord(FnvBaseRecord):
     _Type = 'TXST'
     SINT16_MACRO(boundX1, 7)
@@ -2086,7 +2106,7 @@ class FnvTXSTRecord(FnvBaseRecord):
                                            'decalPasses', 'decalFlags', 'decalUnused1',
                                            'decalRed', 'decalGreen', 'decalBlue',
                                            'decalUnused2', 'flags']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                              'boundX2', 'boundY2', 'boundZ2', 'baseImageOrTransparencyPath',
                                              'normalMapOrSpecularPath', 'envMapMaskOrUnkPath', 'glowMapOrUnusedPath',
@@ -2095,19 +2115,19 @@ class FnvTXSTRecord(FnvBaseRecord):
                                              'decalDepth', 'decalShininess', 'decalScale',
                                              'decalPasses', 'decalFlags',
                                              'decalRed', 'decalGreen', 'decalBlue',
-                                             'flags'] # 'decalUnused1','decalUnused2', 
+                                             'flags'] # 'decalUnused1','decalUnused2',
 class FnvMICNRecord(FnvBaseRecord):
     _Type = 'MICN'
     ISTRING_MACRO(iconPath, 7)
     ISTRING_MACRO(smallIconPath, 8)
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath']
 
 class FnvGLOBRecord(FnvBaseRecord):
     _Type = 'GLOB'
     CHAR_MACRO(format, 7)
     FLOAT32_MACRO(value, 8)
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['format', 'value']
 
 class FnvCLASRecord(FnvBaseRecord):
@@ -2132,10 +2152,10 @@ class FnvCLASRecord(FnvBaseRecord):
     UINT8_MACRO(intelligence, 24)
     UINT8_MACRO(agility, 25)
     UINT8_MACRO(luck, 26)
-    
+
     BasicFlagMACRO(IsPlayable, flags, 0x00000001)
     BasicFlagMACRO(IsGuard, flags, 0x00000002)
-    
+
     BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
     BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
     BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
@@ -2148,7 +2168,7 @@ class FnvCLASRecord(FnvBaseRecord):
     BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
     BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
     BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
-    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)    
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
                                                          'tagSkills1', 'tagSkills2', 'tagSkills3',
                                                          'tagSkills4', 'flags', 'services',
@@ -2174,7 +2194,7 @@ class FnvFACTRecord(FnvBaseRecord):
 
     LIST_MACRO(ranks, 12, self.Rank)
     FORMID_MACRO(reputation, 13)
-    
+
     BasicFlagMACRO(IsHiddenFromPC, flags, 0x0001)
     BasicFlagMACRO(IsEvil, flags, 0x0002)
     BasicFlagMACRO(IsSpecialCombat, flags, 0x0004)
@@ -2189,14 +2209,14 @@ class FnvHDPTRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 8)
     FLOAT32_MACRO(modb, 9)
     UINT8_ARRAY_MACRO(modt_p, 10)
-    
+
     LIST_MACRO(altTextures, 11, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 12)
     UINT8_FLAG_MACRO(flags, 13)
     FORMID_ARRAY_MACRO(parts, 14)
-    
+
     BasicFlagMACRO(IsPlayable, flags, 0x01)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
@@ -2211,19 +2231,19 @@ class FnvHAIRRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 8)
     FLOAT32_MACRO(modb, 9)
     UINT8_ARRAY_MACRO(modt_p, 10)
-    
+
     LIST_MACRO(altTextures, 11, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 12)
     ISTRING_MACRO(iconPath, 13)
     UINT8_FLAG_MACRO(flags, 14)
-    
+
     BasicFlagMACRO(IsPlayable, flags, 0x01)
     BasicFlagMACRO(IsNotMale, flags, 0x02)
     BasicInvertedFlagMACRO(IsMale, IsNotMale)
     BasicFlagMACRO(IsNotFemale, flags, 0x04)
     BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
     BasicFlagMACRO(IsFixedColor, flags, 0x08)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
@@ -2231,32 +2251,32 @@ class FnvHAIRRecord(FnvBaseRecord):
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'modPath', 'modb',
                                                          'modt_p', 'altTextures_list',
                                                          'modelFlags', 'iconPath', 'flags']
-    
+
 class FnvEYESRecord(FnvBaseRecord):
     _Type = 'EYES'
     STRING_MACRO(full, 7)
     ISTRING_MACRO(iconPath, 8)
     UINT8_FLAG_MACRO(flags, 9)
-    
+
     BasicFlagMACRO(IsPlayable, flags, 0x01)
     BasicFlagMACRO(IsNotMale, flags, 0x02)
     BasicInvertedFlagMACRO(IsMale, IsNotMale)
     BasicFlagMACRO(IsNotFemale, flags, 0x04)
     BasicInvertedFlagMACRO(IsFemale, IsNotFemale)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'iconPath', 'flags']
-    
+
 class FnvRACERecord(FnvBaseRecord):
     _Type = 'RACE'
     class RaceModel(BaseComponent):
         ISTRING_GROUPEDMACRO(modPath, 0)
         FLOAT32_GROUPEDMACRO(modb, 1)
         UINT8_ARRAY_GROUPEDMACRO(modt_p, 2)
-        
+
         LIST_GROUPEDMACRO(altTextures, 3, FNVAltTexture)
         UINT8_FLAG_GROUPEDMACRO(flags, 4)
         ISTRING_GROUPEDMACRO(iconPath, 5)
         ISTRING_GROUPEDMACRO(smallIconPath, 6)
-        
+
         BasicFlagMACRO(IsHead, flags, 0x01)
         BasicFlagMACRO(IsTorso, flags, 0x02)
         BasicFlagMACRO(IsRightHand, flags, 0x04)
@@ -2268,7 +2288,7 @@ class FnvRACERecord(FnvBaseRecord):
 
     STRING_MACRO(full, 7)
     STRING_MACRO(description, 8)
-    
+
     LIST_MACRO(relations, 9, FNVRelation)
     SINT8_MACRO(skill1, 10)
     SINT8_MACRO(skill1Boost, 11)
@@ -2316,11 +2336,11 @@ class FnvRACERecord(FnvBaseRecord):
     GroupedValuesMACRO(femaleTeethUpper, 125, RaceModel)
     GroupedValuesMACRO(femaleTongue, 132, RaceModel)
     GroupedValuesMACRO(femaleLeftEye, 139, RaceModel)
-    GroupedValuesMACRO(femaleRightEye, 146, RaceModel)    
+    GroupedValuesMACRO(femaleRightEye, 146, RaceModel)
     GroupedValuesMACRO(maleUpperBody, 153, RaceModel)
     GroupedValuesMACRO(maleLeftHand, 160, RaceModel)
     GroupedValuesMACRO(maleRightHand, 167, RaceModel)
-    GroupedValuesMACRO(maleUpperBodyTexture, 174, RaceModel)    
+    GroupedValuesMACRO(maleUpperBodyTexture, 174, RaceModel)
     GroupedValuesMACRO(femaleUpperBody, 181, RaceModel)
     GroupedValuesMACRO(femaleLeftHand, 188, RaceModel)
     GroupedValuesMACRO(femaleRightHand, 195, RaceModel)
@@ -2335,7 +2355,7 @@ class FnvRACERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(femaleFgga_p, 216, 120)
     UINT8_ARRAY_MACRO(femaleFgts_p, 217, 200)
     UINT8_ARRAY_MACRO(femaleSnam_p, 218, 2)
-    
+
     BasicFlagMACRO(IsPlayable, flags, 0x00000001)
     BasicFlagMACRO(IsChild, flags, 0x00000004)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'description',
@@ -2354,7 +2374,7 @@ class FnvRACERecord(FnvBaseRecord):
                                         'maleHead_list', 'maleEars_list',
                                         'maleMouth_list', 'maleTeethLower_list',
                                         'maleTeethUpper_list', 'maleTongue_list',
-                                        'maleLeftEye_list', 'maleRightEye_list',                                           
+                                        'maleLeftEye_list', 'maleRightEye_list',
                                         'femaleHead_list', 'femaleEars_list',
                                         'femaleMouth_list', 'femaleTeethLower_list',
                                         'femaleTeethUpper_list', 'femaleTongue_list',
@@ -2393,7 +2413,7 @@ class FnvSOUNRecord(FnvBaseRecord):
     SINT32_MACRO(priority, 25)
     SINT32_MACRO(x, 26)
     SINT32_MACRO(y, 27)
-    
+
     BasicFlagMACRO(IsRandomFrequencyShift, flags, 0x00000001)
     BasicFlagMACRO(IsPlayAtRandom, flags, 0x00000002)
     BasicFlagMACRO(IsEnvironmentIgnored, flags, 0x00000004)
@@ -2406,7 +2426,7 @@ class FnvSOUNRecord(FnvBaseRecord):
     BasicFlagMACRO(IsEnvelopeFast, flags, 0x00000200)
     BasicFlagMACRO(IsEnvelopeSlow, flags, 0x00000400)
     BasicFlagMACRO(Is2DRadius, flags, 0x00000800)
-    BasicFlagMACRO(IsMuteWhenSubmerged, flags, 0x00001000)    
+    BasicFlagMACRO(IsMuteWhenSubmerged, flags, 0x00001000)
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2', 'soundPath',
                                            'chance', 'minDistance', 'maxDistance',
@@ -2414,14 +2434,14 @@ class FnvSOUNRecord(FnvBaseRecord):
                                            'staticAtten', 'stopTime', 'startTime',
                                            'attenCurve', 'reverb', 'priority',
                                            'x', 'y']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2', 'soundPath',
                                            'chance', 'minDistance', 'maxDistance',
                                            'freqAdjustment', 'flags',
                                            'staticAtten', 'stopTime', 'startTime',
                                            'attenCurve', 'reverb', 'priority',
-                                           'x', 'y'] # 'unused1', 
+                                           'x', 'y'] # 'unused1',
 
 class FnvASPCRecord(FnvBaseRecord):
     _Type = 'ASPC'
@@ -2440,7 +2460,7 @@ class FnvASPCRecord(FnvBaseRecord):
     FORMID_MACRO(regionSound, 19)
     UINT32_TYPE_MACRO(environmentType, 20)
     UINT32_TYPE_MACRO(spaceType, 21)
-    
+
     BasicTypeMACRO(IsEnvironmentNone, environmentType, 0, IsEnvironmentDefault)
     BasicTypeMACRO(IsEnvironmentDefault, environmentType, 1, IsEnvironmentNone)
     BasicTypeMACRO(IsEnvironmentGeneric, environmentType, 2, IsEnvironmentNone)
@@ -2472,7 +2492,7 @@ class FnvASPCRecord(FnvBaseRecord):
     BasicTypeMACRO(IsEnvironmentMediumHall, environmentType, 28, IsEnvironmentNone)
     BasicTypeMACRO(IsEnvironmentLargeHall, environmentType, 29, IsEnvironmentNone)
     BasicTypeMACRO(IsEnvironmentPlate, environmentType, 30, IsEnvironmentNone)
-    
+
     BasicTypeMACRO(IsSpaceExterior, spaceType, 0, IsSpaceInterior)
     BasicTypeMACRO(IsSpaceInterior, spaceType, 1, IsSpaceExterior)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
@@ -2491,7 +2511,7 @@ class FnvMGEFRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 11)
     FLOAT32_MACRO(modb, 12)
     UINT8_ARRAY_MACRO(modt_p, 13)
-    
+
     LIST_MACRO(altTextures, 14, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 15)
     UINT32_FLAG_MACRO(flags, 16)
@@ -2513,7 +2533,7 @@ class FnvMGEFRecord(FnvBaseRecord):
     FLOAT32_MACRO(cefBarterUnused, 32)
     UINT32_TYPE_MACRO(archType, 33)
     SINT32_TYPE_MACRO(actorValue, 34)
-    
+
     BasicFlagMACRO(IsHostile, flags, 0x00000001)
     BasicFlagMACRO(IsRecover, flags, 0x00000002)
     BasicFlagMACRO(IsDetrimental, flags, 0x00000004)
@@ -2536,7 +2556,12 @@ class FnvMGEFRecord(FnvBaseRecord):
     BasicFlagMACRO(IsNoHitEffect, flags, 0x08000000)
     BasicFlagMACRO(IsPersistOnDeath, flags, 0x10000000)
     BasicFlagMACRO(IsUnknown1, flags, 0x20000000)
-    
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
     BasicTypeMACRO(IsValueModifier, archType, 0, IsScript)
     BasicTypeMACRO(IsScript, archType, 1, IsValueModifier)
     BasicTypeMACRO(IsDispel, archType, 2, IsValueModifier)
@@ -2566,10 +2591,10 @@ class FnvMGEFRecord(FnvBaseRecord):
     exportattrs = FnvBaseRecord.baseattrs + ['full', 'description', 'iconPath', 'smallIconPath',
                                              'modPath', 'modb', 'altTextures_list',
                                              'modelFlags', 'flags', 'associated',
-                                             'resistType', 'numCounters', 
+                                             'resistType', 'numCounters',
                                              'light', 'projectileSpeed', 'effectShader', 'displayShader',
                                              'effectSound', 'boltSound', 'hitSound', 'areaSound',
-                                             'archType', 'actorValue'] #'modt_p', 'baseCostUnused', 'schoolUnused', 'unused1', 'cefEnchantmentUnused', 'cefBarterUnused', 
+                                             'archType', 'actorValue'] #'modt_p', 'baseCostUnused', 'schoolUnused', 'unused1', 'cefEnchantmentUnused', 'cefBarterUnused',
 
 class FnvSCPTRecord(FnvBaseRecord):
     _Type = 'SCPT'
@@ -2579,10 +2604,10 @@ class FnvSCPTRecord(FnvBaseRecord):
         UINT8_FLAG_LISTMACRO(flags, 3)
         UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
         ISTRING_LISTMACRO(name, 5)
-        
+
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     UINT8_ARRAY_MACRO(unused1, 7, 4)
     UINT32_MACRO(numRefs, 8)
     UINT32_MACRO(compiledSize, 9)
@@ -2591,12 +2616,12 @@ class FnvSCPTRecord(FnvBaseRecord):
     UINT16_FLAG_MACRO(scriptFlags, 12)
     UINT8_ARRAY_MACRO(compiled_p, 13)
     ISTRING_MACRO(scriptText, 14)
-    
+
     LIST_MACRO(vars, 15, self.Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 16)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
@@ -2619,7 +2644,7 @@ class FnvLTEXRecord(FnvBaseRecord):
     UINT8_MACRO(restitution, 12)
     UINT8_MACRO(specularExponent, 13)
     FORMID_ARRAY_MACRO(grasses, 14)
-    
+
     BasicTypeMACRO(IsStone, types, 0, IsCloth)
     BasicTypeMACRO(IsCloth, types, 1, IsStone)
     BasicTypeMACRO(IsDirt, types, 2, IsStone)
@@ -2664,9 +2689,9 @@ class FnvENCHRecord(FnvBaseRecord):
     UINT32_MACRO(enchantCostUnused, 10)
     UINT8_FLAG_MACRO(flags, 11)
     UINT8_ARRAY_MACRO(unused1, 12, 3)
-    
+
     LIST_MACRO(effects, 13, FNVEffect)
-    
+
     BasicFlagMACRO(IsNoAutoCalc, flags, 0x01)
     BasicFlagMACRO(IsHideEffect, flags, 0x04)
     BasicTypeMACRO(IsWeapon, itemType, 2, IsApparel)
@@ -2682,9 +2707,9 @@ class FnvSPELRecord(FnvBaseRecord):
     UINT32_TYPE_MACRO(levelTypeUnused, 10)
     UINT8_FLAG_MACRO(flags, 11)
     UINT8_ARRAY_MACRO(unused1, 12, 3)
-    
+
     LIST_MACRO(effects, 13, FNVEffect)
-    
+
     BasicFlagMACRO(IsManualCost, flags, 0x01)
     BasicFlagMACRO(IsStartSpell, flags, 0x04)
     BasicFlagMACRO(IsSilenceImmune, flags, 0x0A)
@@ -2719,7 +2744,7 @@ class FnvACTIRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     FORMID_MACRO(script, 19)
@@ -2756,7 +2781,7 @@ class FnvTACTRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     FORMID_MACRO(script, 19)
@@ -2802,12 +2827,12 @@ class FnvTERMRecord(FnvBaseRecord):
         UINT16_FLAG_LISTMACRO(scriptFlags, 11)
         UINT8_ARRAY_LISTMACRO(compiled_p, 12)
         ISTRING_LISTMACRO(scriptText, 13)
-        
+
         LIST_LISTMACRO(vars, 14, self.Var)
-        
+
         FORMID_OR_UINT32_ARRAY_LISTMACRO(references, 15)
         LIST_LISTMACRO(conditions, 16, FNVConditionX2)
-        
+
         BasicFlagMACRO(IsAddNote, flags, 0x01)
         BasicFlagMACRO(IsForceRedraw, flags, 0x02)
 
@@ -2828,7 +2853,7 @@ class FnvTERMRecord(FnvBaseRecord):
                        'scriptType', 'scriptFlags',
                        'scriptText', 'vars_list',
                        'references', 'conditions_list',] # 'compiled_p',
-        
+
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
     SINT16_MACRO(boundZ1, 9)
@@ -2839,7 +2864,7 @@ class FnvTERMRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     FORMID_MACRO(script, 19)
@@ -2851,21 +2876,26 @@ class FnvTERMRecord(FnvBaseRecord):
     UINT8_FLAG_MACRO(flags, 29)
     UINT8_TYPE_MACRO(serverType, 30)
     UINT8_ARRAY_MACRO(unused1, 31, 1)
-    
+
     LIST_MACRO(menus, 32, self.Menu)
-    
+
     BasicTypeMACRO(IsVeryEasy, difficultyType, 0, IsEasy)
     BasicTypeMACRO(IsEasy, difficultyType, 1, IsVeryEasy)
     BasicTypeMACRO(IsAverage, difficultyType, 2, IsVeryEasy)
     BasicTypeMACRO(IsHard, difficultyType, 3, IsVeryEasy)
     BasicTypeMACRO(IsVeryHard, difficultyType, 4, IsVeryEasy)
     BasicTypeMACRO(IsRequiresKey, difficultyType, 5, IsVeryEasy)
-    
+
     BasicFlagMACRO(IsLeveled, flags, 0x01)
     BasicFlagMACRO(IsUnlocked, flags, 0x02)
     BasicFlagMACRO(IsAlternateColors, flags, 0x04)
     BasicFlagMACRO(IsHideWelcomeTextWhenDisplayingImage, flags, 0x08)
-    
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
     BasicTypeMACRO(IsServer1, serverType, 0, IsServer2)
     BasicTypeMACRO(IsServer2, serverType, 1, IsServer1)
     BasicTypeMACRO(IsServer3, serverType, 2, IsServer1)
@@ -2967,7 +2997,7 @@ class FnvARMORecord(FnvBaseRecord):
     UINT32_TYPE_MACRO(overrideSounds, 50)
     LIST_MACRO(sounds, 51, self.Sound)
     FORMID_MACRO(soundsTemplate, 52)
-    
+
     BasicFlagMACRO(IsHead, flags, 0x00000001)
     BasicFlagMACRO(IsHair, flags, 0x00000002)
     BasicFlagMACRO(IsUpperBody, flags, 0x00000004)
@@ -3013,10 +3043,10 @@ class FnvARMORecord(FnvBaseRecord):
     BasicTypeMACRO(IsStimpack, equipmentType, 11, IsNone)
     BasicTypeMACRO(IsEdible, equipmentType, 12, IsNone)
     BasicTypeMACRO(IsAlcohol, equipmentType, 13, IsNone)
-    
+
     BasicTypeMACRO(IsNotOverridingSounds, overrideSounds, 0, IsOverridingSounds)
     BasicTypeMACRO(IsOverridingSounds, overrideSounds, 1, IsNotOverridingSounds)
-    
+
     BasicFlagMACRO(IsModulatesVoice, voiceFlags, 0x0001)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                                          'boundX2', 'boundY2', 'boundZ2',
@@ -3045,7 +3075,7 @@ class FnvBOOKRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     ISTRING_MACRO(iconPath, 19)
@@ -3057,12 +3087,12 @@ class FnvBOOKRecord(FnvBaseRecord):
     SINT8_TYPE_MACRO(teaches, 29)
     SINT32_MACRO(value, 30)
     FLOAT32_MACRO(weight, 31)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
     BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    
+
     BasicFlagMACRO(IsFixed, flags, 0x00000002)
     BasicAliasMACRO(IsCantBeTaken, IsFixed)
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
@@ -3088,7 +3118,7 @@ class FnvCONTRecord(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item[0] in modSet]
-        
+
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
     SINT16_MACRO(boundZ1, 9)
@@ -3099,7 +3129,7 @@ class FnvCONTRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     FORMID_MACRO(script, 19)
@@ -3111,7 +3141,7 @@ class FnvCONTRecord(FnvBaseRecord):
     FORMID_MACRO(openSound, 28)
     FORMID_MACRO(closeSound, 29)
     FORMID_MACRO(loopSound, 30)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
@@ -3133,7 +3163,7 @@ class FnvCONTRecord(FnvBaseRecord):
                                              'script', 'items_list',
                                              'destructable_list', 'flags',
                                              'weight', 'openSound',
-                                             'closeSound', 'loopSound', ] #'modt_p', 
+                                             'closeSound', 'loopSound', ] #'modt_p',
 
 
 class FnvDOORRecord(FnvBaseRecord):
@@ -3148,7 +3178,7 @@ class FnvDOORRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     FORMID_MACRO(script, 19)
@@ -3157,12 +3187,12 @@ class FnvDOORRecord(FnvBaseRecord):
     FORMID_MACRO(closeSound, 26)
     FORMID_MACRO(loopSound, 27)
     UINT8_FLAG_MACRO(flags, 28)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
     BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    
+
     BasicFlagMACRO(IsAutomatic, flags, 0x02)
     BasicFlagMACRO(IsHidden, flags, 0x04)
     BasicFlagMACRO(IsMinimalUse, flags, 0x08)
@@ -3180,7 +3210,7 @@ class FnvDOORRecord(FnvBaseRecord):
                                                          'altTextures_list', 'modelFlags',
                                                          'script', 'destructable_list',
                                                          'openSound', 'closeSound',
-                                                         'loopSound', 'flags'] #'modt_p', 
+                                                         'loopSound', 'flags'] #'modt_p',
 
 class FnvINGRRecord(FnvBaseRecord):
     _Type = 'INGR'
@@ -3194,7 +3224,7 @@ class FnvINGRRecord(FnvBaseRecord):
     ISTRING_MACRO(modPath, 14)
     FLOAT32_MACRO(modb, 15)
     UINT8_ARRAY_MACRO(modt_p, 16)
-    
+
     LIST_MACRO(altTextures, 17, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 18)
     ISTRING_MACRO(iconPath, 19)
@@ -3205,9 +3235,13 @@ class FnvINGRRecord(FnvBaseRecord):
     SINT32_MACRO(value, 24)
     UINT8_FLAG_MACRO(flags, 25)
     UINT8_ARRAY_MACRO(unused1, 26, 3)
-                   
+
     LIST_MACRO(effects, 27, FNVEffect)
-    
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2',
                                            'full', 'modPath', 'modb', 'modt_p',
@@ -3227,382 +3261,599 @@ class FnvINGRRecord(FnvBaseRecord):
 
 class FnvLIGHRecord(FnvBaseRecord):
     _Type = 'LIGH'
-    
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
+
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(script, 21)
+    SINT32_MACRO(duration, 22)
+    UINT32_MACRO(radius, 23)
+    UINT8_MACRO(red, 24)
+    UINT8_MACRO(green, 25)
+    UINT8_MACRO(blue, 26)
+    UINT8_ARRAY_MACRO(unused1, 27, 1)
+    UINT32_FLAG_MACRO(flags, 28)
+    FLOAT32_MACRO(falloff, 29)
+    FLOAT32_MACRO(fov, 30)
+    UINT32_MACRO(value, 31)
+    FLOAT32_MACRO(weight, 32)
+    FLOAT32_MACRO(fade, 33)
+    FORMID_MACRO(sound, 34)
+
+    BasicFlagMACRO(IsDynamic, flags, 0x00000001)
+    BasicFlagMACRO(IsCanTake, flags, 0x00000002)
+    BasicFlagMACRO(IsNegative, flags, 0x00000004)
+    BasicFlagMACRO(IsFlickers, flags, 0x00000008)
+    BasicFlagMACRO(IsOffByDefault, flags, 0x00000020)
+    BasicFlagMACRO(IsFlickerSlow, flags, 0x00000040)
+    BasicFlagMACRO(IsPulse, flags, 0x00000080)
+    BasicFlagMACRO(IsPulseSlow, flags, 0x00000100)
+    BasicFlagMACRO(IsSpotLight, flags, 0x00000200)
+    BasicFlagMACRO(IsSpotShadow, flags, 0x00000400)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'duration', 'radius',
+                                           'red', 'green', 'blue',
+                                           'flags', 'falloff', 'fov',
+                                           'value', 'weight', 'fade', 'sound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'duration', 'radius',
+                                             'red', 'green', 'blue',
+                                             'flags', 'falloff', 'fov',
+                                             'value', 'weight', 'fade', 'sound']# 'modt_p',
 
 class FnvMISCRecord(FnvBaseRecord):
     _Type = 'MISC'
-    
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
+
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(script, 21)
+    GroupedValuesMACRO(destructable, 22, FNVDestructable)
+    FORMID_MACRO(pickupSound, 27)
+    FORMID_MACRO(dropSound, 28)
+    SINT32_MACRO(value, 29)
+    FLOAT32_MACRO(weight, 30)
+    FORMID_MACRO(loopSound, 31)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'destructable_list',
+                                           'pickupSound', 'dropSound',
+                                           'value', 'weight', 'loopSound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'destructable_list',
+                                             'pickupSound', 'dropSound',
+                                             'value', 'weight', 'loopSound']# 'modt_p',
 
 class FnvSTATRecord(FnvBaseRecord):
     _Type = 'STAT'
-    
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(modPath, 13)
+    FLOAT32_MACRO(modb, 14)
+    UINT8_ARRAY_MACRO(modt_p, 15)
+
+    LIST_MACRO(altTextures, 16, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 17)
+    SINT8_TYPE_MACRO(passSound, 18)
+    FORMID_MACRO(loopSound, 19)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
+    BasicTypeMACRO(IsNone, passSound, -1, IsBushA)
+    BasicTypeMACRO(IsBushA, passSound, 0, IsNone)
+    BasicTypeMACRO(IsBushB, passSound, 1, IsNone)
+    BasicTypeMACRO(IsBushC, passSound, 2, IsNone)
+    BasicTypeMACRO(IsBushD, passSound, 3, IsNone)
+    BasicTypeMACRO(IsBushE, passSound, 4, IsNone)
+    BasicTypeMACRO(IsBushF, passSound, 5, IsNone)
+    BasicTypeMACRO(IsBushG, passSound, 6, IsNone)
+    BasicTypeMACRO(IsBushH, passSound, 7, IsNone)
+    BasicTypeMACRO(IsBushI, passSound, 8, IsNone)
+    BasicTypeMACRO(IsBushJ, passSound, 9, IsNone)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'passSound', 'loopSound', ]
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'passSound', 'loopSound', ]#, 'modt_p'
 
 class FnvSCOLRecord(FnvBaseRecord):
     _Type = 'SCOL'
-    
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Static(ListComponent):
+        class Placement(ListX2Component):
+            FLOAT32_LISTX2MACRO(posX, 1)
+            FLOAT32_LISTX2MACRO(posY, 2)
+            FLOAT32_LISTX2MACRO(posZ, 3)
+            RADIAN_LISTX2MACRO(rotX, 4)
+            RADIAN_LISTX2MACRO(rotY, 5)
+            RADIAN_LISTX2MACRO(rotZ, 6)
+            FLOAT32_LISTX2MACRO(scale, 7)
+            exportattrs = copyattrs = ['posX', 'posY', 'posZ',
+                                       'rotX', 'rotY', 'rotZ',
+                                       'scale']
+
+        FORMID_LISTMACRO(static, 1)
+
+        LIST_LISTMACRO(placements, 2, Placement)
+        exportattrs = copyattrs = ['static', 'placements_list']
+
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    ISTRING_MACRO(modPath, 13)
+    FLOAT32_MACRO(modb, 14)
+    UINT8_ARRAY_MACRO(modt_p, 15)
+
+    LIST_MACRO(altTextures, 16, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 17)
+
+    LIST_MACRO(statics, 18, Static)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'statics_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'statics_list']# 'modt_p',
 
 class FnvMSTTRecord(FnvBaseRecord):
     _Type = 'MSTT'
-    
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
+
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    GroupedValuesMACRO(destructable, 19, FNVDestructable)
+    UINT8_ARRAY_MACRO(data_p, 24)
+    FORMID_MACRO(sound, 25)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'destructable_list', 'data_p',
+                                           'sound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'destructable_list', 'data_p',
+                                             'sound']# 'modt_p',
 
 class FnvPWATRecord(FnvBaseRecord):
     _Type = 'PWAT'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvGRASRecord(FnvBaseRecord):
     _Type = 'GRAS'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvTREERecord(FnvBaseRecord):
     _Type = 'TREE'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvFURNRecord(FnvBaseRecord):
     _Type = 'FURN'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvWEAPRecord(FnvBaseRecord):
     _Type = 'WEAP'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvAMMORecord(FnvBaseRecord):
     _Type = 'AMMO'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvNPC_Record(FnvBaseRecord):
     _Type = 'NPC_'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCREARecord(FnvBaseRecord):
     _Type = 'CREA'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLVLCRecord(FnvBaseRecord):
     _Type = 'LVLC'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLVLNRecord(FnvBaseRecord):
     _Type = 'LVLN'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvKEYMRecord(FnvBaseRecord):
     _Type = 'KEYM'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvALCHRecord(FnvBaseRecord):
     _Type = 'ALCH'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIDLMRecord(FnvBaseRecord):
     _Type = 'IDLM'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvNOTERecord(FnvBaseRecord):
     _Type = 'NOTE'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCOBJRecord(FnvBaseRecord):
     _Type = 'COBJ'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvPROJRecord(FnvBaseRecord):
     _Type = 'PROJ'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLVLIRecord(FnvBaseRecord):
     _Type = 'LVLI'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCLMTRecord(FnvBaseRecord):
     _Type = 'CLMT'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvREGNRecord(FnvBaseRecord):
     _Type = 'REGN'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvNAVIRecord(FnvBaseRecord):
     _Type = 'NAVI'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvWRLDRecord(FnvBaseRecord):
     _Type = 'WRLD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvDIALRecord(FnvBaseRecord):
     _Type = 'DIAL'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvQUSTRecord(FnvBaseRecord):
     _Type = 'QUST'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIDLERecord(FnvBaseRecord):
     _Type = 'IDLE'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvPACKRecord(FnvBaseRecord):
     _Type = 'PACK'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCSTYRecord(FnvBaseRecord):
     _Type = 'CSTY'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLSCRRecord(FnvBaseRecord):
     _Type = 'LSCR'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvANIORecord(FnvBaseRecord):
     _Type = 'ANIO'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvWATRRecord(FnvBaseRecord):
     _Type = 'WATR'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvEFSHRecord(FnvBaseRecord):
     _Type = 'EFSH'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvEXPLRecord(FnvBaseRecord):
     _Type = 'EXPL'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvDEBRRecord(FnvBaseRecord):
     _Type = 'DEBR'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIMGSRecord(FnvBaseRecord):
     _Type = 'IMGS'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIMADRecord(FnvBaseRecord):
     _Type = 'IMAD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvFLSTRecord(FnvBaseRecord):
     _Type = 'FLST'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvPERKRecord(FnvBaseRecord):
     _Type = 'PERK'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvBPTDRecord(FnvBaseRecord):
     _Type = 'BPTD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvADDNRecord(FnvBaseRecord):
     _Type = 'ADDN'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvAVIFRecord(FnvBaseRecord):
     _Type = 'AVIF'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvRADSRecord(FnvBaseRecord):
     _Type = 'RADS'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCAMSRecord(FnvBaseRecord):
     _Type = 'CAMS'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCPTHRecord(FnvBaseRecord):
     _Type = 'CPTH'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvVTYPRecord(FnvBaseRecord):
     _Type = 'VTYP'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIPCTRecord(FnvBaseRecord):
     _Type = 'IPCT'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIPDSRecord(FnvBaseRecord):
     _Type = 'IPDS'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvARMARecord(FnvBaseRecord):
     _Type = 'ARMA'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvECZNRecord(FnvBaseRecord):
     _Type = 'ECZN'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvMESGRecord(FnvBaseRecord):
     _Type = 'MESG'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvRGDLRecord(FnvBaseRecord):
     _Type = 'RGDL'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvDOBJRecord(FnvBaseRecord):
     _Type = 'DOBJ'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLGTMRecord(FnvBaseRecord):
     _Type = 'LGTM'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvMUSCRecord(FnvBaseRecord):
     _Type = 'MUSC'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvIMODRecord(FnvBaseRecord):
     _Type = 'IMOD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvREPURecord(FnvBaseRecord):
     _Type = 'REPU'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvRCPERecord(FnvBaseRecord):
     _Type = 'RCPE'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvRCCTRecord(FnvBaseRecord):
     _Type = 'RCCT'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCHIPRecord(FnvBaseRecord):
     _Type = 'CHIP'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCSNORecord(FnvBaseRecord):
     _Type = 'CSNO'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvLSCTRecord(FnvBaseRecord):
     _Type = 'LSCT'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvMSETRecord(FnvBaseRecord):
     _Type = 'MSET'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvALOCRecord(FnvBaseRecord):
     _Type = 'ALOC'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCHALRecord(FnvBaseRecord):
     _Type = 'CHAL'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvAMEFRecord(FnvBaseRecord):
     _Type = 'AMEF'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCCRDRecord(FnvBaseRecord):
     _Type = 'CCRD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCMNYRecord(FnvBaseRecord):
     _Type = 'CMNY'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvCDCKRecord(FnvBaseRecord):
     _Type = 'CDCK'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvDEHYRecord(FnvBaseRecord):
     _Type = 'DEHY'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvHUNGRecord(FnvBaseRecord):
     _Type = 'HUNG'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 class FnvSLPDRecord(FnvBaseRecord):
     _Type = 'SLPD'
-    
+
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
 
 #--Oblivion
@@ -7219,7 +7470,7 @@ class FnvModFile(object):
     FnvModRecordsMACRO(DEHY)
     FnvModRecordsMACRO(HUNG)
     FnvModRecordsMACRO(SLPD)
-  
+
     @property
     def tops(self):
         return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
@@ -7468,7 +7719,7 @@ class ObCollection:
 
     def __del__(self):
         _CDeleteCollection(self._CollectionID)
-    
+
     def Debug_DumpModFiles(self):
         value = "Collection (%08X) contains the following modfiles:\n" % (self._CollectionID,)
         for mod in self.AllMods:

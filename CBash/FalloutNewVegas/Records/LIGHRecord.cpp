@@ -24,6 +24,40 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+LIGHRecord::LIGHDATA::LIGHDATA():
+    duration(0),
+    radius(0),
+    flags(0),
+    falloff(0.0f),
+    fov(0.0f),
+    value(0),
+    weight(0.0f)
+    {
+    //
+    }
+
+LIGHRecord::LIGHDATA::~LIGHDATA()
+    {
+    //
+    }
+
+bool LIGHRecord::LIGHDATA::operator ==(const LIGHDATA &other) const
+    {
+    return (duration == other.duration &&
+            radius == other.radius &&
+            color == other.color &&
+            flags == other.flags &&
+            AlmostEqual(falloff,other.falloff,2) &&
+            AlmostEqual(fov,other.fov,2) &&
+            value == other.value &&
+            AlmostEqual(weight,other.weight,2));
+    }
+
+bool LIGHRecord::LIGHDATA::operator !=(const LIGHDATA &other) const
+    {
+    return !(*this == other);
+    }
+
 LIGHRecord::LIGHRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,9 +86,7 @@ LIGHRecord::LIGHRecord(LIGHRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
     FULL = srcRecord->FULL;
     ICON = srcRecord->ICON;
@@ -81,9 +113,9 @@ bool LIGHRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
 
     return op.Stop();
     }
@@ -320,9 +352,7 @@ SINT32 LIGHRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
     WRITE(FULL);
     WRITE(ICON);
@@ -330,22 +360,21 @@ SINT32 LIGHRecord::WriteRecord(FileWriter &writer)
     WRITE(DATA);
     WRITE(FNAM);
     WRITE(SNAM);
-
     return -1;
     }
 
 bool LIGHRecord::operator ==(const LIGHRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            MODL == other.MODL &&
+    return (OBND == other.OBND &&
+            SNAM == other.SNAM &&
             SCRI == other.SCRI &&
+            DATA == other.DATA &&
+            FNAM == other.FNAM &&
+            EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             ICON.equalsi(other.ICON) &&
             MICO.equalsi(other.MICO) &&
-            DATA == other.DATA &&
-            FNAM == other.FNAM &&
-            SNAM == other.SNAM);
+            MODL == other.MODL);
     }
 
 bool LIGHRecord::operator !=(const LIGHRecord &other) const

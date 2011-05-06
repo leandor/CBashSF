@@ -60,17 +60,23 @@ UINT32 SCOLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //modPath
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //modPath
             return ISTRING_FIELD;
-        case 11: //modb
+        case 14: //modb
             return FLOAT32_FIELD;
-        case 12: //modt_p
+        case 15: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -81,27 +87,102 @@ UINT32 SCOLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 13: //mods Alternate Textures
-            return ISTRING_FIELD;
+        case 16: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 16: //modelFlags
-            return UINT8_FIELD;
-        case 17: //onam Static
-            return FORMID_FIELD;
-        case 18: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 19: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 20: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 21: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 22: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 23: //data DATA ,, Struct
-            return FLOAT32_FIELD;
-        case 24: //data DATA ,, Struct
-            return FLOAT32_FIELD;
+            if(ListFieldID == 0) //altTextures
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 17: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 18: //statics
+            if(ListFieldID == 0) //statics
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return Parts.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Parts.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //static
+                    return FORMID_FIELD;
+                case 2: //placements
+                    if(ListX2FieldID == 0) //placements
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Parts.value[ListIndex]->DATA.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            return FLOAT32_FIELD;
+                        case 2: //posY
+                            return FLOAT32_FIELD;
+                        case 3: //posZ
+                            return FLOAT32_FIELD;
+                        case 4: //rotX
+                            return RADIAN_FIELD;
+                        case 5: //rotY
+                            return RADIAN_FIELD;
+                        case 6: //rotZ
+                            return RADIAN_FIELD;
+                        case 7: //scale
+                            return FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -126,43 +207,82 @@ void * SCOLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //modPath
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 11: //modb
+        case 14: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
-        case 12: //modt_p
+        case 15: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 13: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 14: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value14 : NULL;
-        case 15: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
-        case 16: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value16 : NULL;
-        case 17: //onam Static
-            return ONAM.IsLoaded() ? &ONAM->value17 : NULL;
-        case 18: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value18 : NULL;
-        case 19: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value19 : NULL;
-        case 20: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value20 : NULL;
-        case 21: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value21 : NULL;
-        case 22: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value22 : NULL;
-        case 23: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value23 : NULL;
-        case 24: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value24 : NULL;
+        case 16: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 17: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 18: //statics
+            if(ListIndex >= Parts.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //static
+                    return &Parts.value[ListIndex]->ONAM.value;
+                case 2: //placements
+                    if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].posX;
+                        case 2: //posY
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].posY;
+                        case 3: //posZ
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].posZ;
+                        case 4: //rotX
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].rotX;
+                        case 5: //rotY
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].rotY;
+                        case 6: //rotZ
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].rotZ;
+                        case 7: //scale
+                            return &Parts.value[ListIndex]->DATA.value[ListX2Index].scale;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
         default:
             return NULL;
         }
@@ -196,80 +316,128 @@ bool SCOLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //modPath
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
+            break;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
+            break;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
+            break;
+        case 13: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 11: //modb
+        case 14: //modb
             MODL.Load();
             MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 12: //modt_p
+        case 15: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 13: //mods Alternate Textures
+        case 16: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 14: //mods Alternate Textures
+        case 17: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value14 = *(FORMID *)FieldValue;
-            return true;
-        case 15: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value15 = *(SINT32 *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 16: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value16 = *(UINT8 *)FieldValue;
-            break;
-        case 17: //onam Static
-            ONAM.Load();
-            ONAM->value17 = *(FORMID *)FieldValue;
-            return true;
-        case 18: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value18 = *(FLOAT32 *)FieldValue;
-            break;
-        case 19: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value19 = *(FLOAT32 *)FieldValue;
-            break;
-        case 20: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value20 = *(FLOAT32 *)FieldValue;
-            break;
-        case 21: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value21 = *(FLOAT32 *)FieldValue;
-            break;
-        case 22: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value22 = *(FLOAT32 *)FieldValue;
-            break;
-        case 23: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value23 = *(FLOAT32 *)FieldValue;
-            break;
-        case 24: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value24 = *(FLOAT32 *)FieldValue;
+        case 18: //statics
+            if(ListFieldID == 0) //staticsSize
+                {
+                Parts.resize(ArraySize);
+                return false;
+                }
+                
+            if(ListIndex >= Parts.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //static
+                    Parts.value[ListIndex]->ONAM.value = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //placements
+                    if(ListX2FieldID == 0) //staticsSize
+                        {
+                        Parts.value[ListIndex]->DATA.resize(ArraySize);
+                        return false;
+                        }
+                        
+                    if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posX = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 2: //posY
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posY = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 3: //posZ
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posZ = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 4: //rotX
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotX = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 5: //rotY
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotY = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 6: //rotZ
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotZ = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 7: //scale
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].scale = *(FLOAT32 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -279,6 +447,9 @@ bool SCOLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void SCOLRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
+    FNVMODS defaultMODS;
+    SCOLDATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -297,72 +468,128 @@ void SCOLRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //modPath
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
+            return;
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 11: //modb
+        case 14: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 12: //modt_p
+        case 15: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 13: //mods Alternate Textures
+        case 16: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 14: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 15: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 16: //modelFlags
+        case 17: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 17: //onam Static
-            ONAM.Unload();
-            return;
-        case 18: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 19: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 20: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 21: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 22: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 23: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 24: //data DATA ,, Struct
-            DATA.Unload();
+        case 18: //statics
+            if(ListFieldID == 0) //staticsSize
+                {
+                Parts.Unload();
+                return;
+                }
+                
+            if(ListIndex >= Parts.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //static
+                    Parts.value[ListIndex]->ONAM.Unload();
+                    return;
+                case 2: //placements
+                    if(ListX2FieldID == 0) //staticsSize
+                        {
+                        Parts.value[ListIndex]->DATA.Unload();
+                        return;
+                        }
+                        
+                    if(ListX2Index >= Parts.value[ListIndex]->DATA.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posX = defaultDATA.posX;
+                            return;
+                        case 2: //posY
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posY = defaultDATA.posY;
+                            return;
+                        case 3: //posZ
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].posZ = defaultDATA.posZ;
+                            return;
+                        case 4: //rotX
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotX = defaultDATA.rotX;
+                            return;
+                        case 5: //rotY
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotY = defaultDATA.rotY;
+                            return;
+                        case 6: //rotZ
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].rotZ = defaultDATA.rotZ;
+                            return;
+                        case 7: //scale
+                            Parts.value[ListIndex]->DATA.value[ListX2Index].scale = defaultDATA.scale;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
         default:
             return;
         }
+    return;
     }
 }

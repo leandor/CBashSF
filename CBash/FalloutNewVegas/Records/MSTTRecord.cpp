@@ -53,9 +53,7 @@ MSTTRecord::MSTTRecord(MSTTRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     Destructable = srcRecord->Destructable;
     DATA = srcRecord->DATA;
     SNAM = srcRecord->SNAM;
@@ -86,7 +84,7 @@ bool MSTTRecord::VisitFormIDs(FormIDOp &op)
             }
         }
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
 
     return op.Stop();
     }
@@ -213,11 +211,8 @@ SINT32 MSTTRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     Destructable.Write(writer);
-
     WRITE(DATA);
     WRITE(SNAM);
 
@@ -226,13 +221,13 @@ SINT32 MSTTRecord::WriteRecord(FileWriter &writer)
 
 bool MSTTRecord::operator ==(const MSTTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
+    return (OBND == other.OBND &&
+            SNAM == other.SNAM &&
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            Destructable == other.Destructable &&
-            DATA == other.DATA &&
-            SNAM == other.SNAM);
+            Destructable == other.Destructable);
     }
 
 bool MSTTRecord::operator !=(const MSTTRecord &other) const

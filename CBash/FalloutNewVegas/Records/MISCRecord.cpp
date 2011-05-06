@@ -53,9 +53,7 @@ MISCRecord::MISCRecord(MISCRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
@@ -83,7 +81,7 @@ bool MISCRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(Destructable.IsLoaded())
         {
         for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
@@ -93,11 +91,11 @@ bool MISCRecord::VisitFormIDs(FormIDOp &op)
             }
         }
     if(YNAM.IsLoaded())
-        op.Accept(YNAM->value);
+        op.Accept(YNAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
+        op.Accept(ZNAM.value);
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->value);
+        op.Accept(RNAM.value);
 
     return op.Stop();
     }
@@ -244,37 +242,32 @@ SINT32 MISCRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SCRI);
-
     Destructable.Write(writer);
-
     WRITE(YNAM);
     WRITE(ZNAM);
     WRITE(DATA);
     WRITE(RNAM);
-
     return -1;
     }
 
 bool MISCRecord::operator ==(const MISCRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
-            Destructable == other.Destructable &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
             DATA == other.DATA &&
-            RNAM == other.RNAM);
+            RNAM == other.RNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
+            MODL == other.MODL &&
+            Destructable == other.Destructable);
     }
 
 bool MISCRecord::operator !=(const MISCRecord &other) const

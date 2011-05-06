@@ -221,6 +221,14 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
+SearchAndReplace.setSearchString("( *) RADIAN_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString("$1 $2 = CBashFLOAT32_LISTX2($3)\n$1 $2_degrees = CBashDEGREES_LISTX2($3)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 //ListX1 Level Macros
 SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
 SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
