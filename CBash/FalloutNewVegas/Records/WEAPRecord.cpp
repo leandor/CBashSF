@@ -24,6 +24,231 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+WEAPRecord::WEAPDATA::WEAPDATA():
+    value(0),
+    health(0),
+    weight(0.0f), 
+    damage(0),
+    clipSize(0)
+    {
+    //
+    }
+
+WEAPRecord::WEAPDATA::~WEAPDATA()
+    {
+    //
+    }
+
+bool WEAPRecord::WEAPDATA::operator ==(const WEAPDATA &other) const
+    {
+    return (value == other.value &&
+            health == other.health &&
+            damage == other.damage &&
+            clipSize == other.clipSize &&
+            AlmostEqual(weight,other.weight,2));
+    }
+
+bool WEAPRecord::WEAPDATA::operator !=(const WEAPDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+WEAPRecord::WEAPDNAM::WEAPDNAM():
+    animType(0),
+    animMult(0.0f),
+    reach(0.0f), 
+    flags1(0),
+    gripAnim(0),
+    ammoUse(0),
+    reloadAnim(0), 
+    minSpread(0.0f), 
+    spread(0.0f), 
+    unknown1(0.0f), 
+    sightFOV(0.0f), 
+    unknown2(0.0f), 
+    projectile(0), 
+    VATSHitChance(0), 
+    attackAnim(0), 
+    projectileCount(0), 
+    weaponAV(0), 
+    minRange(0.0f), 
+    maxRange(0.0f), 
+    onHit(0), 
+    flags2(0), 
+    animAttackMult(0.0f), 
+    fireRate(0.0f), 
+    overrideAP(0.0f), 
+    leftRumble(0.0f), 
+    rightRumble(0.0f), 
+    timeRumble(0.0f), 
+    overrideDamageToWeapon(0.0f), 
+    shotsPerSecond(0.0f), 
+    reloadTime(0.0f), 
+    jamTime(0.0f), 
+    aimArc(0.0f), 
+    skill(0), 
+    rumbleType(0), 
+    rumbleWavelength(0.0f), 
+    limbDamageMult(0.0f), 
+    resistType(0), 
+    sightUsage(0.0f), 
+    semiFireDelayMin(0.0f), 
+    semiFireDelayMax(0.0f), 
+    unknown3(0.0f), 
+    effectMod1(0), 
+    effectMod2(0), 
+    effectMod3(0), 
+    valueAMod1(0.0f), 
+    valueAMod2(0.0f), 
+    valueAMod3(0.0f), 
+    overridePwrAtkAnim(0), 
+    strengthReq(0), 
+    unknown4(0), 
+    reloadAnimMod(0), 
+    regenRate(0.0f), 
+    killImpulse(0.0f), 
+    valueBMod1(0.0f), 
+    valueBMod2(0.0f), 
+    valueBMod3(0.0f), 
+    impulseDist(0.0f), 
+    skillReq(0)
+    {
+    memset(&unknown5[0], 0x00, 2);
+    }
+
+WEAPRecord::WEAPDNAM::~WEAPDNAM()
+    {
+    //
+    }
+
+bool WEAPRecord::WEAPDNAM::operator ==(const WEAPDNAM &other) const
+    {
+    return (animType == other.animType &&
+            flags1 == other.flags1 &&
+            gripAnim == other.gripAnim &&
+            ammoUse == other.ammoUse &&
+            reloadAnim == other.reloadAnim &&
+            projectile == other.projectile &&
+            VATSHitChance == other.VATSHitChance &&
+            attackAnim == other.attackAnim &&
+            projectileCount == other.projectileCount &&
+            weaponAV == other.weaponAV &&
+            onHit == other.onHit &&
+            flags2 == other.flags2 &&
+            skill == other.skill &&
+            rumbleType == other.rumbleType &&
+            resistType == other.resistType &&
+            effectMod1 == other.effectMod1 &&
+            effectMod2 == other.effectMod2 &&
+            effectMod3 == other.effectMod3 &&
+            overridePwrAtkAnim == other.overridePwrAtkAnim &&
+            strengthReq == other.strengthReq &&
+            unknown4 == other.unknown4 &&
+            reloadAnimMod == other.reloadAnimMod &&
+            skillReq == other.skillReq &&
+            unknown5[0] == other.unknown5[0] &&
+            unknown5[1] == other.unknown5[1] &&
+            AlmostEqual(animMult,other.animMult,2) &&
+            AlmostEqual(reach,other.reach,2) &&
+            AlmostEqual(minSpread,other.minSpread,2) &&
+            AlmostEqual(spread,other.spread,2) &&
+            AlmostEqual(unknown1,other.unknown1,2) &&
+            AlmostEqual(sightFOV,other.sightFOV,2) &&
+            AlmostEqual(unknown2,other.unknown2,2) &&
+            AlmostEqual(minRange,other.minRange,2) &&
+            AlmostEqual(maxRange,other.maxRange,2) &&
+            AlmostEqual(animAttackMult,other.animAttackMult,2) &&
+            AlmostEqual(fireRate,other.fireRate,2) &&
+            AlmostEqual(overrideAP,other.overrideAP,2) &&
+            AlmostEqual(leftRumble,other.leftRumble,2) &&
+            AlmostEqual(rightRumble,other.rightRumble,2) &&
+            AlmostEqual(timeRumble,other.timeRumble,2) &&
+            AlmostEqual(overrideDamageToWeapon,other.overrideDamageToWeapon,2) &&
+            AlmostEqual(shotsPerSecond,other.shotsPerSecond,2) &&
+            AlmostEqual(reloadTime,other.reloadTime,2) &&
+            AlmostEqual(jamTime,other.jamTime,2) &&
+            AlmostEqual(aimArc,other.aimArc,2) &&
+            AlmostEqual(rumbleWavelength,other.rumbleWavelength,2) &&
+            AlmostEqual(limbDamageMult,other.limbDamageMult,2) &&
+            AlmostEqual(sightUsage,other.sightUsage,2) &&
+            AlmostEqual(semiFireDelayMin,other.semiFireDelayMin,2) &&
+            AlmostEqual(semiFireDelayMax,other.semiFireDelayMax,2) &&
+            AlmostEqual(unknown3,other.unknown3,2) &&
+            AlmostEqual(valueAMod1,other.valueAMod1,2) &&
+            AlmostEqual(valueAMod2,other.valueAMod2,2) &&
+            AlmostEqual(valueAMod3,other.valueAMod3,2) &&
+            AlmostEqual(regenRate,other.regenRate,2) &&
+            AlmostEqual(killImpulse,other.killImpulse,2) &&
+            AlmostEqual(valueBMod1,other.valueBMod1,2) &&
+            AlmostEqual(valueBMod2,other.valueBMod2,2) &&
+            AlmostEqual(valueBMod3,other.valueBMod3,2) &&
+            AlmostEqual(impulseDist,other.impulseDist,2));
+    }
+
+bool WEAPRecord::WEAPDNAM::operator !=(const WEAPDNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+WEAPRecord::WEAPCRDT::WEAPCRDT():
+    critDamage(0),
+    critMult(0.0f),
+    flags(0),
+    effect(0)
+    {
+    memset(&unused1[0], 0x00, 2);
+    memset(&unused2[0], 0x00, 3);
+    }
+
+WEAPRecord::WEAPCRDT::~WEAPCRDT()
+    {
+    //
+    }
+
+bool WEAPRecord::WEAPCRDT::operator ==(const WEAPCRDT &other) const
+    {
+    return (critDamage == other.critDamage &&
+            flags == other.flags &&
+            effect == other.effect &&
+            AlmostEqual(critMult,other.critMult,2));
+    }
+
+bool WEAPRecord::WEAPCRDT::operator !=(const WEAPCRDT &other) const
+    {
+    return !(*this == other);
+    }
+
+WEAPRecord::WEAPVATS::WEAPVATS():
+    effect(0),
+    skill(0.0f),
+    damageMult(0.0f),
+    AP(0.0f),
+    silenceType(0),
+    modRequiredType(0)
+    {
+    memset(&unused1[0], 0x00, 2);
+    }
+
+WEAPRecord::WEAPVATS::~WEAPVATS()
+    {
+    //
+    }
+
+bool WEAPRecord::WEAPVATS::operator ==(const WEAPVATS &other) const
+    {
+    return (effect == other.effect &&
+            silenceType == other.silenceType &&
+            modRequiredType == other.modRequiredType &&
+            AlmostEqual(skill,other.skill,2) &&
+            AlmostEqual(damageMult,other.damageMult,2) &&
+            AlmostEqual(AP,other.AP,2));
+    }
+
+bool WEAPRecord::WEAPVATS::operator !=(const WEAPVATS &other) const
+    {
+    return !(*this == other);
+    }
+
 WEAPRecord::WEAPRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -53,9 +278,7 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
@@ -67,63 +290,34 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     ETYP = srcRecord->ETYP;
     BIPL = srcRecord->BIPL;
     YNAM = srcRecord->YNAM;
-    ZNAM = srcRecord->ZNAM;
-    if(srcRecord->MOD2.IsLoaded())
-        {
-        MOD2.Load();
-        MOD2->MOD2 = srcRecord->MOD2->MOD2;
-        MOD2->MO2T = srcRecord->MOD2->MO2T;
-        MOD2->MO2S = srcRecord->MOD2->MO2S;
-        }
-    if(srcRecord->MOD3.IsLoaded())
-        {
-        MOD3.Load();
-        MOD3->MOD3 = srcRecord->MOD3->MOD3;
-        MOD3->MO3T = srcRecord->MOD3->MO3T;
-        MOD3->MO3S = srcRecord->MOD3->MO3S;
-        }
+    ZNAM = srcRecord->ZNAM;    
+    MOD2 = srcRecord->MOD2;
+    MOD3 = srcRecord->MOD3;
     EFSD = srcRecord->EFSD;
-    if(srcRecord->MOD4.IsLoaded())
-        {
-        MOD4.Load();
-        MOD4->MOD4 = srcRecord->MOD4->MOD4;
-        MOD4->MO4T = srcRecord->MOD4->MO4T;
-        MOD4->MO4S = srcRecord->MOD4->MO4S;
-        }
+    MOD4 = srcRecord->MOD4;
     VANM = srcRecord->VANM;
     NNAM = srcRecord->NNAM;
-    if(srcRecord->MWD1.IsLoaded())
-        {
-        MWD1.Load();
-        MWD1->MWD1 = srcRecord->MWD1->MWD1;
-        MWD1->MWD2 = srcRecord->MWD1->MWD2;
-        MWD1->MWD3 = srcRecord->MWD1->MWD3;
-        MWD1->MWD4 = srcRecord->MWD1->MWD4;
-        MWD1->MWD5 = srcRecord->MWD1->MWD5;
-        MWD1->MWD6 = srcRecord->MWD1->MWD6;
-        MWD1->MWD7 = srcRecord->MWD1->MWD7;
-        }
+    MWD1 = srcRecord->MWD1;
+    MWD2 = srcRecord->MWD2;
+    MWD3 = srcRecord->MWD3;
+    MWD4 = srcRecord->MWD4;
+    MWD5 = srcRecord->MWD5;
+    MWD6 = srcRecord->MWD6;
+    MWD7 = srcRecord->MWD7;
     INAM = srcRecord->INAM;
     WNAM = srcRecord->WNAM;
-    if(srcRecord->WNM1.IsLoaded())
-        {
-        WNM1.Load();
-        WNM1->WNM1 = srcRecord->WNM1->WNM1;
-        WNM1->WNM2 = srcRecord->WNM1->WNM2;
-        WNM1->WNM3 = srcRecord->WNM1->WNM3;
-        WNM1->WNM4 = srcRecord->WNM1->WNM4;
-        WNM1->WNM5 = srcRecord->WNM1->WNM5;
-        WNM1->WNM6 = srcRecord->WNM1->WNM6;
-        WNM1->WNM7 = srcRecord->WNM1->WNM7;
-        }
-    if(srcRecord->WMI1.IsLoaded())
-        {
-        WMI1.Load();
-        WMI1->WMI1 = srcRecord->WMI1->WMI1;
-        WMI1->WMI2 = srcRecord->WMI1->WMI2;
-        WMI1->WMI3 = srcRecord->WMI1->WMI3;
-        }
-    SNAM = srcRecord->SNAM;
+    WNM1 = srcRecord->WNM1;
+    WNM2 = srcRecord->WNM2;
+    WNM3 = srcRecord->WNM3;
+    WNM4 = srcRecord->WNM4;
+    WNM5 = srcRecord->WNM5;
+    WNM6 = srcRecord->WNM6;
+    WNM7 = srcRecord->WNM7;
+    WMI1 = srcRecord->WMI1;
+    WMI2 = srcRecord->WMI2;
+    WMI3 = srcRecord->WMI3;
+    SNAM1 = srcRecord->SNAM1;
+    SNAM2 = srcRecord->SNAM2;
     XNAM = srcRecord->XNAM;
     NAM7 = srcRecord->NAM7;
     TNAM = srcRecord->TNAM;
@@ -131,7 +325,8 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     UNAM = srcRecord->UNAM;
     NAM9 = srcRecord->NAM9;
     NAM8 = srcRecord->NAM8;
-    WMS1 = srcRecord->WMS1;
+    WMS11 = srcRecord->WMS11;
+    WMS12 = srcRecord->WMS12;
     WMS2 = srcRecord->WMS2;
     DATA = srcRecord->DATA;
     DNAM = srcRecord->DNAM;
@@ -157,11 +352,11 @@ bool WEAPRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(EITM.IsLoaded())
-        op.Accept(EITM->value);
+        op.Accept(EITM.value);
     if(NAM0.IsLoaded())
-        op.Accept(NAM0->value);
+        op.Accept(NAM0.value);
     if(Destructable.IsLoaded())
         {
         for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
@@ -171,2149 +366,1812 @@ bool WEAPRecord::VisitFormIDs(FormIDOp &op)
             }
         }
     if(REPL.IsLoaded())
-        op.Accept(REPL->value);
+        op.Accept(REPL.value);
     if(BIPL.IsLoaded())
-        op.Accept(BIPL->value);
+        op.Accept(BIPL.value);
     if(YNAM.IsLoaded())
-        op.Accept(YNAM->value);
+        op.Accept(YNAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-    if(MOD2.IsLoaded() && MOD2->MO2S.IsLoaded())
-        op.Accept(MOD2->MO2S->value);
-    if(MOD3.IsLoaded() && MOD3->MO3S.IsLoaded())
-        op.Accept(MOD3->MO3S->value);
+        op.Accept(ZNAM.value);
+    if(MOD2.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MOD2->Textures.MODS.size(); x++)
+            op.Accept(MOD2->Textures.MODS[x]->texture);
+        }
+    if(MOD3.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MOD3->Textures.MODS.size(); x++)
+            op.Accept(MOD3->Textures.MODS[x]->texture);
+        }
     if(EFSD.IsLoaded())
-        op.Accept(EFSD->value);
-    if(MOD4.IsLoaded() && MOD4->MO4S.IsLoaded())
-        op.Accept(MOD4->MO4S->value);
+        op.Accept(EFSD.value);
+    if(MOD4.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MOD4->Textures.MODS.size(); x++)
+            op.Accept(MOD4->Textures.MODS[x]->texture);
+        }
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
     if(WNAM.IsLoaded())
-        op.Accept(WNAM->value);
-    if(WNM1.IsLoaded() && WNM1->WNM1.IsLoaded())
-        op.Accept(WNM1->WNM1->value);
-    if(WNM1.IsLoaded() && WNM1->WNM2.IsLoaded())
-        op.Accept(WNM1->WNM2->value);
-    if(WNM1.IsLoaded() && WNM1->WNM3.IsLoaded())
-        op.Accept(WNM1->WNM3->value);
-    if(WNM1.IsLoaded() && WNM1->WNM4.IsLoaded())
-        op.Accept(WNM1->WNM4->value);
-    if(WNM1.IsLoaded() && WNM1->WNM5.IsLoaded())
-        op.Accept(WNM1->WNM5->value);
-    if(WNM1.IsLoaded() && WNM1->WNM6.IsLoaded())
-        op.Accept(WNM1->WNM6->value);
-    if(WNM1.IsLoaded() && WNM1->WNM7.IsLoaded())
-        op.Accept(WNM1->WNM7->value);
-    if(WMI1.IsLoaded() && WMI1->WMI1.IsLoaded())
-        op.Accept(WMI1->WMI1->value);
-    if(WMI1.IsLoaded() && WMI1->WMI2.IsLoaded())
-        op.Accept(WMI1->WMI2->value);
-    if(WMI1.IsLoaded() && WMI1->WMI3.IsLoaded())
-        op.Accept(WMI1->WMI3->value);
-    if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(WNAM.value);
+    if(WNM1.IsLoaded())
+        op.Accept(WNM1.value);
+    if(WNM2.IsLoaded())
+        op.Accept(WNM2.value);
+    if(WNM3.IsLoaded())
+        op.Accept(WNM3.value);
+    if(WNM4.IsLoaded())
+        op.Accept(WNM4.value);
+    if(WNM5.IsLoaded())
+        op.Accept(WNM5.value);
+    if(WNM6.IsLoaded())
+        op.Accept(WNM6.value);
+    if(WNM7.IsLoaded())
+        op.Accept(WNM7.value);
+    if(WMI1.IsLoaded())
+        op.Accept(WMI1.value);
+    if(WMI2.IsLoaded())
+        op.Accept(WMI2.value);
+    if(WMI3.IsLoaded())
+        op.Accept(WMI3.value);
+    if(SNAM1.IsLoaded())
+        op.Accept(SNAM1.value);
+    if(SNAM2.IsLoaded())
+        op.Accept(SNAM2.value);
     if(XNAM.IsLoaded())
-        op.Accept(XNAM->value);
+        op.Accept(XNAM.value);
     if(NAM7.IsLoaded())
-        op.Accept(NAM7->value);
+        op.Accept(NAM7.value);
     if(TNAM.IsLoaded())
-        op.Accept(TNAM->value);
+        op.Accept(TNAM.value);
     if(NAM6.IsLoaded())
-        op.Accept(NAM6->value);
+        op.Accept(NAM6.value);
     if(UNAM.IsLoaded())
-        op.Accept(UNAM->value);
+        op.Accept(UNAM.value);
     if(NAM9.IsLoaded())
-        op.Accept(NAM9->value);
+        op.Accept(NAM9.value);
     if(NAM8.IsLoaded())
-        op.Accept(NAM8->value);
-    if(WMS1.IsLoaded())
-        op.Accept(WMS1->value);
+        op.Accept(NAM8.value);
+    if(WMS11.IsLoaded())
+        op.Accept(WMS11.value);
+    if(WMS12.IsLoaded())
+        op.Accept(WMS12.value);
     if(WMS2.IsLoaded())
-        op.Accept(WMS2->value);
-    //if(DNAM.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(DNAM->value);
-    //if(CRDT.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(CRDT->value);
-    //if(VATS.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(VATS->value);
-
+        op.Accept(WMS2.value);
+    op.Accept(DNAM.value.projectile);
+    op.Accept(CRDT.value.effect);
+    op.Accept(VATS.value.effect);
     return op.Stop();
     }
 
 bool WEAPRecord::IsNotNormalWeapon()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNotNormalWeapon) != 0;
+    return (DNAM.value.flags1 & fIsNotNormalWeapon) != 0;
     }
 
 void WEAPRecord::IsNotNormalWeapon(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNotNormalWeapon) : (Dummy->flags & ~fIsNotNormalWeapon);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsNotNormalWeapon) : (DNAM.value.flags1 & ~fIsNotNormalWeapon);
     }
 
 bool WEAPRecord::IsAutomatic()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAutomatic) != 0;
+    return (DNAM.value.flags1 & fIsAutomatic) != 0;
     }
 
 void WEAPRecord::IsAutomatic(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAutomatic) : (Dummy->flags & ~fIsAutomatic);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsAutomatic) : (DNAM.value.flags1 & ~fIsAutomatic);
     }
 
 bool WEAPRecord::IsHasScope()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHasScope) != 0;
+    return (DNAM.value.flags1 & fIsHasScope) != 0;
     }
 
 void WEAPRecord::IsHasScope(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHasScope) : (Dummy->flags & ~fIsHasScope);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsHasScope) : (DNAM.value.flags1 & ~fIsHasScope);
     }
 
 bool WEAPRecord::IsCantDrop()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsCantDrop) != 0;
+    return (DNAM.value.flags1 & fIsCantDrop) != 0;
     }
 
 void WEAPRecord::IsCantDrop(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsCantDrop) : (Dummy->flags & ~fIsCantDrop);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsCantDrop) : (DNAM.value.flags1 & ~fIsCantDrop);
     }
 
 bool WEAPRecord::IsHideBackpack()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHideBackpack) != 0;
+    return (DNAM.value.flags1 & fIsHideBackpack) != 0;
     }
 
 void WEAPRecord::IsHideBackpack(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHideBackpack) : (Dummy->flags & ~fIsHideBackpack);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsHideBackpack) : (DNAM.value.flags1 & ~fIsHideBackpack);
     }
 
 bool WEAPRecord::IsEmbeddedWeapon()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEmbeddedWeapon) != 0;
+    return (DNAM.value.flags1 & fIsEmbeddedWeapon) != 0;
     }
 
 void WEAPRecord::IsEmbeddedWeapon(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsEmbeddedWeapon) : (Dummy->flags & ~fIsEmbeddedWeapon);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsEmbeddedWeapon) : (DNAM.value.flags1 & ~fIsEmbeddedWeapon);
     }
 
 bool WEAPRecord::IsDontUse1stPersonISAnimations()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDontUse1stPersonISAnimations) != 0;
+    return (DNAM.value.flags1 & fIsDontUse1stPersonISAnimations) != 0;
     }
 
 void WEAPRecord::IsDontUse1stPersonISAnimations(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDontUse1stPersonISAnimations) : (Dummy->flags & ~fIsDontUse1stPersonISAnimations);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsDontUse1stPersonISAnimations) : (DNAM.value.flags1 & ~fIsDontUse1stPersonISAnimations);
     }
 
 bool WEAPRecord::IsNonPlayable()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNonPlayable) != 0;
+    return (DNAM.value.flags1 & fIsNonPlayable) != 0;
     }
 
 void WEAPRecord::IsNonPlayable(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNonPlayable) : (Dummy->flags & ~fIsNonPlayable);
+    DNAM.value.flags1 = value ? (DNAM.value.flags1 | fIsNonPlayable) : (DNAM.value.flags1 & ~fIsNonPlayable);
     }
 
 bool WEAPRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DNAM.value.flags1 & Mask) == Mask) : ((DNAM.value.flags1 & Mask) != 0);
     }
 
 void WEAPRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.flags1 = Mask;
     }
 
 bool WEAPRecord::IsPlayerOnly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPlayerOnly) != 0;
+    return (DNAM.value.flags2 & fIsPlayerOnly) != 0;
     }
 
 void WEAPRecord::IsPlayerOnly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPlayerOnly) : (Dummy->flags & ~fIsPlayerOnly);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsPlayerOnly) : (DNAM.value.flags2 & ~fIsPlayerOnly);
     }
 
 bool WEAPRecord::IsNPCsUseAmmo()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNPCsUseAmmo) != 0;
+    return (DNAM.value.flags2 & fIsNPCsUseAmmo) != 0;
     }
 
 void WEAPRecord::IsNPCsUseAmmo(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNPCsUseAmmo) : (Dummy->flags & ~fIsNPCsUseAmmo);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsNPCsUseAmmo) : (DNAM.value.flags2 & ~fIsNPCsUseAmmo);
     }
 
 bool WEAPRecord::IsNoJamAfterReload()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoJamAfterReload) != 0;
+    return (DNAM.value.flags2 & fIsNoJamAfterReload) != 0;
     }
 
 void WEAPRecord::IsNoJamAfterReload(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoJamAfterReload) : (Dummy->flags & ~fIsNoJamAfterReload);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsNoJamAfterReload) : (DNAM.value.flags2 & ~fIsNoJamAfterReload);
     }
 
 bool WEAPRecord::IsOverrideActionPoints()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOverrideActionPoints) != 0;
+    return (DNAM.value.flags2 & fIsOverrideActionPoints) != 0;
     }
 
 void WEAPRecord::IsOverrideActionPoints(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOverrideActionPoints) : (Dummy->flags & ~fIsOverrideActionPoints);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsOverrideActionPoints) : (DNAM.value.flags2 & ~fIsOverrideActionPoints);
     }
 
 bool WEAPRecord::IsMinorCrime()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsMinorCrime) != 0;
+    return (DNAM.value.flags2 & fIsMinorCrime) != 0;
     }
 
 void WEAPRecord::IsMinorCrime(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsMinorCrime) : (Dummy->flags & ~fIsMinorCrime);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsMinorCrime) : (DNAM.value.flags2 & ~fIsMinorCrime);
     }
 
 bool WEAPRecord::IsRangeFixed()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRangeFixed) != 0;
+    return (DNAM.value.flags2 & fIsRangeFixed) != 0;
     }
 
 void WEAPRecord::IsRangeFixed(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRangeFixed) : (Dummy->flags & ~fIsRangeFixed);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsRangeFixed) : (DNAM.value.flags2 & ~fIsRangeFixed);
     }
 
 bool WEAPRecord::IsNotUsedInNormalCombat()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNotUsedInNormalCombat) != 0;
+    return (DNAM.value.flags2 & fIsNotUsedInNormalCombat) != 0;
     }
 
 void WEAPRecord::IsNotUsedInNormalCombat(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNotUsedInNormalCombat) : (Dummy->flags & ~fIsNotUsedInNormalCombat);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsNotUsedInNormalCombat) : (DNAM.value.flags2 & ~fIsNotUsedInNormalCombat);
     }
 
 bool WEAPRecord::IsOverrideDamageToWeaponMult()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOverrideDamageToWeaponMult) != 0;
+    return (DNAM.value.flags2 & fIsOverrideDamageToWeaponMult) != 0;
     }
 
 void WEAPRecord::IsOverrideDamageToWeaponMult(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOverrideDamageToWeaponMult) : (Dummy->flags & ~fIsOverrideDamageToWeaponMult);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsOverrideDamageToWeaponMult) : (DNAM.value.flags2 & ~fIsOverrideDamageToWeaponMult);
     }
 
 bool WEAPRecord::IsDontUse3rdPersonISAnimations()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDontUse3rdPersonISAnimations) != 0;
+    return (DNAM.value.flags2 & fIsDontUse3rdPersonISAnimations) != 0;
     }
 
 void WEAPRecord::IsDontUse3rdPersonISAnimations(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDontUse3rdPersonISAnimations) : (Dummy->flags & ~fIsDontUse3rdPersonISAnimations);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsDontUse3rdPersonISAnimations) : (DNAM.value.flags2 & ~fIsDontUse3rdPersonISAnimations);
     }
 
 bool WEAPRecord::IsShortBurst()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsShortBurst) != 0;
+    return (DNAM.value.flags2 & fIsShortBurst) != 0;
     }
 
 void WEAPRecord::IsShortBurst(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsShortBurst) : (Dummy->flags & ~fIsShortBurst);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsShortBurst) : (DNAM.value.flags2 & ~fIsShortBurst);
     }
 
 bool WEAPRecord::IsRumbleAlternate()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRumbleAlternate) != 0;
+    return (DNAM.value.flags2 & fIsRumbleAlternate) != 0;
     }
 
 void WEAPRecord::IsRumbleAlternate(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRumbleAlternate) : (Dummy->flags & ~fIsRumbleAlternate);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsRumbleAlternate) : (DNAM.value.flags2 & ~fIsRumbleAlternate);
     }
 
 bool WEAPRecord::IsLongBurst()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsLongBurst) != 0;
+    return (DNAM.value.flags2 & fIsLongBurst) != 0;
     }
 
 void WEAPRecord::IsLongBurst(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsLongBurst) : (Dummy->flags & ~fIsLongBurst);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsLongBurst) : (DNAM.value.flags2 & ~fIsLongBurst);
     }
 
 bool WEAPRecord::IsScopeHasNightVision()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsScopeHasNightVision) != 0;
+    return (DNAM.value.flags2 & fIsScopeHasNightVision) != 0;
     }
 
 void WEAPRecord::IsScopeHasNightVision(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsScopeHasNightVision) : (Dummy->flags & ~fIsScopeHasNightVision);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsScopeHasNightVision) : (DNAM.value.flags2 & ~fIsScopeHasNightVision);
     }
 
 bool WEAPRecord::IsScopeFromMod()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsScopeFromMod) != 0;
+    return (DNAM.value.flags2 & fIsScopeFromMod) != 0;
     }
 
 void WEAPRecord::IsScopeFromMod(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsScopeFromMod) : (Dummy->flags & ~fIsScopeFromMod);
+    DNAM.value.flags2 = value ? (DNAM.value.flags2 | fIsScopeFromMod) : (DNAM.value.flags2 & ~fIsScopeFromMod);
     }
 
 bool WEAPRecord::IsAdvFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DNAM.value.flags2 & Mask) == Mask) : ((DNAM.value.flags2 & Mask) != 0);
     }
 
 void WEAPRecord::SetAdvFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.flags2 = Mask;
     }
 
 bool WEAPRecord::IsCritOnDeath()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOnDeath) != 0;
+    return (CRDT.value.flags & fIsOnDeath) != 0;
     }
 
 void WEAPRecord::IsCritOnDeath(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOnDeath) : (Dummy->flags & ~fIsOnDeath);
+    CRDT.value.flags = value ? (CRDT.value.flags | fIsOnDeath) : (CRDT.value.flags & ~fIsOnDeath);
     }
 
 bool WEAPRecord::IsCritFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((CRDT.value.flags & Mask) == Mask) : ((CRDT.value.flags & Mask) != 0);
     }
 
 void WEAPRecord::SetCritFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    CRDT.value.flags = Mask;
     }
 
 bool WEAPRecord::IsNone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return (ETYP.value == eNone);
     }
 
 void WEAPRecord::IsNone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
+    ETYP.value = value ? eNone : eBigGuns;
     }
 
 bool WEAPRecord::IsBigGuns()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBigGuns);
+    return (ETYP.value == eBigGuns);
     }
 
 void WEAPRecord::IsBigGuns(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBigGuns : eDummyDefault;
+    ETYP.value = value ? eBigGuns : eNone;
     }
 
 bool WEAPRecord::IsEnergyWeapons()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEnergyWeapons);
+    return (ETYP.value == eEnergyWeapons);
     }
 
 void WEAPRecord::IsEnergyWeapons(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
+    ETYP.value = value ? eEnergyWeapons : eNone;
     }
 
 bool WEAPRecord::IsSmallGuns()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSmallGuns);
+    return (ETYP.value == eSmallGuns);
     }
 
 void WEAPRecord::IsSmallGuns(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSmallGuns : eDummyDefault;
+    ETYP.value = value ? eSmallGuns : eNone;
     }
 
 bool WEAPRecord::IsMeleeWeapons()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMeleeWeapons);
+    return (ETYP.value == eMeleeWeapons);
     }
 
 void WEAPRecord::IsMeleeWeapons(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
+    ETYP.value = value ? eMeleeWeapons : eNone;
     }
 
 bool WEAPRecord::IsUnarmedWeapon()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnarmedWeapon);
+    return (ETYP.value == eUnarmedWeapon);
     }
 
 void WEAPRecord::IsUnarmedWeapon(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
+    ETYP.value = value ? eUnarmedWeapon : eNone;
     }
 
 bool WEAPRecord::IsThrownWeapons()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eThrownWeapons);
+    return (ETYP.value == eThrownWeapons);
     }
 
 void WEAPRecord::IsThrownWeapons(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
+    ETYP.value = value ? eThrownWeapons : eNone;
     }
 
 bool WEAPRecord::IsMine()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMine);
+    return (ETYP.value == eMine);
     }
 
 void WEAPRecord::IsMine(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMine : eDummyDefault;
+    ETYP.value = value ? eMine : eNone;
     }
 
 bool WEAPRecord::IsBodyWear()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBodyWear);
+    return (ETYP.value == eBodyWear);
     }
 
 void WEAPRecord::IsBodyWear(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBodyWear : eDummyDefault;
+    ETYP.value = value ? eBodyWear : eNone;
     }
 
 bool WEAPRecord::IsHeadWear()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeadWear);
+    return (ETYP.value == eHeadWear);
     }
 
 void WEAPRecord::IsHeadWear(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeadWear : eDummyDefault;
+    ETYP.value = value ? eHeadWear : eNone;
     }
 
 bool WEAPRecord::IsHandWear()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandWear);
+    return (ETYP.value == eHandWear);
     }
 
 void WEAPRecord::IsHandWear(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandWear : eDummyDefault;
+    ETYP.value = value ? eHandWear : eNone;
     }
 
 bool WEAPRecord::IsChems()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eChems);
+    return (ETYP.value == eChems);
     }
 
 void WEAPRecord::IsChems(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eChems : eDummyDefault;
+    ETYP.value = value ? eChems : eNone;
     }
 
 bool WEAPRecord::IsStimpack()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStimpack);
+    return (ETYP.value == eStimpack);
     }
 
 void WEAPRecord::IsStimpack(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStimpack : eDummyDefault;
+    ETYP.value = value ? eStimpack : eNone;
     }
 
-bool WEAPRecord::IsFood()
+bool WEAPRecord::IsEdible()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFood);
+    return (ETYP.value == eEdible);
     }
 
-void WEAPRecord::IsFood(bool value)
+void WEAPRecord::IsEdible(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFood : eDummyDefault;
+    ETYP.value = value ? eEdible : eNone;
     }
 
 bool WEAPRecord::IsAlcohol()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAlcohol);
+    return (ETYP.value == eAlcohol);
     }
 
 void WEAPRecord::IsAlcohol(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAlcohol : eDummyDefault;
+    ETYP.value = value ? eAlcohol : eNone;
     }
 
-bool WEAPRecord::IsEquipmentType(SINT32 Type, bool Exact)
+bool WEAPRecord::IsEquipmentType(SINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return ETYP.value == Type;
     }
 
 void WEAPRecord::SetEquipmentType(SINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ETYP.value = Type;
     }
 
 bool WEAPRecord::IsHand2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHand2Hand);
+    return (DNAM.value.animType == eHand2Hand);
     }
 
 void WEAPRecord::IsHand2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHand2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eHand2Hand : eMelee1Hand;
     }
 
 bool WEAPRecord::IsMelee1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMelee1Hand);
+    return (DNAM.value.animType == eMelee1Hand);
     }
 
 void WEAPRecord::IsMelee1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMelee1Hand : eDummyDefault;
+    DNAM.value.animType = value ? eMelee1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsMelee2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMelee2Hand);
+    return (DNAM.value.animType == eMelee2Hand);
     }
 
 void WEAPRecord::IsMelee2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMelee2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eMelee2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsPistolBallistic1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePistolBallistic1Hand);
+    return (DNAM.value.animType == ePistolBallistic1Hand);
     }
 
 void WEAPRecord::IsPistolBallistic1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePistolBallistic1Hand : eDummyDefault;
+    DNAM.value.animType = value ? ePistolBallistic1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsPistolEnergy1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePistolEnergy1Hand);
+    return (DNAM.value.animType == ePistolEnergy1Hand);
     }
 
 void WEAPRecord::IsPistolEnergy1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePistolEnergy1Hand : eDummyDefault;
+    DNAM.value.animType = value ? ePistolEnergy1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsRifleBallistic2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRifleBallistic2Hand);
+    return (DNAM.value.animType == eRifleBallistic2Hand);
     }
 
 void WEAPRecord::IsRifleBallistic2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRifleBallistic2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eRifleBallistic2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsRifleAutomatic2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRifleAutomatic2Hand);
+    return (DNAM.value.animType == eRifleAutomatic2Hand);
     }
 
 void WEAPRecord::IsRifleAutomatic2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRifleAutomatic2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eRifleAutomatic2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsRifleEnergy2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRifleEnergy2Hand);
+    return (DNAM.value.animType == eRifleEnergy2Hand);
     }
 
 void WEAPRecord::IsRifleEnergy2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRifleEnergy2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eRifleEnergy2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsHandle2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandle2Hand);
+    return (DNAM.value.animType == eHandle2Hand);
     }
 
 void WEAPRecord::IsHandle2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandle2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eHandle2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsLauncher2Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLauncher2Hand);
+    return (DNAM.value.animType == eLauncher2Hand);
     }
 
 void WEAPRecord::IsLauncher2Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLauncher2Hand : eDummyDefault;
+    DNAM.value.animType = value ? eLauncher2Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsGrenadeThrow1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGrenadeThrow1Hand);
+    return (DNAM.value.animType == eGrenadeThrow1Hand);
     }
 
 void WEAPRecord::IsGrenadeThrow1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGrenadeThrow1Hand : eDummyDefault;
+    DNAM.value.animType = value ? eGrenadeThrow1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsLandMine1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLandMine1Hand);
+    return (DNAM.value.animType == eLandMine1Hand);
     }
 
 void WEAPRecord::IsLandMine1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLandMine1Hand : eDummyDefault;
+    DNAM.value.animType = value ? eLandMine1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsMineDrop1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMineDrop1Hand);
+    return (DNAM.value.animType == eMineDrop1Hand);
     }
 
 void WEAPRecord::IsMineDrop1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMineDrop1Hand : eDummyDefault;
+    DNAM.value.animType = value ? eMineDrop1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsThrown1Hand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eThrown1Hand);
+    return (DNAM.value.animType == eThrown1Hand);
     }
 
 void WEAPRecord::IsThrown1Hand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eThrown1Hand : eDummyDefault;
+    DNAM.value.animType = value ? eThrown1Hand : eHand2Hand;
     }
 
 bool WEAPRecord::IsType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.animType == Type;
     }
 
 void WEAPRecord::SetType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.animType = Type;
     }
 
 bool WEAPRecord::IsGripHandGrip1()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip1);
+    return (DNAM.value.gripAnim == eHandGrip1);
     }
 
 void WEAPRecord::IsGripHandGrip1(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip1 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip1 : eHandGrip2;
     }
 
 bool WEAPRecord::IsGripHandGrip2()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip2);
+    return (DNAM.value.gripAnim == eHandGrip2);
     }
 
 void WEAPRecord::IsGripHandGrip2(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip2 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip2 : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripHandGrip3()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip3);
+    return (DNAM.value.gripAnim == eHandGrip3);
     }
 
 void WEAPRecord::IsGripHandGrip3(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip3 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip3 : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripHandGrip4()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip4);
+    return (DNAM.value.gripAnim == eHandGrip4);
     }
 
 void WEAPRecord::IsGripHandGrip4(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip4 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip4 : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripHandGrip5()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip5);
+    return (DNAM.value.gripAnim == eHandGrip5);
     }
 
 void WEAPRecord::IsGripHandGrip5(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip5 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip5 : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripHandGrip6()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandGrip6);
+    return (DNAM.value.gripAnim == eHandGrip6);
     }
 
 void WEAPRecord::IsGripHandGrip6(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandGrip6 : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGrip6 : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDefault);
+    return (DNAM.value.gripAnim == eHandGripDefault);
     }
 
 void WEAPRecord::IsGripDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDefault : eDummyDefault;
+    DNAM.value.gripAnim = value ? eHandGripDefault : eHandGrip1;
     }
 
 bool WEAPRecord::IsGripType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.gripAnim == Type;
     }
 
 void WEAPRecord::SetGripType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.gripAnim = Type;
     }
 
-bool WEAPRecord::IsReloadAnimReloadA()
+bool WEAPRecord::IsReloadA()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadA);
+    return (DNAM.value.reloadAnim == eReloadA);
     }
 
-void WEAPRecord::IsReloadAnimReloadA(bool value)
+void WEAPRecord::IsReloadA(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadA : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadA : eReloadB;
     }
 
-bool WEAPRecord::IsReloadAnimReloadB()
+bool WEAPRecord::IsReloadB()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadB);
+    return (DNAM.value.reloadAnim == eReloadB);
     }
 
-void WEAPRecord::IsReloadAnimReloadB(bool value)
+void WEAPRecord::IsReloadB(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadB : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadB : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadC()
+bool WEAPRecord::IsReloadC()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadC);
+    return (DNAM.value.reloadAnim == eReloadC);
     }
 
-void WEAPRecord::IsReloadAnimReloadC(bool value)
+void WEAPRecord::IsReloadC(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadC : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadC : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadD()
+bool WEAPRecord::IsReloadD()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadD);
+    return (DNAM.value.reloadAnim == eReloadD);
     }
 
-void WEAPRecord::IsReloadAnimReloadD(bool value)
+void WEAPRecord::IsReloadD(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadD : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadD : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadE()
+bool WEAPRecord::IsReloadE()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadE);
+    return (DNAM.value.reloadAnim == eReloadE);
     }
 
-void WEAPRecord::IsReloadAnimReloadE(bool value)
+void WEAPRecord::IsReloadE(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadE : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadE : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadF()
+bool WEAPRecord::IsReloadF()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadF);
+    return (DNAM.value.reloadAnim == eReloadF);
     }
 
-void WEAPRecord::IsReloadAnimReloadF(bool value)
+void WEAPRecord::IsReloadF(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadF : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadF : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadG()
+bool WEAPRecord::IsReloadG()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadG);
+    return (DNAM.value.reloadAnim == eReloadG);
     }
 
-void WEAPRecord::IsReloadAnimReloadG(bool value)
+void WEAPRecord::IsReloadG(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadG : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadG : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadH()
+bool WEAPRecord::IsReloadH()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadH);
+    return (DNAM.value.reloadAnim == eReloadH);
     }
 
-void WEAPRecord::IsReloadAnimReloadH(bool value)
+void WEAPRecord::IsReloadH(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadH : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadH : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadI()
+bool WEAPRecord::IsReloadI()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadI);
+    return (DNAM.value.reloadAnim == eReloadI);
     }
 
-void WEAPRecord::IsReloadAnimReloadI(bool value)
+void WEAPRecord::IsReloadI(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadI : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadI : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadJ()
+bool WEAPRecord::IsReloadJ()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadJ);
+    return (DNAM.value.reloadAnim == eReloadJ);
     }
 
-void WEAPRecord::IsReloadAnimReloadJ(bool value)
+void WEAPRecord::IsReloadJ(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadJ : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadJ : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadK()
+bool WEAPRecord::IsReloadK()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadK);
+    return (DNAM.value.reloadAnim == eReloadK);
     }
 
-void WEAPRecord::IsReloadAnimReloadK(bool value)
+void WEAPRecord::IsReloadK(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadK : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadK : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadL()
+bool WEAPRecord::IsReloadL()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadL);
+    return (DNAM.value.reloadAnim == eReloadL);
     }
 
-void WEAPRecord::IsReloadAnimReloadL(bool value)
+void WEAPRecord::IsReloadL(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadL : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadL : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadM()
+bool WEAPRecord::IsReloadM()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadM);
+    return (DNAM.value.reloadAnim == eReloadM);
     }
 
-void WEAPRecord::IsReloadAnimReloadM(bool value)
+void WEAPRecord::IsReloadM(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadM : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadM : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadN()
+bool WEAPRecord::IsReloadN()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadN);
+    return (DNAM.value.reloadAnim == eReloadN);
     }
 
-void WEAPRecord::IsReloadAnimReloadN(bool value)
+void WEAPRecord::IsReloadN(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadN : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadN : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadO()
+bool WEAPRecord::IsReloadO()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadO);
+    return (DNAM.value.reloadAnim == eReloadO);
     }
 
-void WEAPRecord::IsReloadAnimReloadO(bool value)
+void WEAPRecord::IsReloadO(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadO : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadO : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadP()
+bool WEAPRecord::IsReloadP()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadP);
+    return (DNAM.value.reloadAnim == eReloadP);
     }
 
-void WEAPRecord::IsReloadAnimReloadP(bool value)
+void WEAPRecord::IsReloadP(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadP : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadP : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadQ()
+bool WEAPRecord::IsReloadQ()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadQ);
+    return (DNAM.value.reloadAnim == eReloadQ);
     }
 
-void WEAPRecord::IsReloadAnimReloadQ(bool value)
+void WEAPRecord::IsReloadQ(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadQ : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadQ : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadR()
+bool WEAPRecord::IsReloadR()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadR);
+    return (DNAM.value.reloadAnim == eReloadR);
     }
 
-void WEAPRecord::IsReloadAnimReloadR(bool value)
+void WEAPRecord::IsReloadR(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadR : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadR : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadS()
+bool WEAPRecord::IsReloadS()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadS);
+    return (DNAM.value.reloadAnim == eReloadS);
     }
 
-void WEAPRecord::IsReloadAnimReloadS(bool value)
+void WEAPRecord::IsReloadS(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadS : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadS : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadW()
+bool WEAPRecord::IsReloadW()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadW);
+    return (DNAM.value.reloadAnim == eReloadW);
     }
 
-void WEAPRecord::IsReloadAnimReloadW(bool value)
+void WEAPRecord::IsReloadW(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadW : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadW : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadX()
+bool WEAPRecord::IsReloadX()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadX);
+    return (DNAM.value.reloadAnim == eReloadX);
     }
 
-void WEAPRecord::IsReloadAnimReloadX(bool value)
+void WEAPRecord::IsReloadX(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadX : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadX : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadY()
+bool WEAPRecord::IsReloadY()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadY);
+    return (DNAM.value.reloadAnim == eReloadY);
     }
 
-void WEAPRecord::IsReloadAnimReloadY(bool value)
+void WEAPRecord::IsReloadY(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadY : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadY : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimReloadZ()
+bool WEAPRecord::IsReloadZ()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadZ);
+    return (DNAM.value.reloadAnim == eReloadZ);
     }
 
-void WEAPRecord::IsReloadAnimReloadZ(bool value)
+void WEAPRecord::IsReloadZ(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadZ : eDummyDefault;
+    DNAM.value.reloadAnim = value ? eReloadZ : eReloadA;
     }
 
-bool WEAPRecord::IsReloadAnimType(UINT8 Type)
+bool WEAPRecord::IsReloadType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.reloadAnim == Type;
     }
 
-void WEAPRecord::SetReloadAnimType(UINT8 Type)
+void WEAPRecord::SetReloadType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.reloadAnim = Type;
     }
 
 bool WEAPRecord::IsAttackLeft()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackLeft);
+    return (DNAM.value.attackAnim == eAttackLeft);
     }
 
 void WEAPRecord::IsAttackLeft(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackLeft : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackLeft : eAttackRight;
     }
 
 bool WEAPRecord::IsAttackRight()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackRight);
+    return (DNAM.value.attackAnim == eAttackRight);
     }
 
 void WEAPRecord::IsAttackRight(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackRight : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackRight : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack3()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack3);
+    return (DNAM.value.attackAnim == eAttack3);
     }
 
 void WEAPRecord::IsAttack3(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack3 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack3 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack4()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack4);
+    return (DNAM.value.attackAnim == eAttack4);
     }
 
 void WEAPRecord::IsAttack4(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack4 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack4 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack5()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack5);
+    return (DNAM.value.attackAnim == eAttack5);
     }
 
 void WEAPRecord::IsAttack5(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack5 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack5 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack6()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack6);
+    return (DNAM.value.attackAnim == eAttack6);
     }
 
 void WEAPRecord::IsAttack6(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack6 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack6 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack7()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack7);
+    return (DNAM.value.attackAnim == eAttack7);
     }
 
 void WEAPRecord::IsAttack7(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack7 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack7 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack8()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack8);
+    return (DNAM.value.attackAnim == eAttack8);
     }
 
 void WEAPRecord::IsAttack8(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack8 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack8 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttack9()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttack9);
+    return (DNAM.value.attackAnim == eAttack9);
     }
 
 void WEAPRecord::IsAttack9(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttack9 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttack9 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackLoop()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackLoop);
+    return (DNAM.value.attackAnim == eAttackLoop);
     }
 
 void WEAPRecord::IsAttackLoop(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackLoop : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackLoop : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackSpin()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackSpin);
+    return (DNAM.value.attackAnim == eAttackSpin);
     }
 
 void WEAPRecord::IsAttackSpin(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackSpin : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackSpin : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackSpin2()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackSpin2);
+    return (DNAM.value.attackAnim == eAttackSpin2);
     }
 
 void WEAPRecord::IsAttackSpin2(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackSpin2 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackSpin2 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow);
+    return (DNAM.value.attackAnim == eAttackThrow);
     }
 
 void WEAPRecord::IsAttackThrow(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow2()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow2);
+    return (DNAM.value.attackAnim == eAttackThrow2);
     }
 
 void WEAPRecord::IsAttackThrow2(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow2 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow2 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow3()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow3);
+    return (DNAM.value.attackAnim == eAttackThrow3);
     }
 
 void WEAPRecord::IsAttackThrow3(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow3 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow3 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow4()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow4);
+    return (DNAM.value.attackAnim == eAttackThrow4);
     }
 
 void WEAPRecord::IsAttackThrow4(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow4 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow4 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow5()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow5);
+    return (DNAM.value.attackAnim == eAttackThrow5);
     }
 
 void WEAPRecord::IsAttackThrow5(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow5 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow5 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow6()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow6);
+    return (DNAM.value.attackAnim == eAttackThrow6);
     }
 
 void WEAPRecord::IsAttackThrow6(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow6 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow6 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow7()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow7);
+    return (DNAM.value.attackAnim == eAttackThrow7);
     }
 
 void WEAPRecord::IsAttackThrow7(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow7 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow7 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackThrow8()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackThrow8);
+    return (DNAM.value.attackAnim == eAttackThrow8);
     }
 
 void WEAPRecord::IsAttackThrow8(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackThrow8 : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackThrow8 : eAttackLeft;
     }
 
-bool WEAPRecord::AttackIsPlaceMine()
+bool WEAPRecord::IsAttackPlaceMine()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePlaceMine);
+    return (DNAM.value.attackAnim == ePlaceMine);
     }
 
 void WEAPRecord::IsAttackPlaceMine(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePlaceMine : eDummyDefault;
+    DNAM.value.attackAnim = value ? ePlaceMine : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackPlaceMine2()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePlaceMine2);
+    return (DNAM.value.attackAnim == ePlaceMine2);
     }
 
 void WEAPRecord::IsAttackPlaceMine2(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePlaceMine2 : eDummyDefault;
+    DNAM.value.attackAnim = value ? ePlaceMine2 : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDefault);
+    return (DNAM.value.attackAnim == eAttackDefault);
     }
 
 void WEAPRecord::IsAttackDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDefault : eDummyDefault;
+    DNAM.value.attackAnim = value ? eAttackDefault : eAttackLeft;
     }
 
 bool WEAPRecord::IsAttackType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.attackAnim == Type;
     }
 
 void WEAPRecord::SetAttackType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.attackAnim = Type;
     }
 
 bool WEAPRecord::IsEmbeddedAVPerception()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePerception);
+    return (DNAM.value.weaponAV == ePerception);
     }
 
 void WEAPRecord::IsEmbeddedAVPerception(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePerception : eDummyDefault;
+    DNAM.value.weaponAV = value ? ePerception : eEndurance;
     }
 
 bool WEAPRecord::IsEmbeddedAVEndurance()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEndurance);
+    return (DNAM.value.weaponAV == eEndurance);
     }
 
 void WEAPRecord::IsEmbeddedAVEndurance(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEndurance : eDummyDefault;
+    DNAM.value.weaponAV = value ? eEndurance : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVLeftAttack()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLeftAttack);
+    return (DNAM.value.weaponAV == eLeftAttack);
     }
 
 void WEAPRecord::IsEmbeddedAVLeftAttack(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLeftAttack : eDummyDefault;
+    DNAM.value.weaponAV = value ? eLeftAttack : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVRightAttack()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRightAttack);
+    return (DNAM.value.weaponAV == eRightAttack);
     }
 
 void WEAPRecord::IsEmbeddedAVRightAttack(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRightAttack : eDummyDefault;
+    DNAM.value.weaponAV = value ? eRightAttack : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVLeftMobility()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLeftMobility);
+    return (DNAM.value.weaponAV == eLeftMobility);
     }
 
 void WEAPRecord::IsEmbeddedAVLeftMobility(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLeftMobility : eDummyDefault;
+    DNAM.value.weaponAV = value ? eLeftMobility : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVRightMobilty()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRightMobilty);
+    return (DNAM.value.weaponAV == eRightMobilty);
     }
 
 void WEAPRecord::IsEmbeddedAVRightMobilty(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRightMobilty : eDummyDefault;
+    DNAM.value.weaponAV = value ? eRightMobilty : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVBrain()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBrain);
+    return (DNAM.value.weaponAV == eBrain);
     }
 
 void WEAPRecord::IsEmbeddedAVBrain(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBrain : eDummyDefault;
+    DNAM.value.weaponAV = value ? eBrain : ePerception;
     }
 
 bool WEAPRecord::IsEmbeddedAVType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.weaponAV == Type;
     }
 
 void WEAPRecord::SetEmbeddedAVType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.weaponAV = Type;
     }
 
 bool WEAPRecord::IsOnHitNormalFormulaBehavior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNormalFormulaBehavior);
+    return (DNAM.value.onHit == eNormalFormulaBehavior);
     }
 
 void WEAPRecord::IsOnHitNormalFormulaBehavior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNormalFormulaBehavior : eDummyDefault;
+    DNAM.value.onHit = value ? eNormalFormulaBehavior : eDismemberOnly;
     }
 
 bool WEAPRecord::IsOnHitDismemberOnly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDismemberOnly);
+    return (DNAM.value.onHit == eDismemberOnly);
     }
 
 void WEAPRecord::IsOnHitDismemberOnly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDismemberOnly : eDummyDefault;
+    DNAM.value.onHit = value ? eDismemberOnly : eNormalFormulaBehavior;
     }
 
 bool WEAPRecord::IsOnHitExplodeOnly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eExplodeOnly);
+    return (DNAM.value.onHit == eExplodeOnly);
     }
 
 void WEAPRecord::IsOnHitExplodeOnly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eExplodeOnly : eDummyDefault;
+    DNAM.value.onHit = value ? eExplodeOnly : eNormalFormulaBehavior;
     }
 
 bool WEAPRecord::IsOnHitNoDismemberExplode()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNoDismemberExplode);
+    return (DNAM.value.onHit == eNoDismemberExplode);
     }
 
 void WEAPRecord::IsOnHitNoDismemberExplode(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNoDismemberExplode : eDummyDefault;
+    DNAM.value.onHit = value ? eNoDismemberExplode : eNormalFormulaBehavior;
     }
 
 bool WEAPRecord::IsOnHitType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.onHit == Type;
     }
 
 void WEAPRecord::SetOnHitType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.onHit = Type;
     }
 
 bool WEAPRecord::IsRumbleConstant()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eConstant);
+    return (DNAM.value.rumbleType == eConstant);
     }
 
 void WEAPRecord::IsRumbleConstant(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eConstant : eDummyDefault;
+    DNAM.value.rumbleType = value ? eConstant : eSquare;
     }
 
 bool WEAPRecord::IsRumbleSquare()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSquare);
+    return (DNAM.value.rumbleType == eSquare);
     }
 
 void WEAPRecord::IsRumbleSquare(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSquare : eDummyDefault;
+    DNAM.value.rumbleType = value ? eSquare : eConstant;
     }
 
 bool WEAPRecord::IsRumbleTriangle()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTriangle);
+    return (DNAM.value.rumbleType == eTriangle);
     }
 
 void WEAPRecord::IsRumbleTriangle(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTriangle : eDummyDefault;
+    DNAM.value.rumbleType = value ? eTriangle : eConstant;
     }
 
 bool WEAPRecord::IsRumbleSawtooth()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSawtooth);
+    return (DNAM.value.rumbleType == eSawtooth);
     }
 
 void WEAPRecord::IsRumbleSawtooth(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSawtooth : eDummyDefault;
+    DNAM.value.rumbleType = value ? eSawtooth : eConstant;
     }
 
 bool WEAPRecord::IsRumbleType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.rumbleType == Type;
     }
 
 void WEAPRecord::SetRumbleType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.rumbleType = Type;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideUnknown0()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnknown0);
+    return (DNAM.value.overridePwrAtkAnim == eUnknown0);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideUnknown0(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnknown0 : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eUnknown0 : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom1Power()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackCustom1Power);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustom1Power);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom1Power(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackCustom1Power : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustom1Power : eAttackCustom2Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom2Power()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackCustom2Power);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustom2Power);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom2Power(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackCustom2Power : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustom2Power : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom3Power()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackCustom3Power);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustom3Power);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom3Power(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackCustom3Power : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustom3Power : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom4Power()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackCustom4Power);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustom4Power);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom4Power(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackCustom4Power : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustom4Power : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideAttackCustom5Power()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAttackCustom5Power);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustom5Power);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideAttackCustom5Power(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAttackCustom5Power : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustom5Power : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDefault);
+    return (DNAM.value.overridePwrAtkAnim == eAttackCustomDefault);
     }
 
 void WEAPRecord::IsPowerAttackAnimOverrideDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDefault : eDummyDefault;
+    DNAM.value.overridePwrAtkAnim = value ? eAttackCustomDefault : eAttackCustom1Power;
     }
 
 bool WEAPRecord::IsPowerAttackAnimOverrideType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DNAM.value.overridePwrAtkAnim == Type;
     }
 
 void WEAPRecord::SetPowerAttackAnimOverrideType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.overridePwrAtkAnim = Type;
     }
 
-bool WEAPRecord::IsReloadAnimModReloadA()
+bool WEAPRecord::IsModReloadA()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadA);
+    return (DNAM.value.reloadAnimMod == eReloadA);
     }
 
-void WEAPRecord::IsReloadAnimModReloadA(bool value)
+void WEAPRecord::IsModReloadA(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadA : eDummyDefault;
+    DNAM.value.reloadAnimMod = value ? eReloadA : eReloadB;
+    }                                     
+
+bool WEAPRecord::IsModReloadB()
+    {
+    return (DNAM.value.reloadAnimMod == eReloadB);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadB()
+void WEAPRecord::IsModReloadB(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadB);
+    DNAM.value.reloadAnimMod = value ? eReloadB : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadB(bool value)
+bool WEAPRecord::IsModReloadC()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadB : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadC);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadC()
+void WEAPRecord::IsModReloadC(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadC);
+    DNAM.value.reloadAnimMod = value ? eReloadC : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadC(bool value)
+bool WEAPRecord::IsModReloadD()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadC : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadD);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadD()
+void WEAPRecord::IsModReloadD(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadD);
+    DNAM.value.reloadAnimMod = value ? eReloadD : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadD(bool value)
+bool WEAPRecord::IsModReloadE()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadD : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadE);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadE()
+void WEAPRecord::IsModReloadE(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadE);
+    DNAM.value.reloadAnimMod = value ? eReloadE : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadE(bool value)
+bool WEAPRecord::IsModReloadF()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadE : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadF);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadF()
+void WEAPRecord::IsModReloadF(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadF);
+    DNAM.value.reloadAnimMod = value ? eReloadF : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadF(bool value)
+bool WEAPRecord::IsModReloadG()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadF : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadG);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadG()
+void WEAPRecord::IsModReloadG(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadG);
+    DNAM.value.reloadAnimMod = value ? eReloadG : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadG(bool value)
+bool WEAPRecord::IsModReloadH()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadG : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadH);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadH()
+void WEAPRecord::IsModReloadH(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadH);
+    DNAM.value.reloadAnimMod = value ? eReloadH : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadH(bool value)
+bool WEAPRecord::IsModReloadI()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadH : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadI);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadI()
+void WEAPRecord::IsModReloadI(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadI);
+    DNAM.value.reloadAnimMod = value ? eReloadI : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadI(bool value)
+bool WEAPRecord::IsModReloadJ()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadI : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadJ);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadJ()
+void WEAPRecord::IsModReloadJ(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadJ);
+    DNAM.value.reloadAnimMod = value ? eReloadJ : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadJ(bool value)
+bool WEAPRecord::IsModReloadK()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadJ : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadK);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadK()
+void WEAPRecord::IsModReloadK(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadK);
+    DNAM.value.reloadAnimMod = value ? eReloadK : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadK(bool value)
+bool WEAPRecord::IsModReloadL()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadK : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadL);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadL()
+void WEAPRecord::IsModReloadL(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadL);
+    DNAM.value.reloadAnimMod = value ? eReloadL : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadL(bool value)
+bool WEAPRecord::IsModReloadM()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadL : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadM);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadM()
+void WEAPRecord::IsModReloadM(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadM);
+    DNAM.value.reloadAnimMod = value ? eReloadM : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadM(bool value)
+bool WEAPRecord::IsModReloadN()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadM : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadN);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadN()
+void WEAPRecord::IsModReloadN(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadN);
+    DNAM.value.reloadAnimMod = value ? eReloadN : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadN(bool value)
+bool WEAPRecord::IsModReloadO()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadN : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadO);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadO()
+void WEAPRecord::IsModReloadO(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadO);
+    DNAM.value.reloadAnimMod = value ? eReloadO : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadO(bool value)
+bool WEAPRecord::IsModReloadP()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadO : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadP);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadP()
+void WEAPRecord::IsModReloadP(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadP);
+    DNAM.value.reloadAnimMod = value ? eReloadP : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadP(bool value)
+bool WEAPRecord::IsModReloadQ()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadP : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadQ);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadQ()
+void WEAPRecord::IsModReloadQ(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadQ);
+    DNAM.value.reloadAnimMod = value ? eReloadQ : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadQ(bool value)
+bool WEAPRecord::IsModReloadR()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadQ : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadR);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadR()
+void WEAPRecord::IsModReloadR(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadR);
+    DNAM.value.reloadAnimMod = value ? eReloadR : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadR(bool value)
+bool WEAPRecord::IsModReloadS()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadR : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadS);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadS()
+void WEAPRecord::IsModReloadS(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadS);
+    DNAM.value.reloadAnimMod = value ? eReloadS : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadS(bool value)
+bool WEAPRecord::IsModReloadW()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadS : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadW);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadW()
+void WEAPRecord::IsModReloadW(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadW);
+    DNAM.value.reloadAnimMod = value ? eReloadW : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadW(bool value)
+bool WEAPRecord::IsModReloadX()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadW : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadX);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadX()
+void WEAPRecord::IsModReloadX(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadX);
+    DNAM.value.reloadAnimMod = value ? eReloadX : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadX(bool value)
+bool WEAPRecord::IsModReloadY()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadX : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadY);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadY()
+void WEAPRecord::IsModReloadY(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadY);
+    DNAM.value.reloadAnimMod = value ? eReloadY : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadY(bool value)
+bool WEAPRecord::IsModReloadZ()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadY : eDummyDefault;
+    return (DNAM.value.reloadAnimMod == eReloadZ);
     }
 
-bool WEAPRecord::IsReloadAnimModReloadZ()
+void WEAPRecord::IsModReloadZ(bool value)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReloadZ);
+    DNAM.value.reloadAnimMod = value ? eReloadZ : eReloadA;
     }
 
-void WEAPRecord::IsReloadAnimModReloadZ(bool value)
+bool WEAPRecord::IsModType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReloadZ : eDummyDefault;
+    return DNAM.value.reloadAnimMod == Type;
     }
 
-bool WEAPRecord::IsReloadAnimModType(UINT8 Type)
+void WEAPRecord::SetModType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void WEAPRecord::SetReloadAnimModType(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DNAM.value.reloadAnimMod = Type;
     }
 
 bool WEAPRecord::IsVATSNotSilent()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsNotSilent);
+    return (VATS.value.silenceType == eIsNotSilent);
     }
 
 void WEAPRecord::IsVATSNotSilent(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsNotSilent : eDummyDefault;
+    VATS.value.silenceType = value ? eIsNotSilent : eIsSilent;
     }
 
 bool WEAPRecord::IsVATSSilent()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsSilent);
+    return (VATS.value.silenceType == eIsSilent);
     }
 
 void WEAPRecord::IsVATSSilent(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsSilent : eDummyDefault;
+    VATS.value.silenceType = value ? eIsSilent : eIsNotSilent;
     }
 
 bool WEAPRecord::IsVATSSilenceType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return VATS.value.silenceType == Type;
     }
 
 void WEAPRecord::SetVATSSilenceType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    VATS.value.silenceType = Type;
     }
 
 bool WEAPRecord::IsVATSModNotRequired()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsNotModRequired);
+    return (VATS.value.modRequiredType == eIsNotModRequired);
     }
 
 void WEAPRecord::IsVATSModNotRequired(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsNotModRequired : eDummyDefault;
+    VATS.value.modRequiredType = value ? eIsNotModRequired : eIsModRequired;
     }
 
 bool WEAPRecord::IsVATSModRequired()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eIsModRequired);
+    return (VATS.value.modRequiredType == eIsModRequired);
     }
 
 void WEAPRecord::IsVATSModRequired(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eIsModRequired : eDummyDefault;
+    VATS.value.modRequiredType = value ? eIsModRequired : eIsNotModRequired;
     }
 
 bool WEAPRecord::IsVATSModType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return VATS.value.modRequiredType == Type;
     }
 
 void WEAPRecord::SetVATSModType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    VATS.value.modRequiredType = Type;
     }
 
 bool WEAPRecord::IsLoud()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLoud);
+    return (VNAM.value == eLoud);
     }
 
 void WEAPRecord::IsLoud(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLoud : eDummyDefault;
+    VNAM.value = value ? eLoud : eNormal;
     }
 
 bool WEAPRecord::IsNormal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNormal);
+    return (VNAM.value == eNormal);
     }
 
 void WEAPRecord::IsNormal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNormal : eDummyDefault;
+    VNAM.value = value ? eNormal : eLoud;
     }
 
 bool WEAPRecord::IsSilent()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSilent);
+    return (VNAM.value == eSilent);
     }
 
 void WEAPRecord::IsSilent(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSilent : eDummyDefault;
+    VNAM.value = value ? eSilent : eNormal;
     }
 
-bool WEAPRecord::IsSoundLevelType(UINT8 Type)
+bool WEAPRecord::IsSoundLevelType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return VNAM.value == Type;
     }
 
-void WEAPRecord::SetSoundLevelType(UINT8 Type)
+void WEAPRecord::SetSoundLevelType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    VNAM.value = Type;
     }
 
 UINT32 WEAPRecord::GetType()
@@ -2331,6 +2189,12 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
+    UINT32 curSound = 0;
+    enum curSounds
+        {
+        fIsGun3DRead     = 0x01,
+        fIsShoot3DRead   = 0x02
+        };
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -2436,42 +2300,42 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case '2DOM':
                 MOD2.Load();
-                MOD2->MOD2.Read(buffer, subSize, curPos);
+                MOD2->MODL.Read(buffer, subSize, curPos);
                 break;
             case 'T2OM':
                 MOD2.Load();
-                MOD2->MO2T.Read(buffer, subSize, curPos);
+                MOD2->MODT.Read(buffer, subSize, curPos);
                 break;
             case 'S2OM':
                 MOD2.Load();
-                MOD2->MO2S.Read(buffer, subSize, curPos);
+                MOD2->Textures.Read(buffer, subSize, curPos);
                 break;
             case '3DOM':
                 MOD3.Load();
-                MOD3->MOD3.Read(buffer, subSize, curPos);
+                MOD3->MODL.Read(buffer, subSize, curPos);
                 break;
             case 'T3OM':
                 MOD3.Load();
-                MOD3->MO3T.Read(buffer, subSize, curPos);
+                MOD3->MODT.Read(buffer, subSize, curPos);
                 break;
             case 'S3OM':
                 MOD3.Load();
-                MOD3->MO3S.Read(buffer, subSize, curPos);
+                MOD3->Textures.Read(buffer, subSize, curPos);
                 break;
             case 'DSFE':
                 EFSD.Read(buffer, subSize, curPos);
                 break;
             case '4DOM':
                 MOD4.Load();
-                MOD4->MOD4.Read(buffer, subSize, curPos);
+                MOD4->MODL.Read(buffer, subSize, curPos);
                 break;
             case 'T4OM':
                 MOD4.Load();
-                MOD4->MO4T.Read(buffer, subSize, curPos);
+                MOD4->MODT.Read(buffer, subSize, curPos);
                 break;
             case 'S4OM':
                 MOD4.Load();
-                MOD4->MO4S.Read(buffer, subSize, curPos);
+                MOD4->Textures.Read(buffer, subSize, curPos);
                 break;
             case 'MNAV':
                 VANM.Read(buffer, subSize, curPos);
@@ -2480,32 +2344,25 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 NNAM.Read(buffer, subSize, curPos);
                 break;
             case '1DWM':
-                MWD1.Load();
-                MWD1->MWD1.Read(buffer, subSize, curPos);
+                MWD1.Read(buffer, subSize, curPos);
                 break;
             case '2DWM':
-                MWD1.Load();
-                MWD1->MWD2.Read(buffer, subSize, curPos);
+                MWD2.Read(buffer, subSize, curPos);
                 break;
             case '3DWM':
-                MWD1.Load();
-                MWD1->MWD3.Read(buffer, subSize, curPos);
+                MWD3.Read(buffer, subSize, curPos);
                 break;
             case '4DWM':
-                MWD1.Load();
-                MWD1->MWD4.Read(buffer, subSize, curPos);
+                MWD4.Read(buffer, subSize, curPos);
                 break;
             case '5DWM':
-                MWD1.Load();
-                MWD1->MWD5.Read(buffer, subSize, curPos);
+                MWD5.Read(buffer, subSize, curPos);
                 break;
             case '6DWM':
-                MWD1.Load();
-                MWD1->MWD6.Read(buffer, subSize, curPos);
+                MWD6.Read(buffer, subSize, curPos);
                 break;
             case '7DWM':
-                MWD1.Load();
-                MWD1->MWD7.Read(buffer, subSize, curPos);
+                MWD7.Read(buffer, subSize, curPos);
                 break;
             case 'MANI':
                 INAM.Read(buffer, subSize, curPos);
@@ -2514,47 +2371,41 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 WNAM.Read(buffer, subSize, curPos);
                 break;
             case '1MNW':
-                WNM1.Load();
-                WNM1->WNM1.Read(buffer, subSize, curPos);
+                WNM1.Read(buffer, subSize, curPos);
                 break;
             case '2MNW':
-                WNM1.Load();
-                WNM1->WNM2.Read(buffer, subSize, curPos);
+                WNM2.Read(buffer, subSize, curPos);
                 break;
             case '3MNW':
-                WNM1.Load();
-                WNM1->WNM3.Read(buffer, subSize, curPos);
+                WNM3.Read(buffer, subSize, curPos);
                 break;
             case '4MNW':
-                WNM1.Load();
-                WNM1->WNM4.Read(buffer, subSize, curPos);
+                WNM4.Read(buffer, subSize, curPos);
                 break;
             case '5MNW':
-                WNM1.Load();
-                WNM1->WNM5.Read(buffer, subSize, curPos);
+                WNM5.Read(buffer, subSize, curPos);
                 break;
             case '6MNW':
-                WNM1.Load();
-                WNM1->WNM6.Read(buffer, subSize, curPos);
+                WNM6.Read(buffer, subSize, curPos);
                 break;
             case '7MNW':
-                WNM1.Load();
-                WNM1->WNM7.Read(buffer, subSize, curPos);
+                WNM7.Read(buffer, subSize, curPos);
                 break;
             case '1IMW':
-                WMI1.Load();
-                WMI1->WMI1.Read(buffer, subSize, curPos);
+                WMI1.Read(buffer, subSize, curPos);
                 break;
             case '2IMW':
-                WMI1.Load();
-                WMI1->WMI2.Read(buffer, subSize, curPos);
+                WMI2.Read(buffer, subSize, curPos);
                 break;
             case '3IMW':
-                WMI1.Load();
-                WMI1->WMI3.Read(buffer, subSize, curPos);
+                WMI3.Read(buffer, subSize, curPos);
                 break;
             case 'MANS':
-                SNAM.Read(buffer, subSize, curPos);
+                if((curSound & fIsGun3DRead) == 0)
+                    SNAM1.Read(buffer, subSize, curPos);
+                else
+                    SNAM2.Read(buffer, subSize, curPos);
+                curSound |= fIsGun3DRead;
                 break;
             case 'MANX':
                 XNAM.Read(buffer, subSize, curPos);
@@ -2578,7 +2429,11 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 NAM8.Read(buffer, subSize, curPos);
                 break;
             case '1SMW':
-                WMS1.Read(buffer, subSize, curPos);
+                if((curSound & fIsShoot3DRead) == 0)
+                    WMS11.Read(buffer, subSize, curPos);
+                else
+                    WMS12.Read(buffer, subSize, curPos);
+                curSound |= fIsShoot3DRead;
                 break;
             case '2SMW':
                 WMS2.Read(buffer, subSize, curPos);
@@ -2637,11 +2492,26 @@ SINT32 WEAPRecord::Unload()
     VANM.Unload();
     NNAM.Unload();
     MWD1.Unload();
+    MWD2.Unload();
+    MWD3.Unload();
+    MWD4.Unload();
+    MWD5.Unload();
+    MWD6.Unload();
+    MWD7.Unload();
     INAM.Unload();
     WNAM.Unload();
     WNM1.Unload();
+    WNM2.Unload();
+    WNM3.Unload();
+    WNM4.Unload();
+    WNM5.Unload();
+    WNM6.Unload();
+    WNM7.Unload();
     WMI1.Unload();
-    SNAM.Unload();
+    WMI2.Unload();
+    WMI3.Unload();
+    SNAM1.Unload();
+    SNAM2.Unload();
     XNAM.Unload();
     NAM7.Unload();
     TNAM.Unload();
@@ -2649,7 +2519,8 @@ SINT32 WEAPRecord::Unload()
     UNAM.Unload();
     NAM9.Unload();
     NAM8.Unload();
-    WMS1.Unload();
+    WMS11.Unload();
+    WMS12.Unload();
     WMS2.Unload();
     DATA.Unload();
     DNAM.Unload();
@@ -2664,135 +2535,64 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SCRI);
     WRITE(EITM);
     WRITE(EAMT);
     WRITE(NAM0);
-
     Destructable.Write(writer);
-
     WRITE(REPL);
     WRITE(ETYP);
     WRITE(BIPL);
     WRITE(YNAM);
     WRITE(ZNAM);
-
     if(MOD2.IsLoaded())
         {
-        if(MOD2->MOD2.IsLoaded())
-            SaveHandler.writeSubRecord('2DOM', MOD2->MOD2.value, MOD2->MOD2.GetSize());
-
-        if(MOD2->MO2T.IsLoaded())
-            SaveHandler.writeSubRecord('T2OM', MOD2->MO2T.value, MOD2->MO2T.GetSize());
-
-        if(MOD2->MO2S.IsLoaded())
-            SaveHandler.writeSubRecord('S2OM', MOD2->MO2S.value, MOD2->MO2S.GetSize());
-
+        MOD2->WRITEAS(MODL, MOD2);
+        MOD2->WRITEAS(MODT, MO2T);
+        MOD2->WRITEAS(Textures, MO2S);
         }
-
     if(MOD3.IsLoaded())
         {
-        if(MOD3->MOD3.IsLoaded())
-            SaveHandler.writeSubRecord('3DOM', MOD3->MOD3.value, MOD3->MOD3.GetSize());
-
-        if(MOD3->MO3T.IsLoaded())
-            SaveHandler.writeSubRecord('T3OM', MOD3->MO3T.value, MOD3->MO3T.GetSize());
-
-        if(MOD3->MO3S.IsLoaded())
-            SaveHandler.writeSubRecord('S3OM', MOD3->MO3S.value, MOD3->MO3S.GetSize());
-
+        MOD3->WRITEAS(MODL, MOD3);
+        MOD3->WRITEAS(MODT, MO3T);
+        MOD3->WRITEAS(Textures, MO3S);
         }
-
     WRITE(EFSD);
-
     if(MOD4.IsLoaded())
         {
-        if(MOD4->MOD4.IsLoaded())
-            SaveHandler.writeSubRecord('4DOM', MOD4->MOD4.value, MOD4->MOD4.GetSize());
-
-        if(MOD4->MO4T.IsLoaded())
-            SaveHandler.writeSubRecord('T4OM', MOD4->MO4T.value, MOD4->MO4T.GetSize());
-
-        if(MOD4->MO4S.IsLoaded())
-            SaveHandler.writeSubRecord('S4OM', MOD4->MO4S.value, MOD4->MO4S.GetSize());
-
+        MOD4->WRITEAS(MODL, MOD4);
+        MOD4->WRITEAS(MODT, MO4T);
+        MOD4->WRITEAS(Textures, MO4S);
         }
-
     WRITE(VANM);
     WRITE(NNAM);
 
-    if(MWD1.IsLoaded())
-        {
-        if(MWD1->MWD1.IsLoaded())
-            SaveHandler.writeSubRecord('1DWM', MWD1->MWD1.value, MWD1->MWD1.GetSize());
-
-        if(MWD1->MWD2.IsLoaded())
-            SaveHandler.writeSubRecord('2DWM', MWD1->MWD2.value, MWD1->MWD2.GetSize());
-
-        if(MWD1->MWD3.IsLoaded())
-            SaveHandler.writeSubRecord('3DWM', MWD1->MWD3.value, MWD1->MWD3.GetSize());
-
-        if(MWD1->MWD4.IsLoaded())
-            SaveHandler.writeSubRecord('4DWM', MWD1->MWD4.value, MWD1->MWD4.GetSize());
-
-        if(MWD1->MWD5.IsLoaded())
-            SaveHandler.writeSubRecord('5DWM', MWD1->MWD5.value, MWD1->MWD5.GetSize());
-
-        if(MWD1->MWD6.IsLoaded())
-            SaveHandler.writeSubRecord('6DWM', MWD1->MWD6.value, MWD1->MWD6.GetSize());
-
-        if(MWD1->MWD7.IsLoaded())
-            SaveHandler.writeSubRecord('7DWM', MWD1->MWD7.value, MWD1->MWD7.GetSize());
-
-        }
-
+    WRITE(MWD1);
+    WRITE(MWD2);
+    WRITE(MWD3);
+    WRITE(MWD4);
+    WRITE(MWD5);
+    WRITE(MWD6);
+    WRITE(MWD7);
     WRITE(INAM);
     WRITE(WNAM);
-
-    if(WNM1.IsLoaded())
-        {
-        if(WNM1->WNM1.IsLoaded())
-            SaveHandler.writeSubRecord('1MNW', WNM1->WNM1.value, WNM1->WNM1.GetSize());
-
-        if(WNM1->WNM2.IsLoaded())
-            SaveHandler.writeSubRecord('2MNW', WNM1->WNM2.value, WNM1->WNM2.GetSize());
-
-        if(WNM1->WNM3.IsLoaded())
-            SaveHandler.writeSubRecord('3MNW', WNM1->WNM3.value, WNM1->WNM3.GetSize());
-
-        if(WNM1->WNM4.IsLoaded())
-            SaveHandler.writeSubRecord('4MNW', WNM1->WNM4.value, WNM1->WNM4.GetSize());
-
-        if(WNM1->WNM5.IsLoaded())
-            SaveHandler.writeSubRecord('5MNW', WNM1->WNM5.value, WNM1->WNM5.GetSize());
-
-        if(WNM1->WNM6.IsLoaded())
-            SaveHandler.writeSubRecord('6MNW', WNM1->WNM6.value, WNM1->WNM6.GetSize());
-
-        if(WNM1->WNM7.IsLoaded())
-            SaveHandler.writeSubRecord('7MNW', WNM1->WNM7.value, WNM1->WNM7.GetSize());
-
-        }
-
-    if(WMI1.IsLoaded())
-        {
-        if(WMI1->WMI1.IsLoaded())
-            SaveHandler.writeSubRecord('1IMW', WMI1->WMI1.value, WMI1->WMI1.GetSize());
-
-        if(WMI1->WMI2.IsLoaded())
-            SaveHandler.writeSubRecord('2IMW', WMI1->WMI2.value, WMI1->WMI2.GetSize());
-
-        if(WMI1->WMI3.IsLoaded())
-            SaveHandler.writeSubRecord('3IMW', WMI1->WMI3.value, WMI1->WMI3.GetSize());
-
-        }
-
-    WRITE(SNAM);
+    WRITE(WNM1);
+    WRITE(WNM2);
+    WRITE(WNM3);
+    WRITE(WNM4);
+    WRITE(WNM5);
+    WRITE(WNM6);
+    WRITE(WNM7);
+    WRITE(WMI1);
+    WRITE(WMI2);
+    WRITE(WMI3);
+    WRITEAS(SNAM1, SNAM);
+    if(SNAM2.IsLoaded() && !SNAM1.IsLoaded()) //SNAM1 must be written even if empty for SNAM2 to work
+        writer.record_write_subrecord(REV32(SNAM), &SNAM1.value, sizeof(SNAM1.value));
+    WRITEAS(SNAM2, SNAM);
     WRITE(XNAM);
     WRITE(NAM7);
     WRITE(TNAM);
@@ -2800,47 +2600,46 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(UNAM);
     WRITE(NAM9);
     WRITE(NAM8);
-    WRITE(WMS1);
+    WRITEAS(WMS11, WMS1);
+    if(WMS12.IsLoaded() && !WMS11.IsLoaded()) //WMS11 must be written even if empty for WMS12 to work
+        writer.record_write_subrecord(REV32(WMS1), &WMS11.value, sizeof(WMS11.value));
+    WRITEAS(WMS12, WMS1);
     WRITE(WMS2);
     WRITE(DATA);
     WRITE(DNAM);
     WRITE(CRDT);
     WRITE(VATS);
     WRITE(VNAM);
-
     return -1;
     }
 
 bool WEAPRecord::operator ==(const WEAPRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
             EITM == other.EITM &&
             EAMT == other.EAMT &&
             NAM0 == other.NAM0 &&
-            Destructable == other.Destructable &&
             REPL == other.REPL &&
             ETYP == other.ETYP &&
             BIPL == other.BIPL &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
-            MOD2 == other.MOD2 &&
-            MOD3 == other.MOD3 &&
             EFSD == other.EFSD &&
-            MOD4 == other.MOD4 &&
-            VANM.equalsi(other.VANM) &&
-            NNAM.equalsi(other.NNAM) &&
-            MWD1 == other.MWD1 &&
             INAM == other.INAM &&
             WNAM == other.WNAM &&
-            WNM1 == other.WNM1 &&
             WMI1 == other.WMI1 &&
-            SNAM == other.SNAM &&
+            WMI2 == other.WMI2 &&
+            WMI3 == other.WMI3 &&
+            WNM1 == other.WNM1 &&
+            WNM2 == other.WNM2 &&
+            WNM3 == other.WNM3 &&
+            WNM4 == other.WNM4 &&
+            WNM5 == other.WNM5 &&
+            WNM6 == other.WNM6 &&
+            WNM7 == other.WNM7 &&
+            SNAM1 == other.SNAM1 &&
+            SNAM2 == other.SNAM2 &&
             XNAM == other.XNAM &&
             NAM7 == other.NAM7 &&
             TNAM == other.TNAM &&
@@ -2848,13 +2647,32 @@ bool WEAPRecord::operator ==(const WEAPRecord &other) const
             UNAM == other.UNAM &&
             NAM9 == other.NAM9 &&
             NAM8 == other.NAM8 &&
-            WMS1 == other.WMS1 &&
+            WMS11 == other.WMS11 &&
+            WMS12 == other.WMS12 &&
             WMS2 == other.WMS2 &&
             DATA == other.DATA &&
             DNAM == other.DNAM &&
             CRDT == other.CRDT &&
             VATS == other.VATS &&
-            VNAM == other.VNAM);
+            VNAM == other.VNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
+            VANM.equalsi(other.VANM) &&
+            NNAM.equalsi(other.NNAM) &&
+            MWD1.equalsi(other.MWD1) &&
+            MWD2.equalsi(other.MWD2) &&
+            MWD3.equalsi(other.MWD3) &&
+            MWD4.equalsi(other.MWD4) &&
+            MWD5.equalsi(other.MWD5) &&
+            MWD6.equalsi(other.MWD6) &&
+            MWD7.equalsi(other.MWD7) &&
+            MODL == other.MODL &&
+            MOD2 == other.MOD2 &&
+            MOD3 == other.MOD3 &&
+            MOD4 == other.MOD4 &&
+            Destructable == other.Destructable);
     }
 
 bool WEAPRecord::operator !=(const WEAPRecord &other) const

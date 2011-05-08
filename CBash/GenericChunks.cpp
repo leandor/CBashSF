@@ -99,7 +99,8 @@ GENXNAM::~GENXNAM()
 
 bool GENXNAM::operator ==(const GENXNAM &other) const
     {
-    return (faction == other.faction && mod == other.mod);
+    return (faction == other.faction &&
+            mod == other.mod);
     }
 
 bool GENXNAM::operator !=(const GENXNAM &other) const
@@ -113,7 +114,7 @@ GENSCHR::GENSCHR():
     lastIndex(0),
     scriptType(0)
     {
-    memset(&unused1, 0x00, 4);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENSCHR::~GENSCHR()
@@ -130,35 +131,6 @@ bool GENSCHR::operator ==(const GENSCHR &other) const
     }
 
 bool GENSCHR::operator !=(const GENSCHR &other) const
-    {
-    return !(*this == other);
-    }
-
-FNVSCHR::FNVSCHR():
-    numRefs(0),
-    compiledSize(0),
-    lastIndex(0),
-    scriptType(0),
-    flags(0)
-    {
-    memset(&unused1, 0x00, 4);
-    }
-
-FNVSCHR::~FNVSCHR()
-    {
-    //
-    }
-
-bool FNVSCHR::operator ==(const FNVSCHR &other) const
-    {
-    return (numRefs == other.numRefs &&
-            compiledSize == other.compiledSize &&
-            lastIndex == other.lastIndex &&
-            scriptType == other.scriptType &&
-            flags == other.flags);
-    }
-
-bool FNVSCHR::operator !=(const FNVSCHR &other) const
     {
     return !(*this == other);
     }
@@ -195,8 +167,8 @@ GENSLSD::GENSLSD():
     index(0),
     flags(0)
     {
-    memset(&unused1[0], 0, sizeof(unused1));
-    memset(&unused2[0], 0, sizeof(unused2));
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
     }
 
 GENSLSD::~GENSLSD()
@@ -257,6 +229,35 @@ bool sortVARS::operator()(const GENVARS *lhs, const GENVARS *rhs) const
     return lhs->SLSD.value.index < rhs->SLSD.value.index;
     }
 
+FNVSCHR::FNVSCHR():
+    numRefs(0),
+    compiledSize(0),
+    lastIndex(0),
+    scriptType(0),
+    flags(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    }
+
+FNVSCHR::~FNVSCHR()
+    {
+    //
+    }
+
+bool FNVSCHR::operator ==(const FNVSCHR &other) const
+    {
+    return (numRefs == other.numRefs &&
+            compiledSize == other.compiledSize &&
+            lastIndex == other.lastIndex &&
+            scriptType == other.scriptType &&
+            flags == other.flags);
+    }
+
+bool FNVSCHR::operator !=(const FNVSCHR &other) const
+    {
+    return !(*this == other);
+    }
+
 FNVMINSCRIPT::FNVMINSCRIPT()
     {
     //
@@ -280,10 +281,7 @@ void FNVMINSCRIPT::IsScriptEnabled(bool value)
 
 bool FNVMINSCRIPT::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void FNVMINSCRIPT::SetScriptFlagMask(UINT16 Mask)
@@ -360,7 +358,7 @@ GENSCIT::GENSCIT():
     visual(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENSCIT::~GENSCIT()
@@ -389,7 +387,7 @@ OBMEEFME::OBMEEFME():
     efitParamInfo(0),
     efixParamInfo(0)
     {
-    memset(&reserved, 0x00, 0xA);
+    memset(&reserved[0], 0x00, sizeof(reserved));
     }
 
 OBMEEFME::~OBMEEFME()
@@ -405,7 +403,16 @@ bool OBMEEFME::operator ==(const OBMEEFME &other) const
             majorVersion == other.majorVersion &&
             efitParamInfo == other.efitParamInfo &&
             efixParamInfo == other.efixParamInfo &&
-            reserved == other.reserved);
+            reserved[0] == other.reserved[0] &&
+            reserved[1] == other.reserved[1] &&
+            reserved[2] == other.reserved[2] &&
+            reserved[3] == other.reserved[3] &&
+            reserved[4] == other.reserved[4] &&
+            reserved[5] == other.reserved[5] &&
+            reserved[6] == other.reserved[6] &&
+            reserved[7] == other.reserved[7] &&
+            reserved[8] == other.reserved[8] &&
+            reserved[9] == other.reserved[9]);
     }
 
 bool OBMEEFME::operator !=(const OBMEEFME &other) const
@@ -416,10 +423,10 @@ bool OBMEEFME::operator !=(const OBMEEFME &other) const
 OBMEEFIX::OBMEEFIX():
     efixOverrides(0),
     efixFlags(0),
-    baseCost(0.0),
+    baseCost(0.0f),
     resistAV(0)
     {
-    memset(&reserved, 0x00, 0x10);
+    memset(&reserved[0], 0x00, sizeof(reserved));
     }
 
 OBMEEFIX::~OBMEEFIX()
@@ -433,7 +440,22 @@ bool OBMEEFIX::operator ==(const OBMEEFIX &other) const
             efixFlags == other.efixFlags &&
             AlmostEqual(baseCost,other.baseCost,2) &&
             resistAV == other.resistAV &&
-            reserved == other.reserved);
+            reserved[0] == other.reserved[0] &&
+            reserved[1] == other.reserved[1] &&
+            reserved[2] == other.reserved[2] &&
+            reserved[3] == other.reserved[3] &&
+            reserved[4] == other.reserved[4] &&
+            reserved[5] == other.reserved[5] &&
+            reserved[6] == other.reserved[6] &&
+            reserved[7] == other.reserved[7] &&
+            reserved[8] == other.reserved[8] &&
+            reserved[9] == other.reserved[9] &&
+            reserved[10] == other.reserved[10] &&
+            reserved[11] == other.reserved[11] &&
+            reserved[12] == other.reserved[12] &&
+            reserved[13] == other.reserved[13] &&
+            reserved[14] == other.reserved[14] &&
+            reserved[15] == other.reserved[15]);
     }
 
 bool OBMEEFIX::operator !=(const OBMEEFIX &other) const
@@ -447,6 +469,7 @@ bool OBMEEffect::operator ==(const OBMEEffect &other) const
             EFII.equals(other.EFII) &&
             EFIX == other.EFIX);
     }
+
 bool OBMEEffect::operator !=(const OBMEEffect &other) const
     {
     return !(*this == other);
@@ -1102,7 +1125,7 @@ GENENIT::GENENIT():
     value(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENENIT::~GENENIT()
@@ -1204,7 +1227,7 @@ GENSNAM::GENSNAM():
     faction(0),
     rank(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENSNAM::~GENSNAM()
@@ -1232,7 +1255,7 @@ GENAIDT::GENAIDT():
     trainSkill(0),
     trainLevel(0)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENAIDT::~GENAIDT()
@@ -1546,8 +1569,7 @@ bool GENXLOD::operator ==(const GENXLOD &other) const
     {
     return (AlmostEqual(lod1,other.lod1,2) &&
             AlmostEqual(lod2,other.lod2,2) &&
-            AlmostEqual(lod3,other.lod3,2)
-            );
+            AlmostEqual(lod3,other.lod3,2));
     }
 
 bool GENXLOD::operator !=(const GENXLOD &other) const
@@ -1559,7 +1581,7 @@ GENXESP::GENXESP():
     parent(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENXESP::~GENXESP()
@@ -1601,8 +1623,7 @@ bool GENPOSDATA::operator ==(const GENPOSDATA &other) const
             AlmostEqual(posZ,other.posZ,2) &&
             AlmostEqual(rotX,other.rotX,2) &&
             AlmostEqual(rotY,other.rotY,2) &&
-            AlmostEqual(rotZ,other.rotZ,2)
-            );
+            AlmostEqual(rotZ,other.rotZ,2));
     }
 
 bool GENPOSDATA::operator !=(const GENPOSDATA &other) const
@@ -1616,7 +1637,7 @@ GENPGRP::GENPGRP():
     z(0.0f),
     connections(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENPGRP::~GENPGRP()
@@ -1642,8 +1663,8 @@ LVLLVLO::LVLLVLO():
     listId(0),
     count(1)
     {
-    memset(&unused1, 0x00, 2);
-    memset(&unused2, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
     }
 
 LVLLVLO::~LVLLVLO()
@@ -1669,7 +1690,7 @@ MAGICOBME::MAGICOBME():
     minorVersion(0),
     majorVersion(0)
     {
-    memset(&reserved, 0x00, 0x1C);
+    memset(&reserved[0], 0x00, sizeof(reserved));
     }
 
 MAGICOBME::~MAGICOBME()
@@ -1683,7 +1704,34 @@ bool MAGICOBME::operator ==(const MAGICOBME &other) const
             betaVersion == other.betaVersion &&
             minorVersion == other.minorVersion &&
             majorVersion == other.majorVersion &&
-            reserved == other.reserved);
+            reserved[0] == other.reserved[0] &&
+            reserved[1] == other.reserved[1] &&
+            reserved[2] == other.reserved[2] &&
+            reserved[3] == other.reserved[3] &&
+            reserved[4] == other.reserved[4] &&
+            reserved[5] == other.reserved[5] &&
+            reserved[6] == other.reserved[6] &&
+            reserved[7] == other.reserved[7] &&
+            reserved[8] == other.reserved[8] &&
+            reserved[9] == other.reserved[9] &&
+            reserved[10] == other.reserved[10] &&
+            reserved[11] == other.reserved[11] &&
+            reserved[12] == other.reserved[12] &&
+            reserved[13] == other.reserved[13] &&
+            reserved[14] == other.reserved[14] &&
+            reserved[15] == other.reserved[15] &&
+            reserved[16] == other.reserved[16] &&
+            reserved[17] == other.reserved[17] &&
+            reserved[18] == other.reserved[18] &&
+            reserved[19] == other.reserved[19] &&
+            reserved[20] == other.reserved[20] &&
+            reserved[21] == other.reserved[21] &&
+            reserved[22] == other.reserved[22] &&
+            reserved[23] == other.reserved[23] &&
+            reserved[24] == other.reserved[24] &&
+            reserved[25] == other.reserved[25] &&
+            reserved[26] == other.reserved[26] &&
+            reserved[27] == other.reserved[27]);
     }
 
 bool MAGICOBME::operator !=(const MAGICOBME &other) const
@@ -1808,7 +1856,7 @@ RACEDATA::RACEDATA():
     femaleWeight(1.0f),
     flags(0)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 RACEDATA::~RACEDATA()
@@ -1839,7 +1887,7 @@ bool RACEDATA::operator !=(const RACEDATA &other) const
 
 RACESNAM::RACESNAM()
     {
-    memset(&SNAM, 0x00, 2);
+    memset(&SNAM[0], 0x00, sizeof(SNAM));
     }
 
 RACESNAM::~RACESNAM()
@@ -1928,7 +1976,6 @@ bool RACECNAM::operator !=(const RACECNAM &other) const
     }
 
 //Fallout New Vegas Chunks
-
 GENOBND::GENOBND():
     x1(0),
     y1(0),
@@ -1973,9 +2020,9 @@ GENDODT::GENDODT():
     red(0),
     green(0),
     blue(0),
-    unused2(0x00)
+    unused2(0)
     {
-    memset(&unused1[0], 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENDODT::~GENDODT()
@@ -3019,11 +3066,11 @@ bool sortDESTStages::operator()(const DESTSTAGE *lhs, const DESTSTAGE *rhs) cons
     }
 
 GENDEST::GENDEST():
-    health(),
-    count(),
-    flags()
+    health(0),
+    count(0),
+    flags(0)
     {
-    memset(&unused1[0], 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENDEST::~GENDEST()
@@ -3037,6 +3084,7 @@ bool GENDEST::operator ==(const GENDEST &other) const
             count == other.count &&
             flags == other.flags);
     }
+
 bool GENDEST::operator !=(const GENDEST &other) const
     {
     return !(*this == other);
@@ -3082,7 +3130,7 @@ GENBMDT::GENBMDT():
     bipedFlags(0),
     generalFlags(0)
     {
-    memset(&unused1[0], 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 GENBMDT::~GENBMDT()
@@ -3104,7 +3152,7 @@ bool GENBMDT::operator !=(const GENBMDT &other) const
 FNVEQUIPDATA::FNVEQUIPDATA():
     value(0),
     health(0),
-    weight(0)
+    weight(0.0f)
     {
     //
     }
@@ -3118,7 +3166,7 @@ bool FNVEQUIPDATA::operator ==(const FNVEQUIPDATA &other) const
     {
     return (value == other.value &&
             health == other.health &&
-            weight == other.weight);
+            AlmostEqual(weight,other.weight,2));
     }
 
 bool FNVEQUIPDATA::operator !=(const FNVEQUIPDATA &other) const
@@ -3129,9 +3177,9 @@ bool FNVEQUIPDATA::operator !=(const FNVEQUIPDATA &other) const
 FNVEQUIPDNAM::FNVEQUIPDNAM():
     AR(0),
     flags(0),
-    DT(0)
+    DT(0.0f)
     {
-    memset(&unknown[0], 0x00, 4);
+    memset(&unknown[0], 0x00, sizeof(unknown));
     }
 
 FNVEQUIPDNAM::~FNVEQUIPDNAM()
@@ -3143,7 +3191,7 @@ bool FNVEQUIPDNAM::operator ==(const FNVEQUIPDNAM &other) const
     {
     return (AR == other.AR &&
             flags == other.flags &&
-            DT == other.DT &&
+            AlmostEqual(DT,other.DT,2) &&
             unknown[0] == other.unknown[0] &&
             unknown[1] == other.unknown[1] &&
             unknown[2] == other.unknown[2] &&
@@ -3158,7 +3206,7 @@ bool FNVEQUIPDNAM::operator !=(const FNVEQUIPDNAM &other) const
 GENCOED::GENCOED():
     owner(0),
     globalOrRank(0),
-    condition(0)
+    condition(0.0f)
     {
     //
     }
@@ -3172,7 +3220,7 @@ bool GENCOED::operator ==(const GENCOED &other) const
     {
     return (owner == other.owner &&
             globalOrRank == other.globalOrRank &&
-            condition == other.condition);
+            AlmostEqual(condition,other.condition,2));
     }
 
 bool GENCOED::operator !=(const GENCOED &other) const
@@ -3233,19 +3281,265 @@ bool FNVCNTO::operator ==(const FNVCNTO &other) const
     return (CNTO == other.CNTO &&
             COED == other.COED);
     }
+
 bool FNVCNTO::operator !=(const FNVCNTO &other) const
     {
     return !(*this == other);
     }
 
+GENDNAM::GENDNAM():
+    defaultLandHeight(0.0f),
+    defaultWaterHeight(0.0f)
+    {
+    //
+    }
 
+GENDNAM::~GENDNAM()
+    {
+    //
+    }
 
+bool GENDNAM::operator ==(const GENDNAM &other) const
+    {
+    return (AlmostEqual(defaultLandHeight,other.defaultLandHeight,2) &&
+            AlmostEqual(defaultWaterHeight,other.defaultWaterHeight,2));
+    }
 
+bool GENDNAM::operator !=(const GENDNAM &other) const
+    {
+    return !(*this == other);
+    }
 
+GENONAM::GENONAM():
+    mapScale(0.0f),
+    xCellOffset(0.0f),
+    yCellOffset(0.0f)
+    {
+    //
+    }
 
+GENONAM::~GENONAM()
+    {
+    //
+    }
 
+bool GENONAM::operator ==(const GENONAM &other) const
+    {
+    return (AlmostEqual(mapScale,other.mapScale,2) &&
+            AlmostEqual(xCellOffset,other.xCellOffset,2) &&
+            AlmostEqual(yCellOffset,other.yCellOffset,2));
+    }
 
+bool GENONAM::operator !=(const GENONAM &other) const
+    {
+    return !(*this == other);
+    }
 
+GENIMPS::GENIMPS():
+    material(0),
+    oldImpact(0),
+    newImpact(0)
+    {
+    //
+    }
+
+GENIMPS::~GENIMPS()
+    {
+    //
+    }
+
+bool GENIMPS::operator ==(const GENIMPS &other) const
+    {
+    return (material == other.material &&
+            oldImpact == other.oldImpact &&
+            newImpact == other.newImpact);
+    }
+
+bool GENIMPS::operator !=(const GENIMPS &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXPRM::GENXPRM():
+    xBound(0.0f),
+    yBound(0.0f),
+    zBound(0.0f),
+    red(0.0f),
+    green(0.0f),
+    blue(0.0f),
+    unknown(0.0f),
+    type(0)
+    {
+    //
+    }
+
+GENXPRM::~GENXPRM()
+    {
+    //
+    }
+
+bool GENXPRM::operator ==(const GENXPRM &other) const
+    {
+    return (AlmostEqual(xBound,other.xBound,2) &&
+            AlmostEqual(yBound,other.yBound,2) &&
+            AlmostEqual(zBound,other.zBound,2) &&
+            AlmostEqual(red,other.red,2) &&
+            AlmostEqual(green,other.green,2) &&
+            AlmostEqual(blue,other.blue,2) &&
+            AlmostEqual(unknown,other.unknown,2) &&
+            type == other.type);
+    }
+
+bool GENXPRM::operator !=(const GENXPRM &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXMBO::GENXMBO():
+    x(0.0f),
+    y(0.0f),
+    z(0.0f)
+    {
+    //
+    }
+
+GENXMBO::~GENXMBO()
+    {
+    //
+    }
+
+bool GENXMBO::operator ==(const GENXMBO &other) const
+    {
+    return (AlmostEqual(x,other.x,2) &&
+            AlmostEqual(y,other.y,2) &&
+            AlmostEqual(z,other.z,2));
+    }
+
+bool GENXMBO::operator !=(const GENXMBO &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXTEL::GENXTEL():
+    destinationFid(0),
+    flags(0)
+    {
+    //
+    }
+
+GENXTEL::~GENXTEL()
+    {
+    //
+    }
+
+bool GENXTEL::operator ==(const GENXTEL &other) const
+    {
+    return (destinationFid == other.destinationFid &&
+            flags == other.flags &&
+            destination == other.destination);
+    }
+
+bool GENXTEL::operator !=(const GENXTEL &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXMRK::operator ==(const GENXMRK &other) const
+    {
+    return (FNAM == other.FNAM &&
+            FULL.equals(other.FULL) &&
+            TNAM == other.TNAM &&
+            WMI1 == other.WMI1);
+    }
+
+bool GENXMRK::operator !=(const GENXMRK &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENMMRK::operator ==(const GENMMRK &other) const
+    {
+    return (FULL == other.FULL &&
+            CNAM == other.CNAM &&
+            BNAM == other.BNAM &&
+            MNAM == other.MNAM &&
+            NNAM == other.NNAM);
+    }
+
+bool GENMMRK::operator !=(const GENMMRK &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXRDO::GENXRDO():
+    rangeRadius(0.0f),
+    rangeType(0),
+    staticPercentage(0.0f),
+    positionReference(0)
+    {
+    //
+    }
+
+GENXRDO::~GENXRDO()
+    {
+    //
+    }
+
+bool GENXRDO::operator ==(const GENXRDO &other) const
+    {
+    return (AlmostEqual(rangeRadius,other.rangeRadius,2) &&
+            rangeType == other.rangeType &&
+            AlmostEqual(staticPercentage,other.staticPercentage,2) &&
+            positionReference == other.positionReference);
+    }
+
+bool GENXRDO::operator !=(const GENXRDO &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENAMMO::operator ==(const GENAMMO &other) const
+    {
+    return (XAMT == other.XAMT &&
+            XAMC == other.XAMC);
+    }
+
+bool GENAMMO::operator !=(const GENAMMO &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENXPWR::operator ==(const GENXPWR &other) const
+    {
+    return (XAMT == other.XAMT &&
+            XAMC == other.XAMC);
+    }
+
+bool GENXPWR::operator !=(const GENXPWR &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXDCR::GENXDCR():
+    reference(0)
+    {
+    //
+    }
+
+GENXDCR::~GENXDCR()
+    {
+    //
+    }
+
+bool GENXDCR::operator ==(const GENXDCR &other) const
+    {
+    return (reference == other.reference);
+    }
+
+bool GENXDCR::operator !=(const GENXDCR &other) const
+    {
+    return !(*this == other);
+    }
 
 bool GENXCLP::operator ==(const GENXCLP &other) const
     {
@@ -3257,3 +3551,390 @@ bool GENXCLP::operator !=(const GENXCLP &other) const
     {
     return !(*this == other);
     }
+
+GENXAPR::GENXAPR():
+    reference(0),
+    delay(0.0f)
+    {
+    //
+    }
+
+GENXAPR::~GENXAPR()
+    {
+    //
+    }
+
+bool GENXAPR::operator ==(const GENXAPR &other) const
+    {
+    return (reference == other.reference &&
+            AlmostEqual(delay,other.delay,2));
+    }
+
+bool GENXAPR::operator !=(const GENXAPR &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENACTPARENT::IsParentActivateOnly()
+    {
+    return (XAPD.value & fIsParentActivateOnly) != 0;
+    }
+
+void GENACTPARENT::IsParentActivateOnly(bool value)
+    {
+    XAPD.value = value ? (XAPD.value | fIsParentActivateOnly) : (XAPD.value & ~fIsParentActivateOnly);
+    }
+
+bool GENACTPARENT::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((XAPD.value & Mask) == Mask) : ((XAPD.value & Mask) != 0);
+    }
+
+void GENACTPARENT::SetFlagMask(UINT8 Mask)
+    {
+    XAPD.value = Mask;
+    }
+
+bool GENACTPARENT::operator ==(const GENACTPARENT &other) const
+    {
+    return (XAPD == other.XAPD &&
+            XAPR == other.XAPR);
+    }
+
+bool GENACTPARENT::operator !=(const GENACTPARENT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXNDP::GENXNDP():
+    navMesh(0),
+    unknown1(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    }
+
+GENXNDP::~GENXNDP()
+    {
+    //
+    }
+
+bool GENXNDP::operator ==(const GENXNDP &other) const
+    {
+    return (navMesh == other.navMesh &&
+            unknown1 == other.unknown1);
+    }
+
+bool GENXNDP::operator !=(const GENXNDP &other) const
+    {
+    return !(*this == other);
+    }
+
+GENPOSITION::GENPOSITION():
+    width(0.0f),
+    height(0.0f),
+    xPos(0.0f),
+    yPos(0.0f),
+    zPos(0.0f),
+    q1(0.0f),
+    q2(0.0f),
+    q3(0.0f),
+    q4(0.0f)
+    {
+    //
+    }
+
+GENPOSITION::~GENPOSITION()
+    {
+    //
+    }
+
+bool GENPOSITION::operator ==(const GENPOSITION &other) const
+    {
+    return (AlmostEqual(width,other.width,2) &&
+            AlmostEqual(height,other.height,2) &&
+            AlmostEqual(xPos,other.xPos,2) &&
+            AlmostEqual(yPos,other.yPos,2) &&
+            AlmostEqual(zPos,other.zPos,2) &&
+            AlmostEqual(q1,other.q1,2) &&
+            AlmostEqual(q2,other.q2,2) &&
+            AlmostEqual(q3,other.q3,2) &&
+            AlmostEqual(q4,other.q4,2));
+    }
+
+bool GENPOSITION::operator !=(const GENPOSITION &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXRMR::GENXRMR():
+    count(0)
+    {
+    memset(&unknown1[0], 0x00, sizeof(unknown1));
+    }
+
+GENXRMR::~GENXRMR()
+    {
+    //
+    }
+
+bool GENXRMR::operator ==(const GENXRMR &other) const
+    {
+    return (count == other.count &&
+            unknown1[0] == other.unknown1[0] &&
+            unknown1[1] == other.unknown1[1]);
+    }
+
+bool GENXRMR::operator !=(const GENXRMR &other) const
+    {
+    return !(*this == other);
+    }
+
+bool GENROOM::operator ==(const GENROOM &other) const
+    {
+    return (XRMR == other.XRMR &&
+            XLRM == other.XLRM);
+    }
+
+bool GENROOM::operator !=(const GENROOM &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FNVXOWN::operator ==(const FNVXOWN &other) const
+    {
+    return (XOWN == other.XOWN &&
+            XRNK == other.XRNK);
+    }
+
+bool FNVXOWN::operator !=(const FNVXOWN &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVXLOC::FNVXLOC():
+    level(0),
+    key(0),
+    flags(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
+    memset(&unknown[0], 0x00, sizeof(unknown));
+    }
+
+FNVXLOC::~FNVXLOC()
+    {
+    //
+    }
+
+bool FNVXLOC::operator ==(const FNVXLOC &other) const
+    {
+    return (level == other.level &&
+            key == other.key &&
+            flags == other.flags &&
+            unknown[0] == other.unknown[0] &&
+            unknown[1] == other.unknown[1] &&
+            unknown[2] == other.unknown[2] &&
+            unknown[3] == other.unknown[3] &&
+            unknown[4] == other.unknown[4] &&
+            unknown[5] == other.unknown[5] &&
+            unknown[6] == other.unknown[6] &&
+            unknown[7] == other.unknown[7]);
+    }
+
+bool FNVXLOC::operator !=(const FNVXLOC &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVAIDT::FNVAIDT():
+    aggression(0),
+    confidence(0),
+    energyLevel(0),
+    responsibility(0),
+    mood(0),
+    flags(0),
+    trainSkill(0),
+    trainLevel(0),
+    assistance(0),
+    aggroFlags(0),
+    aggroRadius(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    }
+
+FNVAIDT::~FNVAIDT()
+    {
+    //
+    }
+
+bool FNVAIDT::operator ==(const FNVAIDT &other) const
+    {
+    return (aggression == other.aggression &&
+            confidence == other.confidence &&
+            energyLevel == other.energyLevel &&
+            responsibility == other.responsibility &&
+            mood == other.mood &&
+            flags == other.flags &&
+            trainSkill == other.trainSkill &&
+            trainLevel == other.trainLevel &&
+            assistance == other.assistance &&
+            aggroFlags == other.aggroFlags &&
+            aggroRadius == other.aggroRadius);
+    }
+
+bool FNVAIDT::operator !=(const FNVAIDT &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVACBS::FNVACBS():
+    flags(0),
+    fatigue(0),
+    barterGold(0),
+    level(0),
+    calcMin(0),
+    calcMax(0),
+    speedMult(0),
+    karma(0.0f),
+    dispBase(0),
+    templateFlags(0)
+    {
+    //
+    }
+
+FNVACBS::~FNVACBS()
+    {
+    //
+    }
+
+bool FNVACBS::operator ==(const FNVACBS &other) const
+    {
+    return (flags == other.flags &&
+            fatigue == other.fatigue &&
+            barterGold == other.barterGold &&
+            level == other.level &&
+            calcMin == other.calcMin &&
+            calcMax == other.calcMax &&
+            speedMult == other.speedMult &&
+            AlmostEqual(karma,other.karma,2) &&
+            dispBase == other.dispBase &&
+            templateFlags == other.templateFlags);
+    }
+
+bool FNVACBS::operator !=(const FNVACBS &other) const
+    {
+    return !(*this == other);
+    }
+
+bool FNVLVLO::IsGlobal()
+    {
+    //Not properly implemented, requires being able to tell if COED->owner is a npc record
+    //...the current model doesn't allow a record to lookup another record...
+    //As well, the geck wiki states that the global variable isn't even used by FO3/FNV
+
+    //So the current hack is to see if the globalOrRank is likely to be a rank or global
+    //It seems highly unlikely that any faction will have anywhere close to END_HARDCODED_IDS ranks (0x800)
+    //So CBash assumes that if globalOrRank is > END_HARDCODED_IDS, then it must be a global
+    //So false positives shouldn't be a problem
+    //False negatives could occur though...
+    //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37),
+    //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
+    //PlayCredits (0x63)
+    //It seems unlikely that these specific globals would be used in this context
+    if(COED.IsLoaded())
+        return COED->globalOrRank > END_HARDCODED_IDS;
+    return false;
+    }
+
+bool FNVLVLO::IsRank()
+    {
+    //Not properly implemented, requires being able to tell if COED->owner is a faction record
+    //...the current model doesn't allow a record to lookup another record...
+    //As well, the geck wiki states that the global variable isn't even used by FO3/FNV
+
+    //So the current hack is to see if the globalOrRank is likely to be a rank or global
+    //It seems highly unlikely that any faction will have anywhere close to END_HARDCODED_IDS ranks (0x800)
+    //So CBash assumes that if globalOrRank is < END_HARDCODED_IDS, then it must be a rank
+    //So false negatives shouldn't be a problem
+    //False positives could occur though...
+    //There aren't many records < END_HARDCODED_IDS, but 7 of them are globals
+    //GameYear (0x35), GameMonth (0x36), GameDay (0x37),
+    //GameHour (0x38), GameDaysPassed (0x39), TimeScale (0x3A),
+    //PlayCredits (0x63)
+    //It seems unlikely that these specific globals would be used in this context
+    if(COED.IsLoaded())
+        return COED->globalOrRank < END_HARDCODED_IDS;
+    return false;
+    }
+
+bool FNVLVLO::operator ==(const FNVLVLO &other) const
+    {
+    return (LVLO == other.LVLO &&
+            COED == other.COED);
+    }
+
+bool FNVLVLO::operator !=(const FNVLVLO &other) const
+    {
+    return !(*this == other);
+    }
+
+SURVDATA::SURVDATA():
+    threshold(0),
+    actorEffect(0)
+    {
+    //
+    }
+
+SURVDATA::~SURVDATA()
+    {
+    //
+    }
+
+bool SURVDATA::operator ==(const SURVDATA &other) const
+    {
+    return (threshold == other.threshold &&
+            actorEffect == other.actorEffect);
+    }
+
+bool SURVDATA::operator !=(const SURVDATA &other) const
+    {
+    return !(*this == other);
+    }
+
+FNVLIGHT::FNVLIGHT():
+    fogNear(0.0f),
+    fogFar(0.0f),
+    directionalXY(0),
+    directionalZ(0),
+    directionalFade(0.0f),
+    fogClip(0.0f),
+    fogPower(0.0f)
+    {
+    //
+    }
+
+FNVLIGHT::~FNVLIGHT()
+    {
+    //
+    }
+
+bool FNVLIGHT::operator ==(const FNVLIGHT &other) const
+    {
+    return (ambient == other.ambient &&
+            directional == other.directional &&
+            fog == other.fog &&
+            AlmostEqual(fogNear,other.fogNear,2) &&
+            AlmostEqual(fogFar,other.fogFar,2) &&
+            directionalXY == other.directionalXY &&
+            directionalZ == other.directionalZ &&
+            AlmostEqual(directionalFade,other.directionalFade,2) &&
+            AlmostEqual(fogClip,other.fogClip,2) &&
+            AlmostEqual(fogPower,other.fogPower,2));
+    }
+
+bool FNVLIGHT::operator !=(const FNVLIGHT &other) const
+    {
+    return !(*this == other);
+    }
+

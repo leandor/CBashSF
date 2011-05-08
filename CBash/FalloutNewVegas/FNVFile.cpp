@@ -410,34 +410,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgTREE: //Same as normal
             case 'EERT':
-                //reader.read(&TREE.stamp, 4);
-                //reader.read(&TREE.unknown, 4);
-                //TREE.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&TREE.stamp, 4);
+                reader.read(&TREE.unknown, 4);
+                TREE.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgFURN: //Same as normal
             case 'NRUF':
-                //reader.read(&FURN.stamp, 4);
-                //reader.read(&FURN.unknown, 4);
-                //FURN.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&FURN.stamp, 4);
+                reader.read(&FURN.unknown, 4);
+                FURN.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgWEAP:
             case 'PAEW':
-                //reader.read(&WEAP.stamp, 4);
-                //reader.read(&WEAP.unknown, 4);
-                //WEAP.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&WEAP.stamp, 4);
+                reader.read(&WEAP.unknown, 4);
+                WEAP.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgAMMO:
             case 'OMMA':
-                //reader.read(&AMMO.stamp, 4);
-                //reader.read(&AMMO.unknown, 4);
-                //AMMO.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&AMMO.stamp, 4);
+                reader.read(&AMMO.unknown, 4);
+                AMMO.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgNPC_: //Same as normal
             case '_CPN':
-                //reader.read(&NPC_.stamp, 4);
-                //reader.read(&NPC_.unknown, 4);
-                //NPC_.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&NPC_.stamp, 4);
+                reader.read(&NPC_.unknown, 4);
+                NPC_.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgCREA: //Same as normal
             case 'AERC':
                 //reader.read(&CREA.stamp, 4);
@@ -919,15 +919,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'SARG':
             return (UINT32)GRAS.Records.size();
         case 'EERT':
-            //return (UINT32)TREE.Records.size();
+            return (UINT32)TREE.Records.size();
         case 'NRUF':
-            //return (UINT32)FURN.Records.size();
+            return (UINT32)FURN.Records.size();
         case 'PAEW':
-            //return (UINT32)WEAP.Records.size();
+            return (UINT32)WEAP.Records.size();
         case 'OMMA':
-            //return (UINT32)AMMO.Records.size();
+            return (UINT32)AMMO.Records.size();
         case '_CPN':
-            //return (UINT32)NPC_.Records.size();
+            return (UINT32)NPC_.Records.size();
         case 'AERC':
             //return (UINT32)CREA.Records.size();
         case 'CLVL':
@@ -1218,25 +1218,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = GRAS.Records.back();
             break;
         case 'EERT':
-            //TREE.Records.push_back(new FNV::TREERecord((FNV::TREERecord *)SourceRecord));
-            //newRecord = TREE.Records.back();
-            //break;
+            TREE.Records.push_back(new FNV::TREERecord((FNV::TREERecord *)SourceRecord));
+            newRecord = TREE.Records.back();
+            break;
         case 'NRUF':
-            //FURN.Records.push_back(new FNV::FURNRecord((FNV::FURNRecord *)SourceRecord));
-            //newRecord = FURN.Records.back();
-            //break;
+            FURN.Records.push_back(new FNV::FURNRecord((FNV::FURNRecord *)SourceRecord));
+            newRecord = FURN.Records.back();
+            break;
         case 'PAEW':
-            //WEAP.Records.push_back(new FNV::WEAPRecord((FNV::WEAPRecord *)SourceRecord));
-            //newRecord = WEAP.Records.back();
-            //break;
+            WEAP.Records.push_back(new FNV::WEAPRecord((FNV::WEAPRecord *)SourceRecord));
+            newRecord = WEAP.Records.back();
+            break;
         case 'OMMA':
-            //AMMO.Records.push_back(new FNV::AMMORecord((FNV::AMMORecord *)SourceRecord));
-            //newRecord = AMMO.Records.back();
-            //break;
+            AMMO.Records.push_back(new FNV::AMMORecord((FNV::AMMORecord *)SourceRecord));
+            newRecord = AMMO.Records.back();
+            break;
         case '_CPN':
-            //NPC_.Records.push_back(new FNV::NPC_Record((FNV::NPC_Record *)SourceRecord));
-            //newRecord = NPC_.Records.back();
-            //break;
+            NPC_.Records.push_back(new FNV::NPC_Record((FNV::NPC_Record *)SourceRecord));
+            newRecord = NPC_.Records.back();
+            break;
         case 'AERC':
             //CREA.Records.push_back(new FNV::CREARecord((FNV::CREARecord *)SourceRecord));
             //newRecord = CREA.Records.back();
@@ -1556,11 +1556,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(MSTT.VisitRecords(NULL, checker, false)) continue;
         if(PWAT.VisitRecords(NULL, checker, false)) continue;
         if(GRAS.VisitRecords(NULL, checker, false)) continue;
-        //if(TREE.VisitRecords(NULL, checker, false)) continue;
-        //if(FURN.VisitRecords(NULL, checker, false)) continue;
-        //if(WEAP.VisitRecords(NULL, checker, false)) continue;
-        //if(AMMO.VisitRecords(NULL, checker, false)) continue;
-        //if(NPC_.VisitRecords(NULL, checker, false)) continue;
+        if(TREE.VisitRecords(NULL, checker, false)) continue;
+        if(FURN.VisitRecords(NULL, checker, false)) continue;
+        if(WEAP.VisitRecords(NULL, checker, false)) continue;
+        if(AMMO.VisitRecords(NULL, checker, false)) continue;
+        if(NPC_.VisitRecords(NULL, checker, false)) continue;
         //if(CREA.VisitRecords(NULL, checker, false)) continue;
         //if(LVLC.VisitRecords(NULL, checker, false)) continue;
         //if(LVLN.VisitRecords(NULL, checker, false)) continue;
@@ -1694,11 +1694,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += MSTT.WriteGRUP('TTSM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += PWAT.WriteGRUP('TAWP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += FURN.WriteGRUP('NRUF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AMMO.WriteGRUP('OMMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NPC_.WriteGRUP('_CPN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FURN.WriteGRUP('NRUF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += AMMO.WriteGRUP('OMMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NPC_.WriteGRUP('_CPN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += CREA.WriteGRUP('AERC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += LVLC.WriteGRUP('CLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += LVLN.WriteGRUP('NLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1817,11 +1817,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     MSTT.VisitRecords(NULL, op, true);
     PWAT.VisitRecords(NULL, op, true);
     GRAS.VisitRecords(NULL, op, true);
-    //TREE.VisitRecords(NULL, op, true);
-    //FURN.VisitRecords(NULL, op, true);
-    //WEAP.VisitRecords(NULL, op, true);
-    //AMMO.VisitRecords(NULL, op, true);
-    //NPC_.VisitRecords(NULL, op, true);
+    TREE.VisitRecords(NULL, op, true);
+    FURN.VisitRecords(NULL, op, true);
+    WEAP.VisitRecords(NULL, op, true);
+    AMMO.VisitRecords(NULL, op, true);
+    NPC_.VisitRecords(NULL, op, true);
     //CREA.VisitRecords(NULL, op, true);
     //LVLC.VisitRecords(NULL, op, true);
     //LVLN.VisitRecords(NULL, op, true);
@@ -2004,20 +2004,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             GRAS.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'EERT':
-            //TREE.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            TREE.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'NRUF':
-            //FURN.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            FURN.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'PAEW':
-            //WEAP.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            WEAP.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'OMMA':
-            //AMMO.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            AMMO.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case '_CPN':
-            //NPC_.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            NPC_.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'AERC':
             //CREA.VisitRecords(RecordType, op, DeepVisit);
             //break;

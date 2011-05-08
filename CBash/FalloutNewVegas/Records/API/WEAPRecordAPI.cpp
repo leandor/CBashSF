@@ -30,7 +30,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         {
         case 0: //recType
             return GetType();
-        case 1: //flags1
+        case 1: //flags
             return UINT32_FLAG_FIELD;
         case 2: //fid
             return FORMID_FIELD;
@@ -60,19 +60,25 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //full
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //full
             return STRING_FIELD;
-        case 11: //modPath
+        case 14: //modPath
             return ISTRING_FIELD;
-        case 12: //modb
+        case 15: //modb
             return FLOAT32_FIELD;
-        case 13: //modt_p
+        case 16: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -83,7 +89,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 14: //altTextures
+        case 17: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
 
@@ -94,13 +100,13 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -114,28 +120,417 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
+        case 18: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 19: //iconPath
+            return ISTRING_FIELD;
+        case 20: //smallIconPath
+            return ISTRING_FIELD;
+        case 21: //script
+            return FORMID_FIELD;
+        case 22: //effect
+            return FORMID_FIELD;
+        case 23: //chargeAmount
+            return SINT16_FIELD;
+        case 24: //ammo
+            return FORMID_FIELD;
+        case 25: //destructableHealth
+            return SINT32_FIELD;
+        case 26: //destructableCount
+            return UINT8_FIELD;
+        case 27: //destructableFlags
+            return UINT8_FLAG_FIELD;
+        case 28: //destructableUnused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return Destructable.IsLoaded() ? 2 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 29: //destructableStages
+            if(!Destructable.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 17: //modelFlags
-            return UINT8_FIELD;
-        case 18: //iconPath
+            if(ListFieldID == 0) //destructableStages
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return Destructable->Stages.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return UINT8_FIELD;
+                case 2: //index
+                    return UINT8_FIELD;
+                case 3: //stage
+                    return UINT8_FIELD;
+                case 4: //flags
+                    return UINT8_FLAG_FIELD;
+                case 5: //dps
+                    return SINT32_FIELD;
+                case 6: //explosion
+                    return FORMID_FIELD;
+                case 7: //debris
+                    return FORMID_FIELD;
+                case 8: //debrisCount
+                    return SINT32_FIELD;
+                case 9: //modPath
+                    return ISTRING_FIELD;
+                case 10: //modt_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Destructable->Stages.value[ListIndex]->DMDT.GetSize();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 30: //repairList
+            return FORMID_FIELD;
+        case 31: //equipmentType
+            return SINT32_TYPE_FIELD;
+        case 32: //modelList
+            return FORMID_FIELD;
+        case 33: //pickupSound
+            return FORMID_FIELD;
+        case 34: //dropSound
+            return FORMID_FIELD;
+        case 35: //shell_modPath
             return ISTRING_FIELD;
-        case 19: //smallIconPath
+        case 36: //shell_modt_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MOD2.IsLoaded() ? MOD2->MODT.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 37: //shell_altTextures
+            if(!MOD2.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MOD2->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 38: //scope_modPath
             return ISTRING_FIELD;
-        case 20: //script
+        case 39: //scope_modt_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MOD2.IsLoaded() ? MOD2->MODT.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 40: //scope_altTextures
+            if(!MOD2.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MOD2->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 41: //scopeEffect
             return FORMID_FIELD;
-        case 21: //effect
+        case 42: //world_modPath
+            return ISTRING_FIELD;
+        case 43: //world_modt_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return MOD2.IsLoaded() ? MOD2->MODT.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 44: //world_altTextures
+            if(!MOD2.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //altTextures
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MOD2->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 45: //vatsName
+            return STRING_FIELD;
+        case 46: //weaponNode
+            return STRING_FIELD;
+        case 47: //model1Path
+            return ISTRING_FIELD;
+        case 48: //model2Path
+            return ISTRING_FIELD;
+        case 49: //model12Path
+            return ISTRING_FIELD;
+        case 50: //model3Path
+            return ISTRING_FIELD;
+        case 51: //model13Path
+            return ISTRING_FIELD;
+        case 52: //model23Path
+            return ISTRING_FIELD;
+        case 53: //model123Path
+            return ISTRING_FIELD;            
+        case 54: //impact
             return FORMID_FIELD;
-        case 22: //eamt Enchantment Charge Amount
-            return SINT16_FIELD;
-        case 23: //nam0 Ammo
+        case 55: //model
             return FORMID_FIELD;
-        case 24: //dest Header
+        case 56: //model1
+            return FORMID_FIELD;
+        case 57: //model2
+            return FORMID_FIELD;
+        case 58: //model12
+            return FORMID_FIELD;
+        case 59: //model3
+            return FORMID_FIELD;
+        case 60: //model13
+            return FORMID_FIELD;
+        case 61: //model23
+            return FORMID_FIELD;
+        case 62: //model123
+            return FORMID_FIELD;
+        case 63: //mod1
+            return FORMID_FIELD;
+        case 64: //mod2
+            return FORMID_FIELD;
+        case 65: //mod3
+            return FORMID_FIELD;
+        case 66: //sound3D
+            return FORMID_FIELD;
+        case 67: //soundDist
+            return FORMID_FIELD;
+        case 68: //sound2D
+            return FORMID_FIELD;
+        case 69: //sound3DLoop
+            return FORMID_FIELD;
+        case 70: //soundMelee
+            return FORMID_FIELD;
+        case 71: //soundBlock
+            return FORMID_FIELD;
+        case 72: //soundIdle
+            return FORMID_FIELD;
+        case 73: //soundEquip
+            return FORMID_FIELD;
+        case 74: //soundUnequip
+            return FORMID_FIELD;
+        case 75: //soundMod3D
+            return FORMID_FIELD;
+        case 76: //soundModDist
+            return FORMID_FIELD;
+        case 77: //soundMod2D
+            return FORMID_FIELD;
+        case 78: //value
             return SINT32_FIELD;
-        case 25: //dest Header
+        case 79: //health
+            return SINT32_FIELD;
+        case 80: //weight
+            return FLOAT32_FIELD;
+        case 81: //damage
+            return SINT16_FIELD;
+        case 82: //clipSize
             return UINT8_FIELD;
-        case 26: //dest Header
+        case 83: //animType
+            return UINT32_TYPE_FIELD;
+        case 84: //animMult
+            return FLOAT32_FIELD;
+        case 85: //reach
+            return FLOAT32_FIELD;
+        case 86: //flags
+            return UINT8_FLAG_FIELD;
+        case 87: //gripAnim
+            return UINT8_TYPE_FIELD;
+        case 88: //ammoUse
             return UINT8_FIELD;
-        case 27: //dest_p Header
+        case 89: //reloadAnim
+            return UINT8_TYPE_FIELD;
+        case 90: //minSpread
+            return FLOAT32_FIELD;
+        case 91: //spread
+            return FLOAT32_FIELD;
+        case 92: //unknown1
+            return FLOAT32_FIELD;
+        case 93: //sightFOV
+            return FLOAT32_FIELD;
+        case 94: //unknown2
+            return FLOAT32_FIELD;
+        case 95: //projectile
+            return FORMID_FIELD;
+        case 96: //VATSHitChance
+            return UINT8_FIELD;
+        case 97: //attackAnim
+            return UINT8_TYPE_FIELD;
+        case 98: //projectileCount
+            return UINT8_FIELD;
+        case 99: //weaponAV
+            return UINT8_TYPE_FIELD;
+        case 100: //minRange
+            return FLOAT32_FIELD;
+        case 101: //maxRange
+            return FLOAT32_FIELD;
+        case 102: //onHit
+            return UINT32_TYPE_FIELD;
+        case 103: //extraFlags
+            return UINT32_FLAG_FIELD;
+        case 104: //animAttackMult
+            return FLOAT32_FIELD;
+        case 105: //fireRate
+            return FLOAT32_FIELD;
+        case 106: //overrideAP
+            return FLOAT32_FIELD;
+        case 107: //leftRumble
+            return FLOAT32_FIELD;
+        case 108: //timeRumble
+            return FLOAT32_FIELD;
+        case 109: //overrideDamageToWeapon
+            return FLOAT32_FIELD;
+        case 110: //reloadTime
+            return FLOAT32_FIELD;
+        case 111: //jamTime
+            return FLOAT32_FIELD;
+        case 112: //aimArc
+            return FLOAT32_FIELD;
+        case 113: //skill
+            return SINT32_FIELD;
+        case 114: //rumbleType
+            return UINT32_TYPE_FIELD;
+        case 115: //rumbleWavelength
+            return FLOAT32_FIELD;
+        case 116: //limbDamageMult
+            return FLOAT32_FIELD;
+        case 117: //resistType
+            return SINT32_TYPE_FIELD;
+        case 118: //sightUsage
+            return FLOAT32_FIELD;
+        case 119: //semiFireDelayMin
+            return FLOAT32_FIELD;
+        case 120: //semiFireDelayMax
+            return FLOAT32_FIELD;
+        case 121: //unknown3
+            return FLOAT32_FIELD;
+        case 122: //effectMod1
+            return UINT32_FIELD;
+        case 123: //effectMod2
+            return UINT32_FIELD;
+        case 124: //effectMod3
+            return UINT32_FIELD;
+        case 125: //valueAMod1
+            return FLOAT32_FIELD;
+        case 126: //valueAMod2
+            return FLOAT32_FIELD;
+        case 127: //valueAMod3
+            return FLOAT32_FIELD;
+        case 128: //overridePwrAtkAnim
+            return UINT32_TYPE_FIELD;
+        case 129: //strengthReq
+            return UINT32_FIELD;
+        case 130: //unknown4
+            return UINT8_FIELD;
+        case 131: //reloadAnimMod
+            return UINT8_TYPE_FIELD;
+        case 132: //unknown5
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -146,315 +541,21 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 28: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 29: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 30: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 31: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 32: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 33: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 34: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 35: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 36: //dmdl Model Filename
-            return ISTRING_FIELD;
-        case 37: //dmdt_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return DMDT.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 38: //repl Repair List
-            return FORMID_FIELD;
-        case 39: //etyp Equipment Type
-            return SINT32_FIELD;
-        case 40: //bipl Biped Model List
-            return FORMID_FIELD;
-        case 41: //ynam Sound - Pick Up
-            return FORMID_FIELD;
-        case 42: //znam Sound - Drop
-            return FORMID_FIELD;
-        case 43: //mod2 Model Filename
-            return ISTRING_FIELD;
-        case 44: //mo2t_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MO2T.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 45: //mo2s Alternate Texture
-            return ISTRING_FIELD;
-        case 46: //mo2s Alternate Texture
-            return FORMID_FIELD;
-        case 47: //mo2s Alternate Texture
-            return SINT32_FIELD;
-        case 48: //mod3 Model Filename
-            return ISTRING_FIELD;
-        case 49: //mo3t_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MO3T.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 50: //mo3s Alternate Texture
-            return ISTRING_FIELD;
-        case 51: //mo3s Alternate Texture
-            return FORMID_FIELD;
-        case 52: //mo3s Alternate Texture
-            return SINT32_FIELD;
-        case 53: //efsd Scope Effect
-            return FORMID_FIELD;
-        case 54: //mod4 Model Filename
-            return ISTRING_FIELD;
-        case 55: //mo4t_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MO4T.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 56: //mo4s Alternate Texture
-            return ISTRING_FIELD;
-        case 57: //mo4s Alternate Texture
-            return FORMID_FIELD;
-        case 58: //mo4s Alternate Texture
-            return SINT32_FIELD;
-        case 59: //vanm VATS Attack Name
-            return ISTRING_FIELD;
-        case 60: //nnam Embedded Weapon Node
-            return ISTRING_FIELD;
-        case 61: //mwd1 Mod 1
-            return ISTRING_FIELD;
-        case 62: //mwd2 Mod 2
-            return ISTRING_FIELD;
-        case 63: //mwd3 Mod 1 and 2
-            return ISTRING_FIELD;
-        case 64: //mwd4 Mod 3
-            return ISTRING_FIELD;
-        case 65: //mwd5 Mod 1 and 3
-            return ISTRING_FIELD;
-        case 66: //mwd6 Mod 2 and 3
-            return ISTRING_FIELD;
-        case 67: //mwd7 Mod 1, 2 and 3
-            return ISTRING_FIELD;
-        case 68: //inam Impact DataSet
-            return FORMID_FIELD;
-        case 69: //wnam 1st Person Model
-            return FORMID_FIELD;
-        case 70: //wnm1 Mod 1
-            return FORMID_FIELD;
-        case 71: //wnm2 Mod 2
-            return FORMID_FIELD;
-        case 72: //wnm3 Mod 1 and 2
-            return FORMID_FIELD;
-        case 73: //wnm4 Mod 3
-            return FORMID_FIELD;
-        case 74: //wnm5 Mod 1 and 3
-            return FORMID_FIELD;
-        case 75: //wnm6 Mod 2 and 3
-            return FORMID_FIELD;
-        case 76: //wnm7 Mod 1, 2 and 3
-            return FORMID_FIELD;
-        case 77: //wmi1 Mod 1
-            return FORMID_FIELD;
-        case 78: //wmi2 Mod 2
-            return FORMID_FIELD;
-        case 79: //wmi3 Mod 3
-            return FORMID_FIELD;
-        case 80: //snam Sound - Gun - Shoot Dist
-            return FORMID_FIELD;
-        case 81: //xnam Sound - Gun - Shoot 2D
-            return FORMID_FIELD;
-        case 82: //nam7 Sound - Gun - Shoot 3D Looping
-            return FORMID_FIELD;
-        case 83: //tnam Sound - Melee - Swing / Gun - No Ammo
-            return FORMID_FIELD;
-        case 84: //nam6 Sound - Block
-            return FORMID_FIELD;
-        case 85: //unam Sound - Idle
-            return FORMID_FIELD;
-        case 86: //nam9 Sound - Equip
-            return FORMID_FIELD;
-        case 87: //nam8 Sound - Unequip
-            return FORMID_FIELD;
-        case 88: //wms1 Sound - Mod 1 - Shoot Dist
-            return FORMID_FIELD;
-        case 89: //wms2 Sound - Mod 1 - Shoot 2D
-            return FORMID_FIELD;
-        case 90: //data DATA ,, Struct
-            return SINT32_FIELD;
-        case 91: //data DATA ,, Struct
-            return SINT32_FIELD;
-        case 92: //data DATA ,, Struct
+        case 133: //regenRate
             return FLOAT32_FIELD;
-        case 93: //data DATA ,, Struct
-            return SINT16_FIELD;
-        case 94: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 95: //dnam DNAM ,, Struct
+        case 134: //killImpulse
+            return FLOAT32_FIELD;
+        case 135: //valueBMod1
+            return FLOAT32_FIELD;
+        case 136: //valueBMod2
+            return FLOAT32_FIELD;
+        case 137: //valueBMod3
+            return FLOAT32_FIELD;
+        case 138: //skillReq
             return UINT32_FIELD;
-        case 96: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 97: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 98: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 99: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 100: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 101: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 102: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 103: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 104: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 105: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 106: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 107: //dnam DNAM ,, Struct
-            return FORMID_FIELD;
-        case 108: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 109: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 110: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 111: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 112: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 113: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 114: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 115: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 116: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 117: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 118: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 119: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 120: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 121: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 122: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 123: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 124: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 125: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 126: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 127: //dnam DNAM ,, Struct
-            return UNPARSED_FIELD;
-        case 128: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 129: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 130: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 131: //dnam DNAM ,, Struct
-            return UNPARSED_FIELD;
-        case 132: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 133: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 134: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 135: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 136: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 137: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 138: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 139: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 140: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 141: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 142: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 143: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 144: //dnam_p DNAM ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 1;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 145: //dnam DNAM ,, Struct
-            return UINT8_FIELD;
-        case 146: //dnam_p DNAM ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 147: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 148: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 149: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 150: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 151: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 152: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 153: //dnam DNAM ,, Struct
-            return UINT32_FIELD;
-        case 154: //crdt CRDT ,, Struct
+        case 139: //critDamage
             return UINT16_FIELD;
-        case 155: //crdt_p CRDT ,, Struct
+        case 140: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -465,11 +566,11 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 156: //crdt CRDT ,, Struct
+        case 141: //critMult
             return FLOAT32_FIELD;
-        case 157: //crdt CRDT ,, Struct
-            return UINT8_FIELD;
-        case 158: //crdt_p CRDT ,, Struct
+        case 142: //critFlags
+            return UINT8_FLAG_FIELD;
+        case 143: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -480,21 +581,21 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 159: //crdt CRDT ,, Struct
+        case 144: //critEffect
             return FORMID_FIELD;
-        case 160: //vats VATS ,, Struct
+        case 145: //vatsEffect
             return FORMID_FIELD;
-        case 161: //vats VATS ,, Struct
+        case 146: //vatsSkill
             return FLOAT32_FIELD;
-        case 162: //vats VATS ,, Struct
+        case 147: //vatsDamageMult
             return FLOAT32_FIELD;
-        case 163: //vats VATS ,, Struct
+        case 148: //AP
             return FLOAT32_FIELD;
-        case 164: //vats VATS ,, Struct
-            return UINT8_FIELD;
-        case 165: //vats VATS ,, Struct
-            return UINT8_FIELD;
-        case 166: //vats_p VATS ,, Struct
+        case 149: //silenceType
+            return UINT8_TYPE_FIELD;
+        case 150: //modRequiredType
+            return UINT8_TYPE_FIELD;
+        case 151: //unused3
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -505,8 +606,8 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 167: //vnam Sound Level
-            return UINT32_FIELD;
+        case 152: //soundLevelType
+            return UINT32_TYPE_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -517,7 +618,7 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     {
     switch(FieldID)
         {
-        case 1: //flags1
+        case 1: //flags
             return &flags;
         case 2: //fid
             return &formID;
@@ -531,339 +632,407 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //full
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //full
             return FULL.value;
-        case 11: //modPath
+        case 14: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 12: //modb
+        case 15: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
-        case 13: //modt_p
+        case 16: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 14: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 15: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
-        case 16: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
-        case 17: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value17 : NULL;
-        case 18: //iconPath
+        case 17: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 18: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 19: //iconPath
             return ICON.value;
-        case 19: //smallIconPath
+        case 20: //smallIconPath
             return MICO.value;
-        case 20: //script
-            return SCRI.IsLoaded() ? &SCRI->value20 : NULL;
-        case 21: //effect
-            return EITM.IsLoaded() ? &EITM->value21 : NULL;
-        case 22: //eamt Enchantment Charge Amount
-            return EAMT.IsLoaded() ? &EAMT->value22 : NULL;
-        case 23: //nam0 Ammo
-            return NAM0.IsLoaded() ? &NAM0->value23 : NULL;
-        case 24: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value24 : NULL;
-        case 25: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value25 : NULL;
-        case 26: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value26 : NULL;
-        case 27: //dest_p Header
-            *FieldValues = DEST.IsLoaded() ? &DEST->DEST->value27[0] : NULL;
+        case 21: //script
+            return SCRI.IsLoaded() ? &SCRI.value : NULL;
+        case 22: //effect
+            return EITM.IsLoaded() ? &EITM.value : NULL;
+        case 23: //chargeAmount
+            return EAMT.IsLoaded() ? &EAMT.value : NULL;
+        case 24: //ammo
+            return NAM0.IsLoaded() ? &NAM0.value : NULL;
+        case 25: //destructableHealth
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.health : NULL;
+        case 26: //destructableCount
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.count : NULL;
+        case 27: //destructableFlags
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.flags : NULL;
+        case 28: //destructableUnused1
+            *FieldValues = Destructable.IsLoaded() ? &Destructable->DEST.value.unused1[0] : NULL;
             return NULL;
-        case 28: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value28 : NULL;
-        case 29: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value29 : NULL;
-        case 30: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value30 : NULL;
-        case 31: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value31 : NULL;
-        case 32: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value32 : NULL;
-        case 33: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value33 : NULL;
-        case 34: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value34 : NULL;
-        case 35: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value35 : NULL;
-        case 36: //dmdl Model Filename
-            return DEST.IsLoaded() ? DEST->DMDL.value : NULL;
-        case 37: //dmdt_p Texture Files Hashes
-            *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
+        case 29: //destructableStages
+            if(!Destructable.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.health;
+                case 2: //index
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.index;
+                case 3: //stage
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.stage;
+                case 4: //flags
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.flags;
+                case 5: //dps
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.dps;
+                case 6: //explosion
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.explosion;
+                case 7: //debris
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debris;
+                case 8: //debrisCount
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount;
+                case 9: //modPath
+                    return Destructable->Stages.value[ListIndex]->DMDL.value;
+                case 10: //modt_p
+                    *FieldValues = Destructable->Stages.value[ListIndex]->DMDT.value;
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 38: //repl Repair List
-            return REPL.IsLoaded() ? &REPL->value38 : NULL;
-        case 39: //etyp Equipment Type
-            return ETYP.IsLoaded() ? &ETYPReq->value39 : NULL;
-        case 40: //bipl Biped Model List
-            return BIPL.IsLoaded() ? &BIPL->value40 : NULL;
-        case 41: //ynam Sound - Pick Up
-            return YNAM.IsLoaded() ? &YNAM->value41 : NULL;
-        case 42: //znam Sound - Drop
-            return ZNAM.IsLoaded() ? &ZNAM->value42 : NULL;
-        case 43: //mod2 Model Filename
-            return MOD2.IsLoaded() ? MOD2->MOD2.value : NULL;
-        case 44: //mo2t_p Texture Files Hashes
-            *FieldValues = (MOD2.IsLoaded()) ? MOD2->MO2T.value : NULL;
+        case 30: //repairList
+            return REPL.IsLoaded() ? &REPL.value : NULL;
+        case 31: //equipmentType
+            return ETYP.IsLoaded() ? &ETYP.value : NULL;
+        case 32: //modelList
+            return BIPL.IsLoaded() ? &BIPL.value : NULL;
+        case 33: //pickupSound
+            return YNAM.IsLoaded() ? &YNAM.value : NULL;
+        case 34: //dropSound
+            return ZNAM.IsLoaded() ? &ZNAM.value : NULL;
+        case 35: //shell_modPath
+            return MOD2.IsLoaded() ? MOD2->MODL.value : NULL;
+        case 36: //shell_modt_p
+            *FieldValues = MOD2.IsLoaded() ? MOD2->MODT.value : NULL;
             return NULL;
-        case 45: //mo2s Alternate Texture
-            return MOD2.IsLoaded() ? MOD2->MO2S.value : NULL;
-        case 46: //mo2s Alternate Texture
-            return MOD2.IsLoaded() ? &MOD2->MO2S->value46 : NULL;
-        case 47: //mo2s Alternate Texture
-            return MOD2.IsLoaded() ? &MOD2->MO2S->value47 : NULL;
-        case 48: //mod3 Model Filename
-            return MOD3.IsLoaded() ? MOD3->MOD3.value : NULL;
-        case 49: //mo3t_p Texture Files Hashes
-            *FieldValues = (MOD3.IsLoaded()) ? MOD3->MO3T.value : NULL;
+        case 37: //shell_altTextures
+            if(!MOD2.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MOD2->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MOD2->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MOD2->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 50: //mo3s Alternate Texture
-            return MOD3.IsLoaded() ? MOD3->MO3S.value : NULL;
-        case 51: //mo3s Alternate Texture
-            return MOD3.IsLoaded() ? &MOD3->MO3S->value51 : NULL;
-        case 52: //mo3s Alternate Texture
-            return MOD3.IsLoaded() ? &MOD3->MO3S->value52 : NULL;
-        case 53: //efsd Scope Effect
-            return EFSD.IsLoaded() ? &EFSD->value53 : NULL;
-        case 54: //mod4 Model Filename
-            return MOD4.IsLoaded() ? MOD4->MOD4.value : NULL;
-        case 55: //mo4t_p Texture Files Hashes
-            *FieldValues = (MOD4.IsLoaded()) ? MOD4->MO4T.value : NULL;
+        case 38: //scope_modPath
+            return MOD2.IsLoaded() ? MOD2->MODL.value : NULL;
+        case 39: //scope_modt_p
+            *FieldValues = MOD2.IsLoaded() ? MOD2->MODT.value : NULL;
             return NULL;
-        case 56: //mo4s Alternate Texture
-            return MOD4.IsLoaded() ? MOD4->MO4S.value : NULL;
-        case 57: //mo4s Alternate Texture
-            return MOD4.IsLoaded() ? &MOD4->MO4S->value57 : NULL;
-        case 58: //mo4s Alternate Texture
-            return MOD4.IsLoaded() ? &MOD4->MO4S->value58 : NULL;
-        case 59: //vanm VATS Attack Name
+        case 40: //scope_altTextures
+            if(!MOD2.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MOD2->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MOD2->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MOD2->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 41: //scopeEffect
+            return EFSD.IsLoaded() ? &EFSD.value : NULL;
+        case 42: //world_modPath
+            return MOD2.IsLoaded() ? MOD2->MODL.value : NULL;
+        case 43: //world_modt_p
+            *FieldValues = MOD2.IsLoaded() ? MOD2->MODT.value : NULL;
+            return NULL;
+        case 44: //world_altTextures
+            if(!MOD2.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MOD2->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MOD2->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MOD2->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 45: //vatsName
             return VANM.value;
-        case 60: //nnam Embedded Weapon Node
+        case 46: //weaponNode
             return NNAM.value;
-        case 61: //mwd1 Mod 1
-            return MWD1.IsLoaded() ? MWD1->MWD1.value : NULL;
-        case 62: //mwd2 Mod 2
-            return MWD1.IsLoaded() ? MWD1->MWD2.value : NULL;
-        case 63: //mwd3 Mod 1 and 2
-            return MWD1.IsLoaded() ? MWD1->MWD3.value : NULL;
-        case 64: //mwd4 Mod 3
-            return MWD1.IsLoaded() ? MWD1->MWD4.value : NULL;
-        case 65: //mwd5 Mod 1 and 3
-            return MWD1.IsLoaded() ? MWD1->MWD5.value : NULL;
-        case 66: //mwd6 Mod 2 and 3
-            return MWD1.IsLoaded() ? MWD1->MWD6.value : NULL;
-        case 67: //mwd7 Mod 1, 2 and 3
-            return MWD1.IsLoaded() ? MWD1->MWD7.value : NULL;
-        case 68: //inam Impact DataSet
-            return INAM.IsLoaded() ? &INAM->value68 : NULL;
-        case 69: //wnam 1st Person Model
-            return WNAM.IsLoaded() ? &WNAM->value69 : NULL;
-        case 70: //wnm1 Mod 1
-            return WNM1.IsLoaded() ? &WNM1->WNM1->value70 : NULL;
-        case 71: //wnm2 Mod 2
-            return WNM1.IsLoaded() ? &WNM1->WNM2->value71 : NULL;
-        case 72: //wnm3 Mod 1 and 2
-            return WNM1.IsLoaded() ? &WNM1->WNM3->value72 : NULL;
-        case 73: //wnm4 Mod 3
-            return WNM1.IsLoaded() ? &WNM1->WNM4->value73 : NULL;
-        case 74: //wnm5 Mod 1 and 3
-            return WNM1.IsLoaded() ? &WNM1->WNM5->value74 : NULL;
-        case 75: //wnm6 Mod 2 and 3
-            return WNM1.IsLoaded() ? &WNM1->WNM6->value75 : NULL;
-        case 76: //wnm7 Mod 1, 2 and 3
-            return WNM1.IsLoaded() ? &WNM1->WNM7->value76 : NULL;
-        case 77: //wmi1 Mod 1
-            return WMI1.IsLoaded() ? &WMI1->WMI1->value77 : NULL;
-        case 78: //wmi2 Mod 2
-            return WMI1.IsLoaded() ? &WMI1->WMI2->value78 : NULL;
-        case 79: //wmi3 Mod 3
-            return WMI1.IsLoaded() ? &WMI1->WMI3->value79 : NULL;
-        case 80: //snam Sound - Gun - Shoot Dist
-            return SNAM.IsLoaded() ? &SNAM->value80 : NULL;
-        case 81: //xnam Sound - Gun - Shoot 2D
-            return XNAM.IsLoaded() ? &XNAM->value81 : NULL;
-        case 82: //nam7 Sound - Gun - Shoot 3D Looping
-            return NAM7.IsLoaded() ? &NAM7->value82 : NULL;
-        case 83: //tnam Sound - Melee - Swing / Gun - No Ammo
-            return TNAM.IsLoaded() ? &TNAM->value83 : NULL;
-        case 84: //nam6 Sound - Block
-            return NAM6.IsLoaded() ? &NAM6->value84 : NULL;
-        case 85: //unam Sound - Idle
-            return UNAM.IsLoaded() ? &UNAM->value85 : NULL;
-        case 86: //nam9 Sound - Equip
-            return NAM9.IsLoaded() ? &NAM9->value86 : NULL;
-        case 87: //nam8 Sound - Unequip
-            return NAM8.IsLoaded() ? &NAM8->value87 : NULL;
-        case 88: //wms1 Sound - Mod 1 - Shoot Dist
-            return WMS1.IsLoaded() ? &WMS1->value88 : NULL;
-        case 89: //wms2 Sound - Mod 1 - Shoot 2D
-            return WMS2.IsLoaded() ? &WMS2->value89 : NULL;
-        case 90: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value90 : NULL;
-        case 91: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value91 : NULL;
-        case 92: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value92 : NULL;
-        case 93: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value93 : NULL;
-        case 94: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value94 : NULL;
-        case 95: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value95 : NULL;
-        case 96: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value96 : NULL;
-        case 97: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value97 : NULL;
-        case 98: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value98 : NULL;
-        case 99: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value99 : NULL;
-        case 100: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value100 : NULL;
-        case 101: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value101 : NULL;
-        case 102: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value102 : NULL;
-        case 103: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value103 : NULL;
-        case 104: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value104 : NULL;
-        case 105: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value105 : NULL;
-        case 106: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value106 : NULL;
-        case 107: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value107 : NULL;
-        case 108: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value108 : NULL;
-        case 109: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value109 : NULL;
-        case 110: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value110 : NULL;
-        case 111: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value111 : NULL;
-        case 112: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value112 : NULL;
-        case 113: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value113 : NULL;
-        case 114: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value114 : NULL;
-        case 115: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value115 : NULL;
-        case 116: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value116 : NULL;
-        case 117: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value117 : NULL;
-        case 118: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value118 : NULL;
-        case 119: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value119 : NULL;
-        case 120: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value120 : NULL;
-        case 121: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value121 : NULL;
-        case 122: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value122 : NULL;
-        case 123: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value123 : NULL;
-        case 124: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value124 : NULL;
-        case 125: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value125 : NULL;
-        case 126: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value126 : NULL;
-        case 127: //dnam DNAM ,, Struct
-            return UNPARSEDGET_FIELD127;
-        case 128: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value128 : NULL;
-        case 129: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value129 : NULL;
-        case 130: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value130 : NULL;
-        case 131: //dnam DNAM ,, Struct
-            return UNPARSEDGET_FIELD131;
-        case 132: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value132 : NULL;
-        case 133: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value133 : NULL;
-        case 134: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value134 : NULL;
-        case 135: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value135 : NULL;
-        case 136: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value136 : NULL;
-        case 137: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value137 : NULL;
-        case 138: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value138 : NULL;
-        case 139: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value139 : NULL;
-        case 140: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value140 : NULL;
-        case 141: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value141 : NULL;
-        case 142: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value142 : NULL;
-        case 143: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value143 : NULL;
-        case 144: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value144[0] : NULL;
+        case 47: //mod1Path
+            return MWD1.value;
+        case 48: //mod2Path
+            return MWD2.value;
+        case 49: //mod12Path
+            return MWD3.value;
+        case 50: //mod3Path
+            return MWD4.value;
+        case 51: //mod13Path
+            return MWD5.value;
+        case 52: //mod23Path
+            return MWD6.value;
+        case 53: //mod123Path
+            return MWD7.value;
+        case 54: //impact
+            return INAM.IsLoaded() ? &INAM.value : NULL;
+        case 55: //model
+            return WNAM.IsLoaded() ? &WNAM.value : NULL;
+        case 56: //model1
+            return WNM1.IsLoaded() ? &WNM1.value : NULL;
+        case 57: //model2
+            return WNM2.IsLoaded() ? &WNM2.value : NULL;
+        case 58: //model12
+            return WNM3.IsLoaded() ? &WNM3.value : NULL;
+        case 59: //model3
+            return WNM4.IsLoaded() ? &WNM4.value : NULL;
+        case 60: //model13
+            return WNM5.IsLoaded() ? &WNM5.value : NULL;
+        case 61: //model23
+            return WNM6.IsLoaded() ? &WNM6.value : NULL;
+        case 62: //model123
+            return WNM7.IsLoaded() ? &WNM7.value : NULL;
+        case 63: //mod1
+            return WMI1.IsLoaded() ? &WMI1.value : NULL;
+        case 64: //mod2
+            return WMI2.IsLoaded() ? &WMI2.value : NULL;
+        case 65: //mod3
+            return WMI3.IsLoaded() ? &WMI3.value : NULL;
+        case 66: //sound3D
+            return SNAM1.IsLoaded() ? &SNAM1.value : NULL;
+        case 67: //soundDist
+            return SNAM2.IsLoaded() ? &SNAM2.value : NULL;
+        case 68: //sound2D
+            return XNAM.IsLoaded() ? &XNAM.value : NULL;
+        case 69: //sound3DLoop
+            return NAM7.IsLoaded() ? &NAM7.value : NULL;
+        case 70: //soundMelee
+            return TNAM.IsLoaded() ? &TNAM.value : NULL;
+        case 71: //soundBlock
+            return NAM6.IsLoaded() ? &NAM6.value : NULL;
+        case 72: //soundIdle
+            return UNAM.IsLoaded() ? &UNAM.value : NULL;
+        case 73: //soundEquip
+            return NAM9.IsLoaded() ? &NAM9.value : NULL;
+        case 74: //soundUnequip
+            return NAM8.IsLoaded() ? &NAM8.value : NULL;
+        case 75: //soundMod3D
+            return WMS11.IsLoaded() ? &WMS11.value : NULL;
+        case 76: //soundModDist
+            return WMS12.IsLoaded() ? &WMS12.value : NULL;
+        case 77: //soundMod2D
+            return WMS2.IsLoaded() ? &WMS2.value : NULL;
+        case 78: //value
+            return &DATA.value.value;
+        case 79: //health
+            return &DATA.value.health;
+        case 80: //weight
+            return &DATA.value.weight;
+        case 81: //damage
+            return &DATA.value.damage;
+        case 82: //clipSize
+            return &DATA.value.clipSize;
+        case 83: //animType
+            return &DNAM.value.animType;
+        case 84: //animMult
+            return &DNAM.value.animMult;
+        case 85: //reach
+            return &DNAM.value.reach;
+        case 86: //flags
+            return &DNAM.value.flags1;
+        case 87: //gripAnim
+            return &DNAM.value.gripAnim;
+        case 88: //ammoUse
+            return &DNAM.value.ammoUse;
+        case 89: //reloadAnim
+            return &DNAM.value.reloadAnim;
+        case 90: //minSpread
+            return &DNAM.value.minSpread;
+        case 91: //spread
+            return &DNAM.value.spread;
+        case 92: //unknown1
+            return &DNAM.value.unknown1;
+        case 93: //sightFOV
+            return &DNAM.value.sightFOV;
+        case 94: //unknown2
+            return &DNAM.value.unknown2;
+        case 95: //projectile
+            return &DNAM.value.projectile;
+        case 96: //VATSHitChance
+            return &DNAM.value.VATSHitChance;
+        case 97: //attackAnim
+            return &DNAM.value.attackAnim;
+        case 98: //projectileCount
+            return &DNAM.value.projectileCount;
+        case 99: //weaponAV
+            return &DNAM.value.weaponAV;
+        case 100: //minRange
+            return &DNAM.value.minRange;
+        case 101: //maxRange
+            return &DNAM.value.maxRange;
+        case 102: //onHit
+            return &DNAM.value.onHit;
+        case 103: //extraFlags
+            return &DNAM.value.flags2;
+        case 104: //animAttackMult
+            return &DNAM.value.animAttackMult;
+        case 105: //fireRate
+            return &DNAM.value.fireRate;
+        case 106: //overrideAP
+            return &DNAM.value.overrideAP;
+        case 107: //leftRumble
+            return &DNAM.value.leftRumble;
+        case 108: //timeRumble
+            return &DNAM.value.timeRumble;
+        case 109: //overrideDamageToWeapon
+            return &DNAM.value.overrideDamageToWeapon;
+        case 110: //reloadTime
+            return &DNAM.value.reloadTime;
+        case 111: //jamTime
+            return &DNAM.value.jamTime;
+        case 112: //aimArc
+            return &DNAM.value.aimArc;
+        case 113: //skill
+            return &DNAM.value.skill;
+        case 114: //rumbleType
+            return &DNAM.value.rumbleType;
+        case 115: //rumbleWavelength
+            return &DNAM.value.rumbleWavelength;
+        case 116: //limbDamageMult
+            return &DNAM.value.limbDamageMult;
+        case 117: //resistType
+            return &DNAM.value.resistType;
+        case 118: //sightUsage
+            return &DNAM.value.sightUsage;
+        case 119: //semiFireDelayMin
+            return &DNAM.value.semiFireDelayMin;
+        case 120: //semiFireDelayMax
+            return &DNAM.value.semiFireDelayMax;
+        case 121: //unknown3
+            return &DNAM.value.unknown3;
+        case 122: //effectMod1
+            return &DNAM.value.effectMod1;
+        case 123: //effectMod2
+            return &DNAM.value.effectMod2;
+        case 124: //effectMod3
+            return &DNAM.value.effectMod3;
+        case 125: //valueAMod1
+            return &DNAM.value.valueAMod1;
+        case 126: //valueAMod2
+            return &DNAM.value.valueAMod2;
+        case 127: //valueAMod3
+            return &DNAM.value.valueAMod3;
+        case 128: //overridePwrAtkAnim
+            return &DNAM.value.overridePwrAtkAnim;
+        case 129: //strengthReq
+            return &DNAM.value.strengthReq;
+        case 130: //unknown4
+            return &DNAM.value.unknown4;
+        case 131: //reloadAnimMod
+            return &DNAM.value.reloadAnimMod;
+        case 132: //unknown5
+            *FieldValues = &DNAM.value.unknown5[0];
             return NULL;
-        case 145: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value145 : NULL;
-        case 146: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value146[0] : NULL;
+        case 133: //regenRate
+            return &DNAM.value.regenRate;
+        case 134: //killImpulse
+            return &DNAM.value.killImpulse;
+        case 135: //valueBMod1
+            return &DNAM.value.valueBMod1;
+        case 136: //valueBMod2
+            return &DNAM.value.valueBMod2;
+        case 137: //valueBMod3
+            return &DNAM.value.valueBMod3;
+        case 138: //skillReq
+            return &DNAM.value.skillReq;
+        case 139: //critDamage
+            return &CRDT.value.critDamage;
+        case 140: //unused1
+            *FieldValues = &CRDT.value.unused1[0];
             return NULL;
-        case 147: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value147 : NULL;
-        case 148: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value148 : NULL;
-        case 149: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value149 : NULL;
-        case 150: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value150 : NULL;
-        case 151: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value151 : NULL;
-        case 152: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value152 : NULL;
-        case 153: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value153 : NULL;
-        case 154: //crdt CRDT ,, Struct
-            return CRDT.IsLoaded() ? &CRDT->value154 : NULL;
-        case 155: //crdt_p CRDT ,, Struct
-            *FieldValues = CRDT.IsLoaded() ? &CRDT->value155[0] : NULL;
+        case 141: //critMult
+            return &CRDT.value.critMult;
+        case 142: //critFlags
+            return &CRDT.value.flags;
+        case 143: //unused2
+            *FieldValues = &CRDT.value.unused2[0];
             return NULL;
-        case 156: //crdt CRDT ,, Struct
-            return CRDT.IsLoaded() ? &CRDT->value156 : NULL;
-        case 157: //crdt CRDT ,, Struct
-            return CRDT.IsLoaded() ? &CRDT->value157 : NULL;
-        case 158: //crdt_p CRDT ,, Struct
-            *FieldValues = CRDT.IsLoaded() ? &CRDT->value158[0] : NULL;
+        case 144: //critEffect
+            return &CRDT.value.effect;
+        case 145: //vatsEffect
+            return &VATS.value.effect;
+        case 146: //vatsSkill
+            return &VATS.value.skill;
+        case 147: //vatsDamageMult
+            return &VATS.value.damageMult;
+        case 148: //AP
+            return &VATS.value.AP;
+        case 149: //silenceType
+            return &VATS.value.silenceType;
+        case 150: //modRequiredType
+            return &VATS.value.modRequiredType;
+        case 151: //unused3
+            *FieldValues = &VATS.value.unused1[0];
             return NULL;
-        case 159: //crdt CRDT ,, Struct
-            return CRDT.IsLoaded() ? &CRDT->value159 : NULL;
-        case 160: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value160 : NULL;
-        case 161: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value161 : NULL;
-        case 162: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value162 : NULL;
-        case 163: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value163 : NULL;
-        case 164: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value164 : NULL;
-        case 165: //vats VATS ,, Struct
-            return VATS.IsLoaded() ? &VATS->value165 : NULL;
-        case 166: //vats_p VATS ,, Struct
-            *FieldValues = VATS.IsLoaded() ? &VATS->value166[0] : NULL;
-            return NULL;
-        case 167: //vnam Sound Level
-            return VNAM.IsLoaded() ? &VNAM->value167 : NULL;
+        case 152: //soundLevelType
+            return &VNAM.value;
         default:
             return NULL;
         }
@@ -874,7 +1043,7 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
     {
     switch(FieldID)
         {
-        case 1: //flags1
+        case 1: //flags
             SetHeaderFlagMask(*(UINT32 *)FieldValue);
             break;
         case 3: //versionControl1
@@ -897,689 +1066,637 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //full
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
+            break;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
+            break;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
+            break;
+        case 13: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 11: //modPath
+        case 14: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 12: //modb
+        case 15: //modb
             MODL.Load();
             MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //modt_p
+        case 16: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 15: //mods Alternate Textures
+        case 18: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value15 = *(FORMID *)FieldValue;
-            return true;
-        case 16: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value16 = *(SINT32 *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 17: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value17 = *(UINT8 *)FieldValue;
-            break;
-        case 18: //iconPath
+        case 19: //iconPath
             ICON.Copy((STRING)FieldValue);
             break;
-        case 19: //smallIconPath
+        case 20: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 20: //script
-            SCRI.Load();
-            SCRI->value20 = *(FORMID *)FieldValue;
+        case 21: //script
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
-        case 21: //effect
-            EITM.Load();
-            EITM->value21 = *(FORMID *)FieldValue;
+        case 22: //effect
+            EITM.value = *(FORMID *)FieldValue;
             return true;
-        case 22: //eamt Enchantment Charge Amount
-            EAMT.Load();
-            EAMT->value22 = *(SINT16 *)FieldValue;
+        case 23: //chargeAmount
+            EAMT.value = *(SINT16 *)FieldValue;
             break;
-        case 23: //nam0 Ammo
-            NAM0.Load();
-            NAM0->value23 = *(FORMID *)FieldValue;
+        case 24: //ammo
+            NAM0.value = *(FORMID *)FieldValue;
             return true;
-        case 24: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value24 = *(SINT32 *)FieldValue;
+        case 25: //destructableHealth
+            Destructable.Load();
+            Destructable->DEST.value.health = *(SINT32 *)FieldValue;
             break;
-        case 25: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value25 = *(UINT8 *)FieldValue;
+        case 26: //destructableCount
+            Destructable.Load();
+            Destructable->DEST.value.count = *(UINT8 *)FieldValue;
             break;
-        case 26: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value26 = *(UINT8 *)FieldValue;
+        case 27: //destructableFlags
+            Destructable.Load();
+            Destructable->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 27: //dest_p Header
+        case 28: //destructableUnused1
             if(ArraySize != 2)
                 break;
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value27[0] = ((UINT8ARRAY)FieldValue)[0];
-            DEST->DEST->value27[1] = ((UINT8ARRAY)FieldValue)[1];
+            Destructable.Load();
+            Destructable->DEST.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Destructable->DEST.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 28: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value28 = *(UINT8 *)FieldValue;
+        case 29: //destructableStages
+            Destructable.Load();
+            if(ListFieldID == 0) //destructableStagesSize
+                {
+                Destructable->Stages.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    Destructable->Stages.value[ListIndex]->DSTD.value.health = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //index
+                    Destructable->Stages.value[ListIndex]->DSTD.value.index = *(UINT8 *)FieldValue;
+                    break;
+                case 3: //stage
+                    Destructable->Stages.value[ListIndex]->DSTD.value.stage = *(UINT8 *)FieldValue;
+                    break;
+                case 4: //flags
+                    Destructable->Stages.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 5: //dps
+                    Destructable->Stages.value[ListIndex]->DSTD.value.dps = *(SINT32 *)FieldValue;
+                    break;
+                case 6: //explosion
+                    Destructable->Stages.value[ListIndex]->DSTD.value.explosion = *(FORMID *)FieldValue;
+                    return true;
+                case 7: //debris
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debris = *(FORMID *)FieldValue;
+                    return true;
+                case 8: //debrisCount
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = *(SINT32 *)FieldValue;
+                    break;
+                case 9: //modPath
+                    Destructable->Stages.value[ListIndex]->DMDL.Copy((STRING)FieldValue);
+                    break;
+                case 10: //modt_p
+                    Destructable->Stages.value[ListIndex]->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 29: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value29 = *(UINT8 *)FieldValue;
-            break;
-        case 30: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value30 = *(UINT8 *)FieldValue;
-            break;
-        case 31: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value31 = *(UINT8 *)FieldValue;
-            break;
-        case 32: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value32 = *(SINT32 *)FieldValue;
-            break;
-        case 33: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value33 = *(FORMID *)FieldValue;
+        case 30: //repairList
+            REPL.value = *(FORMID *)FieldValue;
             return true;
-        case 34: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value34 = *(FORMID *)FieldValue;
-            return true;
-        case 35: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value35 = *(SINT32 *)FieldValue;
+        case 31: //equipmentType
+            ETYP.value = *(SINT32 *)FieldValue;
             break;
-        case 36: //dmdl Model Filename
-            DEST.Load();
-            DEST->DMDL.Copy((STRING)FieldValue);
-            break;
-        case 37: //dmdt_p Texture Files Hashes
-            DEST.Load();
-            DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 38: //repl Repair List
-            REPL.Load();
-            REPL->value38 = *(FORMID *)FieldValue;
+        case 32: //modelList
+            BIPL.value = *(FORMID *)FieldValue;
             return true;
-        case 39: //etyp Equipment Type
-            ETYP.Load();
-            ETYPReq->value39 = *(SINT32 *)FieldValue;
-            break;
-        case 40: //bipl Biped Model List
-            BIPL.Load();
-            BIPL->value40 = *(FORMID *)FieldValue;
+        case 33: //pickupSound
+            YNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 41: //ynam Sound - Pick Up
-            YNAM.Load();
-            YNAM->value41 = *(FORMID *)FieldValue;
+        case 34: //dropSound
+            ZNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 42: //znam Sound - Drop
-            ZNAM.Load();
-            ZNAM->value42 = *(FORMID *)FieldValue;
-            return true;
-        case 43: //mod2 Model Filename
+        case 35: //shell_modPath
             MOD2.Load();
-            MOD2->MOD2.Copy((STRING)FieldValue);
+            MOD2->MODL.Copy((STRING)FieldValue);
             break;
-        case 44: //mo2t_p Texture Files Hashes
+        case 36: //shell_modt_p
             MOD2.Load();
-            MOD2->MO2T.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            MOD2->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 45: //mo2s Alternate Texture
+        case 37: //shell_altTextures
             MOD2.Load();
-            MOD2->MO2S.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MOD2->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MOD2->Textures.MODS[ListIndex]->name;
+                    MOD2->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MOD2->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MOD2->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MOD2->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MOD2->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 46: //mo2s Alternate Texture
+        case 38: //scope_modPath
             MOD2.Load();
-            MOD2->MO2S.Load();
-            MOD2->MO2S->value46 = *(FORMID *)FieldValue;
-            return true;
-        case 47: //mo2s Alternate Texture
+            MOD2->MODL.Copy((STRING)FieldValue);
+            break;
+        case 39: //scope_modt_p
             MOD2.Load();
-            MOD2->MO2S.Load();
-            MOD2->MO2S->value47 = *(SINT32 *)FieldValue;
+            MOD2->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 48: //mod3 Model Filename
-            MOD3.Load();
-            MOD3->MOD3.Copy((STRING)FieldValue);
+        case 40: //scope_altTextures
+            MOD2.Load();
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MOD2->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MOD2->Textures.MODS[ListIndex]->name;
+                    MOD2->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MOD2->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MOD2->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MOD2->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MOD2->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 49: //mo3t_p Texture Files Hashes
-            MOD3.Load();
-            MOD3->MO3T.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 50: //mo3s Alternate Texture
-            MOD3.Load();
-            MOD3->MO3S.Copy((STRING)FieldValue);
-            break;
-        case 51: //mo3s Alternate Texture
-            MOD3.Load();
-            MOD3->MO3S.Load();
-            MOD3->MO3S->value51 = *(FORMID *)FieldValue;
+        case 41: //scopeEffect
+            EFSD.value = *(FORMID *)FieldValue;
             return true;
-        case 52: //mo3s Alternate Texture
-            MOD3.Load();
-            MOD3->MO3S.Load();
-            MOD3->MO3S->value52 = *(SINT32 *)FieldValue;
+        case 42: //world_modPath
+            MOD2.Load();
+            MOD2->MODL.Copy((STRING)FieldValue);
             break;
-        case 53: //efsd Scope Effect
-            EFSD.Load();
-            EFSD->value53 = *(FORMID *)FieldValue;
-            return true;
-        case 54: //mod4 Model Filename
-            MOD4.Load();
-            MOD4->MOD4.Copy((STRING)FieldValue);
+        case 43: //world_modt_p
+            MOD2.Load();
+            MOD2->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 55: //mo4t_p Texture Files Hashes
-            MOD4.Load();
-            MOD4->MO4T.Copy((UINT8ARRAY)FieldValue, ArraySize);
+        case 44: //world_altTextures
+            MOD2.Load();
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MOD2->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MOD2->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MOD2->Textures.MODS[ListIndex]->name;
+                    MOD2->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MOD2->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MOD2->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MOD2->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MOD2->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 56: //mo4s Alternate Texture
-            MOD4.Load();
-            MOD4->MO4S.Copy((STRING)FieldValue);
-            break;
-        case 57: //mo4s Alternate Texture
-            MOD4.Load();
-            MOD4->MO4S.Load();
-            MOD4->MO4S->value57 = *(FORMID *)FieldValue;
-            return true;
-        case 58: //mo4s Alternate Texture
-            MOD4.Load();
-            MOD4->MO4S.Load();
-            MOD4->MO4S->value58 = *(SINT32 *)FieldValue;
-            break;
-        case 59: //vanm VATS Attack Name
+        case 45: //vatsName
             VANM.Copy((STRING)FieldValue);
             break;
-        case 60: //nnam Embedded Weapon Node
+        case 46: //weaponNode
             NNAM.Copy((STRING)FieldValue);
             break;
-        case 61: //mwd1 Mod 1
-            MWD1.Load();
-            MWD1->MWD1.Copy((STRING)FieldValue);
+        case 47: //mod1Path
+            MWD1.Copy((STRING)FieldValue);
             break;
-        case 62: //mwd2 Mod 2
-            MWD1.Load();
-            MWD1->MWD2.Copy((STRING)FieldValue);
+        case 48: //mod2Path
+            MWD2.Copy((STRING)FieldValue);
             break;
-        case 63: //mwd3 Mod 1 and 2
-            MWD1.Load();
-            MWD1->MWD3.Copy((STRING)FieldValue);
+        case 49: //mod12Path
+            MWD3.Copy((STRING)FieldValue);
             break;
-        case 64: //mwd4 Mod 3
-            MWD1.Load();
-            MWD1->MWD4.Copy((STRING)FieldValue);
+        case 50: //mod3Path
+            MWD4.Copy((STRING)FieldValue);
             break;
-        case 65: //mwd5 Mod 1 and 3
-            MWD1.Load();
-            MWD1->MWD5.Copy((STRING)FieldValue);
+        case 51: //mod13Path
+            MWD5.Copy((STRING)FieldValue);
             break;
-        case 66: //mwd6 Mod 2 and 3
-            MWD1.Load();
-            MWD1->MWD6.Copy((STRING)FieldValue);
+        case 52: //mod23Path
+            MWD6.Copy((STRING)FieldValue);
             break;
-        case 67: //mwd7 Mod 1, 2 and 3
-            MWD1.Load();
-            MWD1->MWD7.Copy((STRING)FieldValue);
+        case 53: //mod123Path
+            MWD7.Copy((STRING)FieldValue);
             break;
-        case 68: //inam Impact DataSet
-            INAM.Load();
-            INAM->value68 = *(FORMID *)FieldValue;
+        case 54: //impact
+            INAM.value = *(FORMID *)FieldValue;
             return true;
-        case 69: //wnam 1st Person Model
-            WNAM.Load();
-            WNAM->value69 = *(FORMID *)FieldValue;
+        case 55: //model
+            WNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 70: //wnm1 Mod 1
-            WNM1.Load();
-            WNM1->WNM1.Load();
-            WNM1->WNM1->value70 = *(FORMID *)FieldValue;
+        case 56: //model1
+            WNM1.value = *(FORMID *)FieldValue;
             return true;
-        case 71: //wnm2 Mod 2
-            WNM1.Load();
-            WNM1->WNM2.Load();
-            WNM1->WNM2->value71 = *(FORMID *)FieldValue;
+        case 57: //model2
+            WNM2.value = *(FORMID *)FieldValue;
             return true;
-        case 72: //wnm3 Mod 1 and 2
-            WNM1.Load();
-            WNM1->WNM3.Load();
-            WNM1->WNM3->value72 = *(FORMID *)FieldValue;
+        case 58: //model12
+            WNM3.value = *(FORMID *)FieldValue;
             return true;
-        case 73: //wnm4 Mod 3
-            WNM1.Load();
-            WNM1->WNM4.Load();
-            WNM1->WNM4->value73 = *(FORMID *)FieldValue;
+        case 59: //model3
+            WNM4.value = *(FORMID *)FieldValue;
             return true;
-        case 74: //wnm5 Mod 1 and 3
-            WNM1.Load();
-            WNM1->WNM5.Load();
-            WNM1->WNM5->value74 = *(FORMID *)FieldValue;
+        case 60: //model13
+            WNM5.value = *(FORMID *)FieldValue;
             return true;
-        case 75: //wnm6 Mod 2 and 3
-            WNM1.Load();
-            WNM1->WNM6.Load();
-            WNM1->WNM6->value75 = *(FORMID *)FieldValue;
+        case 61: //model23
+            WNM6.value = *(FORMID *)FieldValue;
             return true;
-        case 76: //wnm7 Mod 1, 2 and 3
-            WNM1.Load();
-            WNM1->WNM7.Load();
-            WNM1->WNM7->value76 = *(FORMID *)FieldValue;
+        case 62: //model123
+            WNM7.value = *(FORMID *)FieldValue;
             return true;
-        case 77: //wmi1 Mod 1
-            WMI1.Load();
-            WMI1->WMI1.Load();
-            WMI1->WMI1->value77 = *(FORMID *)FieldValue;
+        case 63: //mod1
+            WMI1.value = *(FORMID *)FieldValue;
             return true;
-        case 78: //wmi2 Mod 2
-            WMI1.Load();
-            WMI1->WMI2.Load();
-            WMI1->WMI2->value78 = *(FORMID *)FieldValue;
+        case 64: //mod2
+            WMI2.value = *(FORMID *)FieldValue;
             return true;
-        case 79: //wmi3 Mod 3
-            WMI1.Load();
-            WMI1->WMI3.Load();
-            WMI1->WMI3->value79 = *(FORMID *)FieldValue;
+        case 65: //mod3
+            WMI3.value = *(FORMID *)FieldValue;
             return true;
-        case 80: //snam Sound - Gun - Shoot Dist
-            SNAM.Load();
-            SNAM->value80 = *(FORMID *)FieldValue;
+        case 66: //sound3D
+            SNAM1.value = *(FORMID *)FieldValue;
             return true;
-        case 81: //xnam Sound - Gun - Shoot 2D
-            XNAM.Load();
-            XNAM->value81 = *(FORMID *)FieldValue;
+        case 67: //soundDist
+            SNAM2.value = *(FORMID *)FieldValue;
             return true;
-        case 82: //nam7 Sound - Gun - Shoot 3D Looping
-            NAM7.Load();
-            NAM7->value82 = *(FORMID *)FieldValue;
+        case 68: //sound2D
+            XNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 83: //tnam Sound - Melee - Swing / Gun - No Ammo
-            TNAM.Load();
-            TNAM->value83 = *(FORMID *)FieldValue;
+        case 69: //sound3DLoop
+            NAM7.value = *(FORMID *)FieldValue;
             return true;
-        case 84: //nam6 Sound - Block
-            NAM6.Load();
-            NAM6->value84 = *(FORMID *)FieldValue;
+        case 70: //soundMelee
+            TNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 85: //unam Sound - Idle
-            UNAM.Load();
-            UNAM->value85 = *(FORMID *)FieldValue;
+        case 71: //soundBlock
+            NAM6.value = *(FORMID *)FieldValue;
             return true;
-        case 86: //nam9 Sound - Equip
-            NAM9.Load();
-            NAM9->value86 = *(FORMID *)FieldValue;
+        case 72: //soundIdle
+            UNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 87: //nam8 Sound - Unequip
-            NAM8.Load();
-            NAM8->value87 = *(FORMID *)FieldValue;
+        case 73: //soundEquip
+            NAM9.value = *(FORMID *)FieldValue;
             return true;
-        case 88: //wms1 Sound - Mod 1 - Shoot Dist
-            WMS1.Load();
-            WMS1->value88 = *(FORMID *)FieldValue;
+        case 74: //soundUnequip
+            NAM8.value = *(FORMID *)FieldValue;
             return true;
-        case 89: //wms2 Sound - Mod 1 - Shoot 2D
-            WMS2.Load();
-            WMS2->value89 = *(FORMID *)FieldValue;
+        case 75: //soundMod3D
+            WMS11.value = *(FORMID *)FieldValue;
             return true;
-        case 90: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value90 = *(SINT32 *)FieldValue;
-            break;
-        case 91: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value91 = *(SINT32 *)FieldValue;
-            break;
-        case 92: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value92 = *(FLOAT32 *)FieldValue;
-            break;
-        case 93: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value93 = *(SINT16 *)FieldValue;
-            break;
-        case 94: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value94 = *(UINT8 *)FieldValue;
-            break;
-        case 95: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value95 = *(UINT32 *)FieldValue;
-            break;
-        case 96: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value96 = *(FLOAT32 *)FieldValue;
-            break;
-        case 97: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value97 = *(FLOAT32 *)FieldValue;
-            break;
-        case 98: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value98 = *(UINT8 *)FieldValue;
-            break;
-        case 99: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value99 = *(UINT8 *)FieldValue;
-            break;
-        case 100: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value100 = *(UINT8 *)FieldValue;
-            break;
-        case 101: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value101 = *(UINT8 *)FieldValue;
-            break;
-        case 102: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value102 = *(FLOAT32 *)FieldValue;
-            break;
-        case 103: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value103 = *(FLOAT32 *)FieldValue;
-            break;
-        case 104: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value104 = *(FLOAT32 *)FieldValue;
-            break;
-        case 105: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value105 = *(FLOAT32 *)FieldValue;
-            break;
-        case 106: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value106 = *(FLOAT32 *)FieldValue;
-            break;
-        case 107: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value107 = *(FORMID *)FieldValue;
+        case 76: //soundModDist
+            WMS12.value = *(FORMID *)FieldValue;
             return true;
-        case 108: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value108 = *(UINT8 *)FieldValue;
+        case 77: //soundMod2D
+            WMS2.value = *(FORMID *)FieldValue;
+            return true;
+        case 78: //value
+            DATA.value.value = *(SINT32 *)FieldValue;
             break;
-        case 109: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value109 = *(UINT8 *)FieldValue;
+        case 79: //health
+            DATA.value.health = *(SINT32 *)FieldValue;
             break;
-        case 110: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value110 = *(UINT8 *)FieldValue;
+        case 80: //weight
+            DATA.value.weight = *(FLOAT32 *)FieldValue;
             break;
-        case 111: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value111 = *(UINT8 *)FieldValue;
+        case 81: //damage
+            DATA.value.damage = *(SINT16 *)FieldValue;
             break;
-        case 112: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value112 = *(FLOAT32 *)FieldValue;
+        case 82: //clipSize
+            DATA.value.clipSize = *(UINT8 *)FieldValue;
             break;
-        case 113: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value113 = *(FLOAT32 *)FieldValue;
+        case 83: //animType
+            SetType(*(UINT32 *)FieldValue);
             break;
-        case 114: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value114 = *(UINT32 *)FieldValue;
+        case 84: //animMult
+            DNAM.value.animMult = *(FLOAT32 *)FieldValue;
             break;
-        case 115: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value115 = *(UINT32 *)FieldValue;
+        case 85: //reach
+            DNAM.value.reach = *(FLOAT32 *)FieldValue;
             break;
-        case 116: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value116 = *(FLOAT32 *)FieldValue;
+        case 86: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 117: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value117 = *(FLOAT32 *)FieldValue;
+        case 87: //gripAnim
+            SetGripType(*(UINT8 *)FieldValue);
             break;
-        case 118: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value118 = *(FLOAT32 *)FieldValue;
+        case 88: //ammoUse
+            DNAM.value.ammoUse = *(UINT8 *)FieldValue;
             break;
-        case 119: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value119 = *(FLOAT32 *)FieldValue;
+        case 89: //reloadAnim
+            SetReloadType(*(UINT8 *)FieldValue);
             break;
-        case 120: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value120 = *(FLOAT32 *)FieldValue;
+        case 90: //minSpread
+            DNAM.value.minSpread = *(FLOAT32 *)FieldValue;
             break;
-        case 121: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value121 = *(FLOAT32 *)FieldValue;
+        case 91: //spread
+            DNAM.value.spread = *(FLOAT32 *)FieldValue;
             break;
-        case 122: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value122 = *(FLOAT32 *)FieldValue;
+        case 92: //unknown1
+            DNAM.value.unknown1 = *(FLOAT32 *)FieldValue;
             break;
-        case 123: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value123 = *(FLOAT32 *)FieldValue;
+        case 93: //sightFOV
+            DNAM.value.sightFOV = *(FLOAT32 *)FieldValue;
             break;
-        case 124: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value124 = *(FLOAT32 *)FieldValue;
+        case 94: //unknown2
+            DNAM.value.unknown2 = *(FLOAT32 *)FieldValue;
             break;
-        case 125: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value125 = *(FLOAT32 *)FieldValue;
+        case 95: //projectile
+            DNAM.value.projectile = *(FORMID *)FieldValue;
+            return true;
+        case 96: //VATSHitChance
+            DNAM.value.VATSHitChance = *(UINT8 *)FieldValue;
             break;
-        case 126: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value126 = *(FLOAT32 *)FieldValue;
+        case 97: //attackAnim
+            SetAttackType(*(UINT8 *)FieldValue);
             break;
-        case 127: //dnam DNAM ,, Struct
-            return UNPARSEDGET_FIELD127;
-        case 128: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value128 = *(UINT32 *)FieldValue;
+        case 98: //projectileCount
+            DNAM.value.projectileCount = *(UINT8 *)FieldValue;
             break;
-        case 129: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value129 = *(FLOAT32 *)FieldValue;
+        case 99: //weaponAV
+            SetEmbeddedAVType(*(UINT8 *)FieldValue);
             break;
-        case 130: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value130 = *(FLOAT32 *)FieldValue;
+        case 100: //minRange
+            DNAM.value.minRange = *(FLOAT32 *)FieldValue;
             break;
-        case 131: //dnam DNAM ,, Struct
-            return UNPARSEDGET_FIELD131;
-        case 132: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value132 = *(FLOAT32 *)FieldValue;
+        case 101: //maxRange
+            DNAM.value.maxRange = *(FLOAT32 *)FieldValue;
             break;
-        case 133: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value133 = *(FLOAT32 *)FieldValue;
+        case 102: //onHit
+            SetOnHitType(*(UINT32 *)FieldValue);
             break;
-        case 134: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value134 = *(FLOAT32 *)FieldValue;
+        case 103: //extraFlags
+            SetAdvFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 135: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value135 = *(FLOAT32 *)FieldValue;
+        case 104: //animAttackMult
+            DNAM.value.animAttackMult = *(FLOAT32 *)FieldValue;
             break;
-        case 136: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value136 = *(UINT32 *)FieldValue;
+        case 105: //fireRate
+            DNAM.value.fireRate = *(FLOAT32 *)FieldValue;
             break;
-        case 137: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value137 = *(UINT32 *)FieldValue;
+        case 106: //overrideAP
+            DNAM.value.overrideAP = *(FLOAT32 *)FieldValue;
             break;
-        case 138: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value138 = *(UINT32 *)FieldValue;
+        case 107: //leftRumble
+            DNAM.value.leftRumble = *(FLOAT32 *)FieldValue;
             break;
-        case 139: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value139 = *(FLOAT32 *)FieldValue;
+        case 108: //timeRumble
+            DNAM.value.timeRumble = *(FLOAT32 *)FieldValue;
             break;
-        case 140: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value140 = *(FLOAT32 *)FieldValue;
+        case 109: //overrideDamageToWeapon
+            DNAM.value.overrideDamageToWeapon = *(FLOAT32 *)FieldValue;
             break;
-        case 141: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value141 = *(FLOAT32 *)FieldValue;
+        case 110: //reloadTime
+            DNAM.value.reloadTime = *(FLOAT32 *)FieldValue;
             break;
-        case 142: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value142 = *(UINT32 *)FieldValue;
+        case 111: //jamTime
+            DNAM.value.jamTime = *(FLOAT32 *)FieldValue;
             break;
-        case 143: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value143 = *(UINT32 *)FieldValue;
+        case 112: //aimArc
+            DNAM.value.aimArc = *(FLOAT32 *)FieldValue;
             break;
-        case 144: //dnam_p DNAM ,, Struct
-            if(ArraySize != 1)
-                break;
-            DNAM.Load();
-            DNAM->value144[0] = ((UINT8ARRAY)FieldValue)[0];
+        case 113: //skill
+            DNAM.value.skill = *(SINT32 *)FieldValue;
             break;
-        case 145: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value145 = *(UINT8 *)FieldValue;
+        case 114: //rumbleType
+            SetRumbleType(*(UINT32 *)FieldValue);
             break;
-        case 146: //dnam_p DNAM ,, Struct
+        case 115: //rumbleWavelength
+            DNAM.value.rumbleWavelength = *(FLOAT32 *)FieldValue;
+            break;
+        case 116: //limbDamageMult
+            DNAM.value.limbDamageMult = *(FLOAT32 *)FieldValue;
+            break;
+        case 117: //resistType
+            DNAM.value.resistType = *(SINT32 *)FieldValue;
+            break;
+        case 118: //sightUsage
+            DNAM.value.sightUsage = *(FLOAT32 *)FieldValue;
+            break;
+        case 119: //semiFireDelayMin
+            DNAM.value.semiFireDelayMin = *(FLOAT32 *)FieldValue;
+            break;
+        case 120: //semiFireDelayMax
+            DNAM.value.semiFireDelayMax = *(FLOAT32 *)FieldValue;
+            break;
+        case 121: //unknown3
+            DNAM.value.unknown3 = *(FLOAT32 *)FieldValue;
+            break;
+        case 122: //effectMod1
+            DNAM.value.effectMod1 = *(UINT32 *)FieldValue;
+            break;
+        case 123: //effectMod2
+            DNAM.value.effectMod2 = *(UINT32 *)FieldValue;
+            break;
+        case 124: //effectMod3
+            DNAM.value.effectMod3 = *(UINT32 *)FieldValue;
+            break;
+        case 125: //valueAMod1
+            DNAM.value.valueAMod1 = *(FLOAT32 *)FieldValue;
+            break;
+        case 126: //valueAMod2
+            DNAM.value.valueAMod2 = *(FLOAT32 *)FieldValue;
+            break;
+        case 127: //valueAMod3
+            DNAM.value.valueAMod3 = *(FLOAT32 *)FieldValue;
+            break;
+        case 128: //overridePwrAtkAnim
+            SetPowerAttackAnimOverrideType(*(UINT32 *)FieldValue);
+            break;
+        case 129: //strengthReq
+            DNAM.value.strengthReq = *(UINT32 *)FieldValue;
+            break;
+        case 130: //unknown4
+            DNAM.value.unknown4 = *(UINT8 *)FieldValue;
+            break;
+        case 131: //reloadAnimMod
+            SetModType(*(UINT8 *)FieldValue);
+            break;
+        case 132: //unknown5
             if(ArraySize != 2)
                 break;
-            DNAM.Load();
-            DNAM->value146[0] = ((UINT8ARRAY)FieldValue)[0];
-            DNAM->value146[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM.value.unknown5[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.unknown5[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 147: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value147 = *(FLOAT32 *)FieldValue;
+        case 133: //regenRate
+            DNAM.value.regenRate = *(FLOAT32 *)FieldValue;
             break;
-        case 148: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value148 = *(FLOAT32 *)FieldValue;
+        case 134: //killImpulse
+            DNAM.value.killImpulse = *(FLOAT32 *)FieldValue;
             break;
-        case 149: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value149 = *(FLOAT32 *)FieldValue;
+        case 135: //valueBMod1
+            DNAM.value.valueBMod1 = *(FLOAT32 *)FieldValue;
             break;
-        case 150: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value150 = *(FLOAT32 *)FieldValue;
+        case 136: //valueBMod2
+            DNAM.value.valueBMod2 = *(FLOAT32 *)FieldValue;
             break;
-        case 151: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value151 = *(FLOAT32 *)FieldValue;
+        case 137: //valueBMod3
+            DNAM.value.valueBMod3 = *(FLOAT32 *)FieldValue;
             break;
-        case 152: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value152 = *(FLOAT32 *)FieldValue;
+        case 138: //skillReq
+            DNAM.value.skillReq = *(UINT32 *)FieldValue;
             break;
-        case 153: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value153 = *(UINT32 *)FieldValue;
+        case 139: //critDamage
+            CRDT.value.critDamage = *(UINT16 *)FieldValue;
             break;
-        case 154: //crdt CRDT ,, Struct
-            CRDT.Load();
-            CRDT->value154 = *(UINT16 *)FieldValue;
-            break;
-        case 155: //crdt_p CRDT ,, Struct
+        case 140: //unused1
             if(ArraySize != 2)
                 break;
-            CRDT.Load();
-            CRDT->value155[0] = ((UINT8ARRAY)FieldValue)[0];
-            CRDT->value155[1] = ((UINT8ARRAY)FieldValue)[1];
+            CRDT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            CRDT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 156: //crdt CRDT ,, Struct
-            CRDT.Load();
-            CRDT->value156 = *(FLOAT32 *)FieldValue;
+        case 141: //critMult
+            CRDT.value.critMult = *(FLOAT32 *)FieldValue;
             break;
-        case 157: //crdt CRDT ,, Struct
-            CRDT.Load();
-            CRDT->value157 = *(UINT8 *)FieldValue;
+        case 142: //critFlags
+            SetCritFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 158: //crdt_p CRDT ,, Struct
+        case 143: //unused2
             if(ArraySize != 3)
                 break;
-            CRDT.Load();
-            CRDT->value158[0] = ((UINT8ARRAY)FieldValue)[0];
-            CRDT->value158[1] = ((UINT8ARRAY)FieldValue)[1];
-            CRDT->value158[2] = ((UINT8ARRAY)FieldValue)[2];
+            CRDT.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+            CRDT.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+            CRDT.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 159: //crdt CRDT ,, Struct
-            CRDT.Load();
-            CRDT->value159 = *(FORMID *)FieldValue;
+        case 144: //critEffect
+            CRDT.value.effect = *(FORMID *)FieldValue;
             return true;
-        case 160: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value160 = *(FORMID *)FieldValue;
+        case 145: //vatsEffect
+            VATS.value.effect = *(FORMID *)FieldValue;
             return true;
-        case 161: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value161 = *(FLOAT32 *)FieldValue;
+        case 146: //vatsSkill
+            VATS.value.skill = *(FLOAT32 *)FieldValue;
             break;
-        case 162: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value162 = *(FLOAT32 *)FieldValue;
+        case 147: //vatsDamageMult
+            VATS.value.damageMult = *(FLOAT32 *)FieldValue;
             break;
-        case 163: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value163 = *(FLOAT32 *)FieldValue;
+        case 148: //AP
+            VATS.value.AP = *(FLOAT32 *)FieldValue;
             break;
-        case 164: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value164 = *(UINT8 *)FieldValue;
+        case 149: //silenceType
+            SetVATSSilenceType(*(UINT8 *)FieldValue);
             break;
-        case 165: //vats VATS ,, Struct
-            VATS.Load();
-            VATS->value165 = *(UINT8 *)FieldValue;
+        case 150: //modRequiredType
+            SetVATSModType(*(UINT8 *)FieldValue);
             break;
-        case 166: //vats_p VATS ,, Struct
+        case 151: //unused3
             if(ArraySize != 2)
                 break;
-            VATS.Load();
-            VATS->value166[0] = ((UINT8ARRAY)FieldValue)[0];
-            VATS->value166[1] = ((UINT8ARRAY)FieldValue)[1];
+            VATS.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            VATS.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 167: //vnam Sound Level
-            VNAM.Load();
-            VNAM->value167 = *(UINT32 *)FieldValue;
+        case 152: //soundLevelType
+            SetSoundLevelType(*(UINT32 *)FieldValue);
             break;
         default:
             break;
@@ -1589,9 +1706,17 @@ bool WEAPRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void WEAPRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
+    FNVMODS defaultMODS;
+    GENDEST defaultDEST;
+    DESTDSTD defaultDSTD;
+    WEAPDATA defaultDATA;
+    WEAPDNAM defaultDNAM;
+    WEAPCRDT defaultCRDT;
+    WEAPVATS defaultVATS;
     switch(FieldID)
         {
-        case 1: //flags1
+        case 1: //flags
             SetHeaderFlagMask(0);
             return;
         case 3: //versionControl1
@@ -1607,543 +1732,615 @@ void WEAPRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //full
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
+            return;
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //full
             FULL.Unload();
             return;
-        case 11: //modPath
+        case 14: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 12: //modb
+        case 15: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 13: //modt_p
+        case 16: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 15: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 16: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 17: //modelFlags
+        case 18: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 18: //iconPath
+        case 19: //iconPath
             ICON.Unload();
             return;
-        case 19: //smallIconPath
+        case 20: //smallIconPath
             MICO.Unload();
             return;
-        case 20: //script
+        case 21: //script
             SCRI.Unload();
             return;
-        case 21: //effect
+        case 22: //effect
             EITM.Unload();
             return;
-        case 22: //eamt Enchantment Charge Amount
+        case 23: //chargeAmount
             EAMT.Unload();
             return;
-        case 23: //nam0 Ammo
+        case 24: //ammo
             NAM0.Unload();
             return;
-        case 24: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 25: //destructableHealth
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.health = defaultDEST.health;
             return;
-        case 25: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 26: //destructableCount
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.count = defaultDEST.count;
             return;
-        case 26: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 27: //destructableFlags
+            if(Destructable.IsLoaded())
+                Destructable->SetFlagMask(defaultDEST.flags);
             return;
-        case 27: //dest_p Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 28: //destructableUnused1
+            if(Destructable.IsLoaded())
+                {
+                Destructable->DEST.value.unused1[0] = defaultDSTD.health;
+                }
             return;
-        case 28: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 29: //destructableStages
+            if(Destructable.IsLoaded())
+                {
+                if(ListFieldID == 0) //destructableStages
+                    {
+                    Destructable->Stages.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= Destructable->Stages.value.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //health
+                        Destructable->Stages.value[ListIndex]->DSTD.value.health = defaultDSTD.health;
+                        return;
+                    case 2: //index
+                        Destructable->Stages.value[ListIndex]->DSTD.value.index = defaultDSTD.index;
+                        return;
+                    case 3: //stage
+                        Destructable->Stages.value[ListIndex]->DSTD.value.stage = defaultDSTD.stage;
+                        return;
+                    case 4: //flags
+                        Destructable->Stages.value[ListIndex]->SetFlagMask(defaultDSTD.flags);
+                        return;
+                    case 5: //dps
+                        Destructable->Stages.value[ListIndex]->DSTD.value.dps = defaultDSTD.dps;
+                        return;
+                    case 6: //explosion
+                        Destructable->Stages.value[ListIndex]->DSTD.value.explosion = defaultDSTD.explosion;
+                        return;
+                    case 7: //debris
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debris = defaultDSTD.debris;
+                        return;
+                    case 8: //debrisCount
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = defaultDSTD.debrisCount;
+                        return;
+                    case 9: //modPath
+                        Destructable->Stages.value[ListIndex]->DMDL.Unload();
+                        return;
+                    case 10: //modt_p
+                        Destructable->Stages.value[ListIndex]->DMDT.Unload();
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 29: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 30: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 31: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 32: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 33: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 34: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 35: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
-            return;
-        case 36: //dmdl Model Filename
-            if(DEST.IsLoaded())
-                DEST->DMDL.Unload();
-            return;
-        case 37: //dmdt_p Texture Files Hashes
-            if(DEST.IsLoaded())
-                DEST->DMDT.Unload();
-            return;
-        case 38: //repl Repair List
+        case 30: //repairList
             REPL.Unload();
             return;
-        case 39: //etyp Equipment Type
+        case 31: //equipmentType
             ETYP.Unload();
             return;
-        case 40: //bipl Biped Model List
+        case 32: //modelList
             BIPL.Unload();
             return;
-        case 41: //ynam Sound - Pick Up
+        case 33: //pickupSound
             YNAM.Unload();
             return;
-        case 42: //znam Sound - Drop
+        case 34: //dropSound
             ZNAM.Unload();
             return;
-        case 43: //mod2 Model Filename
+        case 35: //shell_modPath
             if(MOD2.IsLoaded())
-                MOD2->MOD2.Unload();
+                MOD2->MODL.Unload();
             return;
-        case 44: //mo2t_p Texture Files Hashes
+        case 36: //shell_modt_p
             if(MOD2.IsLoaded())
-                MOD2->MO2T.Unload();
+                MOD2->MODT.Unload();
             return;
-        case 45: //mo2s Alternate Texture
+        case 37: //shell_altTextures
             if(MOD2.IsLoaded())
-                MOD2->MO2S.Unload();
-            return;
-        case 46: //mo2s Alternate Texture
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MOD2->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MOD2->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MOD2->Textures.MODS[ListIndex]->name;
+                        MOD2->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MOD2->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MOD2->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            return;               
+        case 38: //scope_modPath
             if(MOD2.IsLoaded())
-                MOD2->MO2S.Unload();
+                MOD2->MODL.Unload();
             return;
-        case 47: //mo2s Alternate Texture
+        case 39: //scope_modt_p
             if(MOD2.IsLoaded())
-                MOD2->MO2S.Unload();
+                MOD2->MODT.Unload();
             return;
-        case 48: //mod3 Model Filename
-            if(MOD3.IsLoaded())
-                MOD3->MOD3.Unload();
+        case 40: //scope_altTextures
+            if(MOD2.IsLoaded())
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MOD2->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MOD2->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MOD2->Textures.MODS[ListIndex]->name;
+                        MOD2->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MOD2->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MOD2->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 49: //mo3t_p Texture Files Hashes
-            if(MOD3.IsLoaded())
-                MOD3->MO3T.Unload();
-            return;
-        case 50: //mo3s Alternate Texture
-            if(MOD3.IsLoaded())
-                MOD3->MO3S.Unload();
-            return;
-        case 51: //mo3s Alternate Texture
-            if(MOD3.IsLoaded())
-                MOD3->MO3S.Unload();
-            return;
-        case 52: //mo3s Alternate Texture
-            if(MOD3.IsLoaded())
-                MOD3->MO3S.Unload();
-            return;
-        case 53: //efsd Scope Effect
+        case 41: //scopeEffect
             EFSD.Unload();
             return;
-        case 54: //mod4 Model Filename
-            if(MOD4.IsLoaded())
-                MOD4->MOD4.Unload();
+        case 42: //world_modPath
+            if(MOD2.IsLoaded())
+                MOD2->MODL.Unload();
             return;
-        case 55: //mo4t_p Texture Files Hashes
-            if(MOD4.IsLoaded())
-                MOD4->MO4T.Unload();
+        case 43: //world_modt_p
+            if(MOD2.IsLoaded())
+                MOD2->MODT.Unload();
             return;
-        case 56: //mo4s Alternate Texture
-            if(MOD4.IsLoaded())
-                MOD4->MO4S.Unload();
+        case 44: //world_altTextures
+            if(MOD2.IsLoaded())
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MOD2->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MOD2->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MOD2->Textures.MODS[ListIndex]->name;
+                        MOD2->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MOD2->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MOD2->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 57: //mo4s Alternate Texture
-            if(MOD4.IsLoaded())
-                MOD4->MO4S.Unload();
-            return;
-        case 58: //mo4s Alternate Texture
-            if(MOD4.IsLoaded())
-                MOD4->MO4S.Unload();
-            return;
-        case 59: //vanm VATS Attack Name
+        case 45: //vatsName
             VANM.Unload();
             return;
-        case 60: //nnam Embedded Weapon Node
+        case 46: //weaponNode
             NNAM.Unload();
             return;
-        case 61: //mwd1 Mod 1
-            if(MWD1.IsLoaded())
-                MWD1->MWD1.Unload();
+        case 47: //mod1Path
+            MWD1.Unload();
             return;
-        case 62: //mwd2 Mod 2
-            if(MWD1.IsLoaded())
-                MWD1->MWD2.Unload();
+        case 48: //mod2Path
+            MWD2.Unload();
             return;
-        case 63: //mwd3 Mod 1 and 2
-            if(MWD1.IsLoaded())
-                MWD1->MWD3.Unload();
+        case 49: //mod12Path
+            MWD3.Unload();
             return;
-        case 64: //mwd4 Mod 3
-            if(MWD1.IsLoaded())
-                MWD1->MWD4.Unload();
+        case 50: //mod3Path
+            MWD4.Unload();
             return;
-        case 65: //mwd5 Mod 1 and 3
-            if(MWD1.IsLoaded())
-                MWD1->MWD5.Unload();
+        case 51: //mod13Path
+            MWD5.Unload();
             return;
-        case 66: //mwd6 Mod 2 and 3
-            if(MWD1.IsLoaded())
-                MWD1->MWD6.Unload();
+        case 52: //mod23Path
+            MWD6.Unload();
             return;
-        case 67: //mwd7 Mod 1, 2 and 3
-            if(MWD1.IsLoaded())
-                MWD1->MWD7.Unload();
+        case 53: //mod123Path
+            MWD7.Unload();
             return;
-        case 68: //inam Impact DataSet
+        case 54: //impact
             INAM.Unload();
             return;
-        case 69: //wnam 1st Person Model
+        case 55: //model
             WNAM.Unload();
             return;
-        case 70: //wnm1 Mod 1
-            if(WNM1.IsLoaded())
-                WNM1->WNM1.Unload();
+        case 56: //model1
+            WNM1.Unload();
             return;
-        case 71: //wnm2 Mod 2
-            if(WNM1.IsLoaded())
-                WNM1->WNM2.Unload();
+        case 57: //model2
+            WNM2.Unload();
             return;
-        case 72: //wnm3 Mod 1 and 2
-            if(WNM1.IsLoaded())
-                WNM1->WNM3.Unload();
+        case 58: //model12
+            WNM3.Unload();
             return;
-        case 73: //wnm4 Mod 3
-            if(WNM1.IsLoaded())
-                WNM1->WNM4.Unload();
+        case 59: //model3
+            WNM4.Unload();
             return;
-        case 74: //wnm5 Mod 1 and 3
-            if(WNM1.IsLoaded())
-                WNM1->WNM5.Unload();
+        case 60: //model13
+            WNM5.Unload();
             return;
-        case 75: //wnm6 Mod 2 and 3
-            if(WNM1.IsLoaded())
-                WNM1->WNM6.Unload();
+        case 61: //model23
+            WNM6.Unload();
             return;
-        case 76: //wnm7 Mod 1, 2 and 3
-            if(WNM1.IsLoaded())
-                WNM1->WNM7.Unload();
+        case 62: //model123
+            WNM7.Unload();
             return;
-        case 77: //wmi1 Mod 1
-            if(WMI1.IsLoaded())
-                WMI1->WMI1.Unload();
+        case 63: //mod1
+            WMI1.Unload();
             return;
-        case 78: //wmi2 Mod 2
-            if(WMI1.IsLoaded())
-                WMI1->WMI2.Unload();
+        case 64: //mod2
+            WMI2.Unload();
             return;
-        case 79: //wmi3 Mod 3
-            if(WMI1.IsLoaded())
-                WMI1->WMI3.Unload();
+        case 65: //mod3
+            WMI3.Unload();
             return;
-        case 80: //snam Sound - Gun - Shoot Dist
-            SNAM.Unload();
+        case 66: //sound3D
+            SNAM1.Unload();
             return;
-        case 81: //xnam Sound - Gun - Shoot 2D
+        case 67: //soundDist
+            SNAM2.Unload();
+            return;
+        case 68: //sound2D
             XNAM.Unload();
             return;
-        case 82: //nam7 Sound - Gun - Shoot 3D Looping
+        case 69: //sound3DLoop
             NAM7.Unload();
             return;
-        case 83: //tnam Sound - Melee - Swing / Gun - No Ammo
+        case 70: //soundMelee
             TNAM.Unload();
             return;
-        case 84: //nam6 Sound - Block
+        case 71: //soundBlock
             NAM6.Unload();
             return;
-        case 85: //unam Sound - Idle
+        case 72: //soundIdle
             UNAM.Unload();
             return;
-        case 86: //nam9 Sound - Equip
+        case 73: //soundEquip
             NAM9.Unload();
             return;
-        case 87: //nam8 Sound - Unequip
+        case 74: //soundUnequip
             NAM8.Unload();
             return;
-        case 88: //wms1 Sound - Mod 1 - Shoot Dist
-            WMS1.Unload();
+        case 75: //soundMod3D
+            WMS11.Unload();
             return;
-        case 89: //wms2 Sound - Mod 1 - Shoot 2D
+        case 76: //soundModDist
+            WMS12.Unload();
+            return;
+        case 77: //soundMod2D
             WMS2.Unload();
             return;
-        case 90: //data DATA ,, Struct
-            DATA.Unload();
+        case 78: //value
+            DATA.value.value = defaultDATA.value;
             return;
-        case 91: //data DATA ,, Struct
-            DATA.Unload();
+        case 79: //health
+            DATA.value.health = defaultDATA.health;
             return;
-        case 92: //data DATA ,, Struct
-            DATA.Unload();
+        case 80: //weight
+            DATA.value.weight = defaultDATA.weight;
             return;
-        case 93: //data DATA ,, Struct
-            DATA.Unload();
+        case 81: //damage
+            DATA.value.damage = defaultDATA.damage;
             return;
-        case 94: //data DATA ,, Struct
-            DATA.Unload();
+        case 82: //clipSize
+            DATA.value.clipSize = defaultDATA.clipSize;
             return;
-        case 95: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 83: //animType
+            SetType(defaultDNAM.animType);
             return;
-        case 96: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 84: //animMult
+            DNAM.value.animMult = defaultDNAM.animMult;
             return;
-        case 97: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 85: //reach
+            DNAM.value.reach = defaultDNAM.reach;
             return;
-        case 98: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 86: //flags
+            SetFlagMask(defaultDNAM.flags1);
             return;
-        case 99: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 87: //gripAnim
+            SetGripType(defaultDNAM.gripAnim);
             return;
-        case 100: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 88: //ammoUse
+            DNAM.value.ammoUse = defaultDNAM.ammoUse;
             return;
-        case 101: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 89: //reloadAnim
+            SetReloadType(defaultDNAM.reloadAnim);
             return;
-        case 102: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 90: //minSpread
+            DNAM.value.minSpread = defaultDNAM.minSpread;
             return;
-        case 103: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 91: //spread
+            DNAM.value.spread = defaultDNAM.spread;
             return;
-        case 104: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 92: //unknown1
+            DNAM.value.unknown1 = defaultDNAM.unknown1;
             return;
-        case 105: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 93: //sightFOV
+            DNAM.value.sightFOV = defaultDNAM.sightFOV;
             return;
-        case 106: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 94: //unknown2
+            DNAM.value.unknown2 = defaultDNAM.unknown2;
             return;
-        case 107: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 95: //projectile
+            DNAM.value.projectile = defaultDNAM.projectile;
             return;
-        case 108: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 96: //VATSHitChance
+            DNAM.value.VATSHitChance = defaultDNAM.VATSHitChance;
             return;
-        case 109: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 97: //attackAnim
+            SetAttackType(defaultDNAM.attackAnim);
             return;
-        case 110: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 98: //projectileCount
+            DNAM.value.projectileCount = defaultDNAM.projectileCount;
             return;
-        case 111: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 99: //weaponAV
+            SetEmbeddedAVType(defaultDNAM.weaponAV);
             return;
-        case 112: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 100: //minRange
+            DNAM.value.minRange = defaultDNAM.minRange;
             return;
-        case 113: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 101: //maxRange
+            DNAM.value.maxRange = defaultDNAM.maxRange;
             return;
-        case 114: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 102: //onHit
+            SetOnHitType(defaultDNAM.onHit);
             return;
-        case 115: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 103: //extraFlags
+            SetAdvFlagMask(defaultDNAM.flags2);
             return;
-        case 116: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 104: //animAttackMult
+            DNAM.value.animAttackMult = defaultDNAM.animAttackMult;
             return;
-        case 117: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 105: //fireRate
+            DNAM.value.fireRate = defaultDNAM.fireRate;
             return;
-        case 118: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 106: //overrideAP
+            DNAM.value.overrideAP = defaultDNAM.overrideAP;
             return;
-        case 119: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 107: //leftRumble
+            DNAM.value.leftRumble = defaultDNAM.leftRumble;
             return;
-        case 120: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 108: //timeRumble
+            DNAM.value.timeRumble = defaultDNAM.timeRumble;
             return;
-        case 121: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 109: //overrideDamageToWeapon
+            DNAM.value.overrideDamageToWeapon = defaultDNAM.overrideDamageToWeapon;
             return;
-        case 122: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 110: //reloadTime
+            DNAM.value.reloadTime = defaultDNAM.reloadTime;
             return;
-        case 123: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 111: //jamTime
+            DNAM.value.jamTime = defaultDNAM.jamTime;
             return;
-        case 124: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 112: //aimArc
+            DNAM.value.aimArc = defaultDNAM.aimArc;
             return;
-        case 125: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 113: //skill
+            DNAM.value.skill = defaultDNAM.skill;
             return;
-        case 126: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 114: //rumbleType
+            SetRumbleType(defaultDNAM.rumbleType);
             return;
-        case 127: //dnam DNAM ,, Struct
-            return UNPARSEDDEL_FIELD127;
-        case 128: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 115: //rumbleWavelength
+            DNAM.value.rumbleWavelength = defaultDNAM.rumbleWavelength;
             return;
-        case 129: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 116: //limbDamageMult
+            DNAM.value.limbDamageMult = defaultDNAM.limbDamageMult;
             return;
-        case 130: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 117: //resistType
+            DNAM.value.resistType = defaultDNAM.resistType;
             return;
-        case 131: //dnam DNAM ,, Struct
-            return UNPARSEDDEL_FIELD131;
-        case 132: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 118: //sightUsage
+            DNAM.value.sightUsage = defaultDNAM.sightUsage;
             return;
-        case 133: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 119: //semiFireDelayMin
+            DNAM.value.semiFireDelayMin = defaultDNAM.semiFireDelayMin;
             return;
-        case 134: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 120: //semiFireDelayMax
+            DNAM.value.semiFireDelayMax = defaultDNAM.semiFireDelayMax;
             return;
-        case 135: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 121: //unknown3
+            DNAM.value.unknown3 = defaultDNAM.unknown3;
             return;
-        case 136: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 122: //effectMod1
+            DNAM.value.effectMod1 = defaultDNAM.effectMod1;
             return;
-        case 137: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 123: //effectMod2
+            DNAM.value.effectMod2 = defaultDNAM.effectMod2;
             return;
-        case 138: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 124: //effectMod3
+            DNAM.value.effectMod3 = defaultDNAM.effectMod3;
             return;
-        case 139: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 125: //valueAMod1
+            DNAM.value.valueAMod1 = defaultDNAM.valueAMod1;
             return;
-        case 140: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 126: //valueAMod2
+            DNAM.value.valueAMod2 = defaultDNAM.valueAMod2;
             return;
-        case 141: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 127: //valueAMod3
+            DNAM.value.valueAMod3 = defaultDNAM.valueAMod3;
             return;
-        case 142: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 128: //overridePwrAtkAnim
+            SetPowerAttackAnimOverrideType(defaultDNAM.overridePwrAtkAnim);
             return;
-        case 143: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 129: //strengthReq
+            DNAM.value.strengthReq = defaultDNAM.strengthReq;
             return;
-        case 144: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 130: //unknown4
+            DNAM.value.unknown4 = defaultDNAM.unknown4;
             return;
-        case 145: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 131: //reloadAnimMod
+            SetModType(defaultDNAM.reloadAnimMod);
             return;
-        case 146: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 132: //unknown5
+            DNAM.value.unknown5[0] = defaultDNAM.unknown5[0];
+            DNAM.value.unknown5[1] = defaultDNAM.unknown5[1];
             return;
-        case 147: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 133: //regenRate
+            DNAM.value.regenRate = defaultDNAM.regenRate;
             return;
-        case 148: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 134: //killImpulse
+            DNAM.value.killImpulse = defaultDNAM.killImpulse;
             return;
-        case 149: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 135: //valueBMod1
+            DNAM.value.valueBMod1 = defaultDNAM.valueBMod1;
             return;
-        case 150: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 136: //valueBMod2
+            DNAM.value.valueBMod2 = defaultDNAM.valueBMod2;
             return;
-        case 151: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 137: //valueBMod3
+            DNAM.value.valueBMod3 = defaultDNAM.valueBMod3;
             return;
-        case 152: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 138: //skillReq
+            DNAM.value.skillReq = defaultDNAM.skillReq;
             return;
-        case 153: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 139: //critDamage
+            CRDT.value.critDamage = defaultCRDT.critDamage;
             return;
-        case 154: //crdt CRDT ,, Struct
-            CRDT.Unload();
+        case 140: //unused1
+            CRDT.value.unused1[0] = defaultCRDT.unused1[0];
+            CRDT.value.unused1[1] = defaultCRDT.unused1[1];
             return;
-        case 155: //crdt_p CRDT ,, Struct
-            CRDT.Unload();
+        case 141: //critMult
+            CRDT.value.critMult = defaultCRDT.critMult;
             return;
-        case 156: //crdt CRDT ,, Struct
-            CRDT.Unload();
+        case 142: //critFlags
+            SetCritFlagMask(defaultCRDT.flags);
             return;
-        case 157: //crdt CRDT ,, Struct
-            CRDT.Unload();
+        case 143: //unused2
+            CRDT.value.unused2[0] = defaultCRDT.unused2[0];
+            CRDT.value.unused2[1] = defaultCRDT.unused2[1];
+            CRDT.value.unused2[2] = defaultCRDT.unused2[2];
             return;
-        case 158: //crdt_p CRDT ,, Struct
-            CRDT.Unload();
+        case 144: //critEffect
+            CRDT.value.effect = defaultCRDT.effect;
             return;
-        case 159: //crdt CRDT ,, Struct
-            CRDT.Unload();
+        case 145: //vatsEffect
+            VATS.value.effect = defaultVATS.effect;
             return;
-        case 160: //vats VATS ,, Struct
-            VATS.Unload();
+        case 146: //vatsSkill
+            VATS.value.skill = defaultVATS.skill;
             return;
-        case 161: //vats VATS ,, Struct
-            VATS.Unload();
+        case 147: //vatsDamageMult
+            VATS.value.damageMult = defaultVATS.damageMult;
             return;
-        case 162: //vats VATS ,, Struct
-            VATS.Unload();
+        case 148: //AP
+            VATS.value.AP = defaultVATS.AP;
             return;
-        case 163: //vats VATS ,, Struct
-            VATS.Unload();
+        case 149: //silenceType
+            SetVATSSilenceType(defaultVATS.silenceType);
             return;
-        case 164: //vats VATS ,, Struct
-            VATS.Unload();
+        case 150: //modRequiredType
+            SetVATSModType(defaultVATS.modRequiredType);
             return;
-        case 165: //vats VATS ,, Struct
-            VATS.Unload();
+        case 151: //unused3
+            VATS.value.unused1[0] = defaultVATS.unused1[0];
+            VATS.value.unused1[1] = defaultVATS.unused1[1];
             return;
-        case 166: //vats_p VATS ,, Struct
-            VATS.Unload();
-            return;
-        case 167: //vnam Sound Level
+        case 152: //soundLevelType
             VNAM.Unload();
-            return;
+            break;
         default:
             return;
         }

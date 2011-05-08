@@ -24,12 +24,121 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+NPC_Record::NPC_DATA::NPC_DATA():
+    baseHealth(0),
+    strength(0),
+    perception(0),
+    endurance(0),
+    charisma(0),
+    intelligence(0),
+    agility(0),
+    luck(0)
+    {
+    //
+    }
+
+NPC_Record::NPC_DATA::~NPC_DATA()
+    {
+    //
+    }
+
+bool NPC_Record::NPC_DATA::operator ==(const NPC_DATA &other) const
+    {
+    return (baseHealth == other.baseHealth &&
+            strength == other.strength &&
+            perception == other.perception &&
+            endurance == other.endurance &&
+            charisma == other.charisma &&
+            intelligence == other.intelligence &&
+            agility == other.agility &&
+            luck == other.luck);
+    }
+
+bool NPC_Record::NPC_DATA::operator !=(const NPC_DATA &other) const
+    {
+    return !(*this == other);
+    }
+
+NPC_Record::NPC_DNAM::NPC_DNAM():
+    barter(0),
+    bigGuns(0),
+    energy(0),
+    explosives(0),
+    lockpick(0),
+    medicine(0),
+    melee(0),
+    repair(0),
+    science(0),
+    guns(0),
+    sneak(0),
+    speech(0),
+    survival(0),
+    unarmed(0),
+    barterBoost(0),
+    bigGunsBoost(0),
+    energyBoost(0),
+    explosivesBoost(0),
+    lockpickBoost(0),
+    medicineBoost(0),
+    meleeBoost(0),
+    repairBoost(0),
+    scienceBoost(0),
+    gunsBoost(0),
+    sneakBoost(0),
+    speechBoost(0),
+    survivalBoost(0),
+    unarmedBoost(0)
+    {
+    //
+    }
+
+NPC_Record::NPC_DNAM::~NPC_DNAM()
+    {
+    //
+    }
+
+bool NPC_Record::NPC_DNAM::operator ==(const NPC_DNAM &other) const
+    {
+    return (barter == other.barter &&
+            bigGuns == other.bigGuns &&
+            energy == other.energy &&
+            explosives == other.explosives &&
+            lockpick == other.lockpick &&
+            medicine == other.medicine &&
+            melee == other.melee &&
+            repair == other.repair &&
+            science == other.science &&
+            guns == other.guns &&
+            sneak == other.sneak &&
+            speech == other.speech &&
+            survival == other.survival &&
+            unarmed == other.unarmed &&
+            barterBoost == other.barterBoost &&
+            bigGunsBoost == other.bigGunsBoost &&
+            energyBoost == other.energyBoost &&
+            explosivesBoost == other.explosivesBoost &&
+            lockpickBoost == other.lockpickBoost &&
+            medicineBoost == other.medicineBoost &&
+            meleeBoost == other.meleeBoost &&
+            repairBoost == other.repairBoost &&
+            scienceBoost == other.scienceBoost &&
+            gunsBoost == other.gunsBoost &&
+            sneakBoost == other.sneakBoost &&
+            speechBoost == other.speechBoost &&
+            survivalBoost == other.survivalBoost &&
+            unarmedBoost == other.unarmedBoost);
+    }
+
+bool NPC_Record::NPC_DNAM::operator !=(const NPC_DNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 NPC_Record::NPC_Record(unsigned char *_recData):
     FNVRecord(_recData)
     {
     //
     }
-
 NPC_Record::NPC_Record(NPC_Record *srcRecord):
     FNVRecord()
     {
@@ -49,13 +158,10 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
         recData = srcRecord->recData;
         return;
         }
-
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ACBS = srcRecord->ACBS;
     SNAM = srcRecord->SNAM;
     INAM = srcRecord->INAM;
@@ -80,13 +186,9 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
     HCLR = srcRecord->HCLR;
     ZNAM = srcRecord->ZNAM;
     NAM4 = srcRecord->NAM4;
-    if(srcRecord->FGGS.IsLoaded())
-        {
-        FGGS.Load();
-        FGGS->FGGS = srcRecord->FGGS->FGGS;
-        FGGS->FGGA = srcRecord->FGGS->FGGA;
-        FGGS->FGTS = srcRecord->FGGS->FGTS;
-        }
+    FGGS = srcRecord->FGGS;
+    FGGA = srcRecord->FGGA;
+    FGTS = srcRecord->FGTS;
     NAM5 = srcRecord->NAM5;
     NAM6 = srcRecord->NAM6;
     NAM7 = srcRecord->NAM7;
@@ -108,20 +210,20 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
-    //if(SNAM.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(SNAM->value);
+    for(UINT32 x = 0; x < SNAM.value.size(); x++)
+        op.Accept(SNAM.value[x]->faction);
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
     if(VTCK.IsLoaded())
-        op.Accept(VTCK->value);
+        op.Accept(VTCK.value);
     if(TPLT.IsLoaded())
-        op.Accept(TPLT->value);
+        op.Accept(TPLT.value);
     if(RNAM.IsLoaded())
-        op.Accept(RNAM->value);
-    if(SPLO.IsLoaded())
-        op.Accept(SPLO->value);
+        op.Accept(RNAM.value);
+    for(UINT32 x = 0; x < SPLO.value.size(); x++)
+        op.Accept(SPLO.value[x]);
     if(EITM.IsLoaded())
-        op.Accept(EITM->value);
+        op.Accept(EITM.value);
     if(Destructable.IsLoaded())
         {
         for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
@@ -131,832 +233,753 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
             }
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
-    //if(CNTO.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(CNTO->value);
-    if(PKID.IsLoaded())
-        op.Accept(PKID->value);
+        op.Accept(SCRI.value);
+    for(UINT32 x = 0; x < CNTO.value.size(); ++x)
+        {
+        op.Accept(CNTO.value[x]->CNTO.value.item);
+        if(CNTO.value[x]->IsGlobal())
+            op.Accept(CNTO.value[x]->COED->globalOrRank);
+        }
+    for(UINT32 x = 0; x < PKID.value.size(); x++)
+        op.Accept(PKID.value[x]);
     if(CNAM.IsLoaded())
-        op.Accept(CNAM->value);
-    if(PNAM.IsLoaded())
-        op.Accept(PNAM->value);
+        op.Accept(CNAM.value);
+    for(UINT32 x = 0; x < PNAM.value.size(); x++)
+        op.Accept(PNAM.value[x]);
     if(HNAM.IsLoaded())
-        op.Accept(HNAM->value);
+        op.Accept(HNAM.value);
     if(ENAM.IsLoaded())
-        op.Accept(ENAM->value);
+        op.Accept(ENAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-
+        op.Accept(ZNAM.value);
     return op.Stop();
     }
 
 bool NPC_Record::IsFemale()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFemale) != 0;
+    return (ACBS.value.flags & fIsFemale) != 0;
     }
 
 void NPC_Record::IsFemale(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFemale) : (Dummy->flags & ~fIsFemale);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsFemale) : (ACBS.value.flags & ~fIsFemale);
     }
 
 bool NPC_Record::IsEssential()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsEssential) != 0;
+    return (ACBS.value.flags & fIsEssential) != 0;
     }
 
 void NPC_Record::IsEssential(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsEssential) : (Dummy->flags & ~fIsEssential);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsEssential) : (ACBS.value.flags & ~fIsEssential);
     }
 
 bool NPC_Record::IsCharGenFacePreset()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsCharGenFacePreset) != 0;
+    return (ACBS.value.flags & fIsCharGenFacePreset) != 0;
     }
 
 void NPC_Record::IsCharGenFacePreset(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsCharGenFacePreset) : (Dummy->flags & ~fIsCharGenFacePreset);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsCharGenFacePreset) : (ACBS.value.flags & ~fIsCharGenFacePreset);
     }
 
 bool NPC_Record::IsRespawn()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRespawn) != 0;
+    return (ACBS.value.flags & fIsRespawn) != 0;
     }
 
 void NPC_Record::IsRespawn(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRespawn) : (Dummy->flags & ~fIsRespawn);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsRespawn) : (ACBS.value.flags & ~fIsRespawn);
     }
 
 bool NPC_Record::IsAutoCalcStats()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAutoCalcStats) != 0;
+    return (ACBS.value.flags & fIsAutoCalcStats) != 0;
     }
 
 void NPC_Record::IsAutoCalcStats(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAutoCalcStats) : (Dummy->flags & ~fIsAutoCalcStats);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsAutoCalcStats) : (ACBS.value.flags & ~fIsAutoCalcStats);
     }
 
 bool NPC_Record::IsPCLevelOffset()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPCLevelOffset) != 0;
+    return (ACBS.value.flags & fIsPCLevelOffset) != 0;
     }
 
 void NPC_Record::IsPCLevelOffset(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPCLevelOffset) : (Dummy->flags & ~fIsPCLevelOffset);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsPCLevelOffset) : (ACBS.value.flags & ~fIsPCLevelOffset);
     }
 
 bool NPC_Record::IsUseTemplate()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseTemplate) != 0;
+    return (ACBS.value.flags & fIsUseTemplate) != 0;
     }
 
 void NPC_Record::IsUseTemplate(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseTemplate) : (Dummy->flags & ~fIsUseTemplate);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsUseTemplate) : (ACBS.value.flags & ~fIsUseTemplate);
     }
 
 bool NPC_Record::IsNoLowLevel()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoLowLevel) != 0;
+    return (ACBS.value.flags & fIsNoLowLevel) != 0;
     }
 
 void NPC_Record::IsNoLowLevel(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoLowLevel) : (Dummy->flags & ~fIsNoLowLevel);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoLowLevel) : (ACBS.value.flags & ~fIsNoLowLevel);
     }
 
 bool NPC_Record::IsNoBloodSpray()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoBloodSpray) != 0;
+    return (ACBS.value.flags & fIsNoBloodSpray) != 0;
     }
 
 void NPC_Record::IsNoBloodSpray(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoBloodSpray) : (Dummy->flags & ~fIsNoBloodSpray);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoBloodSpray) : (ACBS.value.flags & ~fIsNoBloodSpray);
     }
 
 bool NPC_Record::IsNoBloodDecal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoBloodDecal) != 0;
+    return (ACBS.value.flags & fIsNoBloodDecal) != 0;
     }
 
 void NPC_Record::IsNoBloodDecal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoBloodDecal) : (Dummy->flags & ~fIsNoBloodDecal);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoBloodDecal) : (ACBS.value.flags & ~fIsNoBloodDecal);
     }
 
 bool NPC_Record::IsNoVATSMelee()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoVATSMelee) != 0;
+    return (ACBS.value.flags & fIsNoVATSMelee) != 0;
     }
 
 void NPC_Record::IsNoVATSMelee(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoVATSMelee) : (Dummy->flags & ~fIsNoVATSMelee);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoVATSMelee) : (ACBS.value.flags & ~fIsNoVATSMelee);
     }
 
 bool NPC_Record::IsCanBeAllRaces()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsCanBeAllRaces) != 0;
+    return (ACBS.value.flags & fIsCanBeAllRaces) != 0;
     }
 
 void NPC_Record::IsCanBeAllRaces(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsCanBeAllRaces) : (Dummy->flags & ~fIsCanBeAllRaces);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsCanBeAllRaces) : (ACBS.value.flags & ~fIsCanBeAllRaces);
     }
 
 bool NPC_Record::IsAutoCalcService()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAutoCalcService) != 0;
+    return (ACBS.value.flags & fIsAutoCalcService) != 0;
     }
 
 void NPC_Record::IsAutoCalcService(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAutoCalcService) : (Dummy->flags & ~fIsAutoCalcService);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsAutoCalcService) : (ACBS.value.flags & ~fIsAutoCalcService);
     }
 
 bool NPC_Record::IsNoKnockdowns()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoKnockdowns) != 0;
+    return (ACBS.value.flags & fIsNoKnockdowns) != 0;
     }
 
 void NPC_Record::IsNoKnockdowns(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoKnockdowns) : (Dummy->flags & ~fIsNoKnockdowns);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoKnockdowns) : (ACBS.value.flags & ~fIsNoKnockdowns);
     }
 
 bool NPC_Record::IsNotPushable()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNotPushable) != 0;
+    return (ACBS.value.flags & fIsNotPushable) != 0;
     }
 
 void NPC_Record::IsNotPushable(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNotPushable) : (Dummy->flags & ~fIsNotPushable);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNotPushable) : (ACBS.value.flags & ~fIsNotPushable);
     }
 
 bool NPC_Record::IsNoHeadTracking()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoHeadTracking) != 0;
+    return (ACBS.value.flags & fIsNoHeadTracking) != 0;
     }
 
 void NPC_Record::IsNoHeadTracking(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoHeadTracking) : (Dummy->flags & ~fIsNoHeadTracking);
+    ACBS.value.flags = value ? (ACBS.value.flags | fIsNoHeadTracking) : (ACBS.value.flags & ~fIsNoHeadTracking);
     }
 
-bool NPC_Record::IsFlagMask(UINT8 Mask, bool Exact)
+bool NPC_Record::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((ACBS.value.flags & Mask) == Mask) : ((ACBS.value.flags & Mask) != 0);
     }
 
-void NPC_Record::SetFlagMask(UINT8 Mask)
+void NPC_Record::SetFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ACBS.value.flags = Mask;
     }
 
 bool NPC_Record::IsUseTraits()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseTraits) != 0;
+    return (ACBS.value.templateFlags & fIsUseTraits) != 0;
     }
 
 void NPC_Record::IsUseTraits(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseTraits) : (Dummy->flags & ~fIsUseTraits);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseTraits) : (ACBS.value.templateFlags & ~fIsUseTraits);
     }
 
 bool NPC_Record::IsUseStats()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseStats) != 0;
+    return (ACBS.value.templateFlags & fIsUseStats) != 0;
     }
 
 void NPC_Record::IsUseStats(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseStats) : (Dummy->flags & ~fIsUseStats);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseStats) : (ACBS.value.templateFlags & ~fIsUseStats);
     }
 
 bool NPC_Record::IsUseFactions()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseFactions) != 0;
+    return (ACBS.value.templateFlags & fIsUseFactions) != 0;
     }
 
 void NPC_Record::IsUseFactions(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseFactions) : (Dummy->flags & ~fIsUseFactions);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseFactions) : (ACBS.value.templateFlags & ~fIsUseFactions);
     }
 
 bool NPC_Record::IsUseAEList()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseAEList) != 0;
+    return (ACBS.value.templateFlags & fIsUseAEList) != 0;
     }
 
 void NPC_Record::IsUseAEList(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseAEList) : (Dummy->flags & ~fIsUseAEList);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseAEList) : (ACBS.value.templateFlags & ~fIsUseAEList);
     }
 
 bool NPC_Record::IsUseAIData()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseAIData) != 0;
+    return (ACBS.value.templateFlags & fIsUseAIData) != 0;
     }
 
 void NPC_Record::IsUseAIData(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseAIData) : (Dummy->flags & ~fIsUseAIData);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseAIData) : (ACBS.value.templateFlags & ~fIsUseAIData);
     }
 
 bool NPC_Record::IsUseAIPackages()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseAIPackages) != 0;
+    return (ACBS.value.templateFlags & fIsUseAIPackages) != 0;
     }
 
 void NPC_Record::IsUseAIPackages(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseAIPackages) : (Dummy->flags & ~fIsUseAIPackages);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseAIPackages) : (ACBS.value.templateFlags & ~fIsUseAIPackages);
     }
 
 bool NPC_Record::IsUseModelAnim()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseModelAnim) != 0;
+    return (ACBS.value.templateFlags & fIsUseModelAnim) != 0;
     }
 
 void NPC_Record::IsUseModelAnim(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseModelAnim) : (Dummy->flags & ~fIsUseModelAnim);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseModelAnim) : (ACBS.value.templateFlags & ~fIsUseModelAnim);
     }
 
 bool NPC_Record::IsUseBaseData()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseBaseData) != 0;
+    return (ACBS.value.templateFlags & fIsUseBaseData) != 0;
     }
 
 void NPC_Record::IsUseBaseData(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseBaseData) : (Dummy->flags & ~fIsUseBaseData);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseBaseData) : (ACBS.value.templateFlags & ~fIsUseBaseData);
     }
 
 bool NPC_Record::IsUseInventory()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseInventory) != 0;
+    return (ACBS.value.templateFlags & fIsUseInventory) != 0;
     }
 
 void NPC_Record::IsUseInventory(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseInventory) : (Dummy->flags & ~fIsUseInventory);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseInventory) : (ACBS.value.templateFlags & ~fIsUseInventory);
     }
 
 bool NPC_Record::IsUseScript()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseScript) != 0;
+    return (ACBS.value.templateFlags & fIsUseScript) != 0;
     }
 
 void NPC_Record::IsUseScript(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseScript) : (Dummy->flags & ~fIsUseScript);
+    ACBS.value.templateFlags = value ? (ACBS.value.templateFlags | fIsUseScript) : (ACBS.value.templateFlags & ~fIsUseScript);
     }
 
-bool NPC_Record::IsTemplateFlagMask(UINT8 Mask, bool Exact)
+bool NPC_Record::IsTemplateFlagMask(UINT16 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((ACBS.value.templateFlags & Mask) == Mask) : ((ACBS.value.templateFlags & Mask) != 0);
     }
 
-void NPC_Record::SetTemplateFlagMask(UINT8 Mask)
+void NPC_Record::SetTemplateFlagMask(UINT16 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ACBS.value.templateFlags = Mask;
     }
 
 bool NPC_Record::IsAggroRadiusBehavior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAggroRadiusBehavior) != 0;
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->aggroFlags & fIsAggroRadiusBehavior) != 0;
     }
 
 void NPC_Record::IsAggroRadiusBehavior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAggroRadiusBehavior) : (Dummy->flags & ~fIsAggroRadiusBehavior);
+    if(!AIDT.IsLoaded()) return;
+    AIDT->aggroFlags = value ? (AIDT->aggroFlags | fIsAggroRadiusBehavior) : (AIDT->aggroFlags & ~fIsAggroRadiusBehavior);
     }
 
 bool NPC_Record::IsAggroFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    if(!AIDT.IsLoaded()) return false;
+    return Exact ? ((AIDT->aggroFlags & Mask) == Mask) : ((AIDT->aggroFlags & Mask) != 0);
     }
 
 void NPC_Record::SetAggroFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    AIDT.Load();
+    AIDT->aggroFlags = Mask;
     }
 
 bool NPC_Record::IsUnaggressive()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnaggressive);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->aggression == eUnaggressive;
     }
 
 void NPC_Record::IsUnaggressive(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnaggressive : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->aggression = value ? eUnaggressive : eAggressive;
     }
 
 bool NPC_Record::IsAggressive()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAggressive);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->aggression == eAggressive;
     }
 
 void NPC_Record::IsAggressive(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAggressive : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->aggression = value ? eAggressive : eUnaggressive;
     }
 
 bool NPC_Record::IsVeryAggressive()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVeryAggressive);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->aggression == eVeryAggressive;
     }
 
 void NPC_Record::IsVeryAggressive(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVeryAggressive : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->aggression = value ? eVeryAggressive : eUnaggressive;
     }
 
 bool NPC_Record::IsFrenzied()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFrenzied);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->aggression == eFrenzied;
     }
 
 void NPC_Record::IsFrenzied(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFrenzied : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->aggression = value ? eFrenzied : eUnaggressive;
     }
 
 bool NPC_Record::IsAggressionType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->aggression == Type;
     }
 
 void NPC_Record::SetAggressionType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    AIDT.Load();
+    AIDT->aggression = Type;
     }
 
 bool NPC_Record::IsCowardly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCowardly);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == eCowardly;
     }
 
 void NPC_Record::IsCowardly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCowardly : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->confidence = value ? eCowardly : eCautious;
     }
 
 bool NPC_Record::IsCautious()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCautious);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == eCautious;
     }
 
 void NPC_Record::IsCautious(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCautious : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->confidence = value ? eCautious : eCowardly;
     }
 
 bool NPC_Record::IsAverage()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAverage);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == eAverage;
     }
 
 void NPC_Record::IsAverage(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAverage : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->confidence = value ? eAverage : eCowardly;
     }
 
 bool NPC_Record::IsBrave()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBrave);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == eBrave;
     }
 
 void NPC_Record::IsBrave(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBrave : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->confidence = value ? eBrave : eCowardly;
     }
 
 bool NPC_Record::IsFoolhardy()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFoolhardy);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == eFoolhardy;
     }
 
 void NPC_Record::IsFoolhardy(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFoolhardy : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->confidence = value ? eFoolhardy : eCowardly;
     }
 
 bool NPC_Record::IsConfidenceType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->confidence == Type;
     }
 
 void NPC_Record::SetConfidenceType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    AIDT.Load();
+    AIDT->confidence = Type;
     }
 
 bool NPC_Record::IsNeutral()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNeutral);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eNeutral;
     }
 
 void NPC_Record::IsNeutral(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNeutral : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eNeutral : eAfraid;
     }
 
 bool NPC_Record::IsAfraid()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAfraid);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eAfraid;
     }
 
 void NPC_Record::IsAfraid(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAfraid : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eAfraid : eNeutral;
     }
 
 bool NPC_Record::IsAnnoyed()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAnnoyed);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eAnnoyed;
     }
 
 void NPC_Record::IsAnnoyed(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAnnoyed : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eAnnoyed : eNeutral;
     }
 
 bool NPC_Record::IsCocky()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCocky);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eCocky;
     }
 
 void NPC_Record::IsCocky(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCocky : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eCocky : eNeutral;
     }
 
 bool NPC_Record::IsDrugged()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDrugged);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eDrugged;
     }
 
 void NPC_Record::IsDrugged(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDrugged : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eDrugged : eNeutral;
     }
 
 bool NPC_Record::IsPleasant()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePleasant);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == ePleasant;
     }
 
 void NPC_Record::IsPleasant(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePleasant : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? ePleasant : eNeutral;
     }
 
 bool NPC_Record::IsAngry()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAngry);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eAngry;
     }
 
 void NPC_Record::IsAngry(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAngry : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eAngry : eNeutral;
     }
 
 bool NPC_Record::IsSad()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSad);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == eSad;
     }
 
 void NPC_Record::IsSad(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSad : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->mood = value ? eSad : eNeutral;
     }
 
 bool NPC_Record::IsMoodType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->mood == Type;
     }
 
 void NPC_Record::SetMoodType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    AIDT.Load();
+    AIDT->mood = Type;
     }
 
 bool NPC_Record::IsHelpsNobody()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHelpsNobody);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->assistance == eHelpsNobody;
     }
 
 void NPC_Record::IsHelpsNobody(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHelpsNobody : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->assistance = value ? eHelpsNobody : eHelpsAllies;
     }
 
 bool NPC_Record::IsHelpsAllies()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHelpsAllies);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->assistance == eHelpsAllies;
     }
 
 void NPC_Record::IsHelpsAllies(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHelpsAllies : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->assistance = value ? eHelpsAllies : eHelpsNobody;
     }
 
 bool NPC_Record::IsHelpsFriendsAndAllies()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHelpsFriendsAndAllies);
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->assistance == eHelpsFriendsAndAllies;
     }
 
 void NPC_Record::IsHelpsFriendsAndAllies(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHelpsFriendsAndAllies : eDummyDefault;
+    if(!AIDT.IsLoaded()) return;
+    AIDT->assistance = value ? eHelpsFriendsAndAllies : eHelpsNobody;
     }
 
 bool NPC_Record::IsAssistanceType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    if(!AIDT.IsLoaded()) return false;
+    return AIDT->assistance == Type;
     }
 
 void NPC_Record::SetAssistanceType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    AIDT.Load();
+    AIDT->assistance = Type;
     }
 
 bool NPC_Record::IsStone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStone);
+    return NAM4.value == eStone;
     }
 
 void NPC_Record::IsStone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStone : eDummyDefault;
+    NAM4.value = value ? eStone : eDirt;
     }
 
 bool NPC_Record::IsDirt()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDirt);
+    return NAM4.value == eDirt;
     }
 
 void NPC_Record::IsDirt(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDirt : eDummyDefault;
+    NAM4.value = value ? eDirt : eStone;
     }
 
 bool NPC_Record::IsGrass()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGrass);
+    return NAM4.value == eGrass;
     }
 
 void NPC_Record::IsGrass(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGrass : eDummyDefault;
+    NAM4.value = value ? eGrass : eStone;
     }
 
 bool NPC_Record::IsGlass()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGlass);
+    return NAM4.value == eGlass;
     }
 
 void NPC_Record::IsGlass(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGlass : eDummyDefault;
+    NAM4.value = value ? eGlass : eStone;
     }
 
 bool NPC_Record::IsMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMetal);
+    return NAM4.value == eMetal;
     }
 
 void NPC_Record::IsMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMetal : eDummyDefault;
+    NAM4.value = value ? eMetal : eStone;
     }
 
 bool NPC_Record::IsWood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWood);
+    return NAM4.value == eWood;
     }
 
 void NPC_Record::IsWood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWood : eDummyDefault;
+    NAM4.value = value ? eWood : eStone;
     }
 
 bool NPC_Record::IsOrganic()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eOrganic);
+    return NAM4.value == eOrganic;
     }
 
 void NPC_Record::IsOrganic(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eOrganic : eDummyDefault;
+    NAM4.value = value ? eOrganic : eStone;
     }
 
 bool NPC_Record::IsCloth()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCloth);
+    return NAM4.value == eCloth;
     }
 
 void NPC_Record::IsCloth(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCloth : eDummyDefault;
+    NAM4.value = value ? eCloth : eStone;
     }
 
 bool NPC_Record::IsWater()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWater);
+    return NAM4.value == eWater;
     }
 
 void NPC_Record::IsWater(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWater : eDummyDefault;
+    NAM4.value = value ? eWater : eStone;
     }
 
 bool NPC_Record::IsHollowMetal()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHollowMetal);
+    return NAM4.value == eHollowMetal;
     }
 
 void NPC_Record::IsHollowMetal(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHollowMetal : eDummyDefault;
+    NAM4.value = value ? eHollowMetal : eStone;
     }
 
 bool NPC_Record::IsOrganicBug()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eOrganicBug);
+    return NAM4.value == eOrganicBug;
     }
 
 void NPC_Record::IsOrganicBug(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eOrganicBug : eDummyDefault;
+    NAM4.value = value ? eOrganicBug : eStone;
     }
 
 bool NPC_Record::IsOrganicGlow()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eOrganicGlow);
+    return NAM4.value == eOrganicGlow;
     }
 
 void NPC_Record::IsOrganicGlow(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eOrganicGlow : eDummyDefault;
+    NAM4.value = value ? eOrganicGlow : eStone;
     }
 
-bool NPC_Record::IsImpactType(UINT8 Type)
+bool NPC_Record::IsImpactType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return NAM4.value == Type;
     }
 
-void NPC_Record::SetImpactType(UINT8 Type)
+void NPC_Record::SetImpactType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    NAM4.value = Type;
     }
 
 UINT32 NPC_Record::GetType()
     {
-    return '_CPN';
+    return REV32(NPC_);
     }
 
 STRING NPC_Record::GetStrType()
@@ -986,60 +1009,60 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'SBCA':
+            case REV32(ACBS):
                 ACBS.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'KCTV':
+            case REV32(VTCK):
                 VTCK.Read(buffer, subSize, curPos);
                 break;
-            case 'TLPT':
+            case REV32(TPLT):
                 TPLT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'OLPS':
+            case REV32(SPLO):
                 SPLO.Read(buffer, subSize, curPos);
                 break;
-            case 'MTIE':
+            case REV32(EITM):
                 EITM.Read(buffer, subSize, curPos);
                 break;
-            case 'TMAE':
+            case REV32(EAMT):
                 EAMT.Read(buffer, subSize, curPos);
                 break;
             case 'TSED':
@@ -1066,67 +1089,64 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case 'FTSD':
                 //Marks end of a destruction stage
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'OTNC':
+            case REV32(CNTO):
                 CNTO.Read(buffer, subSize, curPos);
                 break;
-            case 'TDIA':
+            case REV32(AIDT):
                 AIDT.Read(buffer, subSize, curPos);
                 break;
-            case 'DIKP':
+            case REV32(PKID):
                 PKID.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 HNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANL':
+            case REV32(LNAM):
                 LNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 ENAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCH':
+            case REV32(HCLR):
                 HCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 NAM4.Read(buffer, subSize, curPos);
                 break;
-            case 'SGGF':
-                FGGS.Load();
-                FGGS->FGGS.Read(buffer, subSize, curPos);
+            case REV32(FGGS):
+                FGGS.Read(buffer, subSize, curPos);
                 break;
-            case 'AGGF':
-                FGGS.Load();
-                FGGS->FGGA.Read(buffer, subSize, curPos);
+            case REV32(FGGA):
+                FGGA.Read(buffer, subSize, curPos);
                 break;
-            case 'STGF':
-                FGGS.Load();
-                FGGS->FGTS.Read(buffer, subSize, curPos);
+            case REV32(FGTS):
+                FGTS.Read(buffer, subSize, curPos);
                 break;
-            case '5MAN':
+            case REV32(NAM5):
                 NAM5.Read(buffer, subSize, curPos);
                 break;
-            case '6MAN':
+            case REV32(NAM6):
                 NAM6.Read(buffer, subSize, curPos);
                 break;
-            case '7MAN':
+            case REV32(NAM7):
                 NAM7.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -1145,6 +1165,7 @@ SINT32 NPC_Record::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     OBND.Unload();
     FULL.Unload();
@@ -1174,6 +1195,8 @@ SINT32 NPC_Record::Unload()
     ZNAM.Unload();
     NAM4.Unload();
     FGGS.Unload();
+    FGGA.Unload();
+    FGTS.Unload();
     NAM5.Unload();
     NAM6.Unload();
     NAM7.Unload();
@@ -1185,9 +1208,7 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ACBS);
     WRITE(SNAM);
     WRITE(INAM);
@@ -1197,9 +1218,7 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     WRITE(SPLO);
     WRITE(EITM);
     WRITE(EAMT);
-
     Destructable.Write(writer);
-
     WRITE(SCRI);
     WRITE(CNTO);
     WRITE(AIDT);
@@ -1214,24 +1233,12 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     WRITE(HCLR);
     WRITE(ZNAM);
     WRITE(NAM4);
-
-    if(FGGS.IsLoaded())
-        {
-        if(FGGS->FGGS.IsLoaded())
-            SaveHandler.writeSubRecord('SGGF', FGGS->FGGS.value, FGGS->FGGS.GetSize());
-
-        if(FGGS->FGGA.IsLoaded())
-            SaveHandler.writeSubRecord('AGGF', FGGS->FGGA.value, FGGS->FGGA.GetSize());
-
-        if(FGGS->FGTS.IsLoaded())
-            SaveHandler.writeSubRecord('STGF', FGGS->FGTS.value, FGGS->FGTS.GetSize());
-
-        }
-
+    WRITE(FGGS);
+    WRITE(FGGA);
+    WRITE(FGTS);
     WRITE(NAM5);
     WRITE(NAM6);
     WRITE(NAM7);
-
     return -1;
     }
 
@@ -1266,6 +1273,8 @@ bool NPC_Record::operator ==(const NPC_Record &other) const
             ZNAM == other.ZNAM &&
             NAM4 == other.NAM4 &&
             FGGS == other.FGGS &&
+            FGGA == other.FGGA &&
+            FGTS == other.FGTS &&
             NAM5 == other.NAM5 &&
             NAM6 == other.NAM6 &&
             NAM7 == other.NAM7);

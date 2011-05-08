@@ -75,11 +75,11 @@ class AMMORecord : public FNVRecord //Ammunition
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSubRecord<AMMODATA> DATA; //Ammo Data
+        ReqSubRecord<AMMODATA> DATA; //Ammo Data
         OptSubRecord<AMMODAT2> DAT2; //Extra Ammo Data
         StringRecord ONAM; //Short Name
         StringRecord QNAM; //Abbrev.
-        std::vector<FORMID> RCIL; //Ammo Effects
+        UnorderedSparseArray<FORMID> RCIL; //Ammo Effects
 
         AMMORecord(unsigned char *_recData=NULL);
         AMMORecord(AMMORecord *srcRecord);

@@ -160,7 +160,7 @@ class WEAPRecord : public FNVRecord //Weapon
             eHandGrip4,
             eHandGrip5,
             eHandGrip6,
-            eDefault
+            eHandGripDefault
             };
 
         enum eReloadAnimTypes
@@ -217,7 +217,7 @@ class WEAPRecord : public FNVRecord //Weapon
             eAttackThrow8 = 162,
             ePlaceMine    = 102,
             ePlaceMine2   = 108,
-            eDefault      = 255
+            eAttackDefault      = 255
             };
 
         enum onHitTypes
@@ -273,7 +273,7 @@ class WEAPRecord : public FNVRecord //Weapon
             eAttackCustom3Power = 99,
             eAttackCustom4Power = 100,
             eAttackCustom5Power = 101,
-            eDefault            = 255
+            eAttackCustomDefault            = 255
             };
 
         enum critFlagFlags
@@ -312,7 +312,7 @@ class WEAPRecord : public FNVRecord //Weapon
         OptSimpleSubRecord<FORMID> NAM0; //Ammo
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> REPL; //Repair List
-        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        ReqSimpleSubRecord<SINT32> ETYP; //Equipment Type
         OptSimpleSubRecord<FORMID> BIPL; //Biped Model List
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
@@ -335,7 +335,7 @@ class WEAPRecord : public FNVRecord //Weapon
         OptSimpleSubRecord<FORMID> INAM; //Impact DataSet
         OptSimpleSubRecord<FORMID> WNAM; //1st Person Model
 
-        //1st Pereson Models with Mods
+        //1st Person Models with Mods
         OptSimpleSubRecord<FORMID> WNM1; //Mod 1
         OptSimpleSubRecord<FORMID> WNM2; //Mod 2
         OptSimpleSubRecord<FORMID> WNM3; //Mod 1 and 2
@@ -361,11 +361,11 @@ class WEAPRecord : public FNVRecord //Weapon
         OptSimpleSubRecord<FORMID> WMS11; //Sound - Mod 1 - Shoot 3D
         OptSimpleSubRecord<FORMID> WMS12; //Sound - Mod 1 - Shoot Dist
         OptSimpleSubRecord<FORMID> WMS2; //Sound - Mod 1 - Shoot 2D
-        OptSubRecord<WEAPDATA> DATA; //Basic Weapon Data
-        OptSubRecord<WEAPDNAM> DNAM; //Advanced Weapon Data
-        OptSubRecord<WEAPCRDT> CRDT; //Critical Data
-        OptSubRecord<WEAPVATS> VATS; //VATS
-        OptSimpleSubRecord<UINT32> VNAM; //Sound Level
+        ReqSubRecord<WEAPDATA> DATA; //Basic Weapon Data
+        ReqSubRecord<WEAPDNAM> DNAM; //Advanced Weapon Data
+        ReqSubRecord<WEAPCRDT> CRDT; //Critical Data
+        ReqSubRecord<WEAPVATS> VATS; //VATS
+        ReqSimpleSubRecord<UINT32> VNAM; //Sound Level
 
         WEAPRecord(unsigned char *_recData=NULL);
         WEAPRecord(WEAPRecord *srcRecord);
@@ -509,54 +509,54 @@ class WEAPRecord : public FNVRecord //Weapon
         bool   IsGripType(UINT8 Type);
         void   SetGripType(UINT8 Type);
 
-        bool   IsReloadAnimReloadA();
-        void   IsReloadAnimReloadA(bool value);
-        bool   IsReloadAnimReloadB();
-        void   IsReloadAnimReloadB(bool value);
-        bool   IsReloadAnimReloadC();
-        void   IsReloadAnimReloadC(bool value);
-        bool   IsReloadAnimReloadD();
-        void   IsReloadAnimReloadD(bool value);
-        bool   IsReloadAnimReloadE();
-        void   IsReloadAnimReloadE(bool value);
-        bool   IsReloadAnimReloadF();
-        void   IsReloadAnimReloadF(bool value);
-        bool   IsReloadAnimReloadG();
-        void   IsReloadAnimReloadG(bool value);
-        bool   IsReloadAnimReloadH();
-        void   IsReloadAnimReloadH(bool value);
-        bool   IsReloadAnimReloadI();
-        void   IsReloadAnimReloadI(bool value);
-        bool   IsReloadAnimReloadJ();
-        void   IsReloadAnimReloadJ(bool value);
-        bool   IsReloadAnimReloadK();
-        void   IsReloadAnimReloadK(bool value);
-        bool   IsReloadAnimReloadL();
-        void   IsReloadAnimReloadL(bool value);
-        bool   IsReloadAnimReloadM();
-        void   IsReloadAnimReloadM(bool value);
-        bool   IsReloadAnimReloadN();
-        void   IsReloadAnimReloadN(bool value);
-        bool   IsReloadAnimReloadO();
-        void   IsReloadAnimReloadO(bool value);
-        bool   IsReloadAnimReloadP();
-        void   IsReloadAnimReloadP(bool value);
-        bool   IsReloadAnimReloadQ();
-        void   IsReloadAnimReloadQ(bool value);
-        bool   IsReloadAnimReloadR();
-        void   IsReloadAnimReloadR(bool value);
-        bool   IsReloadAnimReloadS();
-        void   IsReloadAnimReloadS(bool value);
-        bool   IsReloadAnimReloadW();
-        void   IsReloadAnimReloadW(bool value);
-        bool   IsReloadAnimReloadX();
-        void   IsReloadAnimReloadX(bool value);
-        bool   IsReloadAnimReloadY();
-        void   IsReloadAnimReloadY(bool value);
-        bool   IsReloadAnimReloadZ();
-        void   IsReloadAnimReloadZ(bool value);
-        bool   IsReloadAnimType(UINT8 Type);
-        void   SetReloadAnimType(UINT8 Type);
+        bool   IsReloadA();
+        void   IsReloadA(bool value);
+        bool   IsReloadB();
+        void   IsReloadB(bool value);
+        bool   IsReloadC();
+        void   IsReloadC(bool value);
+        bool   IsReloadD();
+        void   IsReloadD(bool value);
+        bool   IsReloadE();
+        void   IsReloadE(bool value);
+        bool   IsReloadF();
+        void   IsReloadF(bool value);
+        bool   IsReloadG();
+        void   IsReloadG(bool value);
+        bool   IsReloadH();
+        void   IsReloadH(bool value);
+        bool   IsReloadI();
+        void   IsReloadI(bool value);
+        bool   IsReloadJ();
+        void   IsReloadJ(bool value);
+        bool   IsReloadK();
+        void   IsReloadK(bool value);
+        bool   IsReloadL();
+        void   IsReloadL(bool value);
+        bool   IsReloadM();
+        void   IsReloadM(bool value);
+        bool   IsReloadN();
+        void   IsReloadN(bool value);
+        bool   IsReloadO();
+        void   IsReloadO(bool value);
+        bool   IsReloadP();
+        void   IsReloadP(bool value);
+        bool   IsReloadQ();
+        void   IsReloadQ(bool value);
+        bool   IsReloadR();
+        void   IsReloadR(bool value);
+        bool   IsReloadS();
+        void   IsReloadS(bool value);
+        bool   IsReloadW();
+        void   IsReloadW(bool value);
+        bool   IsReloadX();
+        void   IsReloadX(bool value);
+        bool   IsReloadY();
+        void   IsReloadY(bool value);
+        bool   IsReloadZ();
+        void   IsReloadZ(bool value);
+        bool   IsReloadType(UINT8 Type);
+        void   SetReloadType(UINT8 Type);
 
         bool   IsAttackLeft();
         void   IsAttackLeft(bool value);
@@ -663,54 +663,54 @@ class WEAPRecord : public FNVRecord //Weapon
         bool   IsPowerAttackAnimOverrideType(UINT32 Type);
         void   SetPowerAttackAnimOverrideType(UINT32 Type);
 
-        bool   IsReloadAnimModReloadA();
-        void   IsReloadAnimModReloadA(bool value);
-        bool   IsReloadAnimModReloadB();
-        void   IsReloadAnimModReloadB(bool value);
-        bool   IsReloadAnimModReloadC();
-        void   IsReloadAnimModReloadC(bool value);
-        bool   IsReloadAnimModReloadD();
-        void   IsReloadAnimModReloadD(bool value);
-        bool   IsReloadAnimModReloadE();
-        void   IsReloadAnimModReloadE(bool value);
-        bool   IsReloadAnimModReloadF();
-        void   IsReloadAnimModReloadF(bool value);
-        bool   IsReloadAnimModReloadG();
-        void   IsReloadAnimModReloadG(bool value);
-        bool   IsReloadAnimModReloadH();
-        void   IsReloadAnimModReloadH(bool value);
-        bool   IsReloadAnimModReloadI();
-        void   IsReloadAnimModReloadI(bool value);
-        bool   IsReloadAnimModReloadJ();
-        void   IsReloadAnimModReloadJ(bool value);
-        bool   IsReloadAnimModReloadK();
-        void   IsReloadAnimModReloadK(bool value);
-        bool   IsReloadAnimModReloadL();
-        void   IsReloadAnimModReloadL(bool value);
-        bool   IsReloadAnimModReloadM();
-        void   IsReloadAnimModReloadM(bool value);
-        bool   IsReloadAnimModReloadN();
-        void   IsReloadAnimModReloadN(bool value);
-        bool   IsReloadAnimModReloadO();
-        void   IsReloadAnimModReloadO(bool value);
-        bool   IsReloadAnimModReloadP();
-        void   IsReloadAnimModReloadP(bool value);
-        bool   IsReloadAnimModReloadQ();
-        void   IsReloadAnimModReloadQ(bool value);
-        bool   IsReloadAnimModReloadR();
-        void   IsReloadAnimModReloadR(bool value);
-        bool   IsReloadAnimModReloadS();
-        void   IsReloadAnimModReloadS(bool value);
-        bool   IsReloadAnimModReloadW();
-        void   IsReloadAnimModReloadW(bool value);
-        bool   IsReloadAnimModReloadX();
-        void   IsReloadAnimModReloadX(bool value);
-        bool   IsReloadAnimModReloadY();
-        void   IsReloadAnimModReloadY(bool value);
-        bool   IsReloadAnimModReloadZ();
-        void   IsReloadAnimModReloadZ(bool value);
-        bool   IsReloadAnimModType(UINT8 Type);
-        void   SetReloadAnimModType(UINT8 Type);
+        bool   IsModReloadA();
+        void   IsModReloadA(bool value);
+        bool   IsModReloadB();
+        void   IsModReloadB(bool value);
+        bool   IsModReloadC();
+        void   IsModReloadC(bool value);
+        bool   IsModReloadD();
+        void   IsModReloadD(bool value);
+        bool   IsModReloadE();
+        void   IsModReloadE(bool value);
+        bool   IsModReloadF();
+        void   IsModReloadF(bool value);
+        bool   IsModReloadG();
+        void   IsModReloadG(bool value);
+        bool   IsModReloadH();
+        void   IsModReloadH(bool value);
+        bool   IsModReloadI();
+        void   IsModReloadI(bool value);
+        bool   IsModReloadJ();
+        void   IsModReloadJ(bool value);
+        bool   IsModReloadK();
+        void   IsModReloadK(bool value);
+        bool   IsModReloadL();
+        void   IsModReloadL(bool value);
+        bool   IsModReloadM();
+        void   IsModReloadM(bool value);
+        bool   IsModReloadN();
+        void   IsModReloadN(bool value);
+        bool   IsModReloadO();
+        void   IsModReloadO(bool value);
+        bool   IsModReloadP();
+        void   IsModReloadP(bool value);
+        bool   IsModReloadQ();
+        void   IsModReloadQ(bool value);
+        bool   IsModReloadR();
+        void   IsModReloadR(bool value);
+        bool   IsModReloadS();
+        void   IsModReloadS(bool value);
+        bool   IsModReloadW();
+        void   IsModReloadW(bool value);
+        bool   IsModReloadX();
+        void   IsModReloadX(bool value);
+        bool   IsModReloadY();
+        void   IsModReloadY(bool value);
+        bool   IsModReloadZ();
+        void   IsModReloadZ(bool value);
+        bool   IsModType(UINT8 Type);
+        void   SetModType(UINT8 Type);
 
         bool   IsVATSNotSilent();
         void   IsVATSNotSilent(bool value);
@@ -732,8 +732,8 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type);
-        void   SetSoundLevelType(UINT8 Type);
+        bool   IsSoundLevelType(UINT32 Type);
+        void   SetSoundLevelType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

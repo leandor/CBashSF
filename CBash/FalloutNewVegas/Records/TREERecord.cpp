@@ -24,6 +24,64 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+TREERecord::TREECNAM::TREECNAM():
+    curvature(0.0f),
+    minAngle(0.0f),
+    maxAngle(0.0f),
+    branchDim(0.0f),
+    leafDim(0.0f),
+    shadowRadius(0),
+    rockSpeed(0.0f),
+    rustleSpeed(0.0f)
+    {
+    //
+    }
+
+TREERecord::TREECNAM::~TREECNAM()
+    {
+    //
+    }
+
+bool TREERecord::TREECNAM::operator ==(const TREECNAM &other) const
+    {
+    return (AlmostEqual(curvature,other.curvature,2) &&
+            AlmostEqual(minAngle,other.minAngle,2) &&
+            AlmostEqual(maxAngle,other.maxAngle,2) &&
+            AlmostEqual(branchDim,other.branchDim,2) &&
+            AlmostEqual(leafDim,other.leafDim,2) &&
+            shadowRadius == other.shadowRadius &&
+            AlmostEqual(rockSpeed,other.rockSpeed,2) &&
+            AlmostEqual(rustleSpeed,other.rustleSpeed,2));
+    }
+
+bool TREERecord::TREECNAM::operator !=(const TREECNAM &other) const
+    {
+    return !(*this == other);
+    }
+
+TREERecord::TREEBNAM::TREEBNAM():
+    widthBill(0.0f),
+    heightBill(0.0f)
+    {
+    //
+    }
+
+TREERecord::TREEBNAM::~TREEBNAM()
+    {
+    //
+    }
+
+bool TREERecord::TREEBNAM::operator ==(const TREEBNAM &other) const
+    {
+    return (AlmostEqual(widthBill,other.widthBill,2) &&
+            AlmostEqual(heightBill,other.heightBill,2));
+    }
+
+bool TREERecord::TREEBNAM::operator !=(const TREEBNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 TREERecord::TREERecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,9 +110,7 @@ TREERecord::TREERecord(TREERecord *srcRecord):
 
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SNAM = srcRecord->SNAM;
@@ -186,28 +242,25 @@ SINT32 TREERecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SNAM);
     WRITE(CNAM);
     WRITE(BNAM);
-
     return -1;
     }
 
 bool TREERecord::operator ==(const TREERecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SNAM == other.SNAM &&
             CNAM == other.CNAM &&
-            BNAM == other.BNAM);
+            BNAM == other.BNAM &&
+            MODL == other.MODL &&
+            EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO));
     }
 
 bool TREERecord::operator !=(const TREERecord &other) const

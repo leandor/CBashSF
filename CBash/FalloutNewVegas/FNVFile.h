@@ -57,11 +57,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/MSTTRecord.h"
 #include "Records/PWATRecord.h"
 #include "Records/GRASRecord.h"
-//#include "Records/TREERecord.h"
-//#include "Records/FURNRecord.h"
-//#include "Records/WEAPRecord.h"
-//#include "Records/AMMORecord.h"
-//#include "Records/NPC_Record.h"
+#include "Records/TREERecord.h"
+#include "Records/FURNRecord.h"
+#include "Records/WEAPRecord.h"
+#include "Records/AMMORecord.h"
+#include "Records/NPC_Record.h"
 //#include "Records/CREARecord.h"
 //#include "Records/LVLCRecord.h"
 //#include "Records/LVLNRecord.h"
@@ -162,11 +162,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::MSTTRecord> MSTT;
         FNVGRUPRecords<FNV::PWATRecord> PWAT;
         FNVGRUPRecords<FNV::GRASRecord> GRAS;
-        //FNVGRUPRecords<FNV::TREERecord> TREE;
-        //FNVGRUPRecords<FNV::FURNRecord> FURN;
-        //FNVGRUPRecords<FNV::WEAPRecord> WEAP;
-        //FNVGRUPRecords<FNV::AMMORecord> AMMO;
-        //FNVGRUPRecords<FNV::NPC_Record> NPC_;
+        FNVGRUPRecords<FNV::TREERecord> TREE;
+        FNVGRUPRecords<FNV::FURNRecord> FURN;
+        FNVGRUPRecords<FNV::WEAPRecord> WEAP;
+        FNVGRUPRecords<FNV::AMMORecord> AMMO;
+        FNVGRUPRecords<FNV::NPC_Record> NPC_;
         //FNVGRUPRecords<FNV::CREARecord> CREA;
         //FNVGRUPRecords<FNV::LVLCRecord> LVLC;
         //FNVGRUPRecords<FNV::LVLNRecord> LVLN;

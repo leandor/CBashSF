@@ -112,7 +112,7 @@ void * TREERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //iconPath
             return ICON.value;
         case 9: //speedTree
-            *FieldValues = &SNAM[0];
+            *FieldValues = SNAM.size() != 0 ? &SNAM[0] : NULL;
             return NULL;
         case 10: //curvature
             return &CNAM.value.curvature;

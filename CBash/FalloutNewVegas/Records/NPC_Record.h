@@ -99,7 +99,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
             {
             fIsUseTraits     = 0x00000001,
             fIsUseStats      = 0x00000002,
-            fIsUseFactions   = 0x00000004
+            fIsUseFactions   = 0x00000004,
             fIsUseAEList     = 0x00000008,
             fIsUseAIData     = 0x00000010,
             fIsUseAIPackages = 0x00000020,
@@ -170,24 +170,24 @@ class NPC_Record : public FNVRecord //Non-Player Character
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSubRecord<FNVACBS> ACBS; //Configuration
-        std::vector<ReqSubRecord<GENSNAM> *> SNAM; //Factions
+        ReqSubRecord<FNVACBS> ACBS; //Configuration
+        UnorderedSparseArray<GENSNAM *> SNAM; //Factions
         OptSimpleSubRecord<FORMID> INAM; //Death item
         OptSimpleSubRecord<FORMID> VTCK; //Voice
         OptSimpleSubRecord<FORMID> TPLT; //Template
         OptSimpleSubRecord<FORMID> RNAM; //Race
-        std::vector<FORMID> SPLO; //Actor Effects
+        UnorderedSparseArray<FORMID> SPLO; //Actor Effects
         OptSimpleSubRecord<FORMID> EITM; //Unarmed Attack Effect
         OptSimpleSubRecord<UINT16> EAMT; //Unarmed Attack Animation
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> SCRI; //Script
-        std::vector<FNVCNTO *> CNTO;  //Items
+        UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
         OptSubRecord<FNVAIDT> AIDT; //AI Data
-        std::vector<FORMID> PKID; //Packages
+        UnorderedSparseArray<FORMID> PKID; //Packages
         OptSimpleSubRecord<FORMID> CNAM; //Class
         OptSubRecord<NPC_DATA> DATA; //Data
         OptSubRecord<NPC_DNAM> DNAM; //Skill Data
-        std::vector<FORMID> PNAM; //Head Parts
+        UnorderedSparseArray<FORMID> PNAM; //Head Parts
         OptSimpleSubRecord<FORMID> HNAM; //Hair
         OptSimpleSubRecord<FLOAT32> LNAM; //Hair length
         OptSimpleSubRecord<FORMID> ENAM; //Eyes
@@ -197,7 +197,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         RawRecord FGGS; //FaceGen Geometry-Symmetric
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
-        OptSimpleSubRecord<UINT16> NAM5; //Unknown
+        ReqSimpleSubRecord<UINT16> NAM5; //Unknown
         OptSimpleSubRecord<FLOAT32> NAM6; //Height
         OptSimpleSubRecord<FLOAT32> NAM7; //Weight
 
@@ -239,8 +239,8 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsNotPushable(bool value);
         bool   IsNoHeadTracking();
         void   IsNoHeadTracking(bool value);
-        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagMask(UINT8 Mask);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
 
         bool   IsUseTraits();
         void   IsUseTraits(bool value);
@@ -262,8 +262,8 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsUseInventory(bool value);
         bool   IsUseScript();
         void   IsUseScript(bool value);
-        bool   IsTemplateFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetTemplateFlagMask(UINT8 Mask);
+        bool   IsTemplateFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetTemplateFlagMask(UINT16 Mask);
 
         bool   IsAggroRadiusBehavior();
         void   IsAggroRadiusBehavior(bool value);
@@ -346,8 +346,8 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsOrganicBug(bool value);
         bool   IsOrganicGlow();
         void   IsOrganicGlow(bool value);
-        bool   IsImpactType(UINT8 Type);
-        void   SetImpactType(UINT8 Type);
+        bool   IsImpactType(UINT32 Type);
+        void   SetImpactType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

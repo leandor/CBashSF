@@ -58,9 +58,9 @@ class TREERecord : public FNVRecord //Tree
         OptSubRecord<FNVMODEL> MODL; //Model
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        std::vector<UINT32> SNAM; //SpeedTree Seeds
-        OptSubRecord<TREECNAM> CNAM; //Tree Data
-        OptSubRecord<TREEBNAM> BNAM; //Billboard Dimensions
+        UnorderedPackedArray<UINT32> SNAM; //SpeedTree Seeds
+        ReqSubRecord<TREECNAM> CNAM; //Tree Data
+        ReqSubRecord<TREEBNAM> BNAM; //Billboard Dimensions
 
         TREERecord(unsigned char *_recData=NULL);
         TREERecord(TREERecord *srcRecord);

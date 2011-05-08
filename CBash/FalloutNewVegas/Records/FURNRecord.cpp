@@ -53,9 +53,7 @@ FURNRecord::FURNRecord(FURNRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     SCRI = srcRecord->SCRI;
     Destructable = srcRecord->Destructable;
     MNAM = srcRecord->MNAM;
@@ -78,7 +76,7 @@ bool FURNRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(Destructable.IsLoaded())
         {
         for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
@@ -93,350 +91,350 @@ bool FURNRecord::VisitFormIDs(FormIDOp &op)
 
 bool FURNRecord::IsAnim01()
     {
-    return (MNAM.value.value & fIsAnim01) != 0;
+    return (MNAM.value & fIsAnim01) != 0;
     }
 
 void FURNRecord::IsAnim01(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim01) : (MNAM.value.value & ~fIsAnim01);
+    MNAM.value = value ? (MNAM.value | fIsAnim01) : (MNAM.value & ~fIsAnim01);
     }
 
 bool FURNRecord::IsAnim02()
     {
-    return (MNAM.value.value & fIsAnim02) != 0;
+    return (MNAM.value & fIsAnim02) != 0;
     }
 
 void FURNRecord::IsAnim02(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim02) : (MNAM.value.value & ~fIsAnim02);
+    MNAM.value = value ? (MNAM.value | fIsAnim02) : (MNAM.value & ~fIsAnim02);
     }
 
 bool FURNRecord::IsAnim03()
     {
-    return (MNAM.value.value & fIsAnim03) != 0;
+    return (MNAM.value & fIsAnim03) != 0;
     }
 
 void FURNRecord::IsAnim03(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim03) : (MNAM.value.value & ~fIsAnim03);
+    MNAM.value = value ? (MNAM.value | fIsAnim03) : (MNAM.value & ~fIsAnim03);
     }
 
 bool FURNRecord::IsAnim04()
     {
-    return (MNAM.value.value & fIsAnim04) != 0;
+    return (MNAM.value & fIsAnim04) != 0;
     }
 
 void FURNRecord::IsAnim04(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim04) : (MNAM.value.value & ~fIsAnim04);
+    MNAM.value = value ? (MNAM.value | fIsAnim04) : (MNAM.value & ~fIsAnim04);
     }
 
 bool FURNRecord::IsAnim05()
     {
-    return (MNAM.value.value & fIsAnim05) != 0;
+    return (MNAM.value & fIsAnim05) != 0;
     }
 
 void FURNRecord::IsAnim05(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim05) : (MNAM.value.value & ~fIsAnim05);
+    MNAM.value = value ? (MNAM.value | fIsAnim05) : (MNAM.value & ~fIsAnim05);
     }
 
 bool FURNRecord::IsAnim06()
     {
-    return (MNAM.value.value & fIsAnim06) != 0;
+    return (MNAM.value & fIsAnim06) != 0;
     }
 
 void FURNRecord::IsAnim06(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim06) : (MNAM.value.value & ~fIsAnim06);
+    MNAM.value = value ? (MNAM.value | fIsAnim06) : (MNAM.value & ~fIsAnim06);
     }
 
 bool FURNRecord::IsAnim07()
     {
-    return (MNAM.value.value & fIsAnim07) != 0;
+    return (MNAM.value & fIsAnim07) != 0;
     }
 
 void FURNRecord::IsAnim07(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim07) : (MNAM.value.value & ~fIsAnim07);
+    MNAM.value = value ? (MNAM.value | fIsAnim07) : (MNAM.value & ~fIsAnim07);
     }
 
 bool FURNRecord::IsAnim08()
     {
-    return (MNAM.value.value & fIsAnim08) != 0;
+    return (MNAM.value & fIsAnim08) != 0;
     }
 
 void FURNRecord::IsAnim08(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim08) : (MNAM.value.value & ~fIsAnim08);
+    MNAM.value = value ? (MNAM.value | fIsAnim08) : (MNAM.value & ~fIsAnim08);
     }
 
 bool FURNRecord::IsAnim09()
     {
-    return (MNAM.value.value & fIsAnim09) != 0;
+    return (MNAM.value & fIsAnim09) != 0;
     }
 
 void FURNRecord::IsAnim09(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim09) : (MNAM.value.value & ~fIsAnim09);
+    MNAM.value = value ? (MNAM.value | fIsAnim09) : (MNAM.value & ~fIsAnim09);
     }
 
 bool FURNRecord::IsAnim10()
     {
-    return (MNAM.value.value & fIsAnim10) != 0;
+    return (MNAM.value & fIsAnim10) != 0;
     }
 
 void FURNRecord::IsAnim10(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim10) : (MNAM.value.value & ~fIsAnim10);
+    MNAM.value = value ? (MNAM.value | fIsAnim10) : (MNAM.value & ~fIsAnim10);
     }
 
 bool FURNRecord::IsAnim11()
     {
-    return (MNAM.value.value & fIsAnim11) != 0;
+    return (MNAM.value & fIsAnim11) != 0;
     }
 
 void FURNRecord::IsAnim11(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim11) : (MNAM.value.value & ~fIsAnim11);
+    MNAM.value = value ? (MNAM.value | fIsAnim11) : (MNAM.value & ~fIsAnim11);
     }
 
 bool FURNRecord::IsAnim12()
     {
-    return (MNAM.value.value & fIsAnim12) != 0;
+    return (MNAM.value & fIsAnim12) != 0;
     }
 
 void FURNRecord::IsAnim12(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim12) : (MNAM.value.value & ~fIsAnim12);
+    MNAM.value = value ? (MNAM.value | fIsAnim12) : (MNAM.value & ~fIsAnim12);
     }
 
 bool FURNRecord::IsAnim13()
     {
-    return (MNAM.value.value & fIsAnim13) != 0;
+    return (MNAM.value & fIsAnim13) != 0;
     }
 
 void FURNRecord::IsAnim13(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim13) : (MNAM.value.value & ~fIsAnim13);
+    MNAM.value = value ? (MNAM.value | fIsAnim13) : (MNAM.value & ~fIsAnim13);
     }
 
 bool FURNRecord::IsAnim14()
     {
-    return (MNAM.value.value & fIsAnim14) != 0;
+    return (MNAM.value & fIsAnim14) != 0;
     }
 
 void FURNRecord::IsAnim14(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim14) : (MNAM.value.value & ~fIsAnim14);
+    MNAM.value = value ? (MNAM.value | fIsAnim14) : (MNAM.value & ~fIsAnim14);
     }
 
 bool FURNRecord::IsAnim15()
     {
-    return (MNAM.value.value & fIsAnim15) != 0;
+    return (MNAM.value & fIsAnim15) != 0;
     }
 
 void FURNRecord::IsAnim15(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim15) : (MNAM.value.value & ~fIsAnim15);
+    MNAM.value = value ? (MNAM.value | fIsAnim15) : (MNAM.value & ~fIsAnim15);
     }
 
 bool FURNRecord::IsAnim16()
     {
-    return (MNAM.value.value & fIsAnim16) != 0;
+    return (MNAM.value & fIsAnim16) != 0;
     }
 
 void FURNRecord::IsAnim16(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim16) : (MNAM.value.value & ~fIsAnim16);
+    MNAM.value = value ? (MNAM.value | fIsAnim16) : (MNAM.value & ~fIsAnim16);
     }
 
 bool FURNRecord::IsAnim17()
     {
-    return (MNAM.value.value & fIsAnim17) != 0;
+    return (MNAM.value & fIsAnim17) != 0;
     }
 
 void FURNRecord::IsAnim17(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim17) : (MNAM.value.value & ~fIsAnim17);
+    MNAM.value = value ? (MNAM.value | fIsAnim17) : (MNAM.value & ~fIsAnim17);
     }
 
 bool FURNRecord::IsAnim18()
     {
-    return (MNAM.value.value & fIsAnim18) != 0;
+    return (MNAM.value & fIsAnim18) != 0;
     }
 
 void FURNRecord::IsAnim18(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim18) : (MNAM.value.value & ~fIsAnim18);
+    MNAM.value = value ? (MNAM.value | fIsAnim18) : (MNAM.value & ~fIsAnim18);
     }
 
 bool FURNRecord::IsAnim19()
     {
-    return (MNAM.value.value & fIsAnim19) != 0;
+    return (MNAM.value & fIsAnim19) != 0;
     }
 
 void FURNRecord::IsAnim19(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim19) : (MNAM.value.value & ~fIsAnim19);
+    MNAM.value = value ? (MNAM.value | fIsAnim19) : (MNAM.value & ~fIsAnim19);
     }
 
 bool FURNRecord::IsAnim20()
     {
-    return (MNAM.value.value & fIsAnim20) != 0;
+    return (MNAM.value & fIsAnim20) != 0;
     }
 
 void FURNRecord::IsAnim20(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim20) : (MNAM.value.value & ~fIsAnim20);
+    MNAM.value = value ? (MNAM.value | fIsAnim20) : (MNAM.value & ~fIsAnim20);
     }
 
 bool FURNRecord::IsAnim21()
     {
-    return (MNAM.value.value & fIsAnim21) != 0;
+    return (MNAM.value & fIsAnim21) != 0;
     }
 
 void FURNRecord::IsAnim21(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim21) : (MNAM.value.value & ~fIsAnim21);
+    MNAM.value = value ? (MNAM.value | fIsAnim21) : (MNAM.value & ~fIsAnim21);
     }
 
 bool FURNRecord::IsAnim22()
     {
-    return (MNAM.value.value & fIsAnim22) != 0;
+    return (MNAM.value & fIsAnim22) != 0;
     }
 
 void FURNRecord::IsAnim22(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim22) : (MNAM.value.value & ~fIsAnim22);
+    MNAM.value = value ? (MNAM.value | fIsAnim22) : (MNAM.value & ~fIsAnim22);
     }
 
 bool FURNRecord::IsAnim23()
     {
-    return (MNAM.value.value & fIsAnim23) != 0;
+    return (MNAM.value & fIsAnim23) != 0;
     }
 
 void FURNRecord::IsAnim23(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim23) : (MNAM.value.value & ~fIsAnim23);
+    MNAM.value = value ? (MNAM.value | fIsAnim23) : (MNAM.value & ~fIsAnim23);
     }
 
 bool FURNRecord::IsAnim24()
     {
-    return (MNAM.value.value & fIsAnim24) != 0;
+    return (MNAM.value & fIsAnim24) != 0;
     }
 
 void FURNRecord::IsAnim24(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim24) : (MNAM.value.value & ~fIsAnim24);
+    MNAM.value = value ? (MNAM.value | fIsAnim24) : (MNAM.value & ~fIsAnim24);
     }
 
 bool FURNRecord::IsAnim25()
     {
-    return (MNAM.value.value & fIsAnim25) != 0;
+    return (MNAM.value & fIsAnim25) != 0;
     }
 
 void FURNRecord::IsAnim25(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim25) : (MNAM.value.value & ~fIsAnim25);
+    MNAM.value = value ? (MNAM.value | fIsAnim25) : (MNAM.value & ~fIsAnim25);
     }
 
 bool FURNRecord::IsAnim26()
     {
-    return (MNAM.value.value & fIsAnim26) != 0;
+    return (MNAM.value & fIsAnim26) != 0;
     }
 
 void FURNRecord::IsAnim26(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim26) : (MNAM.value.value & ~fIsAnim26);
+    MNAM.value = value ? (MNAM.value | fIsAnim26) : (MNAM.value & ~fIsAnim26);
     }
 
 bool FURNRecord::IsAnim27()
     {
-    return (MNAM.value.value & fIsAnim27) != 0;
+    return (MNAM.value & fIsAnim27) != 0;
     }
 
 void FURNRecord::IsAnim27(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim27) : (MNAM.value.value & ~fIsAnim27);
+    MNAM.value = value ? (MNAM.value | fIsAnim27) : (MNAM.value & ~fIsAnim27);
     }
 
 bool FURNRecord::IsAnim28()
     {
-    return (MNAM.value.value & fIsAnim28) != 0;
+    return (MNAM.value & fIsAnim28) != 0;
     }
 
 void FURNRecord::IsAnim28(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim28) : (MNAM.value.value & ~fIsAnim28);
+    MNAM.value = value ? (MNAM.value | fIsAnim28) : (MNAM.value & ~fIsAnim28);
     }
 
 bool FURNRecord::IsAnim29()
     {
-    return (MNAM.value.value & fIsAnim29) != 0;
+    return (MNAM.value & fIsAnim29) != 0;
     }
 
 void FURNRecord::IsAnim29(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim29) : (MNAM.value.value & ~fIsAnim29);
+    MNAM.value = value ? (MNAM.value | fIsAnim29) : (MNAM.value & ~fIsAnim29);
     }
 
 bool FURNRecord::IsAnim30()
     {
-    return (MNAM.value.value & fIsAnim30) != 0;
+    return (MNAM.value & fIsAnim30) != 0;
     }
 
 void FURNRecord::IsAnim30(bool value)
     {
-    MNAM.value.value = value ? (MNAM.value.value | fIsAnim30) : (MNAM.value.value & ~fIsAnim30);
+    MNAM.value = value ? (MNAM.value | fIsAnim30) : (MNAM.value & ~fIsAnim30);
     }
 
 bool FURNRecord::IsSitAnim()
     {
-    return (MNAM.value.value & fIsSitAnim) != 0;
+    return (MNAM.value & fIsSitAnim) != 0;
     }
 
 void FURNRecord::IsSitAnim(bool value)
     {
     if(value)
         {
-        MNAM.value.value &= ~fIsSleepAnim;
-        MNAM.value.value |= fIsSitAnim;
+        MNAM.value &= ~fIsSleepAnim;
+        MNAM.value |= fIsSitAnim;
         }
     else
         {
-        MNAM.value.value &= ~fIsSitAnim;
-        MNAM.value.value |= fIsSleepAnim;
+        MNAM.value &= ~fIsSitAnim;
+        MNAM.value |= fIsSleepAnim;
         }
     }
 
 bool FURNRecord::IsSleepAnim()
     {
-    return (MNAM.value.value & fIsSleepAnim) != 0;
+    return (MNAM.value & fIsSleepAnim) != 0;
     }
 
 void FURNRecord::IsSleepAnim(bool value)
     {
     if(value)
         {
-        MNAM.value.value &= ~fIsSitAnim;
-        MNAM.value.value |= fIsSleepAnim;
+        MNAM.value &= ~fIsSitAnim;
+        MNAM.value |= fIsSleepAnim;
         }
     else
         {
-        MNAM.value.value &= ~fIsSleepAnim;
-        MNAM.value.value |= fIsSitAnim;
+        MNAM.value &= ~fIsSleepAnim;
+        MNAM.value |= fIsSitAnim;
         }
     }
 
 bool FURNRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? ((MNAM.value.value & Mask) == Mask) : ((MNAM.value.value & Mask) != 0);
+    return Exact ? ((MNAM.value & Mask) == Mask) : ((MNAM.value & Mask) != 0);
     }
 
 void FURNRecord::SetFlagMask(UINT32 Mask)
     {
-    MNAM.value.value = Mask;
+    MNAM.value = Mask;
     }
 
 UINT32 FURNRecord::GetType()
@@ -561,27 +559,22 @@ SINT32 FURNRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(SCRI);
-
     Destructable.Write(writer);
-
     WRITE(MNAM);
-
     return -1;
     }
 
 bool FURNRecord::operator ==(const FURNRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
+    return (OBND == other.OBND &&
+            SCRI == other.SCRI &&
+            MNAM == other.MNAM &&
+            EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            SCRI == other.SCRI &&
-            Destructable == other.Destructable &&
-            MNAM == other.MNAM);
+            Destructable == other.Destructable);
     }
 
 bool FURNRecord::operator !=(const FURNRecord &other) const

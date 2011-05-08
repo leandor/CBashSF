@@ -571,7 +571,7 @@ struct GENCLR
     {
     UINT8   red, green, blue, unused1;
 
-    GENCLR(UINT8   _red=0, UINT8   _green=0, UINT8   _blue=0, UINT8   _unused1=0);
+    GENCLR(UINT8 _red=0, UINT8 _green=0, UINT8 _blue=0, UINT8 _unused1=0);
     ~GENCLR();
 
     bool operator ==(const GENCLR &other) const;
@@ -794,234 +794,7 @@ struct RACECNAM
     bool operator !=(const RACECNAM &other) const;
     };
 
-//Unfilled
-struct GENDNAM
-    {
-    FLOAT32  defaultLandHeight, defaultWaterHeight;
-
-    GENDNAM();
-    ~GENDNAM();
-
-    bool operator ==(const GENDNAM &other) const;
-    bool operator !=(const GENDNAM &other) const;
-    };
-
-struct GENONAM
-    {
-    FLOAT32  mapScale, xCellOffset, yCellOffset;
-
-    GENONAM();
-    ~GENONAM();
-
-    bool operator ==(const GENONAM &other) const;
-    bool operator !=(const GENONAM &other) const;
-    };
-
-struct GENIMPS
-    {
-    UINT32   material;
-    FORMID   oldImpact, newImpact;
-
-    GENIMPS();
-    ~GENIMPS();
-
-    bool operator ==(const GENIMPS &other) const;
-    bool operator !=(const GENIMPS &other) const;
-    };
-
-struct GENXPRM
-    {
-    FLOAT32  xBound, yBound, zBound;
-    FLOAT32  red, green, blue, unknown;
-    UINT32   type;
-
-    GENXPRM();
-    ~GENXPRM();
-
-    bool operator ==(const GENXPRM &other) const;
-    bool operator !=(const GENXPRM &other) const;
-    };
-
-struct GENXMBO
-    {
-    FLOAT32  x, y, z;
-
-    GENXMBO();
-    ~GENXMBO();
-
-    bool operator ==(const GENXMBO &other) const;
-    bool operator !=(const GENXMBO &other) const;
-    };
-
-struct GENXTEL
-    {
-    FORMID  destinationFid;
-    GENPOSDATA destination;
-    UINT32 flags;
-
-    GENXTEL();
-    ~GENXTEL();
-
-    bool operator ==(const GENXTEL &other) const;
-    bool operator !=(const GENXTEL &other) const;
-    };
-
-struct GENXMRK
-    {
-    ReqSimpleSubRecord<UINT8> FNAM; //Flags
-    StringRecord FULL; //Name
-    ReqSubRecord<GENTNAM> TNAM; //Type
-    OptSimpleSubRecord<FORMID> WMI1; //Reputation
-
-    bool operator ==(const GENXMRK &other) const;
-    bool operator !=(const GENXMRK &other) const;
-    };
-
-struct GENMMRK
-    {
-    RawRecord FULL; //Unknown
-    OptSimpleSubRecord<FORMID> CNAM; //Audio Location
-    RawRecord BNAM; //Unknown
-    OptSimpleSubRecord<FLOAT32> MNAM; //Unknown
-    OptSimpleSubRecord<FLOAT32> NNAM; //Unknown
-
-    bool operator ==(const GENXMRK &other) const;
-    bool operator !=(const GENXMRK &other) const;
-    };
-
-struct GENXRDO
-    {
-    FLOAT32  rangeRadius;
-    UINT32 rangeType;
-    FLOAT32 staticPercentage;
-    FORMID positionReference;
-
-    GENXRDO();
-    ~GENXRDO();
-
-    bool operator ==(const GENXRDO &other) const;
-    bool operator !=(const GENXRDO &other) const;
-    };
-
-struct GENAMMO
-    {
-    OptSimpleSubRecord<FORMID> XAMT; //Type
-    OptSimpleSubRecord<SINT32> XAMC; //Count
-
-    bool operator ==(const GENAMMO &other) const;
-    bool operator !=(const GENAMMO &other) const;
-    };
-
-struct GENXPWR
-    {
-    OptSimpleSubRecord<FORMID> XAMT; //Reference
-    OptSimpleSubRecord<UINT32> XAMC; //Flags
-
-    bool operator ==(const GENXPWR &other) const;
-    bool operator !=(const GENXPWR &other) const;
-    };
-
-struct GENXDCR
-    {
-    FORMID reference; //Reference
-    //Unknown? OptSimpleSubRecord<SINT32> XAMC; //Count
-
-    GENXDCR();
-    ~GENXDCR();
-
-    bool operator ==(const GENXDCR &other) const;
-    bool operator !=(const GENXDCR &other) const;
-    };
-
-struct GENXCLP
-    {
-    GENCLR start; //Link Start Color
-    GENCLR end; //Link End Color
-
-    bool operator ==(const GENXCLP &other) const;
-    bool operator !=(const GENXCLP &other) const;
-    };
-
-struct GENXAPR
-    {
-    FORMID reference; //Reference
-    FLOAT32 delay; //Delay
-
-    GENXAPR();
-    ~GENXAPR();
-
-    bool operator ==(const GENXAPR &other) const;
-    bool operator !=(const GENXAPR &other) const;
-    };
-
-struct GENACTPARENT
-    {
-    OptSimpleSubRecord<UINT8> XAPD; //Flags
-    std::vector<ReqSubRecord<GENXAPR> *> XAPR; //Activate Parent Refs
-
-    enum flagsFlags
-        {
-        fIsParentActivateOnly = 0x00000001
-        };
-
-    bool   IsParentActivateOnly();
-    void   IsParentActivateOnly(bool value);
-    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-    void   SetFlagMask(UINT8 Mask);
-
-    bool operator ==(const GENACTPARENT &other) const;
-    bool operator !=(const GENACTPARENT &other) const;
-    };
-
-struct GENXNDP
-    {
-    FORMID navMesh; //Navigation Mesh
-    UINT16 unknown1; //Unknown
-    UINT8  unused1[2]; //Unused
-
-    GENXNDP();
-    ~GENXNDP();
-
-    bool operator ==(const GENXNDP &other) const;
-    bool operator !=(const GENXNDP &other) const;
-    };
-
-struct GENPOSITION
-    {
-    FLOAT32 width, height; //Size
-    FLOAT32 xPos, yPos, zPos; //Position
-    FLOAT32 q1, q2, q3, q4; //Rotation (Quaternion?)
-
-    GENPOSITION();
-    ~GENPOSITION();
-
-    bool operator ==(const GENPOSITION &other) const;
-    bool operator !=(const GENPOSITION &other) const;
-    };
-
-struct GENXRMR
-    {
-    UINT16 count; //Linked Rooms Count
-    UINT8  unknown1[2]; //Unknown
-
-    GENXRMR();
-    ~GENXRMR();
-
-    bool operator ==(const GENXRMR &other) const;
-    bool operator !=(const GENXRMR &other) const;
-    };
-
-struct GENROOM
-    {
-    OptSubRecord<GENXRMR> XRMR; //Room Data
-    std::vector<FORMID> XLRM; //Linked Rooms
-
-    bool operator ==(const GENROOM &other) const;
-    bool operator !=(const GENROOM &other) const;
-    };
-
 //Fallout New Vegas Chunks
-
 struct GENOBND
     {
     SINT16   x1, y1, z1, x2, y2, z2;
@@ -1495,7 +1268,230 @@ struct FNVCNTO
     bool operator !=(const FNVCNTO &other) const;
     };
 
-//Unfilled
+struct GENDNAM
+    {
+    FLOAT32  defaultLandHeight, defaultWaterHeight;
+
+    GENDNAM();
+    ~GENDNAM();
+
+    bool operator ==(const GENDNAM &other) const;
+    bool operator !=(const GENDNAM &other) const;
+    };
+
+struct GENONAM
+    {
+    FLOAT32  mapScale, xCellOffset, yCellOffset;
+
+    GENONAM();
+    ~GENONAM();
+
+    bool operator ==(const GENONAM &other) const;
+    bool operator !=(const GENONAM &other) const;
+    };
+
+struct GENIMPS
+    {
+    UINT32   material;
+    FORMID   oldImpact, newImpact;
+
+    GENIMPS();
+    ~GENIMPS();
+
+    bool operator ==(const GENIMPS &other) const;
+    bool operator !=(const GENIMPS &other) const;
+    };
+
+struct GENXPRM
+    {
+    FLOAT32  xBound, yBound, zBound;
+    FLOAT32  red, green, blue, unknown;
+    UINT32   type;
+
+    GENXPRM();
+    ~GENXPRM();
+
+    bool operator ==(const GENXPRM &other) const;
+    bool operator !=(const GENXPRM &other) const;
+    };
+
+struct GENXMBO
+    {
+    FLOAT32  x, y, z;
+
+    GENXMBO();
+    ~GENXMBO();
+
+    bool operator ==(const GENXMBO &other) const;
+    bool operator !=(const GENXMBO &other) const;
+    };
+
+struct GENXTEL
+    {
+    FORMID  destinationFid;
+    GENPOSDATA destination;
+    UINT32  flags;
+
+    GENXTEL();
+    ~GENXTEL();
+
+    bool operator ==(const GENXTEL &other) const;
+    bool operator !=(const GENXTEL &other) const;
+    };
+
+struct GENXMRK
+    {
+    ReqSimpleSubRecord<UINT8> FNAM; //Flags
+    StringRecord FULL; //Name
+    ReqSubRecord<GENTNAM> TNAM; //Type
+    OptSimpleSubRecord<FORMID> WMI1; //Reputation
+
+    bool operator ==(const GENXMRK &other) const;
+    bool operator !=(const GENXMRK &other) const;
+    };
+
+struct GENMMRK
+    {
+    RawRecord FULL; //Unknown
+    OptSimpleSubRecord<FORMID> CNAM; //Audio Location
+    RawRecord BNAM; //Unknown
+    OptSimpleSubRecord<FLOAT32> MNAM; //Unknown
+    OptSimpleSubRecord<FLOAT32> NNAM; //Unknown
+
+    bool operator ==(const GENMMRK &other) const;
+    bool operator !=(const GENMMRK &other) const;
+    };
+
+struct GENXRDO
+    {
+    FLOAT32  rangeRadius;
+    UINT32   rangeType;
+    FLOAT32  staticPercentage;
+    FORMID   positionReference;
+
+    GENXRDO();
+    ~GENXRDO();
+
+    bool operator ==(const GENXRDO &other) const;
+    bool operator !=(const GENXRDO &other) const;
+    };
+
+struct GENAMMO
+    {
+    OptSimpleSubRecord<FORMID> XAMT; //Type
+    OptSimpleSubRecord<SINT32> XAMC; //Count
+
+    bool operator ==(const GENAMMO &other) const;
+    bool operator !=(const GENAMMO &other) const;
+    };
+
+struct GENXPWR
+    {
+    OptSimpleSubRecord<FORMID> XAMT; //Reference
+    OptSimpleSubRecord<UINT32> XAMC; //Flags
+
+    bool operator ==(const GENXPWR &other) const;
+    bool operator !=(const GENXPWR &other) const;
+    };
+
+struct GENXDCR
+    {
+    FORMID reference; //Reference
+    //Unknown? OptSimpleSubRecord<SINT32> XAMC; //Count
+
+    GENXDCR();
+    ~GENXDCR();
+
+    bool operator ==(const GENXDCR &other) const;
+    bool operator !=(const GENXDCR &other) const;
+    };
+
+struct GENXCLP
+    {
+    GENCLR start; //Link Start Color
+    GENCLR end; //Link End Color
+
+    bool operator ==(const GENXCLP &other) const;
+    bool operator !=(const GENXCLP &other) const;
+    };
+
+struct GENXAPR
+    {
+    FORMID reference; //Reference
+    FLOAT32 delay; //Delay
+
+    GENXAPR();
+    ~GENXAPR();
+
+    bool operator ==(const GENXAPR &other) const;
+    bool operator !=(const GENXAPR &other) const;
+    };
+
+struct GENACTPARENT
+    {
+    OptSimpleSubRecord<UINT8> XAPD; //Flags
+    UnorderedSparseArray<GENXAPR *> XAPR; //Activate Parent Refs
+
+    enum flagsFlags
+        {
+        fIsParentActivateOnly = 0x00000001
+        };
+
+    bool   IsParentActivateOnly();
+    void   IsParentActivateOnly(bool value);
+    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+    void   SetFlagMask(UINT8 Mask);
+
+    bool operator ==(const GENACTPARENT &other) const;
+    bool operator !=(const GENACTPARENT &other) const;
+    };
+
+struct GENXNDP
+    {
+    FORMID navMesh; //Navigation Mesh
+    UINT16 unknown1; //Unknown
+    UINT8  unused1[2]; //Unused
+
+    GENXNDP();
+    ~GENXNDP();
+
+    bool operator ==(const GENXNDP &other) const;
+    bool operator !=(const GENXNDP &other) const;
+    };
+
+struct GENPOSITION
+    {
+    FLOAT32 width, height, //Size
+            xPos, yPos, zPos, //Position
+            q1, q2, q3, q4; //Rotation (Quaternion?)
+
+    GENPOSITION();
+    ~GENPOSITION();
+
+    bool operator ==(const GENPOSITION &other) const;
+    bool operator !=(const GENPOSITION &other) const;
+    };
+
+struct GENXRMR
+    {
+    UINT16  count; //Linked Rooms Count
+    UINT8   unknown1[2]; //Unknown
+
+    GENXRMR();
+    ~GENXRMR();
+
+    bool operator ==(const GENXRMR &other) const;
+    bool operator !=(const GENXRMR &other) const;
+    };
+
+struct GENROOM
+    {
+    OptSubRecord<GENXRMR> XRMR; //Room Data
+    UnorderedPackedArray<FORMID> XLRM; //Linked Rooms
+
+    bool operator ==(const GENROOM &other) const;
+    bool operator !=(const GENROOM &other) const;
+    };
 struct FNVXOWN
     {
     ReqSimpleSubRecord<FORMID> XOWN;
@@ -1555,9 +1551,8 @@ struct FNVLVLO
     ReqSubRecord<LVLLVLO> LVLO;
     OptSubRecord<GENCOED> COED;
 
-    bool IsGlobal();
-    bool IsRank();
-    bool IsUnused();
+    bool IsGlobal(); //Hack
+    bool IsRank();   //Hack
 
     bool operator ==(const FNVLVLO &other) const;
     bool operator !=(const FNVLVLO &other) const;

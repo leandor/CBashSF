@@ -394,9 +394,9 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<FORMID> TPLT; //Template
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> SCRI; //Script
-        std::vector<FNVCNTO *> CNTO;  //Items
+        UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
         OptSubRecord<FNVAIDT> AIDT; //AI Data
-        std::vector<FORMID> PKID; //Packages
+        UnorderedSparseArray<FORMID> PKID; //Packages
         std::vector<StringRecord> KFFZ; //Animations
         OptSubRecord<CREADATA> DATA; //Data
         OptSimpleSubRecord<UINT8> RNAM; //Attack reach
