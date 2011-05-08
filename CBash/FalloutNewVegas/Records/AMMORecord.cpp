@@ -27,7 +27,7 @@ namespace FNV
 AMMORecord::AMMODATA::AMMODATA():
     speed(0.0f),
     flags(0),
-    value(0), 
+    value(0),
     clipRounds(0)
     {
     memset(&unused[0], 0x00, 3);

@@ -440,34 +440,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgCREA: //Same as normal
             case 'AERC':
-                //reader.read(&CREA.stamp, 4);
-                //reader.read(&CREA.unknown, 4);
-                //CREA.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&CREA.stamp, 4);
+                reader.read(&CREA.unknown, 4);
+                CREA.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgLVLC: //Same as normal
             case 'CLVL':
-                //reader.read(&LVLC.stamp, 4);
-                //reader.read(&LVLC.unknown, 4);
-                //LVLC.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&LVLC.stamp, 4);
+                reader.read(&LVLC.unknown, 4);
+                LVLC.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgLVLN: //Same as normal
             case 'NLVL':
-                //reader.read(&LVLN.stamp, 4);
-                //reader.read(&LVLN.unknown, 4);
-                //LVLN.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&LVLN.stamp, 4);
+                reader.read(&LVLN.unknown, 4);
+                LVLN.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgKEYM:
             case 'MYEK':
-                //reader.read(&KEYM.stamp, 4);
-                //reader.read(&KEYM.unknown, 4);
-                //KEYM.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&KEYM.stamp, 4);
+                reader.read(&KEYM.unknown, 4);
+                KEYM.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgALCH:
             case 'HCLA':
-                //reader.read(&ALCH.stamp, 4);
-                //reader.read(&ALCH.unknown, 4);
-                //ALCH.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ALCH.stamp, 4);
+                reader.read(&ALCH.unknown, 4);
+                ALCH.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgIDLM:
             case 'MLDI':
                 //reader.read(&IDLM.stamp, 4);
@@ -929,15 +929,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case '_CPN':
             return (UINT32)NPC_.Records.size();
         case 'AERC':
-            //return (UINT32)CREA.Records.size();
+            return (UINT32)CREA.Records.size();
         case 'CLVL':
-            //return (UINT32)LVLC.Records.size();
+            return (UINT32)LVLC.Records.size();
         case 'NLVL':
-            //return (UINT32)LVLN.Records.size();
+            return (UINT32)LVLN.Records.size();
         case 'MYEK':
-            //return (UINT32)KEYM.Records.size();
+            return (UINT32)KEYM.Records.size();
         case 'HCLA':
-            //return (UINT32)ALCH.Records.size();
+            return (UINT32)ALCH.Records.size();
         case 'MLDI':
             //return (UINT32)IDLM.Records.size();
         case 'ETON':
@@ -1238,25 +1238,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = NPC_.Records.back();
             break;
         case 'AERC':
-            //CREA.Records.push_back(new FNV::CREARecord((FNV::CREARecord *)SourceRecord));
-            //newRecord = CREA.Records.back();
-            //break;
+            CREA.Records.push_back(new FNV::CREARecord((FNV::CREARecord *)SourceRecord));
+            newRecord = CREA.Records.back();
+            break;
         case 'CLVL':
-            //LVLC.Records.push_back(new FNV::LVLCRecord((FNV::LVLCRecord *)SourceRecord));
-            //newRecord = LVLC.Records.back();
-            //break;
+            LVLC.Records.push_back(new FNV::LVLCRecord((FNV::LVLCRecord *)SourceRecord));
+            newRecord = LVLC.Records.back();
+            break;
         case 'NLVL':
-            //LVLN.Records.push_back(new FNV::LVLNRecord((FNV::LVLNRecord *)SourceRecord));
-            //newRecord = LVLN.Records.back();
-            //break;
+            LVLN.Records.push_back(new FNV::LVLNRecord((FNV::LVLNRecord *)SourceRecord));
+            newRecord = LVLN.Records.back();
+            break;
         case 'MYEK':
-            //KEYM.Records.push_back(new FNV::KEYMRecord((FNV::KEYMRecord *)SourceRecord));
-            //newRecord = KEYM.Records.back();
-            //break;
+            KEYM.Records.push_back(new FNV::KEYMRecord((FNV::KEYMRecord *)SourceRecord));
+            newRecord = KEYM.Records.back();
+            break;
         case 'HCLA':
-            //ALCH.Records.push_back(new FNV::ALCHRecord((FNV::ALCHRecord *)SourceRecord));
-            //newRecord = ALCH.Records.back();
-            //break;
+            ALCH.Records.push_back(new FNV::ALCHRecord((FNV::ALCHRecord *)SourceRecord));
+            newRecord = ALCH.Records.back();
+            break;
         case 'MLDI':
             //IDLM.Records.push_back(new FNV::IDLMRecord((FNV::IDLMRecord *)SourceRecord));
             //newRecord = IDLM.Records.back();
@@ -1561,11 +1561,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(WEAP.VisitRecords(NULL, checker, false)) continue;
         if(AMMO.VisitRecords(NULL, checker, false)) continue;
         if(NPC_.VisitRecords(NULL, checker, false)) continue;
-        //if(CREA.VisitRecords(NULL, checker, false)) continue;
-        //if(LVLC.VisitRecords(NULL, checker, false)) continue;
-        //if(LVLN.VisitRecords(NULL, checker, false)) continue;
-        //if(KEYM.VisitRecords(NULL, checker, false)) continue;
-        //if(ALCH.VisitRecords(NULL, checker, false)) continue;
+        if(CREA.VisitRecords(NULL, checker, false)) continue;
+        if(LVLC.VisitRecords(NULL, checker, false)) continue;
+        if(LVLN.VisitRecords(NULL, checker, false)) continue;
+        if(KEYM.VisitRecords(NULL, checker, false)) continue;
+        if(ALCH.VisitRecords(NULL, checker, false)) continue;
         //if(IDLM.VisitRecords(NULL, checker, false)) continue;
         //if(NOTE.VisitRecords(NULL, checker, false)) continue;
         //if(COBJ.VisitRecords(NULL, checker, false)) continue;
@@ -1699,11 +1699,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += AMMO.WriteGRUP('OMMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += NPC_.WriteGRUP('_CPN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CREA.WriteGRUP('AERC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLC.WriteGRUP('CLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLN.WriteGRUP('NLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += KEYM.WriteGRUP('MYEK', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ALCH.WriteGRUP('HCLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CREA.WriteGRUP('AERC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLC.WriteGRUP('CLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLN.WriteGRUP('NLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += KEYM.WriteGRUP('MYEK', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ALCH.WriteGRUP('HCLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += IDLM.WriteGRUP('MLDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += NOTE.WriteGRUP('ETON', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += COBJ.WriteGRUP('JBOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1822,11 +1822,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     WEAP.VisitRecords(NULL, op, true);
     AMMO.VisitRecords(NULL, op, true);
     NPC_.VisitRecords(NULL, op, true);
-    //CREA.VisitRecords(NULL, op, true);
-    //LVLC.VisitRecords(NULL, op, true);
-    //LVLN.VisitRecords(NULL, op, true);
-    //KEYM.VisitRecords(NULL, op, true);
-    //ALCH.VisitRecords(NULL, op, true);
+    CREA.VisitRecords(NULL, op, true);
+    LVLC.VisitRecords(NULL, op, true);
+    LVLN.VisitRecords(NULL, op, true);
+    KEYM.VisitRecords(NULL, op, true);
+    ALCH.VisitRecords(NULL, op, true);
     //IDLM.VisitRecords(NULL, op, true);
     //NOTE.VisitRecords(NULL, op, true);
     //COBJ.VisitRecords(NULL, op, true);
@@ -2019,20 +2019,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             NPC_.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'AERC':
-            //CREA.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            CREA.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'CLVL':
-            //LVLC.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            LVLC.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'NLVL':
-            //LVLN.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            LVLN.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'MYEK':
-            //KEYM.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            KEYM.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'HCLA':
-            //ALCH.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            ALCH.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'MLDI':
             //IDLM.VisitRecords(RecordType, op, DeepVisit);
             //break;

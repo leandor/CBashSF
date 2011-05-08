@@ -54,11 +54,8 @@ LVLCRecord::LVLCRecord(LVLCRecord *srcRecord):
     OBND = srcRecord->OBND;
     LVLD = srcRecord->LVLD;
     LVLF = srcRecord->LVLF;
-    LVLO = srcRecord->LVLO;
-    COED = srcRecord->COED;
-
+    Entries = srcRecord->Entries;
     MODL = srcRecord->MODL;
-
     return;
     }
 
@@ -72,64 +69,59 @@ bool LVLCRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    //if(LVLO.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(LVLO->value);
-    //if(COED.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(COED->value);
-    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
-        op.Accept(MODL->MODS->value);
+    for(UINT32 x = 0; x < Entries.value.size(); x++)
+        {
+        op.Accept(Entries.value[x]->LVLO.value.listId);
+        if(Entries.value[x]->IsGlobal())
+            op.Accept(Entries.value[x]->COED->globalOrRank);
+        }
+    if(MODL.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
+            op.Accept(MODL->Textures.MODS[x]->texture);
+        }
 
     return op.Stop();
     }
 
 bool LVLCRecord::IsCalcFromAllLevels()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fCalcFromAllLevels) != 0 : false;
+    return (LVLF.value & fCalcFromAllLevels) != 0;
     }
 
 void LVLCRecord::IsCalcFromAllLevels(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fCalcFromAllLevels) : (LVLF->value & ~fCalcFromAllLevels);
+    LVLF.value = value ? (LVLF.value | fCalcFromAllLevels) : (LVLF.value & ~fCalcFromAllLevels);
     }
 
 bool LVLCRecord::IsCalcForEachItem()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fCalcForEachItem) != 0 : false;
+    return (LVLF.value & fCalcForEachItem) != 0;
     }
 
 void LVLCRecord::IsCalcForEachItem(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fCalcForEachItem) : (LVLF->value & ~fCalcForEachItem);
+    LVLF.value = value ? (LVLF.value | fCalcForEachItem) : (LVLF.value & ~fCalcForEachItem);
     }
 
 bool LVLCRecord::IsUseAll()
     {
-    return LVLF.IsLoaded() ? (LVLF->value & fUseAll) != 0 : false;
+    return (LVLF.value & fUseAll) != 0;
     }
 
 void LVLCRecord::IsUseAll(bool value)
     {
-    if(!LVLF.IsLoaded()) return;
-    LVLF->value = value ? (LVLF->value | fUseAll) : (LVLF->value & ~fUseAll);
+    LVLF.value = value ? (LVLF.value | fUseAll) : (LVLF.value & ~fUseAll);
     }
 
 bool LVLCRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!LVLF.IsLoaded()) return false;
-    return Exact ? ((LVLF->value & Mask) == Mask) : ((LVLF->value & Mask) != 0);
+    return Exact ? ((LVLF.value & Mask) == Mask) : ((LVLF.value & Mask) != 0);
     }
 
 void LVLCRecord::SetFlagMask(UINT8 Mask)
     {
-    if(Mask)
-        {
-        LVLF.Load();
-        LVLF->value = Mask;
-        }
-    else
-        LVLF.Unload();
+    LVLF.value = Mask;
     }
 
 UINT32 LVLCRecord::GetType()
@@ -177,10 +169,13 @@ SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 LVLF.Read(buffer, subSize, curPos);
                 break;
             case 'OLVL':
-                LVLO.Read(buffer, subSize, curPos);
+                Entries.value.push_back(new FNVLVLO);
+                Entries.value.back()->LVLO.Read(buffer, subSize, curPos);
                 break;
             case 'DEOC':
-                COED.Read(buffer, subSize, curPos);
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new FNVLVLO);
+                Entries.value.back()->COED.Read(buffer, subSize, curPos);
                 break;
             case 'LDOM':
                 MODL.Load();
@@ -222,8 +217,7 @@ SINT32 LVLCRecord::Unload()
     OBND.Unload();
     LVLD.Unload();
     LVLF.Unload();
-    LVLO.Unload();
-    COED.Unload();
+    Entries.Unload();
     MODL.Unload();
     return 1;
     }
@@ -234,11 +228,8 @@ SINT32 LVLCRecord::WriteRecord(FileWriter &writer)
     WRITE(OBND);
     WRITE(LVLD);
     WRITE(LVLF);
-    WRITE(LVLO);
-    WRITE(COED);
-
+    Entries.Write(writer);
     MODL.Write(writer);
-
     return -1;
     }
 
@@ -248,8 +239,7 @@ bool LVLCRecord::operator ==(const LVLCRecord &other) const
             OBND == other.OBND &&
             LVLD == other.LVLD &&
             LVLF == other.LVLF &&
-            LVLO == other.LVLO &&
-            COED == other.COED &&
+            Entries == other.Entries &&
             MODL == other.MODL);
     }
 

@@ -321,15 +321,15 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 }
             return UNKNOWN_FIELD;
         case 44: //aggression
-            return UINT8_FIELD;
+            return UINT8_TYPE_FIELD;
         case 45: //confidence
-            return UINT8_FIELD;
+            return UINT8_TYPE_FIELD;
         case 46: //energyLevel
             return UINT8_FIELD;
         case 47: //responsibility
-            return UINT8_FIELD;
+            return UINT8_TYPE_FIELD;
         case 48: //mood
-            return UINT8_FIELD;
+            return UINT8_TYPE_FIELD;
         case 49: //unused1
             switch(WhichAttribute)
                 {
@@ -341,14 +341,14 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 50: //flags
+        case 50: //services
             return UINT32_FLAG_FIELD;
         case 51: //trainSkill
             return SINT8_TYPE_FIELD;
         case 52: //trainLevel
             return UINT8_FIELD;
         case 53: //assistance
-            return UINT8_FIELD;
+            return UINT8_TYPE_FIELD;
         case 54: //aggroFlags
             return UINT8_FLAG_FIELD;
         case 55: //aggroRadius
@@ -711,7 +711,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 49: //unused1
             *FieldValues = AIDT.IsLoaded() ? &AIDT->unused1[0] : NULL;
             return NULL;
-        case 50: //flags
+        case 50: //services
             return AIDT.IsLoaded() ? &AIDT->flags : NULL;
         case 51: //trainSkill
             return AIDT.IsLoaded() ? &AIDT->trainSkill : NULL;
@@ -1156,9 +1156,8 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             AIDT->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             AIDT->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 50: //flags
-            AIDT.Load();
-            AIDT->flags = *(UINT32 *)FieldValue;
+        case 50: //services
+            SetServicesFlagMask(*(UINT32 *)FieldValue);
             break;
         case 51: //trainSkill
             AIDT.Load();
@@ -1707,9 +1706,9 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
                 AIDT->unused1[2] = defaultAIDT.unused1[2];
                 }
             return;
-        case 50: //flags
+        case 50: //services
             if(AIDT.IsLoaded())
-                AIDT->flags = defaultAIDT.flags;
+                SetServicesFlagMask(defaultAIDT.flags);
             return;
         case 51: //trainSkill
             if(AIDT.IsLoaded())

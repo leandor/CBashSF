@@ -60,19 +60,25 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //full
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //full
             return STRING_FIELD;
-        case 11: //modPath
+        case 14: //modPath
             return ISTRING_FIELD;
-        case 12: //modb
+        case 15: //modb
             return FLOAT32_FIELD;
-        case 13: //modt_p
+        case 16: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -83,7 +89,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 14: //altTextures
+        case 17: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
 
@@ -94,13 +100,13 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -115,17 +121,35 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
 
-        case 17: //modelFlags
-            return UINT8_FIELD;
-        case 18: //splo Actor Effect
+        case 18: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 19: //actorEffects
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return SPLO.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 20: //unarmedEffect
             return FORMID_FIELD;
-        case 19: //eitm Unarmed Attack Effect
-            return FORMID_FIELD;
-        case 20: //eamt Unarmed Attack Animation
-            return UINT16_FIELD;
-        case 21: //nifz Model List
-            return UNPARSED_FIELD;
-        case 22: //nift_p Texture Files Hashes
+        case 21: //unarmedAnim
+            return UINT16_TYPE_FIELD;
+        case 22: //bodyParts
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return ISTRING_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)NIFZ.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 23: //nift_p_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -136,31 +160,197 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 23: //acbs ACBS ,, Struct
-            return UINT32_FIELD;
-        case 24: //acbs ACBS ,, Struct
+        case 24: //flags
+            return UINT32_FLAG_FIELD;
+        case 25: //fatigue
             return UINT16_FIELD;
-        case 25: //acbs ACBS ,, Struct
+        case 26: //barterGold
             return UINT16_FIELD;
-        case 26: //acbs ACBS ,, Struct
+        case 27: //level
             return SINT16_FIELD;
-        case 27: //acbs ACBS ,, Struct
+        case 28: //calcMin
             return UINT16_FIELD;
-        case 28: //acbs ACBS ,, Struct
+        case 29: //calcMax
             return UINT16_FIELD;
-        case 29: //acbs ACBS ,, Struct
+        case 30: //speedMult
             return UINT16_FIELD;
-        case 30: //acbs ACBS ,, Struct
+        case 31: //karma
             return FLOAT32_FIELD;
-        case 31: //acbs ACBS ,, Struct
+        case 32: //dispBase
             return SINT16_FIELD;
-        case 32: //acbs ACBS ,, Struct
-            return UINT16_FIELD;
-        case 33: //snam SNAM ,, Struct
+        case 33: //templateFlags
+            return UINT16_FLAG_FIELD;
+        case 34: //factions
+            if(ListFieldID == 0) //factions
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return SNAM.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= SNAM.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    return FORMID_FIELD;
+                case 2: //rank
+                    return UINT8_FIELD;
+                case 3: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 35: //deathItem
             return FORMID_FIELD;
-        case 34: //snam SNAM ,, Struct
+        case 36: //voice
+            return FORMID_FIELD;
+        case 37: //template
+            return FORMID_FIELD;
+        case 38: //destructableHealth
+            return SINT32_FIELD;
+        case 39: //destructableCount
             return UINT8_FIELD;
-        case 35: //snam_p SNAM ,, Struct
+        case 40: //destructableFlags
+            return UINT8_FLAG_FIELD;
+        case 41: //destructableUnused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return Destructable.IsLoaded() ? 2 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 42: //destructableStages
+            if(!Destructable.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //destructableStages
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return Destructable->Stages.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return UINT8_FIELD;
+                case 2: //index
+                    return UINT8_FIELD;
+                case 3: //stage
+                    return UINT8_FIELD;
+                case 4: //flags
+                    return UINT8_FLAG_FIELD;
+                case 5: //dps
+                    return SINT32_FIELD;
+                case 6: //explosion
+                    return FORMID_FIELD;
+                case 7: //debris
+                    return FORMID_FIELD;
+                case 8: //debrisCount
+                    return SINT32_FIELD;
+                case 9: //modPath
+                    return ISTRING_FIELD;
+                case 10: //modt_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Destructable->Stages.value[ListIndex]->DMDT.GetSize();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 43: //script
+            return FORMID_FIELD;
+        case 44: //items
+            if(ListFieldID == 0) //items
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)CNTO.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= CNTO.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //item
+                    return FORMID_FIELD;
+                case 2: //count
+                    return SINT32_FIELD;
+                case 3: //owner
+                    return FORMID_FIELD;
+                case 4: //globalOrRank
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return CNTO.value[ListIndex]->IsGlobal() ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 5: //condition
+                    return FLOAT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 45: //aggression
+            return UINT8_TYPE_FIELD;
+        case 46: //confidence
+            return UINT8_TYPE_FIELD;
+        case 47: //energyLevel
+            return UINT8_FIELD;
+        case 48: //responsibility
+            return UINT8_FIELD;
+        case 49: //mood
+            return UINT8_TYPE_FIELD;
+        case 50: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -171,19 +361,51 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 36: //inam Death item
-            return FORMID_FIELD;
-        case 37: //vtck Voice
-            return FORMID_FIELD;
-        case 38: //tplt Template
-            return FORMID_FIELD;
-        case 39: //dest Header
+        case 51: //services
+            return UINT32_FLAG_FIELD;
+        case 52: //trainSkill
+            return SINT8_TYPE_FIELD;
+        case 53: //trainLevel
+            return UINT8_FIELD;
+        case 54: //assistance
+            return UINT8_TYPE_FIELD;
+        case 55: //aggroFlags
+            return UINT8_FLAG_FIELD;
+        case 56: //aggroRadius
             return SINT32_FIELD;
-        case 40: //dest Header
+        case 57: //aiPackages
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return PKID.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 58: //animations
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return ISTRING_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)KFFZ.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 59: //creatureType
+            return UINT8_TYPE_FIELD;
+        case 60: //combat
             return UINT8_FIELD;
-        case 41: //dest Header
+        case 61: //magic
             return UINT8_FIELD;
-        case 42: //dest_p Header
+        case 62: //stealth
+            return UINT8_FIELD;
+        case 63: //health
+            return UINT16_FIELD;
+        case 64: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -194,130 +416,97 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 43: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 44: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 45: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 46: //dstd Destruction Stage Data
-            return UINT8_FIELD;
-        case 47: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 48: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 49: //dstd Destruction Stage Data
-            return FORMID_FIELD;
-        case 50: //dstd Destruction Stage Data
-            return SINT32_FIELD;
-        case 51: //dmdl Model Filename
-            return ISTRING_FIELD;
-        case 52: //dmdt_p Texture Files Hashes
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return DMDT.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 53: //script
-            return FORMID_FIELD;
-        case 54: //cnto Item
-            return FORMID_FIELD;
-        case 55: //cnto Item
-            return SINT32_FIELD;
-        case 56: //aidt AI Data
-            return UINT8_FIELD;
-        case 57: //aidt AI Data
-            return UINT8_FIELD;
-        case 58: //aidt AI Data
-            return UINT8_FIELD;
-        case 59: //aidt AI Data
-            return UINT8_FIELD;
-        case 60: //aidt AI Data
-            return UINT8_FIELD;
-        case 61: //aidt_p AI Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 62: //aidt AI Data
-            return UINT32_FIELD;
-        case 63: //aidt AI Data
-            return SINT8_FIELD;
-        case 64: //aidt AI Data
-            return UINT8_FIELD;
-        case 65: //aidt AI Data
-            return SINT8_FIELD;
-        case 66: //aidt AI Data
-            return UINT8_FIELD;
-        case 67: //aidt AI Data
-            return SINT32_FIELD;
-        case 68: //pkid Package
-            return FORMID_FIELD;
-        case 69: //kffz Animations
-            return UNPARSED_FIELD;
-        case 70: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 71: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 72: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 73: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 74: //data DATA ,, Struct
+        case 65: //attackDamage
             return SINT16_FIELD;
-        case 75: //data_p DATA ,, Struct
-            switch(WhichAttribute)
+        case 66: //strength
+            return UINT8_FIELD;
+        case 67: //perception
+            return UINT8_FIELD;
+        case 68: //endurance
+            return UINT8_FIELD;
+        case 69: //charisma
+            return UINT8_FIELD;
+        case 70: //intelligence
+            return UINT8_FIELD;
+        case 71: //agility
+            return UINT8_FIELD;
+        case 72: //luck
+            return UINT8_FIELD;
+        case 73: //attackReach
+            return UINT8_FIELD;
+        case 74: //combatStyle
+            return FORMID_FIELD;
+        case 75: //partData
+            return FORMID_FIELD;
+        case 76: //turningSpeed
+            return FLOAT32_FIELD;
+        case 77: //baseScale
+            return FLOAT32_FIELD;
+        case 78: //footWeight
+            return FLOAT32_FIELD;
+        case 79: //impactType
+            return UINT32_TYPE_FIELD;
+        case 80: //soundLevel
+            return UINT32_FIELD;
+        case 81: //inheritsSoundsFrom
+            return FORMID_FIELD;
+        case 82: //soundTypes
+            if(ListFieldID == 0) //soundTypes
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Types.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Types.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //soundType
+                    return UINT32_TYPE_FIELD;
+                case 2: //sounds
+                    if(ListX2FieldID == 0) //sounds
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Types.value[ListIndex]->Sounds.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        return UNKNOWN_FIELD;
+                        }
+
+                    if(ListX2Index >= Types.value[ListIndex]->Sounds.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            return FORMID_FIELD;
+                        case 2: //chance
+                            return UINT8_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 76: //data DATA ,, Struct
-            return SINT16_FIELD;
-        case 77: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 78: //rnam Attack reach
-            return UINT8_FIELD;
-        case 79: //znam Combat Style
+        case 83: //impactData
             return FORMID_FIELD;
-        case 80: //pnam Body Part Data
-            return FORMID_FIELD;
-        case 81: //tnam Turning Speed
-            return FLOAT32_FIELD;
-        case 82: //bnam Base Scale
-            return FLOAT32_FIELD;
-        case 83: //wnam Foot Weight
-            return FLOAT32_FIELD;
-        case 84: //nam4 Impact Material Type
-            return UINT32_FIELD;
-        case 85: //nam5 Sound Level
-            return UINT32_FIELD;
-        case 86: //cscr Inherits Sounds from
-            return FORMID_FIELD;
-        case 87: //csdt Type
-            return UINT32_FIELD;
-        case 88: //csdi Sound
-            return FORMID_FIELD;
-        case 89: //csdc Sound Chance
-            return UINT8_FIELD;
-        case 90: //cnam Impact Dataset
-            return FORMID_FIELD;
-        case 91: //lnam Melee Weapon List
+        case 84: //meleeList
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -343,183 +532,279 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //full
-            return FULLActor.value;
-        case 11: //modPath
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //full
+            return FULL.value;
+        case 14: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 12: //modb
+        case 15: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
-        case 13: //modt_p
+        case 16: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 14: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 15: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value15 : NULL;
-        case 16: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value16 : NULL;
-        case 17: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value17 : NULL;
-        case 18: //splo Actor Effect
-            return SPLOs.IsLoaded() ? &SPLOs->value18 : NULL;
-        case 19: //eitm Unarmed Attack Effect
-            return EITM.IsLoaded() ? &EITM->value19 : NULL;
-        case 20: //eamt Unarmed Attack Animation
-            return EAMT.IsLoaded() ? &EAMT->value20 : NULL;
-        case 21: //nifz Model List
-            return UNPARSEDGET_FIELD21;
-        case 22: //nift_p Texture Files Hashes
+        case 17: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 18: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 19: //actorEffects
+            *FieldValues = SPLO.IsLoaded() ? &SPLO.value[0] : NULL;
+            return NULL;
+        case 20: //unarmedEffect
+            return &EITM.value;
+        case 21: //unarmedAnim
+            return &EAMT.value;
+        case 22: //bodyParts
+            for(UINT32 p = 0;p < NIFZ.value.size();p++)
+                FieldValues[p] = NIFZ.value[p];
+            return NULL;
+        case 23: //nift_p_p
             *FieldValues = NIFT.value;
             return NULL;
-        case 23: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value23 : NULL;
-        case 24: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value24 : NULL;
-        case 25: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value25 : NULL;
-        case 26: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value26 : NULL;
-        case 27: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value27 : NULL;
-        case 28: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value28 : NULL;
-        case 29: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value29 : NULL;
-        case 30: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value30 : NULL;
-        case 31: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value31 : NULL;
-        case 32: //acbs ACBS ,, Struct
-            return ACBS.IsLoaded() ? &ACBS->value32 : NULL;
-        case 33: //snam SNAM ,, Struct
-            return SNAM.IsLoaded() ? &SNAM->value33 : NULL;
-        case 34: //snam SNAM ,, Struct
-            return SNAM.IsLoaded() ? &SNAM->value34 : NULL;
-        case 35: //snam_p SNAM ,, Struct
-            *FieldValues = SNAM.IsLoaded() ? &SNAM->value35[0] : NULL;
+        case 24: //flags
+            return &ACBS.value.flags;
+        case 25: //fatigue
+            return &ACBS.value.fatigue;
+        case 26: //barterGold
+            return &ACBS.value.barterGold;
+        case 27: //level
+            return &ACBS.value.level;
+        case 28: //calcMin
+            return &ACBS.value.calcMin;
+        case 29: //calcMax
+            return &ACBS.value.calcMax;
+        case 30: //speedMult
+            return &ACBS.value.speedMult;
+        case 31: //karma
+            return &ACBS.value.karma;
+        case 32: //dispBase
+            return &ACBS.value.dispBase;
+        case 33: //templateFlags
+            return &ACBS.value.templateFlags;
+        case 34: //faction
+            if(ListIndex >= SNAM.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    return &SNAM.value[ListIndex]->faction;
+                case 2: //rank
+                    return &SNAM.value[ListIndex]->rank;
+                case 3: //unused1
+                    *FieldValues = &SNAM.value[ListIndex]->unused1[0];
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 36: //inam Death item
-            return INAM.IsLoaded() ? &INAM->value36 : NULL;
-        case 37: //vtck Voice
-            return VTCK.IsLoaded() ? &VTCK->value37 : NULL;
-        case 38: //tplt Template
-            return TPLT.IsLoaded() ? &TPLT->value38 : NULL;
-        case 39: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value39 : NULL;
-        case 40: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value40 : NULL;
-        case 41: //dest Header
-            return DEST.IsLoaded() ? &DEST->DEST->value41 : NULL;
-        case 42: //dest_p Header
-            *FieldValues = DEST.IsLoaded() ? &DEST->DEST->value42[0] : NULL;
+        case 35: //deathItem
+            return &INAM.value;
+        case 36: //voice
+            return &VTCK.value;
+        case 37: //template
+            return &TPLT.value;
+        case 38: //destructableHealth
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.health : NULL;
+        case 39: //destructableCount
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.count : NULL;
+        case 40: //destructableFlags
+            return Destructable.IsLoaded() ? &Destructable->DEST.value.flags : NULL;
+        case 41: //destructableUnused1
+            *FieldValues = Destructable.IsLoaded() ? &Destructable->DEST.value.unused1[0] : NULL;
             return NULL;
-        case 43: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value43 : NULL;
-        case 44: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value44 : NULL;
-        case 45: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value45 : NULL;
-        case 46: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value46 : NULL;
-        case 47: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value47 : NULL;
-        case 48: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value48 : NULL;
-        case 49: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value49 : NULL;
-        case 50: //dstd Destruction Stage Data
-            return DEST.IsLoaded() ? &DEST->DSTD->value50 : NULL;
-        case 51: //dmdl Model Filename
-            return DEST.IsLoaded() ? DEST->DMDL.value : NULL;
-        case 52: //dmdt_p Texture Files Hashes
-            *FieldValues = (DEST.IsLoaded()) ? DEST->DMDT.value : NULL;
+        case 42: //destructableStages
+            if(!Destructable.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.health;
+                case 2: //index
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.index;
+                case 3: //stage
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.stage;
+                case 4: //flags
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.flags;
+                case 5: //dps
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.dps;
+                case 6: //explosion
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.explosion;
+                case 7: //debris
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debris;
+                case 8: //debrisCount
+                    return &Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount;
+                case 9: //modPath
+                    return Destructable->Stages.value[ListIndex]->DMDL.value;
+                case 10: //modt_p
+                    *FieldValues = Destructable->Stages.value[ListIndex]->DMDT.value;
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 53: //script
-            return SCRIActor.IsLoaded() ? &SCRIActor->value53 : NULL;
-        case 54: //cnto Item
-            return CNTO.IsLoaded() ? &CNTO->value54 : NULL;
-        case 55: //cnto Item
-            return CNTO.IsLoaded() ? &CNTO->value55 : NULL;
-        case 56: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value56 : NULL;
-        case 57: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value57 : NULL;
-        case 58: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value58 : NULL;
-        case 59: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value59 : NULL;
-        case 60: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value60 : NULL;
-        case 61: //aidt_p AI Data
-            *FieldValues = AIDT.IsLoaded() ? &AIDT->value61[0] : NULL;
+        case 43: //script
+            return &SCRI.value;
+        case 44: //items
+            if(ListIndex >= CNTO.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //item
+                    return &CNTO.value[ListIndex]->CNTO.value.item;
+                case 2: //count
+                    return &CNTO.value[ListIndex]->CNTO.value.count;
+                case 3: //owner
+                    return CNTO.value[ListIndex]->COED.IsLoaded() ? &CNTO.value[ListIndex]->COED->owner : NULL;
+                case 4: //globalOrRank
+                    return CNTO.value[ListIndex]->COED.IsLoaded() ? &CNTO.value[ListIndex]->COED->globalOrRank : NULL;
+                case 5: //condition
+                    return CNTO.value[ListIndex]->COED.IsLoaded() ? &CNTO.value[ListIndex]->COED->condition : NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 62: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value62 : NULL;
-        case 63: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value63 : NULL;
-        case 64: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value64 : NULL;
-        case 65: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value65 : NULL;
-        case 66: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value66 : NULL;
-        case 67: //aidt AI Data
-            return AIDT.IsLoaded() ? &AIDT->value67 : NULL;
-        case 68: //pkid Package
-            return PKID.IsLoaded() ? &PKID->value68 : NULL;
-        case 69: //kffz Animations
-            return UNPARSEDGET_FIELD69;
-        case 70: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value70 : NULL;
-        case 71: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value71 : NULL;
-        case 72: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value72 : NULL;
-        case 73: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value73 : NULL;
-        case 74: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value74 : NULL;
-        case 75: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value75[0] : NULL;
+        case 45: //aggression
+            return &AIDT.value.aggression;
+        case 46: //confidence
+            return &AIDT.value.confidence;
+        case 47: //energyLevel
+            return &AIDT.value.energyLevel;
+        case 48: //responsibility
+            return &AIDT.value.responsibility;
+        case 49: //mood
+            return &AIDT.value.mood;
+        case 50: //unused1
+            *FieldValues = &AIDT.value.unused1[0];
             return NULL;
-        case 76: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value76 : NULL;
-        case 77: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value77 : NULL;
-        case 78: //rnam Attack reach
-            return RNAM.IsLoaded() ? &RNAM->value78 : NULL;
-        case 79: //znam Combat Style
-            return ZNAM.IsLoaded() ? &ZNAM->value79 : NULL;
-        case 80: //pnam Body Part Data
-            return PNAM.IsLoaded() ? &PNAM->value80 : NULL;
-        case 81: //tnam Turning Speed
-            return TNAM.IsLoaded() ? &TNAM->value81 : NULL;
-        case 82: //bnam Base Scale
-            return BNAM.IsLoaded() ? &BNAM->value82 : NULL;
-        case 83: //wnam Foot Weight
-            return WNAM.IsLoaded() ? &WNAM->value83 : NULL;
-        case 84: //nam4 Impact Material Type
-            return NAM4.IsLoaded() ? &NAM4->value84 : NULL;
-        case 85: //nam5 Sound Level
-            return NAM5.IsLoaded() ? &NAM5->value85 : NULL;
-        case 86: //cscr Inherits Sounds from
-            return CSCR.IsLoaded() ? &CSCR->value86 : NULL;
-        case 87: //csdt Type
-            return CSDT.IsLoaded() ? &CSDT->CSDT->value87 : NULL;
-        case 88: //csdi Sound
-            return CSDT.IsLoaded() ? &CSDT->CSDI->value88 : NULL;
-        case 89: //csdc Sound Chance
-            return CSDT.IsLoaded() ? &CSDT->CSDC->value89 : NULL;
-        case 90: //cnam Impact Dataset
-            return CNAM.IsLoaded() ? &CNAM->value90 : NULL;
-        case 91: //lnam Melee Weapon List
-            return LNAM.IsLoaded() ? &LNAM->value91 : NULL;
+        case 51: //services
+            return &AIDT.value.flags;
+        case 52: //trainSkill
+            return &AIDT.value.trainSkill;
+        case 53: //trainLevel
+            return &AIDT.value.trainLevel;
+        case 54: //assistance
+            return &AIDT.value.assistance;
+        case 55: //aggroFlags
+            return &AIDT.value.aggroFlags;
+        case 56: //aggroRadius
+            return &AIDT.value.aggroRadius;
+        case 57: //aiPackages
+            *FieldValues = PKID.IsLoaded() ? &PKID.value[0] : NULL;
+            return NULL;
+        case 58: //animations
+            for(UINT32 p = 0;p < KFFZ.value.size();p++)
+                FieldValues[p] = KFFZ.value[p];
+            return NULL;
+        case 59: //creatureType
+            return &DATA.value.creatureType;
+        case 60: //combat
+            return &DATA.value.combat;
+        case 61: //magic
+            return &DATA.value.magic;
+        case 62: //stealth
+            return &DATA.value.stealth;
+        case 63: //health
+            return &DATA.value.health;
+        case 64: //unused2
+            *FieldValues = &DATA.value.unused1[0];
+            return NULL;
+        case 65: //attackDamage
+            return &DATA.value.attackDamage;
+        case 66: //strength
+            return &DATA.value.strength;
+        case 67: //perception
+            return &DATA.value.perception;
+        case 68: //endurance
+            return &DATA.value.endurance;
+        case 69: //charisma
+            return &DATA.value.charisma;
+        case 70: //intelligence
+            return &DATA.value.intelligence;
+        case 71: //agility
+            return &DATA.value.agility;
+        case 72: //luck
+            return &DATA.value.luck;
+        case 73: //attackReach
+            return &RNAM.value;
+        case 74: //combatStyle
+            return &ZNAM.value;
+        case 75: //partData
+            return &PNAM.value;
+        case 76: //turningSpeed
+            return &TNAM.value;
+        case 77: //baseScale
+            return &BNAM.value;
+        case 78: //footWeight
+            return &WNAM.value;
+        case 79: //impactType
+            return &NAM4.value;
+        case 80: //soundLevel
+            return &NAM5.value;
+        case 81: //inheritsSoundsFrom
+            return &CSCR.value;
+        case 82: //soundTypes
+            if(ListIndex >= Types.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //soundType
+                    return &Types.value[ListIndex]->CSDT.value;
+                case 2: //sounds
+                    if(ListX2Index >= Types.value[ListIndex]->Sounds.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            return &Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDI.value;
+                        case 2: //chance
+                            return &Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDC.value;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 83: //impactData
+            return &CNAM.value;
+        case 84: //meleeList
+            return &LNAM.value;
         default:
             return NULL;
         }
@@ -553,371 +838,442 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //full
-            FULLActor.Copy((STRING)FieldValue);
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
             break;
-        case 11: //modPath
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
+            break;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
+            break;
+        case 13: //full
+            FULL.Copy((STRING)FieldValue);
+            break;
+        case 14: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 12: //modb
+        case 15: //modb
             MODL.Load();
             MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //modt_p
+        case 16: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 15: //mods Alternate Textures
+        case 18: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value15 = *(FORMID *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 19: //actorEffects
+            SPLO.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                SPLO.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 16: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value16 = *(SINT32 *)FieldValue;
-            break;
-        case 17: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value17 = *(UINT8 *)FieldValue;
-            break;
-        case 18: //splo Actor Effect
-            SPLOs.Load();
-            SPLOs->value18 = *(FORMID *)FieldValue;
+        case 20: //unarmedEffect
+            EITM.value = *(FORMID *)FieldValue;
             return true;
-        case 19: //eitm Unarmed Attack Effect
-            EITM.Load();
-            EITM->value19 = *(FORMID *)FieldValue;
-            return true;
-        case 20: //eamt Unarmed Attack Animation
-            EAMT.Load();
-            EAMT->value20 = *(UINT16 *)FieldValue;
+        case 21: //unarmedAnim
+            SetAttackAnimType(*(UINT16 *)FieldValue);
             break;
-        case 21: //nifz Model List
-            return UNPARSEDGET_FIELD21;
-        case 22: //nift_p Texture Files Hashes
+        case 22: //bodyParts
+            NIFZ.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                {
+                UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+                NIFZ.value[x] = new char[size];
+                strcpy_s(NIFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                }
+            break;
+        case 23: //nift_p
             NIFT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 23: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value23 = *(UINT32 *)FieldValue;
+        case 24: //flags
+            SetFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 24: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value24 = *(UINT16 *)FieldValue;
+        case 25: //fatigue
+            ACBS.value.fatigue = *(UINT16 *)FieldValue;
             break;
-        case 25: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value25 = *(UINT16 *)FieldValue;
+        case 26: //barterGold
+            ACBS.value.barterGold = *(UINT16 *)FieldValue;
             break;
-        case 26: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value26 = *(SINT16 *)FieldValue;
+        case 27: //level
+            ACBS.value.level = *(SINT16 *)FieldValue;
             break;
-        case 27: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value27 = *(UINT16 *)FieldValue;
+        case 28: //calcMin
+            ACBS.value.calcMin = *(UINT16 *)FieldValue;
             break;
-        case 28: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value28 = *(UINT16 *)FieldValue;
+        case 29: //calcMax
+            ACBS.value.calcMax = *(UINT16 *)FieldValue;
             break;
-        case 29: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value29 = *(UINT16 *)FieldValue;
+        case 30: //speedMult
+            ACBS.value.speedMult = *(UINT16 *)FieldValue;
             break;
-        case 30: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value30 = *(FLOAT32 *)FieldValue;
+        case 31: //karma
+            ACBS.value.karma = *(FLOAT32 *)FieldValue;
             break;
-        case 31: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value31 = *(SINT16 *)FieldValue;
+        case 32: //dispBase
+            ACBS.value.dispBase = *(SINT16 *)FieldValue;
             break;
-        case 32: //acbs ACBS ,, Struct
-            ACBS.Load();
-            ACBS->value32 = *(UINT16 *)FieldValue;
+        case 33: //templateFlags
+            SetTemplateFlagMask(*(UINT16 *)FieldValue);
             break;
-        case 33: //snam SNAM ,, Struct
-            SNAM.Load();
-            SNAM->value33 = *(FORMID *)FieldValue;
+        case 34: //factions
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                SNAM.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= SNAM.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    SNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //rank
+                    SNAM.value[ListIndex]->rank = *(UINT8 *)FieldValue;
+                    break;
+                case 3: //unused1
+                    if(ArraySize != 3)
+                        break;
+                    SNAM.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    SNAM.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    SNAM.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 35: //deathItem
+            INAM.value = *(FORMID *)FieldValue;
             return true;
-        case 34: //snam SNAM ,, Struct
-            SNAM.Load();
-            SNAM->value34 = *(UINT8 *)FieldValue;
-            break;
-        case 35: //snam_p SNAM ,, Struct
-            if(ArraySize != 3)
-                break;
-            SNAM.Load();
-            SNAM->value35[0] = ((UINT8ARRAY)FieldValue)[0];
-            SNAM->value35[1] = ((UINT8ARRAY)FieldValue)[1];
-            SNAM->value35[2] = ((UINT8ARRAY)FieldValue)[2];
-            break;
-        case 36: //inam Death item
-            INAM.Load();
-            INAM->value36 = *(FORMID *)FieldValue;
+        case 36: //voice
+            VTCK.value = *(FORMID *)FieldValue;
             return true;
-        case 37: //vtck Voice
-            VTCK.Load();
-            VTCK->value37 = *(FORMID *)FieldValue;
+        case 37: //template
+            TPLT.value = *(FORMID *)FieldValue;
             return true;
-        case 38: //tplt Template
-            TPLT.Load();
-            TPLT->value38 = *(FORMID *)FieldValue;
-            return true;
-        case 39: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value39 = *(SINT32 *)FieldValue;
+        case 38: //destructableHealth
+            Destructable.Load();
+            Destructable->DEST.value.health = *(SINT32 *)FieldValue;
             break;
-        case 40: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value40 = *(UINT8 *)FieldValue;
+        case 39: //destructableCount
+            Destructable.Load();
+            Destructable->DEST.value.count = *(UINT8 *)FieldValue;
             break;
-        case 41: //dest Header
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value41 = *(UINT8 *)FieldValue;
+        case 40: //destructableFlags
+            Destructable.Load();
+            Destructable->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 42: //dest_p Header
+        case 41: //destructableUnused1
             if(ArraySize != 2)
                 break;
-            DEST.Load();
-            DEST->DEST.Load();
-            DEST->DEST->value42[0] = ((UINT8ARRAY)FieldValue)[0];
-            DEST->DEST->value42[1] = ((UINT8ARRAY)FieldValue)[1];
+            Destructable.Load();
+            Destructable->DEST.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Destructable->DEST.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 43: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value43 = *(UINT8 *)FieldValue;
+        case 42: //destructableStages
+            Destructable.Load();
+            if(ListFieldID == 0) //destructableStagesSize
+                {
+                Destructable->Stages.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Destructable->Stages.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //health
+                    Destructable->Stages.value[ListIndex]->DSTD.value.health = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //index
+                    Destructable->Stages.value[ListIndex]->DSTD.value.index = *(UINT8 *)FieldValue;
+                    break;
+                case 3: //stage
+                    Destructable->Stages.value[ListIndex]->DSTD.value.stage = *(UINT8 *)FieldValue;
+                    break;
+                case 4: //flags
+                    Destructable->Stages.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 5: //dps
+                    Destructable->Stages.value[ListIndex]->DSTD.value.dps = *(SINT32 *)FieldValue;
+                    break;
+                case 6: //explosion
+                    Destructable->Stages.value[ListIndex]->DSTD.value.explosion = *(FORMID *)FieldValue;
+                    return true;
+                case 7: //debris
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debris = *(FORMID *)FieldValue;
+                    return true;
+                case 8: //debrisCount
+                    Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = *(SINT32 *)FieldValue;
+                    break;
+                case 9: //modPath
+                    Destructable->Stages.value[ListIndex]->DMDL.Copy((STRING)FieldValue);
+                    break;
+                case 10: //modt_p
+                    Destructable->Stages.value[ListIndex]->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 44: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value44 = *(UINT8 *)FieldValue;
-            break;
-        case 45: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value45 = *(UINT8 *)FieldValue;
-            break;
-        case 46: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value46 = *(UINT8 *)FieldValue;
-            break;
-        case 47: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value47 = *(SINT32 *)FieldValue;
-            break;
-        case 48: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value48 = *(FORMID *)FieldValue;
+        case 43: //script
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
-        case 49: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value49 = *(FORMID *)FieldValue;
-            return true;
-        case 50: //dstd Destruction Stage Data
-            DEST.Load();
-            DEST->DSTD.Load();
-            DEST->DSTD->value50 = *(SINT32 *)FieldValue;
+        case 44: //items
+            if(ListFieldID == 0) //itemsSize
+                {
+                CNTO.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= CNTO.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //item
+                    CNTO.value[ListIndex]->CNTO.value.item = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //count
+                    CNTO.value[ListIndex]->CNTO.value.count = *(SINT32 *)FieldValue;
+                    break;
+                case 3: //owner
+                    CNTO.value[ListIndex]->COED.Load();
+                    CNTO.value[ListIndex]->COED->owner = *(FORMID *)FieldValue;
+                    return true;
+                case 4: //globalOrRank
+                    CNTO.value[ListIndex]->COED.Load();
+                    CNTO.value[ListIndex]->COED->globalOrRank = *(FORMID_OR_UINT32 *)FieldValue;
+                    return true;
+                case 5: //condition
+                    CNTO.value[ListIndex]->COED.Load();
+                    CNTO.value[ListIndex]->COED->condition = *(FLOAT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 51: //dmdl Model Filename
-            DEST.Load();
-            DEST->DMDL.Copy((STRING)FieldValue);
+        case 45: //aggression
+            SetAggressionType(*(UINT8 *)FieldValue);
             break;
-        case 52: //dmdt_p Texture Files Hashes
-            DEST.Load();
-            DEST->DMDT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+        case 46: //confidence
+            SetConfidenceType(*(UINT8 *)FieldValue);
             break;
-        case 53: //script
-            SCRIActor.Load();
-            SCRIActor->value53 = *(FORMID *)FieldValue;
-            return true;
-        case 54: //cnto Item
-            CNTO.Load();
-            CNTO->value54 = *(FORMID *)FieldValue;
-            return true;
-        case 55: //cnto Item
-            CNTO.Load();
-            CNTO->value55 = *(SINT32 *)FieldValue;
+        case 47: //energyLevel
+            AIDT.value.energyLevel = *(UINT8 *)FieldValue;
             break;
-        case 56: //aidt AI Data
-            AIDT.Load();
-            AIDT->value56 = *(UINT8 *)FieldValue;
+        case 48: //responsibility
+            AIDT.value.responsibility = *(UINT8 *)FieldValue;
             break;
-        case 57: //aidt AI Data
-            AIDT.Load();
-            AIDT->value57 = *(UINT8 *)FieldValue;
+        case 49: //mood
+            SetMoodType(*(UINT8 *)FieldValue);
             break;
-        case 58: //aidt AI Data
-            AIDT.Load();
-            AIDT->value58 = *(UINT8 *)FieldValue;
-            break;
-        case 59: //aidt AI Data
-            AIDT.Load();
-            AIDT->value59 = *(UINT8 *)FieldValue;
-            break;
-        case 60: //aidt AI Data
-            AIDT.Load();
-            AIDT->value60 = *(UINT8 *)FieldValue;
-            break;
-        case 61: //aidt_p AI Data
+        case 50: //unused1
             if(ArraySize != 3)
                 break;
-            AIDT.Load();
-            AIDT->value61[0] = ((UINT8ARRAY)FieldValue)[0];
-            AIDT->value61[1] = ((UINT8ARRAY)FieldValue)[1];
-            AIDT->value61[2] = ((UINT8ARRAY)FieldValue)[2];
+            AIDT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            AIDT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            AIDT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 62: //aidt AI Data
-            AIDT.Load();
-            AIDT->value62 = *(UINT32 *)FieldValue;
+        case 51: //services
+            SetServicesFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 63: //aidt AI Data
-            AIDT.Load();
-            AIDT->value63 = *(SINT8 *)FieldValue;
+        case 52: //trainSkill
+            AIDT.value.trainSkill = *(SINT8 *)FieldValue;
             break;
-        case 64: //aidt AI Data
-            AIDT.Load();
-            AIDT->value64 = *(UINT8 *)FieldValue;
+        case 53: //trainLevel
+            AIDT.value.trainLevel = *(UINT8 *)FieldValue;
             break;
-        case 65: //aidt AI Data
-            AIDT.Load();
-            AIDT->value65 = *(SINT8 *)FieldValue;
+        case 54: //assistance
+            SetAssistanceType(*(UINT8 *)FieldValue);
             break;
-        case 66: //aidt AI Data
-            AIDT.Load();
-            AIDT->value66 = *(UINT8 *)FieldValue;
+        case 55: //aggroFlags
+            SetAggroFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 67: //aidt AI Data
-            AIDT.Load();
-            AIDT->value67 = *(SINT32 *)FieldValue;
+        case 56: //aggroRadius
+            AIDT.value.aggroRadius = *(SINT32 *)FieldValue;
             break;
-        case 68: //pkid Package
-            PKID.Load();
-            PKID->value68 = *(FORMID *)FieldValue;
+        case 57: //aiPackages
+            PKID.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                PKID.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 69: //kffz Animations
-            return UNPARSEDGET_FIELD69;
-        case 70: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value70 = *(UINT8 *)FieldValue;
+        case 58: //animations
+            KFFZ.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                {
+                UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+                KFFZ.value[x] = new char[size];
+                strcpy_s(KFFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                }
             break;
-        case 71: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value71 = *(UINT8 *)FieldValue;
+        case 59: //creatureType
+            SetType(*(UINT8 *)FieldValue);
             break;
-        case 72: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value72 = *(UINT8 *)FieldValue;
+        case 60: //combat
+            DATA.value.combat = *(UINT8 *)FieldValue;
             break;
-        case 73: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value73 = *(UINT8 *)FieldValue;
+        case 61: //magic
+            DATA.value.magic = *(UINT8 *)FieldValue;
             break;
-        case 74: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value74 = *(SINT16 *)FieldValue;
+        case 62: //stealth
+            DATA.value.stealth = *(UINT8 *)FieldValue;
             break;
-        case 75: //data_p DATA ,, Struct
+        case 63: //health
+            DATA.value.health = *(UINT16 *)FieldValue;
+            break;
+        case 64: //unused2
             if(ArraySize != 2)
                 break;
-            DATA.Load();
-            DATA->value75[0] = ((UINT8ARRAY)FieldValue)[0];
-            DATA->value75[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 76: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value76 = *(SINT16 *)FieldValue;
+        case 65: //attackDamage
+            DATA.value.attackDamage = *(SINT16 *)FieldValue;
             break;
-        case 77: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value77 = *(UINT8 *)FieldValue;
+        case 66: //strength
+            DATA.value.strength = *(UINT8 *)FieldValue;
             break;
-        case 78: //rnam Attack reach
-            RNAM.Load();
-            RNAM->value78 = *(UINT8 *)FieldValue;
+        case 67: //perception
+            DATA.value.perception = *(UINT8 *)FieldValue;
             break;
-        case 79: //znam Combat Style
-            ZNAM.Load();
-            ZNAM->value79 = *(FORMID *)FieldValue;
+        case 68: //endurance
+            DATA.value.endurance = *(UINT8 *)FieldValue;
+            break;
+        case 69: //charisma
+            DATA.value.charisma = *(UINT8 *)FieldValue;
+            break;
+        case 70: //intelligence
+            DATA.value.intelligence = *(UINT8 *)FieldValue;
+            break;
+        case 71: //agility
+            DATA.value.agility = *(UINT8 *)FieldValue;
+            break;
+        case 72: //luck
+            DATA.value.luck = *(UINT8 *)FieldValue;
+            break;
+        case 73: //attackReach
+            RNAM.value = *(UINT8 *)FieldValue;
+            break;
+        case 74: //combatStyle
+            ZNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 80: //pnam Body Part Data
-            PNAM.Load();
-            PNAM->value80 = *(FORMID *)FieldValue;
+        case 75: //partData
+            PNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 81: //tnam Turning Speed
-            TNAM.Load();
-            TNAM->value81 = *(FLOAT32 *)FieldValue;
+        case 76: //turningSpeed
+            TNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 82: //bnam Base Scale
-            BNAM.Load();
-            BNAM->value82 = *(FLOAT32 *)FieldValue;
+        case 77: //baseScale
+            BNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 83: //wnam Foot Weight
-            WNAM.Load();
-            WNAM->value83 = *(FLOAT32 *)FieldValue;
+        case 78: //footWeight
+            WNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 84: //nam4 Impact Material Type
-            NAM4.Load();
-            NAM4->value84 = *(UINT32 *)FieldValue;
+        case 79: //impactType
+            SetImpactType(*(UINT32 *)FieldValue);
             break;
-        case 85: //nam5 Sound Level
-            NAM5.Load();
-            NAM5->value85 = *(UINT32 *)FieldValue;
+        case 80: //soundLevel
+            SetSoundLevelType(*(UINT32 *)FieldValue);
             break;
-        case 86: //cscr Inherits Sounds from
-            CSCR.Load();
-            CSCR->value86 = *(FORMID *)FieldValue;
+        case 81: //inheritsSoundsFrom
+            CSCR.value = *(FORMID *)FieldValue;
             return true;
-        case 87: //csdt Type
-            CSDT.Load();
-            CSDT->CSDT.Load();
-            CSDT->CSDT->value87 = *(UINT32 *)FieldValue;
+        case 82: //soundTypes
+            if(ListFieldID == 0) //soundTypesSize
+                {
+                Types.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Types.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //soundType
+                    Types.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    break;
+                case 2: //sounds
+                    if(ListX2FieldID == 0) //soundTypesSize
+                        {
+                        Types.value[ListIndex]->Sounds.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Types.value[ListIndex]->Sounds.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDI.value = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //chance
+                            Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDC.value = *(UINT8 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 88: //csdi Sound
-            CSDT.Load();
-            CSDT->CSDI.Load();
-            CSDT->CSDI->value88 = *(FORMID *)FieldValue;
+        case 83: //impactData
+            CNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 89: //csdc Sound Chance
-            CSDT.Load();
-            CSDT->CSDC.Load();
-            CSDT->CSDC->value89 = *(UINT8 *)FieldValue;
-            break;
-        case 90: //cnam Impact Dataset
-            CNAM.Load();
-            CNAM->value90 = *(FORMID *)FieldValue;
-            return true;
-        case 91: //lnam Melee Weapon List
-            LNAM.Load();
-            LNAM->value91 = *(FORMID *)FieldValue;
+        case 84: //meleeList
+            LNAM.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -927,6 +1283,16 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void CREARecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
+    FNVMODS defaultMODS;
+    FNVACBS defaultACBS;
+    GENSNAM defaultSNAM;
+    GENDEST defaultDEST;
+    DESTDSTD defaultDSTD;
+    GENCNTO defaultCNTO;
+    GENCOED defaultCOED;
+    FNVAIDT defaultAIDT;
+    CREADATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -945,284 +1311,416 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //full
-            FULLActor.Unload();
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
             return;
-        case 11: //modPath
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //full
+            FULL.Unload();
+            return;
+        case 14: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 12: //modb
+        case 15: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 13: //modt_p
+        case 16: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 14: //mods Alternate Textures
+        case 17: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 15: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 16: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 17: //modelFlags
+        case 18: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 18: //splo Actor Effect
-            SPLOs.Unload();
+        case 19: //actorEffects
+            SPLO.Unload();
             return;
-        case 19: //eitm Unarmed Attack Effect
+        case 20: //unarmedEffect
             EITM.Unload();
             return;
-        case 20: //eamt Unarmed Attack Animation
+        case 21: //unarmedAnim
             EAMT.Unload();
             return;
-        case 21: //nifz Model List
-            return UNPARSEDDEL_FIELD21;
-        case 22: //nift_p Texture Files Hashes
+        case 22: //bodyParts
+            NIFZ.Unload();
+            return;
+        case 23: //nift_p
             NIFT.Unload();
             return;
-        case 23: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 24: //flags
+            SetFlagMask(defaultACBS.flags);
             return;
-        case 24: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 25: //fatigue
+            ACBS.value.fatigue = defaultACBS.fatigue;
             return;
-        case 25: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 26: //barterGold
+            ACBS.value.barterGold = defaultACBS.barterGold;
             return;
-        case 26: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 27: //level
+            ACBS.value.level = defaultACBS.level;
             return;
-        case 27: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 28: //calcMin
+            ACBS.value.calcMin = defaultACBS.calcMin;
             return;
-        case 28: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 29: //calcMax
+            ACBS.value.calcMax = defaultACBS.calcMax;
             return;
-        case 29: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 30: //speedMult
+            ACBS.value.speedMult = defaultACBS.speedMult;
             return;
-        case 30: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 31: //karma
+            ACBS.value.karma = defaultACBS.karma;
             return;
-        case 31: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 32: //dispBase
+            ACBS.value.dispBase = defaultACBS.dispBase;
             return;
-        case 32: //acbs ACBS ,, Struct
-            ACBS.Unload();
+        case 33: //templateFlags
+            SetTemplateFlagMask(defaultACBS.templateFlags);
             return;
-        case 33: //snam SNAM ,, Struct
-            SNAM.Unload();
+        case 34: //factions
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                SNAM.Unload();
+                return;
+                }
+
+            if(ListIndex >= SNAM.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //faction
+                    SNAM.value[ListIndex]->faction = defaultSNAM.faction;
+                    return;
+                case 2: //rank
+                    SNAM.value[ListIndex]->rank = defaultSNAM.rank;
+                    return;
+                case 3: //unused1
+                    SNAM.value[ListIndex]->unused1[0] = defaultSNAM.unused1[0];
+                    SNAM.value[ListIndex]->unused1[1] = defaultSNAM.unused1[1];
+                    SNAM.value[ListIndex]->unused1[2] = defaultSNAM.unused1[2];
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 34: //snam SNAM ,, Struct
-            SNAM.Unload();
-            return;
-        case 35: //snam_p SNAM ,, Struct
-            SNAM.Unload();
-            return;
-        case 36: //inam Death item
+        case 35: //deathItem
             INAM.Unload();
             return;
-        case 37: //vtck Voice
+        case 36: //voice
             VTCK.Unload();
             return;
-        case 38: //tplt Template
+        case 37: //template
             TPLT.Unload();
             return;
-        case 39: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 38: //destructableHealth
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.health = defaultDEST.health;
             return;
-        case 40: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 39: //destructableCount
+            if(Destructable.IsLoaded())
+                Destructable->DEST.value.count = defaultDEST.count;
             return;
-        case 41: //dest Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 40: //destructableFlags
+            if(Destructable.IsLoaded())
+                Destructable->SetFlagMask(defaultDEST.flags);
             return;
-        case 42: //dest_p Header
-            if(DEST.IsLoaded())
-                DEST->DEST.Unload();
+        case 41: //destructableUnused1
+            if(Destructable.IsLoaded())
+                {
+                Destructable->DEST.value.unused1[0] = defaultDSTD.health;
+                }
             return;
-        case 43: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 42: //destructableStages
+            if(Destructable.IsLoaded())
+                {
+                if(ListFieldID == 0) //destructableStages
+                    {
+                    Destructable->Stages.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= Destructable->Stages.value.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //health
+                        Destructable->Stages.value[ListIndex]->DSTD.value.health = defaultDSTD.health;
+                        return;
+                    case 2: //index
+                        Destructable->Stages.value[ListIndex]->DSTD.value.index = defaultDSTD.index;
+                        return;
+                    case 3: //stage
+                        Destructable->Stages.value[ListIndex]->DSTD.value.stage = defaultDSTD.stage;
+                        return;
+                    case 4: //flags
+                        Destructable->Stages.value[ListIndex]->SetFlagMask(defaultDSTD.flags);
+                        return;
+                    case 5: //dps
+                        Destructable->Stages.value[ListIndex]->DSTD.value.dps = defaultDSTD.dps;
+                        return;
+                    case 6: //explosion
+                        Destructable->Stages.value[ListIndex]->DSTD.value.explosion = defaultDSTD.explosion;
+                        return;
+                    case 7: //debris
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debris = defaultDSTD.debris;
+                        return;
+                    case 8: //debrisCount
+                        Destructable->Stages.value[ListIndex]->DSTD.value.debrisCount = defaultDSTD.debrisCount;
+                        return;
+                    case 9: //modPath
+                        Destructable->Stages.value[ListIndex]->DMDL.Unload();
+                        return;
+                    case 10: //modt_p
+                        Destructable->Stages.value[ListIndex]->DMDT.Unload();
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 44: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 43: //script
+            SCRI.Unload();
             return;
-        case 45: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 44: //items
+            if(ListFieldID == 0) //itemsSize
+                {
+                CNTO.Unload();
+                return;
+                }
+
+            if(ListIndex >= CNTO.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //item
+                    CNTO.value[ListIndex]->CNTO.value.item = defaultCNTO.item;
+                    return;
+                case 2: //count
+                    CNTO.value[ListIndex]->CNTO.value.count = defaultCNTO.count;
+                    return;
+                case 3: //owner
+                    if(CNTO.value[ListIndex]->COED.IsLoaded())
+                        CNTO.value[ListIndex]->COED->owner = defaultCOED.owner;
+                    return;
+                case 4: //globalOrRank
+                    if(CNTO.value[ListIndex]->COED.IsLoaded())
+                        CNTO.value[ListIndex]->COED->globalOrRank = defaultCOED.globalOrRank;
+                    return;
+                case 5: //condition
+                    if(CNTO.value[ListIndex]->COED.IsLoaded())
+                        CNTO.value[ListIndex]->COED->condition = defaultCOED.condition;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 46: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 45: //aggression
+            SetAggressionType(defaultAIDT.aggression);
             return;
-        case 47: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 46: //confidence
+            SetConfidenceType(defaultAIDT.confidence);
             return;
-        case 48: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 47: //energyLevel
+            AIDT.value.energyLevel = defaultAIDT.energyLevel;
             return;
-        case 49: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 48: //responsibility
+            AIDT.value.responsibility = defaultAIDT.responsibility;
             return;
-        case 50: //dstd Destruction Stage Data
-            if(DEST.IsLoaded())
-                DEST->DSTD.Unload();
+        case 49: //mood
+            SetMoodType(defaultAIDT.mood);
             return;
-        case 51: //dmdl Model Filename
-            if(DEST.IsLoaded())
-                DEST->DMDL.Unload();
+        case 50: //unused1
+            AIDT.value.unused1[0] = defaultAIDT.unused1[0];
+            AIDT.value.unused1[1] = defaultAIDT.unused1[1];
+            AIDT.value.unused1[2] = defaultAIDT.unused1[2];
             return;
-        case 52: //dmdt_p Texture Files Hashes
-            if(DEST.IsLoaded())
-                DEST->DMDT.Unload();
+        case 51: //services
+            SetServicesFlagMask(defaultAIDT.flags);
             return;
-        case 53: //script
-            SCRIActor.Unload();
+        case 52: //trainSkill
+            AIDT.value.trainSkill = defaultAIDT.trainSkill;
             return;
-        case 54: //cnto Item
-            CNTO.Unload();
+        case 53: //trainLevel
+            AIDT.value.trainLevel = defaultAIDT.trainLevel;
             return;
-        case 55: //cnto Item
-            CNTO.Unload();
+        case 54: //assistance
+            SetAssistanceType(defaultAIDT.assistance);
             return;
-        case 56: //aidt AI Data
-            AIDT.Unload();
+        case 55: //aggroFlags
+            SetAggroFlagMask(defaultAIDT.aggroFlags);
             return;
-        case 57: //aidt AI Data
-            AIDT.Unload();
+        case 56: //aggroRadius
+            AIDT.value.aggroRadius = defaultAIDT.aggroRadius;
             return;
-        case 58: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 59: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 60: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 61: //aidt_p AI Data
-            AIDT.Unload();
-            return;
-        case 62: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 63: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 64: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 65: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 66: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 67: //aidt AI Data
-            AIDT.Unload();
-            return;
-        case 68: //pkid Package
+        case 57: //aiPackages
             PKID.Unload();
             return;
-        case 69: //kffz Animations
-            return UNPARSEDDEL_FIELD69;
-        case 70: //data DATA ,, Struct
-            DATA.Unload();
+        case 58: //animations
+            KFFZ.Unload();
             return;
-        case 71: //data DATA ,, Struct
-            DATA.Unload();
+        case 59: //creatureType
+            SetType(defaultDATA.creatureType);
             return;
-        case 72: //data DATA ,, Struct
-            DATA.Unload();
+        case 60: //combat
+            DATA.value.combat = defaultDATA.combat;
             return;
-        case 73: //data DATA ,, Struct
-            DATA.Unload();
+        case 61: //magic
+            DATA.value.magic = defaultDATA.magic;
             return;
-        case 74: //data DATA ,, Struct
-            DATA.Unload();
+        case 62: //stealth
+            DATA.value.stealth = defaultDATA.stealth;
             return;
-        case 75: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 63: //health
+            DATA.value.health = defaultDATA.health;
             return;
-        case 76: //data DATA ,, Struct
-            DATA.Unload();
+        case 64: //unused2
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
             return;
-        case 77: //data DATA ,, Struct
-            DATA.Unload();
+        case 65: //attackDamage
+            DATA.value.attackDamage = defaultDATA.attackDamage;
             return;
-        case 78: //rnam Attack reach
+        case 66: //strength
+            DATA.value.strength = defaultDATA.strength;
+            return;
+        case 67: //perception
+            DATA.value.perception = defaultDATA.perception;
+            return;
+        case 68: //endurance
+            DATA.value.endurance = defaultDATA.endurance;
+            return;
+        case 69: //charisma
+            DATA.value.charisma = defaultDATA.charisma;
+            return;
+        case 70: //intelligence
+            DATA.value.intelligence = defaultDATA.intelligence;
+            return;
+        case 71: //agility
+            DATA.value.agility = defaultDATA.agility;
+            return;
+        case 72: //luck
+            DATA.value.luck = defaultDATA.luck;
+            return;
+        case 73: //attackReach
             RNAM.Unload();
             return;
-        case 79: //znam Combat Style
+        case 74: //combatStyle
             ZNAM.Unload();
             return;
-        case 80: //pnam Body Part Data
+        case 75: //partData
             PNAM.Unload();
             return;
-        case 81: //tnam Turning Speed
+        case 76: //turningSpeed
             TNAM.Unload();
             return;
-        case 82: //bnam Base Scale
+        case 77: //baseScale
             BNAM.Unload();
             return;
-        case 83: //wnam Foot Weight
+        case 78: //footWeight
             WNAM.Unload();
             return;
-        case 84: //nam4 Impact Material Type
+        case 79: //impactType
             NAM4.Unload();
             return;
-        case 85: //nam5 Sound Level
+        case 80: //soundLevel
             NAM5.Unload();
             return;
-        case 86: //cscr Inherits Sounds from
+        case 81: //inheritsSoundsFrom
             CSCR.Unload();
             return;
-        case 87: //csdt Type
-            if(CSDT.IsLoaded())
-                CSDT->CSDT.Unload();
+        case 82: //soundTypes
+            if(ListFieldID == 0) //soundTypesSize
+                {
+                Types.Unload();
+                return;
+                }
+
+            if(ListIndex >= Types.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //soundType
+                    Types.value[ListIndex]->CSDT.Unload();
+                    return;
+                case 2: //sounds
+                    if(ListX2FieldID == 0) //soundTypesSize
+                        {
+                        Types.value[ListIndex]->Sounds.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Types.value[ListIndex]->Sounds.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDI.Unload();
+                            return;
+                        case 2: //chance
+                            Types.value[ListIndex]->Sounds.value[ListX2Index]->CSDC.Unload();
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 88: //csdi Sound
-            if(CSDT.IsLoaded())
-                CSDT->CSDI.Unload();
-            return;
-        case 89: //csdc Sound Chance
-            if(CSDT.IsLoaded())
-                CSDT->CSDC.Unload();
-            return;
-        case 90: //cnam Impact Dataset
+        case 83: //impactData
             CNAM.Unload();
             return;
-        case 91: //lnam Melee Weapon List
+        case 84: //meleeList
             LNAM.Unload();
             return;
         default:

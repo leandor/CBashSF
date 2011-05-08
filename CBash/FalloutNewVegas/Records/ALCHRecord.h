@@ -44,6 +44,13 @@ class ALCHRecord : public FNVRecord //Ingestible
             bool operator !=(const ALCHENIT &other) const;
             };
 
+        enum flagsFlags
+            {
+            fIsNoAutoCalc = 0x00000001, //Unused
+            fIsFood       = 0x00000002,
+            fIsMedicine   = 0x00000004
+            };
+
         enum eEquipTypes
             {
             eNone    = -1,
@@ -70,19 +77,28 @@ class ALCHRecord : public FNVRecord //Ingestible
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
+        ReqSimpleSubRecord<FLOAT32> DATA; //Weight
+        ReqSubRecord<ALCHENIT> ENIT; //Effect Data
+        UnorderedSparseArray<FNVEffect *> Effects; //Effects
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
-        OptSimpleSubRecord<FLOAT32> DATA; //Weight
-        OptSubRecord<ALCHENIT> ENIT; //Effect Data
-        UnorderedSparseArray<FNVEffect *> Effects; //Effects
 
         ALCHRecord(unsigned char *_recData=NULL);
         ALCHRecord(ALCHRecord *srcRecord);
         ~ALCHRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
+
+        bool   IsNoAutoCalc();
+        void   IsNoAutoCalc(bool value);
+        bool   IsFood();
+        void   IsFood(bool value);
+        bool   IsMedicine();
+        void   IsMedicine(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         bool   IsNone();
         void   IsNone(bool value);

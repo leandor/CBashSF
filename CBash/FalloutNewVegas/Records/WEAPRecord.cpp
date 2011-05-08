@@ -27,7 +27,7 @@ namespace FNV
 WEAPRecord::WEAPDATA::WEAPDATA():
     value(0),
     health(0),
-    weight(0.0f), 
+    weight(0.0f),
     damage(0),
     clipSize(0)
     {
@@ -56,61 +56,61 @@ bool WEAPRecord::WEAPDATA::operator !=(const WEAPDATA &other) const
 WEAPRecord::WEAPDNAM::WEAPDNAM():
     animType(0),
     animMult(0.0f),
-    reach(0.0f), 
+    reach(0.0f),
     flags1(0),
     gripAnim(0),
     ammoUse(0),
-    reloadAnim(0), 
-    minSpread(0.0f), 
-    spread(0.0f), 
-    unknown1(0.0f), 
-    sightFOV(0.0f), 
-    unknown2(0.0f), 
-    projectile(0), 
-    VATSHitChance(0), 
-    attackAnim(0), 
-    projectileCount(0), 
-    weaponAV(0), 
-    minRange(0.0f), 
-    maxRange(0.0f), 
-    onHit(0), 
-    flags2(0), 
-    animAttackMult(0.0f), 
-    fireRate(0.0f), 
-    overrideAP(0.0f), 
-    leftRumble(0.0f), 
-    rightRumble(0.0f), 
-    timeRumble(0.0f), 
-    overrideDamageToWeapon(0.0f), 
-    shotsPerSecond(0.0f), 
-    reloadTime(0.0f), 
-    jamTime(0.0f), 
-    aimArc(0.0f), 
-    skill(0), 
-    rumbleType(0), 
-    rumbleWavelength(0.0f), 
-    limbDamageMult(0.0f), 
-    resistType(0), 
-    sightUsage(0.0f), 
-    semiFireDelayMin(0.0f), 
-    semiFireDelayMax(0.0f), 
-    unknown3(0.0f), 
-    effectMod1(0), 
-    effectMod2(0), 
-    effectMod3(0), 
-    valueAMod1(0.0f), 
-    valueAMod2(0.0f), 
-    valueAMod3(0.0f), 
-    overridePwrAtkAnim(0), 
-    strengthReq(0), 
-    unknown4(0), 
-    reloadAnimMod(0), 
-    regenRate(0.0f), 
-    killImpulse(0.0f), 
-    valueBMod1(0.0f), 
-    valueBMod2(0.0f), 
-    valueBMod3(0.0f), 
-    impulseDist(0.0f), 
+    reloadAnim(0),
+    minSpread(0.0f),
+    spread(0.0f),
+    unknown1(0.0f),
+    sightFOV(0.0f),
+    unknown2(0.0f),
+    projectile(0),
+    VATSHitChance(0),
+    attackAnim(0),
+    projectileCount(0),
+    weaponAV(0),
+    minRange(0.0f),
+    maxRange(0.0f),
+    onHit(0),
+    flags2(0),
+    animAttackMult(0.0f),
+    fireRate(0.0f),
+    overrideAP(0.0f),
+    leftRumble(0.0f),
+    rightRumble(0.0f),
+    timeRumble(0.0f),
+    overrideDamageToWeapon(0.0f),
+    shotsPerSecond(0.0f),
+    reloadTime(0.0f),
+    jamTime(0.0f),
+    aimArc(0.0f),
+    skill(0),
+    rumbleType(0),
+    rumbleWavelength(0.0f),
+    limbDamageMult(0.0f),
+    resistType(0),
+    sightUsage(0.0f),
+    semiFireDelayMin(0.0f),
+    semiFireDelayMax(0.0f),
+    unknown3(0.0f),
+    effectMod1(0),
+    effectMod2(0),
+    effectMod3(0),
+    valueAMod1(0.0f),
+    valueAMod2(0.0f),
+    valueAMod3(0.0f),
+    overridePwrAtkAnim(0),
+    strengthReq(0),
+    unknown4(0),
+    reloadAnimMod(0),
+    regenRate(0.0f),
+    killImpulse(0.0f),
+    valueBMod1(0.0f),
+    valueBMod2(0.0f),
+    valueBMod3(0.0f),
+    impulseDist(0.0f),
     skillReq(0)
     {
     memset(&unknown5[0], 0x00, 2);
@@ -290,7 +290,7 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     ETYP = srcRecord->ETYP;
     BIPL = srcRecord->BIPL;
     YNAM = srcRecord->YNAM;
-    ZNAM = srcRecord->ZNAM;    
+    ZNAM = srcRecord->ZNAM;
     MOD2 = srcRecord->MOD2;
     MOD3 = srcRecord->MOD3;
     EFSD = srcRecord->EFSD;
@@ -1842,7 +1842,7 @@ bool WEAPRecord::IsModReloadA()
 void WEAPRecord::IsModReloadA(bool value)
     {
     DNAM.value.reloadAnimMod = value ? eReloadA : eReloadB;
-    }                                     
+    }
 
 bool WEAPRecord::IsModReloadB()
     {
@@ -2192,8 +2192,8 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 curSound = 0;
     enum curSounds
         {
-        fIsGun3DRead     = 0x01,
-        fIsShoot3DRead   = 0x02
+        fIsGun3DRead   = 0x01,
+        fIsShoot3DRead = 0x02
         };
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);

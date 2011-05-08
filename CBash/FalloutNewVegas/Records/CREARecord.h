@@ -32,7 +32,7 @@ class CREARecord : public FNVRecord //Creature
             {
             UINT8   creatureType, combat, magic, stealth;
             UINT16  health;
-            UINT8   unused2[2];
+            UINT8   unused1[2];
             SINT16  attackDamage;
             UINT8   strength, perception, endurance, charisma, intelligence, agility, luck;
 
@@ -48,14 +48,14 @@ class CREARecord : public FNVRecord //Creature
             ReqSimpleSubRecord<FORMID> CSDI; // Sound
             ReqSimpleSubRecord<UINT8> CSDC; // Sound Chance
 
-            bool   operator ==(const CREASound &other) const;
-            bool   operator !=(const CREASound &other) const;
+            bool operator ==(const CREASound &other) const;
+            bool operator !=(const CREASound &other) const;
             };
 
         struct CREASoundType // Sound Type
             {
             ReqSimpleSubRecord<UINT32> CSDT; //Type
-            std::vector<CREASound *> Sounds; // Sounds
+            UnorderedSparseArray<CREASound *> Sounds; // Sounds
 
             enum eSoundType
                 {
@@ -128,10 +128,12 @@ class CREARecord : public FNVRecord //Creature
             bool   IsPlayRandomLoop();
             void   IsPlayRandomLoop(bool value);
             bool   IsType(UINT32 Type);
-            void   Se0Type(UINT32 Type);
+            void   SetType(UINT32 Type);
 
-            bool   operator ==(const CREASoundType &other) const;
-            bool   operator !=(const CREASoundType &other) const;
+            void Write(FileWriter &writer);
+
+            bool operator ==(const CREASoundType &other) const;
+            bool operator !=(const CREASoundType &other) const;
             };
 
         enum flagsFlags
@@ -172,7 +174,7 @@ class CREARecord : public FNVRecord //Creature
             {
             fIsUseTraits     = 0x00000001,
             fIsUseStats      = 0x00000002,
-            fIsUseFactions   = 0x00000004
+            fIsUseFactions   = 0x00000004,
             fIsUseAEList     = 0x00000008,
             fIsUseAIData     = 0x00000010,
             fIsUseAIPackages = 0x00000020,
@@ -377,28 +379,46 @@ class CREARecord : public FNVRecord //Creature
             eOrganicBug,
             eOrganicGlow
             };
+
+        enum servicesFlags
+            {
+            fIsServicesWeapons   = 0x00000001,
+            fIsServicesArmor     = 0x00000002,
+            fIsServicesClothing  = 0x00000004,
+            fIsServicesBooks     = 0x00000008,
+            fIsServicesFood      = 0x00000010,
+            fIsServicesChems     = 0x00000020,
+            fIsServicesStimpacks = 0x00000040,
+            fIsServicesLights    = 0x00000080, // ?
+            fIsServicesMiscItems = 0x00000400,
+            fIsServicesPotions   = 0x00002000, // ?
+            fIsServicesTraining  = 0x00004000,
+            fIsServicesRecharge  = 0x00010000,
+            fIsServicesRepair    = 0x00020000
+            };
+
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        std::vector<FORMID> SPLO; //Actor Effects
+        UnorderedSparseArray<FORMID> SPLO; //Actor Effects
         OptSimpleSubRecord<FORMID> EITM; //Unarmed Attack Effect
         OptSimpleSubRecord<UINT16> EAMT; //Unarmed Attack Animation
-        std::vector<StringRecord> NIFZ; //Model List
+        UnorderedPackedStrings NIFZ; //Model List
         RawRecord NIFT; //Texture Files Hashes
-        OptSubRecord<FNVACBS> ACBS; // Configuration
-        std::vector<ReqSubRecord<GENSNAM> *> SNAM; //Factions
+        ReqSubRecord<FNVACBS> ACBS; // Configuration
+        UnorderedSparseArray<GENSNAM *> SNAM; //Factions
         OptSimpleSubRecord<FORMID> INAM; //Death item
         OptSimpleSubRecord<FORMID> VTCK; //Voice
         OptSimpleSubRecord<FORMID> TPLT; //Template
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> SCRI; //Script
         UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
-        OptSubRecord<FNVAIDT> AIDT; //AI Data
+        ReqSubRecord<FNVAIDT> AIDT; //AI Data
         UnorderedSparseArray<FORMID> PKID; //Packages
-        std::vector<StringRecord> KFFZ; //Animations
-        OptSubRecord<CREADATA> DATA; //Data
+        UnorderedPackedStrings KFFZ; //Animations
+        ReqSubRecord<CREADATA> DATA; //Data
         OptSimpleSubRecord<UINT8> RNAM; //Attack reach
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
@@ -408,7 +428,7 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level
         OptSimpleSubRecord<FORMID> CSCR; //Inherits Sounds from
-        std::vector<CREASound *> Sounds; //Sound Types
+        UnorderedSparseArray<CREASoundType *> Types; //Sound Types
         OptSimpleSubRecord<FORMID> CNAM; //Impact Dataset
         OptSimpleSubRecord<FORMID> LNAM; //Melee Weapon List
 
@@ -476,8 +496,8 @@ class CREARecord : public FNVRecord //Creature
         void   IsNoHeadTracking(bool value);
         bool   IsInvulnerable();
         void   IsInvulnerable(bool value);
-        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagMask(UINT8 Mask);
+        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagMask(UINT32 Mask);
 
         bool   IsUseTraits();
         void   IsUseTraits(bool value);
@@ -499,13 +519,42 @@ class CREARecord : public FNVRecord //Creature
         void   IsUseInventory(bool value);
         bool   IsUseScript();
         void   IsUseScript(bool value);
-        bool   IsTemplateFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetTemplateFlagMask(UINT8 Mask);
+        bool   IsTemplateFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetTemplateFlagMask(UINT16 Mask);
 
         bool   IsAggroRadiusBehavior();
         void   IsAggroRadiusBehavior(bool value);
         bool   IsAggroFlagMask(UINT8 Mask, bool Exact=false);
         void   SetAggroFlagMask(UINT8 Mask);
+
+        bool   IsServicesWeapons();
+        void   IsServicesWeapons(bool value);
+        bool   IsServicesArmor();
+        void   IsServicesArmor(bool value);
+        bool   IsServicesClothing();
+        void   IsServicesClothing(bool value);
+        bool   IsServicesBooks();
+        void   IsServicesBooks(bool value);
+        bool   IsServicesFood();
+        void   IsServicesFood(bool value);
+        bool   IsServicesChems();
+        void   IsServicesChems(bool value);
+        bool   IsServicesStimpacks();
+        void   IsServicesStimpacks(bool value);
+        bool   IsServicesLights();
+        void   IsServicesLights(bool value);
+        bool   IsServicesMiscItems();
+        void   IsServicesMiscItems(bool value);
+        bool   IsServicesPotions();
+        void   IsServicesPotions(bool value);
+        bool   IsServicesTraining();
+        void   IsServicesTraining(bool value);
+        bool   IsServicesRecharge();
+        void   IsServicesRecharge(bool value);
+        bool   IsServicesRepair();
+        void   IsServicesRepair(bool value);
+        bool   IsServicesFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetServicesFlagMask(UINT32 Mask);
 
         bool   IsAnimal();
         void   IsAnimal(bool value);
@@ -758,8 +807,8 @@ class CREARecord : public FNVRecord //Creature
         void   IsPipBoyChild(bool value);
         bool   IsANY();
         void   IsANY(bool value);
-        bool   IsAttackAnimType(UINT8 Type);
-        void   SetAttackAnimType(UINT8 Type);
+        bool   IsAttackAnimType(UINT16 Type);
+        void   SetAttackAnimType(UINT16 Type);
 
         bool   IsLoud();
         void   IsLoud(bool value);
@@ -767,8 +816,8 @@ class CREARecord : public FNVRecord //Creature
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type);
-        void   SetSoundLevelType(UINT8 Type);
+        bool   IsSoundLevelType(UINT32 Type);
+        void   SetSoundLevelType(UINT32 Type);
 
         bool   IsUnaggressive();
         void   IsUnaggressive(bool value);
@@ -846,8 +895,8 @@ class CREARecord : public FNVRecord //Creature
         void   IsOrganicBug(bool value);
         bool   IsOrganicGlow();
         void   IsOrganicGlow(bool value);
-        bool   IsImpactType(UINT8 Type);
-        void   SetImpactType(UINT8 Type);
+        bool   IsImpactType(UINT32 Type);
+        void   SetImpactType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

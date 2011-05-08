@@ -40,7 +40,7 @@ class LVLNRecord : public FNVRecord //Leveled NPC
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSimpleSubRecord<UINT8> LVLD; //Chance none
         OptSimpleSubRecord<UINT8> LVLF; //Flags
-        std::vector<ReqSubRecord<FNVLVLO> *> Entries; //Leveled List Entries
+        UnorderedSparseArray<FNVLVLO *> Entries; //Leveled List Entries
         OptSubRecord<FNVMODEL> MODL; //Model
 
         LVLNRecord(unsigned char *_recData=NULL);

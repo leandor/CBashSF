@@ -70,7 +70,7 @@ class CLASRecord : public FNVRecord //Class
             fIsServicesFood      = 0x00000010,
             fIsServicesChems     = 0x00000020,
             fIsServicesStimpacks = 0x00000040,
-            fIsServicesLights    = 0x00000080,
+            fIsServicesLights    = 0x00000080, // ?
             fIsServicesMiscItems = 0x00000400,
             fIsServicesPotions   = 0x00002000, // ?
             fIsServicesTraining  = 0x00004000,

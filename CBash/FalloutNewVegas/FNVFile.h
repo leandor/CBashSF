@@ -62,11 +62,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/WEAPRecord.h"
 #include "Records/AMMORecord.h"
 #include "Records/NPC_Record.h"
-//#include "Records/CREARecord.h"
-//#include "Records/LVLCRecord.h"
-//#include "Records/LVLNRecord.h"
-//#include "Records/KEYMRecord.h"
-//#include "Records/ALCHRecord.h"
+#include "Records/CREARecord.h"
+#include "Records/LVLCRecord.h"
+#include "Records/LVLNRecord.h"
+#include "Records/KEYMRecord.h"
+#include "Records/ALCHRecord.h"
 //#include "Records/IDLMRecord.h"
 //#include "Records/NOTERecord.h"
 //#include "Records/COBJRecord.h"
@@ -167,11 +167,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::WEAPRecord> WEAP;
         FNVGRUPRecords<FNV::AMMORecord> AMMO;
         FNVGRUPRecords<FNV::NPC_Record> NPC_;
-        //FNVGRUPRecords<FNV::CREARecord> CREA;
-        //FNVGRUPRecords<FNV::LVLCRecord> LVLC;
-        //FNVGRUPRecords<FNV::LVLNRecord> LVLN;
-        //FNVGRUPRecords<FNV::KEYMRecord> KEYM;
-        //FNVGRUPRecords<FNV::ALCHRecord> ALCH;
+        FNVGRUPRecords<FNV::CREARecord> CREA;
+        FNVGRUPRecords<FNV::LVLCRecord> LVLC;
+        FNVGRUPRecords<FNV::LVLNRecord> LVLN;
+        FNVGRUPRecords<FNV::KEYMRecord> KEYM;
+        FNVGRUPRecords<FNV::ALCHRecord> ALCH;
         //FNVGRUPRecords<FNV::IDLMRecord> IDLM;
         //FNVGRUPRecords<FNV::NOTERecord> NOTE;
         //FNVGRUPRecords<FNV::COBJRecord> COBJ;

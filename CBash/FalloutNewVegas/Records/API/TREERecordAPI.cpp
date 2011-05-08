@@ -155,7 +155,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 29: //widthBill
             return FLOAT32_FIELD;
         case 30: //heightBill
-            return FLOAT32_FIELD;            
+            return FLOAT32_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -519,7 +519,7 @@ void TREERecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 30: //heightBill
             BNAM.value.heightBill = defaultBNAM.heightBill;
-            return;            
+            return;
         default:
             return;
         }

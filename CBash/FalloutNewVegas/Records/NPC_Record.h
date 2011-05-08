@@ -165,6 +165,24 @@ class NPC_Record : public FNVRecord //Non-Player Character
             eOrganicBug,
             eOrganicGlow
             };
+
+        enum servicesFlags
+            {
+            fIsServicesWeapons   = 0x00000001,
+            fIsServicesArmor     = 0x00000002,
+            fIsServicesClothing  = 0x00000004,
+            fIsServicesBooks     = 0x00000008,
+            fIsServicesFood      = 0x00000010,
+            fIsServicesChems     = 0x00000020,
+            fIsServicesStimpacks = 0x00000040,
+            fIsServicesLights    = 0x00000080, // ?
+            fIsServicesMiscItems = 0x00000400,
+            fIsServicesPotions   = 0x00002000, // ?
+            fIsServicesTraining  = 0x00004000,
+            fIsServicesRecharge  = 0x00010000,
+            fIsServicesRepair    = 0x00020000
+            };
+
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
@@ -269,6 +287,35 @@ class NPC_Record : public FNVRecord //Non-Player Character
         void   IsAggroRadiusBehavior(bool value);
         bool   IsAggroFlagMask(UINT8 Mask, bool Exact=false);
         void   SetAggroFlagMask(UINT8 Mask);
+
+        bool   IsServicesWeapons();
+        void   IsServicesWeapons(bool value);
+        bool   IsServicesArmor();
+        void   IsServicesArmor(bool value);
+        bool   IsServicesClothing();
+        void   IsServicesClothing(bool value);
+        bool   IsServicesBooks();
+        void   IsServicesBooks(bool value);
+        bool   IsServicesFood();
+        void   IsServicesFood(bool value);
+        bool   IsServicesChems();
+        void   IsServicesChems(bool value);
+        bool   IsServicesStimpacks();
+        void   IsServicesStimpacks(bool value);
+        bool   IsServicesLights();
+        void   IsServicesLights(bool value);
+        bool   IsServicesMiscItems();
+        void   IsServicesMiscItems(bool value);
+        bool   IsServicesPotions();
+        void   IsServicesPotions(bool value);
+        bool   IsServicesTraining();
+        void   IsServicesTraining(bool value);
+        bool   IsServicesRecharge();
+        void   IsServicesRecharge(bool value);
+        bool   IsServicesRepair();
+        void   IsServicesRepair(bool value);
+        bool   IsServicesFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetServicesFlagMask(UINT32 Mask);
 
         bool   IsUnaggressive();
         void   IsUnaggressive(bool value);

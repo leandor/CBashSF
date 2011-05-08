@@ -2820,6 +2820,7 @@ class FnvENCHRecord(FnvBaseRecord):
 
 
     IsNoAutoCalc = CBashBasicFlag('flags', 0x01)
+    IsAutoCalc = CBashInvertedFlag('IsNoAutoCalc')
     IsHideEffect = CBashBasicFlag('flags', 0x04)
     IsWeapon = CBashBasicType('itemType', 2, 'IsApparel')
     IsApparel = CBashBasicType('itemType', 3, 'IsWeapon')
@@ -4611,7 +4612,7 @@ class FnvNPC_Record(FnvBaseRecord):
     responsibility = CBashGeneric(47, c_ubyte)
     mood = CBashGeneric(48, c_ubyte)
     unused1 = CBashUINT8ARRAY(49, 3)
-    flags = CBashGeneric(50, c_ulong)
+    services = CBashGeneric(50, c_ulong)
     trainSkill = CBashGeneric(51, c_byte)
     trainLevel = CBashGeneric(52, c_ubyte)
     assistance = CBashGeneric(53, c_ubyte)
@@ -4757,7 +4758,7 @@ class FnvNPC_Record(FnvBaseRecord):
                                            'script', 'items_list', 'aggression',
                                            'confidence', 'energyLevel',
                                            'responsibility', 'mood',
-                                           'flags', 'trainSkill', 'trainLevel',
+                                           'services', 'trainSkill', 'trainLevel',
                                            'assistance', 'aggroFlags',
                                            'aggroRadius', 'aiPackages', 'iclass',
                                            'baseHealth', 'strength', 'perception',
@@ -4792,7 +4793,7 @@ class FnvNPC_Record(FnvBaseRecord):
                                              'script', 'items_list', 'aggression',
                                              'confidence', 'energyLevel',
                                              'responsibility', 'mood',
-                                             'flags', 'trainSkill', 'trainLevel',
+                                             'services', 'trainSkill', 'trainLevel',
                                              'assistance', 'aggroFlags',
                                              'aggroRadius', 'aiPackages', 'iclass',
                                              'baseHealth', 'strength', 'perception',
@@ -4816,28 +4817,739 @@ class FnvNPC_Record(FnvBaseRecord):
 
 class FnvCREARecord(FnvBaseRecord):
     _Type = 'CREA'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet.
+        Filters items."""
+        self.items = [x for x in self.items if x.item[0] in modSet]
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class SoundType(ListComponent):
+        class Sound(ListX2Component):
+            sound = CBashFORMID_LISTX2(1)
+            chance = CBashGeneric_LISTX2(2, c_ubyte)
+            exportattrs = copyattrs = ['sound', 'chance']
+
+        soundType = CBashGeneric_LIST(1, c_ulong)
+        def create_sound(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Sound(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, length)
+        sounds = CBashLIST_LIST(2, Sound)
+        sounds_list = CBashLIST_LIST(2, Sound, True)
+
+        
+        IsLeftFoot = CBashBasicType('soundType', 0, 'IsRightFoot')
+        IsRightFoot = CBashBasicType('soundType', 1, 'IsLeftFoot')
+        IsLeftBackFoot = CBashBasicType('soundType', 2, 'IsLeftFoot')
+        IsRightBackFoot = CBashBasicType('soundType', 3, 'IsLeftFoot')
+        IsIdle = CBashBasicType('soundType', 4, 'IsLeftFoot')
+        IsAware = CBashBasicType('soundType', 5, 'IsLeftFoot')
+        IsAttack = CBashBasicType('soundType', 6, 'IsLeftFoot')
+        IsHit = CBashBasicType('soundType', 7, 'IsLeftFoot')
+        IsDeath = CBashBasicType('soundType', 8, 'IsLeftFoot')
+        IsWeapon = CBashBasicType('soundType', 9, 'IsLeftFoot')
+        IsMovementLoop = CBashBasicType('soundType', 10, 'IsLeftFoot')
+        IsConsciousLoop = CBashBasicType('soundType', 11, 'IsLeftFoot')
+        IsAuxiliary1 = CBashBasicType('soundType', 12, 'IsLeftFoot')
+        IsAuxiliary2 = CBashBasicType('soundType', 13, 'IsLeftFoot')
+        IsAuxiliary3 = CBashBasicType('soundType', 14, 'IsLeftFoot')
+        IsAuxiliary4 = CBashBasicType('soundType', 15, 'IsLeftFoot')
+        IsAuxiliary5 = CBashBasicType('soundType', 16, 'IsLeftFoot')
+        IsAuxiliary6 = CBashBasicType('soundType', 17, 'IsLeftFoot')
+        IsAuxiliary7 = CBashBasicType('soundType', 18, 'IsLeftFoot')
+        IsAuxiliary8 = CBashBasicType('soundType', 19, 'IsLeftFoot')
+        IsJump = CBashBasicType('soundType', 20, 'IsLeftFoot')
+        IsPlayRandomLoop = CBashBasicType('soundType', 21, 'IsLeftFoot')
+        exportattrs = copyattrs = ['soundType', 'sounds_list']
+
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    actorEffects = CBashFORMIDARRAY(19)
+    unarmedEffect = CBashFORMID(20)
+    unarmedAnim = CBashGeneric(21, c_ushort)
+    bodyParts = CBashISTRINGARRAY(22)
+    nift_p = CBashUINT8ARRAY(23)
+    flags = CBashGeneric(24, c_ulong)
+    fatigue = CBashGeneric(25, c_ushort)
+    barterGold = CBashGeneric(26, c_ushort)
+    level = CBashGeneric(27, c_short)
+    calcMin = CBashGeneric(28, c_ushort)
+    calcMax = CBashGeneric(29, c_ushort)
+    speedMult = CBashGeneric(30, c_ushort)
+    karma = CBashFLOAT32(31)
+    dispBase = CBashGeneric(32, c_short)
+    templateFlags = CBashGeneric(33, c_ushort)
+    def create_faction(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 34, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 34, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return Faction(self._CollectionID, self._ModID, self._RecordID, 34, length)
+    factions = CBashLIST(34, Faction)
+    factions_list = CBashLIST(34, Faction, True)
+
+    deathItem = CBashFORMID(35)
+    voice = CBashFORMID(36)
+    template = CBashFORMID(37)
+    destructable = CBashGrouped(38, FNVDestructable)
+    destructable_list = CBashGrouped(38, FNVDestructable, True)
+
+    script = CBashFORMID(43)
+
+    def create_item(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 44, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 44, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVItem(self._CollectionID, self._ModID, self._RecordID, 44, length)
+    items = CBashLIST(44, FNVItem)
+    items_list = CBashLIST(44, FNVItem, True)
+
+    aggression = CBashGeneric(45, c_ubyte)
+    confidence = CBashGeneric(46, c_ubyte)
+    energyLevel = CBashGeneric(47, c_ubyte)
+    responsibility = CBashGeneric(48, c_ubyte)
+    mood = CBashGeneric(49, c_ubyte)
+    unused1 = CBashUINT8ARRAY(50, 3)
+    services = CBashGeneric(51, c_ulong)
+    trainSkill = CBashGeneric(52, c_byte)
+    trainLevel = CBashGeneric(53, c_ubyte)
+    assistance = CBashGeneric(54, c_ubyte)
+    aggroFlags = CBashGeneric(55, c_ubyte)
+    aggroRadius = CBashGeneric(56, c_long)
+    aiPackages = CBashFORMIDARRAY(57)
+    animations = CBashISTRINGARRAY(58)
+    creatureType = CBashGeneric(59, c_ubyte)
+    combat = CBashGeneric(60, c_ubyte)
+    magic = CBashGeneric(61, c_ubyte)
+    stealth = CBashGeneric(62, c_ubyte)
+    health = CBashGeneric(63, c_ushort)
+    unused2 = CBashUINT8ARRAY(64, 2)
+    attackDamage = CBashGeneric(65, c_short)
+    strength = CBashGeneric(66, c_ubyte)
+    perception = CBashGeneric(67, c_ubyte)
+    endurance = CBashGeneric(68, c_ubyte)
+    charisma = CBashGeneric(69, c_ubyte)
+    intelligence = CBashGeneric(70, c_ubyte)
+    agility = CBashGeneric(71, c_ubyte)
+    luck = CBashGeneric(72, c_ubyte)
+    attackReach = CBashGeneric(73, c_ubyte)
+    combatStyle = CBashFORMID(74)
+    partData = CBashFORMID(75)
+    turningSpeed = CBashFLOAT32(76)
+    baseScale = CBashFLOAT32(77)
+    footWeight = CBashFLOAT32(78)
+    impactType = CBashGeneric(79, c_ulong)
+    soundLevel = CBashGeneric(80, c_ulong)
+    inheritsSoundsFrom = CBashFORMID(81)
+    
+    def create_soundTyp(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 82, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 82, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return SoundType(self._CollectionID, self._ModID, self._RecordID, 82, length)
+    soundTypes = CBashLIST(82, SoundType)
+    soundTypes_list = CBashLIST(82, SoundType, True)
+
+    impactData = CBashFORMID(83)
+    meleeList = CBashFORMID(84)
+
+    IsBiped = CBashBasicFlag('flags', 0x00000001)
+    IsEssential = CBashBasicFlag('flags', 0x00000002)
+    IsWeaponAndShield = CBashBasicFlag('flags', 0x00000004)
+    IsRespawn = CBashBasicFlag('flags', 0x00000008)
+    IsSwims = CBashBasicFlag('flags', 0x00000010)
+    IsFlies = CBashBasicFlag('flags', 0x00000020)
+    IsWalks = CBashBasicFlag('flags', 0x00000040)
+    IsPCLevelOffset = CBashBasicFlag('flags', 0x00000080)
+    IsUnknown1 = CBashBasicFlag('flags', 0x00000100)
+    IsNoLowLevel = CBashBasicFlag('flags', 0x00000200)
+    IsLowLevel = CBashInvertedFlag('IsNoLowLevel')
+    IsNoBloodSpray = CBashBasicFlag('flags', 0x00000800)
+    IsBloodSpray = CBashInvertedFlag('IsNoBloodSpray')
+    IsNoBloodDecal = CBashBasicFlag('flags', 0x00001000)
+    IsBloodDecal = CBashInvertedFlag('IsNoBloodDecal')
+    IsNoHead = CBashBasicFlag('flags', 0x00008000)
+    IsHead = CBashInvertedFlag('IsNoHead')
+    IsNoRightArm = CBashBasicFlag('flags', 0x00010000)
+    IsRightArm = CBashInvertedFlag('IsNoRightArm')
+    IsNoLeftArm = CBashBasicFlag('flags', 0x00020000)
+    IsLeftArm = CBashInvertedFlag('IsNoLeftArm')
+    IsNoCombatInWater = CBashBasicFlag('flags', 0x00040000)
+    IsCombatInWater = CBashInvertedFlag('IsNoCombatInWater')
+    IsNoShadow = CBashBasicFlag('flags', 0x00080000)
+    IsShadow = CBashInvertedFlag('IsNoShadow')
+    IsNoVATSMelee = CBashBasicFlag('flags', 0x00100000)
+    IsVATSMelee = CBashInvertedFlag('IsNoVATSMelee')
+    IsAllowPCDialogue = CBashBasicFlag('flags', 0x00200000)
+    IsCantOpenDoors = CBashBasicFlag('flags', 0x00400000)
+    IsCanOpenDoors = CBashInvertedFlag('IsCantOpenDoors')
+    IsImmobile = CBashBasicFlag('flags', 0x00800000)
+    IsTiltFrontBack = CBashBasicFlag('flags', 0x01000000)
+    IsTiltLeftRight = CBashBasicFlag('flags', 0x02000000)
+    IsNoKnockdowns = CBashBasicFlag('flags', 0x03000000)
+    IsKnockdowns = CBashInvertedFlag('IsNoKnockdowns')
+    IsNotPushable = CBashBasicFlag('flags', 0x08000000)
+    IsPushable = CBashInvertedFlag('IsNotPushable')
+    IsAllowPickpocket = CBashBasicFlag('flags', 0x10000000)
+    IsGhost = CBashBasicFlag('flags', 0x20000000)
+    IsNoHeadTracking = CBashBasicFlag('flags', 0x40000000)
+    IsHeadTracking = CBashInvertedFlag('IsNoHeadTracking')
+    IsInvulnerable = CBashBasicFlag('flags', 0x80000000)
+
+    IsUseTraits = CBashBasicFlag('templateFlags', 0x00000001)
+    IsUseStats = CBashBasicFlag('templateFlags', 0x00000002)
+    IsUseFactions = CBashBasicFlag('templateFlags', 0x00000004)
+    IsUseAEList = CBashBasicFlag('templateFlags', 0x00000008)
+    IsUseAIData = CBashBasicFlag('templateFlags', 0x00000010)
+    IsUseAIPackages = CBashBasicFlag('templateFlags', 0x00000020)
+    IsUseModelAnim = CBashBasicFlag('templateFlags', 0x00000040)
+    IsUseBaseData = CBashBasicFlag('templateFlags', 0x00000080)
+    IsUseInventory = CBashBasicFlag('templateFlags', 0x00000100)
+    IsUseScript = CBashBasicFlag('templateFlags', 0x00000200)
+    
+    IsAggroRadiusBehavior = CBashBasicFlag('aggroFlags', 0x01)
+
+    IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
+    IsServicesArmor = CBashBasicFlag('services', 0x00000002)
+    IsServicesClothing = CBashBasicFlag('services', 0x00000004)
+    IsServicesBooks = CBashBasicFlag('services', 0x00000008)
+    IsServicesIngredients = CBashBasicFlag('services', 0x00000010)
+    IsServicesLights = CBashBasicFlag('services', 0x00000080)
+    IsServicesApparatus = CBashBasicFlag('services', 0x00000100)
+    IsServicesMiscItems = CBashBasicFlag('services', 0x00000400)
+    IsServicesSpells = CBashBasicFlag('services', 0x00000800)
+    IsServicesMagicItems = CBashBasicFlag('services', 0x00001000)
+    IsServicesPotions = CBashBasicFlag('services', 0x00002000)
+    IsServicesTraining = CBashBasicFlag('services', 0x00004000)
+    IsServicesRecharge = CBashBasicFlag('services', 0x00010000)
+    IsServicesRepair = CBashBasicFlag('services', 0x00020000)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    
+    IsAnimal = CBashBasicType('creatureType', 0, 'IsMutatedAnimal')
+    IsMutatedAnimal = CBashBasicType('creatureType', 1, 'IsAnimal')
+    IsMutatedInsect = CBashBasicType('creatureType', 2, 'IsAnimal')
+    IsAbomination = CBashBasicType('creatureType', 3, 'IsAnimal')
+    IsSuperMutant = CBashBasicType('creatureType', 4, 'IsAnimal')
+    IsFeralGhoul = CBashBasicType('creatureType', 5, 'IsAnimal')
+    IsRobot = CBashBasicType('creatureType', 6, 'IsAnimal')
+    IsGiant = CBashBasicType('creatureType', 7, 'IsAnimal')
+    
+    IsLoud = CBashBasicType('soundLevel', 0, 'IsNormal')
+    IsNormal = CBashBasicType('soundLevel', 1, 'IsLoud')
+    IsSilent = CBashBasicType('soundLevel', 2, 'IsLoud')
+    
+    IsUnaggressive = CBashBasicType('aggression', 0, 'IsAggressive')
+    IsAggressive = CBashBasicType('aggression', 1, 'IsUnaggressive')
+    IsVeryAggressive = CBashBasicType('aggression', 2, 'IsUnaggressive')
+    IsFrenzied = CBashBasicType('aggression', 3, 'IsUnaggressive')
+    
+    IsCowardly = CBashBasicType('confidence', 0, 'IsCautious')
+    IsCautious = CBashBasicType('confidence', 1, 'IsCowardly')
+    IsAverage = CBashBasicType('confidence', 2, 'IsCowardly')
+    IsBrave = CBashBasicType('confidence', 3, 'IsCowardly')
+    IsFoolhardy = CBashBasicType('confidence', 4, 'IsCowardly')
+
+    IsNeutral = CBashBasicType('mood', 0, 'IsAfraid')
+    IsAfraid = CBashBasicType('mood', 1, 'IsNeutral')
+    IsAnnoyed = CBashBasicType('mood', 2, 'IsNeutral')
+    IsCocky = CBashBasicType('mood', 3, 'IsNeutral')
+    IsDrugged = CBashBasicType('mood', 4, 'IsNeutral')
+    IsPleasant = CBashBasicType('mood', 5, 'IsNeutral')
+    IsAngry = CBashBasicType('mood', 6, 'IsNeutral')
+    IsSad = CBashBasicType('mood', 7, 'IsNeutral')
+
+    IsHelpsNobody = CBashBasicType('assistance', 0, 'IsHelpsAllies')
+    IsHelpsAllies = CBashBasicType('assistance', 1, 'IsHelpsNobody')
+    IsHelpsFriendsAndAllies = CBashBasicType('assistance', 2, 'IsHelpsNobody')
+
+    IsStone = CBashBasicType('impactType', 0, 'IsDirt')
+    IsDirt = CBashBasicType('impactType', 1, 'IsStone')
+    IsGrass = CBashBasicType('impactType', 2, 'IsStone')
+    IsGlass = CBashBasicType('impactType', 3, 'IsStone')
+    IsMetal = CBashBasicType('impactType', 4, 'IsStone')
+    IsWood = CBashBasicType('impactType', 5, 'IsStone')
+    IsOrganic = CBashBasicType('impactType', 6, 'IsStone')
+    IsCloth = CBashBasicType('impactType', 7, 'IsStone')
+    IsWater = CBashBasicType('impactType', 8, 'IsStone')
+    IsHollowMetal = CBashBasicType('impactType', 9, 'IsStone')
+    IsOrganicBug = CBashBasicType('impactType', 10, 'IsStone')
+    IsOrganicGlow = CBashBasicType('impactType', 11, 'IsStone')
+
+    IsAttackLeft = CBashBasicType('unarmedAnim', 26, 'IsAttackLeftUp')
+    IsAttackLeftUp = CBashBasicType('unarmedAnim', 27, 'IsAttackLeft')
+    IsAttackLeftDown = CBashBasicType('unarmedAnim', 28, 'IsAttackLeft')
+    IsAttackLeftIS = CBashBasicType('unarmedAnim', 29, 'IsAttackLeft')
+    IsAttackLeftISUp = CBashBasicType('unarmedAnim', 30, 'IsAttackLeft')
+    IsAttackLeftISDown = CBashBasicType('unarmedAnim', 31, 'IsAttackLeft')
+    IsAttackRight = CBashBasicType('unarmedAnim', 32, 'IsAttackLeft')
+    IsAttackRightUp = CBashBasicType('unarmedAnim', 33, 'IsAttackLeft')
+    IsAttackRightDown = CBashBasicType('unarmedAnim', 34, 'IsAttackLeft')
+    IsAttackRightIS = CBashBasicType('unarmedAnim', 35, 'IsAttackLeft')
+    IsAttackRightISUp = CBashBasicType('unarmedAnim', 36, 'IsAttackLeft')
+    IsAttackRightISDown = CBashBasicType('unarmedAnim', 37, 'IsAttackLeft')
+    IsAttack3 = CBashBasicType('unarmedAnim', 38, 'IsAttackLeft')
+    IsAttack3Up = CBashBasicType('unarmedAnim', 39, 'IsAttackLeft')
+    IsAttack3Down = CBashBasicType('unarmedAnim', 40, 'IsAttackLeft')
+    IsAttack3IS = CBashBasicType('unarmedAnim', 41, 'IsAttackLeft')
+    IsAttack3ISUp = CBashBasicType('unarmedAnim', 42, 'IsAttackLeft')
+    IsAttack3ISDown = CBashBasicType('unarmedAnim', 43, 'IsAttackLeft')
+    IsAttack4 = CBashBasicType('unarmedAnim', 44, 'IsAttackLeft')
+    IsAttack4Up = CBashBasicType('unarmedAnim', 45, 'IsAttackLeft')
+    IsAttack4Down = CBashBasicType('unarmedAnim', 46, 'IsAttackLeft')
+    IsAttack4IS = CBashBasicType('unarmedAnim', 47, 'IsAttackLeft')
+    IsAttack4ISUp = CBashBasicType('unarmedAnim', 48, 'IsAttackLeft')
+    IsAttack4ISDown = CBashBasicType('unarmedAnim', 49, 'IsAttackLeft')
+    IsAttack5 = CBashBasicType('unarmedAnim', 50, 'IsAttackLeft')
+    IsAttack5Up = CBashBasicType('unarmedAnim', 51, 'IsAttackLeft')
+    IsAttack5Down = CBashBasicType('unarmedAnim', 52, 'IsAttackLeft')
+    IsAttack5IS = CBashBasicType('unarmedAnim', 53, 'IsAttackLeft')
+    IsAttack5ISUp = CBashBasicType('unarmedAnim', 54, 'IsAttackLeft')
+    IsAttack5ISDown = CBashBasicType('unarmedAnim', 55, 'IsAttackLeft')
+    IsAttack6 = CBashBasicType('unarmedAnim', 56, 'IsAttackLeft')
+    IsAttack6Up = CBashBasicType('unarmedAnim', 57, 'IsAttackLeft')
+    IsAttack6Down = CBashBasicType('unarmedAnim', 58, 'IsAttackLeft')
+    IsAttack6IS = CBashBasicType('unarmedAnim', 59, 'IsAttackLeft')
+    IsAttack6ISUp = CBashBasicType('unarmedAnim', 60, 'IsAttackLeft')
+    IsAttack6ISDown = CBashBasicType('unarmedAnim', 61, 'IsAttackLeft')
+    IsAttack7 = CBashBasicType('unarmedAnim', 62, 'IsAttackLeft')
+    IsAttack7Up = CBashBasicType('unarmedAnim', 63, 'IsAttackLeft')
+    IsAttack7Down = CBashBasicType('unarmedAnim', 64, 'IsAttackLeft')
+    IsAttack7IS = CBashBasicType('unarmedAnim', 65, 'IsAttackLeft')
+    IsAttack7ISUp = CBashBasicType('unarmedAnim', 66, 'IsAttackLeft')
+    IsAttack7ISDown = CBashBasicType('unarmedAnim', 67, 'IsAttackLeft')
+    IsAttack8 = CBashBasicType('unarmedAnim', 68, 'IsAttackLeft')
+    IsAttack8Up = CBashBasicType('unarmedAnim', 69, 'IsAttackLeft')
+    IsAttack8Down = CBashBasicType('unarmedAnim', 70, 'IsAttackLeft')
+    IsAttack8IS = CBashBasicType('unarmedAnim', 71, 'IsAttackLeft')
+    IsAttack8ISUp = CBashBasicType('unarmedAnim', 72, 'IsAttackLeft')
+    IsAttack8ISDown = CBashBasicType('unarmedAnim', 73, 'IsAttackLeft')
+    IsAttackLoop = CBashBasicType('unarmedAnim', 74, 'IsAttackLeft')
+    IsAttackLoopUp = CBashBasicType('unarmedAnim', 75, 'IsAttackLeft')
+    IsAttackLoopDown = CBashBasicType('unarmedAnim', 76, 'IsAttackLeft')
+    IsAttackLoopIS = CBashBasicType('unarmedAnim', 77, 'IsAttackLeft')
+    IsAttackLoopISUp = CBashBasicType('unarmedAnim', 78, 'IsAttackLeft')
+    IsAttackLoopISDown = CBashBasicType('unarmedAnim', 79, 'IsAttackLeft')
+    IsAttackSpin = CBashBasicType('unarmedAnim', 80, 'IsAttackLeft')
+    IsAttackSpinUp = CBashBasicType('unarmedAnim', 81, 'IsAttackLeft')
+    IsAttackSpinDown = CBashBasicType('unarmedAnim', 82, 'IsAttackLeft')
+    IsAttackSpinIS = CBashBasicType('unarmedAnim', 83, 'IsAttackLeft')
+    IsAttackSpinISUp = CBashBasicType('unarmedAnim', 84, 'IsAttackLeft')
+    IsAttackSpinISDown = CBashBasicType('unarmedAnim', 85, 'IsAttackLeft')
+    IsAttackSpin2 = CBashBasicType('unarmedAnim', 86, 'IsAttackLeft')
+    IsAttackSpin2Up = CBashBasicType('unarmedAnim', 87, 'IsAttackLeft')
+    IsAttackSpin2Down = CBashBasicType('unarmedAnim', 88, 'IsAttackLeft')
+    IsAttackSpin2IS = CBashBasicType('unarmedAnim', 89, 'IsAttackLeft')
+    IsAttackSpin2ISUp = CBashBasicType('unarmedAnim', 90, 'IsAttackLeft')
+    IsAttackSpin2ISDown = CBashBasicType('unarmedAnim', 91, 'IsAttackLeft')
+    IsAttackPower = CBashBasicType('unarmedAnim', 92, 'IsAttackLeft')
+    IsAttackForwardPower = CBashBasicType('unarmedAnim', 93, 'IsAttackLeft')
+    IsAttackBackPower = CBashBasicType('unarmedAnim', 94, 'IsAttackLeft')
+    IsAttackLeftPower = CBashBasicType('unarmedAnim', 95, 'IsAttackLeft')
+    IsAttackRightPower = CBashBasicType('unarmedAnim', 96, 'IsAttackLeft')
+    IsPlaceMine = CBashBasicType('unarmedAnim', 97, 'IsAttackLeft')
+    IsPlaceMineUp = CBashBasicType('unarmedAnim', 98, 'IsAttackLeft')
+    IsPlaceMineDown = CBashBasicType('unarmedAnim', 99, 'IsAttackLeft')
+    IsPlaceMineIS = CBashBasicType('unarmedAnim', 100, 'IsAttackLeft')
+    IsPlaceMineISUp = CBashBasicType('unarmedAnim', 101, 'IsAttackLeft')
+    IsPlaceMineISDown = CBashBasicType('unarmedAnim', 102, 'IsAttackLeft')
+    IsPlaceMine2 = CBashBasicType('unarmedAnim', 103, 'IsAttackLeft')
+    IsPlaceMine2Up = CBashBasicType('unarmedAnim', 104, 'IsAttackLeft')
+    IsPlaceMine2Down = CBashBasicType('unarmedAnim', 105, 'IsAttackLeft')
+    IsPlaceMine2IS = CBashBasicType('unarmedAnim', 106, 'IsAttackLeft')
+    IsPlaceMine2ISUp = CBashBasicType('unarmedAnim', 107, 'IsAttackLeft')
+    IsPlaceMine2ISDown = CBashBasicType('unarmedAnim', 108, 'IsAttackLeft')
+    IsAttackThrow = CBashBasicType('unarmedAnim', 109, 'IsAttackLeft')
+    IsAttackThrowUp = CBashBasicType('unarmedAnim', 110, 'IsAttackLeft')
+    IsAttackThrowDown = CBashBasicType('unarmedAnim', 111, 'IsAttackLeft')
+    IsAttackThrowIS = CBashBasicType('unarmedAnim', 112, 'IsAttackLeft')
+    IsAttackThrowISUp = CBashBasicType('unarmedAnim', 113, 'IsAttackLeft')
+    IsAttackThrowISDown = CBashBasicType('unarmedAnim', 114, 'IsAttackLeft')
+    IsAttackThrow2 = CBashBasicType('unarmedAnim', 115, 'IsAttackLeft')
+    IsAttackThrow2Up = CBashBasicType('unarmedAnim', 116, 'IsAttackLeft')
+    IsAttackThrow2Down = CBashBasicType('unarmedAnim', 117, 'IsAttackLeft')
+    IsAttackThrow2IS = CBashBasicType('unarmedAnim', 118, 'IsAttackLeft')
+    IsAttackThrow2ISUp = CBashBasicType('unarmedAnim', 119, 'IsAttackLeft')
+    IsAttackThrow2ISDown = CBashBasicType('unarmedAnim', 120, 'IsAttackLeft')
+    IsAttackThrow3 = CBashBasicType('unarmedAnim', 121, 'IsAttackLeft')
+    IsAttackThrow3Up = CBashBasicType('unarmedAnim', 122, 'IsAttackLeft')
+    IsAttackThrow3Down = CBashBasicType('unarmedAnim', 123, 'IsAttackLeft')
+    IsAttackThrow3IS = CBashBasicType('unarmedAnim', 124, 'IsAttackLeft')
+    IsAttackThrow3ISUp = CBashBasicType('unarmedAnim', 125, 'IsAttackLeft')
+    IsAttackThrow3ISDown = CBashBasicType('unarmedAnim', 126, 'IsAttackLeft')
+    IsAttackThrow4 = CBashBasicType('unarmedAnim', 127, 'IsAttackLeft')
+    IsAttackThrow4Up = CBashBasicType('unarmedAnim', 128, 'IsAttackLeft')
+    IsAttackThrow4Down = CBashBasicType('unarmedAnim', 129, 'IsAttackLeft')
+    IsAttackThrow4IS = CBashBasicType('unarmedAnim', 130, 'IsAttackLeft')
+    IsAttackThrow4ISUp = CBashBasicType('unarmedAnim', 131, 'IsAttackLeft')
+    IsAttackThrow4ISDown = CBashBasicType('unarmedAnim', 132, 'IsAttackLeft')
+    IsAttackThrow5 = CBashBasicType('unarmedAnim', 133, 'IsAttackLeft')
+    IsAttackThrow5Up = CBashBasicType('unarmedAnim', 134, 'IsAttackLeft')
+    IsAttackThrow5Down = CBashBasicType('unarmedAnim', 135, 'IsAttackLeft')
+    IsAttackThrow5IS = CBashBasicType('unarmedAnim', 136, 'IsAttackLeft')
+    IsAttackThrow5ISUp = CBashBasicType('unarmedAnim', 137, 'IsAttackLeft')
+    IsAttackThrow5ISDown = CBashBasicType('unarmedAnim', 138, 'IsAttackLeft')
+    IsPipBoy = CBashBasicType('unarmedAnim', 167, 'IsAttackLeft')
+    IsPipBoyChild = CBashBasicType('unarmedAnim', 178, 'IsAttackLeft')
+    IsANY = CBashBasicType('unarmedAnim', 255, 'IsAttackLeft')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'actorEffects', 'unarmedEffect',
+                                           'unarmedAnim', 'bodyParts', 'nift_p',
+                                           'flags', 'fatigue', 'barterGold',
+                                           'level', 'calcMin', 'calcMax',
+                                           'speedMult', 'karma', 'dispBase',
+                                           'templateFlags', 'factions_list',
+                                           'deathItem', 'voice', 'template',
+                                           'destructable_list', 'script',
+                                           'items_list', 'aggression',
+                                           'confidence', 'energyLevel',
+                                           'responsibility', 'mood',
+                                           'services', 'trainSkill',
+                                           'trainLevel', 'assistance',
+                                           'aggroFlags', 'aggroRadius',
+                                           'aiPackages', 'animations',
+                                           'creatureType', 'combat', 'magic',
+                                           'stealth', 'health', 'attackDamage',
+                                           'strength', 'perception',
+                                           'endurance', 'charisma',
+                                           'intelligence', 'agility', 'luck',
+                                           'attackReach', 'combatStyle',
+                                           'partData', 'turningSpeed',
+                                           'baseScale', 'footWeight',
+                                           'impactType', 'soundLevel',
+                                           'inheritsSoundsFrom',
+                                           'soundTypes_list', 'impactData',
+                                           'meleeList']
+    exportattrs  = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                              'boundX2', 'boundY2', 'boundZ2',
+                                              'full', 'modPath', 'modb',
+                                              'altTextures_list', 'modelFlags',
+                                              'actorEffects', 'unarmedEffect',
+                                              'unarmedAnim', 'bodyParts',
+                                              'flags', 'fatigue', 'barterGold',
+                                              'level', 'calcMin', 'calcMax',
+                                              'speedMult', 'karma', 'dispBase',
+                                              'templateFlags', 'factions_list',
+                                              'deathItem', 'voice', 'template',
+                                              'destructable_list', 'script',
+                                              'items_list', 'aggression',
+                                              'confidence', 'energyLevel',
+                                              'responsibility', 'mood',
+                                              'services', 'trainSkill',
+                                              'trainLevel', 'assistance',
+                                              'aggroFlags', 'aggroRadius',
+                                              'aiPackages', 'animations',
+                                              'creatureType', 'combat', 'magic',
+                                              'stealth', 'health', 'attackDamage',
+                                              'strength', 'perception',
+                                              'endurance', 'charisma',
+                                              'intelligence', 'agility', 'luck',
+                                              'attackReach', 'combatStyle',
+                                              'partData', 'turningSpeed',
+                                              'baseScale', 'footWeight',
+                                              'impactType', 'soundLevel',
+                                              'inheritsSoundsFrom',
+                                              'soundTypes_list', 'impactData',
+                                              'meleeList']# 'modt_p', 'nift_p',
 
 class FnvLVLCRecord(FnvBaseRecord):
     _Type = 'LVLC'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        
+    class Entry(ListComponent):
+        level = CBashGeneric_LIST(1, c_short)
+        unused1 = CBashUINT8ARRAY_LIST(2, 2)
+        listId = CBashFORMID_LIST(3)
+        count = CBashGeneric_LIST(4, c_short)
+        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        owner = CBashFORMID_LIST(6)
+        globalOrRank = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(7)
+        condition = CBashFLOAT32_LIST(8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    chanceNone = CBashGeneric(13, c_ubyte)
+    flags = CBashGeneric(14, c_ubyte)
+
+    def create_entry(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    entries = CBashLIST(15, Entry)
+    entries_list = CBashLIST(15, Entry, True)
+
+    modPath = CBashISTRING(16)
+    modb = CBashFLOAT32(17)
+    modt_p = CBashUINT8ARRAY(18)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 19, length)
+    altTextures = CBashLIST(19, FNVAltTexture)
+    altTextures_list = CBashLIST(19, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(20, c_ubyte)
+    
+    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
+    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
+    IsUseAll = CBashBasicFlag('flags', 0x00000004)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvLVLNRecord(FnvBaseRecord):
     _Type = 'LVLN'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Entry(ListComponent):
+        level = CBashGeneric_LIST(1, c_short)
+        unused1 = CBashUINT8ARRAY_LIST(2, 2)
+        listId = CBashFORMID_LIST(3)
+        count = CBashGeneric_LIST(4, c_short)
+        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        owner = CBashFORMID_LIST(6)
+        globalOrRank = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(7)
+        condition = CBashFLOAT32_LIST(8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
+
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    chanceNone = CBashGeneric(13, c_ubyte)
+    flags = CBashGeneric(14, c_ubyte)
+
+    def create_entry(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    entries = CBashLIST(15, Entry)
+    entries_list = CBashLIST(15, Entry, True)
+
+    modPath = CBashISTRING(16)
+    modb = CBashFLOAT32(17)
+    modt_p = CBashUINT8ARRAY(18)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 19, length)
+    altTextures = CBashLIST(19, FNVAltTexture)
+    altTextures_list = CBashLIST(19, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(20, c_ubyte)
+    
+    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
+    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
+    IsUseAll = CBashBasicFlag('flags', 0x00000004)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvKEYMRecord(FnvBaseRecord):
     _Type = 'KEYM'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    script = CBashFORMID(21)
+    destructable = CBashGrouped(22, FNVDestructable)
+    destructable_list = CBashGrouped(22, FNVDestructable, True)
+
+    pickupSound = CBashFORMID(27)
+    dropSound = CBashFORMID(28)
+    value = CBashGeneric(29, c_long)
+    weight = CBashFLOAT32(30)
+    loopSound = CBashFORMID(31)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'destructable_list',
+                                           'pickupSound', 'dropSound',
+                                           'value', 'weight', 'loopSound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'destructable_list',
+                                             'pickupSound', 'dropSound',
+                                             'value', 'weight', 'loopSound']# 'modt_p',
 
 class FnvALCHRecord(FnvBaseRecord):
     _Type = 'ALCH'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    script = CBashFORMID(21)
+    equipmentType = CBashGeneric(22, c_long)
+    weight = CBashFLOAT32(23)
+    value = CBashGeneric(24, c_long)
+    flags = CBashGeneric(25, c_ubyte)
+    unused1 = CBashUINT8ARRAY(26, 3)
+    
+    withdrawalEffect = CBashFORMID(27)
+    addictionChance = CBashGeneric(28, c_long)
+    consumeSound = CBashFORMID(29)
+
+    def create_effect(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 30, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 30, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVEffect(self._CollectionID, self._ModID, self._RecordID, 30, length)
+    effects = CBashLIST(30, FNVEffect)
+    effects_list = CBashLIST(30, FNVEffect, True)
+
+    destructable = CBashGrouped(31, FNVDestructable)
+    destructable_list = CBashGrouped(31, FNVDestructable, True)
+
+    pickupSound = CBashFORMID(36)
+    dropSound = CBashFORMID(37)
+
+    IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
+    IsAutoCalc = CBashInvertedFlag('IsNoAutoCalc')
+    IsFood = CBashBasicFlag('flags', 0x00000002)
+    IsMedicine = CBashBasicFlag('flags', 0x00000004)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+
+    IsNone = CBashBasicType('equipmentType', -1, 'IsBigGuns')
+    IsBigGuns = CBashBasicType('equipmentType', 0, 'IsNone')
+    IsEnergyWeapons = CBashBasicType('equipmentType', 1, 'IsNone')
+    IsSmallGuns = CBashBasicType('equipmentType', 2, 'IsNone')
+    IsMeleeWeapons = CBashBasicType('equipmentType', 3, 'IsNone')
+    IsUnarmedWeapon = CBashBasicType('equipmentType', 4, 'IsNone')
+    IsThrownWeapons = CBashBasicType('equipmentType', 5, 'IsNone')
+    IsMine = CBashBasicType('equipmentType', 6, 'IsNone')
+    IsBodyWear = CBashBasicType('equipmentType', 7, 'IsNone')
+    IsHeadWear = CBashBasicType('equipmentType', 8, 'IsNone')
+    IsHandWear = CBashBasicType('equipmentType', 9, 'IsNone')
+    IsChems = CBashBasicType('equipmentType', 10, 'IsNone')
+    IsStimpack = CBashBasicType('equipmentType', 11, 'IsNone')
+    IsEdible = CBashBasicType('equipmentType', 12, 'IsNone')
+    IsAlcohol = CBashBasicType('equipmentType', 13, 'IsNone')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'equipmentType', 'weight',
+                                           'value', 'flags', 'withdrawalEffect',
+                                           'addictionChance', 'consumeSound',
+                                           'effects_list', 'destructable_list',
+                                           'pickupSound', 'dropSound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'equipmentType', 'weight',
+                                             'value', 'flags', 'withdrawalEffect',
+                                             'addictionChance', 'consumeSound',
+                                             'effects_list', 'destructable_list',
+                                             'pickupSound', 'dropSound']# 'modt_p',
 
 class FnvIDLMRecord(FnvBaseRecord):
     _Type = 'IDLM'
@@ -5932,6 +6644,7 @@ class ObALCHRecord(ObBaseRecord):
     effects_list = CBashLIST(15, Effect, True)
 
     IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
+    IsAutoCalc = CBashInvertedFlag('IsNoAutoCalc')
     IsFood = CBashBasicFlag('flags', 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
@@ -6788,6 +7501,7 @@ class ObENCHRecord(ObBaseRecord):
     effects_list = CBashLIST(11, Effect, True)
 
     IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
+    IsAutoCalc = CBashInvertedFlag('IsNoAutoCalc')
     IsScroll = CBashBasicType('itemType', 0, 'IsStaff')
     IsStaff = CBashBasicType('itemType', 1, 'IsScroll')
     IsWeapon = CBashBasicType('itemType', 2, 'IsScroll')
@@ -7021,6 +7735,7 @@ class ObINGRRecord(ObBaseRecord):
     effects_list = CBashLIST(15, Effect, True)
 
     IsNoAutoCalc = CBashBasicFlag('flags', 0x00000001)
+    IsAutoCalc = CBashInvertedFlag('IsNoAutoCalc')
     IsFood = CBashBasicFlag('flags', 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value

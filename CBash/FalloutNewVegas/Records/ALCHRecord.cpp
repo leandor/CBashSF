@@ -31,7 +31,7 @@ ALCHRecord::ALCHENIT::ALCHENIT():
     addictionChance(0.0f),
     consumeSound(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 ALCHRecord::ALCHENIT::~ALCHENIT()
@@ -44,7 +44,7 @@ bool ALCHRecord::ALCHENIT::operator ==(const ALCHENIT &other) const
     return (value == other.value &&
             flags == other.flags &&
             withdrawalEffect == other.withdrawalEffect &&
-            addictionChance == other.addictionChance &&
+            AlmostEqual(addictionChance, other.addictionChance, 2) &&
             consumeSound == other.consumeSound);
     }
 
@@ -82,9 +82,7 @@ ALCHRecord::ALCHRecord(ALCHRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
@@ -94,13 +92,7 @@ ALCHRecord::ALCHRecord(ALCHRecord *srcRecord):
     ETYP = srcRecord->ETYP;
     DATA = srcRecord->DATA;
     ENIT = srcRecord->ENIT;
-    if(srcRecord->EFID.IsLoaded())
-        {
-        EFID.Load();
-        EFID->EFID = srcRecord->EFID->EFID;
-        EFID->EFIT = srcRecord->EFID->EFIT;
-        EFID->CTDA = srcRecord->EFID->CTDA;
-        }
+    Effects = srcRecord->Effects;
     return;
     }
 
@@ -120,7 +112,7 @@ bool ALCHRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(Destructable.IsLoaded())
         {
         for(UINT32 x = 0; x < Destructable->Stages.value.size(); ++x)
@@ -130,209 +122,213 @@ bool ALCHRecord::VisitFormIDs(FormIDOp &op)
             }
         }
     if(YNAM.IsLoaded())
-        op.Accept(YNAM->value);
+        op.Accept(YNAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-    //if(ENIT.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(ENIT->value);
-    if(EFID.IsLoaded() && EFID->EFID.IsLoaded())
-        op.Accept(EFID->EFID->value);
-    if(EFID.IsLoaded() && EFID->CTDA.IsLoaded())
-        op.Accept(EFID->CTDA->value);
+        op.Accept(ZNAM.value);
+    for(UINT32 x = 0; x < Effects.value.size(); x++)
+        Effects.value[x]->VisitFormIDs(op);
 
     return op.Stop();
     }
 
-bool ALCHRecord::IsNone()
+bool ALCHRecord::IsNoAutoCalc()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return (ENIT.value.flags & fIsNoAutoCalc) != 0;
     }
 
-void ALCHRecord::IsNone(bool value)
+void ALCHRecord::IsNoAutoCalc(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
-    }
-
-bool ALCHRecord::IsBigGuns()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBigGuns);
-    }
-
-void ALCHRecord::IsBigGuns(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBigGuns : eDummyDefault;
-    }
-
-bool ALCHRecord::IsEnergyWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEnergyWeapons);
-    }
-
-void ALCHRecord::IsEnergyWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEnergyWeapons : eDummyDefault;
-    }
-
-bool ALCHRecord::IsSmallGuns()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSmallGuns);
-    }
-
-void ALCHRecord::IsSmallGuns(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSmallGuns : eDummyDefault;
-    }
-
-bool ALCHRecord::IsMeleeWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMeleeWeapons);
-    }
-
-void ALCHRecord::IsMeleeWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMeleeWeapons : eDummyDefault;
-    }
-
-bool ALCHRecord::IsUnarmedWeapon()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnarmedWeapon);
-    }
-
-void ALCHRecord::IsUnarmedWeapon(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnarmedWeapon : eDummyDefault;
-    }
-
-bool ALCHRecord::IsThrownWeapons()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eThrownWeapons);
-    }
-
-void ALCHRecord::IsThrownWeapons(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eThrownWeapons : eDummyDefault;
-    }
-
-bool ALCHRecord::IsMine()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMine);
-    }
-
-void ALCHRecord::IsMine(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMine : eDummyDefault;
-    }
-
-bool ALCHRecord::IsBodyWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBodyWear);
-    }
-
-void ALCHRecord::IsBodyWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBodyWear : eDummyDefault;
-    }
-
-bool ALCHRecord::IsHeadWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHeadWear);
-    }
-
-void ALCHRecord::IsHeadWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHeadWear : eDummyDefault;
-    }
-
-bool ALCHRecord::IsHandWear()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eHandWear);
-    }
-
-void ALCHRecord::IsHandWear(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eHandWear : eDummyDefault;
-    }
-
-bool ALCHRecord::IsChems()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eChems);
-    }
-
-void ALCHRecord::IsChems(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eChems : eDummyDefault;
-    }
-
-bool ALCHRecord::IsStimpack()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStimpack);
-    }
-
-void ALCHRecord::IsStimpack(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStimpack : eDummyDefault;
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsNoAutoCalc) : (ENIT.value.flags & ~fIsNoAutoCalc);
     }
 
 bool ALCHRecord::IsFood()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFood);
+    return (ENIT.value.flags & fIsFood) != 0;
     }
 
 void ALCHRecord::IsFood(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFood : eDummyDefault;
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsFood) : (ENIT.value.flags & ~fIsFood);
+    }
+
+bool ALCHRecord::IsMedicine()
+    {
+    return (ENIT.value.flags & fIsMedicine) != 0;
+    }
+
+void ALCHRecord::IsMedicine(bool value)
+    {
+    ENIT.value.flags = value ? (ENIT.value.flags | fIsMedicine) : (ENIT.value.flags & ~fIsMedicine);
+    }
+
+bool ALCHRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((ENIT.value.flags & Mask) == Mask) : ((ENIT.value.flags & Mask) != 0);
+    }
+
+void ALCHRecord::SetFlagMask(UINT8 Mask)
+    {
+    ENIT.value.flags = Mask;
+    }
+
+bool ALCHRecord::IsNone()
+    {
+    return (ETYP.value == eNone);
+    }
+
+void ALCHRecord::IsNone(bool value)
+    {
+    ETYP.value = value ? eNone : eBigGuns;
+    }
+
+bool ALCHRecord::IsBigGuns()
+    {
+    return (ETYP.value == eBigGuns);
+    }
+
+void ALCHRecord::IsBigGuns(bool value)
+    {
+    ETYP.value = value ? eBigGuns : eNone;
+    }
+
+bool ALCHRecord::IsEnergyWeapons()
+    {
+    return (ETYP.value == eEnergyWeapons);
+    }
+
+void ALCHRecord::IsEnergyWeapons(bool value)
+    {
+    ETYP.value = value ? eEnergyWeapons : eNone;
+    }
+
+bool ALCHRecord::IsSmallGuns()
+    {
+    return (ETYP.value == eSmallGuns);
+    }
+
+void ALCHRecord::IsSmallGuns(bool value)
+    {
+    ETYP.value = value ? eSmallGuns : eNone;
+    }
+
+bool ALCHRecord::IsMeleeWeapons()
+    {
+    return (ETYP.value == eMeleeWeapons);
+    }
+
+void ALCHRecord::IsMeleeWeapons(bool value)
+    {
+    ETYP.value = value ? eMeleeWeapons : eNone;
+    }
+
+bool ALCHRecord::IsUnarmedWeapon()
+    {
+    return (ETYP.value == eUnarmedWeapon);
+    }
+
+void ALCHRecord::IsUnarmedWeapon(bool value)
+    {
+    ETYP.value = value ? eUnarmedWeapon : eNone;
+    }
+
+bool ALCHRecord::IsThrownWeapons()
+    {
+    return (ETYP.value == eThrownWeapons);
+    }
+
+void ALCHRecord::IsThrownWeapons(bool value)
+    {
+    ETYP.value = value ? eThrownWeapons : eNone;
+    }
+
+bool ALCHRecord::IsMine()
+    {
+    return (ETYP.value == eMine);
+    }
+
+void ALCHRecord::IsMine(bool value)
+    {
+    ETYP.value = value ? eMine : eNone;
+    }
+
+bool ALCHRecord::IsBodyWear()
+    {
+    return (ETYP.value == eBodyWear);
+    }
+
+void ALCHRecord::IsBodyWear(bool value)
+    {
+    ETYP.value = value ? eBodyWear : eNone;
+    }
+
+bool ALCHRecord::IsHeadWear()
+    {
+    return (ETYP.value == eHeadWear);
+    }
+
+void ALCHRecord::IsHeadWear(bool value)
+    {
+    ETYP.value = value ? eHeadWear : eNone;
+    }
+
+bool ALCHRecord::IsHandWear()
+    {
+    return (ETYP.value == eHandWear);
+    }
+
+void ALCHRecord::IsHandWear(bool value)
+    {
+    ETYP.value = value ? eHandWear : eNone;
+    }
+
+bool ALCHRecord::IsChems()
+    {
+    return (ETYP.value == eChems);
+    }
+
+void ALCHRecord::IsChems(bool value)
+    {
+    ETYP.value = value ? eChems : eNone;
+    }
+
+bool ALCHRecord::IsStimpack()
+    {
+    return (ETYP.value == eStimpack);
+    }
+
+void ALCHRecord::IsStimpack(bool value)
+    {
+    ETYP.value = value ? eStimpack : eNone;
+    }
+
+bool ALCHRecord::IsEdible()
+    {
+    return (ETYP.value == eEdible);
+    }
+
+void ALCHRecord::IsEdible(bool value)
+    {
+    ETYP.value = value ? eEdible : eNone;
     }
 
 bool ALCHRecord::IsAlcohol()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAlcohol);
+    return (ETYP.value == eAlcohol);
     }
 
 void ALCHRecord::IsAlcohol(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAlcohol : eDummyDefault;
+    ETYP.value = value ? eAlcohol : eNone;
     }
 
-bool ALCHRecord::IsEquipmentType(UINT32 Type)
+bool ALCHRecord::IsEquipmentType(SINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return ETYP.value == Type;
     }
 
-void ALCHRecord::SetEquipmentType(UINT32 Type)
+void ALCHRecord::SetEquipmentType(SINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    ETYP.value = Type;
     }
 
 UINT32 ALCHRecord::GetType()
@@ -445,16 +441,18 @@ SINT32 ALCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 ENIT.Read(buffer, subSize, curPos);
                 break;
             case 'DIFE':
-                EFID.Load();
-                EFID->EFID.Read(buffer, subSize, curPos);
+                Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFID.Read(buffer, subSize, curPos);
                 break;
             case 'TIFE':
-                EFID.Load();
-                EFID->EFIT.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
                 break;
             case 'ADTC':
-                EFID.Load();
-                EFID->CTDA.Read(buffer, subSize, curPos);
+                if(Effects.value.size() == 0)
+                    Effects.value.push_back(new FNVEffect);
+                Effects.value.back()->CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -485,7 +483,7 @@ SINT32 ALCHRecord::Unload()
     ETYP.Unload();
     DATA.Unload();
     ENIT.Unload();
-    EFID.Unload();
+    Effects.Unload();
     return 1;
     }
 
@@ -494,53 +492,36 @@ SINT32 ALCHRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SCRI);
-
     Destructable.Write(writer);
-
     WRITE(YNAM);
     WRITE(ZNAM);
     WRITE(ETYP);
     WRITE(DATA);
     WRITE(ENIT);
-
-    if(EFID.IsLoaded())
-        {
-        if(EFID->EFID.IsLoaded())
-            SaveHandler.writeSubRecord('DIFE', EFID->EFID.value, EFID->EFID.GetSize());
-
-        if(EFID->EFIT.IsLoaded())
-            SaveHandler.writeSubRecord('TIFE', EFID->EFIT.value, EFID->EFIT.GetSize());
-
-        if(EFID->CTDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADTC', EFID->CTDA.value, EFID->CTDA.GetSize());
-
-        }
-
+    Effects.Write(writer);
     return -1;
     }
 
 bool ALCHRecord::operator ==(const ALCHRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
-            Destructable == other.Destructable &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
             ETYP == other.ETYP &&
             DATA == other.DATA &&
             ENIT == other.ENIT &&
-            EFID == other.EFID);
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
+            Destructable == other.Destructable &&
+            MODL == other.MODL &&
+            Effects == other.Effects);
     }
 
 bool ALCHRecord::operator !=(const ALCHRecord &other) const

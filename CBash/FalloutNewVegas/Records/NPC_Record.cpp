@@ -559,6 +559,174 @@ void NPC_Record::SetAggroFlagMask(UINT8 Mask)
     AIDT->aggroFlags = Mask;
     }
 
+bool NPC_Record::IsServicesWeapons()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesWeapons) != 0;
+    }
+
+void NPC_Record::IsServicesWeapons(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesWeapons) : (AIDT->flags & ~fIsServicesWeapons);
+    }
+
+bool NPC_Record::IsServicesArmor()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesArmor) != 0;
+    }
+
+void NPC_Record::IsServicesArmor(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesArmor) : (AIDT->flags & ~fIsServicesArmor);
+    }
+
+bool NPC_Record::IsServicesClothing()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesClothing) != 0;
+    }
+
+void NPC_Record::IsServicesClothing(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesClothing) : (AIDT->flags & ~fIsServicesClothing);
+    }
+
+bool NPC_Record::IsServicesBooks()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesBooks) != 0;
+    }
+
+void NPC_Record::IsServicesBooks(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesBooks) : (AIDT->flags & ~fIsServicesBooks);
+    }
+
+bool NPC_Record::IsServicesFood()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesFood) != 0;
+    }
+
+void NPC_Record::IsServicesFood(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesFood) : (AIDT->flags & ~fIsServicesFood);
+    }
+
+bool NPC_Record::IsServicesChems()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesChems) != 0;
+    }
+
+void NPC_Record::IsServicesChems(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesChems) : (AIDT->flags & ~fIsServicesChems);
+    }
+
+bool NPC_Record::IsServicesStimpacks()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesStimpacks) != 0;
+    }
+
+void NPC_Record::IsServicesStimpacks(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesStimpacks) : (AIDT->flags & ~fIsServicesStimpacks);
+    }
+
+bool NPC_Record::IsServicesLights()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesLights) != 0;
+    }
+
+void NPC_Record::IsServicesLights(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesLights) : (AIDT->flags & ~fIsServicesLights);
+    }
+
+bool NPC_Record::IsServicesMiscItems()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesMiscItems) != 0;
+    }
+
+void NPC_Record::IsServicesMiscItems(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesMiscItems) : (AIDT->flags & ~fIsServicesMiscItems);
+    }
+
+bool NPC_Record::IsServicesPotions()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesPotions) != 0;
+    }
+
+void NPC_Record::IsServicesPotions(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesPotions) : (AIDT->flags & ~fIsServicesPotions);
+    }
+
+bool NPC_Record::IsServicesTraining()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesTraining) != 0;
+    }
+
+void NPC_Record::IsServicesTraining(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesTraining) : (AIDT->flags & ~fIsServicesTraining);
+    }
+
+bool NPC_Record::IsServicesRecharge()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesRecharge) != 0;
+    }
+
+void NPC_Record::IsServicesRecharge(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesRecharge) : (AIDT->flags & ~fIsServicesRecharge);
+    }
+
+bool NPC_Record::IsServicesRepair()
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return (AIDT->flags & fIsServicesRepair) != 0;
+    }
+
+void NPC_Record::IsServicesRepair(bool value)
+    {
+    if(!AIDT.IsLoaded()) return;
+    AIDT->flags = value ? (AIDT->flags | fIsServicesRepair) : (AIDT->flags & ~fIsServicesRepair);
+    }
+
+bool NPC_Record::IsServicesFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!AIDT.IsLoaded()) return false;
+    return Exact ? ((AIDT->flags & Mask) == Mask) : ((AIDT->flags & Mask) != 0);
+    }
+
+void NPC_Record::SetServicesFlagMask(UINT32 Mask)
+    {
+    AIDT.Load();
+    AIDT->flags = Mask;
+    }
+
 bool NPC_Record::IsUnaggressive()
     {
     if(!AIDT.IsLoaded()) return false;

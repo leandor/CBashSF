@@ -373,7 +373,7 @@ UINT32 WEAPRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 52: //model23Path
             return ISTRING_FIELD;
         case 53: //model123Path
-            return ISTRING_FIELD;            
+            return ISTRING_FIELD;
         case 54: //impact
             return FORMID_FIELD;
         case 55: //model
@@ -1934,7 +1934,7 @@ void WEAPRecord::DeleteField(FIELD_IDENTIFIERS)
                         return;
                     }
                 }
-            return;               
+            return;
         case 38: //scope_modPath
             if(MOD2.IsLoaded())
                 MOD2->MODL.Unload();

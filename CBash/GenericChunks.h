@@ -658,7 +658,7 @@ struct LVLLVLO
     {
     SINT16  level;
     UINT8   unused1[2];
-    UINT32  listId;
+    FORMID  listId;
     SINT16  count;
     UINT8   unused2[2];
 
@@ -1553,6 +1553,8 @@ struct FNVLVLO
 
     bool IsGlobal(); //Hack
     bool IsRank();   //Hack
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const FNVLVLO &other) const;
     bool operator !=(const FNVLVLO &other) const;

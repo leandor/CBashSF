@@ -915,6 +915,148 @@ bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UIN
     return true;
     }
 
+UnorderedPackedStrings::UnorderedPackedStrings()
+    {
+    //
+    }
+
+UnorderedPackedStrings::~UnorderedPackedStrings()
+    {
+    Unload();
+    }
+
+UINT32 UnorderedPackedStrings::GetSize() const
+    {
+    if(value.size())
+        {
+        UINT32 cSize = 1; //final null terminator
+        for(UINT32 p = 0; p < value.size(); p++)
+            if(value[p] != NULL)
+                cSize += strlen(value[p]) + 1;
+        return cSize == 1 ? 0 : cSize;
+        }
+    return 0;
+    }
+
+bool UnorderedPackedStrings::IsLoaded() const
+    {
+    return (value.size() != 0);
+    }
+
+void UnorderedPackedStrings::Load()
+    {
+    //
+    }
+
+void UnorderedPackedStrings::Unload()
+    {
+    for(UINT32 x = 0; x < value.size(); ++x)
+        delete value[x];
+    value.clear();
+    }
+
+void UnorderedPackedStrings::resize(UINT32 newSize)
+    {
+    //Shrink
+    UINT32 size = value.size();
+    for(; size > newSize;)
+        delete value[--size];
+    value.resize(newSize);
+    //Grow
+    for(; size < newSize;)
+        value[size++] = NULL;
+    }
+
+bool UnorderedPackedStrings::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(value.size() != 0)
+        {
+        curPos += subSize;
+        return false;
+        }
+    STRING curString = NULL;
+    STRING s = NULL;
+    for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
+        {
+        s = (STRING)&buffer[curPos];
+        if(s == NULL)
+            continue;
+        UINT32 size = (UINT32)strlen(s) + 1;
+        curString = new char[size];
+        strcpy_s(curString, size, s);
+        value.push_back(curString);
+        }
+    curPos++; //Skip the final null terminator
+    return true;
+    }
+
+void UnorderedPackedStrings::Write(UINT32 _Type, FileWriter &writer)
+    {
+    if(value.size())
+        {
+        writer.record_write_subheader(_Type, GetSize());
+        for(UINT32 p = 0; p < value.size(); p++)
+            if(value[p] != NULL)
+                writer.record_write(value[p], strlen(value[p]) + 1);
+        UINT8 cSize = 0x00;
+        //write final null terminator
+        writer.record_write(&cSize, 1);
+        }
+    }
+
+UnorderedPackedStrings& UnorderedPackedStrings::operator = (const UnorderedPackedStrings &rhs)
+    {
+    if(this != &rhs)
+        {
+        if(rhs.value.size() != 0)
+            {
+            Unload();
+            value.resize(rhs.value.size());
+            UINT32 size = 0;
+            for(UINT32 p = 0; p < rhs.value.size(); p++)
+                {
+                if(rhs.value[p] != NULL)
+                    {
+                    size = (UINT32)strlen(rhs.value[p]) + 1;
+                    value[p] = new char[size];
+                    strcpy_s(value[p], size, rhs.value[p]);
+                    }
+                }
+            }
+        else
+            Unload();
+        }
+    return *this;
+    }
+
+bool UnorderedPackedStrings::equals(const UnorderedPackedStrings &other) const
+    {
+    //Hack
+    //Equality testing should use a set or somesuch
+    if(value.size() == other.value.size())
+        {
+        for(UINT32 x = 0; x < value.size(); ++x)
+            if(strcmp(value[x], other.value[x]) != 0)
+                return false;
+        return true;
+        }
+    return false;
+    }
+
+bool UnorderedPackedStrings::equalsi(const UnorderedPackedStrings &other) const
+    {
+    //Hack
+    //Equality testing should use a set or somesuch
+    if(value.size() == other.value.size())
+        {
+        for(UINT32 x = 0; x < value.size(); ++x)
+            if(_stricmp(value[x], other.value[x]) != 0)
+                return false;
+        return true;
+        }
+    return false;
+    }
+
 RawRecord::RawRecord():
     size(0),
     value(NULL)

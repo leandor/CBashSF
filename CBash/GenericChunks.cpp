@@ -2353,7 +2353,6 @@ FNVAlternateTextures& FNVAlternateTextures::operator = (const FNVAlternateTextur
                     MODS[p]->name = new char[nameSize];
                     strcpy_s(MODS[p]->name, nameSize, rhs.MODS[p]->name);
                     }
-                MODS[p]->name = rhs.MODS[p]->name;
                 MODS[p]->texture = rhs.MODS[p]->texture;
                 MODS[p]->index = rhs.MODS[p]->index;
                 }
@@ -3866,6 +3865,12 @@ bool FNVLVLO::IsRank()
     if(COED.IsLoaded())
         return COED->globalOrRank < END_HARDCODED_IDS;
     return false;
+    }
+
+void FNVLVLO::Write(FileWriter &writer)
+    {
+    WRITE(LVLO);
+    WRITE(COED);
     }
 
 bool FNVLVLO::operator ==(const FNVLVLO &other) const

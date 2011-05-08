@@ -495,6 +495,29 @@ class NonNullStringRecord : public StringRecord
         bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
     };
 
+struct UnorderedPackedStrings
+    {
+    std::vector<STRING> value;
+
+    UnorderedPackedStrings();
+    ~UnorderedPackedStrings();
+
+    UINT32 GetSize() const;
+
+    bool IsLoaded() const;
+    void Load();
+    void Unload();
+
+    void resize(UINT32 newSize);
+
+    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    void Write(UINT32 _Type, FileWriter &writer);
+
+    UnorderedPackedStrings& operator = (const UnorderedPackedStrings &rhs);
+    bool equals(const UnorderedPackedStrings &other) const;
+    bool equalsi(const UnorderedPackedStrings &other) const;
+    };
+
 class RawRecord
     {
     public:

@@ -195,29 +195,29 @@ class WEAPRecord : public FNVRecord //Weapon
 
         enum eAttackAnimTypes
             {
-            eAttackLeft   = 26,
-            eAttackRight  = 32,
-            eAttack3      = 38,
-            eAttack4      = 44,
-            eAttack5      = 50,
-            eAttack6      = 56,
-            eAttack7      = 62,
-            eAttack8      = 68,
-            eAttack9      = 144,
-            eAttackLoop   = 74,
-            eAttackSpin   = 80,
-            eAttackSpin2  = 86,
-            eAttackThrow  = 114,
-            eAttackThrow2 = 120,
-            eAttackThrow3 = 126,
-            eAttackThrow4 = 132,
-            eAttackThrow5 = 138,
-            eAttackThrow6 = 150,
-            eAttackThrow7 = 156,
-            eAttackThrow8 = 162,
-            ePlaceMine    = 102,
-            ePlaceMine2   = 108,
-            eAttackDefault      = 255
+            eAttackLeft    = 26,
+            eAttackRight   = 32,
+            eAttack3       = 38,
+            eAttack4       = 44,
+            eAttack5       = 50,
+            eAttack6       = 56,
+            eAttack7       = 62,
+            eAttack8       = 68,
+            eAttack9       = 144,
+            eAttackLoop    = 74,
+            eAttackSpin    = 80,
+            eAttackSpin2   = 86,
+            eAttackThrow   = 114,
+            eAttackThrow2  = 120,
+            eAttackThrow3  = 126,
+            eAttackThrow4  = 132,
+            eAttackThrow5  = 138,
+            eAttackThrow6  = 150,
+            eAttackThrow7  = 156,
+            eAttackThrow8  = 162,
+            ePlaceMine     = 102,
+            ePlaceMine2    = 108,
+            eAttackDefault = 255
             };
 
         enum onHitTypes
@@ -267,13 +267,13 @@ class WEAPRecord : public FNVRecord //Weapon
 
         enum ePowerAttackAnimOverrideTypes
             {
-            eUnknown0           = 0,
-            eAttackCustom1Power = 97,
-            eAttackCustom2Power = 98,
-            eAttackCustom3Power = 99,
-            eAttackCustom4Power = 100,
-            eAttackCustom5Power = 101,
-            eAttackCustomDefault            = 255
+            eUnknown0            = 0,
+            eAttackCustom1Power  = 97,
+            eAttackCustom2Power  = 98,
+            eAttackCustom3Power  = 99,
+            eAttackCustom4Power  = 100,
+            eAttackCustom5Power  = 101,
+            eAttackCustomDefault = 255
             };
 
         enum critFlagFlags

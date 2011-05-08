@@ -38,7 +38,7 @@ class KEYMRecord : public FNVRecord //Key
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSubRecord<GENVALUEWEIGHT> DATA; //Data
+        ReqSubRecord<GENVALUEWEIGHT> DATA; //Data
         OptSimpleSubRecord<FORMID> RNAM; //Sound - Random/Looping
 
         KEYMRecord(unsigned char *_recData=NULL);

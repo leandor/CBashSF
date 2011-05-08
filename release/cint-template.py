@@ -2700,6 +2700,7 @@ class FnvENCHRecord(FnvBaseRecord):
     LIST_MACRO(effects, 13, FNVEffect)
 
     BasicFlagMACRO(IsNoAutoCalc, flags, 0x01)
+    BasicInvertedFlagMACRO(IsAutoCalc, IsNoAutoCalc)
     BasicFlagMACRO(IsHideEffect, flags, 0x04)
     BasicTypeMACRO(IsWeapon, itemType, 2, IsApparel)
     BasicTypeMACRO(IsApparel, itemType, 3, IsWeapon)
@@ -4264,7 +4265,7 @@ class FnvNPC_Record(FnvBaseRecord):
     UINT8_MACRO(responsibility, 47)
     UINT8_MACRO(mood, 48)
     UINT8_ARRAY_MACRO(unused1, 49, 3)
-    UINT32_FLAG_MACRO(flags, 50)
+    UINT32_FLAG_MACRO(services, 50)
     SINT8_TYPE_MACRO(trainSkill, 51)
     UINT8_MACRO(trainLevel, 52)
     UINT8_MACRO(assistance, 53)
@@ -4410,7 +4411,7 @@ class FnvNPC_Record(FnvBaseRecord):
                                            'script', 'items_list', 'aggression',
                                            'confidence', 'energyLevel',
                                            'responsibility', 'mood',
-                                           'flags', 'trainSkill', 'trainLevel',
+                                           'services', 'trainSkill', 'trainLevel',
                                            'assistance', 'aggroFlags',
                                            'aggroRadius', 'aiPackages', 'iclass',
                                            'baseHealth', 'strength', 'perception',
@@ -4445,7 +4446,7 @@ class FnvNPC_Record(FnvBaseRecord):
                                              'script', 'items_list', 'aggression',
                                              'confidence', 'energyLevel',
                                              'responsibility', 'mood',
-                                             'flags', 'trainSkill', 'trainLevel',
+                                             'services', 'trainSkill', 'trainLevel',
                                              'assistance', 'aggroFlags',
                                              'aggroRadius', 'aiPackages', 'iclass',
                                              'baseHealth', 'strength', 'perception',
@@ -4469,28 +4470,661 @@ class FnvNPC_Record(FnvBaseRecord):
 
 class FnvCREARecord(FnvBaseRecord):
     _Type = 'CREA'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet.
+        Filters items."""
+        self.items = [x for x in self.items if x.item[0] in modSet]
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class SoundType(ListComponent):
+        class Sound(ListX2Component):
+            FORMID_LISTX2MACRO(sound, 1)
+            UINT8_LISTX2MACRO(chance, 2)
+            exportattrs = copyattrs = ['sound', 'chance']
+
+        UINT32_TYPE_LISTMACRO(soundType, 1)
+        LIST_LISTMACRO(sounds, 2, self.Sound)
+        
+        BasicTypeMACRO(IsLeftFoot, soundType, 0, IsRightFoot)
+        BasicTypeMACRO(IsRightFoot, soundType, 1, IsLeftFoot)
+        BasicTypeMACRO(IsLeftBackFoot, soundType, 2, IsLeftFoot)
+        BasicTypeMACRO(IsRightBackFoot, soundType, 3, IsLeftFoot)
+        BasicTypeMACRO(IsIdle, soundType, 4, IsLeftFoot)
+        BasicTypeMACRO(IsAware, soundType, 5, IsLeftFoot)
+        BasicTypeMACRO(IsAttack, soundType, 6, IsLeftFoot)
+        BasicTypeMACRO(IsHit, soundType, 7, IsLeftFoot)
+        BasicTypeMACRO(IsDeath, soundType, 8, IsLeftFoot)
+        BasicTypeMACRO(IsWeapon, soundType, 9, IsLeftFoot)
+        BasicTypeMACRO(IsMovementLoop, soundType, 10, IsLeftFoot)
+        BasicTypeMACRO(IsConsciousLoop, soundType, 11, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary1, soundType, 12, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary2, soundType, 13, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary3, soundType, 14, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary4, soundType, 15, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary5, soundType, 16, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary6, soundType, 17, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary7, soundType, 18, IsLeftFoot)
+        BasicTypeMACRO(IsAuxiliary8, soundType, 19, IsLeftFoot)
+        BasicTypeMACRO(IsJump, soundType, 20, IsLeftFoot)
+        BasicTypeMACRO(IsPlayRandomLoop, soundType, 21, IsLeftFoot)
+        exportattrs = copyattrs = ['soundType', 'sounds_list']
+
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
+
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    FORMID_ARRAY_MACRO(actorEffects, 19)
+    FORMID_MACRO(unarmedEffect, 20)
+    UINT16_TYPE_MACRO(unarmedAnim, 21)
+    ISTRING_ARRAY_MACRO(bodyParts, 22)
+    UINT8_ARRAY_MACRO(nift_p, 23)
+    UINT32_FLAG_MACRO(flags, 24)
+    UINT16_MACRO(fatigue, 25)
+    UINT16_MACRO(barterGold, 26)
+    SINT16_MACRO(level, 27)
+    UINT16_MACRO(calcMin, 28)
+    UINT16_MACRO(calcMax, 29)
+    UINT16_MACRO(speedMult, 30)
+    FLOAT32_MACRO(karma, 31)
+    SINT16_MACRO(dispBase, 32)
+    UINT16_FLAG_MACRO(templateFlags, 33)
+    LIST_MACRO(factions, 34, Faction)
+    FORMID_MACRO(deathItem, 35)
+    FORMID_MACRO(voice, 36)
+    FORMID_MACRO(template, 37)
+    GroupedValuesMACRO(destructable, 38, FNVDestructable)
+    FORMID_MACRO(script, 43)
+
+    LIST_MACRO(items, 44, FNVItem)
+    UINT8_TYPE_MACRO(aggression, 45)
+    UINT8_TYPE_MACRO(confidence, 46)
+    UINT8_MACRO(energyLevel, 47)
+    UINT8_MACRO(responsibility, 48)
+    UINT8_TYPE_MACRO(mood, 49)
+    UINT8_ARRAY_MACRO(unused1, 50, 3)
+    UINT32_FLAG_MACRO(services, 51)
+    SINT8_TYPE_MACRO(trainSkill, 52)
+    UINT8_MACRO(trainLevel, 53)
+    UINT8_TYPE_MACRO(assistance, 54)
+    UINT8_FLAG_MACRO(aggroFlags, 55)
+    SINT32_MACRO(aggroRadius, 56)
+    FORMID_ARRAY_MACRO(aiPackages, 57)
+    ISTRING_ARRAY_MACRO(animations, 58)
+    UINT8_TYPE_MACRO(creatureType, 59)
+    UINT8_MACRO(combat, 60)
+    UINT8_MACRO(magic, 61)
+    UINT8_MACRO(stealth, 62)
+    UINT16_MACRO(health, 63)
+    UINT8_ARRAY_MACRO(unused2, 64, 2)
+    SINT16_MACRO(attackDamage, 65)
+    UINT8_MACRO(strength, 66)
+    UINT8_MACRO(perception, 67)
+    UINT8_MACRO(endurance, 68)
+    UINT8_MACRO(charisma, 69)
+    UINT8_MACRO(intelligence, 70)
+    UINT8_MACRO(agility, 71)
+    UINT8_MACRO(luck, 72)
+    UINT8_MACRO(attackReach, 73)
+    FORMID_MACRO(combatStyle, 74)
+    FORMID_MACRO(partData, 75)
+    FLOAT32_MACRO(turningSpeed, 76)
+    FLOAT32_MACRO(baseScale, 77)
+    FLOAT32_MACRO(footWeight, 78)
+    UINT32_TYPE_MACRO(impactType, 79)
+    UINT32_MACRO(soundLevel, 80)
+    FORMID_MACRO(inheritsSoundsFrom, 81)
+    
+    LIST_MACRO(soundTypes, 82, SoundType)
+    FORMID_MACRO(impactData, 83)
+    FORMID_MACRO(meleeList, 84)
+
+    BasicFlagMACRO(IsBiped, flags, 0x00000001)
+    BasicFlagMACRO(IsEssential, flags, 0x00000002)
+    BasicFlagMACRO(IsWeaponAndShield, flags, 0x00000004)
+    BasicFlagMACRO(IsRespawn, flags, 0x00000008)
+    BasicFlagMACRO(IsSwims, flags, 0x00000010)
+    BasicFlagMACRO(IsFlies, flags, 0x00000020)
+    BasicFlagMACRO(IsWalks, flags, 0x00000040)
+    BasicFlagMACRO(IsPCLevelOffset, flags, 0x00000080)
+    BasicFlagMACRO(IsUnknown1, flags, 0x00000100)
+    BasicFlagMACRO(IsNoLowLevel, flags, 0x00000200)
+    BasicInvertedFlagMACRO(IsLowLevel, IsNoLowLevel)
+    BasicFlagMACRO(IsNoBloodSpray, flags, 0x00000800)
+    BasicInvertedFlagMACRO(IsBloodSpray, IsNoBloodSpray)
+    BasicFlagMACRO(IsNoBloodDecal, flags, 0x00001000)
+    BasicInvertedFlagMACRO(IsBloodDecal, IsNoBloodDecal)
+    BasicFlagMACRO(IsNoHead, flags, 0x00008000)
+    BasicInvertedFlagMACRO(IsHead, IsNoHead)
+    BasicFlagMACRO(IsNoRightArm, flags, 0x00010000)
+    BasicInvertedFlagMACRO(IsRightArm, IsNoRightArm)
+    BasicFlagMACRO(IsNoLeftArm, flags, 0x00020000)
+    BasicInvertedFlagMACRO(IsLeftArm, IsNoLeftArm)
+    BasicFlagMACRO(IsNoCombatInWater, flags, 0x00040000)
+    BasicInvertedFlagMACRO(IsCombatInWater, IsNoCombatInWater)
+    BasicFlagMACRO(IsNoShadow, flags, 0x00080000)
+    BasicInvertedFlagMACRO(IsShadow, IsNoShadow)
+    BasicFlagMACRO(IsNoVATSMelee, flags, 0x00100000)
+    BasicInvertedFlagMACRO(IsVATSMelee, IsNoVATSMelee)
+    BasicFlagMACRO(IsAllowPCDialogue, flags, 0x00200000)
+    BasicFlagMACRO(IsCantOpenDoors, flags, 0x00400000)
+    BasicInvertedFlagMACRO(IsCanOpenDoors, IsCantOpenDoors)
+    BasicFlagMACRO(IsImmobile, flags, 0x00800000)
+    BasicFlagMACRO(IsTiltFrontBack, flags, 0x01000000)
+    BasicFlagMACRO(IsTiltLeftRight, flags, 0x02000000)
+    BasicFlagMACRO(IsNoKnockdowns, flags, 0x03000000)
+    BasicInvertedFlagMACRO(IsKnockdowns, IsNoKnockdowns)
+    BasicFlagMACRO(IsNotPushable, flags, 0x08000000)
+    BasicInvertedFlagMACRO(IsPushable, IsNotPushable)
+    BasicFlagMACRO(IsAllowPickpocket, flags, 0x10000000)
+    BasicFlagMACRO(IsGhost, flags, 0x20000000)
+    BasicFlagMACRO(IsNoHeadTracking, flags, 0x40000000)
+    BasicInvertedFlagMACRO(IsHeadTracking, IsNoHeadTracking)
+    BasicFlagMACRO(IsInvulnerable, flags, 0x80000000)
+
+    BasicFlagMACRO(IsUseTraits, templateFlags, 0x00000001)
+    BasicFlagMACRO(IsUseStats, templateFlags, 0x00000002)
+    BasicFlagMACRO(IsUseFactions, templateFlags, 0x00000004)
+    BasicFlagMACRO(IsUseAEList, templateFlags, 0x00000008)
+    BasicFlagMACRO(IsUseAIData, templateFlags, 0x00000010)
+    BasicFlagMACRO(IsUseAIPackages, templateFlags, 0x00000020)
+    BasicFlagMACRO(IsUseModelAnim, templateFlags, 0x00000040)
+    BasicFlagMACRO(IsUseBaseData, templateFlags, 0x00000080)
+    BasicFlagMACRO(IsUseInventory, templateFlags, 0x00000100)
+    BasicFlagMACRO(IsUseScript, templateFlags, 0x00000200)
+    
+    BasicFlagMACRO(IsAggroRadiusBehavior, aggroFlags, 0x01)
+
+    BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
+    BasicFlagMACRO(IsServicesArmor, services, 0x00000002)
+    BasicFlagMACRO(IsServicesClothing, services, 0x00000004)
+    BasicFlagMACRO(IsServicesBooks, services, 0x00000008)
+    BasicFlagMACRO(IsServicesIngredients, services, 0x00000010)
+    BasicFlagMACRO(IsServicesLights, services, 0x00000080)
+    BasicFlagMACRO(IsServicesApparatus, services, 0x00000100)
+    BasicFlagMACRO(IsServicesMiscItems, services, 0x00000400)
+    BasicFlagMACRO(IsServicesSpells, services, 0x00000800)
+    BasicFlagMACRO(IsServicesMagicItems, services, 0x00001000)
+    BasicFlagMACRO(IsServicesPotions, services, 0x00002000)
+    BasicFlagMACRO(IsServicesTraining, services, 0x00004000)
+    BasicFlagMACRO(IsServicesRecharge, services, 0x00010000)
+    BasicFlagMACRO(IsServicesRepair, services, 0x00020000)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    
+    BasicTypeMACRO(IsAnimal, creatureType, 0, IsMutatedAnimal)
+    BasicTypeMACRO(IsMutatedAnimal, creatureType, 1, IsAnimal)
+    BasicTypeMACRO(IsMutatedInsect, creatureType, 2, IsAnimal)
+    BasicTypeMACRO(IsAbomination, creatureType, 3, IsAnimal)
+    BasicTypeMACRO(IsSuperMutant, creatureType, 4, IsAnimal)
+    BasicTypeMACRO(IsFeralGhoul, creatureType, 5, IsAnimal)
+    BasicTypeMACRO(IsRobot, creatureType, 6, IsAnimal)
+    BasicTypeMACRO(IsGiant, creatureType, 7, IsAnimal)
+    
+    BasicTypeMACRO(IsLoud, soundLevel, 0, IsNormal)
+    BasicTypeMACRO(IsNormal, soundLevel, 1, IsLoud)
+    BasicTypeMACRO(IsSilent, soundLevel, 2, IsLoud)
+    
+    BasicTypeMACRO(IsUnaggressive, aggression, 0, IsAggressive)
+    BasicTypeMACRO(IsAggressive, aggression, 1, IsUnaggressive)
+    BasicTypeMACRO(IsVeryAggressive, aggression, 2, IsUnaggressive)
+    BasicTypeMACRO(IsFrenzied, aggression, 3, IsUnaggressive)
+    
+    BasicTypeMACRO(IsCowardly, confidence, 0, IsCautious)
+    BasicTypeMACRO(IsCautious, confidence, 1, IsCowardly)
+    BasicTypeMACRO(IsAverage, confidence, 2, IsCowardly)
+    BasicTypeMACRO(IsBrave, confidence, 3, IsCowardly)
+    BasicTypeMACRO(IsFoolhardy, confidence, 4, IsCowardly)
+
+    BasicTypeMACRO(IsNeutral, mood, 0, IsAfraid)
+    BasicTypeMACRO(IsAfraid, mood, 1, IsNeutral)
+    BasicTypeMACRO(IsAnnoyed, mood, 2, IsNeutral)
+    BasicTypeMACRO(IsCocky, mood, 3, IsNeutral)
+    BasicTypeMACRO(IsDrugged, mood, 4, IsNeutral)
+    BasicTypeMACRO(IsPleasant, mood, 5, IsNeutral)
+    BasicTypeMACRO(IsAngry, mood, 6, IsNeutral)
+    BasicTypeMACRO(IsSad, mood, 7, IsNeutral)
+
+    BasicTypeMACRO(IsHelpsNobody, assistance, 0, IsHelpsAllies)
+    BasicTypeMACRO(IsHelpsAllies, assistance, 1, IsHelpsNobody)
+    BasicTypeMACRO(IsHelpsFriendsAndAllies, assistance, 2, IsHelpsNobody)
+
+    BasicTypeMACRO(IsStone, impactType, 0, IsDirt)
+    BasicTypeMACRO(IsDirt, impactType, 1, IsStone)
+    BasicTypeMACRO(IsGrass, impactType, 2, IsStone)
+    BasicTypeMACRO(IsGlass, impactType, 3, IsStone)
+    BasicTypeMACRO(IsMetal, impactType, 4, IsStone)
+    BasicTypeMACRO(IsWood, impactType, 5, IsStone)
+    BasicTypeMACRO(IsOrganic, impactType, 6, IsStone)
+    BasicTypeMACRO(IsCloth, impactType, 7, IsStone)
+    BasicTypeMACRO(IsWater, impactType, 8, IsStone)
+    BasicTypeMACRO(IsHollowMetal, impactType, 9, IsStone)
+    BasicTypeMACRO(IsOrganicBug, impactType, 10, IsStone)
+    BasicTypeMACRO(IsOrganicGlow, impactType, 11, IsStone)
+
+    BasicTypeMACRO(IsAttackLeft, unarmedAnim, 26, IsAttackLeftUp)
+    BasicTypeMACRO(IsAttackLeftUp, unarmedAnim, 27, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLeftDown, unarmedAnim, 28, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLeftIS, unarmedAnim, 29, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLeftISUp, unarmedAnim, 30, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLeftISDown, unarmedAnim, 31, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRight, unarmedAnim, 32, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightUp, unarmedAnim, 33, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightDown, unarmedAnim, 34, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightIS, unarmedAnim, 35, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightISUp, unarmedAnim, 36, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightISDown, unarmedAnim, 37, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3, unarmedAnim, 38, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3Up, unarmedAnim, 39, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3Down, unarmedAnim, 40, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3IS, unarmedAnim, 41, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3ISUp, unarmedAnim, 42, IsAttackLeft)
+    BasicTypeMACRO(IsAttack3ISDown, unarmedAnim, 43, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4, unarmedAnim, 44, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4Up, unarmedAnim, 45, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4Down, unarmedAnim, 46, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4IS, unarmedAnim, 47, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4ISUp, unarmedAnim, 48, IsAttackLeft)
+    BasicTypeMACRO(IsAttack4ISDown, unarmedAnim, 49, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5, unarmedAnim, 50, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5Up, unarmedAnim, 51, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5Down, unarmedAnim, 52, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5IS, unarmedAnim, 53, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5ISUp, unarmedAnim, 54, IsAttackLeft)
+    BasicTypeMACRO(IsAttack5ISDown, unarmedAnim, 55, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6, unarmedAnim, 56, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6Up, unarmedAnim, 57, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6Down, unarmedAnim, 58, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6IS, unarmedAnim, 59, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6ISUp, unarmedAnim, 60, IsAttackLeft)
+    BasicTypeMACRO(IsAttack6ISDown, unarmedAnim, 61, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7, unarmedAnim, 62, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7Up, unarmedAnim, 63, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7Down, unarmedAnim, 64, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7IS, unarmedAnim, 65, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7ISUp, unarmedAnim, 66, IsAttackLeft)
+    BasicTypeMACRO(IsAttack7ISDown, unarmedAnim, 67, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8, unarmedAnim, 68, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8Up, unarmedAnim, 69, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8Down, unarmedAnim, 70, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8IS, unarmedAnim, 71, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8ISUp, unarmedAnim, 72, IsAttackLeft)
+    BasicTypeMACRO(IsAttack8ISDown, unarmedAnim, 73, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoop, unarmedAnim, 74, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoopUp, unarmedAnim, 75, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoopDown, unarmedAnim, 76, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoopIS, unarmedAnim, 77, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoopISUp, unarmedAnim, 78, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLoopISDown, unarmedAnim, 79, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin, unarmedAnim, 80, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpinUp, unarmedAnim, 81, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpinDown, unarmedAnim, 82, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpinIS, unarmedAnim, 83, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpinISUp, unarmedAnim, 84, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpinISDown, unarmedAnim, 85, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2, unarmedAnim, 86, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2Up, unarmedAnim, 87, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2Down, unarmedAnim, 88, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2IS, unarmedAnim, 89, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2ISUp, unarmedAnim, 90, IsAttackLeft)
+    BasicTypeMACRO(IsAttackSpin2ISDown, unarmedAnim, 91, IsAttackLeft)
+    BasicTypeMACRO(IsAttackPower, unarmedAnim, 92, IsAttackLeft)
+    BasicTypeMACRO(IsAttackForwardPower, unarmedAnim, 93, IsAttackLeft)
+    BasicTypeMACRO(IsAttackBackPower, unarmedAnim, 94, IsAttackLeft)
+    BasicTypeMACRO(IsAttackLeftPower, unarmedAnim, 95, IsAttackLeft)
+    BasicTypeMACRO(IsAttackRightPower, unarmedAnim, 96, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine, unarmedAnim, 97, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMineUp, unarmedAnim, 98, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMineDown, unarmedAnim, 99, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMineIS, unarmedAnim, 100, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMineISUp, unarmedAnim, 101, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMineISDown, unarmedAnim, 102, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2, unarmedAnim, 103, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2Up, unarmedAnim, 104, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2Down, unarmedAnim, 105, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2IS, unarmedAnim, 106, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2ISUp, unarmedAnim, 107, IsAttackLeft)
+    BasicTypeMACRO(IsPlaceMine2ISDown, unarmedAnim, 108, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow, unarmedAnim, 109, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrowUp, unarmedAnim, 110, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrowDown, unarmedAnim, 111, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrowIS, unarmedAnim, 112, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrowISUp, unarmedAnim, 113, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrowISDown, unarmedAnim, 114, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2, unarmedAnim, 115, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2Up, unarmedAnim, 116, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2Down, unarmedAnim, 117, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2IS, unarmedAnim, 118, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2ISUp, unarmedAnim, 119, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow2ISDown, unarmedAnim, 120, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3, unarmedAnim, 121, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3Up, unarmedAnim, 122, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3Down, unarmedAnim, 123, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3IS, unarmedAnim, 124, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3ISUp, unarmedAnim, 125, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow3ISDown, unarmedAnim, 126, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4, unarmedAnim, 127, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4Up, unarmedAnim, 128, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4Down, unarmedAnim, 129, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4IS, unarmedAnim, 130, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4ISUp, unarmedAnim, 131, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow4ISDown, unarmedAnim, 132, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5, unarmedAnim, 133, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5Up, unarmedAnim, 134, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5Down, unarmedAnim, 135, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5IS, unarmedAnim, 136, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5ISUp, unarmedAnim, 137, IsAttackLeft)
+    BasicTypeMACRO(IsAttackThrow5ISDown, unarmedAnim, 138, IsAttackLeft)
+    BasicTypeMACRO(IsPipBoy, unarmedAnim, 167, IsAttackLeft)
+    BasicTypeMACRO(IsPipBoyChild, unarmedAnim, 178, IsAttackLeft)
+    BasicTypeMACRO(IsANY, unarmedAnim, 255, IsAttackLeft)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'actorEffects', 'unarmedEffect',
+                                           'unarmedAnim', 'bodyParts', 'nift_p',
+                                           'flags', 'fatigue', 'barterGold',
+                                           'level', 'calcMin', 'calcMax',
+                                           'speedMult', 'karma', 'dispBase',
+                                           'templateFlags', 'factions_list',
+                                           'deathItem', 'voice', 'template',
+                                           'destructable_list', 'script',
+                                           'items_list', 'aggression',
+                                           'confidence', 'energyLevel',
+                                           'responsibility', 'mood',
+                                           'services', 'trainSkill',
+                                           'trainLevel', 'assistance',
+                                           'aggroFlags', 'aggroRadius',
+                                           'aiPackages', 'animations',
+                                           'creatureType', 'combat', 'magic',
+                                           'stealth', 'health', 'attackDamage',
+                                           'strength', 'perception',
+                                           'endurance', 'charisma',
+                                           'intelligence', 'agility', 'luck',
+                                           'attackReach', 'combatStyle',
+                                           'partData', 'turningSpeed',
+                                           'baseScale', 'footWeight',
+                                           'impactType', 'soundLevel',
+                                           'inheritsSoundsFrom',
+                                           'soundTypes_list', 'impactData',
+                                           'meleeList']
+    exportattrs  = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                              'boundX2', 'boundY2', 'boundZ2',
+                                              'full', 'modPath', 'modb',
+                                              'altTextures_list', 'modelFlags',
+                                              'actorEffects', 'unarmedEffect',
+                                              'unarmedAnim', 'bodyParts',
+                                              'flags', 'fatigue', 'barterGold',
+                                              'level', 'calcMin', 'calcMax',
+                                              'speedMult', 'karma', 'dispBase',
+                                              'templateFlags', 'factions_list',
+                                              'deathItem', 'voice', 'template',
+                                              'destructable_list', 'script',
+                                              'items_list', 'aggression',
+                                              'confidence', 'energyLevel',
+                                              'responsibility', 'mood',
+                                              'services', 'trainSkill',
+                                              'trainLevel', 'assistance',
+                                              'aggroFlags', 'aggroRadius',
+                                              'aiPackages', 'animations',
+                                              'creatureType', 'combat', 'magic',
+                                              'stealth', 'health', 'attackDamage',
+                                              'strength', 'perception',
+                                              'endurance', 'charisma',
+                                              'intelligence', 'agility', 'luck',
+                                              'attackReach', 'combatStyle',
+                                              'partData', 'turningSpeed',
+                                              'baseScale', 'footWeight',
+                                              'impactType', 'soundLevel',
+                                              'inheritsSoundsFrom',
+                                              'soundTypes_list', 'impactData',
+                                              'meleeList']# 'modt_p', 'nift_p',
 
 class FnvLVLCRecord(FnvBaseRecord):
     _Type = 'LVLC'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        
+    class Entry(ListComponent):
+        SINT16_LISTMACRO(level, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 2)
+        FORMID_LISTMACRO(listId, 3)
+        SINT16_LISTMACRO(count, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 5, 2)
+        FORMID_LISTMACRO(owner, 6)
+        UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO(globalOrRank, 7)
+        FLOAT32_LISTMACRO(condition, 8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    UINT8_MACRO(chanceNone, 13)
+    UINT8_FLAG_MACRO(flags, 14)
+
+    LIST_MACRO(entries, 15, self.Entry)
+    ISTRING_MACRO(modPath, 16)
+    FLOAT32_MACRO(modb, 17)
+    UINT8_ARRAY_MACRO(modt_p, 18)
+
+    LIST_MACRO(altTextures, 19, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 20)
+    
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAll, flags, 0x00000004)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvLVLNRecord(FnvBaseRecord):
     _Type = 'LVLN'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Entry(ListComponent):
+        SINT16_LISTMACRO(level, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 2)
+        FORMID_LISTMACRO(listId, 3)
+        SINT16_LISTMACRO(count, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 5, 2)
+        FORMID_LISTMACRO(owner, 6)
+        UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO(globalOrRank, 7)
+        FLOAT32_LISTMACRO(condition, 8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
+
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    UINT8_MACRO(chanceNone, 13)
+    UINT8_FLAG_MACRO(flags, 14)
+
+    LIST_MACRO(entries, 15, self.Entry)
+    ISTRING_MACRO(modPath, 16)
+    FLOAT32_MACRO(modb, 17)
+    UINT8_ARRAY_MACRO(modt_p, 18)
+
+    LIST_MACRO(altTextures, 19, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 20)
+    
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAll, flags, 0x00000004)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvKEYMRecord(FnvBaseRecord):
     _Type = 'KEYM'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(script, 21)
+    GroupedValuesMACRO(destructable, 22, FNVDestructable)
+    FORMID_MACRO(pickupSound, 27)
+    FORMID_MACRO(dropSound, 28)
+    SINT32_MACRO(value, 29)
+    FLOAT32_MACRO(weight, 30)
+    FORMID_MACRO(loopSound, 31)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'destructable_list',
+                                           'pickupSound', 'dropSound',
+                                           'value', 'weight', 'loopSound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'destructable_list',
+                                             'pickupSound', 'dropSound',
+                                             'value', 'weight', 'loopSound']# 'modt_p',
 
 class FnvALCHRecord(FnvBaseRecord):
     _Type = 'ALCH'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(script, 21)
+    SINT32_TYPE_MACRO(equipmentType, 22)
+    FLOAT32_MACRO(weight, 23)
+    SINT32_MACRO(value, 24)
+    UINT8_FLAG_MACRO(flags, 25)
+    UINT8_ARRAY_MACRO(unused1, 26, 3)
+    
+    FORMID_MACRO(withdrawalEffect, 27)
+    SINT32_MACRO(addictionChance, 28)
+    FORMID_MACRO(consumeSound, 29)
+
+    LIST_MACRO(effects, 30, FNVEffect)
+    GroupedValuesMACRO(destructable, 31, FNVDestructable)
+    FORMID_MACRO(pickupSound, 36)
+    FORMID_MACRO(dropSound, 37)
+
+    BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsAutoCalc, IsNoAutoCalc)
+    BasicFlagMACRO(IsFood, flags, 0x00000002)
+    BasicFlagMACRO(IsMedicine, flags, 0x00000004)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+
+    BasicTypeMACRO(IsNone, equipmentType, -1, IsBigGuns)
+    BasicTypeMACRO(IsBigGuns, equipmentType, 0, IsNone)
+    BasicTypeMACRO(IsEnergyWeapons, equipmentType, 1, IsNone)
+    BasicTypeMACRO(IsSmallGuns, equipmentType, 2, IsNone)
+    BasicTypeMACRO(IsMeleeWeapons, equipmentType, 3, IsNone)
+    BasicTypeMACRO(IsUnarmedWeapon, equipmentType, 4, IsNone)
+    BasicTypeMACRO(IsThrownWeapons, equipmentType, 5, IsNone)
+    BasicTypeMACRO(IsMine, equipmentType, 6, IsNone)
+    BasicTypeMACRO(IsBodyWear, equipmentType, 7, IsNone)
+    BasicTypeMACRO(IsHeadWear, equipmentType, 8, IsNone)
+    BasicTypeMACRO(IsHandWear, equipmentType, 9, IsNone)
+    BasicTypeMACRO(IsChems, equipmentType, 10, IsNone)
+    BasicTypeMACRO(IsStimpack, equipmentType, 11, IsNone)
+    BasicTypeMACRO(IsEdible, equipmentType, 12, IsNone)
+    BasicTypeMACRO(IsAlcohol, equipmentType, 13, IsNone)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'equipmentType', 'weight',
+                                           'value', 'flags', 'withdrawalEffect',
+                                           'addictionChance', 'consumeSound',
+                                           'effects_list', 'destructable_list',
+                                           'pickupSound', 'dropSound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'equipmentType', 'weight',
+                                             'value', 'flags', 'withdrawalEffect',
+                                             'addictionChance', 'consumeSound',
+                                             'effects_list', 'destructable_list',
+                                             'pickupSound', 'dropSound']# 'modt_p',
 
 class FnvIDLMRecord(FnvBaseRecord):
     _Type = 'IDLM'
@@ -5500,6 +6134,7 @@ class ObALCHRecord(ObBaseRecord):
 
     LIST_MACRO(effects, 15, Effect)
     BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsAutoCalc, IsNoAutoCalc)
     BasicFlagMACRO(IsFood, flags, 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
@@ -6274,6 +6909,7 @@ class ObENCHRecord(ObBaseRecord):
 
     LIST_MACRO(effects, 11, Effect)
     BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsAutoCalc, IsNoAutoCalc)
     BasicTypeMACRO(IsScroll, itemType, 0, IsStaff)
     BasicTypeMACRO(IsStaff, itemType, 1, IsScroll)
     BasicTypeMACRO(IsWeapon, itemType, 2, IsScroll)
@@ -6483,6 +7119,7 @@ class ObINGRRecord(ObBaseRecord):
 
     LIST_MACRO(effects, 15, Effect)
     BasicFlagMACRO(IsNoAutoCalc, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsAutoCalc, IsNoAutoCalc)
     BasicFlagMACRO(IsFood, flags, 0x00000002)
     ##OBME Fields. Setting any of the below fields will make the mod require JRoush's OBME plugin for OBSE
     ##To see if OBME is in use, check the recordVersion field for a non-None value
