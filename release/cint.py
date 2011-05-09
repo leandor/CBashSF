@@ -5885,18 +5885,416 @@ class FnvLVLIRecord(FnvBaseRecord):
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'
+    class WTHRColor(BaseComponent):
+        riseRed = CBashGeneric_GROUP(0, c_ubyte)
+        riseGreen = CBashGeneric_GROUP(1, c_ubyte)
+        riseBlue = CBashGeneric_GROUP(2, c_ubyte)
+        unused1 = CBashUINT8ARRAY_GROUP(3, 1)
+        dayRed = CBashGeneric_GROUP(4, c_ubyte)
+        dayGreen = CBashGeneric_GROUP(5, c_ubyte)
+        dayBlue = CBashGeneric_GROUP(6, c_ubyte)
+        unused2 = CBashUINT8ARRAY_GROUP(7, 1)
+        setRed = CBashGeneric_GROUP(8, c_ubyte)
+        setGreen = CBashGeneric_GROUP(9, c_ubyte)
+        setBlue = CBashGeneric_GROUP(10, c_ubyte)
+        unused3 = CBashUINT8ARRAY_GROUP(11, 1)
+        nightRed = CBashGeneric_GROUP(12, c_ubyte)
+        nightGreen = CBashGeneric_GROUP(13, c_ubyte)
+        nightBlue = CBashGeneric_GROUP(14, c_ubyte)
+        unused4 = CBashUINT8ARRAY_GROUP(15, 1)
+        
+        noonRed = CBashGeneric_GROUP(16, c_ubyte)
+        noonGreen = CBashGeneric_GROUP(17, c_ubyte)
+        noonBlue = CBashGeneric_GROUP(18, c_ubyte)
+        unused5 = CBashUINT8ARRAY_GROUP(19, 1)
+        
+        midnightRed = CBashGeneric_GROUP(20, c_ubyte)
+        midnightGreen = CBashGeneric_GROUP(21, c_ubyte)
+        midnightBlue = CBashGeneric_GROUP(22, c_ubyte)
+        unused6 = CBashUINT8ARRAY_GROUP(23, 1)
+        exportattrs = copyattrs = ['riseRed', 'riseGreen', 'riseBlue',
+                                   'dayRed', 'dayGreen', 'dayBlue',
+                                   'setRed', 'setGreen', 'setBlue',
+                                   'nightRed', 'nightGreen', 'nightBlue',
+                                   'noonRed', 'noonGreen', 'noonBlue',
+                                   'midnightRed', 'midnightGreen', 'midnightBlue']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Sound(ListComponent):
+        sound = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        IsDefault = CBashBasicType('type', 0, 'IsPrecip')
+        IsPrecipitation = CBashBasicType('type', 1, 'IsDefault')
+        IsPrecip = CBashAlias('IsPrecipitation')
+        IsWind = CBashBasicType('type', 2, 'IsDefault')
+        IsThunder = CBashBasicType('type', 3, 'IsDefault')
+        exportattrs = copyattrs = ['sound', 'type']
+
+    sunriseImageSpace = CBashFORMID(7)
+    dayImageSpace = CBashFORMID(8)
+    sunsetImageSpace = CBashFORMID(9)
+    nightImageSpace = CBashFORMID(10)
+    unknown1ImageSpace = CBashFORMID(11)
+    unknown2ImageSpace = CBashFORMID(12)
+    cloudLayer0Path = CBashISTRING(13)
+    cloudLayer1Path = CBashISTRING(14)
+    cloudLayer2Path = CBashISTRING(15)
+    cloudLayer3Path = CBashISTRING(16)
+    modPath = CBashISTRING(17)
+    modb = CBashFLOAT32(18)
+    modt_p = CBashUINT8ARRAY(19)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 20, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 20, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 20, length)
+    altTextures = CBashLIST(20, FNVAltTexture)
+    altTextures_list = CBashLIST(20, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(21, c_ubyte)
+    unknown1 = CBashGeneric(22, c_ulong)
+    layer0Speed = CBashGeneric(23, c_ubyte)
+    layer1Speed = CBashGeneric(24, c_ubyte)
+    layer2Speed = CBashGeneric(25, c_ubyte)
+    layer3Speed = CBashGeneric(26, c_ubyte)
+    pnam_p = CBashUINT8ARRAY(27)
+    upperSky = CBashGrouped(28, WTHRColor)
+    upperSky_list = CBashGrouped(28, WTHRColor, True)
+
+    fog = CBashGrouped(52, WTHRColor)
+    fog_list = CBashGrouped(52, WTHRColor, True)
+
+    lowerClouds = CBashGrouped(76, WTHRColor)
+    lowerClouds_list = CBashGrouped(76, WTHRColor, True)
+
+    ambient = CBashGrouped(100, WTHRColor)
+    ambient_list = CBashGrouped(100, WTHRColor, True)
+
+    sunlight = CBashGrouped(124, WTHRColor)
+    sunlight_list = CBashGrouped(124, WTHRColor, True)
+
+    sun = CBashGrouped(148, WTHRColor)
+    sun_list = CBashGrouped(148, WTHRColor, True)
+
+    stars = CBashGrouped(172, WTHRColor)
+    stars_list = CBashGrouped(172, WTHRColor, True)
+
+    lowerSky = CBashGrouped(196, WTHRColor)
+    lowerSky_list = CBashGrouped(196, WTHRColor, True)
+
+    horizon = CBashGrouped(220, WTHRColor)
+    horizon_list = CBashGrouped(220, WTHRColor, True)
+
+    upperClouds = CBashGrouped(244, WTHRColor)
+    upperClouds_list = CBashGrouped(244, WTHRColor, True)
+
+    fogDayNear = CBashFLOAT32(268)
+    fogDayFar = CBashFLOAT32(269)
+    fogNightNear = CBashFLOAT32(270)
+    fogNightFar = CBashFLOAT32(271)
+    fogDayPower = CBashFLOAT32(272)
+    fogNightPower = CBashFLOAT32(273)
+    inam_p = CBashUINT8ARRAY(274)
+    windSpeed = CBashGeneric(275, c_ubyte)
+    lowerCloudSpeed = CBashGeneric(276, c_ubyte)
+    upperCloudSpeed = CBashGeneric(277, c_ubyte)
+    transDelta = CBashGeneric(278, c_ubyte)
+    sunGlare = CBashGeneric(279, c_ubyte)
+    sunDamage = CBashGeneric(280, c_ubyte)
+    rainFadeIn = CBashGeneric(281, c_ubyte)
+    rainFadeOut = CBashGeneric(282, c_ubyte)
+    boltFadeIn = CBashGeneric(283, c_ubyte)
+    boltFadeOut = CBashGeneric(284, c_ubyte)
+    boltFrequency = CBashGeneric(285, c_ubyte)
+    weatherType = CBashGeneric(286, c_ubyte)
+    boltRed = CBashGeneric(287, c_ubyte)
+    boltGreen = CBashGeneric(288, c_ubyte)
+    boltBlue = CBashGeneric(289, c_ubyte)
+    
+    def create_sound(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 290, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 290, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Sound(self._CollectionID, self._ModID, self._RecordID, 290, length)
+    sounds = CBashLIST(290, Sound)
+    sounds_list = CBashLIST(290, Sound, True)
+
+    ##actually flags, but all are exclusive(except unknowns)...so like a Type
+    ##Manual hackery will make the CS think it is multiple types. It isn't known how the game would react.
+    IsNone = CBashMaskedType('weatherType', 0x0F, 0x00, 'IsPleasant')
+    IsPleasant = CBashMaskedType('weatherType', 0x0F, 0x01, 'IsNone')
+    IsCloudy = CBashMaskedType('weatherType', 0x0F, 0x02, 'IsNone')
+    IsRainy = CBashMaskedType('weatherType', 0x0F, 0x04, 'IsNone')
+    IsSnow = CBashMaskedType('weatherType', 0x0F, 0x08, 'IsNone')
+    IsUnk1 = CBashBasicFlag('weatherType', 0x40)
+    IsUnk2 = CBashBasicFlag('weatherType', 0x80)
+    copyattrs = FnvBaseRecord.baseattrs + ['sunriseImageSpace', 'dayImageSpace',
+                                           'sunsetImageSpace', 'nightImageSpace',
+                                           'unknown1ImageSpace', 'unknown2ImageSpace',
+                                           'cloudLayer0Path', 'cloudLayer1Path',
+                                           'cloudLayer2Path', 'cloudLayer3Path',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'unknown1', 'layer0Speed', 'layer1Speed',
+                                           'layer2Speed', 'layer3Speed', 'pnam_p',
+                                           'upperSky_list', 'fog_list',
+                                           'lowerClouds_list', 'ambient_list',
+                                           'sunlight_list', 'sun_list', 'stars_list',
+                                           'lowerSky_list', 'horizon_list',
+                                           'upperClouds_list', 'fogDayNear',
+                                           'fogDayFar', 'fogNightNear',
+                                           'fogNightFar', 'fogDayPower',
+                                           'fogNightPower', 'inam_p', 'windSpeed',
+                                           'lowerCloudSpeed', 'upperCloudSpeed',
+                                           'transDelta', 'sunGlare', 'sunDamage',
+                                           'rainFadeIn', 'rainFadeOut',
+                                           'boltFadeIn', 'boltFadeOut',
+                                           'boltFrequency', 'weatherType',
+                                           'boltRed', 'boltGreen', 'boltBlue',
+                                           'sounds_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['sunriseImageSpace', 'dayImageSpace',
+                                             'sunsetImageSpace', 'nightImageSpace',
+                                             'unknown1ImageSpace', 'unknown2ImageSpace',
+                                             'cloudLayer0Path', 'cloudLayer1Path',
+                                             'cloudLayer2Path', 'cloudLayer3Path',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'unknown1', 'layer0Speed', 'layer1Speed',
+                                             'layer2Speed', 'layer3Speed',
+                                             'upperSky_list', 'fog_list',
+                                             'lowerClouds_list', 'ambient_list',
+                                             'sunlight_list', 'sun_list', 'stars_list',
+                                             'lowerSky_list', 'horizon_list',
+                                             'upperClouds_list', 'fogDayNear',
+                                             'fogDayFar', 'fogNightNear',
+                                             'fogNightFar', 'fogDayPower',
+                                             'fogNightPower', 'windSpeed',
+                                             'lowerCloudSpeed', 'upperCloudSpeed',
+                                             'transDelta', 'sunGlare', 'sunDamage',
+                                             'rainFadeIn', 'rainFadeOut',
+                                             'boltFadeIn', 'boltFadeOut',
+                                             'boltFrequency', 'weatherType',
+                                             'boltRed', 'boltGreen', 'boltBlue',
+                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p', 
 
 class FnvCLMTRecord(FnvBaseRecord):
     _Type = 'CLMT'
+    class Weather(ListComponent):
+        weather = CBashFORMID_LIST(1)
+        chance = CBashGeneric_LIST(2, c_long)
+        globalId = CBashFORMID_LIST(3)
+        copyattrs = ['weather', 'chance', 'globalId']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_weather(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Weather(self._CollectionID, self._ModID, self._RecordID, 7, length)
+    weathers = CBashLIST(7, Weather)
+    weathers_list = CBashLIST(7, Weather, True)
+
+    sunPath = CBashISTRING(8)
+    glarePath = CBashISTRING(9)
+    modPath = CBashISTRING(10)
+    modb = CBashFLOAT32(11)
+    modt_p = CBashUINT8ARRAY(12)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 13, length)
+    altTextures = CBashLIST(13, FNVAltTexture)
+    altTextures_list = CBashLIST(13, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(14, c_ubyte)
+    riseBegin = CBashGeneric(15, c_ubyte)
+    riseEnd = CBashGeneric(16, c_ubyte)
+    setBegin = CBashGeneric(17, c_ubyte)
+    setEnd = CBashGeneric(18, c_ubyte)
+    volatility = CBashGeneric(19, c_ubyte)
+    phaseLength = CBashGeneric(20, c_ubyte)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['weathers_list', 'sunPath',
+                                           'glarePath', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'riseBegin',
+                                           'riseEnd', 'setBegin',
+                                           'setEnd', 'volatility',
+                                           'phaseLength']
+    exportattrs = FnvBaseRecord.baseattrs + ['weathers_list', 'sunPath',
+                                             'glarePath', 'modPath',
+                                             'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'riseBegin',
+                                             'riseEnd', 'setBegin',
+                                             'setEnd', 'volatility',
+                                             'phaseLength']# 'modt_p',
 
 class FnvREGNRecord(FnvBaseRecord):
     _Type = 'REGN'
+    class Area(ListComponent):
+        class Point(ListX2Component):
+            posX = CBashFLOAT32_LISTX2(1)
+            posY = CBashFLOAT32_LISTX2(2)
+            exportattrs = copyattrs = ['posX', 'posY']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        edgeFalloff = CBashFORMID_LIST(1)
+
+        def create_point(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Point(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, length)
+        points = CBashLIST_LIST(2, Point)
+        points_list = CBashLIST_LIST(2, Point, True)
+
+        exportattrs = copyattrs = ['edgeFalloff', 'points_list']
+
+    class Entry(ListComponent):
+        class Object(ListX2Component):
+            objectId = CBashFORMID_LISTX2(1)
+            parentIndex = CBashGeneric_LISTX2(2, c_ushort)
+            unused1 = CBashUINT8ARRAY_LISTX2(3, 2)
+            density = CBashFLOAT32_LISTX2(4)
+            clustering = CBashGeneric_LISTX2(5, c_ubyte)
+            minSlope = CBashGeneric_LISTX2(6, c_ubyte)
+            maxSlope = CBashGeneric_LISTX2(7, c_ubyte)
+            flags = CBashGeneric_LISTX2(8, c_ubyte)
+            radiusWRTParent = CBashGeneric_LISTX2(9, c_ushort)
+            radius = CBashGeneric_LISTX2(10, c_ushort)
+            unk1 = CBashUINT8ARRAY_LISTX2(11, 4)
+            maxHeight = CBashFLOAT32_LISTX2(12)
+            sink = CBashFLOAT32_LISTX2(13)
+            sinkVar = CBashFLOAT32_LISTX2(14)
+            sizeVar = CBashFLOAT32_LISTX2(15)
+            angleVarX = CBashGeneric_LISTX2(16, c_ushort)
+            angleVarY = CBashGeneric_LISTX2(17, c_ushort)
+            angleVarZ = CBashGeneric_LISTX2(18, c_ushort)
+            unused2 = CBashUINT8ARRAY_LISTX2(19, 1)
+            unk2 = CBashUINT8ARRAY_LISTX2(20, 4)
+            IsConformToSlope = CBashBasicFlag('flags', 0x00000001)
+            IsPaintVertices = CBashBasicFlag('flags', 0x00000002)
+            IsSizeVariance = CBashBasicFlag('flags', 0x00000004)
+            IsXVariance = CBashBasicFlag('flags', 0x00000008)
+            IsYVariance = CBashBasicFlag('flags', 0x00000010)
+            IsZVariance = CBashBasicFlag('flags', 0x00000020)
+            IsTree = CBashBasicFlag('flags', 0x00000040)
+            IsHugeRock = CBashBasicFlag('flags', 0x00000080)
+            exportattrs = copyattrs = ['objectId', 'parentIndex', 'density', 'clustering',
+                         'minSlope', 'maxSlope', 'flags', 'radiusWRTParent',
+                         'radius', 'unk1', 'maxHeight', 'sink', 'sinkVar',
+                         'sizeVar', 'angleVarX', 'angleVarY', 'angleVarZ',
+                         'unk2']
+
+        class Grass(ListX2Component):
+            grass = CBashFORMID_LISTX2(1)
+            unk1 = CBashUINT8ARRAY_LISTX2(2, 4)
+            exportattrs = copyattrs = ['grass', 'unk1']
+
+        class Sound(ListX2Component):
+            sound = CBashFORMID_LISTX2(1)
+            flags = CBashGeneric_LISTX2(2, c_ulong)
+            chance = CBashGeneric_LISTX2(3, c_ulong)
+            IsPleasant = CBashBasicFlag('flags', 0x00000001)
+            IsCloudy = CBashBasicFlag('flags', 0x00000002)
+            IsRainy = CBashBasicFlag('flags', 0x00000004)
+            IsSnowy = CBashBasicFlag('flags', 0x00000008)
+            exportattrs = copyattrs = ['sound', 'flags', 'chance']
+
+        class Weather(ListX2Component):
+            weather = CBashFORMID_LISTX2(1)
+            chance = CBashGeneric_LISTX2(2, c_ulong)
+            globalId = CBashFORMID_LISTX2(1)
+            exportattrs = copyattrs = ['weather', 'chance', 'globalId']
+
+        entryType = CBashGeneric_LIST(1, c_ulong)
+        flags = CBashGeneric_LIST(2, c_ubyte)
+        priority = CBashGeneric_LIST(3, c_ubyte)
+        unused1 = CBashUINT8ARRAY_LIST(4, 4)
+
+        def create_object(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Object(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, length)
+        objects = CBashLIST_LIST(5, Object)
+        objects_list = CBashLIST_LIST(5, Object, True)
+
+        mapName = CBashSTRING_LIST(6)
+        iconPath = CBashSTRING_LIST(7)
+
+        def create_grass(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Grass(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 8, length)
+        grasses = CBashLIST_LIST(8, Grass)
+        grasses_list = CBashLIST_LIST(8, Grass, True)
+
+        musicType = CBashGeneric_LIST(9, c_ulong)
+        music = CBashFORMID_LIST(10)
+        incidentalMedia = CBashFORMID_LIST(11)
+        battleMedias = CBashFORMIDARRAY_LIST(12)
+
+        def create_sound(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 13, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 13, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Sound(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 13, length)
+        sounds = CBashLIST_LIST(13, Sound)
+        sounds_list = CBashLIST_LIST(13, Sound, True)
+
+        
+        def create_weather(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Weather(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, length)
+        weathers = CBashLIST_LIST(14, Weather)
+        weathers_list = CBashLIST_LIST(14, Weather, True)
+
+        imposters = CBashFORMIDARRAY_LIST(15)
+        
+        IsOverride = CBashBasicFlag('flags', 0x00000001)
+        
+        IsObject = CBashBasicType('entryType', 2, 'IsWeather')
+        IsWeather = CBashBasicType('entryType', 3, 'IsObject')
+        IsMap = CBashBasicType('entryType', 4, 'IsObject')
+        IsLand = CBashBasicType('entryType', 5, 'IsObject')
+        IsGrass = CBashBasicType('entryType', 6, 'IsObject')
+        IsSound = CBashBasicType('entryType', 7, 'IsObject')
+        IsImposter = CBashBasicType('entryType', 8, 'IsObject')
+        IsDefault = CBashBasicType('musicType', 0, 'IsPublic')
+        IsPublic = CBashBasicType('musicType', 1, 'IsDefault')
+        IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')        
+        exportattrs = copyattrs = ['entryType', 'flags', 'priority', 'objects_list',
+                                   'mapName', 'iconPath', 'grasses_list', 'musicType',
+                                   'music', 'incidentalMedia', 'battleMedias',
+                                   'sounds_list', 'weathers_list', 'imposters']
+
+    iconPath = CBashISTRING(7)
+    smallIconPath = CBashISTRING(8)
+    mapRed = CBashGeneric(9, c_ubyte)
+    mapGreen = CBashGeneric(10, c_ubyte)
+    mapBlue = CBashGeneric(11, c_ubyte)
+    unused1 = CBashUINT8ARRAY(12, 1)
+    worldspace = CBashFORMID(13)
+
+    def create_area(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Area(self._CollectionID, self._ModID, self._RecordID, 14, length)
+    areas = CBashLIST(14, Area)
+    areas_list = CBashLIST(14, Area, True)
+
+    def create_entry(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    entries = CBashLIST(15, Entry)
+    entries_list = CBashLIST(15, Entry, True)
+
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath',
+                                                         'mapRed', 'mapGreen', 'mapBlue',
+                                                         'worldspace', 'areas_list',
+                                                         'entries_list']
 
 class FnvNAVIRecord(FnvBaseRecord):
     _Type = 'NAVI'

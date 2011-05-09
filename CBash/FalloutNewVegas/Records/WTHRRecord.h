@@ -141,25 +141,25 @@ class WTHRRecord : public FNVRecord //Weather
 
     public:
         StringRecord EDID; //Editor ID
-        OptSimpleSubRecord<FORMID> 0IAD; //Sunrise Image Space Modifier
-        OptSimpleSubRecord<FORMID> 1IAD; //Day Image Space Modifier
-        OptSimpleSubRecord<FORMID> 2IAD; //Sunset Image Space Modifier
-        OptSimpleSubRecord<FORMID> 3IAD; //Night Image Space Modifier
-        OptSimpleSubRecord<FORMID> 4IAD; //Unknown
-        OptSimpleSubRecord<FORMID> 5IAD; //Unknown
+        OptSimpleSubRecord<FORMID> _0IAD; //Sunrise Image Space Modifier
+        OptSimpleSubRecord<FORMID> _1IAD; //Day Image Space Modifier
+        OptSimpleSubRecord<FORMID> _2IAD; //Sunset Image Space Modifier
+        OptSimpleSubRecord<FORMID> _3IAD; //Night Image Space Modifier
+        OptSimpleSubRecord<FORMID> _4IAD; //Unknown
+        OptSimpleSubRecord<FORMID> _5IAD; //Unknown
         StringRecord DNAM; //Cloud Textures - Layer 0
         StringRecord CNAM; //Cloud Textures - Layer 1
         StringRecord ANAM; //Cloud Textures - Layer 2
         StringRecord BNAM; //Cloud Textures - Layer 3
         OptSubRecord<FNVMODEL> MODL; //Model
-        RawRecord LNAM; //Unknown
+        ReqSimpleSubRecord<UINT32, 4> LNAM; //Unknown
         OptSubRecord<WTHRONAM> ONAM; //Cloud Speeds
         RawRecord PNAM; //Unused
         ReqSubRecord<WTHRNAM0> NAM0; //Colors by Types/Times
-        OptSubRecord<WTHRFNAM> FNAM; //Fog Distance
+        ReqSubRecord<WTHRFNAM> FNAM; //Fog Distance
         RawRecord INAM; //Unused
-        OptSubRecord<WTHRDATA> DATA; //Data
-        std::vector<ReqSubRecord<WTHRSNAM> *> Sounds; // Sounds
+        ReqSubRecord<WTHRDATA> DATA; //Data
+        UnorderedSparseArray<WTHRSNAM *> Sounds; // Sounds
 
         WTHRRecord(unsigned char *_recData=NULL);
         WTHRRecord(WTHRRecord *srcRecord);

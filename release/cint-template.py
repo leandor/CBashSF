@@ -5428,18 +5428,330 @@ class FnvLVLIRecord(FnvBaseRecord):
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'
+    class WTHRColor(BaseComponent):
+        UINT8_GROUPEDMACRO(riseRed, 0)
+        UINT8_GROUPEDMACRO(riseGreen, 1)
+        UINT8_GROUPEDMACRO(riseBlue, 2)
+        UINT8_ARRAY_GROUPEDMACRO(unused1, 3, 1)
+        UINT8_GROUPEDMACRO(dayRed, 4)
+        UINT8_GROUPEDMACRO(dayGreen, 5)
+        UINT8_GROUPEDMACRO(dayBlue, 6)
+        UINT8_ARRAY_GROUPEDMACRO(unused2, 7, 1)
+        UINT8_GROUPEDMACRO(setRed, 8)
+        UINT8_GROUPEDMACRO(setGreen, 9)
+        UINT8_GROUPEDMACRO(setBlue, 10)
+        UINT8_ARRAY_GROUPEDMACRO(unused3, 11, 1)
+        UINT8_GROUPEDMACRO(nightRed, 12)
+        UINT8_GROUPEDMACRO(nightGreen, 13)
+        UINT8_GROUPEDMACRO(nightBlue, 14)
+        UINT8_ARRAY_GROUPEDMACRO(unused4, 15, 1)
+        
+        UINT8_GROUPEDMACRO(noonRed, 16)
+        UINT8_GROUPEDMACRO(noonGreen, 17)
+        UINT8_GROUPEDMACRO(noonBlue, 18)
+        UINT8_ARRAY_GROUPEDMACRO(unused5, 19, 1)
+        
+        UINT8_GROUPEDMACRO(midnightRed, 20)
+        UINT8_GROUPEDMACRO(midnightGreen, 21)
+        UINT8_GROUPEDMACRO(midnightBlue, 22)
+        UINT8_ARRAY_GROUPEDMACRO(unused6, 23, 1)
+        exportattrs = copyattrs = ['riseRed', 'riseGreen', 'riseBlue',
+                                   'dayRed', 'dayGreen', 'dayBlue',
+                                   'setRed', 'setGreen', 'setBlue',
+                                   'nightRed', 'nightGreen', 'nightBlue',
+                                   'noonRed', 'noonGreen', 'noonBlue',
+                                   'midnightRed', 'midnightGreen', 'midnightBlue']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Sound(ListComponent):
+        FORMID_LISTMACRO(sound, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        BasicTypeMACRO(IsDefault, type, 0, IsPrecip)
+        BasicTypeMACRO(IsPrecipitation, type, 1, IsDefault)
+        BasicAliasMACRO(IsPrecip, IsPrecipitation)
+        BasicTypeMACRO(IsWind, type, 2, IsDefault)
+        BasicTypeMACRO(IsThunder, type, 3, IsDefault)
+        exportattrs = copyattrs = ['sound', 'type']
+
+    FORMID_MACRO(sunriseImageSpace, 7)
+    FORMID_MACRO(dayImageSpace, 8)
+    FORMID_MACRO(sunsetImageSpace, 9)
+    FORMID_MACRO(nightImageSpace, 10)
+    FORMID_MACRO(unknown1ImageSpace, 11)
+    FORMID_MACRO(unknown2ImageSpace, 12)
+    ISTRING_MACRO(cloudLayer0Path, 13)
+    ISTRING_MACRO(cloudLayer1Path, 14)
+    ISTRING_MACRO(cloudLayer2Path, 15)
+    ISTRING_MACRO(cloudLayer3Path, 16)
+    ISTRING_MACRO(modPath, 17)
+    FLOAT32_MACRO(modb, 18)
+    UINT8_ARRAY_MACRO(modt_p, 19)
+
+    LIST_MACRO(altTextures, 20, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 21)
+    UINT32_MACRO(unknown1, 22)
+    UINT8_MACRO(layer0Speed, 23)
+    UINT8_MACRO(layer1Speed, 24)
+    UINT8_MACRO(layer2Speed, 25)
+    UINT8_MACRO(layer3Speed, 26)
+    UINT8_ARRAY_MACRO(pnam_p, 27)
+    GroupedValuesMACRO(upperSky, 28, WTHRColor)
+    GroupedValuesMACRO(fog, 52, WTHRColor)
+    GroupedValuesMACRO(lowerClouds, 76, WTHRColor)
+    GroupedValuesMACRO(ambient, 100, WTHRColor)
+    GroupedValuesMACRO(sunlight, 124, WTHRColor)
+    GroupedValuesMACRO(sun, 148, WTHRColor)
+    GroupedValuesMACRO(stars, 172, WTHRColor)
+    GroupedValuesMACRO(lowerSky, 196, WTHRColor)
+    GroupedValuesMACRO(horizon, 220, WTHRColor)
+    GroupedValuesMACRO(upperClouds, 244, WTHRColor)
+    FLOAT32_MACRO(fogDayNear, 268)
+    FLOAT32_MACRO(fogDayFar, 269)
+    FLOAT32_MACRO(fogNightNear, 270)
+    FLOAT32_MACRO(fogNightFar, 271)
+    FLOAT32_MACRO(fogDayPower, 272)
+    FLOAT32_MACRO(fogNightPower, 273)
+    UINT8_ARRAY_MACRO(inam_p, 274)
+    UINT8_MACRO(windSpeed, 275)
+    UINT8_MACRO(lowerCloudSpeed, 276)
+    UINT8_MACRO(upperCloudSpeed, 277)
+    UINT8_MACRO(transDelta, 278)
+    UINT8_MACRO(sunGlare, 279)
+    UINT8_MACRO(sunDamage, 280)
+    UINT8_MACRO(rainFadeIn, 281)
+    UINT8_MACRO(rainFadeOut, 282)
+    UINT8_MACRO(boltFadeIn, 283)
+    UINT8_MACRO(boltFadeOut, 284)
+    UINT8_MACRO(boltFrequency, 285)
+    UINT8_TYPE_MACRO(weatherType, 286)
+    UINT8_MACRO(boltRed, 287)
+    UINT8_MACRO(boltGreen, 288)
+    UINT8_MACRO(boltBlue, 289)
+    
+    LIST_MACRO(sounds, 290, self.Sound)
+    ##actually flags, but all are exclusive(except unknowns)...so like a Type
+    ##Manual hackery will make the CS think it is multiple types. It isn't known how the game would react.
+    MaskedTypeMACRO(IsNone, weatherType, 0x0F, 0x00, IsPleasant)
+    MaskedTypeMACRO(IsPleasant, weatherType, 0x0F, 0x01, IsNone)
+    MaskedTypeMACRO(IsCloudy, weatherType, 0x0F, 0x02, IsNone)
+    MaskedTypeMACRO(IsRainy, weatherType, 0x0F, 0x04, IsNone)
+    MaskedTypeMACRO(IsSnow, weatherType, 0x0F, 0x08, IsNone)
+    BasicFlagMACRO(IsUnk1, weatherType, 0x40)
+    BasicFlagMACRO(IsUnk2, weatherType, 0x80)
+    copyattrs = FnvBaseRecord.baseattrs + ['sunriseImageSpace', 'dayImageSpace',
+                                           'sunsetImageSpace', 'nightImageSpace',
+                                           'unknown1ImageSpace', 'unknown2ImageSpace',
+                                           'cloudLayer0Path', 'cloudLayer1Path',
+                                           'cloudLayer2Path', 'cloudLayer3Path',
+                                           'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'unknown1', 'layer0Speed', 'layer1Speed',
+                                           'layer2Speed', 'layer3Speed', 'pnam_p',
+                                           'upperSky_list', 'fog_list',
+                                           'lowerClouds_list', 'ambient_list',
+                                           'sunlight_list', 'sun_list', 'stars_list',
+                                           'lowerSky_list', 'horizon_list',
+                                           'upperClouds_list', 'fogDayNear',
+                                           'fogDayFar', 'fogNightNear',
+                                           'fogNightFar', 'fogDayPower',
+                                           'fogNightPower', 'inam_p', 'windSpeed',
+                                           'lowerCloudSpeed', 'upperCloudSpeed',
+                                           'transDelta', 'sunGlare', 'sunDamage',
+                                           'rainFadeIn', 'rainFadeOut',
+                                           'boltFadeIn', 'boltFadeOut',
+                                           'boltFrequency', 'weatherType',
+                                           'boltRed', 'boltGreen', 'boltBlue',
+                                           'sounds_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['sunriseImageSpace', 'dayImageSpace',
+                                             'sunsetImageSpace', 'nightImageSpace',
+                                             'unknown1ImageSpace', 'unknown2ImageSpace',
+                                             'cloudLayer0Path', 'cloudLayer1Path',
+                                             'cloudLayer2Path', 'cloudLayer3Path',
+                                             'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'unknown1', 'layer0Speed', 'layer1Speed',
+                                             'layer2Speed', 'layer3Speed',
+                                             'upperSky_list', 'fog_list',
+                                             'lowerClouds_list', 'ambient_list',
+                                             'sunlight_list', 'sun_list', 'stars_list',
+                                             'lowerSky_list', 'horizon_list',
+                                             'upperClouds_list', 'fogDayNear',
+                                             'fogDayFar', 'fogNightNear',
+                                             'fogNightFar', 'fogDayPower',
+                                             'fogNightPower', 'windSpeed',
+                                             'lowerCloudSpeed', 'upperCloudSpeed',
+                                             'transDelta', 'sunGlare', 'sunDamage',
+                                             'rainFadeIn', 'rainFadeOut',
+                                             'boltFadeIn', 'boltFadeOut',
+                                             'boltFrequency', 'weatherType',
+                                             'boltRed', 'boltGreen', 'boltBlue',
+                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p', 
 
 class FnvCLMTRecord(FnvBaseRecord):
     _Type = 'CLMT'
+    class Weather(ListComponent):
+        FORMID_LISTMACRO(weather, 1)
+        SINT32_LISTMACRO(chance, 2)
+        FORMID_LISTMACRO(globalId, 3)
+        copyattrs = ['weather', 'chance', 'globalId']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(weathers, 7, self.Weather)
+    ISTRING_MACRO(sunPath, 8)
+    ISTRING_MACRO(glarePath, 9)
+    ISTRING_MACRO(modPath, 10)
+    FLOAT32_MACRO(modb, 11)
+    UINT8_ARRAY_MACRO(modt_p, 12)
+
+    LIST_MACRO(altTextures, 13, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 14)
+    UINT8_MACRO(riseBegin, 15)
+    UINT8_MACRO(riseEnd, 16)
+    UINT8_MACRO(setBegin, 17)
+    UINT8_MACRO(setEnd, 18)
+    UINT8_MACRO(volatility, 19)
+    UINT8_MACRO(phaseLength, 20)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['weathers_list', 'sunPath',
+                                           'glarePath', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'riseBegin',
+                                           'riseEnd', 'setBegin',
+                                           'setEnd', 'volatility',
+                                           'phaseLength']
+    exportattrs = FnvBaseRecord.baseattrs + ['weathers_list', 'sunPath',
+                                             'glarePath', 'modPath',
+                                             'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'riseBegin',
+                                             'riseEnd', 'setBegin',
+                                             'setEnd', 'volatility',
+                                             'phaseLength']# 'modt_p',
 
 class FnvREGNRecord(FnvBaseRecord):
     _Type = 'REGN'
+    class Area(ListComponent):
+        class Point(ListX2Component):
+            FLOAT32_LISTX2MACRO(posX, 1)
+            FLOAT32_LISTX2MACRO(posY, 2)
+            exportattrs = copyattrs = ['posX', 'posY']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        FORMID_LISTMACRO(edgeFalloff, 1)
+
+        LIST_LISTMACRO(points, 2, self.Point)
+        exportattrs = copyattrs = ['edgeFalloff', 'points_list']
+
+    class Entry(ListComponent):
+        class Object(ListX2Component):
+            FORMID_LISTX2MACRO(objectId, 1)
+            UINT16_LISTX2MACRO(parentIndex, 2)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 3, 2)
+            FLOAT32_LISTX2MACRO(density, 4)
+            UINT8_LISTX2MACRO(clustering, 5)
+            UINT8_LISTX2MACRO(minSlope, 6)
+            UINT8_LISTX2MACRO(maxSlope, 7)
+            UINT8_FLAG_LISTX2MACRO(flags, 8)
+            UINT16_LISTX2MACRO(radiusWRTParent, 9)
+            UINT16_LISTX2MACRO(radius, 10)
+            UINT8_ARRAY_LISTX2MACRO(unk1, 11, 4)
+            FLOAT32_LISTX2MACRO(maxHeight, 12)
+            FLOAT32_LISTX2MACRO(sink, 13)
+            FLOAT32_LISTX2MACRO(sinkVar, 14)
+            FLOAT32_LISTX2MACRO(sizeVar, 15)
+            UINT16_LISTX2MACRO(angleVarX, 16)
+            UINT16_LISTX2MACRO(angleVarY, 17)
+            UINT16_LISTX2MACRO(angleVarZ, 18)
+            UINT8_ARRAY_LISTX2MACRO(unused2, 19, 1)
+            UINT8_ARRAY_LISTX2MACRO(unk2, 20, 4)
+            BasicFlagMACRO(IsConformToSlope, flags, 0x00000001)
+            BasicFlagMACRO(IsPaintVertices, flags, 0x00000002)
+            BasicFlagMACRO(IsSizeVariance, flags, 0x00000004)
+            BasicFlagMACRO(IsXVariance, flags, 0x00000008)
+            BasicFlagMACRO(IsYVariance, flags, 0x00000010)
+            BasicFlagMACRO(IsZVariance, flags, 0x00000020)
+            BasicFlagMACRO(IsTree, flags, 0x00000040)
+            BasicFlagMACRO(IsHugeRock, flags, 0x00000080)
+            exportattrs = copyattrs = ['objectId', 'parentIndex', 'density', 'clustering',
+                         'minSlope', 'maxSlope', 'flags', 'radiusWRTParent',
+                         'radius', 'unk1', 'maxHeight', 'sink', 'sinkVar',
+                         'sizeVar', 'angleVarX', 'angleVarY', 'angleVarZ',
+                         'unk2']
+
+        class Grass(ListX2Component):
+            FORMID_LISTX2MACRO(grass, 1)
+            UINT8_ARRAY_LISTX2MACRO(unk1, 2, 4)
+            exportattrs = copyattrs = ['grass', 'unk1']
+
+        class Sound(ListX2Component):
+            FORMID_LISTX2MACRO(sound, 1)
+            UINT32_FLAG_LISTX2MACRO(flags, 2)
+            UINT32_LISTX2MACRO(chance, 3)
+            BasicFlagMACRO(IsPleasant, flags, 0x00000001)
+            BasicFlagMACRO(IsCloudy, flags, 0x00000002)
+            BasicFlagMACRO(IsRainy, flags, 0x00000004)
+            BasicFlagMACRO(IsSnowy, flags, 0x00000008)
+            exportattrs = copyattrs = ['sound', 'flags', 'chance']
+
+        class Weather(ListX2Component):
+            FORMID_LISTX2MACRO(weather, 1)
+            UINT32_LISTX2MACRO(chance, 2)
+            FORMID_LISTX2MACRO(globalId, 1)
+            exportattrs = copyattrs = ['weather', 'chance', 'globalId']
+
+        UINT32_TYPE_LISTMACRO(entryType, 1)
+        UINT8_FLAG_LISTMACRO(flags, 2)
+        UINT8_LISTMACRO(priority, 3)
+        UINT8_ARRAY_LISTMACRO(unused1, 4, 4)
+
+        LIST_LISTMACRO(objects, 5, self.Object)
+        STRING_LISTMACRO(mapName, 6)
+        STRING_LISTMACRO(iconPath, 7)
+
+        LIST_LISTMACRO(grasses, 8, self.Grass)
+        UINT32_TYPE_LISTMACRO(musicType, 9)
+        FORMID_LISTMACRO(music, 10)
+        FORMID_LISTMACRO(incidentalMedia, 11)
+        FORMID_ARRAY_LISTMACRO(battleMedias, 12)
+
+        LIST_LISTMACRO(sounds, 13, self.Sound)
+        
+        LIST_LISTMACRO(weathers, 14, self.Weather)
+        FORMID_ARRAY_LISTMACRO(imposters, 15)
+        
+        BasicFlagMACRO(IsOverride, flags, 0x00000001)
+        
+        BasicTypeMACRO(IsObject, entryType, 2, IsWeather)
+        BasicTypeMACRO(IsWeather, entryType, 3, IsObject)
+        BasicTypeMACRO(IsMap, entryType, 4, IsObject)
+        BasicTypeMACRO(IsLand, entryType, 5, IsObject)
+        BasicTypeMACRO(IsGrass, entryType, 6, IsObject)
+        BasicTypeMACRO(IsSound, entryType, 7, IsObject)
+        BasicTypeMACRO(IsImposter, entryType, 8, IsObject)
+        BasicTypeMACRO(IsDefault, musicType, 0, IsPublic)
+        BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
+        BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)        
+        exportattrs = copyattrs = ['entryType', 'flags', 'priority', 'objects_list',
+                                   'mapName', 'iconPath', 'grasses_list', 'musicType',
+                                   'music', 'incidentalMedia', 'battleMedias',
+                                   'sounds_list', 'weathers_list', 'imposters']
+
+    ISTRING_MACRO(iconPath, 7)
+    ISTRING_MACRO(smallIconPath, 8)
+    UINT8_MACRO(mapRed, 9)
+    UINT8_MACRO(mapGreen, 10)
+    UINT8_MACRO(mapBlue, 11)
+    UINT8_ARRAY_MACRO(unused1, 12, 1)
+    FORMID_MACRO(worldspace, 13)
+
+    LIST_MACRO(areas, 14, self.Area)
+    LIST_MACRO(entries, 15, self.Entry)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath',
+                                                         'mapRed', 'mapGreen', 'mapBlue',
+                                                         'worldspace', 'areas_list',
+                                                         'entries_list']
 
 class FnvNAVIRecord(FnvBaseRecord):
     _Type = 'NAVI'

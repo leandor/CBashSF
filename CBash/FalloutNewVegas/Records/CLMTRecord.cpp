@@ -24,6 +24,62 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+CLMTRecord::CLMTWLST::CLMTWLST():
+    weather(0),
+    chance(0),
+    globalId(0)
+    {
+    //
+    }
+
+CLMTRecord::CLMTWLST::~CLMTWLST()
+    {
+    //
+    }
+
+bool CLMTRecord::CLMTWLST::operator ==(const CLMTWLST &other) const
+    {
+    return (weather == other.weather &&
+            chance == other.chance &&
+            globalId == other.globalId);
+    }
+
+bool CLMTRecord::CLMTWLST::operator !=(const CLMTWLST &other) const
+    {
+    return !(*this == other);
+    }
+
+CLMTRecord::CLMTTNAM::CLMTTNAM():
+    riseBegin(0),
+    riseEnd(0),
+    setBegin(0),
+    setEnd(0),
+    volatility(0),
+    phaseLength(0)
+    {
+    //
+    }
+
+CLMTRecord::CLMTTNAM::~CLMTTNAM()
+    {
+    //
+    }
+
+bool CLMTRecord::CLMTTNAM::operator ==(const CLMTTNAM &other) const
+    {
+    return (riseBegin == other.riseBegin &&
+            riseEnd == other.riseEnd &&
+            setBegin == other.setBegin &&
+            setEnd == other.setEnd &&
+            volatility == other.volatility &&
+            phaseLength == other.phaseLength);
+    }
+
+bool CLMTRecord::CLMTTNAM::operator !=(const CLMTTNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 CLMTRecord::CLMTRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -51,12 +107,10 @@ CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    WLST = srcRecord->WLST;
+    Weathers = srcRecord->Weathers;
     FNAM = srcRecord->FNAM;
     GNAM = srcRecord->GNAM;
-
     MODL = srcRecord->MODL;
-
     TNAM = srcRecord->TNAM;
     return;
     }
@@ -71,17 +125,23 @@ bool CLMTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    //if(WLST.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(WLST->value);
-    if(MODL.IsLoaded() && MODL->MODS.IsLoaded())
-        op.Accept(MODL->MODS->value);
+    for(UINT32 x = 0; x < Weathers.value.size(); x++)
+        {
+        op.Accept(Weathers.value[x].weather);
+        op.Accept(Weathers.value[x].globalId);
+        }
+    if(MODL.IsLoaded())
+        {
+        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
+            op.Accept(MODL->Textures.MODS[x]->texture);
+        }
 
     return op.Stop();
     }
 
 UINT32 CLMTRecord::GetType()
     {
-    return 'TMLC';
+    return REV32(CLMT);
     }
 
 STRING CLMTRecord::GetStrType()
@@ -111,39 +171,39 @@ SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'TSLW':
-                WLST.Read(buffer, subSize, curPos);
+            case REV32(WLST):
+                Weathers.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -163,7 +223,7 @@ SINT32 CLMTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
-    WLST.Unload();
+    Weathers.Unload();
     FNAM.Unload();
     GNAM.Unload();
     MODL.Unload();
@@ -174,25 +234,22 @@ SINT32 CLMTRecord::Unload()
 SINT32 CLMTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-    WRITE(WLST);
+    WRITEAS(Weathers, WLST);
     WRITE(FNAM);
     WRITE(GNAM);
-
     MODL.Write(writer);
-
     WRITE(TNAM);
-
     return -1;
     }
 
 bool CLMTRecord::operator ==(const CLMTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            WLST == other.WLST &&
+    return (TNAM == other.TNAM &&
+            EDID.equalsi(other.EDID) &&
             FNAM.equalsi(other.FNAM) &&
             GNAM.equalsi(other.GNAM) &&
-            MODL == other.MODL &&
-            TNAM == other.TNAM);
+            Weathers == other.Weathers &&
+            MODL == other.MODL);
     }
 
 bool CLMTRecord::operator !=(const CLMTRecord &other) const

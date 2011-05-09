@@ -72,9 +72,9 @@ GPL License and Copyright Notice ============================================
 #include "Records/COBJRecord.h"
 #include "Records/PROJRecord.h"
 #include "Records/LVLIRecord.h"
-//#include "Records/WTHRRecord.h"
-//#include "Records/CLMTRecord.h"
-//#include "Records/REGNRecord.h"
+#include "Records/WTHRRecord.h"
+#include "Records/CLMTRecord.h"
+#include "Records/REGNRecord.h"
 //#include "Records/NAVIRecord.h"
 //#include "Records/CELLRecord.h"
 //#include "Records/WRLDRecord.h"
@@ -177,9 +177,9 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::COBJRecord> COBJ;
         FNVGRUPRecords<FNV::PROJRecord> PROJ;
         FNVGRUPRecords<FNV::LVLIRecord> LVLI;
-        //FNVGRUPRecords<FNV::WTHRRecord> WTHR;
-        //FNVGRUPRecords<FNV::CLMTRecord> CLMT;
-        //FNVGRUPRecords<FNV::REGNRecord> REGN;
+        FNVGRUPRecords<FNV::WTHRRecord> WTHR;
+        FNVGRUPRecords<FNV::CLMTRecord> CLMT;
+        FNVGRUPRecords<FNV::REGNRecord> REGN;
         //FNVGRUPRecords<FNV::NAVIRecord> NAVI;
         //FNVGRUPRecords<FNV::CELLRecord> CELL;
         //FNVGRUPRecords<FNV::WRLDRecord> WRLD;

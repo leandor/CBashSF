@@ -2095,6 +2095,13 @@ struct UnorderedPackedArray
         if(value.size())
             writer.record_write_subrecord(_Type, &value[0], (UINT32)value.size() * sizeof(T));
         }
+    void ReqWrite(UINT32 _Type, FileWriter &writer)
+        {
+        if(value.size())
+            writer.record_write_subrecord(_Type, &value[0], (UINT32)value.size() * sizeof(T));
+        else
+            writer.record_write_subheader(_Type, 0);
+        }
 
     UnorderedPackedArray<T>& operator = (const UnorderedPackedArray<T> &rhs)
         {

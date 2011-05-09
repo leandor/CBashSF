@@ -2550,7 +2550,6 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 169: //upperClouds.night.unused1
             NAM0.value.upperClouds.night.unused1 = defaultCLR.unused1;
             return;
-
         case 170: //fogDayNear
             FNAM.value.fogDayNear = defaultFNAM.fogDayNear;
             return;
@@ -2563,7 +2562,6 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 173: //fogNightFar
             FNAM.value.fogNightFar = defaultFNAM.fogNightFar;
             return;
-
         case 174: //eyeAdaptSpeed
             HNAM.value.eyeAdaptSpeed = defaultHNAM.eyeAdaptSpeed;
             return;
@@ -2606,7 +2604,6 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 187: //treeDimmer
             HNAM.value.treeDimmer = defaultHNAM.treeDimmer;
             return;
-
         case 188: //windSpeed
             DATA.value.windSpeed = defaultDATA.windSpeed;
             return;

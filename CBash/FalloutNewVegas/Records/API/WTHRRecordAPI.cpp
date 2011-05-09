@@ -60,25 +60,25 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //0iad Sunrise Image Space Modifier
+        case 7: //sunriseImageSpace
             return FORMID_FIELD;
-        case 8: //1iad Day Image Space Modifier
+        case 8: //dayImageSpace
             return FORMID_FIELD;
-        case 9: //2iad Sunset Image Space Modifier
+        case 9: //sunsetImageSpace
             return FORMID_FIELD;
-        case 10: //3iad Night Image Space Modifier
+        case 10: //nightImageSpace
             return FORMID_FIELD;
-        case 11: //4iad Unknown
+        case 11: //unknown1ImageSpace
             return FORMID_FIELD;
-        case 12: //5iad Unknown
+        case 12: //unknown2ImageSpace
             return FORMID_FIELD;
-        case 13: //dnam Cloud Textures - Layer 0
+        case 13: //cloudLayer0Path
             return ISTRING_FIELD;
-        case 14: //cnam Cloud Textures - Layer 1
+        case 14: //cloudLayer1Path
             return ISTRING_FIELD;
-        case 15: //anam Cloud Textures - Layer 2
+        case 15: //cloudLayer2Path
             return ISTRING_FIELD;
-        case 16: //bnam Cloud Textures - Layer 3
+        case 16: //cloudLayer3Path
             return ISTRING_FIELD;
         case 17: //modPath
             return ISTRING_FIELD;
@@ -106,13 +106,13 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -126,23 +126,20 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
-
-        case 23: //modelFlags
-            return UINT8_FIELD;
-        case 24: //lnam_p Unknown
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
             return UNKNOWN_FIELD;
-        case 25: //onam Cloud Speed
-            return UNPARSED_FIELD;
-        case 26: //pnam_p Unused
+        case 21: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 22: //unknown1
+            return UINT32_FIELD;
+        case 23: //layer0Speed
+            return UINT8_FIELD;
+        case 24: //layer1Speed
+            return UINT8_FIELD;
+        case 25: //layer2Speed
+            return UINT8_FIELD;
+        case 26: //layer3Speed
+            return UINT8_FIELD;
+        case 27: //pnam_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -153,13 +150,13 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 27: //nam0 NAM0 ,, Struct
+        case 28: //upperSky.rise.red
             return UINT8_FIELD;
-        case 28: //nam0 NAM0 ,, Struct
+        case 29: //upperSky.rise.green
             return UINT8_FIELD;
-        case 29: //nam0 NAM0 ,, Struct
+        case 30: //upperSky.rise.blue
             return UINT8_FIELD;
-        case 30: //nam0_p NAM0 ,, Struct
+        case 31: //upperSky.rise.unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -170,63 +167,1097 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 31: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 32: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 33: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 34: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 35: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 36: //fnam FNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 37: //inam_p Unused
+        case 32: //upperSky.day.red
+            return UINT8_FIELD;
+        case 33: //upperSky.day.green
+            return UINT8_FIELD;
+        case 34: //upperSky.day.blue
+            return UINT8_FIELD;
+        case 35: //upperSky.day.unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 304;
+                    return 1;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 38: //data DATA ,, Struct
+        case 36: //upperSky.set.red
             return UINT8_FIELD;
-        case 39: //data DATA ,, Struct
+        case 37: //upperSky.set.green
             return UINT8_FIELD;
-        case 40: //data DATA ,, Struct
+        case 38: //upperSky.set.blue
             return UINT8_FIELD;
-        case 41: //data DATA ,, Struct
+        case 39: //upperSky.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 40: //upperSky.night.red
             return UINT8_FIELD;
-        case 42: //data DATA ,, Struct
+        case 41: //upperSky.night.green
             return UINT8_FIELD;
-        case 43: //data DATA ,, Struct
+        case 42: //upperSky.night.blue
             return UINT8_FIELD;
-        case 44: //data DATA ,, Struct
+        case 43: //upperSky.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 44: //upperSky.noon.red
             return UINT8_FIELD;
-        case 45: //data DATA ,, Struct
+        case 45: //upperSky.noon.green
             return UINT8_FIELD;
-        case 46: //data DATA ,, Struct
+        case 46: //upperSky.noon.blue
             return UINT8_FIELD;
-        case 47: //data DATA ,, Struct
+        case 47: //upperSky.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 48: //upperSky.midnight.red
             return UINT8_FIELD;
-        case 48: //data DATA ,, Struct
+        case 49: //upperSky.midnight.green
             return UINT8_FIELD;
-        case 49: //data DATA ,, Struct
+        case 50: //upperSky.midnight.blue
             return UINT8_FIELD;
-        case 50: //data DATA ,, Struct
+        case 51: //upperSky.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 52: //fog.rise.red
             return UINT8_FIELD;
-        case 51: //data DATA ,, Struct
+        case 53: //fog.rise.green
             return UINT8_FIELD;
-        case 52: //data DATA ,, Struct
+        case 54: //fog.rise.blue
             return UINT8_FIELD;
-        case 53: //snam SNAM ,, Struct
-            return FORMID_FIELD;
-        case 54: //snam SNAM ,, Struct
-            return UINT32_FIELD;
+        case 55: //fog.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 56: //fog.day.red
+            return UINT8_FIELD;
+        case 57: //fog.day.green
+            return UINT8_FIELD;
+        case 58: //fog.day.blue
+            return UINT8_FIELD;
+        case 59: //fog.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 60: //fog.set.red
+            return UINT8_FIELD;
+        case 61: //fog.set.green
+            return UINT8_FIELD;
+        case 62: //fog.set.blue
+            return UINT8_FIELD;
+        case 63: //fog.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 64: //fog.night.red
+            return UINT8_FIELD;
+        case 65: //fog.night.green
+            return UINT8_FIELD;
+        case 66: //fog.night.blue
+            return UINT8_FIELD;
+        case 67: //fog.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 68: //fog.noon.red
+            return UINT8_FIELD;
+        case 69: //fog.noon.green
+            return UINT8_FIELD;
+        case 70: //fog.noon.blue
+            return UINT8_FIELD;
+        case 71: //fog.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 72: //fog.midnight.red
+            return UINT8_FIELD;
+        case 73: //fog.midnight.green
+            return UINT8_FIELD;
+        case 74: //fog.midnight.blue
+            return UINT8_FIELD;
+        case 75: //fog.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 76: //lowerClouds.rise.red
+            return UINT8_FIELD;
+        case 77: //lowerClouds.rise.green
+            return UINT8_FIELD;
+        case 78: //lowerClouds.rise.blue
+            return UINT8_FIELD;
+        case 79: //lowerClouds.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 80: //lowerClouds.day.red
+            return UINT8_FIELD;
+        case 81: //lowerClouds.day.green
+            return UINT8_FIELD;
+        case 82: //lowerClouds.day.blue
+            return UINT8_FIELD;
+        case 83: //lowerClouds.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 84: //lowerClouds.set.red
+            return UINT8_FIELD;
+        case 85: //lowerClouds.set.green
+            return UINT8_FIELD;
+        case 86: //lowerClouds.set.blue
+            return UINT8_FIELD;
+        case 87: //lowerClouds.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 88: //lowerClouds.night.red
+            return UINT8_FIELD;
+        case 89: //lowerClouds.night.green
+            return UINT8_FIELD;
+        case 90: //lowerClouds.night.blue
+            return UINT8_FIELD;
+        case 91: //lowerClouds.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 92: //lowerClouds.noon.red
+            return UINT8_FIELD;
+        case 93: //lowerClouds.noon.green
+            return UINT8_FIELD;
+        case 94: //lowerClouds.noon.blue
+            return UINT8_FIELD;
+        case 95: //lowerClouds.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 96: //lowerClouds.midnight.red
+            return UINT8_FIELD;
+        case 97: //lowerClouds.midnight.green
+            return UINT8_FIELD;
+        case 98: //lowerClouds.midnight.blue
+            return UINT8_FIELD;
+        case 99: //lowerClouds.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 100: //ambient.rise.red
+            return UINT8_FIELD;
+        case 101: //ambient.rise.green
+            return UINT8_FIELD;
+        case 102: //ambient.rise.blue
+            return UINT8_FIELD;
+        case 103: //ambient.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 104: //ambient.day.red
+            return UINT8_FIELD;
+        case 105: //ambient.day.green
+            return UINT8_FIELD;
+        case 106: //ambient.day.blue
+            return UINT8_FIELD;
+        case 107: //ambient.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 108: //ambient.set.red
+            return UINT8_FIELD;
+        case 109: //ambient.set.green
+            return UINT8_FIELD;
+        case 110: //ambient.set.blue
+            return UINT8_FIELD;
+        case 111: //ambient.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 112: //ambient.night.red
+            return UINT8_FIELD;
+        case 113: //ambient.night.green
+            return UINT8_FIELD;
+        case 114: //ambient.night.blue
+            return UINT8_FIELD;
+        case 115: //ambient.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 116: //ambient.noon.red
+            return UINT8_FIELD;
+        case 117: //ambient.noon.green
+            return UINT8_FIELD;
+        case 118: //ambient.noon.blue
+            return UINT8_FIELD;
+        case 119: //ambient.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 120: //ambient.midnight.red
+            return UINT8_FIELD;
+        case 121: //ambient.midnight.green
+            return UINT8_FIELD;
+        case 122: //ambient.midnight.blue
+            return UINT8_FIELD;
+        case 123: //ambient.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 124: //sunlight.rise.red
+            return UINT8_FIELD;
+        case 125: //sunlight.rise.green
+            return UINT8_FIELD;
+        case 126: //sunlight.rise.blue
+            return UINT8_FIELD;
+        case 127: //sunlight.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 128: //sunlight.day.red
+            return UINT8_FIELD;
+        case 129: //sunlight.day.green
+            return UINT8_FIELD;
+        case 130: //sunlight.day.blue
+            return UINT8_FIELD;
+        case 131: //sunlight.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 132: //sunlight.set.red
+            return UINT8_FIELD;
+        case 133: //sunlight.set.green
+            return UINT8_FIELD;
+        case 134: //sunlight.set.blue
+            return UINT8_FIELD;
+        case 135: //sunlight.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 136: //sunlight.night.red
+            return UINT8_FIELD;
+        case 137: //sunlight.night.green
+            return UINT8_FIELD;
+        case 138: //sunlight.night.blue
+            return UINT8_FIELD;
+        case 139: //sunlight.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 140: //sunlight.noon.red
+            return UINT8_FIELD;
+        case 141: //sunlight.noon.green
+            return UINT8_FIELD;
+        case 142: //sunlight.noon.blue
+            return UINT8_FIELD;
+        case 143: //sunlight.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 144: //sunlight.midnight.red
+            return UINT8_FIELD;
+        case 145: //sunlight.midnight.green
+            return UINT8_FIELD;
+        case 146: //sunlight.midnight.blue
+            return UINT8_FIELD;
+        case 147: //sunlight.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 148: //sun.rise.red
+            return UINT8_FIELD;
+        case 149: //sun.rise.green
+            return UINT8_FIELD;
+        case 150: //sun.rise.blue
+            return UINT8_FIELD;
+        case 151: //sun.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 152: //sun.day.red
+            return UINT8_FIELD;
+        case 153: //sun.day.green
+            return UINT8_FIELD;
+        case 154: //sun.day.blue
+            return UINT8_FIELD;
+        case 155: //sun.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 156: //sun.set.red
+            return UINT8_FIELD;
+        case 157: //sun.set.green
+            return UINT8_FIELD;
+        case 158: //sun.set.blue
+            return UINT8_FIELD;
+        case 159: //sun.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 160: //sun.night.red
+            return UINT8_FIELD;
+        case 161: //sun.night.green
+            return UINT8_FIELD;
+        case 162: //sun.night.blue
+            return UINT8_FIELD;
+        case 163: //sun.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 164: //sun.noon.red
+            return UINT8_FIELD;
+        case 165: //sun.noon.green
+            return UINT8_FIELD;
+        case 166: //sun.noon.blue
+            return UINT8_FIELD;
+        case 167: //sun.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 168: //sun.midnight.red
+            return UINT8_FIELD;
+        case 169: //sun.midnight.green
+            return UINT8_FIELD;
+        case 170: //sun.midnight.blue
+            return UINT8_FIELD;
+        case 171: //sun.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 172: //stars.rise.red
+            return UINT8_FIELD;
+        case 173: //stars.rise.green
+            return UINT8_FIELD;
+        case 174: //stars.rise.blue
+            return UINT8_FIELD;
+        case 175: //stars.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 176: //stars.day.red
+            return UINT8_FIELD;
+        case 177: //stars.day.green
+            return UINT8_FIELD;
+        case 178: //stars.day.blue
+            return UINT8_FIELD;
+        case 179: //stars.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 180: //stars.set.red
+            return UINT8_FIELD;
+        case 181: //stars.set.green
+            return UINT8_FIELD;
+        case 182: //stars.set.blue
+            return UINT8_FIELD;
+        case 183: //stars.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 184: //stars.night.red
+            return UINT8_FIELD;
+        case 185: //stars.night.green
+            return UINT8_FIELD;
+        case 186: //stars.night.blue
+            return UINT8_FIELD;
+        case 187: //stars.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 188: //stars.noon.red
+            return UINT8_FIELD;
+        case 189: //stars.noon.green
+            return UINT8_FIELD;
+        case 190: //stars.noon.blue
+            return UINT8_FIELD;
+        case 191: //stars.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 192: //stars.midnight.red
+            return UINT8_FIELD;
+        case 193: //stars.midnight.green
+            return UINT8_FIELD;
+        case 194: //stars.midnight.blue
+            return UINT8_FIELD;
+        case 195: //stars.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 196: //lowerSky.rise.red
+            return UINT8_FIELD;
+        case 197: //lowerSky.rise.green
+            return UINT8_FIELD;
+        case 198: //lowerSky.rise.blue
+            return UINT8_FIELD;
+        case 199: //lowerSky.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 200: //lowerSky.day.red
+            return UINT8_FIELD;
+        case 201: //lowerSky.day.green
+            return UINT8_FIELD;
+        case 202: //lowerSky.day.blue
+            return UINT8_FIELD;
+        case 203: //lowerSky.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 204: //lowerSky.set.red
+            return UINT8_FIELD;
+        case 205: //lowerSky.set.green
+            return UINT8_FIELD;
+        case 206: //lowerSky.set.blue
+            return UINT8_FIELD;
+        case 207: //lowerSky.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 208: //lowerSky.night.red
+            return UINT8_FIELD;
+        case 209: //lowerSky.night.green
+            return UINT8_FIELD;
+        case 210: //lowerSky.night.blue
+            return UINT8_FIELD;
+        case 211: //lowerSky.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 212: //lowerSky.noon.red
+            return UINT8_FIELD;
+        case 213: //lowerSky.noon.green
+            return UINT8_FIELD;
+        case 214: //lowerSky.noon.blue
+            return UINT8_FIELD;
+        case 215: //lowerSky.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 216: //lowerSky.midnight.red
+            return UINT8_FIELD;
+        case 217: //lowerSky.midnight.green
+            return UINT8_FIELD;
+        case 218: //lowerSky.midnight.blue
+            return UINT8_FIELD;
+        case 219: //lowerSky.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 220: //horizon.rise.red
+            return UINT8_FIELD;
+        case 221: //horizon.rise.green
+            return UINT8_FIELD;
+        case 222: //horizon.rise.blue
+            return UINT8_FIELD;
+        case 223: //horizon.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 224: //horizon.day.red
+            return UINT8_FIELD;
+        case 225: //horizon.day.green
+            return UINT8_FIELD;
+        case 226: //horizon.day.blue
+            return UINT8_FIELD;
+        case 227: //horizon.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 228: //horizon.set.red
+            return UINT8_FIELD;
+        case 229: //horizon.set.green
+            return UINT8_FIELD;
+        case 230: //horizon.set.blue
+            return UINT8_FIELD;
+        case 231: //horizon.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 232: //horizon.night.red
+            return UINT8_FIELD;
+        case 233: //horizon.night.green
+            return UINT8_FIELD;
+        case 234: //horizon.night.blue
+            return UINT8_FIELD;
+        case 235: //horizon.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 236: //horizon.noon.red
+            return UINT8_FIELD;
+        case 237: //horizon.noon.green
+            return UINT8_FIELD;
+        case 238: //horizon.noon.blue
+            return UINT8_FIELD;
+        case 239: //horizon.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+
+        case 240: //horizon.midnight.red
+            return UINT8_FIELD;
+        case 241: //horizon.midnight.green
+            return UINT8_FIELD;
+        case 242: //horizon.midnight.blue
+            return UINT8_FIELD;
+        case 243: //horizon.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 244: //upperClouds.rise.red
+            return UINT8_FIELD;
+        case 245: //upperClouds.rise.green
+            return UINT8_FIELD;
+        case 246: //upperClouds.rise.blue
+            return UINT8_FIELD;
+        case 247: //upperClouds.rise.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 248: //upperClouds.day.red
+            return UINT8_FIELD;
+        case 249: //upperClouds.day.green
+            return UINT8_FIELD;
+        case 250: //upperClouds.day.blue
+            return UINT8_FIELD;
+        case 251: //upperClouds.day.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 252: //upperClouds.set.red
+            return UINT8_FIELD;
+        case 253: //upperClouds.set.green
+            return UINT8_FIELD;
+        case 254: //upperClouds.set.blue
+            return UINT8_FIELD;
+        case 255: //upperClouds.set.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 256: //upperClouds.night.red
+            return UINT8_FIELD;
+        case 257: //upperClouds.night.green
+            return UINT8_FIELD;
+        case 258: //upperClouds.night.blue
+            return UINT8_FIELD;
+        case 259: //upperClouds.night.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 260: //upperClouds.noon.red
+            return UINT8_FIELD;
+        case 261: //upperClouds.noon.green
+            return UINT8_FIELD;
+        case 262: //upperClouds.noon.blue
+            return UINT8_FIELD;
+        case 263: //upperClouds.noon.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 264: //upperClouds.midnight.red
+            return UINT8_FIELD;
+        case 265: //upperClouds.midnight.green
+            return UINT8_FIELD;
+        case 266: //upperClouds.midnight.blue
+            return UINT8_FIELD;
+        case 267: //upperClouds.midnight.unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return 1;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 268: //fogDayNear
+            return FLOAT32_FIELD;
+        case 269: //fogDayFar
+            return FLOAT32_FIELD;
+        case 270: //fogNightNear
+            return FLOAT32_FIELD;
+        case 271: //fogNightFar
+            return FLOAT32_FIELD;
+        case 272: //fogDayPower
+            return FLOAT32_FIELD;
+        case 273: //fogNightPower
+            return FLOAT32_FIELD;
+        case 274: //inam_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return INAM.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 275: //windSpeed
+            return UINT8_FIELD;
+        case 276: //lowerCloudSpeed
+            return UINT8_FIELD;
+        case 277: //upperCloudSpeed
+            return UINT8_FIELD;
+        case 278: //transDelta
+            return UINT8_FIELD;
+        case 279: //sunGlare
+            return UINT8_FIELD;
+        case 280: //sunDamage
+            return UINT8_FIELD;
+        case 281: //rainFadeIn
+            return UINT8_FIELD;
+        case 282: //rainFadeOut
+            return UINT8_FIELD;
+        case 283: //boltFadeIn
+            return UINT8_FIELD;
+        case 284: //boltFadeOut
+            return UINT8_FIELD;
+        case 285: //boltFrequency
+            return UINT8_FIELD;
+        case 286: //weatherType
+            return UINT8_TYPE_FIELD;
+        case 287: //boltRed
+            return UINT8_FIELD;
+        case 288: //boltGreen
+            return UINT8_FIELD;
+        case 289: //boltBlue
+            return UINT8_FIELD;
+        case 290: //sounds
+            if(ListFieldID == 0) //sounds
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Sounds.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Sounds.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //sound
+                    return FORMID_FIELD;
+                case 2: //type
+                    return UINT32_TYPE_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -251,25 +1282,25 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //0iad Sunrise Image Space Modifier
-            return 0IAD.IsLoaded() ? &0IAD->value7 : NULL;
-        case 8: //1iad Day Image Space Modifier
-            return 1IAD.IsLoaded() ? &1IAD->value8 : NULL;
-        case 9: //2iad Sunset Image Space Modifier
-            return 2IAD.IsLoaded() ? &2IAD->value9 : NULL;
-        case 10: //3iad Night Image Space Modifier
-            return 3IAD.IsLoaded() ? &3IAD->value10 : NULL;
-        case 11: //4iad Unknown
-            return 4IAD.IsLoaded() ? &4IAD->value11 : NULL;
-        case 12: //5iad Unknown
-            return 5IAD.IsLoaded() ? &5IAD->value12 : NULL;
-        case 13: //dnam Cloud Textures - Layer 0
+        case 7: //sunriseImageSpace
+            return &_0IAD.value;
+        case 8: //dayImageSpace
+            return &_1IAD.value;
+        case 9: //sunsetImageSpace
+            return &_2IAD.value;
+        case 10: //nightImageSpace
+            return &_3IAD.value;
+        case 11: //unknown1ImageSpace
+            return &_4IAD.value;
+        case 12: //unknown2ImageSpace
+            return &_5IAD.value;
+        case 13: //cloudLayer0Path
             return DNAM.value;
-        case 14: //cnam Cloud Textures - Layer 1
+        case 14: //cloudLayer1Path
             return CNAM.value;
-        case 15: //anam Cloud Textures - Layer 2
+        case 15: //cloudLayer2Path
             return ANAM.value;
-        case 16: //bnam Cloud Textures - Layer 3
+        case 16: //cloudLayer3Path
             return BNAM.value;
         case 17: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
@@ -278,80 +1309,639 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 19: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 20: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 21: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value21 : NULL;
-        case 22: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value22 : NULL;
-        case 23: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value23 : NULL;
-        case 24: //lnam_p Unknown
-            *FieldValues = LNAM.IsLoaded() ? &LNAM->value24[0] : NULL;
+        case 20: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 25: //onam Cloud Speed
-            return UNPARSEDGET_FIELD25;
-        case 26: //pnam_p Unused
+        case 21: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 22: //unknown1
+            return &LNAM.value;
+        case 23: //layer0Speed
+            return ONAM.IsLoaded() ? &ONAM->layer0Speed : NULL;
+        case 24: //layer1Speed
+            return ONAM.IsLoaded() ? &ONAM->layer1Speed : NULL;
+        case 25: //layer2Speed
+            return ONAM.IsLoaded() ? &ONAM->layer2Speed : NULL;
+        case 26: //layer3Speed
+            return ONAM.IsLoaded() ? &ONAM->layer3Speed : NULL;
+        case 27: //pnam_p
             *FieldValues = PNAM.value;
             return NULL;
-        case 27: //nam0 NAM0 ,, Struct
-            return NAM0.IsLoaded() ? &NAM0->value27 : NULL;
-        case 28: //nam0 NAM0 ,, Struct
-            return NAM0.IsLoaded() ? &NAM0->value28 : NULL;
-        case 29: //nam0 NAM0 ,, Struct
-            return NAM0.IsLoaded() ? &NAM0->value29 : NULL;
-        case 30: //nam0_p NAM0 ,, Struct
-            *FieldValues = NAM0.IsLoaded() ? &NAM0->value30[0] : NULL;
+        case 28: //upperSky.rise.red
+            return &NAM0.value.upperSky.rise.red;
+        case 29: //upperSky.rise.green
+            return &NAM0.value.upperSky.rise.green;
+        case 30: //upperSky.rise.blue
+            return &NAM0.value.upperSky.rise.blue;
+        case 31: //upperSky.rise.unused1
+            *FieldValues = &NAM0.value.upperSky.rise.unused1;
             return NULL;
-        case 31: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value31 : NULL;
-        case 32: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value32 : NULL;
-        case 33: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value33 : NULL;
-        case 34: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value34 : NULL;
-        case 35: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value35 : NULL;
-        case 36: //fnam FNAM ,, Struct
-            return FNAM.IsLoaded() ? &FNAM->value36 : NULL;
-        case 37: //inam_p Unused
-            *FieldValues = INAM.IsLoaded() ? &INAM->value37[0] : NULL;
+        case 32: //upperSky.day.red
+            return &NAM0.value.upperSky.day.red;
+        case 33: //upperSky.day.green
+            return &NAM0.value.upperSky.day.green;
+        case 34: //upperSky.day.blue
+            return &NAM0.value.upperSky.day.blue;
+        case 35: //upperSky.day.unused1
+            *FieldValues = &NAM0.value.upperSky.day.unused1;
             return NULL;
-        case 38: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value38 : NULL;
-        case 39: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value39 : NULL;
-        case 40: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value40 : NULL;
-        case 41: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value41 : NULL;
-        case 42: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value42 : NULL;
-        case 43: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value43 : NULL;
-        case 44: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value44 : NULL;
-        case 45: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value45 : NULL;
-        case 46: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value46 : NULL;
-        case 47: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value47 : NULL;
-        case 48: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value48 : NULL;
-        case 49: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value49 : NULL;
-        case 50: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value50 : NULL;
-        case 51: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value51 : NULL;
-        case 52: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value52 : NULL;
-        case 53: //snam SNAM ,, Struct
-            return SNAM.IsLoaded() ? &SNAM->value53 : NULL;
-        case 54: //snam SNAM ,, Struct
-            return SNAM.IsLoaded() ? &SNAM->value54 : NULL;
+        case 36: //upperSky.set.red
+            return &NAM0.value.upperSky.set.red;
+        case 37: //upperSky.set.green
+            return &NAM0.value.upperSky.set.green;
+        case 38: //upperSky.set.blue
+            return &NAM0.value.upperSky.set.blue;
+        case 39: //upperSky.set.unused1
+            *FieldValues = &NAM0.value.upperSky.set.unused1;
+            return NULL;
+        case 40: //upperSky.night.red
+            return &NAM0.value.upperSky.night.red;
+        case 41: //upperSky.night.green
+            return &NAM0.value.upperSky.night.green;
+        case 42: //upperSky.night.blue
+            return &NAM0.value.upperSky.night.blue;
+        case 43: //upperSky.night.unused1
+            *FieldValues = &NAM0.value.upperSky.night.unused1;
+            return NULL;
+        case 44: //upperSky.noon.red
+            return &NAM0.value.upperSky.noon.red;
+        case 45: //upperSky.noon.green
+            return &NAM0.value.upperSky.noon.green;
+        case 46: //upperSky.noon.blue
+            return &NAM0.value.upperSky.noon.blue;
+        case 47: //upperSky.noon.unused1
+            *FieldValues = &NAM0.value.upperSky.noon.unused1;
+            return NULL;
+        case 48: //upperSky.midnight.red
+            return &NAM0.value.upperSky.midnight.red;
+        case 49: //upperSky.midnight.green
+            return &NAM0.value.upperSky.midnight.green;
+        case 50: //upperSky.midnight.blue
+            return &NAM0.value.upperSky.midnight.blue;
+        case 51: //upperSky.midnight.unused1
+            *FieldValues = &NAM0.value.upperSky.midnight.unused1;
+            return NULL;
+        case 52: //fog.rise.red
+            return &NAM0.value.fog.rise.red;
+        case 53: //fog.rise.green
+            return &NAM0.value.fog.rise.green;
+        case 54: //fog.rise.blue
+            return &NAM0.value.fog.rise.blue;
+        case 55: //fog.rise.unused1
+            *FieldValues = &NAM0.value.fog.rise.unused1;
+            return NULL;
+        case 56: //fog.day.red
+            return &NAM0.value.fog.day.red;
+        case 57: //fog.day.green
+            return &NAM0.value.fog.day.green;
+        case 58: //fog.day.blue
+            return &NAM0.value.fog.day.blue;
+        case 59: //fog.day.unused1
+            *FieldValues = &NAM0.value.fog.day.unused1;
+            return NULL;
+        case 60: //fog.set.red
+            return &NAM0.value.fog.set.red;
+        case 61: //fog.set.green
+            return &NAM0.value.fog.set.green;
+        case 62: //fog.set.blue
+            return &NAM0.value.fog.set.blue;
+        case 63: //fog.set.unused1
+            *FieldValues = &NAM0.value.fog.set.unused1;
+            return NULL;
+        case 64: //fog.night.red
+            return &NAM0.value.fog.night.red;
+        case 65: //fog.night.green
+            return &NAM0.value.fog.night.green;
+        case 66: //fog.night.blue
+            return &NAM0.value.fog.night.blue;
+        case 67: //fog.night.unused1
+            *FieldValues = &NAM0.value.fog.night.unused1;
+            return NULL;
+        case 68: //fog.noon.red
+            return &NAM0.value.fog.noon.red;
+        case 69: //fog.noon.green
+            return &NAM0.value.fog.noon.green;
+        case 70: //fog.noon.blue
+            return &NAM0.value.fog.noon.blue;
+        case 71: //fog.noon.unused1
+            *FieldValues = &NAM0.value.fog.noon.unused1;
+            return NULL;
+        case 72: //fog.midnight.red
+            return &NAM0.value.fog.midnight.red;
+        case 73: //fog.midnight.green
+            return &NAM0.value.fog.midnight.green;
+        case 74: //fog.midnight.blue
+            return &NAM0.value.fog.midnight.blue;
+        case 75: //fog.midnight.unused1
+            *FieldValues = &NAM0.value.fog.midnight.unused1;
+            return NULL;
+        case 76: //lowerClouds.rise.red
+            return &NAM0.value.lowerClouds.rise.red;
+        case 77: //lowerClouds.rise.green
+            return &NAM0.value.lowerClouds.rise.green;
+        case 78: //lowerClouds.rise.blue
+            return &NAM0.value.lowerClouds.rise.blue;
+        case 79: //lowerClouds.rise.unused1
+            *FieldValues = &NAM0.value.lowerClouds.rise.unused1;
+            return NULL;
+        case 80: //lowerClouds.day.red
+            return &NAM0.value.lowerClouds.day.red;
+        case 81: //lowerClouds.day.green
+            return &NAM0.value.lowerClouds.day.green;
+        case 82: //lowerClouds.day.blue
+            return &NAM0.value.lowerClouds.day.blue;
+        case 83: //lowerClouds.day.unused1
+            *FieldValues = &NAM0.value.lowerClouds.day.unused1;
+            return NULL;
+        case 84: //lowerClouds.set.red
+            return &NAM0.value.lowerClouds.set.red;
+        case 85: //lowerClouds.set.green
+            return &NAM0.value.lowerClouds.set.green;
+        case 86: //lowerClouds.set.blue
+            return &NAM0.value.lowerClouds.set.blue;
+        case 87: //lowerClouds.set.unused1
+            *FieldValues = &NAM0.value.lowerClouds.set.unused1;
+            return NULL;
+        case 88: //lowerClouds.night.red
+            return &NAM0.value.lowerClouds.night.red;
+        case 89: //lowerClouds.night.green
+            return &NAM0.value.lowerClouds.night.green;
+        case 90: //lowerClouds.night.blue
+            return &NAM0.value.lowerClouds.night.blue;
+        case 91: //lowerClouds.night.unused1
+            *FieldValues = &NAM0.value.lowerClouds.night.unused1;
+            return NULL;
+        case 92: //lowerClouds.noon.red
+            return &NAM0.value.lowerClouds.noon.red;
+        case 93: //lowerClouds.noon.green
+            return &NAM0.value.lowerClouds.noon.green;
+        case 94: //lowerClouds.noon.blue
+            return &NAM0.value.lowerClouds.noon.blue;
+        case 95: //lowerClouds.noon.unused1
+            *FieldValues = &NAM0.value.lowerClouds.noon.unused1;
+            return NULL;
+        case 96: //lowerClouds.midnight.red
+            return &NAM0.value.lowerClouds.midnight.red;
+        case 97: //lowerClouds.midnight.green
+            return &NAM0.value.lowerClouds.midnight.green;
+        case 98: //lowerClouds.midnight.blue
+            return &NAM0.value.lowerClouds.midnight.blue;
+        case 99: //lowerClouds.midnight.unused1
+            *FieldValues = &NAM0.value.lowerClouds.midnight.unused1;
+            return NULL;
+        case 100: //ambient.rise.red
+            return &NAM0.value.ambient.rise.red;
+        case 101: //ambient.rise.green
+            return &NAM0.value.ambient.rise.green;
+        case 102: //ambient.rise.blue
+            return &NAM0.value.ambient.rise.blue;
+        case 103: //ambient.rise.unused1
+            *FieldValues = &NAM0.value.ambient.rise.unused1;
+            return NULL;
+        case 104: //ambient.day.red
+            return &NAM0.value.ambient.day.red;
+        case 105: //ambient.day.green
+            return &NAM0.value.ambient.day.green;
+        case 106: //ambient.day.blue
+            return &NAM0.value.ambient.day.blue;
+        case 107: //ambient.day.unused1
+            *FieldValues = &NAM0.value.ambient.day.unused1;
+            return NULL;
+        case 108: //ambient.set.red
+            return &NAM0.value.ambient.set.red;
+        case 109: //ambient.set.green
+            return &NAM0.value.ambient.set.green;
+        case 110: //ambient.set.blue
+            return &NAM0.value.ambient.set.blue;
+        case 111: //ambient.set.unused1
+            *FieldValues = &NAM0.value.ambient.set.unused1;
+            return NULL;
+        case 112: //ambient.night.red
+            return &NAM0.value.ambient.night.red;
+        case 113: //ambient.night.green
+            return &NAM0.value.ambient.night.green;
+        case 114: //ambient.night.blue
+            return &NAM0.value.ambient.night.blue;
+        case 115: //ambient.night.unused1
+            *FieldValues = &NAM0.value.ambient.night.unused1;
+            return NULL;
+        case 116: //ambient.noon.red
+            return &NAM0.value.ambient.noon.red;
+        case 117: //ambient.noon.green
+            return &NAM0.value.ambient.noon.green;
+        case 118: //ambient.noon.blue
+            return &NAM0.value.ambient.noon.blue;
+        case 119: //ambient.noon.unused1
+            *FieldValues = &NAM0.value.ambient.noon.unused1;
+            return NULL;
+        case 120: //ambient.midnight.red
+            return &NAM0.value.ambient.midnight.red;
+        case 121: //ambient.midnight.green
+            return &NAM0.value.ambient.midnight.green;
+        case 122: //ambient.midnight.blue
+            return &NAM0.value.ambient.midnight.blue;
+        case 123: //ambient.midnight.unused1
+            *FieldValues = &NAM0.value.ambient.midnight.unused1;
+            return NULL;
+        case 124: //sunlight.rise.red
+            return &NAM0.value.sunlight.rise.red;
+        case 125: //sunlight.rise.green
+            return &NAM0.value.sunlight.rise.green;
+        case 126: //sunlight.rise.blue
+            return &NAM0.value.sunlight.rise.blue;
+        case 127: //sunlight.rise.unused1
+            *FieldValues = &NAM0.value.sunlight.rise.unused1;
+            return NULL;
+        case 128: //sunlight.day.red
+            return &NAM0.value.sunlight.day.red;
+        case 129: //sunlight.day.green
+            return &NAM0.value.sunlight.day.green;
+        case 130: //sunlight.day.blue
+            return &NAM0.value.sunlight.day.blue;
+        case 131: //sunlight.day.unused1
+            *FieldValues = &NAM0.value.sunlight.day.unused1;
+            return NULL;
+        case 132: //sunlight.set.red
+            return &NAM0.value.sunlight.set.red;
+        case 133: //sunlight.set.green
+            return &NAM0.value.sunlight.set.green;
+        case 134: //sunlight.set.blue
+            return &NAM0.value.sunlight.set.blue;
+        case 135: //sunlight.set.unused1
+            *FieldValues = &NAM0.value.sunlight.set.unused1;
+            return NULL;
+        case 136: //sunlight.night.red
+            return &NAM0.value.sunlight.night.red;
+        case 137: //sunlight.night.green
+            return &NAM0.value.sunlight.night.green;
+        case 138: //sunlight.night.blue
+            return &NAM0.value.sunlight.night.blue;
+        case 139: //sunlight.night.unused1
+            *FieldValues = &NAM0.value.sunlight.night.unused1;
+            return NULL;
+        case 140: //sunlight.noon.red
+            return &NAM0.value.sunlight.noon.red;
+        case 141: //sunlight.noon.green
+            return &NAM0.value.sunlight.noon.green;
+        case 142: //sunlight.noon.blue
+            return &NAM0.value.sunlight.noon.blue;
+        case 143: //sunlight.noon.unused1
+            *FieldValues = &NAM0.value.sunlight.noon.unused1;
+            return NULL;
+        case 144: //sunlight.midnight.red
+            return &NAM0.value.sunlight.midnight.red;
+        case 145: //sunlight.midnight.green
+            return &NAM0.value.sunlight.midnight.green;
+        case 146: //sunlight.midnight.blue
+            return &NAM0.value.sunlight.midnight.blue;
+        case 147: //sunlight.midnight.unused1
+            *FieldValues = &NAM0.value.sunlight.midnight.unused1;
+            return NULL;
+        case 148: //sun.rise.red
+            return &NAM0.value.sun.rise.red;
+        case 149: //sun.rise.green
+            return &NAM0.value.sun.rise.green;
+        case 150: //sun.rise.blue
+            return &NAM0.value.sun.rise.blue;
+        case 151: //sun.rise.unused1
+            *FieldValues = &NAM0.value.sun.rise.unused1;
+            return NULL;
+        case 152: //sun.day.red
+            return &NAM0.value.sun.day.red;
+        case 153: //sun.day.green
+            return &NAM0.value.sun.day.green;
+        case 154: //sun.day.blue
+            return &NAM0.value.sun.day.blue;
+        case 155: //sun.day.unused1
+            *FieldValues = &NAM0.value.sun.day.unused1;
+            return NULL;
+        case 156: //sun.set.red
+            return &NAM0.value.sun.set.red;
+        case 157: //sun.set.green
+            return &NAM0.value.sun.set.green;
+        case 158: //sun.set.blue
+            return &NAM0.value.sun.set.blue;
+        case 159: //sun.set.unused1
+            *FieldValues = &NAM0.value.sun.set.unused1;
+            return NULL;
+        case 160: //sun.night.red
+            return &NAM0.value.sun.night.red;
+        case 161: //sun.night.green
+            return &NAM0.value.sun.night.green;
+        case 162: //sun.night.blue
+            return &NAM0.value.sun.night.blue;
+        case 163: //sun.night.unused1
+            *FieldValues = &NAM0.value.sun.night.unused1;
+            return NULL;
+        case 164: //sun.noon.red
+            return &NAM0.value.sun.noon.red;
+        case 165: //sun.noon.green
+            return &NAM0.value.sun.noon.green;
+        case 166: //sun.noon.blue
+            return &NAM0.value.sun.noon.blue;
+        case 167: //sun.noon.unused1
+            *FieldValues = &NAM0.value.sun.noon.unused1;
+            return NULL;
+        case 168: //sun.midnight.red
+            return &NAM0.value.sun.midnight.red;
+        case 169: //sun.midnight.green
+            return &NAM0.value.sun.midnight.green;
+        case 170: //sun.midnight.blue
+            return &NAM0.value.sun.midnight.blue;
+        case 171: //sun.midnight.unused1
+            *FieldValues = &NAM0.value.sun.midnight.unused1;
+            return NULL;
+        case 172: //stars.rise.red
+            return &NAM0.value.stars.rise.red;
+        case 173: //stars.rise.green
+            return &NAM0.value.stars.rise.green;
+        case 174: //stars.rise.blue
+            return &NAM0.value.stars.rise.blue;
+        case 175: //stars.rise.unused1
+            *FieldValues = &NAM0.value.stars.rise.unused1;
+            return NULL;
+        case 176: //stars.day.red
+            return &NAM0.value.stars.day.red;
+        case 177: //stars.day.green
+            return &NAM0.value.stars.day.green;
+        case 178: //stars.day.blue
+            return &NAM0.value.stars.day.blue;
+        case 179: //stars.day.unused1
+            *FieldValues = &NAM0.value.stars.day.unused1;
+            return NULL;
+        case 180: //stars.set.red
+            return &NAM0.value.stars.set.red;
+        case 181: //stars.set.green
+            return &NAM0.value.stars.set.green;
+        case 182: //stars.set.blue
+            return &NAM0.value.stars.set.blue;
+        case 183: //stars.set.unused1
+            *FieldValues = &NAM0.value.stars.set.unused1;
+            return NULL;
+        case 184: //stars.night.red
+            return &NAM0.value.stars.night.red;
+        case 185: //stars.night.green
+            return &NAM0.value.stars.night.green;
+        case 186: //stars.night.blue
+            return &NAM0.value.stars.night.blue;
+        case 187: //stars.night.unused1
+            *FieldValues = &NAM0.value.stars.night.unused1;
+            return NULL;
+        case 188: //stars.noon.red
+            return &NAM0.value.stars.noon.red;
+        case 189: //stars.noon.green
+            return &NAM0.value.stars.noon.green;
+        case 190: //stars.noon.blue
+            return &NAM0.value.stars.noon.blue;
+        case 191: //stars.noon.unused1
+            *FieldValues = &NAM0.value.stars.noon.unused1;
+            return NULL;
+        case 192: //stars.midnight.red
+            return &NAM0.value.stars.midnight.red;
+        case 193: //stars.midnight.green
+            return &NAM0.value.stars.midnight.green;
+        case 194: //stars.midnight.blue
+            return &NAM0.value.stars.midnight.blue;
+        case 195: //stars.midnight.unused1
+            *FieldValues = &NAM0.value.stars.midnight.unused1;
+            return NULL;
+        case 196: //lowerSky.rise.red
+            return &NAM0.value.lowerSky.rise.red;
+        case 197: //lowerSky.rise.green
+            return &NAM0.value.lowerSky.rise.green;
+        case 198: //lowerSky.rise.blue
+            return &NAM0.value.lowerSky.rise.blue;
+        case 199: //lowerSky.rise.unused1
+            *FieldValues = &NAM0.value.lowerSky.rise.unused1;
+            return NULL;
+        case 200: //lowerSky.day.red
+            return &NAM0.value.lowerSky.day.red;
+        case 201: //lowerSky.day.green
+            return &NAM0.value.lowerSky.day.green;
+        case 202: //lowerSky.day.blue
+            return &NAM0.value.lowerSky.day.blue;
+        case 203: //lowerSky.day.unused1
+            *FieldValues = &NAM0.value.lowerSky.day.unused1;
+            return NULL;
+        case 204: //lowerSky.set.red
+            return &NAM0.value.lowerSky.set.red;
+        case 205: //lowerSky.set.green
+            return &NAM0.value.lowerSky.set.green;
+        case 206: //lowerSky.set.blue
+            return &NAM0.value.lowerSky.set.blue;
+        case 207: //lowerSky.set.unused1
+            *FieldValues = &NAM0.value.lowerSky.set.unused1;
+            return NULL;
+        case 208: //lowerSky.night.red
+            return &NAM0.value.lowerSky.night.red;
+        case 209: //lowerSky.night.green
+            return &NAM0.value.lowerSky.night.green;
+        case 210: //lowerSky.night.blue
+            return &NAM0.value.lowerSky.night.blue;
+        case 211: //lowerSky.night.unused1
+            *FieldValues = &NAM0.value.lowerSky.night.unused1;
+            return NULL;
+        case 212: //lowerSky.noon.red
+            return &NAM0.value.lowerSky.noon.red;
+        case 213: //lowerSky.noon.green
+            return &NAM0.value.lowerSky.noon.green;
+        case 214: //lowerSky.noon.blue
+            return &NAM0.value.lowerSky.noon.blue;
+        case 215: //lowerSky.noon.unused1
+            *FieldValues = &NAM0.value.lowerSky.noon.unused1;
+            return NULL;
+        case 216: //lowerSky.midnight.red
+            return &NAM0.value.lowerSky.midnight.red;
+        case 217: //lowerSky.midnight.green
+            return &NAM0.value.lowerSky.midnight.green;
+        case 218: //lowerSky.midnight.blue
+            return &NAM0.value.lowerSky.midnight.blue;
+        case 219: //lowerSky.midnight.unused1
+            *FieldValues = &NAM0.value.lowerSky.midnight.unused1;
+            return NULL;
+        case 220: //horizon.rise.red
+            return &NAM0.value.horizon.rise.red;
+        case 221: //horizon.rise.green
+            return &NAM0.value.horizon.rise.green;
+        case 222: //horizon.rise.blue
+            return &NAM0.value.horizon.rise.blue;
+        case 223: //horizon.rise.unused1
+            *FieldValues = &NAM0.value.horizon.rise.unused1;
+            return NULL;
+        case 224: //horizon.day.red
+            return &NAM0.value.horizon.day.red;
+        case 225: //horizon.day.green
+            return &NAM0.value.horizon.day.green;
+        case 226: //horizon.day.blue
+            return &NAM0.value.horizon.day.blue;
+        case 227: //horizon.day.unused1
+            *FieldValues = &NAM0.value.horizon.day.unused1;
+            return NULL;
+        case 228: //horizon.set.red
+            return &NAM0.value.horizon.set.red;
+        case 229: //horizon.set.green
+            return &NAM0.value.horizon.set.green;
+        case 230: //horizon.set.blue
+            return &NAM0.value.horizon.set.blue;
+        case 231: //horizon.set.unused1
+            *FieldValues = &NAM0.value.horizon.set.unused1;
+            return NULL;
+        case 232: //horizon.night.red
+            return &NAM0.value.horizon.night.red;
+        case 233: //horizon.night.green
+            return &NAM0.value.horizon.night.green;
+        case 234: //horizon.night.blue
+            return &NAM0.value.horizon.night.blue;
+        case 235: //horizon.night.unused1
+            *FieldValues = &NAM0.value.horizon.night.unused1;
+            return NULL;
+        case 236: //horizon.noon.red
+            return &NAM0.value.horizon.noon.red;
+        case 237: //horizon.noon.green
+            return &NAM0.value.horizon.noon.green;
+        case 238: //horizon.noon.blue
+            return &NAM0.value.horizon.noon.blue;
+        case 239: //horizon.noon.unused1
+            *FieldValues = &NAM0.value.horizon.noon.unused1;
+            return NULL;
+        case 240: //horizon.midnight.red
+            return &NAM0.value.horizon.midnight.red;
+        case 241: //horizon.midnight.green
+            return &NAM0.value.horizon.midnight.green;
+        case 242: //horizon.midnight.blue
+            return &NAM0.value.horizon.midnight.blue;
+        case 243: //horizon.midnight.unused1
+            *FieldValues = &NAM0.value.horizon.midnight.unused1;
+            return NULL;
+        case 244: //upperClouds.rise.red
+            return &NAM0.value.upperClouds.rise.red;
+        case 245: //upperClouds.rise.green
+            return &NAM0.value.upperClouds.rise.green;
+        case 246: //upperClouds.rise.blue
+            return &NAM0.value.upperClouds.rise.blue;
+        case 247: //upperClouds.rise.unused1
+            *FieldValues = &NAM0.value.upperClouds.rise.unused1;
+            return NULL;
+        case 248: //upperClouds.day.red
+            return &NAM0.value.upperClouds.day.red;
+        case 249: //upperClouds.day.green
+            return &NAM0.value.upperClouds.day.green;
+        case 250: //upperClouds.day.blue
+            return &NAM0.value.upperClouds.day.blue;
+        case 251: //upperClouds.day.unused1
+            *FieldValues = &NAM0.value.upperClouds.day.unused1;
+            return NULL;
+        case 252: //upperClouds.set.red
+            return &NAM0.value.upperClouds.set.red;
+        case 253: //upperClouds.set.green
+            return &NAM0.value.upperClouds.set.green;
+        case 254: //upperClouds.set.blue
+            return &NAM0.value.upperClouds.set.blue;
+        case 255: //upperClouds.set.unused1
+            *FieldValues = &NAM0.value.upperClouds.set.unused1;
+            return NULL;
+        case 256: //upperClouds.night.red
+            return &NAM0.value.upperClouds.night.red;
+        case 257: //upperClouds.night.green
+            return &NAM0.value.upperClouds.night.green;
+        case 258: //upperClouds.night.blue
+            return &NAM0.value.upperClouds.night.blue;
+        case 259: //upperClouds.night.unused1
+            *FieldValues = &NAM0.value.upperClouds.night.unused1;
+            return NULL;
+        case 260: //upperClouds.noon.red
+            return &NAM0.value.upperClouds.noon.red;
+        case 261: //upperClouds.noon.green
+            return &NAM0.value.upperClouds.noon.green;
+        case 262: //upperClouds.noon.blue
+            return &NAM0.value.upperClouds.noon.blue;
+        case 263: //upperClouds.noon.unused1
+            *FieldValues = &NAM0.value.upperClouds.noon.unused1;
+            return NULL;
+        case 264: //upperClouds.midnight.red
+            return &NAM0.value.upperClouds.midnight.red;
+        case 265: //upperClouds.midnight.green
+            return &NAM0.value.upperClouds.midnight.green;
+        case 266: //upperClouds.midnight.blue
+            return &NAM0.value.upperClouds.midnight.blue;
+        case 267: //upperClouds.midnight.unused1
+            *FieldValues = &NAM0.value.upperClouds.midnight.unused1;
+            return NULL;
+        case 268: //fogDayNear
+            return &FNAM.value.fogDayNear;
+        case 269: //fogDayFar
+            return &FNAM.value.fogDayFar;
+        case 270: //fogNightNear
+            return &FNAM.value.fogNightNear;
+        case 271: //fogNightFar
+            return &FNAM.value.fogNightFar;
+        case 272: //fogDayPower
+            return &FNAM.value.fogDayPower;
+        case 273: //fogNightPower
+            return &FNAM.value.fogNightPower;
+        case 274: //inam_p
+            *FieldValues = INAM.value;
+            return NULL;
+        case 275: //windSpeed
+            return &DATA.value.windSpeed;
+        case 276: //lowerCloudSpeed
+            return &DATA.value.lowerCloudSpeed;
+        case 277: //upperCloudSpeed
+            return &DATA.value.upperCloudSpeed;
+        case 278: //transDelta
+            return &DATA.value.transDelta;
+        case 279: //sunGlare
+            return &DATA.value.sunGlare;
+        case 280: //sunDamage
+            return &DATA.value.sunDamage;
+        case 281: //rainFadeIn
+            return &DATA.value.rainFadeIn;
+        case 282: //rainFadeOut
+            return &DATA.value.rainFadeOut;
+        case 283: //boltFadeIn
+            return &DATA.value.boltFadeIn;
+        case 284: //boltFadeOut
+            return &DATA.value.boltFadeOut;
+        case 285: //boltFrequency
+            return &DATA.value.boltFrequency;
+        case 286: //weatherType
+            return &DATA.value.weatherType;
+        case 287: //boltRed
+            return &DATA.value.boltRed;
+        case 288: //boltGreen
+            return &DATA.value.boltGreen;
+        case 289: //boltBlue
+            return &DATA.value.boltBlue;
+        case 290: //sounds
+            if(ListIndex >= Sounds.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //sound
+                    return &Sounds.value[ListIndex]->sound;
+                case 2: //type
+                    return &Sounds.value[ListIndex]->type;
+                default:
+                    return NULL;
+                }
+            return NULL;
         default:
             return NULL;
         }
@@ -385,40 +1975,34 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //0iad Sunrise Image Space Modifier
-            0IAD.Load();
-            0IAD->value7 = *(FORMID *)FieldValue;
+        case 7: //sunriseImageSpace
+            _0IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 8: //1iad Day Image Space Modifier
-            1IAD.Load();
-            1IAD->value8 = *(FORMID *)FieldValue;
+        case 8: //dayImageSpace
+            _1IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 9: //2iad Sunset Image Space Modifier
-            2IAD.Load();
-            2IAD->value9 = *(FORMID *)FieldValue;
+        case 9: //sunsetImageSpace
+            _2IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 10: //3iad Night Image Space Modifier
-            3IAD.Load();
-            3IAD->value10 = *(FORMID *)FieldValue;
+        case 10: //nightImageSpace
+            _3IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 11: //4iad Unknown
-            4IAD.Load();
-            4IAD->value11 = *(FORMID *)FieldValue;
+        case 11: //unknown1ImageSpace
+            _4IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 12: //5iad Unknown
-            5IAD.Load();
-            5IAD->value12 = *(FORMID *)FieldValue;
+        case 12: //unknown2ImageSpace
+            _5IAD.value = *(FORMID *)FieldValue;
             return true;
-        case 13: //dnam Cloud Textures - Layer 0
+        case 13: //cloudLayer0Path
             DNAM.Copy((STRING)FieldValue);
             break;
-        case 14: //cnam Cloud Textures - Layer 1
+        case 14: //cloudLayer1Path
             CNAM.Copy((STRING)FieldValue);
             break;
-        case 15: //anam Cloud Textures - Layer 2
+        case 15: //cloudLayer2Path
             ANAM.Copy((STRING)FieldValue);
             break;
-        case 16: //bnam Cloud Textures - Layer 3
+        case 16: //cloudLayer3Path
             BNAM.Copy((STRING)FieldValue);
             break;
         case 17: //modPath
@@ -433,457 +2017,992 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 20: //mods Alternate Textures
+        case 20: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
-            break;
-        case 21: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value21 = *(FORMID *)FieldValue;
-            return true;
-        case 22: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value22 = *(SINT32 *)FieldValue;
-            break;
-        case 23: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value23 = *(UINT8 *)FieldValue;
-            break;
-        case 24: //lnam_p Unknown
-            if(ArraySize != 4)
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
                 break;
-            LNAM.Load();
-            LNAM->value24[0] = ((UINT8ARRAY)FieldValue)[0];
-            LNAM->value24[1] = ((UINT8ARRAY)FieldValue)[1];
-            LNAM->value24[2] = ((UINT8ARRAY)FieldValue)[2];
-            LNAM->value24[3] = ((UINT8ARRAY)FieldValue)[3];
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 25: //onam Cloud Speed
-            return UNPARSEDGET_FIELD25;
-        case 26: //pnam_p Unused
+        case 21: //modelFlags
+            MODL.Load();
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 22: //unknown1
+            LNAM.value = *(UINT32 *)FieldValue;
+            break;
+        case 23: //layer0Speed
+            ONAM.Load();
+            ONAM->layer0Speed = *(UINT8 *)FieldValue;
+            break;
+        case 24: //layer1Speed
+            ONAM.Load();
+            ONAM->layer1Speed = *(UINT8 *)FieldValue;
+            break;
+        case 25: //layer2Speed
+            ONAM.Load();
+            ONAM->layer2Speed = *(UINT8 *)FieldValue;
+            break;
+        case 26: //layer3Speed
+            ONAM.Load();
+            ONAM->layer3Speed = *(UINT8 *)FieldValue;
+            break;
+        case 27: //PNAM
             PNAM.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 27: //nam0 NAM0 ,, Struct
-            NAM0.Load();
-            NAM0->value27 = *(UINT8 *)FieldValue;
+        case 28: //upperSky.rise.red
+            NAM0.value.upperSky.rise.red = *(UINT8 *)FieldValue;
             break;
-        case 28: //nam0 NAM0 ,, Struct
-            NAM0.Load();
-            NAM0->value28 = *(UINT8 *)FieldValue;
+        case 29: //upperSky.rise.green
+            NAM0.value.upperSky.rise.green = *(UINT8 *)FieldValue;
             break;
-        case 29: //nam0 NAM0 ,, Struct
-            NAM0.Load();
-            NAM0->value29 = *(UINT8 *)FieldValue;
+        case 30: //upperSky.rise.blue
+            NAM0.value.upperSky.rise.blue = *(UINT8 *)FieldValue;
             break;
-        case 30: //nam0_p NAM0 ,, Struct
+        case 31: //upperSky.rise.unused1
             if(ArraySize != 1)
                 break;
-            NAM0.Load();
-            NAM0->value30[0] = ((UINT8ARRAY)FieldValue)[0];
+            NAM0.value.upperSky.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 31: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value31 = *(FLOAT32 *)FieldValue;
+        case 32: //upperSky.day.red
+            NAM0.value.upperSky.day.red = *(UINT8 *)FieldValue;
             break;
-        case 32: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value32 = *(FLOAT32 *)FieldValue;
+        case 33: //upperSky.day.green
+            NAM0.value.upperSky.day.green = *(UINT8 *)FieldValue;
             break;
-        case 33: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value33 = *(FLOAT32 *)FieldValue;
+        case 34: //upperSky.day.blue
+            NAM0.value.upperSky.day.blue = *(UINT8 *)FieldValue;
             break;
-        case 34: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value34 = *(FLOAT32 *)FieldValue;
-            break;
-        case 35: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value35 = *(FLOAT32 *)FieldValue;
-            break;
-        case 36: //fnam FNAM ,, Struct
-            FNAM.Load();
-            FNAM->value36 = *(FLOAT32 *)FieldValue;
-            break;
-        case 37: //inam_p Unused
-            if(ArraySize != 304)
+        case 35: //upperSky.day.unused1
+            if(ArraySize != 1)
                 break;
-            INAM.Load();
-            INAM->value37[0] = ((UINT8ARRAY)FieldValue)[0];
-            INAM->value37[1] = ((UINT8ARRAY)FieldValue)[1];
-            INAM->value37[2] = ((UINT8ARRAY)FieldValue)[2];
-            INAM->value37[3] = ((UINT8ARRAY)FieldValue)[3];
-            INAM->value37[4] = ((UINT8ARRAY)FieldValue)[4];
-            INAM->value37[5] = ((UINT8ARRAY)FieldValue)[5];
-            INAM->value37[6] = ((UINT8ARRAY)FieldValue)[6];
-            INAM->value37[7] = ((UINT8ARRAY)FieldValue)[7];
-            INAM->value37[8] = ((UINT8ARRAY)FieldValue)[8];
-            INAM->value37[9] = ((UINT8ARRAY)FieldValue)[9];
-            INAM->value37[10] = ((UINT8ARRAY)FieldValue)[10];
-            INAM->value37[11] = ((UINT8ARRAY)FieldValue)[11];
-            INAM->value37[12] = ((UINT8ARRAY)FieldValue)[12];
-            INAM->value37[13] = ((UINT8ARRAY)FieldValue)[13];
-            INAM->value37[14] = ((UINT8ARRAY)FieldValue)[14];
-            INAM->value37[15] = ((UINT8ARRAY)FieldValue)[15];
-            INAM->value37[16] = ((UINT8ARRAY)FieldValue)[16];
-            INAM->value37[17] = ((UINT8ARRAY)FieldValue)[17];
-            INAM->value37[18] = ((UINT8ARRAY)FieldValue)[18];
-            INAM->value37[19] = ((UINT8ARRAY)FieldValue)[19];
-            INAM->value37[20] = ((UINT8ARRAY)FieldValue)[20];
-            INAM->value37[21] = ((UINT8ARRAY)FieldValue)[21];
-            INAM->value37[22] = ((UINT8ARRAY)FieldValue)[22];
-            INAM->value37[23] = ((UINT8ARRAY)FieldValue)[23];
-            INAM->value37[24] = ((UINT8ARRAY)FieldValue)[24];
-            INAM->value37[25] = ((UINT8ARRAY)FieldValue)[25];
-            INAM->value37[26] = ((UINT8ARRAY)FieldValue)[26];
-            INAM->value37[27] = ((UINT8ARRAY)FieldValue)[27];
-            INAM->value37[28] = ((UINT8ARRAY)FieldValue)[28];
-            INAM->value37[29] = ((UINT8ARRAY)FieldValue)[29];
-            INAM->value37[30] = ((UINT8ARRAY)FieldValue)[30];
-            INAM->value37[31] = ((UINT8ARRAY)FieldValue)[31];
-            INAM->value37[32] = ((UINT8ARRAY)FieldValue)[32];
-            INAM->value37[33] = ((UINT8ARRAY)FieldValue)[33];
-            INAM->value37[34] = ((UINT8ARRAY)FieldValue)[34];
-            INAM->value37[35] = ((UINT8ARRAY)FieldValue)[35];
-            INAM->value37[36] = ((UINT8ARRAY)FieldValue)[36];
-            INAM->value37[37] = ((UINT8ARRAY)FieldValue)[37];
-            INAM->value37[38] = ((UINT8ARRAY)FieldValue)[38];
-            INAM->value37[39] = ((UINT8ARRAY)FieldValue)[39];
-            INAM->value37[40] = ((UINT8ARRAY)FieldValue)[40];
-            INAM->value37[41] = ((UINT8ARRAY)FieldValue)[41];
-            INAM->value37[42] = ((UINT8ARRAY)FieldValue)[42];
-            INAM->value37[43] = ((UINT8ARRAY)FieldValue)[43];
-            INAM->value37[44] = ((UINT8ARRAY)FieldValue)[44];
-            INAM->value37[45] = ((UINT8ARRAY)FieldValue)[45];
-            INAM->value37[46] = ((UINT8ARRAY)FieldValue)[46];
-            INAM->value37[47] = ((UINT8ARRAY)FieldValue)[47];
-            INAM->value37[48] = ((UINT8ARRAY)FieldValue)[48];
-            INAM->value37[49] = ((UINT8ARRAY)FieldValue)[49];
-            INAM->value37[50] = ((UINT8ARRAY)FieldValue)[50];
-            INAM->value37[51] = ((UINT8ARRAY)FieldValue)[51];
-            INAM->value37[52] = ((UINT8ARRAY)FieldValue)[52];
-            INAM->value37[53] = ((UINT8ARRAY)FieldValue)[53];
-            INAM->value37[54] = ((UINT8ARRAY)FieldValue)[54];
-            INAM->value37[55] = ((UINT8ARRAY)FieldValue)[55];
-            INAM->value37[56] = ((UINT8ARRAY)FieldValue)[56];
-            INAM->value37[57] = ((UINT8ARRAY)FieldValue)[57];
-            INAM->value37[58] = ((UINT8ARRAY)FieldValue)[58];
-            INAM->value37[59] = ((UINT8ARRAY)FieldValue)[59];
-            INAM->value37[60] = ((UINT8ARRAY)FieldValue)[60];
-            INAM->value37[61] = ((UINT8ARRAY)FieldValue)[61];
-            INAM->value37[62] = ((UINT8ARRAY)FieldValue)[62];
-            INAM->value37[63] = ((UINT8ARRAY)FieldValue)[63];
-            INAM->value37[64] = ((UINT8ARRAY)FieldValue)[64];
-            INAM->value37[65] = ((UINT8ARRAY)FieldValue)[65];
-            INAM->value37[66] = ((UINT8ARRAY)FieldValue)[66];
-            INAM->value37[67] = ((UINT8ARRAY)FieldValue)[67];
-            INAM->value37[68] = ((UINT8ARRAY)FieldValue)[68];
-            INAM->value37[69] = ((UINT8ARRAY)FieldValue)[69];
-            INAM->value37[70] = ((UINT8ARRAY)FieldValue)[70];
-            INAM->value37[71] = ((UINT8ARRAY)FieldValue)[71];
-            INAM->value37[72] = ((UINT8ARRAY)FieldValue)[72];
-            INAM->value37[73] = ((UINT8ARRAY)FieldValue)[73];
-            INAM->value37[74] = ((UINT8ARRAY)FieldValue)[74];
-            INAM->value37[75] = ((UINT8ARRAY)FieldValue)[75];
-            INAM->value37[76] = ((UINT8ARRAY)FieldValue)[76];
-            INAM->value37[77] = ((UINT8ARRAY)FieldValue)[77];
-            INAM->value37[78] = ((UINT8ARRAY)FieldValue)[78];
-            INAM->value37[79] = ((UINT8ARRAY)FieldValue)[79];
-            INAM->value37[80] = ((UINT8ARRAY)FieldValue)[80];
-            INAM->value37[81] = ((UINT8ARRAY)FieldValue)[81];
-            INAM->value37[82] = ((UINT8ARRAY)FieldValue)[82];
-            INAM->value37[83] = ((UINT8ARRAY)FieldValue)[83];
-            INAM->value37[84] = ((UINT8ARRAY)FieldValue)[84];
-            INAM->value37[85] = ((UINT8ARRAY)FieldValue)[85];
-            INAM->value37[86] = ((UINT8ARRAY)FieldValue)[86];
-            INAM->value37[87] = ((UINT8ARRAY)FieldValue)[87];
-            INAM->value37[88] = ((UINT8ARRAY)FieldValue)[88];
-            INAM->value37[89] = ((UINT8ARRAY)FieldValue)[89];
-            INAM->value37[90] = ((UINT8ARRAY)FieldValue)[90];
-            INAM->value37[91] = ((UINT8ARRAY)FieldValue)[91];
-            INAM->value37[92] = ((UINT8ARRAY)FieldValue)[92];
-            INAM->value37[93] = ((UINT8ARRAY)FieldValue)[93];
-            INAM->value37[94] = ((UINT8ARRAY)FieldValue)[94];
-            INAM->value37[95] = ((UINT8ARRAY)FieldValue)[95];
-            INAM->value37[96] = ((UINT8ARRAY)FieldValue)[96];
-            INAM->value37[97] = ((UINT8ARRAY)FieldValue)[97];
-            INAM->value37[98] = ((UINT8ARRAY)FieldValue)[98];
-            INAM->value37[99] = ((UINT8ARRAY)FieldValue)[99];
-            INAM->value37[100] = ((UINT8ARRAY)FieldValue)[100];
-            INAM->value37[101] = ((UINT8ARRAY)FieldValue)[101];
-            INAM->value37[102] = ((UINT8ARRAY)FieldValue)[102];
-            INAM->value37[103] = ((UINT8ARRAY)FieldValue)[103];
-            INAM->value37[104] = ((UINT8ARRAY)FieldValue)[104];
-            INAM->value37[105] = ((UINT8ARRAY)FieldValue)[105];
-            INAM->value37[106] = ((UINT8ARRAY)FieldValue)[106];
-            INAM->value37[107] = ((UINT8ARRAY)FieldValue)[107];
-            INAM->value37[108] = ((UINT8ARRAY)FieldValue)[108];
-            INAM->value37[109] = ((UINT8ARRAY)FieldValue)[109];
-            INAM->value37[110] = ((UINT8ARRAY)FieldValue)[110];
-            INAM->value37[111] = ((UINT8ARRAY)FieldValue)[111];
-            INAM->value37[112] = ((UINT8ARRAY)FieldValue)[112];
-            INAM->value37[113] = ((UINT8ARRAY)FieldValue)[113];
-            INAM->value37[114] = ((UINT8ARRAY)FieldValue)[114];
-            INAM->value37[115] = ((UINT8ARRAY)FieldValue)[115];
-            INAM->value37[116] = ((UINT8ARRAY)FieldValue)[116];
-            INAM->value37[117] = ((UINT8ARRAY)FieldValue)[117];
-            INAM->value37[118] = ((UINT8ARRAY)FieldValue)[118];
-            INAM->value37[119] = ((UINT8ARRAY)FieldValue)[119];
-            INAM->value37[120] = ((UINT8ARRAY)FieldValue)[120];
-            INAM->value37[121] = ((UINT8ARRAY)FieldValue)[121];
-            INAM->value37[122] = ((UINT8ARRAY)FieldValue)[122];
-            INAM->value37[123] = ((UINT8ARRAY)FieldValue)[123];
-            INAM->value37[124] = ((UINT8ARRAY)FieldValue)[124];
-            INAM->value37[125] = ((UINT8ARRAY)FieldValue)[125];
-            INAM->value37[126] = ((UINT8ARRAY)FieldValue)[126];
-            INAM->value37[127] = ((UINT8ARRAY)FieldValue)[127];
-            INAM->value37[128] = ((UINT8ARRAY)FieldValue)[128];
-            INAM->value37[129] = ((UINT8ARRAY)FieldValue)[129];
-            INAM->value37[130] = ((UINT8ARRAY)FieldValue)[130];
-            INAM->value37[131] = ((UINT8ARRAY)FieldValue)[131];
-            INAM->value37[132] = ((UINT8ARRAY)FieldValue)[132];
-            INAM->value37[133] = ((UINT8ARRAY)FieldValue)[133];
-            INAM->value37[134] = ((UINT8ARRAY)FieldValue)[134];
-            INAM->value37[135] = ((UINT8ARRAY)FieldValue)[135];
-            INAM->value37[136] = ((UINT8ARRAY)FieldValue)[136];
-            INAM->value37[137] = ((UINT8ARRAY)FieldValue)[137];
-            INAM->value37[138] = ((UINT8ARRAY)FieldValue)[138];
-            INAM->value37[139] = ((UINT8ARRAY)FieldValue)[139];
-            INAM->value37[140] = ((UINT8ARRAY)FieldValue)[140];
-            INAM->value37[141] = ((UINT8ARRAY)FieldValue)[141];
-            INAM->value37[142] = ((UINT8ARRAY)FieldValue)[142];
-            INAM->value37[143] = ((UINT8ARRAY)FieldValue)[143];
-            INAM->value37[144] = ((UINT8ARRAY)FieldValue)[144];
-            INAM->value37[145] = ((UINT8ARRAY)FieldValue)[145];
-            INAM->value37[146] = ((UINT8ARRAY)FieldValue)[146];
-            INAM->value37[147] = ((UINT8ARRAY)FieldValue)[147];
-            INAM->value37[148] = ((UINT8ARRAY)FieldValue)[148];
-            INAM->value37[149] = ((UINT8ARRAY)FieldValue)[149];
-            INAM->value37[150] = ((UINT8ARRAY)FieldValue)[150];
-            INAM->value37[151] = ((UINT8ARRAY)FieldValue)[151];
-            INAM->value37[152] = ((UINT8ARRAY)FieldValue)[152];
-            INAM->value37[153] = ((UINT8ARRAY)FieldValue)[153];
-            INAM->value37[154] = ((UINT8ARRAY)FieldValue)[154];
-            INAM->value37[155] = ((UINT8ARRAY)FieldValue)[155];
-            INAM->value37[156] = ((UINT8ARRAY)FieldValue)[156];
-            INAM->value37[157] = ((UINT8ARRAY)FieldValue)[157];
-            INAM->value37[158] = ((UINT8ARRAY)FieldValue)[158];
-            INAM->value37[159] = ((UINT8ARRAY)FieldValue)[159];
-            INAM->value37[160] = ((UINT8ARRAY)FieldValue)[160];
-            INAM->value37[161] = ((UINT8ARRAY)FieldValue)[161];
-            INAM->value37[162] = ((UINT8ARRAY)FieldValue)[162];
-            INAM->value37[163] = ((UINT8ARRAY)FieldValue)[163];
-            INAM->value37[164] = ((UINT8ARRAY)FieldValue)[164];
-            INAM->value37[165] = ((UINT8ARRAY)FieldValue)[165];
-            INAM->value37[166] = ((UINT8ARRAY)FieldValue)[166];
-            INAM->value37[167] = ((UINT8ARRAY)FieldValue)[167];
-            INAM->value37[168] = ((UINT8ARRAY)FieldValue)[168];
-            INAM->value37[169] = ((UINT8ARRAY)FieldValue)[169];
-            INAM->value37[170] = ((UINT8ARRAY)FieldValue)[170];
-            INAM->value37[171] = ((UINT8ARRAY)FieldValue)[171];
-            INAM->value37[172] = ((UINT8ARRAY)FieldValue)[172];
-            INAM->value37[173] = ((UINT8ARRAY)FieldValue)[173];
-            INAM->value37[174] = ((UINT8ARRAY)FieldValue)[174];
-            INAM->value37[175] = ((UINT8ARRAY)FieldValue)[175];
-            INAM->value37[176] = ((UINT8ARRAY)FieldValue)[176];
-            INAM->value37[177] = ((UINT8ARRAY)FieldValue)[177];
-            INAM->value37[178] = ((UINT8ARRAY)FieldValue)[178];
-            INAM->value37[179] = ((UINT8ARRAY)FieldValue)[179];
-            INAM->value37[180] = ((UINT8ARRAY)FieldValue)[180];
-            INAM->value37[181] = ((UINT8ARRAY)FieldValue)[181];
-            INAM->value37[182] = ((UINT8ARRAY)FieldValue)[182];
-            INAM->value37[183] = ((UINT8ARRAY)FieldValue)[183];
-            INAM->value37[184] = ((UINT8ARRAY)FieldValue)[184];
-            INAM->value37[185] = ((UINT8ARRAY)FieldValue)[185];
-            INAM->value37[186] = ((UINT8ARRAY)FieldValue)[186];
-            INAM->value37[187] = ((UINT8ARRAY)FieldValue)[187];
-            INAM->value37[188] = ((UINT8ARRAY)FieldValue)[188];
-            INAM->value37[189] = ((UINT8ARRAY)FieldValue)[189];
-            INAM->value37[190] = ((UINT8ARRAY)FieldValue)[190];
-            INAM->value37[191] = ((UINT8ARRAY)FieldValue)[191];
-            INAM->value37[192] = ((UINT8ARRAY)FieldValue)[192];
-            INAM->value37[193] = ((UINT8ARRAY)FieldValue)[193];
-            INAM->value37[194] = ((UINT8ARRAY)FieldValue)[194];
-            INAM->value37[195] = ((UINT8ARRAY)FieldValue)[195];
-            INAM->value37[196] = ((UINT8ARRAY)FieldValue)[196];
-            INAM->value37[197] = ((UINT8ARRAY)FieldValue)[197];
-            INAM->value37[198] = ((UINT8ARRAY)FieldValue)[198];
-            INAM->value37[199] = ((UINT8ARRAY)FieldValue)[199];
-            INAM->value37[200] = ((UINT8ARRAY)FieldValue)[200];
-            INAM->value37[201] = ((UINT8ARRAY)FieldValue)[201];
-            INAM->value37[202] = ((UINT8ARRAY)FieldValue)[202];
-            INAM->value37[203] = ((UINT8ARRAY)FieldValue)[203];
-            INAM->value37[204] = ((UINT8ARRAY)FieldValue)[204];
-            INAM->value37[205] = ((UINT8ARRAY)FieldValue)[205];
-            INAM->value37[206] = ((UINT8ARRAY)FieldValue)[206];
-            INAM->value37[207] = ((UINT8ARRAY)FieldValue)[207];
-            INAM->value37[208] = ((UINT8ARRAY)FieldValue)[208];
-            INAM->value37[209] = ((UINT8ARRAY)FieldValue)[209];
-            INAM->value37[210] = ((UINT8ARRAY)FieldValue)[210];
-            INAM->value37[211] = ((UINT8ARRAY)FieldValue)[211];
-            INAM->value37[212] = ((UINT8ARRAY)FieldValue)[212];
-            INAM->value37[213] = ((UINT8ARRAY)FieldValue)[213];
-            INAM->value37[214] = ((UINT8ARRAY)FieldValue)[214];
-            INAM->value37[215] = ((UINT8ARRAY)FieldValue)[215];
-            INAM->value37[216] = ((UINT8ARRAY)FieldValue)[216];
-            INAM->value37[217] = ((UINT8ARRAY)FieldValue)[217];
-            INAM->value37[218] = ((UINT8ARRAY)FieldValue)[218];
-            INAM->value37[219] = ((UINT8ARRAY)FieldValue)[219];
-            INAM->value37[220] = ((UINT8ARRAY)FieldValue)[220];
-            INAM->value37[221] = ((UINT8ARRAY)FieldValue)[221];
-            INAM->value37[222] = ((UINT8ARRAY)FieldValue)[222];
-            INAM->value37[223] = ((UINT8ARRAY)FieldValue)[223];
-            INAM->value37[224] = ((UINT8ARRAY)FieldValue)[224];
-            INAM->value37[225] = ((UINT8ARRAY)FieldValue)[225];
-            INAM->value37[226] = ((UINT8ARRAY)FieldValue)[226];
-            INAM->value37[227] = ((UINT8ARRAY)FieldValue)[227];
-            INAM->value37[228] = ((UINT8ARRAY)FieldValue)[228];
-            INAM->value37[229] = ((UINT8ARRAY)FieldValue)[229];
-            INAM->value37[230] = ((UINT8ARRAY)FieldValue)[230];
-            INAM->value37[231] = ((UINT8ARRAY)FieldValue)[231];
-            INAM->value37[232] = ((UINT8ARRAY)FieldValue)[232];
-            INAM->value37[233] = ((UINT8ARRAY)FieldValue)[233];
-            INAM->value37[234] = ((UINT8ARRAY)FieldValue)[234];
-            INAM->value37[235] = ((UINT8ARRAY)FieldValue)[235];
-            INAM->value37[236] = ((UINT8ARRAY)FieldValue)[236];
-            INAM->value37[237] = ((UINT8ARRAY)FieldValue)[237];
-            INAM->value37[238] = ((UINT8ARRAY)FieldValue)[238];
-            INAM->value37[239] = ((UINT8ARRAY)FieldValue)[239];
-            INAM->value37[240] = ((UINT8ARRAY)FieldValue)[240];
-            INAM->value37[241] = ((UINT8ARRAY)FieldValue)[241];
-            INAM->value37[242] = ((UINT8ARRAY)FieldValue)[242];
-            INAM->value37[243] = ((UINT8ARRAY)FieldValue)[243];
-            INAM->value37[244] = ((UINT8ARRAY)FieldValue)[244];
-            INAM->value37[245] = ((UINT8ARRAY)FieldValue)[245];
-            INAM->value37[246] = ((UINT8ARRAY)FieldValue)[246];
-            INAM->value37[247] = ((UINT8ARRAY)FieldValue)[247];
-            INAM->value37[248] = ((UINT8ARRAY)FieldValue)[248];
-            INAM->value37[249] = ((UINT8ARRAY)FieldValue)[249];
-            INAM->value37[250] = ((UINT8ARRAY)FieldValue)[250];
-            INAM->value37[251] = ((UINT8ARRAY)FieldValue)[251];
-            INAM->value37[252] = ((UINT8ARRAY)FieldValue)[252];
-            INAM->value37[253] = ((UINT8ARRAY)FieldValue)[253];
-            INAM->value37[254] = ((UINT8ARRAY)FieldValue)[254];
-            INAM->value37[255] = ((UINT8ARRAY)FieldValue)[255];
-            INAM->value37[256] = ((UINT8ARRAY)FieldValue)[256];
-            INAM->value37[257] = ((UINT8ARRAY)FieldValue)[257];
-            INAM->value37[258] = ((UINT8ARRAY)FieldValue)[258];
-            INAM->value37[259] = ((UINT8ARRAY)FieldValue)[259];
-            INAM->value37[260] = ((UINT8ARRAY)FieldValue)[260];
-            INAM->value37[261] = ((UINT8ARRAY)FieldValue)[261];
-            INAM->value37[262] = ((UINT8ARRAY)FieldValue)[262];
-            INAM->value37[263] = ((UINT8ARRAY)FieldValue)[263];
-            INAM->value37[264] = ((UINT8ARRAY)FieldValue)[264];
-            INAM->value37[265] = ((UINT8ARRAY)FieldValue)[265];
-            INAM->value37[266] = ((UINT8ARRAY)FieldValue)[266];
-            INAM->value37[267] = ((UINT8ARRAY)FieldValue)[267];
-            INAM->value37[268] = ((UINT8ARRAY)FieldValue)[268];
-            INAM->value37[269] = ((UINT8ARRAY)FieldValue)[269];
-            INAM->value37[270] = ((UINT8ARRAY)FieldValue)[270];
-            INAM->value37[271] = ((UINT8ARRAY)FieldValue)[271];
-            INAM->value37[272] = ((UINT8ARRAY)FieldValue)[272];
-            INAM->value37[273] = ((UINT8ARRAY)FieldValue)[273];
-            INAM->value37[274] = ((UINT8ARRAY)FieldValue)[274];
-            INAM->value37[275] = ((UINT8ARRAY)FieldValue)[275];
-            INAM->value37[276] = ((UINT8ARRAY)FieldValue)[276];
-            INAM->value37[277] = ((UINT8ARRAY)FieldValue)[277];
-            INAM->value37[278] = ((UINT8ARRAY)FieldValue)[278];
-            INAM->value37[279] = ((UINT8ARRAY)FieldValue)[279];
-            INAM->value37[280] = ((UINT8ARRAY)FieldValue)[280];
-            INAM->value37[281] = ((UINT8ARRAY)FieldValue)[281];
-            INAM->value37[282] = ((UINT8ARRAY)FieldValue)[282];
-            INAM->value37[283] = ((UINT8ARRAY)FieldValue)[283];
-            INAM->value37[284] = ((UINT8ARRAY)FieldValue)[284];
-            INAM->value37[285] = ((UINT8ARRAY)FieldValue)[285];
-            INAM->value37[286] = ((UINT8ARRAY)FieldValue)[286];
-            INAM->value37[287] = ((UINT8ARRAY)FieldValue)[287];
-            INAM->value37[288] = ((UINT8ARRAY)FieldValue)[288];
-            INAM->value37[289] = ((UINT8ARRAY)FieldValue)[289];
-            INAM->value37[290] = ((UINT8ARRAY)FieldValue)[290];
-            INAM->value37[291] = ((UINT8ARRAY)FieldValue)[291];
-            INAM->value37[292] = ((UINT8ARRAY)FieldValue)[292];
-            INAM->value37[293] = ((UINT8ARRAY)FieldValue)[293];
-            INAM->value37[294] = ((UINT8ARRAY)FieldValue)[294];
-            INAM->value37[295] = ((UINT8ARRAY)FieldValue)[295];
-            INAM->value37[296] = ((UINT8ARRAY)FieldValue)[296];
-            INAM->value37[297] = ((UINT8ARRAY)FieldValue)[297];
-            INAM->value37[298] = ((UINT8ARRAY)FieldValue)[298];
-            INAM->value37[299] = ((UINT8ARRAY)FieldValue)[299];
-            INAM->value37[300] = ((UINT8ARRAY)FieldValue)[300];
-            INAM->value37[301] = ((UINT8ARRAY)FieldValue)[301];
-            INAM->value37[302] = ((UINT8ARRAY)FieldValue)[302];
-            INAM->value37[303] = ((UINT8ARRAY)FieldValue)[303];
+            NAM0.value.upperSky.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 38: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value38 = *(UINT8 *)FieldValue;
+        case 36: //upperSky.set.red
+            NAM0.value.upperSky.set.red = *(UINT8 *)FieldValue;
             break;
-        case 39: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value39 = *(UINT8 *)FieldValue;
+        case 37: //upperSky.set.green
+            NAM0.value.upperSky.set.green = *(UINT8 *)FieldValue;
             break;
-        case 40: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value40 = *(UINT8 *)FieldValue;
+        case 38: //upperSky.set.blue
+            NAM0.value.upperSky.set.blue = *(UINT8 *)FieldValue;
             break;
-        case 41: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value41 = *(UINT8 *)FieldValue;
+        case 39: //upperSky.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperSky.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 42: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value42 = *(UINT8 *)FieldValue;
+        case 40: //upperSky.night.red
+            NAM0.value.upperSky.night.red = *(UINT8 *)FieldValue;
             break;
-        case 43: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value43 = *(UINT8 *)FieldValue;
+        case 41: //upperSky.night.green
+            NAM0.value.upperSky.night.green = *(UINT8 *)FieldValue;
             break;
-        case 44: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value44 = *(UINT8 *)FieldValue;
+        case 42: //upperSky.night.blue
+            NAM0.value.upperSky.night.blue = *(UINT8 *)FieldValue;
             break;
-        case 45: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value45 = *(UINT8 *)FieldValue;
+        case 43: //upperSky.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperSky.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 46: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value46 = *(UINT8 *)FieldValue;
+        case 44: //upperSky.noon.red
+            NAM0.value.upperSky.noon.red = *(UINT8 *)FieldValue;
             break;
-        case 47: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value47 = *(UINT8 *)FieldValue;
+        case 45: //upperSky.noon.green
+            NAM0.value.upperSky.noon.green = *(UINT8 *)FieldValue;
             break;
-        case 48: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value48 = *(UINT8 *)FieldValue;
+        case 46: //upperSky.noon.blue
+            NAM0.value.upperSky.noon.blue = *(UINT8 *)FieldValue;
             break;
-        case 49: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value49 = *(UINT8 *)FieldValue;
+        case 47: //upperSky.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperSky.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 50: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value50 = *(UINT8 *)FieldValue;
+        case 48: //upperSky.midnight.red
+            NAM0.value.upperSky.midnight.red = *(UINT8 *)FieldValue;
             break;
-        case 51: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value51 = *(UINT8 *)FieldValue;
+        case 49: //upperSky.midnight.green
+            NAM0.value.upperSky.midnight.green = *(UINT8 *)FieldValue;
             break;
-        case 52: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value52 = *(UINT8 *)FieldValue;
+        case 50: //upperSky.midnight.blue
+            NAM0.value.upperSky.midnight.blue = *(UINT8 *)FieldValue;
             break;
-        case 53: //snam SNAM ,, Struct
-            SNAM.Load();
-            SNAM->value53 = *(FORMID *)FieldValue;
-            return true;
-        case 54: //snam SNAM ,, Struct
-            SNAM.Load();
-            SNAM->value54 = *(UINT32 *)FieldValue;
+        case 51: //upperSky.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperSky.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 52: //fog.rise.red
+            NAM0.value.fog.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 53: //fog.rise.green
+            NAM0.value.fog.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 54: //fog.rise.blue
+            NAM0.value.fog.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 55: //fog.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 56: //fog.day.red
+            NAM0.value.fog.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 57: //fog.day.green
+            NAM0.value.fog.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 58: //fog.day.blue
+            NAM0.value.fog.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 59: //fog.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 60: //fog.set.red
+            NAM0.value.fog.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 61: //fog.set.green
+            NAM0.value.fog.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 62: //fog.set.blue
+            NAM0.value.fog.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 63: //fog.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 64: //fog.night.red
+            NAM0.value.fog.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 65: //fog.night.green
+            NAM0.value.fog.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 66: //fog.night.blue
+            NAM0.value.fog.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 67: //fog.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 68: //fog.noon.red
+            NAM0.value.fog.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 69: //fog.noon.green
+            NAM0.value.fog.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 70: //fog.noon.blue
+            NAM0.value.fog.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 71: //fog.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 72: //fog.midnight.red
+            NAM0.value.fog.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 73: //fog.midnight.green
+            NAM0.value.fog.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 74: //fog.midnight.blue
+            NAM0.value.fog.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 75: //fog.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.fog.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 76: //lowerClouds.rise.red
+            NAM0.value.lowerClouds.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 77: //lowerClouds.rise.green
+            NAM0.value.lowerClouds.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 78: //lowerClouds.rise.blue
+            NAM0.value.lowerClouds.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 79: //lowerClouds.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 80: //lowerClouds.day.red
+            NAM0.value.lowerClouds.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 81: //lowerClouds.day.green
+            NAM0.value.lowerClouds.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 82: //lowerClouds.day.blue
+            NAM0.value.lowerClouds.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 83: //lowerClouds.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 84: //lowerClouds.set.red
+            NAM0.value.lowerClouds.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 85: //lowerClouds.set.green
+            NAM0.value.lowerClouds.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 86: //lowerClouds.set.blue
+            NAM0.value.lowerClouds.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 87: //lowerClouds.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 88: //lowerClouds.night.red
+            NAM0.value.lowerClouds.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 89: //lowerClouds.night.green
+            NAM0.value.lowerClouds.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 90: //lowerClouds.night.blue
+            NAM0.value.lowerClouds.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 91: //lowerClouds.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 92: //lowerClouds.noon.red
+            NAM0.value.lowerClouds.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 93: //lowerClouds.noon.green
+            NAM0.value.lowerClouds.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 94: //lowerClouds.noon.blue
+            NAM0.value.lowerClouds.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 95: //lowerClouds.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 96: //lowerClouds.midnight.red
+            NAM0.value.lowerClouds.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 97: //lowerClouds.midnight.green
+            NAM0.value.lowerClouds.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 98: //lowerClouds.midnight.blue
+            NAM0.value.lowerClouds.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 99: //lowerClouds.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerClouds.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 100: //ambient.rise.red
+            NAM0.value.ambient.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 101: //ambient.rise.green
+            NAM0.value.ambient.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 102: //ambient.rise.blue
+            NAM0.value.ambient.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 103: //ambient.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 104: //ambient.day.red
+            NAM0.value.ambient.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 105: //ambient.day.green
+            NAM0.value.ambient.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 106: //ambient.day.blue
+            NAM0.value.ambient.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 107: //ambient.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 108: //ambient.set.red
+            NAM0.value.ambient.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 109: //ambient.set.green
+            NAM0.value.ambient.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 110: //ambient.set.blue
+            NAM0.value.ambient.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 111: //ambient.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 112: //ambient.night.red
+            NAM0.value.ambient.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 113: //ambient.night.green
+            NAM0.value.ambient.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 114: //ambient.night.blue
+            NAM0.value.ambient.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 115: //ambient.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 116: //ambient.noon.red
+            NAM0.value.ambient.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 117: //ambient.noon.green
+            NAM0.value.ambient.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 118: //ambient.noon.blue
+            NAM0.value.ambient.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 119: //ambient.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 120: //ambient.midnight.red
+            NAM0.value.ambient.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 121: //ambient.midnight.green
+            NAM0.value.ambient.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 122: //ambient.midnight.blue
+            NAM0.value.ambient.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 123: //ambient.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.ambient.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 124: //sunlight.rise.red
+            NAM0.value.sunlight.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 125: //sunlight.rise.green
+            NAM0.value.sunlight.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 126: //sunlight.rise.blue
+            NAM0.value.sunlight.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 127: //sunlight.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 128: //sunlight.day.red
+            NAM0.value.sunlight.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 129: //sunlight.day.green
+            NAM0.value.sunlight.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 130: //sunlight.day.blue
+            NAM0.value.sunlight.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 131: //sunlight.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 132: //sunlight.set.red
+            NAM0.value.sunlight.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 133: //sunlight.set.green
+            NAM0.value.sunlight.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 134: //sunlight.set.blue
+            NAM0.value.sunlight.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 135: //sunlight.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 136: //sunlight.night.red
+            NAM0.value.sunlight.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 137: //sunlight.night.green
+            NAM0.value.sunlight.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 138: //sunlight.night.blue
+            NAM0.value.sunlight.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 139: //sunlight.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 140: //sunlight.noon.red
+            NAM0.value.sunlight.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 141: //sunlight.noon.green
+            NAM0.value.sunlight.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 142: //sunlight.noon.blue
+            NAM0.value.sunlight.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 143: //sunlight.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 144: //sunlight.midnight.red
+            NAM0.value.sunlight.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 145: //sunlight.midnight.green
+            NAM0.value.sunlight.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 146: //sunlight.midnight.blue
+            NAM0.value.sunlight.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 147: //sunlight.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sunlight.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 148: //sun.rise.red
+            NAM0.value.sun.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 149: //sun.rise.green
+            NAM0.value.sun.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 150: //sun.rise.blue
+            NAM0.value.sun.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 151: //sun.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 152: //sun.day.red
+            NAM0.value.sun.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 153: //sun.day.green
+            NAM0.value.sun.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 154: //sun.day.blue
+            NAM0.value.sun.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 155: //sun.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 156: //sun.set.red
+            NAM0.value.sun.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 157: //sun.set.green
+            NAM0.value.sun.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 158: //sun.set.blue
+            NAM0.value.sun.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 159: //sun.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 160: //sun.night.red
+            NAM0.value.sun.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 161: //sun.night.green
+            NAM0.value.sun.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 162: //sun.night.blue
+            NAM0.value.sun.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 163: //sun.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 164: //sun.noon.red
+            NAM0.value.sun.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 165: //sun.noon.green
+            NAM0.value.sun.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 166: //sun.noon.blue
+            NAM0.value.sun.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 167: //sun.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 168: //sun.midnight.red
+            NAM0.value.sun.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 169: //sun.midnight.green
+            NAM0.value.sun.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 170: //sun.midnight.blue
+            NAM0.value.sun.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 171: //sun.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.sun.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 172: //stars.rise.red
+            NAM0.value.stars.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 173: //stars.rise.green
+            NAM0.value.stars.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 174: //stars.rise.blue
+            NAM0.value.stars.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 175: //stars.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 176: //stars.day.red
+            NAM0.value.stars.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 177: //stars.day.green
+            NAM0.value.stars.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 178: //stars.day.blue
+            NAM0.value.stars.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 179: //stars.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 180: //stars.set.red
+            NAM0.value.stars.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 181: //stars.set.green
+            NAM0.value.stars.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 182: //stars.set.blue
+            NAM0.value.stars.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 183: //stars.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 184: //stars.night.red
+            NAM0.value.stars.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 185: //stars.night.green
+            NAM0.value.stars.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 186: //stars.night.blue
+            NAM0.value.stars.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 187: //stars.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 188: //stars.noon.red
+            NAM0.value.stars.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 189: //stars.noon.green
+            NAM0.value.stars.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 190: //stars.noon.blue
+            NAM0.value.stars.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 191: //stars.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 192: //stars.midnight.red
+            NAM0.value.stars.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 193: //stars.midnight.green
+            NAM0.value.stars.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 194: //stars.midnight.blue
+            NAM0.value.stars.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 195: //stars.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.stars.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 196: //lowerSky.rise.red
+            NAM0.value.lowerSky.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 197: //lowerSky.rise.green
+            NAM0.value.lowerSky.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 198: //lowerSky.rise.blue
+            NAM0.value.lowerSky.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 199: //lowerSky.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 200: //lowerSky.day.red
+            NAM0.value.lowerSky.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 201: //lowerSky.day.green
+            NAM0.value.lowerSky.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 202: //lowerSky.day.blue
+            NAM0.value.lowerSky.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 203: //lowerSky.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 204: //lowerSky.set.red
+            NAM0.value.lowerSky.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 205: //lowerSky.set.green
+            NAM0.value.lowerSky.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 206: //lowerSky.set.blue
+            NAM0.value.lowerSky.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 207: //lowerSky.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 208: //lowerSky.night.red
+            NAM0.value.lowerSky.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 209: //lowerSky.night.green
+            NAM0.value.lowerSky.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 210: //lowerSky.night.blue
+            NAM0.value.lowerSky.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 211: //lowerSky.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 212: //lowerSky.noon.red
+            NAM0.value.lowerSky.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 213: //lowerSky.noon.green
+            NAM0.value.lowerSky.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 214: //lowerSky.noon.blue
+            NAM0.value.lowerSky.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 215: //lowerSky.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 216: //lowerSky.midnight.red
+            NAM0.value.lowerSky.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 217: //lowerSky.midnight.green
+            NAM0.value.lowerSky.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 218: //lowerSky.midnight.blue
+            NAM0.value.lowerSky.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 219: //lowerSky.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.lowerSky.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 220: //horizon.rise.red
+            NAM0.value.horizon.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 221: //horizon.rise.green
+            NAM0.value.horizon.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 222: //horizon.rise.blue
+            NAM0.value.horizon.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 223: //horizon.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 224: //horizon.day.red
+            NAM0.value.horizon.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 225: //horizon.day.green
+            NAM0.value.horizon.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 226: //horizon.day.blue
+            NAM0.value.horizon.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 227: //horizon.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 228: //horizon.set.red
+            NAM0.value.horizon.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 229: //horizon.set.green
+            NAM0.value.horizon.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 230: //horizon.set.blue
+            NAM0.value.horizon.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 231: //horizon.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 232: //horizon.night.red
+            NAM0.value.horizon.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 233: //horizon.night.green
+            NAM0.value.horizon.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 234: //horizon.night.blue
+            NAM0.value.horizon.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 235: //horizon.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 236: //horizon.noon.red
+            NAM0.value.horizon.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 237: //horizon.noon.green
+            NAM0.value.horizon.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 238: //horizon.noon.blue
+            NAM0.value.horizon.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 239: //horizon.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 240: //horizon.midnight.red
+            NAM0.value.horizon.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 241: //horizon.midnight.green
+            NAM0.value.horizon.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 242: //horizon.midnight.blue
+            NAM0.value.horizon.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 243: //horizon.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.horizon.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 244: //upperClouds.rise.red
+            NAM0.value.upperClouds.rise.red = *(UINT8 *)FieldValue;
+            break;
+        case 245: //upperClouds.rise.green
+            NAM0.value.upperClouds.rise.green = *(UINT8 *)FieldValue;
+            break;
+        case 246: //upperClouds.rise.blue
+            NAM0.value.upperClouds.rise.blue = *(UINT8 *)FieldValue;
+            break;
+        case 247: //upperClouds.rise.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.rise.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 248: //upperClouds.day.red
+            NAM0.value.upperClouds.day.red = *(UINT8 *)FieldValue;
+            break;
+        case 249: //upperClouds.day.green
+            NAM0.value.upperClouds.day.green = *(UINT8 *)FieldValue;
+            break;
+        case 250: //upperClouds.day.blue
+            NAM0.value.upperClouds.day.blue = *(UINT8 *)FieldValue;
+            break;
+        case 251: //upperClouds.day.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.day.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 252: //upperClouds.set.red
+            NAM0.value.upperClouds.set.red = *(UINT8 *)FieldValue;
+            break;
+        case 253: //upperClouds.set.green
+            NAM0.value.upperClouds.set.green = *(UINT8 *)FieldValue;
+            break;
+        case 254: //upperClouds.set.blue
+            NAM0.value.upperClouds.set.blue = *(UINT8 *)FieldValue;
+            break;
+        case 255: //upperClouds.set.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.set.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 256: //upperClouds.night.red
+            NAM0.value.upperClouds.night.red = *(UINT8 *)FieldValue;
+            break;
+        case 257: //upperClouds.night.green
+            NAM0.value.upperClouds.night.green = *(UINT8 *)FieldValue;
+            break;
+        case 258: //upperClouds.night.blue
+            NAM0.value.upperClouds.night.blue = *(UINT8 *)FieldValue;
+            break;
+        case 259: //upperClouds.night.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.night.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 260: //upperClouds.noon.red
+            NAM0.value.upperClouds.noon.red = *(UINT8 *)FieldValue;
+            break;
+        case 261: //upperClouds.noon.green
+            NAM0.value.upperClouds.noon.green = *(UINT8 *)FieldValue;
+            break;
+        case 262: //upperClouds.noon.blue
+            NAM0.value.upperClouds.noon.blue = *(UINT8 *)FieldValue;
+            break;
+        case 263: //upperClouds.noon.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.noon.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 264: //upperClouds.midnight.red
+            NAM0.value.upperClouds.midnight.red = *(UINT8 *)FieldValue;
+            break;
+        case 265: //upperClouds.midnight.green
+            NAM0.value.upperClouds.midnight.green = *(UINT8 *)FieldValue;
+            break;
+        case 266: //upperClouds.midnight.blue
+            NAM0.value.upperClouds.midnight.blue = *(UINT8 *)FieldValue;
+            break;
+        case 267: //upperClouds.midnight.unused1
+            if(ArraySize != 1)
+                break;
+            NAM0.value.upperClouds.midnight.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 268: //fogDayNear
+            FNAM.value.fogDayNear = *(FLOAT32 *)FieldValue;
+            break;
+        case 269: //fogDayFar
+            FNAM.value.fogDayFar = *(FLOAT32 *)FieldValue;
+            break;
+        case 270: //fogNightNear
+            FNAM.value.fogNightNear = *(FLOAT32 *)FieldValue;
+            break;
+        case 271: //fogNightFar
+            FNAM.value.fogNightFar = *(FLOAT32 *)FieldValue;
+            break;
+        case 272: //fogDayPower
+            FNAM.value.fogDayPower = *(FLOAT32 *)FieldValue;
+            break;
+        case 273: //fogNightPower
+            FNAM.value.fogNightPower = *(FLOAT32 *)FieldValue;
+            break;
+        case 274: //INAM
+            INAM.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 275: //windSpeed
+            DATA.value.windSpeed = *(UINT8 *)FieldValue;
+            break;
+        case 276: //lowerCloudSpeed
+            DATA.value.lowerCloudSpeed = *(UINT8 *)FieldValue;
+            break;
+        case 277: //upperCloudSpeed
+            DATA.value.upperCloudSpeed = *(UINT8 *)FieldValue;
+            break;
+        case 278: //transDelta
+            DATA.value.transDelta = *(UINT8 *)FieldValue;
+            break;
+        case 279: //sunGlare
+            DATA.value.sunGlare = *(UINT8 *)FieldValue;
+            break;
+        case 280: //sunDamage
+            DATA.value.sunDamage = *(UINT8 *)FieldValue;
+            break;
+        case 281: //rainFadeIn
+            DATA.value.rainFadeIn = *(UINT8 *)FieldValue;
+            break;
+        case 282: //rainFadeOut
+            DATA.value.rainFadeOut = *(UINT8 *)FieldValue;
+            break;
+        case 283: //boltFadeIn
+            DATA.value.boltFadeIn = *(UINT8 *)FieldValue;
+            break;
+        case 284: //boltFadeOut
+            DATA.value.boltFadeOut = *(UINT8 *)FieldValue;
+            break;
+        case 285: //boltFrequency
+            DATA.value.boltFrequency = *(UINT8 *)FieldValue;
+            break;
+        case 286: //weatherType
+            DATA.value.weatherType = *(UINT8 *)FieldValue;
+            break;
+        case 287: //boltRed
+            DATA.value.boltRed = *(UINT8 *)FieldValue;
+            break;
+        case 288: //boltGreen
+            DATA.value.boltGreen = *(UINT8 *)FieldValue;
+            break;
+        case 289: //boltBlue
+            DATA.value.boltBlue = *(UINT8 *)FieldValue;
+            break;
+        case 290: //sounds
+            if(ListFieldID == 0) //soundsSize
+                {
+                Sounds.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Sounds.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //sound
+                    Sounds.value[ListIndex]->sound = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //type
+                    Sounds.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -893,6 +3012,13 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENCLR defaultCLR;
+    WTHRFNAM defaultFNAM;
+    WTHRDATA defaultDATA;
+    WTHRColors defaultColors;
+    WTHRSNAM defaultSNAM;
+    FNVMODS defaultMODS;
+    WTHRONAM defaultONAM;
     switch(FieldID)
         {
         case 1: //flags1
@@ -911,34 +3037,34 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //0iad Sunrise Image Space Modifier
-            0IAD.Unload();
+        case 7: //sunriseImageSpace
+            _0IAD.Unload();
             return;
-        case 8: //1iad Day Image Space Modifier
-            1IAD.Unload();
+        case 8: //dayImageSpace
+            _1IAD.Unload();
             return;
-        case 9: //2iad Sunset Image Space Modifier
-            2IAD.Unload();
+        case 9: //sunsetImageSpace
+            _2IAD.Unload();
             return;
-        case 10: //3iad Night Image Space Modifier
-            3IAD.Unload();
+        case 10: //nightImageSpace
+            _3IAD.Unload();
             return;
-        case 11: //4iad Unknown
-            4IAD.Unload();
+        case 11: //unknown1ImageSpace
+            _4IAD.Unload();
             return;
-        case 12: //5iad Unknown
-            5IAD.Unload();
+        case 12: //unknown2ImageSpace
+            _5IAD.Unload();
             return;
-        case 13: //dnam Cloud Textures - Layer 0
+        case 13: //cloudLayer0Path
             DNAM.Unload();
             return;
-        case 14: //cnam Cloud Textures - Layer 1
+        case 14: //cloudLayer1Path
             CNAM.Unload();
             return;
-        case 15: //anam Cloud Textures - Layer 2
+        case 15: //cloudLayer2Path
             ANAM.Unload();
             return;
-        case 16: //bnam Cloud Textures - Layer 3
+        case 16: //cloudLayer3Path
             BNAM.Unload();
             return;
         case 17: //modPath
@@ -953,113 +3079,898 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 20: //mods Alternate Textures
+        case 20: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 21: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 22: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 23: //modelFlags
+        case 21: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 24: //lnam_p Unknown
+        case 22: //unknown1
             LNAM.Unload();
             return;
-        case 25: //onam Cloud Speed
-            return UNPARSEDDEL_FIELD25;
-        case 26: //pnam_p Unused
+        case 23: //layer0Speed
+            if(ONAM.IsLoaded())
+                ONAM->layer0Speed = defaultONAM.layer0Speed;
+            return;
+        case 24: //layer1Speed
+            if(ONAM.IsLoaded())
+                ONAM->layer1Speed = defaultONAM.layer1Speed;
+            return;
+        case 25: //layer2Speed
+            if(ONAM.IsLoaded())
+                ONAM->layer2Speed = defaultONAM.layer2Speed;
+            return;
+        case 26: //layer3Speed
+            if(ONAM.IsLoaded())
+                ONAM->layer3Speed = defaultONAM.layer3Speed;
+            return;
+        case 27: //PNAM
             PNAM.Unload();
             return;
-        case 27: //nam0 NAM0 ,, Struct
-            NAM0.Unload();
+        case 28: //upperSky.rise.red
+            NAM0.value.upperSky.rise.red = defaultCLR.red;
             return;
-        case 28: //nam0 NAM0 ,, Struct
-            NAM0.Unload();
+        case 29: //upperSky.rise.green
+            NAM0.value.upperSky.rise.green = defaultCLR.green;
             return;
-        case 29: //nam0 NAM0 ,, Struct
-            NAM0.Unload();
+        case 30: //upperSky.rise.blue
+            NAM0.value.upperSky.rise.blue = defaultCLR.blue;
             return;
-        case 30: //nam0_p NAM0 ,, Struct
-            NAM0.Unload();
+        case 31: //upperSky.rise.unused1
+            NAM0.value.upperSky.rise.unused1 = defaultCLR.unused1;
             return;
-        case 31: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 32: //upperSky.day.red
+            NAM0.value.upperSky.day.red = defaultCLR.red;
             return;
-        case 32: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 33: //upperSky.day.green
+            NAM0.value.upperSky.day.green = defaultCLR.green;
             return;
-        case 33: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 34: //upperSky.day.blue
+            NAM0.value.upperSky.day.blue = defaultCLR.blue;
             return;
-        case 34: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 35: //upperSky.day.unused1
+            NAM0.value.upperSky.day.unused1 = defaultCLR.unused1;
             return;
-        case 35: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 36: //upperSky.set.red
+            NAM0.value.upperSky.set.red = defaultCLR.red;
             return;
-        case 36: //fnam FNAM ,, Struct
-            FNAM.Unload();
+        case 37: //upperSky.set.green
+            NAM0.value.upperSky.set.green = defaultCLR.green;
             return;
-        case 37: //inam_p Unused
+        case 38: //upperSky.set.blue
+            NAM0.value.upperSky.set.blue = defaultCLR.blue;
+            return;
+        case 39: //upperSky.set.unused1
+            NAM0.value.upperSky.set.unused1 = defaultCLR.unused1;
+            return;
+        case 40: //upperSky.night.red
+            NAM0.value.upperSky.night.red = defaultCLR.red;
+            return;
+        case 41: //upperSky.night.green
+            NAM0.value.upperSky.night.green = defaultCLR.green;
+            return;
+        case 42: //upperSky.night.blue
+            NAM0.value.upperSky.night.blue = defaultCLR.blue;
+            return;
+        case 43: //upperSky.night.unused1
+            NAM0.value.upperSky.night.unused1 = defaultCLR.unused1;
+            return;
+        case 44: //upperSky.noon.red
+            NAM0.value.upperSky.noon.red = defaultCLR.red;
+            return;
+        case 45: //upperSky.noon.green
+            NAM0.value.upperSky.noon.green = defaultCLR.green;
+            return;
+        case 46: //upperSky.noon.blue
+            NAM0.value.upperSky.noon.blue = defaultCLR.blue;
+            return;
+        case 47: //upperSky.noon.unused1
+            NAM0.value.upperSky.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 48: //upperSky.midnight.red
+            NAM0.value.upperSky.midnight.red = defaultCLR.red;
+            return;
+        case 49: //upperSky.midnight.green
+            NAM0.value.upperSky.midnight.green = defaultCLR.green;
+            return;
+        case 50: //upperSky.midnight.blue
+            NAM0.value.upperSky.midnight.blue = defaultCLR.blue;
+            return;
+        case 51: //upperSky.midnight.unused1
+            NAM0.value.upperSky.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 52: //fog.rise.red
+            NAM0.value.fog.rise.red = defaultCLR.red;
+            return;
+        case 53: //fog.rise.green
+            NAM0.value.fog.rise.green = defaultCLR.green;
+            return;
+        case 54: //fog.rise.blue
+            NAM0.value.fog.rise.blue = defaultCLR.blue;
+            return;
+        case 55: //fog.rise.unused1
+            NAM0.value.fog.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 56: //fog.day.red
+            NAM0.value.fog.day.red = defaultCLR.red;
+            return;
+        case 57: //fog.day.green
+            NAM0.value.fog.day.green = defaultCLR.green;
+            return;
+        case 58: //fog.day.blue
+            NAM0.value.fog.day.blue = defaultCLR.blue;
+            return;
+        case 59: //fog.day.unused1
+            NAM0.value.fog.day.unused1 = defaultCLR.unused1;
+            return;
+        case 60: //fog.set.red
+            NAM0.value.fog.set.red = defaultCLR.red;
+            return;
+        case 61: //fog.set.green
+            NAM0.value.fog.set.green = defaultCLR.green;
+            return;
+        case 62: //fog.set.blue
+            NAM0.value.fog.set.blue = defaultCLR.blue;
+            return;
+        case 63: //fog.set.unused1
+            NAM0.value.fog.set.unused1 = defaultCLR.unused1;
+            return;
+        case 64: //fog.night.red
+            NAM0.value.fog.night.red = defaultCLR.red;
+            return;
+        case 65: //fog.night.green
+            NAM0.value.fog.night.green = defaultCLR.green;
+            return;
+        case 66: //fog.night.blue
+            NAM0.value.fog.night.blue = defaultCLR.blue;
+            return;
+        case 67: //fog.night.unused1
+            NAM0.value.fog.night.unused1 = defaultCLR.unused1;
+            return;
+        case 68: //fog.noon.red
+            NAM0.value.fog.noon.red = defaultCLR.red;
+            return;
+        case 69: //fog.noon.green
+            NAM0.value.fog.noon.green = defaultCLR.green;
+            return;
+        case 70: //fog.noon.blue
+            NAM0.value.fog.noon.blue = defaultCLR.blue;
+            return;
+        case 71: //fog.noon.unused1
+            NAM0.value.fog.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 72: //fog.midnight.red
+            NAM0.value.fog.midnight.red = defaultCLR.red;
+            return;
+        case 73: //fog.midnight.green
+            NAM0.value.fog.midnight.green = defaultCLR.green;
+            return;
+        case 74: //fog.midnight.blue
+            NAM0.value.fog.midnight.blue = defaultCLR.blue;
+            return;
+        case 75: //fog.midnight.unused1
+            NAM0.value.fog.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 76: //lowerClouds.rise.red
+            NAM0.value.lowerClouds.rise.red = defaultCLR.red;
+            return;
+        case 77: //lowerClouds.rise.green
+            NAM0.value.lowerClouds.rise.green = defaultCLR.green;
+            return;
+        case 78: //lowerClouds.rise.blue
+            NAM0.value.lowerClouds.rise.blue = defaultCLR.blue;
+            return;
+        case 79: //lowerClouds.rise.unused1
+            NAM0.value.lowerClouds.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 80: //lowerClouds.day.red
+            NAM0.value.lowerClouds.day.red = defaultCLR.red;
+            return;
+        case 81: //lowerClouds.day.green
+            NAM0.value.lowerClouds.day.green = defaultCLR.green;
+            return;
+        case 82: //lowerClouds.day.blue
+            NAM0.value.lowerClouds.day.blue = defaultCLR.blue;
+            return;
+        case 83: //lowerClouds.day.unused1
+            NAM0.value.lowerClouds.day.unused1 = defaultCLR.unused1;
+            return;
+        case 84: //lowerClouds.set.red
+            NAM0.value.lowerClouds.set.red = defaultCLR.red;
+            return;
+        case 85: //lowerClouds.set.green
+            NAM0.value.lowerClouds.set.green = defaultCLR.green;
+            return;
+        case 86: //lowerClouds.set.blue
+            NAM0.value.lowerClouds.set.blue = defaultCLR.blue;
+            return;
+        case 87: //lowerClouds.set.unused1
+            NAM0.value.lowerClouds.set.unused1 = defaultCLR.unused1;
+            return;
+        case 88: //lowerClouds.night.red
+            NAM0.value.lowerClouds.night.red = defaultCLR.red;
+            return;
+        case 89: //lowerClouds.night.green
+            NAM0.value.lowerClouds.night.green = defaultCLR.green;
+            return;
+        case 90: //lowerClouds.night.blue
+            NAM0.value.lowerClouds.night.blue = defaultCLR.blue;
+            return;
+        case 91: //lowerClouds.night.unused1
+            NAM0.value.lowerClouds.night.unused1 = defaultCLR.unused1;
+            return;
+        case 92: //lowerClouds.noon.red
+            NAM0.value.lowerClouds.noon.red = defaultCLR.red;
+            return;
+        case 93: //lowerClouds.noon.green
+            NAM0.value.lowerClouds.noon.green = defaultCLR.green;
+            return;
+        case 94: //lowerClouds.noon.blue
+            NAM0.value.lowerClouds.noon.blue = defaultCLR.blue;
+            return;
+        case 95: //lowerClouds.noon.unused1
+            NAM0.value.lowerClouds.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 96: //lowerClouds.midnight.red
+            NAM0.value.lowerClouds.midnight.red = defaultCLR.red;
+            return;
+        case 97: //lowerClouds.midnight.green
+            NAM0.value.lowerClouds.midnight.green = defaultCLR.green;
+            return;
+        case 98: //lowerClouds.midnight.blue
+            NAM0.value.lowerClouds.midnight.blue = defaultCLR.blue;
+            return;
+        case 99: //lowerClouds.midnight.unused1
+            NAM0.value.lowerClouds.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 100: //ambient.rise.red
+            NAM0.value.ambient.rise.red = defaultCLR.red;
+            return;
+        case 101: //ambient.rise.green
+            NAM0.value.ambient.rise.green = defaultCLR.green;
+            return;
+        case 102: //ambient.rise.blue
+            NAM0.value.ambient.rise.blue = defaultCLR.blue;
+            return;
+        case 103: //ambient.rise.unused1
+            NAM0.value.ambient.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 104: //ambient.day.red
+            NAM0.value.ambient.day.red = defaultCLR.red;
+            return;
+        case 105: //ambient.day.green
+            NAM0.value.ambient.day.green = defaultCLR.green;
+            return;
+        case 106: //ambient.day.blue
+            NAM0.value.ambient.day.blue = defaultCLR.blue;
+            return;
+        case 107: //ambient.day.unused1
+            NAM0.value.ambient.day.unused1 = defaultCLR.unused1;
+            return;
+        case 108: //ambient.set.red
+            NAM0.value.ambient.set.red = defaultCLR.red;
+            return;
+        case 109: //ambient.set.green
+            NAM0.value.ambient.set.green = defaultCLR.green;
+            return;
+        case 110: //ambient.set.blue
+            NAM0.value.ambient.set.blue = defaultCLR.blue;
+            return;
+        case 111: //ambient.set.unused1
+            NAM0.value.ambient.set.unused1 = defaultCLR.unused1;
+            return;
+        case 112: //ambient.night.red
+            NAM0.value.ambient.night.red = defaultCLR.red;
+            return;
+        case 113: //ambient.night.green
+            NAM0.value.ambient.night.green = defaultCLR.green;
+            return;
+        case 114: //ambient.night.blue
+            NAM0.value.ambient.night.blue = defaultCLR.blue;
+            return;
+        case 115: //ambient.night.unused1
+            NAM0.value.ambient.night.unused1 = defaultCLR.unused1;
+            return;
+        case 116: //ambient.noon.red
+            NAM0.value.ambient.noon.red = defaultCLR.red;
+            return;
+        case 117: //ambient.noon.green
+            NAM0.value.ambient.noon.green = defaultCLR.green;
+            return;
+        case 118: //ambient.noon.blue
+            NAM0.value.ambient.noon.blue = defaultCLR.blue;
+            return;
+        case 119: //ambient.noon.unused1
+            NAM0.value.ambient.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 120: //ambient.midnight.red
+            NAM0.value.ambient.midnight.red = defaultCLR.red;
+            return;
+        case 121: //ambient.midnight.green
+            NAM0.value.ambient.midnight.green = defaultCLR.green;
+            return;
+        case 122: //ambient.midnight.blue
+            NAM0.value.ambient.midnight.blue = defaultCLR.blue;
+            return;
+        case 123: //ambient.midnight.unused1
+            NAM0.value.ambient.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 124: //sunlight.rise.red
+            NAM0.value.sunlight.rise.red = defaultCLR.red;
+            return;
+        case 125: //sunlight.rise.green
+            NAM0.value.sunlight.rise.green = defaultCLR.green;
+            return;
+        case 126: //sunlight.rise.blue
+            NAM0.value.sunlight.rise.blue = defaultCLR.blue;
+            return;
+        case 127: //sunlight.rise.unused1
+            NAM0.value.sunlight.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 128: //sunlight.day.red
+            NAM0.value.sunlight.day.red = defaultCLR.red;
+            return;
+        case 129: //sunlight.day.green
+            NAM0.value.sunlight.day.green = defaultCLR.green;
+            return;
+        case 130: //sunlight.day.blue
+            NAM0.value.sunlight.day.blue = defaultCLR.blue;
+            return;
+        case 131: //sunlight.day.unused1
+            NAM0.value.sunlight.day.unused1 = defaultCLR.unused1;
+            return;
+        case 132: //sunlight.set.red
+            NAM0.value.sunlight.set.red = defaultCLR.red;
+            return;
+        case 133: //sunlight.set.green
+            NAM0.value.sunlight.set.green = defaultCLR.green;
+            return;
+        case 134: //sunlight.set.blue
+            NAM0.value.sunlight.set.blue = defaultCLR.blue;
+            return;
+        case 135: //sunlight.set.unused1
+            NAM0.value.sunlight.set.unused1 = defaultCLR.unused1;
+            return;
+        case 136: //sunlight.night.red
+            NAM0.value.sunlight.night.red = defaultCLR.red;
+            return;
+        case 137: //sunlight.night.green
+            NAM0.value.sunlight.night.green = defaultCLR.green;
+            return;
+        case 138: //sunlight.night.blue
+            NAM0.value.sunlight.night.blue = defaultCLR.blue;
+            return;
+        case 139: //sunlight.night.unused1
+            NAM0.value.sunlight.night.unused1 = defaultCLR.unused1;
+            return;
+        case 140: //sunlight.noon.red
+            NAM0.value.sunlight.noon.red = defaultCLR.red;
+            return;
+        case 141: //sunlight.noon.green
+            NAM0.value.sunlight.noon.green = defaultCLR.green;
+            return;
+        case 142: //sunlight.noon.blue
+            NAM0.value.sunlight.noon.blue = defaultCLR.blue;
+            return;
+        case 143: //sunlight.noon.unused1
+            NAM0.value.sunlight.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 144: //sunlight.midnight.red
+            NAM0.value.sunlight.midnight.red = defaultCLR.red;
+            return;
+        case 145: //sunlight.midnight.green
+            NAM0.value.sunlight.midnight.green = defaultCLR.green;
+            return;
+        case 146: //sunlight.midnight.blue
+            NAM0.value.sunlight.midnight.blue = defaultCLR.blue;
+            return;
+        case 147: //sunlight.midnight.unused1
+            NAM0.value.sunlight.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 148: //sun.rise.red
+            NAM0.value.sun.rise.red = defaultCLR.red;
+            return;
+        case 149: //sun.rise.green
+            NAM0.value.sun.rise.green = defaultCLR.green;
+            return;
+        case 150: //sun.rise.blue
+            NAM0.value.sun.rise.blue = defaultCLR.blue;
+            return;
+        case 151: //sun.rise.unused1
+            NAM0.value.sun.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 152: //sun.day.red
+            NAM0.value.sun.day.red = defaultCLR.red;
+            return;
+        case 153: //sun.day.green
+            NAM0.value.sun.day.green = defaultCLR.green;
+            return;
+        case 154: //sun.day.blue
+            NAM0.value.sun.day.blue = defaultCLR.blue;
+            return;
+        case 155: //sun.day.unused1
+            NAM0.value.sun.day.unused1 = defaultCLR.unused1;
+            return;
+        case 156: //sun.set.red
+            NAM0.value.sun.set.red = defaultCLR.red;
+            return;
+        case 157: //sun.set.green
+            NAM0.value.sun.set.green = defaultCLR.green;
+            return;
+        case 158: //sun.set.blue
+            NAM0.value.sun.set.blue = defaultCLR.blue;
+            return;
+        case 159: //sun.set.unused1
+            NAM0.value.sun.set.unused1 = defaultCLR.unused1;
+            return;
+        case 160: //sun.night.red
+            NAM0.value.sun.night.red = defaultCLR.red;
+            return;
+        case 161: //sun.night.green
+            NAM0.value.sun.night.green = defaultCLR.green;
+            return;
+        case 162: //sun.night.blue
+            NAM0.value.sun.night.blue = defaultCLR.blue;
+            return;
+        case 163: //sun.night.unused1
+            NAM0.value.sun.night.unused1 = defaultCLR.unused1;
+            return;
+        case 164: //sun.noon.red
+            NAM0.value.sun.noon.red = defaultCLR.red;
+            return;
+        case 165: //sun.noon.green
+            NAM0.value.sun.noon.green = defaultCLR.green;
+            return;
+        case 166: //sun.noon.blue
+            NAM0.value.sun.noon.blue = defaultCLR.blue;
+            return;
+        case 167: //sun.noon.unused1
+            NAM0.value.sun.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 168: //sun.midnight.red
+            NAM0.value.sun.midnight.red = defaultCLR.red;
+            return;
+        case 169: //sun.midnight.green
+            NAM0.value.sun.midnight.green = defaultCLR.green;
+            return;
+        case 170: //sun.midnight.blue
+            NAM0.value.sun.midnight.blue = defaultCLR.blue;
+            return;
+        case 171: //sun.midnight.unused1
+            NAM0.value.sun.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 172: //stars.rise.red
+            NAM0.value.stars.rise.red = defaultCLR.red;
+            return;
+        case 173: //stars.rise.green
+            NAM0.value.stars.rise.green = defaultCLR.green;
+            return;
+        case 174: //stars.rise.blue
+            NAM0.value.stars.rise.blue = defaultCLR.blue;
+            return;
+        case 175: //stars.rise.unused1
+            NAM0.value.stars.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 176: //stars.day.red
+            NAM0.value.stars.day.red = defaultCLR.red;
+            return;
+        case 177: //stars.day.green
+            NAM0.value.stars.day.green = defaultCLR.green;
+            return;
+        case 178: //stars.day.blue
+            NAM0.value.stars.day.blue = defaultCLR.blue;
+            return;
+        case 179: //stars.day.unused1
+            NAM0.value.stars.day.unused1 = defaultCLR.unused1;
+            return;
+        case 180: //stars.set.red
+            NAM0.value.stars.set.red = defaultCLR.red;
+            return;
+        case 181: //stars.set.green
+            NAM0.value.stars.set.green = defaultCLR.green;
+            return;
+        case 182: //stars.set.blue
+            NAM0.value.stars.set.blue = defaultCLR.blue;
+            return;
+        case 183: //stars.set.unused1
+            NAM0.value.stars.set.unused1 = defaultCLR.unused1;
+            return;
+        case 184: //stars.night.red
+            NAM0.value.stars.night.red = defaultCLR.red;
+            return;
+        case 185: //stars.night.green
+            NAM0.value.stars.night.green = defaultCLR.green;
+            return;
+        case 186: //stars.night.blue
+            NAM0.value.stars.night.blue = defaultCLR.blue;
+            return;
+        case 187: //stars.night.unused1
+            NAM0.value.stars.night.unused1 = defaultCLR.unused1;
+            return;
+        case 188: //stars.noon.red
+            NAM0.value.stars.noon.red = defaultCLR.red;
+            return;
+        case 189: //stars.noon.green
+            NAM0.value.stars.noon.green = defaultCLR.green;
+            return;
+        case 190: //stars.noon.blue
+            NAM0.value.stars.noon.blue = defaultCLR.blue;
+            return;
+        case 191: //stars.noon.unused1
+            NAM0.value.stars.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 192: //stars.midnight.red
+            NAM0.value.stars.midnight.red = defaultCLR.red;
+            return;
+        case 193: //stars.midnight.green
+            NAM0.value.stars.midnight.green = defaultCLR.green;
+            return;
+        case 194: //stars.midnight.blue
+            NAM0.value.stars.midnight.blue = defaultCLR.blue;
+            return;
+        case 195: //stars.midnight.unused1
+            NAM0.value.stars.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 196: //lowerSky.rise.red
+            NAM0.value.lowerSky.rise.red = defaultCLR.red;
+            return;
+        case 197: //lowerSky.rise.green
+            NAM0.value.lowerSky.rise.green = defaultCLR.green;
+            return;
+        case 198: //lowerSky.rise.blue
+            NAM0.value.lowerSky.rise.blue = defaultCLR.blue;
+            return;
+        case 199: //lowerSky.rise.unused1
+            NAM0.value.lowerSky.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 200: //lowerSky.day.red
+            NAM0.value.lowerSky.day.red = defaultCLR.red;
+            return;
+        case 201: //lowerSky.day.green
+            NAM0.value.lowerSky.day.green = defaultCLR.green;
+            return;
+        case 202: //lowerSky.day.blue
+            NAM0.value.lowerSky.day.blue = defaultCLR.blue;
+            return;
+        case 203: //lowerSky.day.unused1
+            NAM0.value.lowerSky.day.unused1 = defaultCLR.unused1;
+            return;
+        case 204: //lowerSky.set.red
+            NAM0.value.lowerSky.set.red = defaultCLR.red;
+            return;
+        case 205: //lowerSky.set.green
+            NAM0.value.lowerSky.set.green = defaultCLR.green;
+            return;
+        case 206: //lowerSky.set.blue
+            NAM0.value.lowerSky.set.blue = defaultCLR.blue;
+            return;
+        case 207: //lowerSky.set.unused1
+            NAM0.value.lowerSky.set.unused1 = defaultCLR.unused1;
+            return;
+        case 208: //lowerSky.night.red
+            NAM0.value.lowerSky.night.red = defaultCLR.red;
+            return;
+        case 209: //lowerSky.night.green
+            NAM0.value.lowerSky.night.green = defaultCLR.green;
+            return;
+        case 210: //lowerSky.night.blue
+            NAM0.value.lowerSky.night.blue = defaultCLR.blue;
+            return;
+        case 211: //lowerSky.night.unused1
+            NAM0.value.lowerSky.night.unused1 = defaultCLR.unused1;
+            return;
+        case 212: //lowerSky.noon.red
+            NAM0.value.lowerSky.noon.red = defaultCLR.red;
+            return;
+        case 213: //lowerSky.noon.green
+            NAM0.value.lowerSky.noon.green = defaultCLR.green;
+            return;
+        case 214: //lowerSky.noon.blue
+            NAM0.value.lowerSky.noon.blue = defaultCLR.blue;
+            return;
+        case 215: //lowerSky.noon.unused1
+            NAM0.value.lowerSky.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 216: //lowerSky.midnight.red
+            NAM0.value.lowerSky.midnight.red = defaultCLR.red;
+            return;
+        case 217: //lowerSky.midnight.green
+            NAM0.value.lowerSky.midnight.green = defaultCLR.green;
+            return;
+        case 218: //lowerSky.midnight.blue
+            NAM0.value.lowerSky.midnight.blue = defaultCLR.blue;
+            return;
+        case 219: //lowerSky.midnight.unused1
+            NAM0.value.lowerSky.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 220: //horizon.rise.red
+            NAM0.value.horizon.rise.red = defaultCLR.red;
+            return;
+        case 221: //horizon.rise.green
+            NAM0.value.horizon.rise.green = defaultCLR.green;
+            return;
+        case 222: //horizon.rise.blue
+            NAM0.value.horizon.rise.blue = defaultCLR.blue;
+            return;
+        case 223: //horizon.rise.unused1
+            NAM0.value.horizon.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 224: //horizon.day.red
+            NAM0.value.horizon.day.red = defaultCLR.red;
+            return;
+        case 225: //horizon.day.green
+            NAM0.value.horizon.day.green = defaultCLR.green;
+            return;
+        case 226: //horizon.day.blue
+            NAM0.value.horizon.day.blue = defaultCLR.blue;
+            return;
+        case 227: //horizon.day.unused1
+            NAM0.value.horizon.day.unused1 = defaultCLR.unused1;
+            return;
+        case 228: //horizon.set.red
+            NAM0.value.horizon.set.red = defaultCLR.red;
+            return;
+        case 229: //horizon.set.green
+            NAM0.value.horizon.set.green = defaultCLR.green;
+            return;
+        case 230: //horizon.set.blue
+            NAM0.value.horizon.set.blue = defaultCLR.blue;
+            return;
+        case 231: //horizon.set.unused1
+            NAM0.value.horizon.set.unused1 = defaultCLR.unused1;
+            return;
+        case 232: //horizon.night.red
+            NAM0.value.horizon.night.red = defaultCLR.red;
+            return;
+        case 233: //horizon.night.green
+            NAM0.value.horizon.night.green = defaultCLR.green;
+            return;
+        case 234: //horizon.night.blue
+            NAM0.value.horizon.night.blue = defaultCLR.blue;
+            return;
+        case 235: //horizon.night.unused1
+            NAM0.value.horizon.night.unused1 = defaultCLR.unused1;
+            return;
+        case 236: //horizon.noon.red
+            NAM0.value.horizon.noon.red = defaultCLR.red;
+            return;
+        case 237: //horizon.noon.green
+            NAM0.value.horizon.noon.green = defaultCLR.green;
+            return;
+        case 238: //horizon.noon.blue
+            NAM0.value.horizon.noon.blue = defaultCLR.blue;
+            return;
+        case 239: //horizon.noon.unused1
+            NAM0.value.horizon.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 240: //horizon.midnight.red
+            NAM0.value.horizon.midnight.red = defaultCLR.red;
+            return;
+        case 241: //horizon.midnight.green
+            NAM0.value.horizon.midnight.green = defaultCLR.green;
+            return;
+        case 242: //horizon.midnight.blue
+            NAM0.value.horizon.midnight.blue = defaultCLR.blue;
+            return;
+        case 243: //horizon.midnight.unused1
+            NAM0.value.horizon.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 244: //upperClouds.rise.red
+            NAM0.value.upperClouds.rise.red = defaultCLR.red;
+            return;
+        case 245: //upperClouds.rise.green
+            NAM0.value.upperClouds.rise.green = defaultCLR.green;
+            return;
+        case 246: //upperClouds.rise.blue
+            NAM0.value.upperClouds.rise.blue = defaultCLR.blue;
+            return;
+        case 247: //upperClouds.rise.unused1
+            NAM0.value.upperClouds.rise.unused1 = defaultCLR.unused1;
+            return;
+        case 248: //upperClouds.day.red
+            NAM0.value.upperClouds.day.red = defaultCLR.red;
+            return;
+        case 249: //upperClouds.day.green
+            NAM0.value.upperClouds.day.green = defaultCLR.green;
+            return;
+        case 250: //upperClouds.day.blue
+            NAM0.value.upperClouds.day.blue = defaultCLR.blue;
+            return;
+        case 251: //upperClouds.day.unused1
+            NAM0.value.upperClouds.day.unused1 = defaultCLR.unused1;
+            return;
+        case 252: //upperClouds.set.red
+            NAM0.value.upperClouds.set.red = defaultCLR.red;
+            return;
+        case 253: //upperClouds.set.green
+            NAM0.value.upperClouds.set.green = defaultCLR.green;
+            return;
+        case 254: //upperClouds.set.blue
+            NAM0.value.upperClouds.set.blue = defaultCLR.blue;
+            return;
+        case 255: //upperClouds.set.unused1
+            NAM0.value.upperClouds.set.unused1 = defaultCLR.unused1;
+            return;
+        case 256: //upperClouds.night.red
+            NAM0.value.upperClouds.night.red = defaultCLR.red;
+            return;
+        case 257: //upperClouds.night.green
+            NAM0.value.upperClouds.night.green = defaultCLR.green;
+            return;
+        case 258: //upperClouds.night.blue
+            NAM0.value.upperClouds.night.blue = defaultCLR.blue;
+            return;
+        case 259: //upperClouds.night.unused1
+            NAM0.value.upperClouds.night.unused1 = defaultCLR.unused1;
+            return;
+        case 260: //upperClouds.noon.red
+            NAM0.value.upperClouds.noon.red = defaultCLR.red;
+            return;
+        case 261: //upperClouds.noon.green
+            NAM0.value.upperClouds.noon.green = defaultCLR.green;
+            return;
+        case 262: //upperClouds.noon.blue
+            NAM0.value.upperClouds.noon.blue = defaultCLR.blue;
+            return;
+        case 263: //upperClouds.noon.unused1
+            NAM0.value.upperClouds.noon.unused1 = defaultCLR.unused1;
+            return;
+        case 264: //upperClouds.midnight.red
+            NAM0.value.upperClouds.midnight.red = defaultCLR.red;
+            return;
+        case 265: //upperClouds.midnight.green
+            NAM0.value.upperClouds.midnight.green = defaultCLR.green;
+            return;
+        case 266: //upperClouds.midnight.blue
+            NAM0.value.upperClouds.midnight.blue = defaultCLR.blue;
+            return;
+        case 267: //upperClouds.midnight.unused1
+            NAM0.value.upperClouds.midnight.unused1 = defaultCLR.unused1;
+            return;
+        case 268: //fogDayNear
+            FNAM.value.fogDayNear = defaultFNAM.fogDayNear;
+            return;
+        case 269: //fogDayFar
+            FNAM.value.fogDayFar = defaultFNAM.fogDayFar;
+            return;
+        case 270: //fogNightNear
+            FNAM.value.fogNightNear = defaultFNAM.fogNightNear;
+            return;
+        case 271: //fogNightFar
+            FNAM.value.fogNightFar = defaultFNAM.fogNightFar;
+            return;
+        case 272: //fogDayPower
+            FNAM.value.fogDayPower = defaultFNAM.fogDayPower;
+            return;
+        case 273: //fogNightPower
+            FNAM.value.fogNightPower = defaultFNAM.fogNightPower;
+            return;
+        case 274: //INAM
             INAM.Unload();
             return;
-        case 38: //data DATA ,, Struct
-            DATA.Unload();
+        case 275: //windSpeed
+            DATA.value.windSpeed = defaultDATA.windSpeed;
             return;
-        case 39: //data DATA ,, Struct
-            DATA.Unload();
+        case 276: //lowerCloudSpeed
+            DATA.value.lowerCloudSpeed = defaultDATA.lowerCloudSpeed;
             return;
-        case 40: //data DATA ,, Struct
-            DATA.Unload();
+        case 277: //upperCloudSpeed
+            DATA.value.upperCloudSpeed = defaultDATA.upperCloudSpeed;
             return;
-        case 41: //data DATA ,, Struct
-            DATA.Unload();
+        case 278: //transDelta
+            DATA.value.transDelta = defaultDATA.transDelta;
             return;
-        case 42: //data DATA ,, Struct
-            DATA.Unload();
+        case 279: //sunGlare
+            DATA.value.sunGlare = defaultDATA.sunGlare;
             return;
-        case 43: //data DATA ,, Struct
-            DATA.Unload();
+        case 280: //sunDamage
+            DATA.value.sunDamage = defaultDATA.sunDamage;
             return;
-        case 44: //data DATA ,, Struct
-            DATA.Unload();
+        case 281: //rainFadeIn
+            DATA.value.rainFadeIn = defaultDATA.rainFadeIn;
             return;
-        case 45: //data DATA ,, Struct
-            DATA.Unload();
+        case 282: //rainFadeOut
+            DATA.value.rainFadeOut = defaultDATA.rainFadeOut;
             return;
-        case 46: //data DATA ,, Struct
-            DATA.Unload();
+        case 283: //boltFadeIn
+            DATA.value.boltFadeIn = defaultDATA.boltFadeIn;
             return;
-        case 47: //data DATA ,, Struct
-            DATA.Unload();
+        case 284: //boltFadeOut
+            DATA.value.boltFadeOut = defaultDATA.boltFadeOut;
             return;
-        case 48: //data DATA ,, Struct
-            DATA.Unload();
+        case 285: //boltFrequency
+            DATA.value.boltFrequency = defaultDATA.boltFrequency;
             return;
-        case 49: //data DATA ,, Struct
-            DATA.Unload();
+        case 286: //weatherType
+            DATA.value.weatherType = defaultDATA.weatherType;
             return;
-        case 50: //data DATA ,, Struct
-            DATA.Unload();
+        case 287: //boltRed
+            DATA.value.boltRed = defaultDATA.boltRed;
             return;
-        case 51: //data DATA ,, Struct
-            DATA.Unload();
+        case 288: //boltGreen
+            DATA.value.boltGreen = defaultDATA.boltGreen;
             return;
-        case 52: //data DATA ,, Struct
-            DATA.Unload();
+        case 289: //boltBlue
+            DATA.value.boltBlue = defaultDATA.boltBlue;
             return;
-        case 53: //snam SNAM ,, Struct
-            SNAM.Unload();
+        case 290: //sounds
+            if(ListFieldID == 0) //sounds
+                {
+                Sounds.Unload();
+                return;
+                }
+
+            if(ListIndex >= Sounds.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //sound
+                    Sounds.value[ListIndex]->sound = defaultSNAM.sound;
+                    return;
+                case 2: //type
+                    Sounds.value[ListIndex]->type = defaultSNAM.type;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 54: //snam SNAM ,, Struct
-            SNAM.Unload();
+        case 291: //convenience deleter
+            NAM0.value.upperSky = defaultColors;
+            return;
+        case 292: //convenience deleter
+            NAM0.value.fog = defaultColors;
+            return;
+        case 293: //convenience deleter
+            NAM0.value.lowerClouds = defaultColors;
+            return;
+        case 294: //convenience deleter
+            NAM0.value.ambient = defaultColors;
+            return;
+        case 295: //convenience deleter
+            NAM0.value.sunlight = defaultColors;
+            return;
+        case 296: //convenience deleter
+            NAM0.value.sun = defaultColors;
+            return;
+        case 297: //convenience deleter
+            NAM0.value.stars = defaultColors;
+            return;
+        case 298: //convenience deleter
+            NAM0.value.lowerSky = defaultColors;
+            return;
+        case 299: //convenience deleter
+            NAM0.value.horizon = defaultColors;
+            return;
+        case 300: //convenience deleter
+            NAM0.value.upperClouds = defaultColors;
             return;
         default:
             return;

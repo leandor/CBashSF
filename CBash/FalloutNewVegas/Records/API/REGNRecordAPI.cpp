@@ -64,13 +64,13 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 8: //smallIconPath
             return ISTRING_FIELD;
-        case 9: //rclr RCLR ,, Struct
+        case 9: //mapRed
             return UINT8_FIELD;
-        case 10: //rclr RCLR ,, Struct
+        case 10: //mapGreen
             return UINT8_FIELD;
-        case 11: //rclr RCLR ,, Struct
+        case 11: //mapBlue
             return UINT8_FIELD;
-        case 12: //rclr_p RCLR ,, Struct
+        case 12: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -81,144 +81,313 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 13: //wnam Worldspace
+        case 13: //worldspace
             return FORMID_FIELD;
-        case 14: //rpli Edge Fall-off
-            return UINT32_FIELD;
-        case 15: //rpld RPLD ,, Struct
-            return FLOAT32_FIELD;
-        case 16: //rpld RPLD ,, Struct
-            return FLOAT32_FIELD;
-        case 17: //rdat RDAT ,, Struct
-            return UINT32_FIELD;
-        case 18: //rdat RDAT ,, Struct
-            return UINT8_FIELD;
-        case 19: //rdat RDAT ,, Struct
-            return UINT8_FIELD;
-        case 20: //rdat_p RDAT ,, Struct
-            switch(WhichAttribute)
+        case 14: //areas
+            if(ListFieldID == 0) //areas
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 0;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Areas.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Areas.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //edgeFalloff
+                    return FORMID_FIELD;
+                case 2: //points
+                    if(ListX2FieldID == 0) //points
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Areas.value[ListIndex]->RPLD.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Areas.value[ListIndex]->RPLD.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            return FLOAT32_FIELD;
+                        case 2: //posY
+                            return FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 21: //rdot RDOT ,, Struct
-            return FORMID_FIELD;
-        case 22: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 23: //rdot_p RDOT ,, Struct
-            switch(WhichAttribute)
+        case 15: //entries
+            if(ListFieldID == 0) //entries
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Entries.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= Entries.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //entryType
+                    return UINT32_TYPE_FIELD;
+                case 2: //flags
+                    return UINT8_FLAG_FIELD;
+                case 3: //priority
+                    return UINT8_FIELD;
+                case 4: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 2;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 5: //objects
+                    if(ListX2FieldID == 0) //points
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Entries.value[ListIndex]->RDOT.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDOT.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //objectId
+                            return FORMID_FIELD;
+                        case 2: //parentIndex
+                            return UINT16_FIELD;
+                        case 3: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 2;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 4: //density
+                            return FLOAT32_FIELD;
+                        case 5: //clustering
+                            return UINT8_FIELD;
+                        case 6: //minSlope
+                            return UINT8_FIELD;
+                        case 7: //maxSlope
+                            return UINT8_FIELD;
+                        case 8: //flags
+                            return UINT8_FLAG_FIELD;
+                        case 9: //radiusWRTParent
+                            return UINT16_FIELD;
+                        case 10: //radius
+                            return UINT16_FIELD;
+                        case 11: //unk1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 4;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 12: //maxHeight
+                            return FLOAT32_FIELD;
+                        case 13: //sink
+                            return FLOAT32_FIELD;
+                        case 14: //sinkVar
+                            return FLOAT32_FIELD;
+                        case 15: //sizeVar
+                            return FLOAT32_FIELD;
+                        case 16: //angleVarX
+                            return UINT16_FIELD;
+                        case 17: //angleVarY
+                            return UINT16_FIELD;
+                        case 18: //angleVarZ
+                            return UINT16_FIELD;
+                        case 19: //unused2
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 2;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        case 20: //unk2
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 4;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 6: //mapName
+                    return STRING_FIELD;
+                case 7: //iconPath
+                    return ISTRING_FIELD;
+                case 8: //grasses
+                    if(ListX2FieldID == 0) //grasses
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Entries.value[ListIndex]->RDGS.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDGS.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //grass
+                            return FORMID_FIELD;
+                        case 2: //unk1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 4;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 9: //musicType
+                    return UINT32_TYPE_FIELD;
+                case 10: //music
+                    return FORMID_FIELD;
+                case 11: //incidentalMedia
+                    return FORMID_FIELD;
+                case 12: //battleMedias
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Entries.value[ListIndex]->RDSB.value.size();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 13: //sounds
+                    if(ListX2FieldID == 0) //sounds
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Entries.value[ListIndex]->RDSD.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDSD.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            return FORMID_FIELD;
+                        case 2: //flags
+                            return UINT32_FLAG_FIELD;
+                        case 3: //chance
+                            return UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 14: //weathers
+                    if(ListX2FieldID == 0) //weathers
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Entries.value[ListIndex]->RDWT.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDWT.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //weather
+                            return FORMID_FIELD;
+                        case 2: //chance
+                            return UINT32_FIELD;
+                        case 3: //globalId
+                            return FORMID_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                case 15: //imposters
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Entries.value[ListIndex]->RDID.value.size();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
-            return UNKNOWN_FIELD;
-        case 24: //rdot RDOT ,, Struct
-            return FLOAT32_FIELD;
-        case 25: //rdot RDOT ,, Struct
-            return UINT8_FIELD;
-        case 26: //rdot RDOT ,, Struct
-            return UINT8_FIELD;
-        case 27: //rdot RDOT ,, Struct
-            return UINT8_FIELD;
-        case 28: //rdot RDOT ,, Struct
-            return UINT8_FIELD;
-        case 29: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 30: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 31: //rdot_p RDOT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 32: //rdot RDOT ,, Struct
-            return FLOAT32_FIELD;
-        case 33: //rdot RDOT ,, Struct
-            return FLOAT32_FIELD;
-        case 34: //rdot RDOT ,, Struct
-            return FLOAT32_FIELD;
-        case 35: //rdot RDOT ,, Struct
-            return FLOAT32_FIELD;
-        case 36: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 37: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 38: //rdot RDOT ,, Struct
-            return UINT16_FIELD;
-        case 39: //rdot_p RDOT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 40: //rdot_p RDOT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 41: //rdmp Map Name
-            return ISTRING_FIELD;
-        case 42: //rdgs RDGS ,, Struct
-            return FORMID_FIELD;
-        case 43: //rdgs_p RDGS ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 44: //rdmd Music Type
-            return UINT32_FIELD;
-        case 45: //rdmo Music
-            return FORMID_FIELD;
-        case 46: //rdsi Incidental MediaSet
-            return FORMID_FIELD;
-        case 47: //rdsb Battle MediaSet
-            return FORMID_FIELD;
-        case 48: //rdsd RDSD ,, Struct
-            return FORMID_FIELD;
-        case 49: //rdsd RDSD ,, Struct
-            return UINT32_FIELD;
-        case 50: //rdsd RDSD ,, Struct
-            return UINT32_FIELD;
-        case 51: //rdwt RDWT ,, Struct
-            return FORMID_FIELD;
-        case 52: //rdwt RDWT ,, Struct
-            return UINT32_FIELD;
-        case 53: //rdwt RDWT ,, Struct
-            return FORMID_FIELD;
-        case 54: //rdid Imposters
-            return UNPARSED_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -247,105 +416,179 @@ void * REGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 8: //smallIconPath
             return MICO.value;
-        case 9: //rclr RCLR ,, Struct
-            return RCLR.IsLoaded() ? &RCLR->value9 : NULL;
-        case 10: //rclr RCLR ,, Struct
-            return RCLR.IsLoaded() ? &RCLR->value10 : NULL;
-        case 11: //rclr RCLR ,, Struct
-            return RCLR.IsLoaded() ? &RCLR->value11 : NULL;
-        case 12: //rclr_p RCLR ,, Struct
-            *FieldValues = RCLR.IsLoaded() ? &RCLR->value12[0] : NULL;
+        case 9: //mapRed
+            return &RCLR.value.red;
+        case 10: //mapGreen
+            return &RCLR.value.green;
+        case 11: //mapBlue
+            return &RCLR.value.blue;
+        case 12: //unused1
+            *FieldValues = &RCLR.value.unused1;
             return NULL;
-        case 13: //wnam Worldspace
-            return WNAM.IsLoaded() ? &WNAM->value13 : NULL;
-        case 14: //rpli Edge Fall-off
-            return RPLI.IsLoaded() ? &RPLI->value14 : NULL;
-        case 15: //rpld RPLD ,, Struct
-            return RPLD.IsLoaded() ? &RPLD->value15 : NULL;
-        case 16: //rpld RPLD ,, Struct
-            return RPLD.IsLoaded() ? &RPLD->value16 : NULL;
-        case 17: //rdat RDAT ,, Struct
-            return RDAT.IsLoaded() ? &RDAT->value17 : NULL;
-        case 18: //rdat RDAT ,, Struct
-            return RDAT.IsLoaded() ? &RDAT->value18 : NULL;
-        case 19: //rdat RDAT ,, Struct
-            return RDAT.IsLoaded() ? &RDAT->value19 : NULL;
-        case 20: //rdat_p RDAT ,, Struct
-            *FieldValues = RDAT.IsLoaded() ? &RDAT->value20[0] : NULL;
+        case 13: //worldspace
+            return WNAM.IsLoaded() ? &WNAM.value : NULL;
+        case 14: //areas
+            if(ListIndex >= Areas.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //edgeFalloff
+                    return &Areas.value[ListIndex]->RPLI.value;
+                case 2: //points
+                    if(ListX2Index >= Areas.value[ListIndex]->RPLD.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            return &Areas.value[ListIndex]->RPLD.value[ListX2Index].posX;
+                        case 2: //posY
+                            return &Areas.value[ListIndex]->RPLD.value[ListX2Index].posY;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 21: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value21 : NULL;
-        case 22: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value22 : NULL;
-        case 23: //rdot_p RDOT ,, Struct
-            *FieldValues = RDOT.IsLoaded() ? &RDOT->value23[0] : NULL;
+        case 15: //entries
+            if(ListIndex >= Entries.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //entryType
+                    return &Entries.value[ListIndex]->RDAT.value.entryType;
+                case 2: //flags
+                    return &Entries.value[ListIndex]->RDAT.value.flags;
+                case 3: //priority
+                    return &Entries.value[ListIndex]->RDAT.value.priority;
+                case 4: //unused1
+                    *FieldValues = &Entries.value[ListIndex]->RDAT.value.unused1[0];
+                    return NULL;
+                case 5: //objects
+                    if(ListX2Index >= Entries.value[ListIndex]->RDOT.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //objectId
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].objectId;
+                        case 2: //parentIndex
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].parentIndex;
+                        case 3: //unused1
+                            *FieldValues = &Entries.value[ListIndex]->RDOT.value[ListX2Index].unused1[0];
+                            return NULL;
+                        case 4: //density
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].density;
+                        case 5: //clustering
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].clustering;
+                        case 6: //minSlope
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].minSlope;
+                        case 7: //maxSlope
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].maxSlope;
+                        case 8: //flags
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].flags;
+                        case 9: //radiusWRTParent
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].radiusWRTParent;
+                        case 10: //radius
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].radius;
+                        case 11: //unk1
+                            *FieldValues = &Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[0];
+                            return NULL;
+                        case 12: //maxHeight
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].maxHeight;
+                        case 13: //sink
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].sink;
+                        case 14: //sinkVar
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].sinkVar;
+                        case 15: //sizeVar
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].sizeVar;
+                        case 16: //angleVarX
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarX;
+                        case 17: //angleVarY
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarY;
+                        case 18: //angleVarZ
+                            return &Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarZ;
+                        case 19: //unused2
+                            *FieldValues = &Entries.value[ListIndex]->RDOT.value[ListX2Index].unused2[0];
+                            return NULL;
+                        case 20: //unk2
+                            *FieldValues = &Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[0];
+                            return NULL;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                case 6: //mapName
+                    return Entries.value[ListIndex]->RDMP.value;
+                case 7: //iconPath
+                    return Entries.value[ListIndex]->ICON.value;
+                case 8: //grasses
+                    if(ListX2Index >= Entries.value[ListIndex]->RDGS.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //grass
+                            return &Entries.value[ListIndex]->RDGS.value[ListX2Index].grass;
+                        case 2: //unk1
+                            *FieldValues = &Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[0];
+                            return NULL;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                case 9: //musicType
+                    return Entries.value[ListIndex]->RDMD.value;
+                case 10: //music
+                    return &Entries.value[ListIndex]->RDMO.value;
+                case 11: //incidentalMedia
+                    return &Entries.value[ListIndex]->RDSI.value;
+                case 12: //battleMedias
+                    *FieldValues = Entries.value[ListIndex]->RDSB.IsLoaded() ? &Entries.value[ListIndex]->RDSB.value[0] : NULL;
+                    return NULL;
+                case 13: //sounds
+                    if(ListX2Index >= Entries.value[ListIndex]->RDSD.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            return &Entries.value[ListIndex]->RDSD.value[ListX2Index].sound;
+                        case 2: //flags
+                            return &Entries.value[ListIndex]->RDSD.value[ListX2Index].flags;
+                        case 3: //chance
+                            return &Entries.value[ListIndex]->RDSD.value[ListX2Index].chance;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                case 14: //weathers
+                    if(ListX2Index >= Entries.value[ListIndex]->RDWT.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //weather
+                            return &Entries.value[ListIndex]->RDWT.value[ListX2Index].weather;
+                        case 2: //chance
+                            return &Entries.value[ListIndex]->RDWT.value[ListX2Index].chance;
+                        case 3: //globalId
+                            return &Entries.value[ListIndex]->RDWT.value[ListX2Index].globalId;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                case 15: //imposters
+                    *FieldValues = Entries.value[ListIndex]->RDID.IsLoaded() ? &Entries.value[ListIndex]->RDID.value[0] : NULL;
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 24: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value24 : NULL;
-        case 25: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value25 : NULL;
-        case 26: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value26 : NULL;
-        case 27: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value27 : NULL;
-        case 28: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value28 : NULL;
-        case 29: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value29 : NULL;
-        case 30: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value30 : NULL;
-        case 31: //rdot_p RDOT ,, Struct
-            *FieldValues = RDOT.IsLoaded() ? &RDOT->value31[0] : NULL;
-            return NULL;
-        case 32: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value32 : NULL;
-        case 33: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value33 : NULL;
-        case 34: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value34 : NULL;
-        case 35: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value35 : NULL;
-        case 36: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value36 : NULL;
-        case 37: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value37 : NULL;
-        case 38: //rdot RDOT ,, Struct
-            return RDOT.IsLoaded() ? &RDOT->value38 : NULL;
-        case 39: //rdot_p RDOT ,, Struct
-            *FieldValues = RDOT.IsLoaded() ? &RDOT->value39[0] : NULL;
-            return NULL;
-        case 40: //rdot_p RDOT ,, Struct
-            *FieldValues = RDOT.IsLoaded() ? &RDOT->value40[0] : NULL;
-            return NULL;
-        case 41: //rdmp Map Name
-            return RDMP.value;
-        case 42: //rdgs RDGS ,, Struct
-            return RDGS.IsLoaded() ? &RDGS->value42 : NULL;
-        case 43: //rdgs_p RDGS ,, Struct
-            *FieldValues = RDGS.IsLoaded() ? &RDGS->value43[0] : NULL;
-            return NULL;
-        case 44: //rdmd Music Type
-            return RDMD.IsLoaded() ? &RDMD->value44 : NULL;
-        case 45: //rdmo Music
-            return RDMO.IsLoaded() ? &RDMO->value45 : NULL;
-        case 46: //rdsi Incidental MediaSet
-            return RDSI.IsLoaded() ? &RDSI->value46 : NULL;
-        case 47: //rdsb Battle MediaSet
-            return RDSB.IsLoaded() ? &RDSB->value47 : NULL;
-        case 48: //rdsd RDSD ,, Struct
-            return RDSD.IsLoaded() ? &RDSD->value48 : NULL;
-        case 49: //rdsd RDSD ,, Struct
-            return RDSD.IsLoaded() ? &RDSD->value49 : NULL;
-        case 50: //rdsd RDSD ,, Struct
-            return RDSD.IsLoaded() ? &RDSD->value50 : NULL;
-        case 51: //rdwt RDWT ,, Struct
-            return RDWT.IsLoaded() ? &RDWT->value51 : NULL;
-        case 52: //rdwt RDWT ,, Struct
-            return RDWT.IsLoaded() ? &RDWT->value52 : NULL;
-        case 53: //rdwt RDWT ,, Struct
-            return RDWT.IsLoaded() ? &RDWT->value53 : NULL;
-        case 54: //rdid Imposters
-            return UNPARSEDGET_FIELD54;
         default:
             return NULL;
         }
@@ -385,211 +628,290 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 9: //rclr RCLR ,, Struct
-            RCLR.Load();
-            RCLR->value9 = *(UINT8 *)FieldValue;
+        case 9: //mapRed
+            RCLR.value.red = *(UINT8 *)FieldValue;
             break;
-        case 10: //rclr RCLR ,, Struct
-            RCLR.Load();
-            RCLR->value10 = *(UINT8 *)FieldValue;
+        case 10: //mapGreen
+            RCLR.value.green = *(UINT8 *)FieldValue;
             break;
-        case 11: //rclr RCLR ,, Struct
-            RCLR.Load();
-            RCLR->value11 = *(UINT8 *)FieldValue;
+        case 11: //mapBlue
+            RCLR.value.blue = *(UINT8 *)FieldValue;
             break;
-        case 12: //rclr_p RCLR ,, Struct
+        case 12: //unused1
             if(ArraySize != 1)
                 break;
-            RCLR.Load();
-            RCLR->value12[0] = ((UINT8ARRAY)FieldValue)[0];
+            RCLR.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 13: //wnam Worldspace
+        case 13: //worldspace
             WNAM.Load();
-            WNAM->value13 = *(FORMID *)FieldValue;
+            WNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 14: //rpli Edge Fall-off
-            RPLI.Load();
-            RPLI->value14 = *(UINT32 *)FieldValue;
-            break;
-        case 15: //rpld RPLD ,, Struct
-            RPLD.Load();
-            RPLD->value15 = *(FLOAT32 *)FieldValue;
-            break;
-        case 16: //rpld RPLD ,, Struct
-            RPLD.Load();
-            RPLD->value16 = *(FLOAT32 *)FieldValue;
-            break;
-        case 17: //rdat RDAT ,, Struct
-            RDAT.Load();
-            RDAT->value17 = *(UINT32 *)FieldValue;
-            break;
-        case 18: //rdat RDAT ,, Struct
-            RDAT.Load();
-            RDAT->value18 = *(UINT8 *)FieldValue;
-            break;
-        case 19: //rdat RDAT ,, Struct
-            RDAT.Load();
-            RDAT->value19 = *(UINT8 *)FieldValue;
-            break;
-        case 20: //rdat_p RDAT ,, Struct
-            if(ArraySize != 0)
+        case 14: //areas
+            if(ListFieldID == 0) //areasSize
+                {
+                Areas.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Areas.value.size())
                 break;
-            RDAT.Load();
+
+            switch(ListFieldID)
+                {
+                case 1: //edgeFalloff
+                    Areas.value[ListIndex]->RPLI.value = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //points
+                    if(ListX2FieldID == 0) //pointsSize
+                        {
+                        Areas.value[ListIndex]->RPLD.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Areas.value[ListIndex]->RPLD.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            Areas.value[ListIndex]->RPLD.value[ListX2Index].posX = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 2: //posY
+                            Areas.value[ListIndex]->RPLD.value[ListX2Index].posY = *(FLOAT32 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 21: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value21 = *(FORMID *)FieldValue;
-            return true;
-        case 22: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value22 = *(UINT16 *)FieldValue;
-            break;
-        case 23: //rdot_p RDOT ,, Struct
-            if(ArraySize != 2)
+        case 15: //entries
+            if(ListFieldID == 0) //areasSize
+                {
+                Entries.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Entries.value.size())
                 break;
-            RDOT.Load();
-            RDOT->value23[0] = ((UINT8ARRAY)FieldValue)[0];
-            RDOT->value23[1] = ((UINT8ARRAY)FieldValue)[1];
+
+            switch(ListFieldID)
+                {
+                case 1: //entryType
+                    Entries.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    return true;
+                case 2: //flags
+                    Entries.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 3: //priority
+                    Entries.value[ListIndex]->RDAT.value.priority = *(UINT8 *)FieldValue;
+                    break;
+                case 4: //unused1
+                    if(ArraySize != 2)
+                        break;
+                    Entries.value[ListIndex]->RDAT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Entries.value[ListIndex]->RDAT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    break;
+                case 5: //objects
+                    if(ListX2FieldID == 0) //objectsSize
+                        {
+                        Entries.value[ListIndex]->RDOT.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDOT.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //objectId
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].objectId = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //parentIndex
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].parentIndex = *(UINT16 *)FieldValue;
+                            break;
+                        case 3: //unused1
+                            if(ArraySize != 2)
+                                break;
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            break;
+                        case 4: //density
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].density = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 5: //clustering
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].clustering = *(UINT8 *)FieldValue;
+                            break;
+                        case 6: //minSlope
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].minSlope = *(UINT8 *)FieldValue;
+                            break;
+                        case 7: //maxSlope
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].maxSlope = *(UINT8 *)FieldValue;
+                            break;
+                        case 8: //flags
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].SetFlagMask(*(UINT8 *)FieldValue);
+                            break;
+                        case 9: //radiusWRTParent
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].radiusWRTParent = *(UINT16 *)FieldValue;
+                            break;
+                        case 10: //radius
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].radius = *(UINT16 *)FieldValue;
+                            break;
+                        case 11: //unk1
+                            if(ArraySize != 4)
+                                break;
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[3] = ((UINT8ARRAY)FieldValue)[3];
+                            break;
+                        case 12: //maxHeight
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].maxHeight = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 13: //sink
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sink = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 14: //sinkVar
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sinkVar = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 15: //sizeVar
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sizeVar = *(FLOAT32 *)FieldValue;
+                            break;
+                        case 16: //angleVarX
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarX = *(UINT16 *)FieldValue;
+                            break;
+                        case 17: //angleVarY
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarY = *(UINT16 *)FieldValue;
+                            break;
+                        case 18: //angleVarZ
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarZ = *(UINT16 *)FieldValue;
+                            break;
+                        case 19: //unused2
+                            if(ArraySize != 2)
+                                break;
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                            break;
+                        case 20: //unk2
+                            if(ArraySize != 4)
+                                break;
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[3] = ((UINT8ARRAY)FieldValue)[3];
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                case 6: //mapName
+                    Entries.value[ListIndex]->RDMP.Copy((STRING)FieldValue);
+                    break;
+                case 7: //iconPath
+                    Entries.value[ListIndex]->ICON.Copy((STRING)FieldValue);
+                    break;
+                case 8: //grasses
+                    if(ListX2FieldID == 0) //grassesSize
+                        {
+                        Entries.value[ListIndex]->RDGS.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDGS.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //grass
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].grass = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //unk1
+                            if(ArraySize != 4)
+                                break;
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[3] = ((UINT8ARRAY)FieldValue)[3];
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                case 9: //musicType
+                    Entries.value[ListIndex]->SetMusicType(*(UINT32 *)FieldValue);
+                    break;
+                case 10: //music
+                    Entries.value[ListIndex]->RDMO.value = *(FORMID *)FieldValue;
+                    return true;
+                case 11: //incidentalMedia
+                    Entries.value[ListIndex]->RDSI.value = *(FORMID *)FieldValue;
+                    return true;
+                case 12: //battleMedias
+                    Entries.value[ListIndex]->RDSB.value.resize(ArraySize);
+                    for(UINT32 x = 0; x < ArraySize; x++)
+                        Entries.value[ListIndex]->RDSB.value[x] = ((FORMIDARRAY)FieldValue)[x];
+                    return true;
+                case 13: //sounds
+                    if(ListX2FieldID == 0) //soundsSize
+                        {
+                        Entries.value[ListIndex]->RDSD.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDSD.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].sound = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //flags
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].SetFlagMask(*(UINT32 *)FieldValue);
+                            break;
+                        case 3: //chance
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].chance = *(UINT32 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                case 14: //weathers
+                    if(ListX2FieldID == 0) //weathersSize
+                        {
+                        Entries.value[ListIndex]->RDWT.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDWT.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //weather
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].weather = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //chance
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].chance = *(UINT32 *)FieldValue;
+                            break;
+                        case 3: //globalId
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].globalId = *(FORMID *)FieldValue;
+                            return true;
+                        default:
+                            break;
+                        }
+                    break;
+                case 15: //imposters
+                    Entries.value[ListIndex]->RDID.value.resize(ArraySize);
+                    for(UINT32 x = 0; x < ArraySize; x++)
+                        Entries.value[ListIndex]->RDID.value[x] = ((FORMIDARRAY)FieldValue)[x];
+                    return true;
+                default:
+                    break;
+                }
             break;
-        case 24: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value24 = *(FLOAT32 *)FieldValue;
-            break;
-        case 25: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value25 = *(UINT8 *)FieldValue;
-            break;
-        case 26: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value26 = *(UINT8 *)FieldValue;
-            break;
-        case 27: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value27 = *(UINT8 *)FieldValue;
-            break;
-        case 28: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value28 = *(UINT8 *)FieldValue;
-            break;
-        case 29: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value29 = *(UINT16 *)FieldValue;
-            break;
-        case 30: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value30 = *(UINT16 *)FieldValue;
-            break;
-        case 31: //rdot_p RDOT ,, Struct
-            if(ArraySize != 4)
-                break;
-            RDOT.Load();
-            RDOT->value31[0] = ((UINT8ARRAY)FieldValue)[0];
-            RDOT->value31[1] = ((UINT8ARRAY)FieldValue)[1];
-            RDOT->value31[2] = ((UINT8ARRAY)FieldValue)[2];
-            RDOT->value31[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 32: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value32 = *(FLOAT32 *)FieldValue;
-            break;
-        case 33: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value33 = *(FLOAT32 *)FieldValue;
-            break;
-        case 34: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value34 = *(FLOAT32 *)FieldValue;
-            break;
-        case 35: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value35 = *(FLOAT32 *)FieldValue;
-            break;
-        case 36: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value36 = *(UINT16 *)FieldValue;
-            break;
-        case 37: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value37 = *(UINT16 *)FieldValue;
-            break;
-        case 38: //rdot RDOT ,, Struct
-            RDOT.Load();
-            RDOT->value38 = *(UINT16 *)FieldValue;
-            break;
-        case 39: //rdot_p RDOT ,, Struct
-            if(ArraySize != 2)
-                break;
-            RDOT.Load();
-            RDOT->value39[0] = ((UINT8ARRAY)FieldValue)[0];
-            RDOT->value39[1] = ((UINT8ARRAY)FieldValue)[1];
-            break;
-        case 40: //rdot_p RDOT ,, Struct
-            if(ArraySize != 4)
-                break;
-            RDOT.Load();
-            RDOT->value40[0] = ((UINT8ARRAY)FieldValue)[0];
-            RDOT->value40[1] = ((UINT8ARRAY)FieldValue)[1];
-            RDOT->value40[2] = ((UINT8ARRAY)FieldValue)[2];
-            RDOT->value40[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 41: //rdmp Map Name
-            RDMP.Copy((STRING)FieldValue);
-            break;
-        case 42: //rdgs RDGS ,, Struct
-            RDGS.Load();
-            RDGS->value42 = *(FORMID *)FieldValue;
-            return true;
-        case 43: //rdgs_p RDGS ,, Struct
-            if(ArraySize != 4)
-                break;
-            RDGS.Load();
-            RDGS->value43[0] = ((UINT8ARRAY)FieldValue)[0];
-            RDGS->value43[1] = ((UINT8ARRAY)FieldValue)[1];
-            RDGS->value43[2] = ((UINT8ARRAY)FieldValue)[2];
-            RDGS->value43[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 44: //rdmd Music Type
-            RDMD.Load();
-            RDMD->value44 = *(UINT32 *)FieldValue;
-            break;
-        case 45: //rdmo Music
-            RDMO.Load();
-            RDMO->value45 = *(FORMID *)FieldValue;
-            return true;
-        case 46: //rdsi Incidental MediaSet
-            RDSI.Load();
-            RDSI->value46 = *(FORMID *)FieldValue;
-            return true;
-        case 47: //rdsb Battle MediaSet
-            RDSB.Load();
-            RDSB->value47 = *(FORMID *)FieldValue;
-            return true;
-        case 48: //rdsd RDSD ,, Struct
-            RDSD.Load();
-            RDSD->value48 = *(FORMID *)FieldValue;
-            return true;
-        case 49: //rdsd RDSD ,, Struct
-            RDSD.Load();
-            RDSD->value49 = *(UINT32 *)FieldValue;
-            break;
-        case 50: //rdsd RDSD ,, Struct
-            RDSD.Load();
-            RDSD->value50 = *(UINT32 *)FieldValue;
-            break;
-        case 51: //rdwt RDWT ,, Struct
-            RDWT.Load();
-            RDWT->value51 = *(FORMID *)FieldValue;
-            return true;
-        case 52: //rdwt RDWT ,, Struct
-            RDWT.Load();
-            RDWT->value52 = *(UINT32 *)FieldValue;
-            break;
-        case 53: //rdwt RDWT ,, Struct
-            RDWT.Load();
-            RDWT->value53 = *(FORMID *)FieldValue;
-            return true;
-        case 54: //rdid Imposters
-            return UNPARSEDGET_FIELD54;
         default:
             break;
         }
@@ -598,6 +920,16 @@ bool REGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void REGNRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENCLR defaultCLR;
+
+    REGNRDAT defaultRDAT;
+
+    REGNRPLD defaultRPLD;
+    REGNRDOT defaultRDOT;
+    REGNRDGS defaultRDGS;
+    REGNRDSD defaultRDSD;
+    REGNRDWT defaultRDWT;
+
     switch(FieldID)
         {
         case 1: //flags1
@@ -622,145 +954,274 @@ void REGNRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //smallIconPath
             MICO.Unload();
             return;
-        case 9: //rclr RCLR ,, Struct
-            RCLR.Unload();
+        case 9: //mapRed
+            RCLR.value.red = defaultCLR.red;
             return;
-        case 10: //rclr RCLR ,, Struct
-            RCLR.Unload();
+        case 10: //mapGreen
+            RCLR.value.green = defaultCLR.green;
             return;
-        case 11: //rclr RCLR ,, Struct
-            RCLR.Unload();
+        case 11: //mapBlue
+            RCLR.value.blue = defaultCLR.blue;
             return;
-        case 12: //rclr_p RCLR ,, Struct
-            RCLR.Unload();
+        case 12: //unused1
+            RCLR.value.unused1 = defaultCLR.unused1;
             return;
-        case 13: //wnam Worldspace
+        case 13: //worldspace
             WNAM.Unload();
             return;
-        case 14: //rpli Edge Fall-off
-            RPLI.Unload();
+        case 14: //areas
+            if(ListFieldID == 0) //areas
+                {
+                Areas.Unload();
+                return;
+                }
+
+            if(ListIndex >= Areas.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //edgeFalloff
+                    Areas.value[ListIndex]->RPLI.Unload();
+                    return;
+                case 2: //points
+                    if(ListX2FieldID == 0) //points
+                        {
+                        Areas.value[ListIndex]->RPLD.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Areas.value[ListIndex]->RPLD.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //posX
+                            Areas.value[ListIndex]->RPLD.value[ListX2Index].posX = defaultRPLD.posX;
+                            return;
+                        case 2: //posY
+                            Areas.value[ListIndex]->RPLD.value[ListX2Index].posY = defaultRPLD.posY;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 15: //rpld RPLD ,, Struct
-            RPLD.Unload();
+        case 15: //entries
+            if(ListFieldID == 0) //entries
+                {
+                Entries.Unload();
+                return;
+                }
+
+            if(ListIndex >= Entries.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //entryType
+                    Entries.value[ListIndex]->RDAT.value.entryType = defaultRDAT.entryType;
+                    return;
+                case 2: //flags
+                    Entries.value[ListIndex]->RDAT.value.flags = defaultRDAT.flags;
+                    return;
+                case 3: //priority
+                    Entries.value[ListIndex]->RDAT.value.priority = defaultRDAT.priority;
+                    return;
+                case 4: //unused1
+                    Entries.value[ListIndex]->RDAT.value.unused1[0] = defaultRDAT.unused1[0];
+                    Entries.value[ListIndex]->RDAT.value.unused1[1] = defaultRDAT.unused1[1];
+                    return;
+                case 5: //objects
+                    if(ListX2FieldID == 0) //objects
+                        {
+                        Entries.value[ListIndex]->RDOT.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDOT.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //objectId
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].objectId = defaultRDOT.objectId;
+                            return;
+                        case 2: //parentIndex
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].parentIndex = defaultRDOT.parentIndex;
+                            return;
+                        case 3: //unused1
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused1[0] = defaultRDOT.unused1[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused1[1] = defaultRDOT.unused1[1];
+                            return;
+                        case 4: //density
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].density = defaultRDOT.density;
+                            return;
+                        case 5: //clustering
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].clustering = defaultRDOT.clustering;
+                            return;
+                        case 6: //minSlope
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].minSlope = defaultRDOT.minSlope;
+                            return;
+                        case 7: //maxSlope
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].maxSlope = defaultRDOT.maxSlope;
+                            return;
+                        case 8: //flags
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].flags = defaultRDOT.flags;
+                            return;
+                        case 9: //radiusWRTParent
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].radiusWRTParent = defaultRDOT.radiusWRTParent;
+                            return;
+                        case 10: //radius
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].radius = defaultRDOT.radius;
+                            return;
+                        case 11: //unk1
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[0] = defaultRDOT.unk1[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[1] = defaultRDOT.unk1[1];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[2] = defaultRDOT.unk1[2];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk1[3] = defaultRDOT.unk1[3];
+                            return;
+                        case 12: //maxHeight
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].maxHeight = defaultRDOT.maxHeight;
+                            return;
+                        case 13: //sink
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sink = defaultRDOT.sink;
+                            return;
+                        case 14: //sinkVar
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sinkVar = defaultRDOT.sinkVar;
+                            return;
+                        case 15: //sizeVar
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].sizeVar = defaultRDOT.sizeVar;
+                            return;
+                        case 16: //angleVarX
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarX = defaultRDOT.angleVarX;
+                            return;
+                        case 17: //angleVarY
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarY = defaultRDOT.angleVarY;
+                            return;
+                        case 18: //angleVarZ
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].angleVarZ = defaultRDOT.angleVarZ;
+                            return;
+                        case 19: //unused2
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused2[0] = defaultRDOT.unused2[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unused2[1] = defaultRDOT.unused2[1];
+                            return;
+                        case 20: //unk2
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[0] = defaultRDOT.unk2[0];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[1] = defaultRDOT.unk2[1];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[2] = defaultRDOT.unk2[2];
+                            Entries.value[ListIndex]->RDOT.value[ListX2Index].unk2[3] = defaultRDOT.unk2[3];
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 6: //mapName
+                    Entries.value[ListIndex]->RDMP.Unload();
+                    return;
+                case 7: //iconPath
+                    Entries.value[ListIndex]->ICON.Unload();
+                    return;
+                case 8: //grasses
+                    if(ListX2FieldID == 0) //grasses
+                        {
+                        Entries.value[ListIndex]->RDGS.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDGS.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //grass
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].grass = defaultRDGS.grass;
+                            return;
+                        case 2: //unk1
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[0] = defaultRDGS.unk1[0];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[1] = defaultRDGS.unk1[1];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[2] = defaultRDGS.unk1[2];
+                            Entries.value[ListIndex]->RDGS.value[ListX2Index].unk1[3] = defaultRDGS.unk1[3];
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 9: //musicType
+                    Entries.value[ListIndex]->RDMD.Unload();
+                    return;
+                case 10: //music
+                    Entries.value[ListIndex]->RDMO.Unload();
+                    return;
+                case 11: //incidentalMedia
+                    Entries.value[ListIndex]->RDSI.Unload();
+                    return;
+                case 12: //battleMedias
+                    Entries.value[ListIndex]->RDSB.Unload();
+                    return;
+                case 13: //sounds
+                    if(ListX2FieldID == 0) //sounds
+                        {
+                        Entries.value[ListIndex]->RDSD.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDSD.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //sound
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].sound = defaultRDSD.sound;
+                            return;
+                        case 2: //flags
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].flags = defaultRDSD.flags;
+                            return;
+                        case 3: //chance
+                            Entries.value[ListIndex]->RDSD.value[ListX2Index].chance = defaultRDSD.chance;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 14: //weathers
+                    if(ListX2FieldID == 0) //weathers
+                        {
+                        Entries.value[ListIndex]->RDWT.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Entries.value[ListIndex]->RDWT.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //weather
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].weather = defaultRDWT.weather;
+                            return;
+                        case 2: //chance
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].chance = defaultRDWT.chance;
+                            return;
+                        case 3: //globalId
+                            Entries.value[ListIndex]->RDWT.value[ListX2Index].globalId = defaultRDWT.globalId;
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                case 15: //imposters
+                    Entries.value[ListIndex]->RDWT.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 16: //rpld RPLD ,, Struct
-            RPLD.Unload();
-            return;
-        case 17: //rdat RDAT ,, Struct
-            RDAT.Unload();
-            return;
-        case 18: //rdat RDAT ,, Struct
-            RDAT.Unload();
-            return;
-        case 19: //rdat RDAT ,, Struct
-            RDAT.Unload();
-            return;
-        case 20: //rdat_p RDAT ,, Struct
-            RDAT.Unload();
-            return;
-        case 21: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 22: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 23: //rdot_p RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 24: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 25: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 26: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 27: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 28: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 29: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 30: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 31: //rdot_p RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 32: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 33: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 34: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 35: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 36: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 37: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 38: //rdot RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 39: //rdot_p RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 40: //rdot_p RDOT ,, Struct
-            RDOT.Unload();
-            return;
-        case 41: //rdmp Map Name
-            RDMP.Unload();
-            return;
-        case 42: //rdgs RDGS ,, Struct
-            RDGS.Unload();
-            return;
-        case 43: //rdgs_p RDGS ,, Struct
-            RDGS.Unload();
-            return;
-        case 44: //rdmd Music Type
-            RDMD.Unload();
-            return;
-        case 45: //rdmo Music
-            RDMO.Unload();
-            return;
-        case 46: //rdsi Incidental MediaSet
-            RDSI.Unload();
-            return;
-        case 47: //rdsb Battle MediaSet
-            RDSB.Unload();
-            return;
-        case 48: //rdsd RDSD ,, Struct
-            RDSD.Unload();
-            return;
-        case 49: //rdsd RDSD ,, Struct
-            RDSD.Unload();
-            return;
-        case 50: //rdsd RDSD ,, Struct
-            RDSD.Unload();
-            return;
-        case 51: //rdwt RDWT ,, Struct
-            RDWT.Unload();
-            return;
-        case 52: //rdwt RDWT ,, Struct
-            RDWT.Unload();
-            return;
-        case 53: //rdwt RDWT ,, Struct
-            RDWT.Unload();
-            return;
-        case 54: //rdid Imposters
-            return UNPARSEDDEL_FIELD54;
         default:
             return;
         }
+    return;
     }
 }

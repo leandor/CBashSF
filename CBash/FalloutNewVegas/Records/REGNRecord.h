@@ -42,7 +42,9 @@ class REGNRecord : public FNVRecord //Region
         struct REGNArea
             {
             ReqSimpleSubRecord<UINT32> RPLI; // Edge Fall-off
-            std::vector<REGNRPLD> RPLD; // Region Point List Data
+            UnorderedPackedArray<REGNRPLD> RPLD; // Region Point List Data
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const REGNArea &other) const;
             bool operator !=(const REGNArea &other) const;
@@ -52,7 +54,7 @@ class REGNRecord : public FNVRecord //Region
             {
             FORMID  weather;
             UINT32  chance;
-            FORMID  globalVar;
+            FORMID  globalId;
 
             REGNRDWT();
             ~REGNRDWT();
@@ -170,16 +172,17 @@ class REGNRecord : public FNVRecord //Region
         struct REGNEntry // Region Data Entry
             {
             ReqSubRecord<REGNRDAT> RDAT; // Data Header
-            std::vector<REGNRDOT> RDOT; // Objects
+            UnorderedPackedArray<REGNRDOT> RDOT; // Objects
             StringRecord RDMP; //Map Name
-            std::vector<REGNRDGS> RDGS; // Grasses
+            StringRecord ICON; //Unknown
+            UnorderedPackedArray<REGNRDGS> RDGS; // Grasses
             SemiOptSimpleSubRecord<UINT32> RDMD; // Music Type
             OptSimpleSubRecord<FORMID> RDMO; //Music
             OptSimpleSubRecord<FORMID> RDSI; //Incidental MediaSet
-            std::vector<FORMID> RDSB; //Battle MediaSets
-            std::vector<REGNRDSD> RDSD; // Sounds
-            std::vector<REGNRDWT> RDWT; // Weather Types
-            std::vector<FORMID> RDID; //Imposters
+            UnorderedSparseArray<FORMID> RDSB; //Battle MediaSets
+            UnorderedPackedArray<REGNRDSD> RDSD; // Sounds
+            UnorderedPackedArray<REGNRDWT> RDWT; // Weather Types
+            UnorderedPackedArray<FORMID> RDID; //Imposters
 
             enum RDATFlags
                 {
@@ -235,30 +238,20 @@ class REGNRecord : public FNVRecord //Region
             bool IsMusicType(UINT32 Type);
             void SetMusicType(UINT32 Type);
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const REGNEntry &other) const;
             bool operator !=(const REGNEntry &other) const;
             };
-
-        enum eREGNType
-            {
-            eREGNObjects  = 2,
-            eREGNWeathers = 3,
-            eREGNMap      = 4,
-            eREGNIcon     = 5,
-            eREGNGrasses  = 6,
-            eREGNSounds   = 7
-            };
-
-    public:
 
     public:
         StringRecord EDID; //Editor ID
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSubRecord<GENCLR> RCLR; //Map Color
+        ReqSubRecord<GENCLR> RCLR; //Map Color
         OptSimpleSubRecord<FORMID> WNAM; //Worldspace
-        std::vector<REGNArea *> Areas; // Areas
-        std::vector<REGNEntry *> Entries; // Region Data Entries
+        UnorderedSparseArray<REGNArea *> Areas; // Areas
+        UnorderedSparseArray<REGNEntry *> Entries; // Region Data Entries
 
         REGNRecord(unsigned char *_recData=NULL);
         REGNRecord(REGNRecord *srcRecord);

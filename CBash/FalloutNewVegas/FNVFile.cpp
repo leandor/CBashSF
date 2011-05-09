@@ -500,22 +500,22 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgWTHR: //Same as normal
             case 'RHTW':
-                //reader.read(&WTHR.stamp, 4);
-                //reader.read(&WTHR.unknown, 4);
-                //WTHR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&WTHR.stamp, 4);
+                reader.read(&WTHR.unknown, 4);
+                WTHR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgCLMT:
             case 'TMLC':
-                //reader.read(&CLMT.stamp, 4);
-                //reader.read(&CLMT.unknown, 4);
-                //CLMT.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&CLMT.stamp, 4);
+                reader.read(&CLMT.unknown, 4);
+                CLMT.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgREGN:
             case 'NGER':
-                //reader.read(&REGN.stamp, 4);
-                //reader.read(&REGN.unknown, 4);
-                //REGN.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&REGN.stamp, 4);
+                reader.read(&REGN.unknown, 4);
+                REGN.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgNAVI:
             case 'IVAN':
                 //reader.read(&NAVI.stamp, 4);
@@ -949,11 +949,11 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'ILVL':
             return (UINT32)LVLI.Records.size();
         case 'RHTW':
-            //return (UINT32)WTHR.Records.size();
+            return (UINT32)WTHR.Records.size();
         case 'TMLC':
-            //return (UINT32)CLMT.Records.size();
+            return (UINT32)CLMT.Records.size();
         case 'NGER':
-            //return (UINT32)REGN.Records.size();
+            return (UINT32)REGN.Records.size();
         case 'IVAN':
             //return (UINT32)NAVI.Records.size();
         case 'LLEC':
@@ -1278,17 +1278,17 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = LVLI.Records.back();
             break;
         case 'RHTW':
-            //WTHR.Records.push_back(new FNV::WTHRRecord((FNV::WTHRRecord *)SourceRecord));
-            //newRecord = WTHR.Records.back();
-            //break;
+            WTHR.Records.push_back(new FNV::WTHRRecord((FNV::WTHRRecord *)SourceRecord));
+            newRecord = WTHR.Records.back();
+            break;
         case 'TMLC':
-            //CLMT.Records.push_back(new FNV::CLMTRecord((FNV::CLMTRecord *)SourceRecord));
-            //newRecord = CLMT.Records.back();
-            //break;
+            CLMT.Records.push_back(new FNV::CLMTRecord((FNV::CLMTRecord *)SourceRecord));
+            newRecord = CLMT.Records.back();
+            break;
         case 'NGER':
-            //REGN.Records.push_back(new FNV::REGNRecord((FNV::REGNRecord *)SourceRecord));
-            //newRecord = REGN.Records.back();
-            //break;
+            REGN.Records.push_back(new FNV::REGNRecord((FNV::REGNRecord *)SourceRecord));
+            newRecord = REGN.Records.back();
+            break;
         case 'IVAN':
             //NAVI.Records.push_back(new FNV::NAVIRecord((FNV::NAVIRecord *)SourceRecord));
             //newRecord = NAVI.Records.back();
@@ -1571,9 +1571,9 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(COBJ.VisitRecords(NULL, checker, false)) continue;
         if(PROJ.VisitRecords(NULL, checker, false)) continue;
         if(LVLI.VisitRecords(NULL, checker, false)) continue;
-        //if(WTHR.VisitRecords(NULL, checker, false)) continue;
-        //if(CLMT.VisitRecords(NULL, checker, false)) continue;
-        //if(REGN.VisitRecords(NULL, checker, false)) continue;
+        if(WTHR.VisitRecords(NULL, checker, false)) continue;
+        if(CLMT.VisitRecords(NULL, checker, false)) continue;
+        if(REGN.VisitRecords(NULL, checker, false)) continue;
         //if(NAVI.VisitRecords(NULL, checker, false)) continue;
         //if(CELL.VisitRecords(NULL, checker, false)) continue;
         //if(WRLD.VisitRecords(NULL, checker, false)) continue;
@@ -1709,9 +1709,9 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += COBJ.WriteGRUP('JBOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += PROJ.WriteGRUP('JORP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += LVLI.WriteGRUP('ILVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += NAVI.WriteGRUP('IVAN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += CELL.WriteGRUP('LLEC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += WRLD.WriteGRUP('DLRW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1832,9 +1832,9 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     COBJ.VisitRecords(NULL, op, true);
     PROJ.VisitRecords(NULL, op, true);
     LVLI.VisitRecords(NULL, op, true);
-    //WTHR.VisitRecords(NULL, op, true);
-    //CLMT.VisitRecords(NULL, op, true);
-    //REGN.VisitRecords(NULL, op, true);
+    WTHR.VisitRecords(NULL, op, true);
+    CLMT.VisitRecords(NULL, op, true);
+    REGN.VisitRecords(NULL, op, true);
     //NAVI.VisitRecords(NULL, op, true);
     //CELL.VisitRecords(NULL, op, true);
     //WRLD.VisitRecords(NULL, op, true);
@@ -2049,14 +2049,14 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             LVLI.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'RHTW':
-            //WTHR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            WTHR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'TMLC':
-            //CLMT.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            CLMT.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'NGER':
-            //REGN.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            REGN.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'IVAN':
             //NAVI.VisitRecords(RecordType, op, DeepVisit);
             //break;

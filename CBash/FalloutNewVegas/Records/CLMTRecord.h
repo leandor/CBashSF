@@ -30,9 +30,9 @@ class CLMTRecord : public FNVRecord //Climate
     private:
         struct CLMTWLST
             {
-            UINT32  weather;
+            FORMID  weather;
             SINT32  chance;
-            FORMID  global;
+            FORMID  globalId;
 
             CLMTWLST();
             ~CLMTWLST();
@@ -53,7 +53,7 @@ class CLMTRecord : public FNVRecord //Climate
             };
     public:
         StringRecord EDID; //Editor ID
-        std::vector<CLMTWLST> Weathers; //Weather Types
+        UnorderedPackedArray<CLMTWLST> Weathers; //Weather Types
         StringRecord FNAM; //Sun Texture
         StringRecord GNAM; //Sun Glare Texture
         OptSubRecord<FNVMODEL> MODL; //Model

@@ -21,9 +21,571 @@ GPL License and Copyright Notice ============================================
 */
 #include "..\..\Common.h"
 #include "REGNRecord.h"
+#include <vector>
 
 namespace FNV
 {
+REGNRecord::REGNRPLD::REGNRPLD():
+    posX(0.0f),
+    posY(0.0f)
+    {
+    //
+    }
+
+REGNRecord::REGNRPLD::~REGNRPLD()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRPLD::operator ==(const REGNRPLD &other) const
+    {
+    return (AlmostEqual(posX,other.posX,2) &&
+            AlmostEqual(posY,other.posY,2));
+    }
+
+bool REGNRecord::REGNRPLD::operator !=(const REGNRPLD &other) const
+    {
+    return !(*this == other);
+    }
+
+void REGNRecord::REGNArea::Write(FileWriter &writer)
+    {
+    WRITE(RPLI);
+    WRITE(RPLD);
+    }
+
+bool REGNRecord::REGNArea::operator ==(const REGNArea &other) const
+    {
+    return (RPLI == other.RPLI &&
+            RPLD == other.RPLD);
+    }
+
+bool REGNRecord::REGNArea::operator !=(const REGNArea &other) const
+    {
+    return !(*this == other);
+    }
+
+REGNRecord::REGNRDWT::REGNRDWT():
+    weather(0),
+    chance(0),
+    globalId(0)
+    {
+    //
+    }
+
+REGNRecord::REGNRDWT::~REGNRDWT()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRDWT::operator ==(const REGNRDWT &other) const
+    {
+    return (weather == other.weather &&
+            chance == other.chance &&
+            globalId == other.globalId);
+    }
+
+bool REGNRecord::REGNRDWT::operator !=(const REGNRDWT &other) const
+    {
+    return !(*this == other);
+    }
+
+REGNRecord::REGNRDSD::REGNRDSD():
+    sound(0),
+    flags(0),
+    chance(0)
+    {
+    //
+    }
+
+REGNRecord::REGNRDSD::~REGNRDSD()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRDSD::IsPleasant()
+    {
+    return (flags & fIsPleasant) != 0;
+    }
+
+void REGNRecord::REGNRDSD::IsPleasant(bool value)
+    {
+    flags = value ? (flags | fIsPleasant) : (flags & ~fIsPleasant);
+    }
+
+bool REGNRecord::REGNRDSD::IsCloudy()
+    {
+    return (flags & fIsCloudy) != 0;
+    }
+
+void REGNRecord::REGNRDSD::IsCloudy(bool value)
+    {
+    flags = value ? (flags | fIsCloudy) : (flags & ~fIsCloudy);
+    }
+
+bool REGNRecord::REGNRDSD::IsRainy()
+    {
+    return (flags & fIsRainy) != 0;
+    }
+
+void REGNRecord::REGNRDSD::IsRainy(bool value)
+    {
+    flags = value ? (flags | fIsRainy) : (flags & ~fIsRainy);
+    }
+
+bool REGNRecord::REGNRDSD::IsSnowy()
+    {
+    return (flags & fIsSnowy) != 0;
+    }
+
+void REGNRecord::REGNRDSD::IsSnowy(bool value)
+    {
+    flags = value ? (flags | fIsSnowy) : (flags & ~fIsSnowy);
+    }
+
+bool REGNRecord::REGNRDSD::IsFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((flags & Mask) == Mask) : ((flags & Mask) != 0);
+    }
+
+void REGNRecord::REGNRDSD::SetFlagMask(UINT32 Mask)
+    {
+    flags = Mask;
+    }
+
+bool REGNRecord::REGNRDSD::operator ==(const REGNRDSD &other) const
+    {
+    return (sound == other.sound &&
+            flags == other.flags &&
+            flags == other.flags);
+    }
+
+bool REGNRecord::REGNRDSD::operator !=(const REGNRDSD &other) const
+    {
+    return !(*this == other);
+    }
+
+REGNRecord::REGNRDGS::REGNRDGS():
+    grass(0)
+    {
+    memset(&unk1[0], 0x00, sizeof(unk1));
+    }
+
+REGNRecord::REGNRDGS::~REGNRDGS()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRDGS::operator ==(const REGNRDGS &other) const
+    {
+    return (grass == other.grass);
+    }
+
+bool REGNRecord::REGNRDGS::operator !=(const REGNRDGS &other) const
+    {
+    return !(*this == other);
+    }
+
+REGNRecord::REGNRDOT::REGNRDOT():
+    objectId(0),
+    parentIndex(0),
+    density(0.0f),
+    clustering(0),
+    minSlope(0),
+    maxSlope(0),
+    flags(0),
+    radiusWRTParent(0),
+    radius(0),
+    maxHeight(0.0f),
+    sink(0.0f),
+    sinkVar(0.0f),
+    sizeVar(0.0f),
+    angleVarX(0),
+    angleVarY(0),
+    angleVarZ(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unk1[0], 0x00, sizeof(unk1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
+    memset(&unk2[0], 0x00, sizeof(unk2));
+    }
+
+REGNRecord::REGNRDOT::~REGNRDOT()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRDOT::IsConformToSlope()
+    {
+    return (flags & fIsConformToSlope) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsConformToSlope(bool value)
+    {
+    flags = value ? (flags | fIsConformToSlope) : (flags & ~fIsConformToSlope);
+    }
+
+bool REGNRecord::REGNRDOT::IsPaintVertices()
+    {
+    return (flags & fIsPaintVertices) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsPaintVertices(bool value)
+    {
+    flags = value ? (flags | fIsPaintVertices) : (flags & ~fIsPaintVertices);
+    }
+
+bool REGNRecord::REGNRDOT::IsSizeVariance()
+    {
+    return (flags & fIsSizeVariance) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsSizeVariance(bool value)
+    {
+    flags = value ? (flags | fIsSizeVariance) : (flags & ~fIsSizeVariance);
+    }
+
+bool REGNRecord::REGNRDOT::IsXVariance()
+    {
+    return (flags & fIsXVariance) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsXVariance(bool value)
+    {
+    flags = value ? (flags | fIsXVariance) : (flags & ~fIsXVariance);
+    }
+
+bool REGNRecord::REGNRDOT::IsYVariance()
+    {
+    return (flags & fIsYVariance) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsYVariance(bool value)
+    {
+    flags = value ? (flags | fIsYVariance) : (flags & ~fIsYVariance);
+    }
+
+bool REGNRecord::REGNRDOT::IsZVariance()
+    {
+    return (flags & fIsZVariance) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsZVariance(bool value)
+    {
+    flags = value ? (flags | fIsZVariance) : (flags & ~fIsZVariance);
+    }
+
+bool REGNRecord::REGNRDOT::IsTree()
+    {
+    return (flags & fIsTree) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsTree(bool value)
+    {
+    flags = value ? (flags | fIsTree) : (flags & ~fIsTree);
+    }
+
+bool REGNRecord::REGNRDOT::IsHugeRock()
+    {
+    return (flags & fIsHugeRock) != 0;
+    }
+
+void REGNRecord::REGNRDOT::IsHugeRock(bool value)
+    {
+    flags = value ? (flags | fIsHugeRock) : (flags & ~fIsHugeRock);
+    }
+
+bool REGNRecord::REGNRDOT::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((flags & Mask) == Mask) : ((flags & Mask) != 0);
+    }
+
+void REGNRecord::REGNRDOT::SetFlagMask(UINT8 Mask)
+    {
+    flags = Mask;
+    }
+
+bool REGNRecord::REGNRDOT::operator ==(const REGNRDOT &other) const
+    {
+    return (objectId == other.objectId &&
+            parentIndex == other.parentIndex &&
+            clustering == other.clustering &&
+            minSlope == other.minSlope &&
+            maxSlope == other.maxSlope &&
+            flags == other.flags &&
+            radiusWRTParent == other.radiusWRTParent &&
+            radius == other.radius &&
+            angleVarX == other.angleVarX &&
+            angleVarY == other.angleVarY &&
+            angleVarZ == other.angleVarZ &&
+            AlmostEqual(density,other.density,2) &&
+            AlmostEqual(maxHeight,other.maxHeight,2) &&
+            AlmostEqual(sink,other.sink,2) &&
+            AlmostEqual(sinkVar,other.sinkVar,2) &&
+            AlmostEqual(sizeVar,other.sizeVar,2));
+    }
+
+bool REGNRecord::REGNRDOT::operator !=(const REGNRDOT &other) const
+    {
+    return !(*this == other);
+    }
+
+REGNRecord::REGNRDAT::REGNRDAT():
+    entryType(0),
+    flags(0),
+    priority(0)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    }
+
+REGNRecord::REGNRDAT::~REGNRDAT()
+    {
+    //
+    }
+
+bool REGNRecord::REGNRDAT::operator ==(const REGNRDAT &other) const
+    {
+    return (entryType == other.entryType &&
+            flags == other.flags &&
+            priority == other.priority);
+    }
+
+bool REGNRecord::REGNRDAT::operator !=(const REGNRDAT &other) const
+    {
+    return !(*this == other);
+    }
+
+bool REGNRecord::REGNEntry::IsOverride()
+    {
+    return (RDAT.value.flags & fIsOverride) != 0;
+    }
+
+void REGNRecord::REGNEntry::IsOverride(bool value)
+    {
+    RDAT.value.flags = value ? (RDAT.value.flags | fIsOverride) : (RDAT.value.flags & ~fIsOverride);
+    }
+
+bool REGNRecord::REGNEntry::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((RDAT.value.flags & Mask) == Mask) : ((RDAT.value.flags & Mask) != 0);
+    }
+
+void REGNRecord::REGNEntry::SetFlagMask(UINT8 Mask)
+    {
+    RDAT.value.flags = Mask;
+    }
+
+bool REGNRecord::REGNEntry::IsObject()
+    {
+    return (RDAT.value.entryType == eObject);
+    }
+
+void REGNRecord::REGNEntry::IsObject(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eObject;
+    else if(IsObject())
+        RDAT.value.entryType = eWeather;
+    }
+
+bool REGNRecord::REGNEntry::IsWeather()
+    {
+    return (RDAT.value.entryType == eWeather);
+    }
+
+void REGNRecord::REGNEntry::IsWeather(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eWeather;
+    else if(IsWeather())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsMap()
+    {
+    return (RDAT.value.entryType == eMap);
+    }
+
+void REGNRecord::REGNEntry::IsMap(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eMap;
+    else if(IsMap())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsLand()
+    {
+    return (RDAT.value.entryType == eLand);
+    }
+
+void REGNRecord::REGNEntry::IsLand(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eLand;
+    else if(IsLand())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsGrass()
+    {
+    return (RDAT.value.entryType == eGrass);
+    }
+
+void REGNRecord::REGNEntry::IsGrass(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eGrass;
+    else if(IsGrass())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsSound()
+    {
+    return (RDAT.value.entryType == eSound);
+    }
+
+void REGNRecord::REGNEntry::IsSound(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eSound;
+    else if(IsSound())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsImposter()
+    {
+    return (RDAT.value.entryType == eImposter);
+    }
+
+void REGNRecord::REGNEntry::IsImposter(bool value)
+    {
+    if(value)
+        RDAT.value.entryType = eImposter;
+    else if(IsImposter())
+        RDAT.value.entryType = eObject;
+    }
+
+bool REGNRecord::REGNEntry::IsType(UINT32 Type)
+    {
+    return (RDAT.value.entryType == Type);
+    }
+
+void REGNRecord::REGNEntry::SetType(UINT32 Type)
+    {
+    RDAT.value.entryType = Type;
+    }
+
+bool REGNRecord::REGNEntry::IsDefaultMusic()
+    {
+    return RDMD.IsLoaded() ? (*RDMD.value == eDefault) : false;
+    }
+
+void REGNRecord::REGNEntry::IsDefaultMusic(bool value)
+    {
+    RDMD.Load();
+    if(value)
+        *RDMD.value = eDefault;
+    else if(IsDefaultMusic())
+        *RDMD.value = ePublic;
+    }
+
+bool REGNRecord::REGNEntry::IsPublicMusic()
+    {
+    return RDMD.IsLoaded() ? (*RDMD.value == ePublic) : false;
+    }
+
+void REGNRecord::REGNEntry::IsPublicMusic(bool value)
+    {
+    RDMD.Load();
+    if(value)
+        *RDMD.value = ePublic;
+    else if(IsPublicMusic())
+        *RDMD.value = eDefault;
+    }
+
+bool REGNRecord::REGNEntry::IsDungeonMusic()
+    {
+    return RDMD.IsLoaded() ? (*RDMD.value == eDungeon) : false;
+    }
+
+void REGNRecord::REGNEntry::IsDungeonMusic(bool value)
+    {
+    RDMD.Load();
+    if(value)
+        *RDMD.value = eDungeon;
+    else if(IsDungeonMusic())
+        *RDMD.value = eDefault;
+    }
+
+bool REGNRecord::REGNEntry::IsMusicType(UINT32 Type)
+    {
+    return RDMD.IsLoaded() ? (*RDMD.value == Type) : false;
+    }
+
+void REGNRecord::REGNEntry::SetMusicType(UINT32 Type)
+    {
+    RDMD.Load();
+    *RDMD.value = Type;
+    }
+
+void REGNRecord::REGNEntry::Write(FileWriter &writer)
+    {
+    WRITE(RDAT);
+    switch(RDAT.value.entryType)
+        {
+        case eObject:
+            WRITEREQ(RDOT);
+            break;
+        case eWeather:
+            WRITE(RDWT);
+            break;
+        case eMap:
+            WRITE(RDMP);
+            break;
+        case eLand:
+            WRITE(ICON);
+            break;
+        case eGrass:
+            WRITE(RDGS);
+            break;
+        case eSound:
+            WRITE(RDMD);
+            WRITE(RDMO);
+            WRITE(RDSI);
+            WRITE(RDSB);
+            WRITEREQ(RDSD);
+            break;
+        case eImposter:
+            WRITE(RDID);
+            break;
+        default:
+            //printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, RDAT.value.entryType, p);
+            break;
+        }
+    }
+
+bool REGNRecord::REGNEntry::operator ==(const REGNEntry &other) const
+    {
+    return (RDAT == other.RDAT &&
+            RDMD == other.RDMD &&
+            RDMO == other.RDMO &&
+            RDSI == other.RDSI &&
+            RDMP.equals(other.RDMP) &&
+            ICON.equalsi(other.ICON) &&
+            RDSB == other.RDSB &&
+            RDID == other.RDID &&
+            RDSD == other.RDSD &&
+            RDGS == other.RDGS &&
+            RDWT == other.RDWT &&
+            RDOT == other.RDOT);
+    }
+
+bool REGNRecord::REGNEntry::operator !=(const REGNEntry &other) const
+    {
+    return !(*this == other);
+    }
+
 REGNRecord::REGNRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -55,19 +617,8 @@ REGNRecord::REGNRecord(REGNRecord *srcRecord):
     MICO = srcRecord->MICO;
     RCLR = srcRecord->RCLR;
     WNAM = srcRecord->WNAM;
-    RPLI = srcRecord->RPLI;
-    RPLD = srcRecord->RPLD;
-    RDAT = srcRecord->RDAT;
-    RDOT = srcRecord->RDOT;
-    RDMP = srcRecord->RDMP;
-    RDGS = srcRecord->RDGS;
-    RDMD = srcRecord->RDMD;
-    RDMO = srcRecord->RDMO;
-    RDSI = srcRecord->RDSI;
-    RDSB = srcRecord->RDSB;
-    RDSD = srcRecord->RDSD;
-    RDWT = srcRecord->RDWT;
-    RDID = srcRecord->RDID;
+    Areas = srcRecord->Areas;
+    Entries = srcRecord->Entries;
     return;
     }
 
@@ -82,31 +633,38 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(WNAM.IsLoaded())
-        op.Accept(WNAM->value);
-    //if(RDOT.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(RDOT->value);
-    //if(RDGS.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(RDGS->value);
-    if(RDMO.IsLoaded())
-        op.Accept(RDMO->value);
-    if(RDSI.IsLoaded())
-        op.Accept(RDSI->value);
-    if(RDSB.IsLoaded())
-        op.Accept(RDSB->value);
-    //if(RDSD.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(RDSD->value);
-    //if(RDWT.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(RDWT->value);
-    //if(RDID.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(RDID->value);
+        op.Accept(WNAM.value);
+    for(UINT32 x = 0; x < Entries.value.size(); x++)
+        {
+        for(UINT32 y = 0; y < Entries.value[x]->RDOT.value.size(); y++)
+            op.Accept(Entries.value[x]->RDOT.value[y].objectId);
+        for(UINT32 y = 0; y < Entries.value[x]->RDGS.value.size(); y++)
+            op.Accept(Entries.value[x]->RDGS.value[y].grass);
+        for(UINT32 y = 0; y < Entries.value[x]->RDSD.value.size(); y++)
+            op.Accept(Entries.value[x]->RDSD.value[y].sound);
+        for(UINT32 y = 0; y < Entries.value[x]->RDWT.value.size(); y++)
+            {
+            op.Accept(Entries.value[x]->RDWT.value[y].weather);
+            op.Accept(Entries.value[x]->RDWT.value[y].globalId);
+            }
+        if(Entries.value[x]->RDMO.IsLoaded())
+            op.Accept(Entries.value[x]->RDMO.value);
+        if(Entries.value[x]->RDSI.IsLoaded())
+            op.Accept(Entries.value[x]->RDSI.value);
+        for(UINT32 y = 0; y < Entries.value[x]->RDSB.value.size(); y++)
+            op.Accept(Entries.value[x]->RDSB.value[y]);
+        for(UINT32 y = 0; y < Entries.value[x]->RDID.value.size(); y++)
+            op.Accept(Entries.value[x]->RDID.value[y]);
+        }
 
     return op.Stop();
     }
 
 UINT32 REGNRecord::GetType()
     {
-    return 'NGER';
+    return REV32(REGN);
     }
+
 
 STRING REGNRecord::GetStrType()
     {
@@ -135,59 +693,86 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
-                ICON.Read(buffer, subSize, curPos);
+            case REV32(ICON):
+                if(Entries.value.size() != 0 && Entries.value.back()->IsLand())
+                    Entries.value.back()->ICON.Read(buffer, subSize, curPos);
+                else
+                    ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCR':
+            case REV32(RCLR):
                 RCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ILPR':
-                RPLI.Read(buffer, subSize, curPos);
+            case REV32(RPLI):
+                Areas.value.push_back(new REGNArea);
+                Areas.value.back()->RPLI.Read(buffer, subSize, curPos);
                 break;
-            case 'DLPR':
-                RPLD.Read(buffer, subSize, curPos);
+            case REV32(RPLD):
+                if(Areas.value.size() == 0)
+                    Areas.value.push_back(new REGNArea);
+                Areas.value.back()->RPLD.Read(buffer, subSize, curPos);
                 break;
-            case 'TADR':
-                RDAT.Read(buffer, subSize, curPos);
+            case REV32(RDAT):
+                Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDAT.Read(buffer, subSize, curPos);
                 break;
-            case 'TODR':
-                RDOT.Read(buffer, subSize, curPos);
+            case REV32(RDOT):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDOT.Read(buffer, subSize, curPos);
                 break;
-            case 'PMDR':
-                RDMP.Read(buffer, subSize, curPos);
+            case REV32(RDMP):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDMP.Read(buffer, subSize, curPos);
                 break;
-            case 'SGDR':
-                RDGS.Read(buffer, subSize, curPos);
+            case REV32(RDGS):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDGS.Read(buffer, subSize, curPos);
                 break;
-            case 'DMDR':
-                RDMD.Read(buffer, subSize, curPos);
+            case REV32(RDMD):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDMD.Read(buffer, subSize, curPos);
                 break;
-            case 'OMDR':
-                RDMO.Read(buffer, subSize, curPos);
+            case REV32(RDMO):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDMO.Read(buffer, subSize, curPos);
                 break;
-            case 'ISDR':
-                RDSI.Read(buffer, subSize, curPos);
+            case REV32(RDSI):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDSI.Read(buffer, subSize, curPos);
                 break;
-            case 'BSDR':
-                RDSB.Read(buffer, subSize, curPos);
+            case REV32(RDSB):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDSB.Read(buffer, subSize, curPos);
                 break;
-            case 'DSDR':
-                RDSD.Read(buffer, subSize, curPos);
+            case REV32(RDSD):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDSD.Read(buffer, subSize, curPos);
                 break;
-            case 'TWDR':
-                RDWT.Read(buffer, subSize, curPos);
+            case REV32(RDWT):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDWT.Read(buffer, subSize, curPos);
                 break;
-            case 'DIDR':
-                RDID.Read(buffer, subSize, curPos);
+            case REV32(RDID):
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDID.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -210,19 +795,8 @@ SINT32 REGNRecord::Unload()
     MICO.Unload();
     RCLR.Unload();
     WNAM.Unload();
-    RPLI.Unload();
-    RPLD.Unload();
-    RDAT.Unload();
-    RDOT.Unload();
-    RDMP.Unload();
-    RDGS.Unload();
-    RDMD.Unload();
-    RDMO.Unload();
-    RDSI.Unload();
-    RDSB.Unload();
-    RDSD.Unload();
-    RDWT.Unload();
-    RDID.Unload();
+    Areas.Unload();
+    Entries.Unload();
     return 1;
     }
 
@@ -233,43 +807,22 @@ SINT32 REGNRecord::WriteRecord(FileWriter &writer)
     WRITE(MICO);
     WRITE(RCLR);
     WRITE(WNAM);
-    WRITE(RPLI);
-    WRITE(RPLD);
-    WRITE(RDAT);
-    WRITE(RDOT);
-    WRITE(RDMP);
-    WRITE(RDGS);
-    WRITE(RDMD);
-    WRITE(RDMO);
-    WRITE(RDSI);
-    WRITE(RDSB);
-    WRITE(RDSD);
-    WRITE(RDWT);
-    WRITE(RDID);
-
+    Areas.Write(writer);
+    Entries.Write(writer);
     return -1;
     }
 
 bool REGNRecord::operator ==(const REGNRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
+    return (RCLR == other.RCLR &&
+            WNAM == other.WNAM &&
+            EDID.equalsi(other.EDID) &&
             ICON.equalsi(other.ICON) &&
             MICO.equalsi(other.MICO) &&
-            RCLR == other.RCLR &&
-            WNAM == other.WNAM &&
-            RPLI == other.RPLI &&
-            RPLD == other.RPLD &&
-            RDAT == other.RDAT &&
-            RDOT == other.RDOT &&
-            RDMP.equalsi(other.RDMP) &&
-            RDGS == other.RDGS &&
-            RDMD == other.RDMD &&
-            RDMO == other.RDMO &&
-            RDSI == other.RDSI &&
-            RDSB == other.RDSB &&
-            RDSD == other.RDSD &&
-            RDWT == other.RDWT &&
-            RDID == other.RDID);
+            Areas == other.Areas &&
+            Entries == other.Entries);
+
+    return false;
     }
 
 bool REGNRecord::operator !=(const REGNRecord &other) const
