@@ -280,7 +280,7 @@ bool AMMORecord::operator ==(const AMMORecord &other) const
     return (EDID.equalsi(other.EDID) &&
             FULL.equals(other.FULL) &&
             MODL == other.MODL &&
-            ICON.equals(other.ICON) &&
+            ICON.equalsi(other.ICON) &&
             ENAM == other.ENAM &&
             ANAM == other.ANAM &&
             DATA == other.DATA);

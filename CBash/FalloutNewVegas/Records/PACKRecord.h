@@ -84,17 +84,6 @@ class PACKRecord : public FNVRecord //Package
             bool operator !=(const PACKPTDT &other) const;
             };
 
-        struct PACKIDLC // Idle Animation Count
-            {
-            UINT8   targetType, unused[3]; // Animation Count, Unused
-
-            PACKIDLC();
-            ~PACKIDLC();
-
-            bool operator ==(const PACKIDLC &other) const;
-            bool operator !=(const PACKIDLC &other) const;
-            };
-
         struct PACKPKPT // Patrol Flags
             {
             UINT8   repeatableTypes, unused; // Repeatable, Unused
@@ -257,7 +246,7 @@ class PACKRecord : public FNVRecord //Package
         OptSubRecord<PACKPTDT> PTDT; //Target 1
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
         OptSimpleSubRecord<UINT8> IDLF; //Idle Animation Flags
-        OptSubRecord<PACKIDLC> IDLC; //Idle Animation Count
+        OptSubRecord<UINT8> IDLC; //Idle Animation Count (may be a UINT32 instead, but only the lower 8 bits are used, so check size on read)
         OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting
         std::vector<FORMID> IDLA; //Animations
         RawRecord IDLB; //Unused

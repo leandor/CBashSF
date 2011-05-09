@@ -60,62 +60,94 @@ UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //lvld Chance none
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //chanceNone
             return UINT8_FIELD;
-        case 11: //lvlf Flags
-            return UINT8_FIELD;
-        case 12: //lvlo LVLO ,, Struct
-            return SINT16_FIELD;
-        case 13: //lvlo_p LVLO ,, Struct
-            switch(WhichAttribute)
+        case 14: //flags
+            return UINT8_FLAG_FIELD;
+        case 15: //entries
+            if(ListFieldID == 0) //entries
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Entries.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Entries.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //level
+                    return SINT16_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 2;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //listId
+                    return FORMID_FIELD;
+                case 4: //count
+                    return SINT16_FIELD;
+                case 5: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 2;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 6: //owner
+                    return FORMID_FIELD;
+                case 7: //globalOrRank
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return Entries.value[ListIndex]->IsGlobal() ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 8: //condition
+                    return FLOAT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 14: //lvlo LVLO ,, Struct
-            return FORMID_FIELD;
-        case 15: //lvlo LVLO ,, Struct
-            return SINT16_FIELD;
-        case 16: //lvlo_p LVLO ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 17: //coed Extra Data
-            return FORMID_FIELD;
-        case 18: //coed_p Extra Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 19: //modPath
+        case 16: //modPath
             return ISTRING_FIELD;
-        case 20: //modb
+        case 17: //modb
             return FLOAT32_FIELD;
-        case 21: //modt_p
+        case 18: //modt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -126,7 +158,7 @@ UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 22: //altTextures
+        case 19: //altTextures
             if(!MODL.IsLoaded())
                 return UNKNOWN_FIELD;
 
@@ -137,13 +169,13 @@ UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.size();
+                        return MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= MODL->Textures.size())
+            if(ListIndex >= MODL->Textures.MODS.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -158,8 +190,8 @@ UINT32 LVLIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
 
-        case 25: //modelFlags
-            return UINT8_FIELD;
+        case 20: //modelFlags
+            return UINT8_FLAG_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -184,48 +216,78 @@ void * LVLIRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //lvld Chance none
-            return LVLD.IsLoaded() ? &LVLD->value10 : NULL;
-        case 11: //lvlf Flags
-            return LVLF.IsLoaded() ? &LVLF->value11 : NULL;
-        case 12: //lvlo LVLO ,, Struct
-            return LVLO.IsLoaded() ? &LVLO->value12 : NULL;
-        case 13: //lvlo_p LVLO ,, Struct
-            *FieldValues = LVLO.IsLoaded() ? &LVLO->value13[0] : NULL;
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //chanceNone
+            return &LVLD.value;
+        case 14: //flags
+            return &LVLF.value;
+        case 15: //entries
+            if(ListIndex >= Entries.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //level
+                    return &Entries.value[ListIndex]->LVLO.value.level;
+                case 2: //unused1
+                    *FieldValues = &Entries.value[ListIndex]->LVLO.value.unused1[0];
+                    return NULL;
+                case 3: //listId
+                    return &Entries.value[ListIndex]->LVLO.value.listId;
+                case 4: //count
+                    return &Entries.value[ListIndex]->LVLO.value.count;
+                case 5: //unused2
+                    *FieldValues = &Entries.value[ListIndex]->LVLO.value.unused2[0];
+                    return NULL;
+                case 6: //owner
+                    return Entries.value[ListIndex]->COED.IsLoaded() ? &Entries.value[ListIndex]->COED->owner : NULL;
+                case 7: //globalOrRank
+                    return Entries.value[ListIndex]->COED.IsLoaded() ? &Entries.value[ListIndex]->COED->globalOrRank : NULL;
+                case 8: //condition
+                    return Entries.value[ListIndex]->COED.IsLoaded() ? &Entries.value[ListIndex]->COED->condition : NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 14: //lvlo LVLO ,, Struct
-            return LVLO.IsLoaded() ? &LVLO->value14 : NULL;
-        case 15: //lvlo LVLO ,, Struct
-            return LVLO.IsLoaded() ? &LVLO->value15 : NULL;
-        case 16: //lvlo_p LVLO ,, Struct
-            *FieldValues = LVLO.IsLoaded() ? &LVLO->value16[0] : NULL;
-            return NULL;
-        case 17: //coed Extra Data
-            return COED.IsLoaded() ? &COED->value17 : NULL;
-        case 18: //coed_p Extra Data
-            *FieldValues = COED.IsLoaded() ? &COED->value18[0] : NULL;
-            return NULL;
-        case 19: //modPath
+        case 16: //modPath
             return MODL.IsLoaded() ? MODL->MODL.value : NULL;
-        case 20: //modb
+        case 17: //modb
             return MODL.IsLoaded() ? &MODL->MODB.value : NULL;
-        case 21: //modt_p
+        case 18: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 22: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 23: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value23 : NULL;
-        case 24: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value24 : NULL;
-        case 25: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value25 : NULL;
+        case 19: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 20: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         default:
             return NULL;
         }
@@ -259,95 +321,127 @@ bool LVLIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //lvld Chance none
-            LVLD.Load();
-            LVLD->value10 = *(UINT8 *)FieldValue;
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
             break;
-        case 11: //lvlf Flags
-            LVLF.Load();
-            LVLF->value11 = *(UINT8 *)FieldValue;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
             break;
-        case 12: //lvlo LVLO ,, Struct
-            LVLO.Load();
-            LVLO->value12 = *(SINT16 *)FieldValue;
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
             break;
-        case 13: //lvlo_p LVLO ,, Struct
-            if(ArraySize != 2)
+        case 13: //chanceNone
+            LVLD.value = *(UINT8 *)FieldValue;
+            break;
+        case 14: //flags
+            LVLF.value = *(UINT8 *)FieldValue;
+            break;
+        case 15: //entries
+            if(ListFieldID == 0) //entriesSize
+                {
+                Entries.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Entries.value.size())
                 break;
-            LVLO.Load();
-            LVLO->value13[0] = ((UINT8ARRAY)FieldValue)[0];
-            LVLO->value13[1] = ((UINT8ARRAY)FieldValue)[1];
+
+            switch(ListFieldID)
+                {
+                case 1: //level
+                    Entries.value[ListIndex]->LVLO.value.level = *(SINT16 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 2)
+                        break;
+                    Entries.value[ListIndex]->LVLO.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Entries.value[ListIndex]->LVLO.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    break;
+                case 3: //listId
+                    Entries.value[ListIndex]->LVLO.value.listId = *(FORMID *)FieldValue;
+                    return true;
+                case 4: //count
+                    Entries.value[ListIndex]->LVLO.value.count = *(SINT16 *)FieldValue;
+                    break;
+                case 5: //unused2
+                    if(ArraySize != 2)
+                        break;
+                    Entries.value[ListIndex]->LVLO.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Entries.value[ListIndex]->LVLO.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    break;
+                case 6: //owner
+                    Entries.value[ListIndex]->COED.Load();
+                    Entries.value[ListIndex]->COED->owner = *(FORMID *)FieldValue;
+                    return true;
+                case 7: //globalOrRank
+                    Entries.value[ListIndex]->COED.Load();
+                    Entries.value[ListIndex]->COED->globalOrRank = *(FORMID_OR_UINT32 *)FieldValue;
+                    return true;
+                case 8: //condition
+                    Entries.value[ListIndex]->COED.Load();
+                    Entries.value[ListIndex]->COED->condition = *(FLOAT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 14: //lvlo LVLO ,, Struct
-            LVLO.Load();
-            LVLO->value14 = *(FORMID *)FieldValue;
-            return true;
-        case 15: //lvlo LVLO ,, Struct
-            LVLO.Load();
-            LVLO->value15 = *(SINT16 *)FieldValue;
-            break;
-        case 16: //lvlo_p LVLO ,, Struct
-            if(ArraySize != 2)
-                break;
-            LVLO.Load();
-            LVLO->value16[0] = ((UINT8ARRAY)FieldValue)[0];
-            LVLO->value16[1] = ((UINT8ARRAY)FieldValue)[1];
-            break;
-        case 17: //coed Extra Data
-            COED.Load();
-            COED->value17 = *(FORMID *)FieldValue;
-            return true;
-        case 18: //coed_p Extra Data
-            if(ArraySize != 4)
-                break;
-            COED.Load();
-            COED->value18[0] = ((UINT8ARRAY)FieldValue)[0];
-            COED->value18[1] = ((UINT8ARRAY)FieldValue)[1];
-            COED->value18[2] = ((UINT8ARRAY)FieldValue)[2];
-            COED->value18[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 19: //modPath
+        case 16: //modPath
             MODL.Load();
             MODL->MODL.Copy((STRING)FieldValue);
             break;
-        case 20: //modb
+        case 17: //modb
             MODL.Load();
             MODL->MODB.value = *(FLOAT32 *)FieldValue;
             break;
-        case 21: //modt_p
+        case 18: //modt_p
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 22: //mods Alternate Textures
+        case 19: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 23: //mods Alternate Textures
+        case 20: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value23 = *(FORMID *)FieldValue;
-            return true;
-        case 24: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value24 = *(SINT32 *)FieldValue;
-            break;
-        case 25: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value25 = *(UINT8 *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
         default:
             break;
@@ -357,6 +451,10 @@ bool LVLIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void LVLIRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
+    LVLLVLO defaultLVLO;
+    GENCOED defaultCOED;
+    FNVMODS defaultMODS;
     switch(FieldID)
         {
         case 1: //flags1
@@ -375,70 +473,117 @@ void LVLIRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //lvld Chance none
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
+            return;
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //chanceNone
             LVLD.Unload();
             return;
-        case 11: //lvlf Flags
+        case 14: //flags
             LVLF.Unload();
             return;
-        case 12: //lvlo LVLO ,, Struct
-            LVLO.Unload();
+        case 15: //entries
+            if(ListFieldID == 0) //entriesSize
+                {
+                Entries.Unload();
+                return;
+                }
+
+            if(ListIndex >= Entries.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //level
+                    Entries.value[ListIndex]->LVLO.value.level = defaultLVLO.level;
+                    return;
+                case 2: //unused1
+                    Entries.value[ListIndex]->LVLO.value.unused1[0] = defaultLVLO.unused1[0];
+                    Entries.value[ListIndex]->LVLO.value.unused1[1] = defaultLVLO.unused1[1];
+                    return;
+                case 3: //listId
+                    Entries.value[ListIndex]->LVLO.value.listId = defaultLVLO.listId;
+                    return;
+                case 4: //count
+                    Entries.value[ListIndex]->LVLO.value.count = defaultLVLO.count;
+                    return;
+                case 5: //unused2
+                    Entries.value[ListIndex]->LVLO.value.unused2[0] = defaultLVLO.unused2[0];
+                    Entries.value[ListIndex]->LVLO.value.unused2[1] = defaultLVLO.unused2[1];
+                    return;
+                case 6: //owner
+                    if(Entries.value[ListIndex]->COED.IsLoaded())
+                        Entries.value[ListIndex]->COED->owner = defaultCOED.owner;
+                    return;
+                case 7: //globalOrRank
+                    if(Entries.value[ListIndex]->COED.IsLoaded())
+                        Entries.value[ListIndex]->COED->globalOrRank = defaultCOED.globalOrRank;
+                    return;
+                case 8: //condition
+                    if(Entries.value[ListIndex]->COED.IsLoaded())
+                        Entries.value[ListIndex]->COED->condition = defaultCOED.condition;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 13: //lvlo_p LVLO ,, Struct
-            LVLO.Unload();
-            return;
-        case 14: //lvlo LVLO ,, Struct
-            LVLO.Unload();
-            return;
-        case 15: //lvlo LVLO ,, Struct
-            LVLO.Unload();
-            return;
-        case 16: //lvlo_p LVLO ,, Struct
-            LVLO.Unload();
-            return;
-        case 17: //coed Extra Data
-            COED.Unload();
-            return;
-        case 18: //coed_p Extra Data
-            COED.Unload();
-            return;
-        case 19: //modPath
+        case 16: //modPath
             if(MODL.IsLoaded())
                 MODL->MODL.Unload();
             return;
-        case 20: //modb
+        case 17: //modb
             if(MODL.IsLoaded())
                 MODL->MODB.Unload();
             return;
-        case 21: //modt_p
+        case 18: //modt_p
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 22: //mods Alternate Textures
+        case 19: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 23: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 24: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 25: //modelFlags
+        case 20: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;

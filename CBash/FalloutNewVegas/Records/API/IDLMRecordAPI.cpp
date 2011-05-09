@@ -60,31 +60,35 @@ UINT32 IDLMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //boundX
+        case 7: //boundX1
             return SINT16_FIELD;
-        case 8: //boundY
+        case 8: //boundY1
             return SINT16_FIELD;
-        case 9: //boundZ
+        case 9: //boundZ1
             return SINT16_FIELD;
-        case 10: //idlf Flags
+        case 10: //boundX2
+            return SINT16_FIELD;
+        case 11: //boundY2
+            return SINT16_FIELD;
+        case 12: //boundZ2
+            return SINT16_FIELD;
+        case 13: //flags
             return UINT8_FIELD;
-        case 11: //idlc IDLC ,, Struct
+        case 14: //count
             return UINT8_FIELD;
-        case 12: //idlc_p IDLC ,, Struct
+        case 15: //timer
+            return FLOAT32_FIELD;
+        case 16: //animations
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
+                    return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 3;
+                    return IDLA.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 13: //idlt Idle Timer Setting
-            return FLOAT32_FIELD;
-        case 14: //idla Animations
-            return UNPARSED_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -109,23 +113,27 @@ void * IDLMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //boundX
-            return OBND.IsLoaded() ? &OBND->x : NULL;
-        case 8: //boundY
-            return OBND.IsLoaded() ? &OBND->y : NULL;
-        case 9: //boundZ
-            return OBND.IsLoaded() ? &OBND->z : NULL;
-        case 10: //idlf Flags
-            return IDLF.IsLoaded() ? &IDLF->value10 : NULL;
-        case 11: //idlc IDLC ,, Struct
-            return IDLC.IsLoaded() ? &IDLC->value11 : NULL;
-        case 12: //idlc_p IDLC ,, Struct
-            *FieldValues = IDLC.IsLoaded() ? &IDLC->value12[0] : NULL;
+        case 7: //boundX1
+            return &OBND.value.x1;
+        case 8: //boundY1
+            return &OBND.value.y1;
+        case 9: //boundZ1
+            return &OBND.value.z1;
+        case 10: //boundX2
+            return &OBND.value.x2;
+        case 11: //boundY2
+            return &OBND.value.y2;
+        case 12: //boundZ2
+            return &OBND.value.z2;
+        case 13: //flags
+            return &IDLF.value;
+        case 14: //count
+            return &IDLC.value;
+        case 15: //timer
+            return &IDLT.value;
+        case 16: //animations
+            *FieldValues = IDLA.IsLoaded() ? &IDLA.value[0] : NULL;
             return NULL;
-        case 13: //idlt Idle Timer Setting
-            return IDLT.IsLoaded() ? &IDLT->value13 : NULL;
-        case 14: //idla Animations
-            return UNPARSEDGET_FIELD14;
         default:
             return NULL;
         }
@@ -159,40 +167,38 @@ bool IDLMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //boundX
-            OBND.Load();
-            OBND->x = *(SINT16 *)FieldValue;
+        case 7: //boundX1
+            OBND.value.x1 = *(SINT16 *)FieldValue;
             break;
-        case 8: //boundY
-            OBND.Load();
-            OBND->y = *(SINT16 *)FieldValue;
+        case 8: //boundY1
+            OBND.value.y1 = *(SINT16 *)FieldValue;
             break;
-        case 9: //boundZ
-            OBND.Load();
-            OBND->z = *(SINT16 *)FieldValue;
+        case 9: //boundZ1
+            OBND.value.z1 = *(SINT16 *)FieldValue;
             break;
-        case 10: //idlf Flags
-            IDLF.Load();
-            IDLF->value10 = *(UINT8 *)FieldValue;
+        case 10: //boundX2
+            OBND.value.x2 = *(SINT16 *)FieldValue;
             break;
-        case 11: //idlc IDLC ,, Struct
-            IDLC.Load();
-            IDLC->value11 = *(UINT8 *)FieldValue;
+        case 11: //boundY2
+            OBND.value.y2 = *(SINT16 *)FieldValue;
             break;
-        case 12: //idlc_p IDLC ,, Struct
-            if(ArraySize != 3)
-                break;
-            IDLC.Load();
-            IDLC->value12[0] = ((UINT8ARRAY)FieldValue)[0];
-            IDLC->value12[1] = ((UINT8ARRAY)FieldValue)[1];
-            IDLC->value12[2] = ((UINT8ARRAY)FieldValue)[2];
+        case 12: //boundZ2
+            OBND.value.z2 = *(SINT16 *)FieldValue;
             break;
-        case 13: //idlt Idle Timer Setting
-            IDLT.Load();
-            IDLT->value13 = *(FLOAT32 *)FieldValue;
+        case 13: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 14: //idla Animations
-            return UNPARSEDGET_FIELD14;
+        case 14: //count
+            IDLC.value = *(UINT8 *)FieldValue;
+            break;
+        case 15: //timer
+            IDLT.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 16: //animations
+            IDLA.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                IDLA.value[x] = ((FORMIDARRAY)FieldValue)[x];
+            return true;
         default:
             break;
         }
@@ -201,6 +207,7 @@ bool IDLMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void IDLMRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENOBND defaultOBND;
     switch(FieldID)
         {
         case 1: //flags1
@@ -219,32 +226,36 @@ void IDLMRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //boundX
-            if(OBND.IsLoaded())
-                OBND->x = defaultOBND.x;
+        case 7: //boundX1
+            OBND.value.x1 = defaultOBND.x1;
             return;
-        case 8: //boundY
-            if(OBND.IsLoaded())
-                OBND->y = defaultOBND.y;
+        case 8: //boundY1
+            OBND.value.y1 = defaultOBND.y1;
             return;
-        case 9: //boundZ
-            if(OBND.IsLoaded())
-                OBND->z = defaultOBND.z;
+        case 9: //boundZ1
+            OBND.value.z1 = defaultOBND.z1;
             return;
-        case 10: //idlf Flags
+        case 10: //boundX2
+            OBND.value.x2 = defaultOBND.x2;
+            return;
+        case 11: //boundY2
+            OBND.value.y2 = defaultOBND.y2;
+            return;
+        case 12: //boundZ2
+            OBND.value.z2 = defaultOBND.z2;
+            return;
+        case 13: //flags
             IDLF.Unload();
             return;
-        case 11: //idlc IDLC ,, Struct
+        case 14: //count
             IDLC.Unload();
             return;
-        case 12: //idlc_p IDLC ,, Struct
-            IDLC.Unload();
-            return;
-        case 13: //idlt Idle Timer Setting
+        case 15: //timer
             IDLT.Unload();
             return;
-        case 14: //idla Animations
-            return UNPARSEDDEL_FIELD14;
+        case 16: //animations
+            IDLA.Unload();
+            return;
         default:
             return;
         }

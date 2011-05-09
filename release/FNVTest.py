@@ -139,17 +139,17 @@ def TestRegressions():
 ####    assertWEAP(Current, newMod)
 ####    assertAMMO(Current, newMod)
 ####    assertNPC_(Current, newMod)
-    assertCREA(Current, newMod)
-    assertLVLC(Current, newMod)
-    assertLVLN(Current, newMod)
-    assertKEYM(Current, newMod)
-    assertALCH(Current, newMod)
-##    newMod.save()
-    ##    assertIDLM(Current, newMod)
-    ##    assertNOTE(Current, newMod)
-    ##    assertCOBJ(Current, newMod)
-    ##    assertPROJ(Current, newMod)
-    ##    assertLVLI(Current, newMod)
+####    assertCREA(Current, newMod)
+####    assertLVLC(Current, newMod)
+####    assertLVLN(Current, newMod)
+####    assertKEYM(Current, newMod)
+####    assertALCH(Current, newMod)
+####    newMod.save()
+    assertIDLM(Current, newMod)
+    assertNOTE(Current, newMod)
+    assertCOBJ(Current, newMod)
+    assertPROJ(Current, newMod)
+    assertLVLI(Current, newMod)
     ##    assertWTHR(Current, newMod)
     ##    assertCLMT(Current, newMod)
     ##    assertREGN(Current, newMod)
@@ -8331,9 +8331,8 @@ def assertNOTE(Current, newMod):
     print "NOTE:Finished testing"
 
 def assertCOBJ(Current, newMod):
-    record = Current.LoadOrderMods[0].COBJ[0]
-    d(record)
-    print
+    assert len(Current.LoadOrderMods[0].COBJ) == 0
+
     return
 
     assert record.fid == ('FalloutNV.esm', 0x0)#xx

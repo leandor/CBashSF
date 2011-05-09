@@ -149,7 +149,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 23: //nift_p_p
+        case 23: //nift_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -585,7 +585,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             for(UINT32 p = 0;p < NIFZ.value.size();p++)
                 FieldValues[p] = NIFZ.value[p];
             return NULL;
-        case 23: //nift_p_p
+        case 23: //nift_p
             *FieldValues = NIFT.value;
             return NULL;
         case 24: //flags

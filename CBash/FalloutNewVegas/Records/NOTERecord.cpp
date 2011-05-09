@@ -53,9 +53,7 @@ NOTERecord::NOTERecord(NOTERecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     YNAM = srcRecord->YNAM;
@@ -64,6 +62,7 @@ NOTERecord::NOTERecord(NOTERecord *srcRecord):
     ONAM = srcRecord->ONAM;
     XNAM = srcRecord->XNAM;
     TNAM = srcRecord->TNAM;
+    TNAMAlt = srcRecord->TNAMAlt;
     SNAM = srcRecord->SNAM;
     return;
     }
@@ -84,80 +83,73 @@ bool NOTERecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(YNAM.IsLoaded())
-        op.Accept(YNAM->value);
+        op.Accept(YNAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-    if(ONAM.IsLoaded())
-        op.Accept(ONAM->value);
+        op.Accept(ZNAM.value);
+    for(UINT32 x = 0; x < ONAM.value.size(); x++)
+        op.Accept(ONAM.value[x]);
+
+    if(IsVoice() && TNAMAlt.IsLoaded())
+        op.Accept(TNAMAlt.value);
     if(SNAM.IsLoaded())
-        op.Accept(SNAM->value);
+        op.Accept(SNAM.value);
 
     return op.Stop();
     }
 
 bool NOTERecord::IsSound()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSound=0);
+    return DATA.value == eSound;
     }
 
 void NOTERecord::IsSound(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSound=0 : eDummyDefault;
+    DATA.value = value ? eSound : eText;
     }
 
 bool NOTERecord::IsText()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eText);
+    return DATA.value == eText;
     }
 
 void NOTERecord::IsText(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eText : eDummyDefault;
+    DATA.value = value ? eText : eSound;
     }
 
 bool NOTERecord::IsImage()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eImage);
+    return DATA.value == eImage;
     }
 
 void NOTERecord::IsImage(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eImage : eDummyDefault;
+    DATA.value = value ? eImage : eSound;
     }
 
 bool NOTERecord::IsVoice()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVoice);
+    return DATA.value == eVoice;
     }
 
 void NOTERecord::IsVoice(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVoice : eDummyDefault;
+    DATA.value = value ? eVoice : eSound;
     }
 
 bool NOTERecord::IsType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DATA.value == Type;
     }
 
 void NOTERecord::SetType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value = Type;
     }
 
 UINT32 NOTERecord::GetType()
     {
-    return 'ETON';
+    return REV32(NOTE);
     }
 
 STRING NOTERecord::GetStrType()
@@ -187,60 +179,63 @@ SINT32 NOTERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'MANY':
+            case REV32(YNAM):
                 YNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 ONAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
-                TNAM.Read(buffer, subSize, curPos);
+            case REV32(TNAM):
+                if(IsVoice())
+                    TNAMAlt.Read(buffer, subSize, curPos);
+                else
+                    TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -259,6 +254,7 @@ SINT32 NOTERecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     OBND.Unload();
     FULL.Unload();
@@ -271,6 +267,7 @@ SINT32 NOTERecord::Unload()
     ONAM.Unload();
     XNAM.Unload();
     TNAM.Unload();
+    TNAMAlt.Unload();
     SNAM.Unload();
     return 1;
     }
@@ -280,9 +277,7 @@ SINT32 NOTERecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(YNAM);
@@ -290,27 +285,30 @@ SINT32 NOTERecord::WriteRecord(FileWriter &writer)
     WRITE(DATA);
     WRITE(ONAM);
     WRITE(XNAM);
-    WRITE(TNAM);
+    if(IsVoice())
+        WRITEAS(TNAMAlt, TNAM);
+    else
+        WRITE(TNAM);
     WRITE(SNAM);
-
     return -1;
     }
 
 bool NOTERecord::operator ==(const NOTERecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
             DATA == other.DATA &&
-            ONAM == other.ONAM &&
+            SNAM == other.SNAM &&
+            TNAMAlt == other.TNAMAlt &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             XNAM.equalsi(other.XNAM) &&
             TNAM.equalsi(other.TNAM) &&
-            SNAM == other.SNAM);
+            MODL == other.MODL &&
+            ONAM == other.ONAM);
     }
 
 bool NOTERecord::operator !=(const NOTERecord &other) const

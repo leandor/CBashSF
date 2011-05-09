@@ -44,8 +44,8 @@ class NOTERecord : public FNVRecord //Note
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSimpleSubRecord<UINT8> DATA; //Type
-        std::vector<FORMID> ONAM; //Quests
+        ReqSimpleSubRecord<UINT8> DATA; //Type
+        UnorderedSparseArray<FORMID> ONAM; //Quests
         StringRecord XNAM; //Texture
         StringRecord TNAM; //Text if DATA.value != eVoice
         OptSimpleSubRecord<FORMID> TNAMAlt; //Topic if DATA.value == eVoice

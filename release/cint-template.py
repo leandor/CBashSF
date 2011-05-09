@@ -131,31 +131,32 @@ LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
 class API_FIELDS(object):
     """These fields MUST be defined in the same order as in CBash's Common.h"""
     __slots__ = ['UNKNOWN', 'MISSING', 'JUNK', 'BOOL',
-                  'SINT8', 'UINT8', 'SINT16', 'UINT16',
-                  'SINT32', 'UINT32', 'FLOAT32',
-                  'RADIAN', 'FORMID', 'MGEFCODE',
-                  'ACTORVALUE', 'FORMID_OR_UINT32',
-                  'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
-                  'UNKNOWN_OR_FORMID_OR_UINT32',
-                  'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
-                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
-                  'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
-                  'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
-                  'CHAR', 'CHAR4', 'STRING', 'ISTRING',
-                  'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
-                  'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
-                  'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
-                  'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
-                  'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
-                  'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
-                  'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
-                  'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
-                  'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
-                  'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
-                  'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
-                  'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
-                  'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
-                  'UNDEFINED']
+                 'SINT8', 'UINT8', 'SINT16', 'UINT16',
+                 'SINT32', 'UINT32', 'FLOAT32',
+                 'RADIAN', 'FORMID', 'MGEFCODE',
+                 'ACTORVALUE', 'FORMID_OR_UINT32',
+                 'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
+                 'FORMID_OR_STRING',
+                 'UNKNOWN_OR_FORMID_OR_UINT32',
+                 'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
+                 'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
+                 'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
+                 'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
+                 'CHAR', 'CHAR4', 'STRING', 'ISTRING',
+                 'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
+                 'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
+                 'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
+                 'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
+                 'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
+                 'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
+                 'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
+                 'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
+                 'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
+                 'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
+                 'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
+                 'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
+                 'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
+                 'UNDEFINED']
 
 for value, attr in enumerate(API_FIELDS.__slots__):
     setattr(API_FIELDS, attr, value)
@@ -707,6 +708,32 @@ class CBashFORMID_OR_UINT32(object):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+
+class CBashFORMID_OR_STRING(object):
+    def __init__(self, FieldID):
+        self._FieldID = FieldID
+    def __get__(self, instance, owner):
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
+        if type == API_FIELDS.FORMID:
+            _CGetField.restype = POINTER(c_ulong)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue):
+                return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
+        elif type == API_FIELDS.STRING:
+            _CGetField.restype = c_char_p
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue):
+                return retValue
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
+            if type == API_FIELDS.FORMID:
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+            elif type == API_FIELDS.STRING:
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+            
 
 class CBashFORMID_OR_UINT32_ARRAY(object):
     def __init__(self, FieldID, Size=None):
@@ -5128,28 +5155,276 @@ class FnvALCHRecord(FnvBaseRecord):
 
 class FnvIDLMRecord(FnvBaseRecord):
     _Type = 'IDLM'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    UINT8_MACRO(flags, 13)
+    UINT8_MACRO(count, 14)
+    FLOAT32_MACRO(timer, 15)
+    FORMID_ARRAY_MACRO(animations, 16)
+    
+    BasicFlagMACRO(IsRunInSequence, flags, 0x00000001)
+    BasicFlagMACRO(IsDoOnce, flags, 0x00000004)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'flags', 'count', 'timer',
+                                                         'animations']
 
 class FnvNOTERecord(FnvBaseRecord):
     _Type = 'NOTE'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(pickupSound, 21)
+    FORMID_MACRO(dropSound, 22)
+    UINT8_TYPE_MACRO(noteType, 23)
+    FORMID_ARRAY_MACRO(quests, 24)
+    ISTRING_MACRO(texturePath, 25)
+    FORMID_OR_STRING_MACRO(textOrTopic, 26) #Is a topic formID if IsVoice is true, otherwise text
+    FORMID_MACRO(sound, 27)
+
+    BasicTypeMACRO(IsSound, flags, 0, IsText)
+    BasicTypeMACRO(IsText, flags, 1, IsSound)
+    BasicTypeMACRO(IsImage, flags, 2, IsSound)
+    BasicTypeMACRO(IsVoice, flags, 3, IsSound)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'pickupSound', 'dropSound',
+                                           'noteType', 'quests', 'texturePath',
+                                           'textOrTopic', 'sound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'pickupSound', 'dropSound',
+                                             'noteType', 'quests', 'texturePath',
+                                             'textOrTopic', 'sound']# 'modt_p',
 
 class FnvCOBJRecord(FnvBaseRecord):
     _Type = 'COBJ'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    ISTRING_MACRO(iconPath, 19)
+    ISTRING_MACRO(smallIconPath, 20)
+    FORMID_MACRO(script, 21)
+    FORMID_MACRO(pickupSound, 22)
+    FORMID_MACRO(dropSound, 23)
+    SINT32_MACRO(value, 24)
+    FLOAT32_MACRO(weight, 25)
+    
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'pickupSound',
+                                           'dropSound', 'value', 'weight']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'pickupSound',
+                                             'dropSound', 'value', 'weight']# 'modt_p',
 
 class FnvPROJRecord(FnvBaseRecord):
     _Type = 'PROJ'
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    GroupedValuesMACRO(destructable, 19, FNVDestructable)
+    UINT16_FLAG_MACRO(flags, 24)
+    UINT16_TYPE_MACRO(projType, 25)
+    FLOAT32_MACRO(gravity, 26)
+    FLOAT32_MACRO(speed, 27)
+    FLOAT32_MACRO(range, 28)
+    FORMID_MACRO(light, 29)
+    FORMID_MACRO(flash, 30)
+    FLOAT32_MACRO(tracerChance, 31)
+    FLOAT32_MACRO(altExplProximityTrigger, 32)
+    FLOAT32_MACRO(altExplProximityTimer, 33)
+    FORMID_MACRO(explosion, 34)
+    FORMID_MACRO(sound, 35)
+    FLOAT32_MACRO(flashDuration, 36)
+    FLOAT32_MACRO(fadeDuration, 37)
+    FLOAT32_MACRO(impactForce, 38)
+    FORMID_MACRO(soundCountdown, 39)
+    FORMID_MACRO(soundDisable, 40)
+    FORMID_MACRO(defaultWeaponSource, 41)
+    FLOAT32_MACRO(rotX, 42)
+    FLOAT32_MACRO(rotY, 43)
+    FLOAT32_MACRO(rotZ, 44)
+    FLOAT32_MACRO(bouncyMult, 45)
+    ISTRING_MACRO(modelPath, 46)
+    UINT8_ARRAY_MACRO(nam2_p, 47)
+    UINT32_MACRO(soundLevel, 48)
+
+    BasicFlagMACRO(IsHitscan, flags, 0x0001)
+    BasicFlagMACRO(IsExplosion, flags, 0x0002)
+    BasicFlagMACRO(IsAltTrigger, flags, 0x0004)
+    BasicFlagMACRO(IsMuzzleFlash, flags, 0x0008)
+    BasicFlagMACRO(IsDisableable, flags, 0x0020)
+    BasicFlagMACRO(IsPickupable, flags, 0x0040)
+    BasicFlagMACRO(IsSupersonic, flags, 0x0080)
+    BasicFlagMACRO(IsPinsLimbs, flags, 0x0100)
+    BasicFlagMACRO(IsPassSmallTransparent, flags, 0x0200)
+    BasicFlagMACRO(IsDetonates, flags, 0x0400)
+    BasicFlagMACRO(IsRotation, flags, 0x0800)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    
+    BasicTypeMACRO(IsMissile, projType, 1, IsLobber)
+    BasicTypeMACRO(IsLobber, projType, 2, IsMissile)
+    BasicTypeMACRO(IsBeam, projType, 4, )
+    BasicTypeMACRO(IsFlame, projType, 8, IsMissile)
+    BasicTypeMACRO(IsContinuousBeam, projType, 16, IsMissile)
+
+    BasicTypeMACRO(IsLoud, soundLevel, 0, IsNormal)
+    BasicTypeMACRO(IsNormal, soundLevel, 1, IsLoud)
+    BasicTypeMACRO(IsSilent, soundLevel, 2, IsLoud)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'destructable_list', 'flags',
+                                           'projType', 'gravity', 'speed',
+                                           'range', 'light', 'flash',
+                                           'tracerChance',
+                                           'altExplProximityTrigger',
+                                           'altExplProximityTimer',
+                                           'explosion', 'sound',
+                                           'flashDuration', 'fadeDuration',
+                                           'impactForce', 'soundCountdown',
+                                           'soundDisable',
+                                           'defaultWeaponSource', 'rotX',
+                                           'rotY', 'rotZ', 'bouncyMult',
+                                           'modelPath', 'nam2_p',
+                                           'soundLevel']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'destructable_list', 'flags',
+                                             'projType', 'gravity', 'speed',
+                                             'range', 'light', 'flash',
+                                             'tracerChance',
+                                             'altExplProximityTrigger',
+                                             'altExplProximityTimer',
+                                             'explosion', 'sound',
+                                             'flashDuration', 'fadeDuration',
+                                             'impactForce', 'soundCountdown',
+                                             'soundDisable',
+                                             'defaultWeaponSource', 'rotX',
+                                             'rotY', 'rotZ', 'bouncyMult',
+                                             'modelPath',
+                                             'soundLevel']# 'nam2_p', 'modt_p',
 
 class FnvLVLIRecord(FnvBaseRecord):
     _Type = 'LVLI'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        
+    class Entry(ListComponent):
+        SINT16_LISTMACRO(level, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 2)
+        FORMID_LISTMACRO(listId, 3)
+        SINT16_LISTMACRO(count, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 5, 2)
+        FORMID_LISTMACRO(owner, 6)
+        UNKNOWN_OR_FORMID_OR_UINT32_LISTMACRO(globalOrRank, 7)
+        FLOAT32_LISTMACRO(condition, 8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    UINT8_MACRO(chanceNone, 13)
+    UINT8_FLAG_MACRO(flags, 14)
+
+    LIST_MACRO(entries, 15, self.Entry)
+    ISTRING_MACRO(modPath, 16)
+    FLOAT32_MACRO(modb, 17)
+    UINT8_ARRAY_MACRO(modt_p, 18)
+
+    LIST_MACRO(altTextures, 19, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 20)
+    
+    BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
+    BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
+    BasicFlagMACRO(IsUseAll, flags, 0x00000004)
+
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'

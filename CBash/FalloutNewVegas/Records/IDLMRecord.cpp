@@ -69,46 +69,40 @@ bool IDLMRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    //if(IDLA.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(IDLA->value);
+    for(UINT32 x = 0; x < IDLA.value.size(); x++)
+        op.Accept(IDLA.value[x]);
 
     return op.Stop();
     }
 
 bool IDLMRecord::IsRunInSequence()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRunInSequence) != 0;
+    return (IDLF.value & fIsRunInSequence) != 0;
     }
 
 void IDLMRecord::IsRunInSequence(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRunInSequence) : (Dummy->flags & ~fIsRunInSequence);
+    IDLF.value = value ? (IDLF.value | fIsRunInSequence) : (IDLF.value & ~fIsRunInSequence);
     }
 
 bool IDLMRecord::IsDoOnce()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDoOnce) != 0;
+    return (IDLF.value & fIsDoOnce) != 0;
     }
 
 void IDLMRecord::IsDoOnce(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDoOnce) : (Dummy->flags & ~fIsDoOnce);
+    IDLF.value = value ? (IDLF.value | fIsDoOnce) : (IDLF.value & ~fIsDoOnce);
     }
 
-bool IDLMRecord::Is0FlagMask(UINT8 Mask, bool Exact)
+bool IDLMRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((IDLF.value & Mask) == Mask) : ((IDLF.value & Mask) != 0);
     }
 
-void IDLMRecord::Set0FlagMask(UINT8 Mask)
+void IDLMRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    IDLF.value = Mask;
     }
 
 UINT32 IDLMRecord::GetType()
@@ -153,7 +147,8 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 IDLF.Read(buffer, subSize, curPos);
                 break;
             case 'CLDI':
-                IDLC.Read(buffer, subSize, curPos);
+                IDLC.Read(buffer, 1, curPos);
+                curPos += subSize - 1; //in case it was one of the UINT32 varieties
                 break;
             case 'TLDI':
                 IDLT.Read(buffer, subSize, curPos);
@@ -194,17 +189,16 @@ SINT32 IDLMRecord::WriteRecord(FileWriter &writer)
     WRITE(IDLC);
     WRITE(IDLT);
     WRITE(IDLA);
-
     return -1;
     }
 
 bool IDLMRecord::operator ==(const IDLMRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
+    return (OBND == other.OBND &&
             IDLF == other.IDLF &&
             IDLC == other.IDLC &&
             IDLT == other.IDLT &&
+            EDID.equalsi(other.EDID) &&
             IDLA == other.IDLA);
     }
 

@@ -67,11 +67,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/LVLNRecord.h"
 #include "Records/KEYMRecord.h"
 #include "Records/ALCHRecord.h"
-//#include "Records/IDLMRecord.h"
-//#include "Records/NOTERecord.h"
-//#include "Records/COBJRecord.h"
-//#include "Records/PROJRecord.h"
-//#include "Records/LVLIRecord.h"
+#include "Records/IDLMRecord.h"
+#include "Records/NOTERecord.h"
+#include "Records/COBJRecord.h"
+#include "Records/PROJRecord.h"
+#include "Records/LVLIRecord.h"
 //#include "Records/WTHRRecord.h"
 //#include "Records/CLMTRecord.h"
 //#include "Records/REGNRecord.h"
@@ -172,11 +172,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::LVLNRecord> LVLN;
         FNVGRUPRecords<FNV::KEYMRecord> KEYM;
         FNVGRUPRecords<FNV::ALCHRecord> ALCH;
-        //FNVGRUPRecords<FNV::IDLMRecord> IDLM;
-        //FNVGRUPRecords<FNV::NOTERecord> NOTE;
-        //FNVGRUPRecords<FNV::COBJRecord> COBJ;
-        //FNVGRUPRecords<FNV::PROJRecord> PROJ;
-        //FNVGRUPRecords<FNV::LVLIRecord> LVLI;
+        FNVGRUPRecords<FNV::IDLMRecord> IDLM;
+        FNVGRUPRecords<FNV::NOTERecord> NOTE;
+        FNVGRUPRecords<FNV::COBJRecord> COBJ;
+        FNVGRUPRecords<FNV::PROJRecord> PROJ;
+        FNVGRUPRecords<FNV::LVLIRecord> LVLI;
         //FNVGRUPRecords<FNV::WTHRRecord> WTHR;
         //FNVGRUPRecords<FNV::CLMTRecord> CLMT;
         //FNVGRUPRecords<FNV::REGNRecord> REGN;

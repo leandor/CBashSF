@@ -1295,6 +1295,10 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\COBJRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\CONTRecord.cpp"
 							>
 							<FileConfiguration
@@ -1640,6 +1644,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\IDLMRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\INGRRecord.cpp"
 							>
 							<FileConfiguration
@@ -1795,6 +1803,37 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\LVLIRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\LVLNRecord.cpp"
 							>
 						</File>
@@ -1869,6 +1908,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\NOTERecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\NPC_Record.cpp"
 							>
 							<FileConfiguration
@@ -1898,6 +1941,10 @@
 									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 								/>
 							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PROJRecord.cpp"
+							>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\PWATRecord.cpp"
@@ -2331,6 +2378,10 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\COBJRecordAPI.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\CONTRecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -2676,6 +2727,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\IDLMRecordAPI.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\INGRRecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -2831,6 +2886,37 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\LVLIRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\LVLNRecordAPI.cpp"
 							>
 						</File>
@@ -2905,6 +2991,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\NOTERecordAPI.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\NPC_RecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -2934,6 +3024,10 @@
 									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 								/>
 							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PROJRecordAPI.cpp"
+							>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\PWATRecordAPI.cpp"

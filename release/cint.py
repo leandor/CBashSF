@@ -131,31 +131,32 @@ LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
 class API_FIELDS(object):
     """These fields MUST be defined in the same order as in CBash's Common.h"""
     __slots__ = ['UNKNOWN', 'MISSING', 'JUNK', 'BOOL',
-                  'SINT8', 'UINT8', 'SINT16', 'UINT16',
-                  'SINT32', 'UINT32', 'FLOAT32',
-                  'RADIAN', 'FORMID', 'MGEFCODE',
-                  'ACTORVALUE', 'FORMID_OR_UINT32',
-                  'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
-                  'UNKNOWN_OR_FORMID_OR_UINT32',
-                  'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
-                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
-                  'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
-                  'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
-                  'CHAR', 'CHAR4', 'STRING', 'ISTRING',
-                  'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
-                  'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
-                  'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
-                  'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
-                  'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
-                  'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
-                  'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
-                  'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
-                  'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
-                  'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
-                  'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
-                  'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
-                  'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
-                  'UNDEFINED']
+                 'SINT8', 'UINT8', 'SINT16', 'UINT16',
+                 'SINT32', 'UINT32', 'FLOAT32',
+                 'RADIAN', 'FORMID', 'MGEFCODE',
+                 'ACTORVALUE', 'FORMID_OR_UINT32',
+                 'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
+                 'FORMID_OR_STRING',
+                 'UNKNOWN_OR_FORMID_OR_UINT32',
+                 'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
+                 'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
+                 'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
+                 'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
+                 'CHAR', 'CHAR4', 'STRING', 'ISTRING',
+                 'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
+                 'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
+                 'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
+                 'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
+                 'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
+                 'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
+                 'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
+                 'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
+                 'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
+                 'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
+                 'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
+                 'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
+                 'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
+                 'UNDEFINED']
 
 for value, attr in enumerate(API_FIELDS.__slots__):
     setattr(API_FIELDS, attr, value)
@@ -707,6 +708,32 @@ class CBashFORMID_OR_UINT32(object):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+
+class CBashFORMID_OR_STRING(object):
+    def __init__(self, FieldID):
+        self._FieldID = FieldID
+    def __get__(self, instance, owner):
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
+        if type == API_FIELDS.FORMID:
+            _CGetField.restype = POINTER(c_ulong)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue):
+                return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
+        elif type == API_FIELDS.STRING:
+            _CGetField.restype = c_char_p
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
+            if(retValue):
+                return retValue
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
+            if type == API_FIELDS.FORMID:
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+            elif type == API_FIELDS.STRING:
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+            
 
 class CBashFORMID_OR_UINT32_ARRAY(object):
     def __init__(self, FieldID, Size=None):
@@ -5553,28 +5580,308 @@ class FnvALCHRecord(FnvBaseRecord):
 
 class FnvIDLMRecord(FnvBaseRecord):
     _Type = 'IDLM'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    flags = CBashGeneric(13, c_ubyte)
+    count = CBashGeneric(14, c_ubyte)
+    timer = CBashFLOAT32(15)
+    animations = CBashFORMIDARRAY(16)
+    
+    IsRunInSequence = CBashBasicFlag('flags', 0x00000001)
+    IsDoOnce = CBashBasicFlag('flags', 0x00000004)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'flags', 'count', 'timer',
+                                                         'animations']
 
 class FnvNOTERecord(FnvBaseRecord):
     _Type = 'NOTE'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    pickupSound = CBashFORMID(21)
+    dropSound = CBashFORMID(22)
+    noteType = CBashGeneric(23, c_ubyte)
+    quests = CBashFORMIDARRAY(24)
+    texturePath = CBashISTRING(25)
+    textOrTopic = CBashFORMID_OR_STRING(26) #Is a topic formID if IsVoice is true, otherwise text
+    sound = CBashFORMID(27)
+
+    IsSound = CBashBasicType('flags', 0, 'IsText')
+    IsText = CBashBasicType('flags', 1, 'IsSound')
+    IsImage = CBashBasicType('flags', 2, 'IsSound')
+    IsVoice = CBashBasicType('flags', 3, 'IsSound')
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'pickupSound', 'dropSound',
+                                           'noteType', 'quests', 'texturePath',
+                                           'textOrTopic', 'sound']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'pickupSound', 'dropSound',
+                                             'noteType', 'quests', 'texturePath',
+                                             'textOrTopic', 'sound']# 'modt_p',
 
 class FnvCOBJRecord(FnvBaseRecord):
     _Type = 'COBJ'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    iconPath = CBashISTRING(19)
+    smallIconPath = CBashISTRING(20)
+    script = CBashFORMID(21)
+    pickupSound = CBashFORMID(22)
+    dropSound = CBashFORMID(23)
+    value = CBashGeneric(24, c_long)
+    weight = CBashFLOAT32(25)
+    
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'iconPath', 'smallIconPath',
+                                           'script', 'pickupSound',
+                                           'dropSound', 'value', 'weight']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'iconPath', 'smallIconPath',
+                                             'script', 'pickupSound',
+                                             'dropSound', 'value', 'weight']# 'modt_p',
 
 class FnvPROJRecord(FnvBaseRecord):
     _Type = 'PROJ'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(18, c_ubyte)
+    destructable = CBashGrouped(19, FNVDestructable)
+    destructable_list = CBashGrouped(19, FNVDestructable, True)
+
+    flags = CBashGeneric(24, c_ushort)
+    projType = CBashGeneric(25, c_ushort)
+    gravity = CBashFLOAT32(26)
+    speed = CBashFLOAT32(27)
+    range = CBashFLOAT32(28)
+    light = CBashFORMID(29)
+    flash = CBashFORMID(30)
+    tracerChance = CBashFLOAT32(31)
+    altExplProximityTrigger = CBashFLOAT32(32)
+    altExplProximityTimer = CBashFLOAT32(33)
+    explosion = CBashFORMID(34)
+    sound = CBashFORMID(35)
+    flashDuration = CBashFLOAT32(36)
+    fadeDuration = CBashFLOAT32(37)
+    impactForce = CBashFLOAT32(38)
+    soundCountdown = CBashFORMID(39)
+    soundDisable = CBashFORMID(40)
+    defaultWeaponSource = CBashFORMID(41)
+    rotX = CBashFLOAT32(42)
+    rotY = CBashFLOAT32(43)
+    rotZ = CBashFLOAT32(44)
+    bouncyMult = CBashFLOAT32(45)
+    modelPath = CBashISTRING(46)
+    nam2_p = CBashUINT8ARRAY(47)
+    soundLevel = CBashGeneric(48, c_ulong)
+
+    IsHitscan = CBashBasicFlag('flags', 0x0001)
+    IsExplosion = CBashBasicFlag('flags', 0x0002)
+    IsAltTrigger = CBashBasicFlag('flags', 0x0004)
+    IsMuzzleFlash = CBashBasicFlag('flags', 0x0008)
+    IsDisableable = CBashBasicFlag('flags', 0x0020)
+    IsPickupable = CBashBasicFlag('flags', 0x0040)
+    IsSupersonic = CBashBasicFlag('flags', 0x0080)
+    IsPinsLimbs = CBashBasicFlag('flags', 0x0100)
+    IsPassSmallTransparent = CBashBasicFlag('flags', 0x0200)
+    IsDetonates = CBashBasicFlag('flags', 0x0400)
+    IsRotation = CBashBasicFlag('flags', 0x0800)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    
+    IsMissile = CBashBasicType('projType', 1, 'IsLobber')
+    IsLobber = CBashBasicType('projType', 2, 'IsMissile')
+    IsBeam = CBashBasicType('projType', 4, '')
+    IsFlame = CBashBasicType('projType', 8, 'IsMissile')
+    IsContinuousBeam = CBashBasicType('projType', 16, 'IsMissile')
+
+    IsLoud = CBashBasicType('soundLevel', 0, 'IsNormal')
+    IsNormal = CBashBasicType('soundLevel', 1, 'IsLoud')
+    IsSilent = CBashBasicType('soundLevel', 2, 'IsLoud')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'destructable_list', 'flags',
+                                           'projType', 'gravity', 'speed',
+                                           'range', 'light', 'flash',
+                                           'tracerChance',
+                                           'altExplProximityTrigger',
+                                           'altExplProximityTimer',
+                                           'explosion', 'sound',
+                                           'flashDuration', 'fadeDuration',
+                                           'impactForce', 'soundCountdown',
+                                           'soundDisable',
+                                           'defaultWeaponSource', 'rotX',
+                                           'rotY', 'rotZ', 'bouncyMult',
+                                           'modelPath', 'nam2_p',
+                                           'soundLevel']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'destructable_list', 'flags',
+                                             'projType', 'gravity', 'speed',
+                                             'range', 'light', 'flash',
+                                             'tracerChance',
+                                             'altExplProximityTrigger',
+                                             'altExplProximityTimer',
+                                             'explosion', 'sound',
+                                             'flashDuration', 'fadeDuration',
+                                             'impactForce', 'soundCountdown',
+                                             'soundDisable',
+                                             'defaultWeaponSource', 'rotX',
+                                             'rotY', 'rotZ', 'bouncyMult',
+                                             'modelPath',
+                                             'soundLevel']# 'nam2_p', 'modt_p',
 
 class FnvLVLIRecord(FnvBaseRecord):
     _Type = 'LVLI'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet."""
+        self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        
+    class Entry(ListComponent):
+        level = CBashGeneric_LIST(1, c_short)
+        unused1 = CBashUINT8ARRAY_LIST(2, 2)
+        listId = CBashFORMID_LIST(3)
+        count = CBashGeneric_LIST(4, c_short)
+        unused2 = CBashUINT8ARRAY_LIST(5, 2)
+        owner = CBashFORMID_LIST(6)
+        globalOrRank = CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(7)
+        condition = CBashFLOAT32_LIST(8)
+        exportattrs = copyattrs = ['level', 'listId', 'count', 'owner', 'globalOrRank', 'condition']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    chanceNone = CBashGeneric(13, c_ubyte)
+    flags = CBashGeneric(14, c_ubyte)
+
+    def create_entry(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    entries = CBashLIST(15, Entry)
+    entries_list = CBashLIST(15, Entry, True)
+
+    modPath = CBashISTRING(16)
+    modb = CBashFLOAT32(17)
+    modt_p = CBashUINT8ARRAY(18)
+
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 19, length)
+    altTextures = CBashLIST(19, FNVAltTexture)
+    altTextures_list = CBashLIST(19, FNVAltTexture, True)
+
+    modelFlags = CBashGeneric(20, c_ubyte)
+    
+    IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
+    IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
+    IsUseAll = CBashBasicFlag('flags', 0x00000004)
+
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'chanceNone', 'flags',
+                                           'entries_list', 'modPath',
+                                           'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'chanceNone', 'flags',
+                                             'entries_list', 'modPath',
+                                             'modb', 
+                                             'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'

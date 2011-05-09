@@ -53,9 +53,7 @@ COBJRecord::COBJRecord(COBJRecord *srcRecord):
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
-
     MODL = srcRecord->MODL;
-
     ICON = srcRecord->ICON;
     MICO = srcRecord->MICO;
     SCRI = srcRecord->SCRI;
@@ -81,18 +79,17 @@ bool COBJRecord::VisitFormIDs(FormIDOp &op)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
     if(SCRI.IsLoaded())
-        op.Accept(SCRI->value);
+        op.Accept(SCRI.value);
     if(YNAM.IsLoaded())
-        op.Accept(YNAM->value);
+        op.Accept(YNAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-
+        op.Accept(ZNAM.value);
     return op.Stop();
     }
 
 UINT32 COBJRecord::GetType()
     {
-    return 'JBOC';
+    return 'CSIM';
     }
 
 STRING COBJRecord::GetStrType()
@@ -203,31 +200,28 @@ SINT32 COBJRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(OBND);
     WRITE(FULL);
-
     MODL.Write(writer);
-
     WRITE(ICON);
     WRITE(MICO);
     WRITE(SCRI);
     WRITE(YNAM);
     WRITE(ZNAM);
     WRITE(DATA);
-
     return -1;
     }
 
 bool COBJRecord::operator ==(const COBJRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            OBND == other.OBND &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
+    return (OBND == other.OBND &&
             SCRI == other.SCRI &&
             YNAM == other.YNAM &&
             ZNAM == other.ZNAM &&
-            DATA == other.DATA);
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
+            MODL == other.MODL);
     }
 
 bool COBJRecord::operator !=(const COBJRecord &other) const

@@ -28,17 +28,6 @@ namespace FNV
 class IDLMRecord : public FNVRecord //Idle Marker
     {
     private:
-        struct IDLMIDLC
-            {
-            UINT8   count, unused1[3]; // Animation Count, Unused
-
-            IDLMIDLC();
-            ~IDLMIDLC();
-
-            bool operator ==(const IDLMIDLC &other) const;
-            bool operator !=(const IDLMIDLC &other) const;
-            };
-
         enum flagsFlags
             {
             fIsRunInSequence = 0x00000001,
@@ -49,9 +38,9 @@ class IDLMRecord : public FNVRecord //Idle Marker
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSimpleSubRecord<UINT8> IDLF; //Flags
-        OptSubRecord<IDLMIDLC> IDLC; //Data
+        OptSimpleSubRecord<UINT8> IDLC; //Data (may be a UINT32 instead, but only the lower 8 bits are used, so check size on read)
         OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting
-        std::vector<FORMID> IDLA; //Animations
+        UnorderedPackedArray<FORMID> IDLA; //Animations
 
         IDLMRecord(unsigned char *_recData=NULL);
         IDLMRecord(IDLMRecord *srcRecord);

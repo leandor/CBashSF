@@ -470,34 +470,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgIDLM:
             case 'MLDI':
-                //reader.read(&IDLM.stamp, 4);
-                //reader.read(&IDLM.unknown, 4);
-                //IDLM.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&IDLM.stamp, 4);
+                reader.read(&IDLM.unknown, 4);
+                IDLM.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgNOTE:
             case 'ETON':
-                //reader.read(&NOTE.stamp, 4);
-                //reader.read(&NOTE.unknown, 4);
-                //NOTE.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&NOTE.stamp, 4);
+                reader.read(&NOTE.unknown, 4);
+                NOTE.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgCOBJ:
             case 'JBOC':
-                //reader.read(&COBJ.stamp, 4);
-                //reader.read(&COBJ.unknown, 4);
-                //COBJ.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&COBJ.stamp, 4);
+                reader.read(&COBJ.unknown, 4);
+                COBJ.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgPROJ: //Same as normal
             case 'JORP':
-                //reader.read(&PROJ.stamp, 4);
-                //reader.read(&PROJ.unknown, 4);
-                //PROJ.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&PROJ.stamp, 4);
+                reader.read(&PROJ.unknown, 4);
+                PROJ.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgLVLI: //Same as normal
             case 'ILVL':
-                //reader.read(&LVLI.stamp, 4);
-                //reader.read(&LVLI.unknown, 4);
-                //LVLI.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&LVLI.stamp, 4);
+                reader.read(&LVLI.unknown, 4);
+                LVLI.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgWTHR: //Same as normal
             case 'RHTW':
                 //reader.read(&WTHR.stamp, 4);
@@ -939,15 +939,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'HCLA':
             return (UINT32)ALCH.Records.size();
         case 'MLDI':
-            //return (UINT32)IDLM.Records.size();
+            return (UINT32)IDLM.Records.size();
         case 'ETON':
-            //return (UINT32)NOTE.Records.size();
+            return (UINT32)NOTE.Records.size();
         case 'JBOC':
-            //return (UINT32)COBJ.Records.size();
+            return (UINT32)COBJ.Records.size();
         case 'JORP':
-            //return (UINT32)PROJ.Records.size();
+            return (UINT32)PROJ.Records.size();
         case 'ILVL':
-            //return (UINT32)LVLI.Records.size();
+            return (UINT32)LVLI.Records.size();
         case 'RHTW':
             //return (UINT32)WTHR.Records.size();
         case 'TMLC':
@@ -1258,25 +1258,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = ALCH.Records.back();
             break;
         case 'MLDI':
-            //IDLM.Records.push_back(new FNV::IDLMRecord((FNV::IDLMRecord *)SourceRecord));
-            //newRecord = IDLM.Records.back();
-            //break;
+            IDLM.Records.push_back(new FNV::IDLMRecord((FNV::IDLMRecord *)SourceRecord));
+            newRecord = IDLM.Records.back();
+            break;
         case 'ETON':
-            //NOTE.Records.push_back(new FNV::NOTERecord((FNV::NOTERecord *)SourceRecord));
-            //newRecord = NOTE.Records.back();
-            //break;
+            NOTE.Records.push_back(new FNV::NOTERecord((FNV::NOTERecord *)SourceRecord));
+            newRecord = NOTE.Records.back();
+            break;
         case 'JBOC':
-            //COBJ.Records.push_back(new FNV::COBJRecord((FNV::COBJRecord *)SourceRecord));
-            //newRecord = COBJ.Records.back();
-            //break;
+            COBJ.Records.push_back(new FNV::COBJRecord((FNV::COBJRecord *)SourceRecord));
+            newRecord = COBJ.Records.back();
+            break;
         case 'JORP':
-            //PROJ.Records.push_back(new FNV::PROJRecord((FNV::PROJRecord *)SourceRecord));
-            //newRecord = PROJ.Records.back();
-            //break;
+            PROJ.Records.push_back(new FNV::PROJRecord((FNV::PROJRecord *)SourceRecord));
+            newRecord = PROJ.Records.back();
+            break;
         case 'ILVL':
-            //LVLI.Records.push_back(new FNV::LVLIRecord((FNV::LVLIRecord *)SourceRecord));
-            //newRecord = LVLI.Records.back();
-            //break;
+            LVLI.Records.push_back(new FNV::LVLIRecord((FNV::LVLIRecord *)SourceRecord));
+            newRecord = LVLI.Records.back();
+            break;
         case 'RHTW':
             //WTHR.Records.push_back(new FNV::WTHRRecord((FNV::WTHRRecord *)SourceRecord));
             //newRecord = WTHR.Records.back();
@@ -1566,11 +1566,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(LVLN.VisitRecords(NULL, checker, false)) continue;
         if(KEYM.VisitRecords(NULL, checker, false)) continue;
         if(ALCH.VisitRecords(NULL, checker, false)) continue;
-        //if(IDLM.VisitRecords(NULL, checker, false)) continue;
-        //if(NOTE.VisitRecords(NULL, checker, false)) continue;
-        //if(COBJ.VisitRecords(NULL, checker, false)) continue;
-        //if(PROJ.VisitRecords(NULL, checker, false)) continue;
-        //if(LVLI.VisitRecords(NULL, checker, false)) continue;
+        if(IDLM.VisitRecords(NULL, checker, false)) continue;
+        if(NOTE.VisitRecords(NULL, checker, false)) continue;
+        if(COBJ.VisitRecords(NULL, checker, false)) continue;
+        if(PROJ.VisitRecords(NULL, checker, false)) continue;
+        if(LVLI.VisitRecords(NULL, checker, false)) continue;
         //if(WTHR.VisitRecords(NULL, checker, false)) continue;
         //if(CLMT.VisitRecords(NULL, checker, false)) continue;
         //if(REGN.VisitRecords(NULL, checker, false)) continue;
@@ -1704,11 +1704,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += LVLN.WriteGRUP('NLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += KEYM.WriteGRUP('MYEK', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += ALCH.WriteGRUP('HCLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IDLM.WriteGRUP('MLDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NOTE.WriteGRUP('ETON', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += COBJ.WriteGRUP('JBOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PROJ.WriteGRUP('JORP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LVLI.WriteGRUP('ILVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLM.WriteGRUP('MLDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NOTE.WriteGRUP('ETON', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += COBJ.WriteGRUP('JBOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PROJ.WriteGRUP('JORP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLI.WriteGRUP('ILVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1827,11 +1827,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     LVLN.VisitRecords(NULL, op, true);
     KEYM.VisitRecords(NULL, op, true);
     ALCH.VisitRecords(NULL, op, true);
-    //IDLM.VisitRecords(NULL, op, true);
-    //NOTE.VisitRecords(NULL, op, true);
-    //COBJ.VisitRecords(NULL, op, true);
-    //PROJ.VisitRecords(NULL, op, true);
-    //LVLI.VisitRecords(NULL, op, true);
+    IDLM.VisitRecords(NULL, op, true);
+    NOTE.VisitRecords(NULL, op, true);
+    COBJ.VisitRecords(NULL, op, true);
+    PROJ.VisitRecords(NULL, op, true);
+    LVLI.VisitRecords(NULL, op, true);
     //WTHR.VisitRecords(NULL, op, true);
     //CLMT.VisitRecords(NULL, op, true);
     //REGN.VisitRecords(NULL, op, true);
@@ -2034,20 +2034,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             ALCH.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'MLDI':
-            //IDLM.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            IDLM.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'ETON':
-            //NOTE.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            NOTE.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'JBOC':
-            //COBJ.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            COBJ.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'JORP':
-            //PROJ.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            PROJ.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'ILVL':
-            //LVLI.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            LVLI.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'RHTW':
             //WTHR.VisitRecords(RecordType, op, DeepVisit);
             //break;

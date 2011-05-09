@@ -381,7 +381,7 @@ SINT32 LTEXRecord::WriteRecord(FileWriter &writer)
 bool LTEXRecord::operator ==(const LTEXRecord &other) const
     {
     if(EDID.equalsi(other.EDID) &&
-        ICON.equals(other.ICON) &&
+        ICON.equalsi(other.ICON) &&
         HNAM == other.HNAM &&
         SNAM == other.SNAM &&
         GNAM.size() == other.GNAM.size())

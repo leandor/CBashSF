@@ -50,7 +50,7 @@ class PROJRecord : public FNVRecord //Projectile
             {
             fIsHitscan              = 0x0001,
             fIsExplosion            = 0x0002,
-            fIsAltTrigger           = 0x0004
+            fIsAltTrigger           = 0x0004,
             fIsMuzzleFlash          = 0x0008,
             fIsDisableable          = 0x0020,
             fIsPickupable           = 0x0040,
@@ -82,7 +82,7 @@ class PROJRecord : public FNVRecord //Projectile
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable
-        OptSubRecord<PROJDATA> DATA; //Data
+        ReqSubRecord<PROJDATA> DATA; //Data
         StringRecord NAM1; //Model Filename
         RawRecord NAM2; //Texture Files Hashes
         OptSimpleSubRecord<UINT32> VNAM; //Sound Level
@@ -115,8 +115,8 @@ class PROJRecord : public FNVRecord //Projectile
         void   IsDetonates(bool value);
         bool   IsRotation();
         void   IsRotation(bool value);
-        bool   IsFlagMask(UINT32 Mask, bool Exact=false);
-        void   SetFlagMask(UINT32 Mask);
+        bool   IsFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetFlagMask(UINT16 Mask);
 
         bool   IsMissile();
         void   IsMissile(bool value);
@@ -128,8 +128,8 @@ class PROJRecord : public FNVRecord //Projectile
         void   IsFlame(bool value);
         bool   IsContinuousBeam();
         void   IsContinuousBeam(bool value);
-        bool   IsType(UINT32 Type);
-        void   SetType(UINT32 Type);
+        bool   IsType(UINT16 Type);
+        void   SetType(UINT16 Type);
 
         bool   IsLoud();
         void   IsLoud(bool value);
@@ -137,8 +137,8 @@ class PROJRecord : public FNVRecord //Projectile
         void   IsNormal(bool value);
         bool   IsSilent();
         void   IsSilent(bool value);
-        bool   IsSoundLevelType(UINT8 Type);
-        void   SetSoundLevelType(UINT8 Type);
+        bool   IsSoundLevelType(UINT32 Type);
+        void   SetSoundLevelType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

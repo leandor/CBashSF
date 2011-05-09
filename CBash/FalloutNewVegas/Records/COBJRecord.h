@@ -37,7 +37,7 @@ class COBJRecord : public FNVRecord //Constructible Object
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<FORMID> YNAM; //Sound - Pick Up
         OptSimpleSubRecord<FORMID> ZNAM; //Sound - Drop
-        OptSubRecord<GENVALUEWEIGHT> DATA; //Data
+        ReqSubRecord<GENVALUEWEIGHT> DATA; //Data
 
         COBJRecord(unsigned char *_recData=NULL);
         COBJRecord(COBJRecord *srcRecord);
