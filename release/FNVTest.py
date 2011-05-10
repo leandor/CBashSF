@@ -150,10 +150,10 @@ def TestRegressions():
 ####    assertCOBJ(Current, newMod)
 ####    assertPROJ(Current, newMod)
 ####    assertLVLI(Current, newMod)
-    assertWTHR(Current, newMod)
-    assertCLMT(Current, newMod)
-    assertREGN(Current, newMod)
-    ##    assertNAVI(Current, newMod)
+####    assertWTHR(Current, newMod)
+####    assertCLMT(Current, newMod)
+####    assertREGN(Current, newMod)
+    assertNAVI(Current, newMod)
     ##    assertCELL(Current, newMod)
     ##    assertWRLD(Current, newMod)
     ##    assertDIAL(Current, newMod)
@@ -8643,7 +8643,7 @@ def assertREGN(Current, newMod):
 
 def assertNAVI(Current, newMod):
     record = Current.LoadOrderMods[0].NAVI[0]
-    d(record)
+    #d(record)
     print
     return
 

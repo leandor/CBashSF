@@ -5755,8 +5755,32 @@ class FnvREGNRecord(FnvBaseRecord):
 
 class FnvNAVIRecord(FnvBaseRecord):
     _Type = 'NAVI'
+    class _NVMI(ListComponent):
+        UINT8_ARRAY_LISTMACRO(unknown1, 1, 4)
+        FORMID_LISTMACRO(mesh, 2)
+        FORMID_LISTMACRO(location, 3)
+        SINT16_LISTMACRO(xGrid, 4)
+        SINT16_LISTMACRO(yGrid, 5)
+        UINT8_ARRAY_LISTMACRO(unknown2_p, 6)
+        copyattrs = ['unknown1', 'mesh', 'location',
+                     'xGrid', 'yGrid', 'unknown2_p']
+        exportattrs = ['mesh', 'location',
+                       'xGrid', 'yGrid']#'unknown1', 'unknown2_p'
+        
+    class _NVCI(ListComponent):
+        FORMID_LISTMACRO(unknown1, 1)
+        FORMID_ARRAY_LISTMACRO(unknown2, 2)
+        FORMID_ARRAY_LISTMACRO(unknown3, 3)
+        FORMID_ARRAY_LISTMACRO(doors, 4)
+        exportattrs = copyattrs = ['unknown1', 'unknown2',
+                                   'unknown3', 'doors']
+        
+    UINT32_MACRO(version, 7)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(NVMI, 8, self._NVMI)
+    
+    LIST_MACRO(NVCI, 9, self._NVCI)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['version', 'NVMI_list', 'NVCI_list']
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'

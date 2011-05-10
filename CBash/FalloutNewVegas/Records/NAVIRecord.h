@@ -28,20 +28,31 @@ namespace FNV
 class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
     {
     private:
+        //This subrecord uses a very non-standard format
+        //The details of unknown2 seem to vary widely based on the contents of unknown1
+        //Normally, it would be expected for unknown2 to be a separate chunk with varying sig's
         struct NAVINVMI
             {
             UINT8   unknown1[4];
             FORMID  mesh, location;
             SINT16  xGrid, yGrid;
-            //UINT8   unknown2;
+            UINT8ARRAY unknown2;
+            UINT32  unknown2Size;
 
             NAVINVMI();
             ~NAVINVMI();
 
+            bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+            void Write(FileWriter &writer);
+
+            NAVINVMI& operator = (const NAVINVMI &rhs);
             bool operator ==(const NAVINVMI &other) const;
             bool operator !=(const NAVINVMI &other) const;
             };
 
+        //This subrecord uses a very non-standard format
+        //It combines a formid and several arrays of formids into a single chunk
+        //Normally, it would be expected for the arrays to be in separate chunks
         struct NAVINVCI
             {
             FORMID  unknown1;
@@ -52,14 +63,18 @@ class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
             NAVINVCI();
             ~NAVINVCI();
 
+            bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+            void Write(FileWriter &writer);
+
             bool operator ==(const NAVINVCI &other) const;
             bool operator !=(const NAVINVCI &other) const;
             };
+
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<UINT32> NVER; //Version
-        std::vector<NAVINVMI> NVMI; //Unknown
-        std::vector<NAVINVCI> NVCI; //Unknown
+        UnorderedSparseArray<NAVINVMI *> NVMI; //Unknown
+        UnorderedSparseArray<NAVINVCI *> NVCI; //Unknown
 
         NAVIRecord(unsigned char *_recData=NULL);
         NAVIRecord(NAVIRecord *srcRecord);

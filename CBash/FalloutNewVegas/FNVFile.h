@@ -75,7 +75,7 @@ GPL License and Copyright Notice ============================================
 #include "Records/WTHRRecord.h"
 #include "Records/CLMTRecord.h"
 #include "Records/REGNRecord.h"
-//#include "Records/NAVIRecord.h"
+#include "Records/NAVIRecord.h"
 //#include "Records/CELLRecord.h"
 //#include "Records/WRLDRecord.h"
 //#include "Records/DIALRecord.h"
@@ -180,7 +180,7 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::WTHRRecord> WTHR;
         FNVGRUPRecords<FNV::CLMTRecord> CLMT;
         FNVGRUPRecords<FNV::REGNRecord> REGN;
-        //FNVGRUPRecords<FNV::NAVIRecord> NAVI;
+        FNVGRUPRecords<FNV::NAVIRecord> NAVI;
         //FNVGRUPRecords<FNV::CELLRecord> CELL;
         //FNVGRUPRecords<FNV::WRLDRecord> WRLD;
         //FNVGRUPRecords<FNV::DIALRecord> DIAL;

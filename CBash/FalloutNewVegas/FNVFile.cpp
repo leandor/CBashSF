@@ -518,10 +518,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgNAVI:
             case 'IVAN':
-                //reader.read(&NAVI.stamp, 4);
-                //reader.read(&NAVI.unknown, 4);
-                //NAVI.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&NAVI.stamp, 4);
+                reader.read(&NAVI.unknown, 4);
+                NAVI.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgCELL:
             case 'LLEC':
                 //reader.read(&CELL.stamp, 4);
@@ -955,7 +955,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case 'NGER':
             return (UINT32)REGN.Records.size();
         case 'IVAN':
-            //return (UINT32)NAVI.Records.size();
+            return (UINT32)NAVI.Records.size();
         case 'LLEC':
             //return (UINT32)CELL.Records.size();
         case 'DLRW':
@@ -1290,9 +1290,9 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = REGN.Records.back();
             break;
         case 'IVAN':
-            //NAVI.Records.push_back(new FNV::NAVIRecord((FNV::NAVIRecord *)SourceRecord));
-            //newRecord = NAVI.Records.back();
-            //break;
+            NAVI.Records.push_back(new FNV::NAVIRecord((FNV::NAVIRecord *)SourceRecord));
+            newRecord = NAVI.Records.back();
+            break;
         case 'LLEC':
             //CELL.Records.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
             //newRecord = CELL.Records.back();
@@ -1574,7 +1574,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(WTHR.VisitRecords(NULL, checker, false)) continue;
         if(CLMT.VisitRecords(NULL, checker, false)) continue;
         if(REGN.VisitRecords(NULL, checker, false)) continue;
-        //if(NAVI.VisitRecords(NULL, checker, false)) continue;
+        if(NAVI.VisitRecords(NULL, checker, false)) continue;
         //if(CELL.VisitRecords(NULL, checker, false)) continue;
         //if(WRLD.VisitRecords(NULL, checker, false)) continue;
         //if(DIAL.VisitRecords(NULL, checker, false)) continue;
@@ -1712,7 +1712,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += NAVI.WriteGRUP('IVAN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NAVI.WriteGRUP('IVAN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += CELL.WriteGRUP('LLEC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += WRLD.WriteGRUP('DLRW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += DIAL.WriteGRUP('LAID', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -1835,7 +1835,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     WTHR.VisitRecords(NULL, op, true);
     CLMT.VisitRecords(NULL, op, true);
     REGN.VisitRecords(NULL, op, true);
-    //NAVI.VisitRecords(NULL, op, true);
+    NAVI.VisitRecords(NULL, op, true);
     //CELL.VisitRecords(NULL, op, true);
     //WRLD.VisitRecords(NULL, op, true);
     //DIAL.VisitRecords(NULL, op, true);
@@ -2058,8 +2058,8 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             REGN.VisitRecords(RecordType, op, DeepVisit);
             break;
         case 'IVAN':
-            //NAVI.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            NAVI.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case 'LLEC':
             //CELL.VisitRecords(RecordType, op, DeepVisit);
             //break;

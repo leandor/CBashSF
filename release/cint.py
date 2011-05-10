@@ -6298,8 +6298,44 @@ class FnvREGNRecord(FnvBaseRecord):
 
 class FnvNAVIRecord(FnvBaseRecord):
     _Type = 'NAVI'
+    class _NVMI(ListComponent):
+        unknown1 = CBashUINT8ARRAY_LIST(1, 4)
+        mesh = CBashFORMID_LIST(2)
+        location = CBashFORMID_LIST(3)
+        xGrid = CBashGeneric_LIST(4, c_short)
+        yGrid = CBashGeneric_LIST(5, c_short)
+        unknown2_p = CBashUINT8ARRAY_LIST(6)
+        copyattrs = ['unknown1', 'mesh', 'location',
+                     'xGrid', 'yGrid', 'unknown2_p']
+        exportattrs = ['mesh', 'location',
+                       'xGrid', 'yGrid']#'unknown1', 'unknown2_p'
+        
+    class _NVCI(ListComponent):
+        unknown1 = CBashFORMID_LIST(1)
+        unknown2 = CBashFORMIDARRAY_LIST(2)
+        unknown3 = CBashFORMIDARRAY_LIST(3)
+        doors = CBashFORMIDARRAY_LIST(4)
+        exportattrs = copyattrs = ['unknown1', 'unknown2',
+                                   'unknown3', 'doors']
+        
+    version = CBashGeneric(7, c_ulong)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    def create_NVMI(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self._NVMI(self._CollectionID, self._ModID, self._RecordID, 8, length)
+    NVMI = CBashLIST(8, _NVMI)
+    NVMI_list = CBashLIST(8, _NVMI, True)
+
+    
+    def create_NVCI(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self._NVCI(self._CollectionID, self._ModID, self._RecordID, 9, length)
+    NVCI = CBashLIST(9, _NVCI)
+    NVCI_list = CBashLIST(9, _NVCI, True)
+
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['version', 'NVMI_list', 'NVCI_list']
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'
