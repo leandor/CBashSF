@@ -465,6 +465,23 @@ void FileReader::read(void *destination, UINT32 length)
     buffer_position += length;
     }
 
+#ifdef CBASH_DEBUG_CHUNK
+    void FileReader::peek_around(UINT32 length)
+        {
+        printf("File Position: %08X\n", buffer_position);
+        for(SINT32 x = length; x > 0; x--)
+            printf("%02X ", (start + buffer_position)[-x]);
+        for(UINT32 x = 0; x < length; x++)
+            printf("%02X ", (start + buffer_position)[x]);
+        printf("\n\n");
+        for(SINT32 x = length; x > 0; x--)
+            printf("%c", (start + buffer_position)[-x]);
+        for(UINT32 x = 0; x < length; x++)
+            printf("%c", (start + buffer_position)[x]);
+        printf("\n");
+        }
+#endif
+
 FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
     MAST(_MAST),
     nextObject(_NextObject),
@@ -2198,12 +2215,12 @@ Function_NameType EntryPoint_NameInit[] =
     Function_NameType(73,"Reserved")
     };
 
-UINT32 _AllPossibleGroups[] = {'TCAF', 'ECAR', 'FEGM', 'TPCS', 'XETL', 'HCNE', 'LEPS', 'NGSB',
-                       'ITCA', 'APPA', 'OMRA', 'KOOB', 'TOLC', 'TNOC', 'ROOD', 'RGNI',
-                       'HGIL', 'CSIM', 'ROLF', 'NRUF', 'PAEW', 'OMMA', '_CPN', 'AERC',
-                       'CLVL', 'MGLS', 'MYEK', 'HCLA', 'TSGS', 'ILVL', 'RHTW', 'TMLC',
-                       'NGER', 'LLEC', 'DLRW', 'LAID', 'TSUQ', 'ELDI', 'KCAP', 'RCSL',
-                       'PSVL', 'OINA', 'RTAW'};
+UINT32 _AllPossibleGroups[] = {REV32(FACT), REV32(RACE), REV32(MGEF), REV32(SCPT), REV32(LTEX), REV32(ENCH), REV32(SPEL), REV32(BSGN),
+                       REV32(ACTI), REV32(APPA), REV32(ARMO), REV32(BOOK), REV32(CLOT), REV32(CONT), REV32(DOOR), REV32(INGR),
+                       REV32(LIGH), REV32(MISC), REV32(FLOR), REV32(FURN), REV32(WEAP), REV32(AMMO), REV32(NPC_), REV32(CREA),
+                       REV32(LVLC), REV32(SLGM), REV32(KEYM), REV32(ALCH), REV32(SGST), REV32(LVLI), REV32(WTHR), REV32(CLMT),
+                       REV32(REGN), REV32(CELL), REV32(WRLD), REV32(DIAL), REV32(QUST), REV32(IDLE), REV32(PACK), REV32(LSCR),
+                       REV32(LVSP), REV32(ANIO), REV32(WATR)};
 
 std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_AllPossibleGroups) / sizeof(_AllPossibleGroups[0])));
 
@@ -2300,62 +2317,62 @@ std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_
 
 RecordType_PossibleGroupsType RecordType_PossibleGroupsInit[] =
     {
-    RecordType_PossibleGroupsType('TSMG', AllGroups),
-    RecordType_PossibleGroupsType('BOLG', AllGroups),
-    RecordType_PossibleGroupsType('SALC', AllGroups),
-    RecordType_PossibleGroupsType('TCAF', AllGroups),
-    RecordType_PossibleGroupsType('RIAH', AllGroups),
-    RecordType_PossibleGroupsType('SEYE', AllGroups),
-    RecordType_PossibleGroupsType('ECAR', AllGroups),
-    RecordType_PossibleGroupsType('NUOS', AllGroups),
-    RecordType_PossibleGroupsType('LIKS', AllGroups),
-    RecordType_PossibleGroupsType('FEGM', AllGroups),
-    RecordType_PossibleGroupsType('TPCS', AllGroups),
-    RecordType_PossibleGroupsType('XETL', AllGroups),
-    RecordType_PossibleGroupsType('HCNE', AllGroups),
-    RecordType_PossibleGroupsType('LEPS', AllGroups),
-    RecordType_PossibleGroupsType('NGSB', AllGroups),
-    RecordType_PossibleGroupsType('ITCA', AllGroups),
-    RecordType_PossibleGroupsType('APPA', AllGroups),
-    RecordType_PossibleGroupsType('OMRA', AllGroups),
-    RecordType_PossibleGroupsType('KOOB', AllGroups),
-    RecordType_PossibleGroupsType('TOLC', AllGroups),
-    RecordType_PossibleGroupsType('TNOC', AllGroups),
-    RecordType_PossibleGroupsType('ROOD', AllGroups),
-    RecordType_PossibleGroupsType('RGNI', AllGroups),
-    RecordType_PossibleGroupsType('HGIL', AllGroups),
-    RecordType_PossibleGroupsType('CSIM', AllGroups),
-    RecordType_PossibleGroupsType('TATS', AllGroups),
-    RecordType_PossibleGroupsType('SARG', AllGroups),
-    RecordType_PossibleGroupsType('EERT', AllGroups),
-    RecordType_PossibleGroupsType('ROLF', AllGroups),
-    RecordType_PossibleGroupsType('NRUF', AllGroups),
-    RecordType_PossibleGroupsType('PAEW', AllGroups),
-    RecordType_PossibleGroupsType('OMMA', AllGroups),
-    RecordType_PossibleGroupsType('_CPN', AllGroups),
-    RecordType_PossibleGroupsType('AERC', AllGroups),
-    RecordType_PossibleGroupsType('CLVL', AllGroups),
-    RecordType_PossibleGroupsType('MGLS', AllGroups),
-    RecordType_PossibleGroupsType('MYEK', AllGroups),
-    RecordType_PossibleGroupsType('HCLA', AllGroups),
-    RecordType_PossibleGroupsType('PSBS', AllGroups),
-    RecordType_PossibleGroupsType('TSGS', AllGroups),
-    RecordType_PossibleGroupsType('ILVL', AllGroups),
-    RecordType_PossibleGroupsType('RHTW', AllGroups),
-    RecordType_PossibleGroupsType('TMLC', AllGroups),
-    RecordType_PossibleGroupsType('NGER', AllGroups),
-    RecordType_PossibleGroupsType('LLEC', AllGroups),
-    RecordType_PossibleGroupsType('DLRW', AllGroups),
-    RecordType_PossibleGroupsType('LAID', AllGroups),
-    RecordType_PossibleGroupsType('TSUQ', AllGroups),
-    RecordType_PossibleGroupsType('ELDI', AllGroups),
-    RecordType_PossibleGroupsType('KCAP', AllGroups),
-    RecordType_PossibleGroupsType('YTSC', AllGroups),
-    RecordType_PossibleGroupsType('RCSL', AllGroups),
-    RecordType_PossibleGroupsType('PSVL', AllGroups),
-    RecordType_PossibleGroupsType('OINA', AllGroups),
-    RecordType_PossibleGroupsType('RTAW', AllGroups),
-    RecordType_PossibleGroupsType('HSFE', AllGroups)
+    RecordType_PossibleGroupsType(REV32(GMST), AllGroups),
+    RecordType_PossibleGroupsType(REV32(GLOB), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CLAS), AllGroups),
+    RecordType_PossibleGroupsType(REV32(FACT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(HAIR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(EYES), AllGroups),
+    RecordType_PossibleGroupsType(REV32(RACE), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SOUN), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SKIL), AllGroups),
+    RecordType_PossibleGroupsType(REV32(MGEF), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SCPT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LTEX), AllGroups),
+    RecordType_PossibleGroupsType(REV32(ENCH), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SPEL), AllGroups),
+    RecordType_PossibleGroupsType(REV32(BSGN), AllGroups),
+    RecordType_PossibleGroupsType(REV32(ACTI), AllGroups),
+    RecordType_PossibleGroupsType(REV32(APPA), AllGroups),
+    RecordType_PossibleGroupsType(REV32(ARMO), AllGroups),
+    RecordType_PossibleGroupsType(REV32(BOOK), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CLOT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CONT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(DOOR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(INGR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LIGH), AllGroups),
+    RecordType_PossibleGroupsType(REV32(MISC), AllGroups),
+    RecordType_PossibleGroupsType(REV32(STAT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(GRAS), AllGroups),
+    RecordType_PossibleGroupsType(REV32(TREE), AllGroups),
+    RecordType_PossibleGroupsType(REV32(FLOR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(FURN), AllGroups),
+    RecordType_PossibleGroupsType(REV32(WEAP), AllGroups),
+    RecordType_PossibleGroupsType(REV32(AMMO), AllGroups),
+    RecordType_PossibleGroupsType(REV32(NPC_), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CREA), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LVLC), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SLGM), AllGroups),
+    RecordType_PossibleGroupsType(REV32(KEYM), AllGroups),
+    RecordType_PossibleGroupsType(REV32(ALCH), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SBSP), AllGroups),
+    RecordType_PossibleGroupsType(REV32(SGST), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LVLI), AllGroups),
+    RecordType_PossibleGroupsType(REV32(WTHR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CLMT), AllGroups),
+    RecordType_PossibleGroupsType(REV32(REGN), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CELL), AllGroups),
+    RecordType_PossibleGroupsType(REV32(WRLD), AllGroups),
+    RecordType_PossibleGroupsType(REV32(DIAL), AllGroups),
+    RecordType_PossibleGroupsType(REV32(QUST), AllGroups),
+    RecordType_PossibleGroupsType(REV32(IDLE), AllGroups),
+    RecordType_PossibleGroupsType(REV32(PACK), AllGroups),
+    RecordType_PossibleGroupsType(REV32(CSTY), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LSCR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(LVSP), AllGroups),
+    RecordType_PossibleGroupsType(REV32(ANIO), AllGroups),
+    RecordType_PossibleGroupsType(REV32(WATR), AllGroups),
+    RecordType_PossibleGroupsType(REV32(EFSH), AllGroups)
     };
 
 const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups(RecordType_PossibleGroupsInit, RecordType_PossibleGroupsInit + sizeof(RecordType_PossibleGroupsInit) / sizeof(RecordType_PossibleGroupsInit[0]));
@@ -2372,3 +2389,9 @@ const std::map<UINT32, STRING> HardCodedFormID_EditorID(HardCodedFormID_EditorID
 
 const std::map<UINT32, STRING> EntryPoint_Name(EntryPoint_NameInit, EntryPoint_NameInit + sizeof(EntryPoint_NameInit) / sizeof(EntryPoint_NameInit[0]));
 const std::map<UINT32, FunctionArguments> FNVFunction_Arguments(FNVFunction_ArgumentsInit, FNVFunction_ArgumentsInit + sizeof(FNVFunction_ArgumentsInit) / sizeof(FNVFunction_ArgumentsInit[0]));
+
+const float flt_max = FLT_MAX;
+const float flt_min = FLT_MIN;
+const float flt_1 = 1.0f;
+const float flt_0 = 0.0f;
+const float flt_n2147483648 = -2147483648.0f;

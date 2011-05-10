@@ -24,124 +24,67 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-bool CELLRecord::CELLLTMP::IsAmbientInherited()
+CELLRecord::CELLXCLC::CELLXCLC():
+    posX(0),
+    posY(0),
+    flags(0)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsAmbientInherited) != 0;
+    //
     }
 
-void CELLRecord::CELLLTMP::IsAmbientInherited(bool value)
+CELLRecord::CELLXCLC::~CELLXCLC()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsAmbientInherited) : (Dummy->flags & ~fIsAmbientInherited);
+    //
     }
 
-bool CELLRecord::CELLLTMP::IsDirectionalColorInherited()
+bool CELLRecord::CELLXCLC::operator ==(const CELLXCLC &other) const
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDirectionalColorInherited) != 0;
+    return (posX == other.posX &&
+            posY == other.posY &&
+            flags == other.flags);
     }
 
-void CELLRecord::CELLLTMP::IsDirectionalColorInherited(bool value)
+bool CELLRecord::CELLXCLC::operator !=(const CELLXCLC &other) const
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDirectionalColorInherited) : (Dummy->flags & ~fIsDirectionalColorInherited);
+    return !(*this == other);
     }
 
-bool CELLRecord::CELLLTMP::IsFogColorInherited()
+CELLRecord::CELLIMPF::CELLIMPF()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFogColorInherited) != 0;
+    memset(&concSolid[0], 0x00, sizeof(concSolid));
+    memset(&concBroken[0], 0x00, sizeof(concBroken));
+    memset(&metalSolid[0], 0x00, sizeof(metalSolid));
+    memset(&metalHollow[0], 0x00, sizeof(metalHollow));
+    memset(&metalSheet[0], 0x00, sizeof(metalSheet));
+    memset(&wood[0], 0x00, sizeof(wood));
+    memset(&sand[0], 0x00, sizeof(sand));
+    memset(&dirt[0], 0x00, sizeof(dirt));
+    memset(&grass[0], 0x00, sizeof(grass));
+    memset(&water[0], 0x00, sizeof(water));
     }
 
-void CELLRecord::CELLLTMP::IsFogColorInherited(bool value)
+CELLRecord::CELLIMPF::~CELLIMPF()
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFogColorInherited) : (Dummy->flags & ~fIsFogColorInherited);
+    //
     }
 
-bool CELLRecord::CELLLTMP::IsFogNearInherited()
+bool CELLRecord::CELLIMPF::operator ==(const CELLIMPF &other) const
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFogNearInherited) != 0;
+    return (strcmp(&concSolid[0], &other.concSolid[0]) == 0 &&
+            strcmp(&concBroken[0], &other.concBroken[0]) == 0 &&
+            strcmp(&metalSolid[0], &other.metalSolid[0]) == 0 &&
+            strcmp(&metalHollow[0], &other.metalHollow[0]) == 0 &&
+            strcmp(&metalSheet[0], &other.metalSheet[0]) == 0 &&
+            strcmp(&wood[0], &other.wood[0]) == 0 &&
+            strcmp(&sand[0], &other.sand[0]) == 0 &&
+            strcmp(&dirt[0], &other.dirt[0]) == 0 &&
+            strcmp(&grass[0], &other.grass[0]) == 0 &&
+            strcmp(&water[0], &other.water[0]) == 0);
     }
 
-void CELLRecord::CELLLTMP::IsFogNearInherited(bool value)
+bool CELLRecord::CELLIMPF::operator !=(const CELLIMPF &other) const
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFogNearInherited) : (Dummy->flags & ~fIsFogNearInherited);
-    }
-
-bool CELLRecord::CELLLTMP::IsFogFarInherited()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFogFarInherited) != 0;
-    }
-
-void CELLRecord::CELLLTMP::IsFogFarInherited(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFogFarInherited) : (Dummy->flags & ~fIsFogFarInherited);
-    }
-
-bool CELLRecord::CELLLTMP::IsDirectionalRotationInherited()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDirectionalRotationInherited) != 0;
-    }
-
-void CELLRecord::CELLLTMP::IsDirectionalRotationInherited(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDirectionalRotationInherited) : (Dummy->flags & ~fIsDirectionalRotationInherited);
-    }
-
-bool CELLRecord::CELLLTMP::IsDirectionalFadeInherited()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsDirectionalFadeInherited) != 0;
-    }
-
-void CELLRecord::CELLLTMP::IsDirectionalFadeInherited(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsDirectionalFadeInherited) : (Dummy->flags & ~fIsDirectionalFadeInherited);
-    }
-
-bool CELLRecord::CELLLTMP::IsFogClipInherited()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFogClipInherited) != 0;
-    }
-
-void CELLRecord::CELLLTMP::IsFogClipInherited(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFogClipInherited) : (Dummy->flags & ~fIsFogClipInherited);
-    }
-
-bool CELLRecord::CELLLTMP::IsFogPowerInherited()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFogPowerInherited) != 0;
-    }
-
-void CELLRecord::CELLLTMP::IsFogPowerInherited(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFogPowerInherited) : (Dummy->flags & ~fIsFogPowerInherited);
-    }
-
-bool CELLRecord::CELLLTMP::Is0FlagMask(UINT8 Mask, bool Exact)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
-    }
-
-void CELLRecord::CELLLTMP::Set0FlagMask(UINT8 Mask)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    return !(*this == other);
     }
 
 CELLRecord::CELLRecord(unsigned char *_recData):
@@ -176,12 +119,8 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     XCLC = srcRecord->XCLC;
     XCLL = srcRecord->XCLL;
     IMPF = srcRecord->IMPF;
-    if(srcRecord->LTMP.IsLoaded())
-        {
-        LTMP.Load();
-        LTMP->LTMP = srcRecord->LTMP->LTMP;
-        LTMP->LNAM = srcRecord->LTMP->LNAM;
-        }
+    LTMP = srcRecord->LTMP;
+    LNAM = srcRecord->LNAM;
     XCLW = srcRecord->XCLW;
     XNAM = srcRecord->XNAM;
     XCLR = srcRecord->XCLR;
@@ -190,12 +129,7 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     XEZN = srcRecord->XEZN;
     XCCM = srcRecord->XCCM;
     XCWT = srcRecord->XCWT;
-    if(srcRecord->XOWN.IsLoaded())
-        {
-        XOWN.Load();
-        XOWN->XOWN = srcRecord->XOWN->XOWN;
-        XOWN->XRNK = srcRecord->XOWN->XRNK;
-        }
+    Ownership = srcRecord->Ownership;
     XCAS = srcRecord->XCAS;
     XCMT = srcRecord->XCMT;
     XCMO = srcRecord->XCMO;
@@ -207,204 +141,357 @@ CELLRecord::~CELLRecord()
     //
     }
 
+bool CELLRecord::HasSubRecords()
+    {
+    return true;
+    }
+
+bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
+    {
+    bool stop;
+
+    //if(RecordType == NULL || RecordType == REV32(ACHR))
+    //    for(UINT32 x = 0; x < ACHR.size();++x)
+    //        {
+    //        stop = op.Accept(ACHR[x]);
+    //        if(ACHR[x] == NULL)
+    //            {
+    //            ACHR.erase(ACHR.begin() + x);
+    //            --x;
+    //            }
+    //        if(stop)
+    //            return stop;
+    //        }
+
+    //if(RecordType == NULL || RecordType == REV32(ACRE))
+    //    for(UINT32 x = 0; x < ACRE.size();++x)
+    //        {
+    //        stop = op.Accept(ACRE[x]);
+    //        if(ACRE[x] == NULL)
+    //            {
+    //            ACRE.erase(ACRE.begin() + x);
+    //            --x;
+    //            }
+    //        if(stop)
+    //            return stop;
+    //        }
+
+    //if(RecordType == NULL || RecordType == REV32(REFR))
+    //    for(UINT32 x = 0; x < REFR.size();++x)
+    //        {
+    //        stop = op.Accept(REFR[x]);
+    //        if(REFR[x] == NULL)
+    //            {
+    //            REFR.erase(REFR.begin() + x);
+    //            --x;
+    //            }
+    //        if(stop)
+    //            return stop;
+    //        }
+
+    //if(RecordType == NULL || RecordType == REV32(PGRD))
+    //    {
+    //    if(PGRD != NULL)
+    //        {
+    //        if(op.Accept(PGRD))
+    //            return true;
+    //        }
+    //    }
+
+    //if(RecordType == NULL || RecordType == REV32(LAND))
+    //    {
+    //    if(LAND != NULL)
+    //        {
+    //        if(op.Accept(LAND))
+    //            return true;
+    //        }
+    //    }
+
+    return op.Stop();
+    }
+
 bool CELLRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
 
-    if(LTMP.IsLoaded() && LTMP->LTMP.IsLoaded())
-        op.Accept(LTMP->LTMP->value);
-    //if(XCLR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XCLR->value);
+    op.Accept(LTMP.value);
+    for(UINT32 x = 0; x < XCLR.value.size(); x++)
+        op.Accept(XCLR.value[x]);
     if(XCIM.IsLoaded())
-        op.Accept(XCIM->value);
+        op.Accept(XCIM.value);
     if(XEZN.IsLoaded())
-        op.Accept(XEZN->value);
+        op.Accept(XEZN.value);
     if(XCCM.IsLoaded())
-        op.Accept(XCCM->value);
+        op.Accept(XCCM.value);
     if(XCWT.IsLoaded())
-        op.Accept(XCWT->value);
-    if(XOWN.IsLoaded() && XOWN->XOWN.IsLoaded())
-        op.Accept(XOWN->XOWN->value);
+        op.Accept(XCWT.value);
+    if(Ownership.IsLoaded())
+        op.Accept(Ownership->XOWN.value);
     if(XCAS.IsLoaded())
-        op.Accept(XCAS->value);
+        op.Accept(XCAS.value);
     if(XCMO.IsLoaded())
-        op.Accept(XCMO->value);
-
+        op.Accept(XCMO.value);
     return op.Stop();
     }
 
 bool CELLRecord::IsInterior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsInterior) != 0;
+    return (DATA.value & fIsInterior) != 0;
     }
 
 void CELLRecord::IsInterior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsInterior) : (Dummy->flags & ~fIsInterior);
+    DATA.value = value ? (DATA.value | fIsInterior) : (DATA.value & ~fIsInterior);
     }
 
-bool CELLRecord::HasWater()
+bool CELLRecord::IsHasWater()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fHasWater) != 0;
+    return (DATA.value & fHasWater) != 0;
     }
 
-void CELLRecord::HasWater(bool value)
+void CELLRecord::IsHasWater(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fHasWater) : (Dummy->flags & ~fHasWater);
+    DATA.value = value ? (DATA.value | fHasWater) : (DATA.value & ~fHasWater);
     }
 
-bool CELLRecord::InvertFastTravel()
+bool CELLRecord::IsInvertFastTravel()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fInvertFastTravel) != 0;
+    return (DATA.value & fInvertFastTravel) != 0;
     }
 
-void CELLRecord::InvertFastTravel(bool value)
+void CELLRecord::IsInvertFastTravel(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fInvertFastTravel) : (Dummy->flags & ~fInvertFastTravel);
+    DATA.value = value ? (DATA.value | fInvertFastTravel) : (DATA.value & ~fInvertFastTravel);
     }
 
-bool CELLRecord::ForceHideLand()
+bool CELLRecord::IsForceHideLand()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fForceHideLand) != 0;
+    if(IsInterior()) return false;
+    return (DATA.value & fForceHideLand) != 0;
     }
 
-void CELLRecord::ForceHideLand(bool value)
+void CELLRecord::IsForceHideLand(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fForceHideLand) : (Dummy->flags & ~fForceHideLand);
+    if(IsInterior()) return;
+    DATA.value = value ? (DATA.value | fForceHideLand) : (DATA.value & ~fForceHideLand);
     }
 
 bool CELLRecord::IsOblivionInterior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOblivionInterior) != 0;
+    if(!IsInterior()) return false;
+    return (DATA.value & fIsOblivionInterior) != 0;
     }
 
 void CELLRecord::IsOblivionInterior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOblivionInterior) : (Dummy->flags & ~fIsOblivionInterior);
+    if(!IsInterior()) return;
+    DATA.value = value ? (DATA.value | fIsOblivionInterior) : (DATA.value & ~fIsOblivionInterior);
     }
 
-bool CELLRecord::PublicPlace()
+bool CELLRecord::IsPublicPlace()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fPublicPlace) != 0;
+    return (DATA.value & fPublicPlace) != 0;
     }
 
-void CELLRecord::PublicPlace(bool value)
+void CELLRecord::IsPublicPlace(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fPublicPlace) : (Dummy->flags & ~fPublicPlace);
+    DATA.value = value ? (DATA.value | fPublicPlace) : (DATA.value & ~fPublicPlace);
     }
 
-bool CELLRecord::HandChanged()
+bool CELLRecord::IsHandChanged()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fHandChanged) != 0;
+    return (DATA.value & fHandChanged) != 0;
     }
 
-void CELLRecord::HandChanged(bool value)
+void CELLRecord::IsHandChanged(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fHandChanged) : (Dummy->flags & ~fHandChanged);
+    DATA.value = value ? (DATA.value | fHandChanged) : (DATA.value & ~fHandChanged);
     }
 
-bool CELLRecord::BehaveLikeExterior()
+bool CELLRecord::IsBehaveLikeExterior()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fBehaveLikeExterior) != 0;
+    return (DATA.value & fBehaveLikeExterior) != 0;
     }
 
-void CELLRecord::BehaveLikeExterior(bool value)
+void CELLRecord::IsBehaveLikeExterior(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fBehaveLikeExterior) : (Dummy->flags & ~fBehaveLikeExterior);
+    DATA.value = value ? (DATA.value | fBehaveLikeExterior) : (DATA.value & ~fBehaveLikeExterior);
     }
 
 bool CELLRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void CELLRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value = Mask;
     }
 
 bool CELLRecord::IsQuad1ForceHidden()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsQuad1ForceHidden) != 0;
+    if(!XCLC.IsLoaded()) return false;
+    return (XCLC->flags & fIsQuad1ForceHidden) != 0;
     }
 
 void CELLRecord::IsQuad1ForceHidden(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsQuad1ForceHidden) : (Dummy->flags & ~fIsQuad1ForceHidden);
+    if(!XCLC.IsLoaded()) return;
+    XCLC->flags = value ? (XCLC->flags | fIsQuad1ForceHidden) : (XCLC->flags & ~fIsQuad1ForceHidden);
     }
 
 bool CELLRecord::IsQuad2ForceHidden()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsQuad2ForceHidden) != 0;
+    if(!XCLC.IsLoaded()) return false;
+    return (XCLC->flags & fIsQuad2ForceHidden) != 0;
     }
 
 void CELLRecord::IsQuad2ForceHidden(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsQuad2ForceHidden) : (Dummy->flags & ~fIsQuad2ForceHidden);
+    if(!XCLC.IsLoaded()) return;
+    XCLC->flags = value ? (XCLC->flags | fIsQuad2ForceHidden) : (XCLC->flags & ~fIsQuad2ForceHidden);
     }
 
 bool CELLRecord::IsQuad3ForceHidden()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsQuad3ForceHidden) != 0;
+    if(!XCLC.IsLoaded()) return false;
+    return (XCLC->flags & fIsQuad3ForceHidden) != 0;
     }
 
 void CELLRecord::IsQuad3ForceHidden(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsQuad3ForceHidden) : (Dummy->flags & ~fIsQuad3ForceHidden);
+    if(!XCLC.IsLoaded()) return;
+    XCLC->flags = value ? (XCLC->flags | fIsQuad3ForceHidden) : (XCLC->flags & ~fIsQuad3ForceHidden);
     }
 
 bool CELLRecord::IsQuad4ForceHidden()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsQuad4ForceHidden) != 0;
+    if(!XCLC.IsLoaded()) return false;
+    return (XCLC->flags & fIsQuad4ForceHidden) != 0;
     }
 
 void CELLRecord::IsQuad4ForceHidden(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsQuad4ForceHidden) : (Dummy->flags & ~fIsQuad4ForceHidden);
+    if(!XCLC.IsLoaded()) return;
+    XCLC->flags = value ? (XCLC->flags | fIsQuad4ForceHidden) : (XCLC->flags & ~fIsQuad4ForceHidden);
     }
 
-bool CELLRecord::IsHiddenFlagMask(UINT8 Mask, bool Exact)
+bool CELLRecord::IsQuadFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    if(!XCLC.IsLoaded()) return false;
+    return Exact ? ((XCLC->flags & Mask) == Mask) : ((XCLC->flags & Mask) != 0);
     }
 
-void CELLRecord::SetHiddenFlagMask(UINT8 Mask)
+void CELLRecord::SetQuadFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    XCLC.Load();
+    XCLC->flags = Mask;
+    }
+
+bool CELLRecord::IsLightAmbientInherited()
+    {
+    return (LNAM.value & fIsAmbientInherited) != 0;
+    }
+
+void CELLRecord::IsLightAmbientInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsAmbientInherited) : (LNAM.value & ~fIsAmbientInherited);
+    }
+
+bool CELLRecord::IsLightDirectionalColorInherited()
+    {
+    return (LNAM.value & fIsDirectionalColorInherited) != 0;
+    }
+
+void CELLRecord::IsLightDirectionalColorInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsDirectionalColorInherited) : (LNAM.value & ~fIsDirectionalColorInherited);
+    }
+
+bool CELLRecord::IsLightFogColorInherited()
+    {
+    return (LNAM.value & fIsFogColorInherited) != 0;
+    }
+
+void CELLRecord::IsLightFogColorInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsFogColorInherited) : (LNAM.value & ~fIsFogColorInherited);
+    }
+
+bool CELLRecord::IsLightFogNearInherited()
+    {
+    return (LNAM.value & fIsFogNearInherited) != 0;
+    }
+
+void CELLRecord::IsLightFogNearInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsFogNearInherited) : (LNAM.value & ~fIsFogNearInherited);
+    }
+
+bool CELLRecord::IsLightFogFarInherited()
+    {
+    return (LNAM.value & fIsFogFarInherited) != 0;
+    }
+
+void CELLRecord::IsLightFogFarInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsFogFarInherited) : (LNAM.value & ~fIsFogFarInherited);
+    }
+
+bool CELLRecord::IsLightDirectionalRotationInherited()
+    {
+    return (LNAM.value & fIsDirectionalRotationInherited) != 0;
+    }
+
+void CELLRecord::IsLightDirectionalRotationInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsDirectionalRotationInherited) : (LNAM.value & ~fIsDirectionalRotationInherited);
+    }
+
+bool CELLRecord::IsLightDirectionalFadeInherited()
+    {
+    return (LNAM.value & fIsDirectionalFadeInherited) != 0;
+    }
+
+void CELLRecord::IsLightDirectionalFadeInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsDirectionalFadeInherited) : (LNAM.value & ~fIsDirectionalFadeInherited);
+    }
+
+bool CELLRecord::IsLightFogClipInherited()
+    {
+    return (LNAM.value & fIsFogClipInherited) != 0;
+    }
+
+void CELLRecord::IsLightFogClipInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsFogClipInherited) : (LNAM.value & ~fIsFogClipInherited);
+    }
+
+bool CELLRecord::IsLightFogPowerInherited()
+    {
+    return (LNAM.value & fIsFogPowerInherited) != 0;
+    }
+
+void CELLRecord::IsLightFogPowerInherited(bool value)
+    {
+    LNAM.value = value ? (LNAM.value | fIsFogPowerInherited) : (LNAM.value & ~fIsFogPowerInherited);
+    }
+
+bool CELLRecord::IsLightFlagMask(UINT32 Mask, bool Exact)
+    {
+    return Exact ? ((LNAM.value & Mask) == Mask) : ((LNAM.value & Mask) != 0);
+    }
+
+void CELLRecord::SetLightFlagMask(UINT32 Mask)
+    {
+    LNAM.value = Mask;
     }
 
 UINT32 CELLRecord::GetType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 STRING CELLRecord::GetStrType()
@@ -421,7 +508,7 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -434,71 +521,69 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'CLCX':
+            case REV32(XCLC):
                 XCLC.Read(buffer, subSize, curPos);
                 break;
-            case 'LLCX':
+            case REV32(XCLL):
                 XCLL.Read(buffer, subSize, curPos);
                 break;
-            case 'FPMI':
+            case REV32(IMPF):
                 IMPF.Read(buffer, subSize, curPos);
                 break;
-            case 'PMTL':
-                LTMP.Load();
-                LTMP->LTMP.Read(buffer, subSize, curPos);
+            case REV32(LTMP):
+                LTMP.Read(buffer, subSize, curPos);
                 break;
-            case 'MANL':
-                LTMP.Load();
-                LTMP->LNAM.Read(buffer, subSize, curPos);
+            case REV32(LNAM):
+                LNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'WLCX':
+            case REV32(XCLW):
                 XCLW.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCX':
+            case REV32(XCLR):
                 XCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'MICX':
+            case REV32(XCIM):
                 XCIM.Read(buffer, subSize, curPos);
                 break;
-            case 'TECX':
+            case REV32(XCET):
                 XCET.Read(buffer, subSize, curPos);
                 break;
-            case 'NZEX':
+            case REV32(XEZN):
                 XEZN.Read(buffer, subSize, curPos);
                 break;
-            case 'MCCX':
+            case REV32(XCCM):
                 XCCM.Read(buffer, subSize, curPos);
                 break;
-            case 'TWCX':
+            case REV32(XCWT):
                 XCWT.Read(buffer, subSize, curPos);
                 break;
-            case 'NWOX':
-                XOWN.Load();
-                XOWN->XOWN.Read(buffer, subSize, curPos);
+            case REV32(XOWN):
+                Ownership.Load();
+                Ownership->XOWN.Read(buffer, subSize, curPos);
                 break;
-            case 'KNRX':
-                XOWN.Load();
-                XOWN->XRNK.Read(buffer, subSize, curPos);
+            case REV32(XRNK):
+                Ownership.Load();
+                Ownership->XRNK.Read(buffer, subSize, curPos);
                 break;
-            case 'SACX':
+            case REV32(XCAS):
                 XCAS.Read(buffer, subSize, curPos);
                 break;
-            case 'TMCX':
+            case REV32(XCMT):
                 XCMT.Read(buffer, subSize, curPos);
                 break;
-            case 'OMCX':
+            case REV32(XCMO):
                 XCMO.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -524,6 +609,7 @@ SINT32 CELLRecord::Unload()
     XCLL.Unload();
     IMPF.Unload();
     LTMP.Unload();
+    LNAM.Unload();
     XCLW.Unload();
     XNAM.Unload();
     XCLR.Unload();
@@ -532,7 +618,7 @@ SINT32 CELLRecord::Unload()
     XEZN.Unload();
     XCCM.Unload();
     XCWT.Unload();
-    XOWN.Unload();
+    Ownership.Unload();
     XCAS.Unload();
     XCMT.Unload();
     XCMO.Unload();
@@ -547,17 +633,8 @@ SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     WRITE(XCLC);
     WRITE(XCLL);
     WRITE(IMPF);
-
-    if(LTMP.IsLoaded())
-        {
-        if(LTMP->LTMP.IsLoaded())
-            SaveHandler.writeSubRecord('PMTL', LTMP->LTMP.value, LTMP->LTMP.GetSize());
-
-        if(LTMP->LNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANL', LTMP->LNAM.value, LTMP->LNAM.GetSize());
-
-        }
-
+    WRITE(LTMP);
+    WRITE(LNAM);
     WRITE(XCLW);
     WRITE(XNAM);
     WRITE(XCLR);
@@ -566,45 +643,35 @@ SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     WRITE(XEZN);
     WRITE(XCCM);
     WRITE(XCWT);
-
-    if(XOWN.IsLoaded())
-        {
-        if(XOWN->XOWN.IsLoaded())
-            SaveHandler.writeSubRecord('NWOX', XOWN->XOWN.value, XOWN->XOWN.GetSize());
-
-        if(XOWN->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', XOWN->XRNK.value, XOWN->XRNK.GetSize());
-
-        }
-
+    Ownership.Write(writer);
     WRITE(XCAS);
     WRITE(XCMT);
     WRITE(XCMO);
-
     return -1;
     }
 
 bool CELLRecord::operator ==(const CELLRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            FULL.equals(other.FULL) &&
-            DATA == other.DATA &&
+    return (DATA == other.DATA &&
             XCLC == other.XCLC &&
             XCLL == other.XCLL &&
             IMPF == other.IMPF &&
             LTMP == other.LTMP &&
+            LNAM == other.LNAM &&
             XCLW == other.XCLW &&
-            XNAM.equalsi(other.XNAM) &&
-            XCLR == other.XCLR &&
             XCIM == other.XCIM &&
-            XCET == other.XCET &&
             XEZN == other.XEZN &&
             XCCM == other.XCCM &&
             XCWT == other.XCWT &&
-            XOWN == other.XOWN &&
             XCAS == other.XCAS &&
-            XCMT == other.XCMT &&
-            XCMO == other.XCMO);
+            XCMO == other.XCMO &&
+            XCLR == other.XCLR &&
+            Ownership == other.Ownership &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            XNAM.equalsi(other.XNAM) &&
+            XCET == other.XCET &&
+            XCMT == other.XCMT);
     }
 
 bool CELLRecord::operator !=(const CELLRecord &other) const

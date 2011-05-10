@@ -135,7 +135,7 @@ bool PGRDRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 PGRDRecord::GetType()
     {
-    return 'DRGP';
+    return REV32(PGRD);
     }
 
 STRING PGRDRecord::GetStrType()
@@ -145,7 +145,7 @@ STRING PGRDRecord::GetStrType()
 
 UINT32 PGRDRecord::GetParentType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -158,7 +158,7 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -171,10 +171,10 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'PRGP':
+            case REV32(PGRP):
                 if(subSize % sizeof(GENPGRP) == 0)
                     {
                     if(subSize == 0)
@@ -188,10 +188,10 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'GAGP':
+            case REV32(PGAG):
                 PGAG.Read(buffer, subSize, curPos);
                 break;
-            case 'RRGP':
+            case REV32(PGRR):
                 PGRR.Read(buffer, subSize, curPos);
                 break;
                 //if(subSize % sizeof(PGRDPGRR) == 0)
@@ -207,7 +207,7 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //    curPos += subSize;
                 //    }
                 //break;
-            case 'IRGP':
+            case REV32(PGRI):
                 if(subSize % sizeof(PGRDPGRI) == 0)
                     {
                     if(subSize == 0)
@@ -221,7 +221,7 @@ SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'LRGP':
+            case REV32(PGRL):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -267,19 +267,19 @@ SINT32 PGRDRecord::Unload()
 SINT32 PGRDRecord::WriteRecord(FileWriter &writer)
     {
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(PGRP.size())
-        writer.record_write_subrecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
+        writer.record_write_subrecord(REV32(PGRP), &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
     if(PGAG.IsLoaded())
-        writer.record_write_subrecord('GAGP', PGAG.value, PGAG.GetSize());
+        writer.record_write_subrecord(REV32(PGAG), PGAG.value, PGAG.GetSize());
     if(PGRR.IsLoaded())
-        writer.record_write_subrecord('RRGP', PGRR.value, PGRR.GetSize());
+        writer.record_write_subrecord(REV32(PGRR), PGRR.value, PGRR.GetSize());
     //if(PGRR.size())
-    //    writer.record_write_subrecord('RRGP', &PGRR[0], sizeof(PGRDPGRR) * (UINT32)PGRR.size());
+    //    writer.record_write_subrecord(REV32(PGRR), &PGRR[0], sizeof(PGRDPGRR) * (UINT32)PGRR.size());
     if(PGRI.size())
-        writer.record_write_subrecord('IRGP', &PGRI[0], sizeof(PGRDPGRI) * (UINT32)PGRI.size());
+        writer.record_write_subrecord(REV32(PGRI), &PGRI[0], sizeof(PGRDPGRI) * (UINT32)PGRI.size());
     for(UINT32 x = 0; x < PGRL.size(); ++x)
-        writer.record_write_subrecord('LRGP', &PGRL[x]->points[0], (sizeof(UINT32) * (UINT32)PGRL[x]->points.size()));
+        writer.record_write_subrecord(REV32(PGRL), &PGRL[x]->points[0], (sizeof(UINT32) * (UINT32)PGRL[x]->points.size()));
     return -1;
     }
 

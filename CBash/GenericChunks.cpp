@@ -149,7 +149,7 @@ GENSCR_::~GENSCR_()
 
 void GENSCR_::Write(FileWriter &writer)
     {
-    writer.record_write_subrecord(isSCRO ? 'ORCS' : 'VRCS', &reference, sizeof(FORMID_OR_UINT32));
+    writer.record_write_subrecord(isSCRO ? REV32(SCRO) : REV32(SCRV), &reference, sizeof(FORMID_OR_UINT32));
     }
 
 bool GENSCR_::operator ==(const GENSCR_ &other) const
@@ -2298,7 +2298,7 @@ void FNVAlternateTextures::Write(FileWriter &writer)
     UINT32 cSize = MODS.size();
     if(cSize)
         {
-        writer.record_write_subheader('SDOM', GetSize());
+        writer.record_write_subheader(REV32(MODS), GetSize());
         writer.record_write(&cSize, 4);
         for(UINT32 p = 0; p < MODS.size(); ++p)
             {
@@ -3004,7 +3004,7 @@ void DESTSTAGE::Write(FileWriter &writer)
         WRITE(DMDL);
         WRITE(DMDT);
         }
-    writer.record_write_subheader('FTSD', 0);
+    writer.record_write_subheader(REV32(DSTF), 0);
     }
 
 bool DESTSTAGE::IsCapDamage()
@@ -3699,6 +3699,12 @@ bool GENROOM::operator !=(const GENROOM &other) const
     return !(*this == other);
     }
 
+void FNVXOWN::Write(FileWriter &writer)
+    {
+    WRITE(XOWN);
+    WRITE(XRNK);
+    }
+
 bool FNVXOWN::operator ==(const FNVXOWN &other) const
     {
     return (XOWN == other.XOWN &&
@@ -3942,4 +3948,3 @@ bool FNVLIGHT::operator !=(const FNVLIGHT &other) const
     {
     return !(*this == other);
     }
-

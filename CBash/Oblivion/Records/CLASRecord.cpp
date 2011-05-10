@@ -287,7 +287,7 @@ void CLASRecord::SetServicesFlagMask(UINT32 Mask)
 
 UINT32 CLASRecord::GetType()
     {
-    return 'SALC';
+    return REV32(CLAS);
     }
 
 STRING CLASRecord::GetStrType()
@@ -304,7 +304,7 @@ SINT32 CLASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -317,19 +317,19 @@ SINT32 CLASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -359,15 +359,15 @@ SINT32 CLASRecord::Unload()
 SINT32 CLASRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(DESC.IsLoaded())
-        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

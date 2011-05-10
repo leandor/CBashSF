@@ -109,7 +109,7 @@ bool WRLDRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 WRLDRecord::GetType()
     {
-    return 'DLRW';
+    return REV32(WRLD);
     }
 
 STRING WRLDRecord::GetStrType()
@@ -126,7 +126,7 @@ SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -139,76 +139,76 @@ SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'NZEX':
+            case REV32(XEZN):
                 XEZN.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 NAM2.Read(buffer, subSize, curPos);
                 break;
-            case '3MAN':
+            case REV32(NAM3):
                 NAM3.Read(buffer, subSize, curPos);
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 NAM4.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 ONAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case '9MAN':
+            case REV32(NAM9):
                 NAM9.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 NNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'SPMI':
+            case REV32(IMPS):
                 IMPS.Read(buffer, subSize, curPos);
                 break;
-            case 'FPMI':
+            case REV32(IMPF):
                 IMPF.Read(buffer, subSize, curPos);
                 break;
-            case 'TSFO':
+            case REV32(OFST):
                 OFST.Read(buffer, subSize, curPos);
                 break;
             default:

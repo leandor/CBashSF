@@ -33,6 +33,7 @@ GPL License and Copyright Notice ============================================
 #include "Oblivion/Records/WRLDRecord.h"
 #include "Oblivion/Records/ROADRecord.h"
 #include "Oblivion/Records/LANDRecord.h"
+#include "FalloutNewVegas/Records/CELLRecord.h"
 #include "Visitors.h"
 #include <vector>
 #include <math.h>
@@ -59,6 +60,9 @@ class GRUPRecords
             if(SkimmedGRUP || gSize == 0)
                 {
                 printf("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
                 return false;
                 }
             SkimmedGRUP = true;
@@ -119,7 +123,7 @@ class GRUPRecords
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
                 return 0;
-            UINT32 type = 'PURG';
+            UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
             UINT32 TopSize = 0;
             UINT32 formCount = 0;
@@ -167,6 +171,9 @@ class GRUPRecords<DIALRecord>
             if(SkimmedGRUP || gSize == 0)
                 {
                 printf("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
                 return false;
                 }
             SkimmedGRUP = true;
@@ -181,7 +188,7 @@ class GRUPRecords<DIALRecord>
                 reader.read(&recordSize, 4);
                 switch(recordType)
                     {
-                    case 'LAID':
+                    case REV32(DIAL):
                         curDIALRecord = new DIALRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curDIALRecord))
                             {
@@ -189,11 +196,11 @@ class GRUPRecords<DIALRecord>
                             Records.push_back(curDIALRecord);
                             }
                         break;
-                    case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
                         reader.skip(8); //Skip label and type fields
                         reader.read(&stamp, 4);
                         continue;
-                    case 'OFNI':
+                    case REV32(INFO):
                         curINFORecord = new INFORecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curINFORecord))
                             {
@@ -206,11 +213,17 @@ class GRUPRecords<DIALRecord>
                                 {
                                 printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curINFORecord->formID, reader.tell(), reader.getFileName());
                                 delete curINFORecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
                     default:
                         printf("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
                         break;
                     }
                 reader.skip(recordSize);
@@ -224,7 +237,7 @@ class GRUPRecords<DIALRecord>
             Record * curRecord = NULL;
             bool stop = false;
 
-            if(RecordType != NULL && RecordType != 'LAID' && RecordType != 'OFNI')
+            if(RecordType != NULL && RecordType != REV32(DIAL) && RecordType != REV32(INFO))
                 return false;
 
             for(UINT32 p = 0; p < Records.size(); p++)
@@ -256,12 +269,12 @@ class GRUPRecords<DIALRecord>
             UINT32 numDIALRecords = (UINT32)Records.size(); //Parent Records
             if(numDIALRecords == 0)
                 return 0;
-            UINT32 type = 'PURG';
+            UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
             UINT32 TopSize =0;
             UINT32 ChildrenSize =0;
             UINT32 formCount = 0;
-            UINT32 TopLabel = 'LAID';
+            UINT32 TopLabel = REV32(DIAL);
             UINT32 numINFORecords = 0;
             UINT32 parentFormID = 0;
             DIALRecord *curRecord = NULL;
@@ -338,6 +351,9 @@ class GRUPRecords<CELLRecord>
             if(SkimmedGRUP || gSize == 0)
                 {
                 printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
                 return false;
                 }
             SkimmedGRUP = true;
@@ -356,7 +372,7 @@ class GRUPRecords<CELLRecord>
                 reader.read(&recordSize, 4);
                 switch(recordType)
                     {
-                    case 'LLEC':
+                    case REV32(CELL):
                         curCELLRecord = new CELLRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curCELLRecord))
                             {
@@ -364,10 +380,10 @@ class GRUPRecords<CELLRecord>
                             Records.push_back(curCELLRecord);
                             }
                         break;
-                    case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
                         reader.skip(12); //skip the rest of the header
                         continue;
-                    case 'RHCA':
+                    case REV32(ACHR):
                         curACHRRecord = new ACHRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACHRRecord))
                             {
@@ -380,10 +396,13 @@ class GRUPRecords<CELLRecord>
                                 {
                                 printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curACHRRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'ERCA':
+                    case REV32(ACRE):
                         curACRERecord = new ACRERecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACRERecord))
                             {
@@ -396,10 +415,13 @@ class GRUPRecords<CELLRecord>
                                 {
                                 printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, reader.tell(), reader.getFileName());
                                 delete curACRERecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'RFER':
+                    case REV32(REFR):
                         curREFRRecord = new REFRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curREFRRecord))
                             {
@@ -412,10 +434,13 @@ class GRUPRecords<CELLRecord>
                                 {
                                 printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curREFRRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'DRGP':
+                    case REV32(PGRD):
                         curPGRDRecord = new PGRDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curPGRDRecord))
                             {
@@ -436,11 +461,17 @@ class GRUPRecords<CELLRecord>
                                 {
                                 printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curPGRDRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
                     default:
                         printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
                         break;
                     }
                 reader.skip(recordSize);
@@ -454,7 +485,7 @@ class GRUPRecords<CELLRecord>
             Record * curRecord = NULL;
             bool stop = false;
 
-            if(RecordType != NULL && RecordType != 'LLEC' && RecordType != 'DRGP' && RecordType != 'DNAL' && RecordType != 'RFER' && RecordType != 'RHCA' && RecordType != 'ERCA')
+            if(RecordType != NULL && RecordType != REV32(CELL) && RecordType != REV32(PGRD) && RecordType != REV32(LAND) && RecordType != REV32(REFR) && RecordType != REV32(ACHR) && RecordType != REV32(ACRE))
                 return false;
 
             for(UINT32 p = 0; p < Records.size(); p++)
@@ -486,7 +517,7 @@ class GRUPRecords<CELLRecord>
             UINT32 numCELLRecords = (UINT32)Records.size();
             if(numCELLRecords == 0)
                 return 0;
-            UINT32 type = 'PURG';
+            UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
             UINT32 TopSize = 0;
             UINT32 TopSizePos = 0;
@@ -501,7 +532,7 @@ class GRUPRecords<CELLRecord>
 
             UINT32 formCount = 0;
 
-            UINT32 gLabel = 'LLEC';
+            UINT32 gLabel = REV32(CELL);
             UINT32 numSubBlocks = 0;
             UINT32 numChildren = 0;
             UINT32 numChild = 0;
@@ -743,6 +774,9 @@ class GRUPRecords<WRLDRecord>
             if(SkimmedGRUP || gSize == 0)
                 {
                 printf("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
                 return false;
                 }
             SkimmedGRUP = true;
@@ -777,7 +811,7 @@ class GRUPRecords<WRLDRecord>
                 reader.read(&recordSize, 4);
                 switch(recordType)
                     {
-                    case 'DLRW':
+                    case REV32(WRLD):
                         curWRLDRecord = new WRLDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curWRLDRecord))
                             {
@@ -785,7 +819,7 @@ class GRUPRecords<WRLDRecord>
                             Records.push_back(curWRLDRecord);
                             }
                         break;
-                    case 'LLEC':
+                    case REV32(CELL):
                         curCELLRecord = new CELLRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curCELLRecord))
                             {
@@ -804,6 +838,9 @@ class GRUPRecords<WRLDRecord>
                                             {
                                             printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, reader.tell(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
                                             delete curCELLRecord;
+                                            #ifdef CBASH_DEBUG_CHUNK
+                                                reader.peek_around(PEEK_SIZE);
+                                            #endif
                                             }
                                         break;
                                     default:
@@ -816,17 +853,20 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan CELL (%08X) at %08X in file \"%s\"\n", curCELLRecord->formID, reader.tell(), reader.getFileName());
                                 delete curCELLRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'PURG': //All GRUPs will be recreated from scratch on write (saves memory)
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
                         reader.skip(4);
                         reader.read(&GRUP_Size.first, 4);
                         reader.skip(4);
                         GRUP_Size.second = reader.tell() + recordSize - 20;
                         GRUPs.push_back(GRUP_Size);
                         continue;
-                    case 'DAOR':
+                    case REV32(ROAD):
                         curROADRecord = new ROADRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curROADRecord))
                             {
@@ -841,16 +881,22 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", curROADRecord->formID, reader.tell(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
                                     delete curROADRecord;
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
                                     }
                                 }
                             else
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", curROADRecord->formID, reader.tell(), reader.getFileName());
                                 delete curROADRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'DNAL':
+                    case REV32(LAND):
                         curLANDRecord = new LANDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curLANDRecord))
                             {
@@ -872,16 +918,22 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curLANDRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
                                     delete curLANDRecord;
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
                                     }
                                 }
                             else
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curLANDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curLANDRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'DRGP':
+                    case REV32(PGRD):
                         curPGRDRecord = new PGRDRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curPGRDRecord))
                             {
@@ -896,16 +948,22 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curPGRDRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
                                     delete curPGRDRecord;
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
                                     }
                                 }
                             else
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curPGRDRecord->formID, reader.tell(), reader.getFileName());
                                 delete curPGRDRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'RHCA':
+                    case REV32(ACHR):
                         curACHRRecord = new ACHRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACHRRecord))
                             {
@@ -918,10 +976,13 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curACHRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curACHRRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'ERCA':
+                    case REV32(ACRE):
                         curACRERecord = new ACRERecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curACRERecord))
                             {
@@ -934,10 +995,13 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curACRERecord->formID, reader.tell(), reader.getFileName());
                                 delete curACRERecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
-                    case 'RFER':
+                    case REV32(REFR):
                         curREFRRecord = new REFRRecord(reader.getBuffer(reader.tell()) + 12);
                         if(processor(curREFRRecord))
                             {
@@ -950,11 +1014,17 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curREFRRecord->formID, reader.tell(), reader.getFileName());
                                 delete curREFRRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
                                 }
                             }
                         break;
                     default:
                         printf("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
                         break;
                     }
                 reader.skip(recordSize);
@@ -1072,11 +1142,11 @@ class GRUPRecords<WRLDRecord>
             Record *curRecord = NULL;
             bool stop = false;
 
-            if(RecordType != NULL && RecordType != 'DLRW' &&
-                RecordType != 'DAOR' && RecordType != 'LLEC' &&
-                RecordType != 'DRGP' && RecordType != 'DNAL' &&
-                RecordType != 'RFER' && RecordType != 'RHCA' &&
-                RecordType != 'ERCA')
+            if(RecordType != NULL && RecordType != REV32(WRLD) &&
+                RecordType != REV32(ROAD) && RecordType != REV32(CELL) &&
+                RecordType != REV32(PGRD) && RecordType != REV32(LAND) &&
+                RecordType != REV32(REFR) && RecordType != REV32(ACHR) &&
+                RecordType != REV32(ACRE))
                 {
                 return false;
                 }
@@ -1110,9 +1180,9 @@ class GRUPRecords<WRLDRecord>
             UINT32 numWrldRecords = (UINT32)Records.size();
             if(numWrldRecords == 0)
                 return 0;
-            UINT32 type = 'PURG';
+            UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
-            UINT32 gLabel = 'DLRW';
+            UINT32 gLabel = REV32(WRLD);
             UINT32 TopSize = 0;
             UINT32 TopSizePos = 0;
             UINT32 worldSize = 0;
@@ -1543,7 +1613,7 @@ class FNVGRUPRecords
     public:
         UINT32 stamp, unknown;
         std::vector<Record *> Records;
-        FNVGRUPRecords():stamp(134671) {}
+        FNVGRUPRecords():stamp(134671), unknown(0) {}
         ~FNVGRUPRecords()
             {
             for(UINT32 p = 0;p < Records.size(); p++)
@@ -1555,6 +1625,9 @@ class FNVGRUPRecords
             if(gSize == 0)
                 {
                 printf("FNVGRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
                 return false;
                 }
             Record * curRecord = NULL;
@@ -1614,7 +1687,7 @@ class FNVGRUPRecords
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
                 return 0;
-            UINT32 type = 'PURG';
+            UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
             UINT32 TopSize = 0;
             UINT32 formCount = 0;
@@ -1643,4 +1716,418 @@ class FNVGRUPRecords
                 Records.clear();
             return formCount;
             }
+    };
+
+template<>
+class FNVGRUPRecords<FNV::CELLRecord>
+    {
+    public:
+        UINT32 stamp, unknown;
+        std::vector<Record *> Records;
+        FNVGRUPRecords():stamp(134671), unknown(0) {}
+        ~FNVGRUPRecords()
+            {
+            for(UINT32 p = 0;p < Records.size(); p++)
+                delete Records[p];
+            }
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+            {
+            if(gSize == 0)
+                {
+                printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
+                return false;
+                }
+            Record * curRecord = NULL;
+            UINT32 recordType = 0;
+            UINT32 gEnd = reader.tell() + gSize - 24;
+            UINT32 recordSize = 0;
+
+            while(reader.tell() < gEnd){
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
+                switch(recordType)
+                    {
+                    case REV32(CELL):
+                        curRecord = new FNV::CELLRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            indexer.Accept(curRecord);
+                            Records.push_back(curRecord);
+                            }
+                        break;
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
+                        reader.skip(16); //skip the rest of the header
+                        continue;
+                    case REV32(ACHR):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        //curRecord = new FNV::ACHRRecord(reader.getBuffer(reader.tell()) + 16);
+                        //if(processor(curRecord))
+                        //    {
+                        //    if(Records.size() == 0)
+                        //        {
+                        //        indexer.Accept(curRecord);
+                        //        ((CELLRecord *)Records.back())->ACHR.push_back(curRecord);
+                        //        }
+                        //    else
+                        //        {
+                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                        //        delete curRecord;
+                        //        }
+                        //    }
+                        break;
+                    case REV32(ACRE):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        //curRecord = new FNV::ACRERecord(reader.getBuffer(reader.tell()) + 16);
+                        //if(processor(curRecord))
+                        //    {
+                        //    if(Records.size() == 0)
+                        //        {
+                        //        indexer.Accept(curRecord);
+                        //        ((CELLRecord *)Records.back())->ACRE.push_back(curRecord);
+                        //        }
+                        //    else
+                        //        {
+                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                        //        delete curRecord;
+                        //        }
+                        //    }
+                        break;
+                    case REV32(REFR):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        //curRecord = new FNV::REFRRecord(reader.getBuffer(reader.tell()) + 16);
+                        //if(processor(curRecord))
+                        //    {
+                        //    if(Records.size() == 0)
+                        //        {
+                        //        indexer.Accept(curRecord);
+                        //        ((CELLRecord *)Records.back())->REFR.push_back(curRecord);
+                        //        }
+                        //    else
+                        //        {
+                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                        //        delete curRecord;
+                        //        }
+                        //    }
+                        break;
+                    case REV32(PGRE):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        break;
+                    case REV32(NAVM):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        break;
+                    //case REV32(PGRD):
+                        //curRecord = new FNV::PGRDRecord(reader.getBuffer(reader.tell()) + 16);
+                        //if(processor(curRecord))
+                        //    {
+                        //    if(Records.size() == 0)
+                        //        {
+                        //        if(((CELLRecord *)Records.back())->PGRD == NULL)
+                        //            {
+                        //            indexer.Accept(curRecord);
+                        //            ((CELLRecord *)Records.back())->PGRD = curRecord;
+                        //            }
+                        //        else
+                        //            {
+                        //            printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curRecord->formID, reader.tell(), reader.getFileName(), Records.back()->formID, ((CELLRecord *)Records.back())->PGRD->formID);
+                        //            delete curRecord;
+                        //            }
+                        //        }
+                        //    else
+                        //        {
+                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                        //        delete curRecord;
+                        //        }
+                        //    }
+                        //break;
+                    default:
+                        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        break;
+                    }
+                reader.skip(recordSize);
+                };
+            if(Records.size())
+                processor.IsEmpty(false);
+            return true;
+            }
+        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+            {
+            Record * curRecord = NULL;
+            bool stop = false;
+
+            //if(RecordType != NULL && RecordType != REV32(CELL) && RecordType != REV32(PGRD) && RecordType != REV32(LAND) && RecordType != REV32(REFR) && RecordType != REV32(ACHR) && RecordType != REV32(ACRE))
+            //    return false;
+
+            for(UINT32 p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(RecordType == NULL || RecordType == curRecord->GetType())
+                    {
+                    stop = op.Accept(curRecord);
+                    if(curRecord == NULL)
+                        {
+                        Records.erase(Records.begin() + p);
+                        --p;
+                        }
+                    if(stop)
+                        return stop;
+                    }
+
+                if(DeepVisit)
+                    {
+                    stop = curRecord->VisitSubRecords(RecordType, op);
+                    if(stop)
+                        return stop;
+                    }
+                }
+            return stop;
+            }
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+            {
+            UINT32 numCELLRecords = (UINT32)Records.size();
+            if(numCELLRecords == 0)
+                return 0;
+            UINT32 type = REV32(GRUP);
+            UINT32 gType = eTop;
+            UINT32 TopSize = 0;
+            UINT32 TopSizePos = 0;
+            UINT32 blockSize = 0;
+            UINT32 blockSizePos = 0;
+            UINT32 subBlockSize = 0;
+            UINT32 subBlockSizePos = 0;
+            UINT32 childrenSize = 0;
+            UINT32 childrenSizePos = 0;
+            UINT32 childSize = 0;
+            UINT32 childSizePos = 0;
+
+            UINT32 formCount = 0;
+
+            UINT32 gLabel = REV32(CELL);
+            UINT32 numSubBlocks = 0;
+            UINT32 numChildren = 0;
+            UINT32 numChild = 0;
+
+            UINT32 parentFormID = 0;
+            FNV::CELLRecord *curRecord = NULL;
+            int ObjectID, BlockIndex, SubBlockIndex;
+
+            std::vector< std::vector< std::vector<FNV::CELLRecord *> > > BlockedRecords(10, std::vector< std::vector<FNV::CELLRecord *> > (10, std::vector<FNV::CELLRecord *>()));
+            //std::vector<Record *> Persistent;
+            //std::vector<Record *> Temporary;
+            //std::vector<Record *> VWD;
+            BlockedRecords.reserve(numCELLRecords);
+            for(UINT32 p = 0; p < numCELLRecords; ++p)
+                {
+                curRecord = (FNV::CELLRecord *)Records[p];
+
+                ObjectID = curRecord->formID & 0x00FFFFFF;
+                BlockIndex = ObjectID % 10;
+                SubBlockIndex = (ObjectID / 10) % 10;
+
+                BlockedRecords[BlockIndex][SubBlockIndex].push_back(curRecord);
+                }
+
+            //Top GRUP Header
+            writer.file_write(&type, 4);
+            TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&gLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
+            ++formCount;
+            TopSize = 20;
+
+            formCount += numCELLRecords;
+            for(UINT32 curBlock = 0; curBlock < 10; ++curBlock)
+                {
+                gType = eInteriorBlock;
+                for(UINT32 curSubBlock = 0; curSubBlock < 10; ++curSubBlock)
+                    {
+                    numSubBlocks = (UINT32)BlockedRecords[curBlock][curSubBlock].size();
+                    if(numSubBlocks != 0)
+                        {
+                        if(gType == eInteriorBlock)
+                            {
+                            writer.file_write(&type, 4);
+                            blockSizePos = writer.file_tell();
+                            writer.file_write(&blockSizePos, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&curBlock, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
+                            ++formCount;
+                            blockSize = 20;
+                            }
+                        gType = eInteriorSubBlock;
+                        writer.file_write(&type, 4);
+                        subBlockSizePos = writer.file_tell();
+                        writer.file_write(&subBlockSize, 4); //Placeholder: will be overwritten with correct value later.
+                        writer.file_write(&curSubBlock, 4);
+                        writer.file_write(&gType, 4);
+                        writer.file_write(&stamp, 4);
+                        ++formCount;
+                        subBlockSize = 20;
+                        for(UINT32 p = 0; p < numSubBlocks; ++p)
+                            {
+                            curRecord = BlockedRecords[curBlock][curSubBlock][p];
+                            parentFormID = curRecord->formID;
+                            collapser.Accept(parentFormID);
+                            subBlockSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                            //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
+                            //if(curRecord->PGRD != NULL)
+                            //    Temporary.push_back(curRecord->PGRD);
+                            //if(CloseMod)
+                            //    curRecord->PGRD = NULL;
+
+                            //for(UINT32 y = 0; y < curRecord->ACHR.size(); ++y)
+                            //    {
+                            //    if(curRecord->ACHR[y]->IsPersistent())
+                            //        Persistent.push_back(curRecord->ACHR[y]);
+                            //    else if(curRecord->ACHR[y]->IsVWD())
+                            //        VWD.push_back(curRecord->ACHR[y]);
+                            //    else
+                            //        Temporary.push_back(curRecord->ACHR[y]);
+                            //    }
+                            //if(CloseMod)
+                            //    curRecord->ACHR.clear();
+
+                            //for(UINT32 y = 0; y < curRecord->ACRE.size(); ++y)
+                            //    {
+                            //    if(curRecord->ACRE[y]->IsPersistent())
+                            //        Persistent.push_back(curRecord->ACRE[y]);
+                            //    else if(curRecord->ACRE[y]->IsVWD())
+                            //        VWD.push_back(curRecord->ACRE[y]);
+                            //    else
+                            //        Temporary.push_back(curRecord->ACRE[y]);
+                            //    }
+                            //if(CloseMod)
+                            //    curRecord->ACRE.clear();
+
+                            //for(UINT32 y = 0; y < curRecord->REFR.size(); ++y)
+                            //    {
+                            //    if(curRecord->REFR[y]->IsPersistent())
+                            //        Persistent.push_back(curRecord->REFR[y]);
+                            //    else if(curRecord->REFR[y]->IsVWD())
+                            //        VWD.push_back(curRecord->REFR[y]);
+                            //    else
+                            //        Temporary.push_back(curRecord->REFR[y]);
+                            //    }
+                            //if(CloseMod)
+                            //    curRecord->REFR.clear();
+
+                            //numChildren = (UINT32)Persistent.size() + (UINT32)VWD.size() + (UINT32)Temporary.size();
+                            //if(numChildren)
+                            //    {
+                            //    formCount += numChildren;
+                            //    gType = eCellChildren;
+                            //    writer.file_write(&type, 4);
+                            //    childrenSizePos = writer.file_tell();
+                            //    writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                            //    writer.file_write(&parentFormID, 4);
+                            //    writer.file_write(&gType, 4);
+                            //    writer.file_write(&stamp, 4);
+                            //    ++formCount;
+                            //    childrenSize = 20;
+
+                            //    numChild = (UINT32)Persistent.size();
+                            //    if(numChild)
+                            //        {
+                            //        gType = eCellPersistent;
+                            //        writer.file_write(&type, 4);
+                            //        childSizePos = writer.file_tell();
+                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                            //        writer.file_write(&parentFormID, 4);
+                            //        writer.file_write(&gType, 4);
+                            //        writer.file_write(&stamp, 4);
+                            //        ++formCount;
+                            //        childSize = 20;
+
+                            //        for(UINT32 x = 0; x < numChild; ++x)
+                            //            {
+                            //            childSize += Persistent[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                            //            if(CloseMod)
+                            //                delete Persistent[x];
+                            //            }
+                            //        childrenSize += childSize;
+                            //        writer.file_write(childSizePos, &childSize, 4);
+                            //        Persistent.clear();
+                            //        }
+
+                            //    numChild = (UINT32)VWD.size();
+                            //    if(numChild)
+                            //        {
+                            //        gType = eCellVWD;
+                            //        writer.file_write(&type, 4);
+                            //        childSizePos = writer.file_tell();
+                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                            //        writer.file_write(&parentFormID, 4);
+                            //        writer.file_write(&gType, 4);
+                            //        writer.file_write(&stamp, 4);
+                            //        ++formCount;
+                            //        childSize = 20;
+
+                            //        for(UINT32 x = 0; x < numChild; ++x)
+                            //            {
+                            //            childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                            //            if(CloseMod)
+                            //                delete VWD[x];
+                            //            }
+                            //        childrenSize += childSize;
+                            //        writer.file_write(childSizePos, &childSize, 4);
+                            //        VWD.clear();
+                            //        }
+
+                            //    numChild = (UINT32)Temporary.size();
+                            //    if(numChild)
+                            //        {
+                            //        gType = eCellTemporary;
+                            //        writer.file_write(&type, 4);
+                            //        childSizePos = writer.file_tell();
+                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                            //        writer.file_write(&parentFormID, 4);
+                            //        writer.file_write(&gType, 4);
+                            //        writer.file_write(&stamp, 4);
+                            //        ++formCount;
+                            //        childSize = 20;
+
+                            //        for(UINT32 x = 0; x < numChild; ++x)
+                            //            {
+                            //            childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                            //            if(CloseMod)
+                            //                delete Temporary[x];
+                            //            }
+                            //        childrenSize += childSize;
+                            //        writer.file_write(childSizePos, &childSize, 4);
+                            //        Temporary.clear();
+                            //        }
+                            //    subBlockSize += childrenSize;
+                            //    writer.file_write(childrenSizePos, &childrenSize, 4);
+                            //    }
+                            if(CloseMod)
+                                delete curRecord;
+                            }
+                        blockSize += subBlockSize;
+                        writer.file_write(subBlockSizePos, &subBlockSize, 4);
+                        BlockedRecords[curBlock][curSubBlock].clear();
+                        }
+                    }
+                if(gType != eInteriorBlock)
+                    {
+                    TopSize += blockSize;
+                    writer.file_write(blockSizePos, &blockSize, 4);
+                    }
+                BlockedRecords[curBlock].clear();
+                }
+            if(CloseMod)
+                Records.clear();
+            writer.file_write(TopSizePos, &TopSize, 4);
+            BlockedRecords.clear();
+            return formCount;
+            }
+
     };

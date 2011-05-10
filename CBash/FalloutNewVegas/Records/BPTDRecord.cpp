@@ -379,7 +379,7 @@ bool BPTDRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 BPTDRecord::GetType()
     {
-    return 'DTPB';
+    return REV32(BPTD);
     }
 
 STRING BPTDRecord::GetStrType()
@@ -396,7 +396,7 @@ SINT32 BPTDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -409,54 +409,54 @@ SINT32 BPTDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'NTPB':
+            case REV32(BPTN):
                 BPTN.Read(buffer, subSize, curPos);
                 break;
-            case 'NNPB':
+            case REV32(BPNN):
                 BPNN.Read(buffer, subSize, curPos);
                 break;
-            case 'TNPB':
+            case REV32(BPNT):
                 BPNT.Read(buffer, subSize, curPos);
                 break;
-            case 'INPB':
+            case REV32(BPNI):
                 BPNI.Read(buffer, subSize, curPos);
                 break;
-            case 'DNPB':
+            case REV32(BPND):
                 BPND.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 NAM1.Read(buffer, subSize, curPos);
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 NAM4.Read(buffer, subSize, curPos);
                 break;
-            case '5MAN':
+            case REV32(NAM5):
                 NAM5.Read(buffer, subSize, curPos);
                 break;
-            case 'AGAR':
+            case REV32(RAGA):
                 RAGA.Read(buffer, subSize, curPos);
                 break;
             default:

@@ -129,7 +129,7 @@ void LVLIRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 LVLIRecord::GetType()
     {
-    return 'ILVL';
+    return REV32(LVLI);
     }
 
 
@@ -149,7 +149,7 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -162,10 +162,10 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DLVL':
+            case REV32(LVLD):
                 LVLD.Read(buffer, subSize, curPos);
                 if((LVLD.value & fAltCalcFromAllLevels) != 0)
                     {
@@ -173,15 +173,15 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     IsCalcFromAllLevels(true);
                     }
                 break;
-            case 'FLVL':
+            case REV32(LVLF):
                 LVLF.Read(buffer, subSize, curPos);
                 break;
-            case 'OLVL':
+            case REV32(LVLO):
                 newEntry = new ReqSubRecord<LVLLVLO>;
                 newEntry->Read(buffer, subSize, curPos);
                 Entries.push_back(newEntry);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 if(DATA.value != 0)
                     {
@@ -218,17 +218,17 @@ SINT32 LVLIRecord::Unload()
 SINT32 LVLIRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(LVLD.IsLoaded())
-        writer.record_write_subrecord('DLVL', &LVLD.value, LVLD.GetSize());
+        writer.record_write_subrecord(REV32(LVLD), &LVLD.value, LVLD.GetSize());
     if(LVLF.IsLoaded())
-        writer.record_write_subrecord('FLVL', LVLF.value, LVLF.GetSize());
+        writer.record_write_subrecord(REV32(LVLF), LVLF.value, LVLF.GetSize());
     for(UINT32 p = 0; p < Entries.size(); p++)
         if(Entries[p]->IsLoaded())
-            writer.record_write_subrecord('OLVL', &Entries[p]->value, Entries[p]->GetSize());
+            writer.record_write_subrecord(REV32(LVLO), &Entries[p]->value, Entries[p]->GetSize());
 
     //if(DATA.IsLoaded())
-    //    writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
+    //    writer.record_write_subrecord(REV32(DATA), DATA.value, DATA.GetSize());
     return -1;
     }
 

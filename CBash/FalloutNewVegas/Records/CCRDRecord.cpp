@@ -189,7 +189,7 @@ void CCRDRecord::SetType(UINT32 Type)
 
 UINT32 CCRDRecord::GetType()
     {
-    return 'DRCC';
+    return REV32(CCRD);
     }
 
 STRING CCRDRecord::GetStrType()
@@ -206,7 +206,7 @@ SINT32 CCRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -219,66 +219,66 @@ SINT32 CCRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'MANY':
+            case REV32(YNAM):
                 YNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case '00XT':
+            case REV32(TX00):
                 TX00.Load();
                 TX00->TX00.Read(buffer, subSize, curPos);
                 break;
-            case '10XT':
+            case REV32(TX01):
                 TX00.Load();
                 TX00->TX01.Read(buffer, subSize, curPos);
                 break;
-            case 'VTNI':
+            case REV32(INTV):
                 INTV.Load();
                 INTV->INTV.Read(buffer, subSize, curPos);
                 break;
-            case 'VTNI':
+            case REV32(INTV):
                 INTV.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -330,17 +330,17 @@ SINT32 CCRDRecord::WriteRecord(FileWriter &writer)
     if(TX00.IsLoaded())
         {
         if(TX00->TX00.IsLoaded())
-            SaveHandler.writeSubRecord('00XT', TX00->TX00.value, TX00->TX00.GetSize());
+            SaveHandler.writeSubRecord(REV32(TX00), TX00->TX00.value, TX00->TX00.GetSize());
 
         if(TX00->TX01.IsLoaded())
-            SaveHandler.writeSubRecord('10XT', TX00->TX01.value, TX00->TX01.GetSize());
+            SaveHandler.writeSubRecord(REV32(TX01), TX00->TX01.value, TX00->TX01.GetSize());
 
         }
 
     if(INTV.IsLoaded())
         {
         if(INTV->INTV.IsLoaded())
-            SaveHandler.writeSubRecord('VTNI', INTV->INTV.value, INTV->INTV.GetSize());
+            SaveHandler.writeSubRecord(REV32(INTV), INTV->INTV.value, INTV->INTV.GetSize());
 
         }
 

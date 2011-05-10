@@ -306,7 +306,7 @@ void CLOTRecord::SetFlagMask(UINT32 Mask)
 
 UINT32 CLOTRecord::GetType()
     {
-    return 'TOLC';
+    return REV32(CLOT);
     }
 
 STRING CLOTRecord::GetStrType()
@@ -323,7 +323,7 @@ SINT32 CLOTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -336,84 +336,84 @@ SINT32 CLOTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 ENAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TDMB':
+            case REV32(BMDT):
                 BMDT.Read(buffer, subSize, curPos);
                 break;
 
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
 
-            case '2DOM':
+            case REV32(MOD2):
                 MOD2.Load();
                 MOD2->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'B2OM':
+            case REV32(MO2B):
                 MOD2.Load();
                 MOD2->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'T2OM':
+            case REV32(MO2T):
                 MOD2.Load();
                 MOD2->MODT.Read(buffer, subSize, curPos);
                 break;
 
-            case '3DOM':
+            case REV32(MOD3):
                 MOD3.Load();
                 MOD3->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'B3OM':
+            case REV32(MO3B):
                 MOD3.Load();
                 MOD3->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'T3OM':
+            case REV32(MO3T):
                 MOD3.Load();
                 MOD3->MODT.Read(buffer, subSize, curPos);
                 break;
 
-            case '4DOM':
+            case REV32(MOD4):
                 MOD4.Load();
                 MOD4->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'B4OM':
+            case REV32(MO4B):
                 MOD4.Load();
                 MOD4->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'T4OM':
+            case REV32(MO4T):
                 MOD4.Load();
                 MOD4->MODT.Read(buffer, subSize, curPos);
                 break;
 
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case '2OCI':
+            case REV32(ICO2):
                 ICO2.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -451,57 +451,57 @@ SINT32 CLOTRecord::Unload()
 SINT32 CLOTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
     if(ENAM.IsLoaded())
-        writer.record_write_subrecord('MANE', &ENAM.value, ENAM.GetSize());
+        writer.record_write_subrecord(REV32(ENAM), &ENAM.value, ENAM.GetSize());
     if(ANAM.IsLoaded())
-        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
     if(BMDT.IsLoaded())
-        writer.record_write_subrecord('TDMB', &BMDT.value, BMDT.GetSize());
+        writer.record_write_subrecord(REV32(BMDT), &BMDT.value, BMDT.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('2DOM', MOD2->MODL.value, MOD2->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MOD2), MOD2->MODL.value, MOD2->MODL.GetSize());
         if(MOD2->MODB.IsLoaded())
-            writer.record_write_subrecord('B2OM', &MOD2->MODB.value, MOD2->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MO2B), &MOD2->MODB.value, MOD2->MODB.GetSize());
         if(MOD2->MODT.IsLoaded())
-            writer.record_write_subrecord('T2OM', MOD2->MODT.value, MOD2->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MO2T), MOD2->MODT.value, MOD2->MODT.GetSize());
         }
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
 
     if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('3DOM', MOD3->MODL.value, MOD3->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MOD3), MOD3->MODL.value, MOD3->MODL.GetSize());
         if(MOD3->MODB.IsLoaded())
-            writer.record_write_subrecord('B3OM', &MOD3->MODB.value, MOD3->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MO3B), &MOD3->MODB.value, MOD3->MODB.GetSize());
         if(MOD3->MODT.IsLoaded())
-            writer.record_write_subrecord('T3OM', MOD3->MODT.value, MOD3->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MO3T), MOD3->MODT.value, MOD3->MODT.GetSize());
         }
     if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('4DOM', MOD4->MODL.value, MOD4->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MOD4), MOD4->MODL.value, MOD4->MODL.GetSize());
         if(MOD4->MODB.IsLoaded())
-            writer.record_write_subrecord('B4OM', &MOD4->MODB.value, MOD4->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MO4B), &MOD4->MODB.value, MOD4->MODB.GetSize());
         if(MOD4->MODT.IsLoaded())
-            writer.record_write_subrecord('T4OM', MOD4->MODT.value, MOD4->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MO4T), MOD4->MODT.value, MOD4->MODT.GetSize());
         }
     if(ICO2.IsLoaded())
-        writer.record_write_subrecord('2OCI', ICO2.value, ICO2.GetSize());
+        writer.record_write_subrecord(REV32(ICO2), ICO2.value, ICO2.GetSize());
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

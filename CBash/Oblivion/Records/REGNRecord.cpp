@@ -649,7 +649,7 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 REGNRecord::GetType()
     {
-    return 'NGER';
+    return REV32(REGN);
     }
 
 
@@ -669,7 +669,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -682,27 +682,27 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 if(newEntry == NULL)
                     ICON.Read(buffer, subSize, curPos);
                 else
                     newEntry->ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCR':
+            case REV32(RCLR):
                 RCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ILPR':
+            case REV32(RPLI):
                 newArea = new REGNArea;
                 newArea->RPLI.Read(buffer, subSize, curPos);
                 Areas.push_back(newArea);
                 break;
-            case 'DLPR':
+            case REV32(RPLD):
                 if(subSize % sizeof(REGNRPLD) == 0)
                     {
                     if(subSize == 0)
@@ -721,12 +721,12 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'TADR':
+            case REV32(RDAT):
                 newEntry = new REGNEntry;
                 newEntry->RDAT.Read(buffer, subSize, curPos);
                 Entries.push_back(newEntry);
                 break;
-            case 'TODR':
+            case REV32(RDOT):
                 if(subSize % sizeof(REGNRDOT) == 0)
                     {
                     if(subSize == 0)
@@ -745,7 +745,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'PMDR':
+            case REV32(RDMP):
                 if(newEntry == NULL)
                     {
                     newEntry = new REGNEntry;
@@ -753,7 +753,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 newEntry->RDMP.Read(buffer, subSize, curPos);
                 break;
-            case 'SGDR':
+            case REV32(RDGS):
                 if(subSize % sizeof(REGNRDGS) == 0)
                     {
                     if(subSize == 0)
@@ -772,7 +772,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'DMDR':
+            case REV32(RDMD):
                 if(newEntry == NULL)
                     {
                     newEntry = new REGNEntry;
@@ -780,7 +780,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 newEntry->RDMD.Read(buffer, subSize, curPos);
                 break;
-            case 'DSDR':
+            case REV32(RDSD):
                 if(subSize % sizeof(REGNRDSD) == 0)
                     {
                     if(subSize == 0)
@@ -799,7 +799,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'TWDR':
+            case REV32(RDWT):
                 if(subSize % sizeof(REGNRDWT) == 0)
                     {
                     if(subSize == 0)
@@ -850,63 +850,63 @@ SINT32 REGNRecord::Unload()
 SINT32 REGNRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(RCLR.IsLoaded())
-        writer.record_write_subrecord('RLCR', &RCLR.value, RCLR.GetSize());
+        writer.record_write_subrecord(REV32(RCLR), &RCLR.value, RCLR.GetSize());
     if(WNAM.IsLoaded())
-        writer.record_write_subrecord('MANW', &WNAM.value, WNAM.GetSize());
+        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
     if(Areas.size())
         for(UINT32 p = 0; p < Areas.size(); p++)
             {
             if(Areas[p]->RPLI.IsLoaded())
-                writer.record_write_subrecord('ILPR', &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
+                writer.record_write_subrecord(REV32(RPLI), &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
             if(Areas[p]->RPLD.size())
-                writer.record_write_subrecord('DLPR', &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
+                writer.record_write_subrecord(REV32(RPLD), &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
             //else
-            //    writer.record_write_subheader('DLPR', 0);
+            //    writer.record_write_subheader(REV32(RPLD), 0);
             }
     if(Entries.size())
         for(UINT32 p = 0; p < Entries.size(); p++)
             {
             if(Entries[p]->RDAT.IsLoaded())
-                writer.record_write_subrecord('TADR', &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
+                writer.record_write_subrecord(REV32(RDAT), &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
             switch(Entries[p]->RDAT.value.entryType)
                 {
                 case eREGNObjects:
                     if(Entries[p]->RDOT.size())
-                        writer.record_write_subrecord('TODR', &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
+                        writer.record_write_subrecord(REV32(RDOT), &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
                     else
-                        writer.record_write_subheader('TODR', 0);
+                        writer.record_write_subheader(REV32(RDOT), 0);
                     break;
                 case eREGNWeathers:
                     if(Entries[p]->RDWT.size())
-                        writer.record_write_subrecord('TWDR', &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
+                        writer.record_write_subrecord(REV32(RDWT), &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
                     //else
-                    //    writer.record_write_subheader('TWDR', 0);
+                    //    writer.record_write_subheader(REV32(RDWT), 0);
                     break;
                 case eREGNMap:
                     if(Entries[p]->RDMP.IsLoaded())
-                        writer.record_write_subrecord('PMDR', Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
+                        writer.record_write_subrecord(REV32(RDMP), Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
                     break;
                 case eREGNIcon:
                     if(Entries[p]->ICON.IsLoaded())
-                        writer.record_write_subrecord('NOCI', Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
+                        writer.record_write_subrecord(REV32(ICON), Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
                     break;
                 case eREGNGrasses:
                     if(Entries[p]->RDGS.size())
-                        writer.record_write_subrecord('SGDR', &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
+                        writer.record_write_subrecord(REV32(RDGS), &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
                     //else
-                    //    writer.record_write_subheader('SGDR', 0);
+                    //    writer.record_write_subheader(REV32(RDGS), 0);
                     break;
                 case eREGNSounds:
                     if(Entries[p]->RDMD.IsLoaded())
-                        writer.record_write_subrecord('DMDR', Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
+                        writer.record_write_subrecord(REV32(RDMD), Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
                     if(Entries[p]->RDSD.size())
-                        writer.record_write_subrecord('DSDR', &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
+                        writer.record_write_subrecord(REV32(RDSD), &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
                     else
-                        writer.record_write_subheader('DSDR', 0);
+                        writer.record_write_subheader(REV32(RDSD), 0);
                     break;
                 default:
                     printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);

@@ -99,7 +99,7 @@ class NPC_Record : public Record
         ReqSimpleSubRecord<FORMID> CNAM;
         ReqSubRecord<NPC_DATA> DATA;
         OptSimpleSubRecord<FORMID> HNAM;
-        SemiOptSimpleSubRecord<FLOAT32> LNAM;
+        SemiOptSimpleFloatSubRecord<flt_0> LNAM;
         OptSimpleSubRecord<FORMID> ENAM;
         ReqSubRecord<GENCLR> HCLR;
         OptSimpleSubRecord<FORMID> ZNAM;

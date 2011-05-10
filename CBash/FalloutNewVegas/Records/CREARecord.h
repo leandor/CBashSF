@@ -422,9 +422,9 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<UINT8> RNAM; //Attack reach
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
-        OptSimpleSubRecord<FLOAT32> TNAM; //Turning Speed
-        OptSimpleSubRecord<FLOAT32, 1> BNAM; //Base Scale
-        OptSimpleSubRecord<FLOAT32> WNAM; //Foot Weight
+        OptSimpleFloatSubRecord<flt_0> TNAM; //Turning Speed
+        OptSimpleFloatSubRecord<flt_1> BNAM; //Base Scale
+        OptSimpleFloatSubRecord<flt_0> WNAM; //Foot Weight
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level
         OptSimpleSubRecord<FORMID> CSCR; //Inherits Sounds from

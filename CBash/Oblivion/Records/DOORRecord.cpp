@@ -142,7 +142,7 @@ void DOORRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 DOORRecord::GetType()
     {
-    return 'ROOD';
+    return REV32(DOOR);
     }
 
 STRING DOORRecord::GetStrType()
@@ -160,7 +160,7 @@ SINT32 DOORRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -173,40 +173,40 @@ SINT32 DOORRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANB':
+            case REV32(BNAM):
                 BNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 _readBuffer(&curFormID, buffer, subSize, curPos);
                 TNAM.push_back(curFormID);
                 break;
@@ -241,29 +241,29 @@ SINT32 DOORRecord::Unload()
 SINT32 DOORRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
     if(SNAM.IsLoaded())
-        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
     if(ANAM.IsLoaded())
-        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
     if(BNAM.IsLoaded())
-        writer.record_write_subrecord('MANB', &BNAM.value, BNAM.GetSize());
+        writer.record_write_subrecord(REV32(BNAM), &BNAM.value, BNAM.GetSize());
     if(FNAM.IsLoaded())
-        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
     for(UINT32 p = 0; p < TNAM.size(); p++)
-        writer.record_write_subrecord('MANT', &TNAM[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(TNAM), &TNAM[p], sizeof(UINT32));
     return -1;
     }
 

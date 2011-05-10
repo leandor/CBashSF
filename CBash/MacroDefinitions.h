@@ -6,7 +6,6 @@
 #define CBASH_CHUNK_WARN
 #undef CBASH_CHUNK_LCHECK
 
-//Requires CBASH_CHUNK_WARN
 #define CBASH_DEBUG_CHUNK
 
 //Peek into the data before and after to see what's up
@@ -26,6 +25,9 @@
     #define CBASH_CHUNK_DEBUG
 #endif
 
+#ifndef PEEK_SIZE
+    #define PEEK_SIZE 32
+#endif
 
 //These require CBASH_PROFILING to be defined
 #ifdef CBASH_PROFILING
@@ -135,6 +137,13 @@
     #else
         #define NULL    ((void *)0)
     #endif
+#endif
+
+#ifndef FLT_MAX
+    #define FLT_MAX         3.402823466e+38F        /* max value */
+#endif
+#ifndef FLT_MIN
+    #define FLT_MIN         1.175494351e-38F        /* min positive value */
 #endif
 
 #ifndef PRINT_RECORD_IDENTIFIERS

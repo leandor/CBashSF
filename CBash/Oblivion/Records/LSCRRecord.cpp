@@ -108,7 +108,7 @@ bool LSCRRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 LSCRRecord::GetType()
     {
-    return 'RCSL';
+    return REV32(LSCR);
     }
 
 
@@ -127,7 +127,7 @@ SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -140,16 +140,16 @@ SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'MANL':
+            case REV32(LNAM):
                 newLNAM = new ReqSubRecord<LSCRLNAM>;
                 newLNAM->Read(buffer, subSize, curPos);
                 LNAM.push_back(newLNAM);
@@ -182,14 +182,14 @@ SINT32 LSCRRecord::Unload()
 SINT32 LSCRRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(DESC.IsLoaded())
-        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
     for(UINT32 p = 0; p < LNAM.size(); p++)
         if(LNAM[p]->IsLoaded())
-            writer.record_write_subrecord('MANL', &LNAM[p]->value, LNAM[p]->GetSize());
+            writer.record_write_subrecord(REV32(LNAM), &LNAM[p]->value, LNAM[p]->GetSize());
     return -1;
     }
 

@@ -59,8 +59,8 @@ class RACERecord : public FNVRecord //Race
         SubRecord<RACEVNAM> VTCK; //Voices
         SubRecord<RACEDNAM> DNAM; //Default Hair Styles
         SubRecord<RACECNAM> CNAM; //Default Hair Colors
-        OptSimpleSubRecord<FLOAT32> PNAM; //FaceGen - Main clamp
-        OptSimpleSubRecord<FLOAT32> UNAM; //FaceGen - Face clamp
+        OptSimpleFloatSubRecord<flt_0> PNAM; //FaceGen - Main clamp
+        OptSimpleFloatSubRecord<flt_0> UNAM; //FaceGen - Face clamp
         RawRecord ATTR; //Unknown
 
         //OptSubRecord<GENNAM> NAM0; //Head Data Marker (Empty)

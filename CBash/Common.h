@@ -89,6 +89,7 @@ enum API_FieldTypes {
     FORMID_OR_STRING_FIELD,
     UNKNOWN_OR_FORMID_OR_UINT32_FIELD,
     UNKNOWN_OR_SINT32_FIELD,
+    UNKNOWN_OR_UINT32_FLAG_FIELD,
     MGEFCODE_OR_UINT32_FIELD,
     FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_FIELD,
     RESOLVED_MGEFCODE_FIELD,
@@ -230,6 +231,12 @@ extern const std::map<UINT32, STRING> HardCodedFormID_EditorID;
 extern const std::map<UINT32, FunctionArguments> FNVFunction_Arguments;
 extern const UINT32 VATSFunction_Argument[];
 
+extern const float flt_max;
+extern const float flt_min;
+extern const float flt_0;
+extern const float flt_1;
+extern const float flt_n2147483648;
+
 #ifdef CBASH_CALLTIMING
     extern std::map<char *, double> CallTime;
 #endif
@@ -308,6 +315,9 @@ class FileReader
         unsigned char *getBuffer(UINT32 offset=0);
         UINT32 getBufferSize();
         void   read(void *destination, UINT32 length);
+        #ifdef CBASH_DEBUG_CHUNK
+            void   peek_around(UINT32 length);
+        #endif
     };
 
 class FormIDHandlerClass
@@ -549,10 +559,7 @@ class RawRecord
 //Used when it isn't known if the record is required or optional.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template <UINT32 power>class Compile10Pow{public:enum{result = 10 * Compile10Pow<power-1>::result};};
-template <>class Compile10Pow<0>{public:enum{result = 1};};
-
-template<class T, SINT32 significand=0, UINT32 exponent=0>
+template<class T, SINT32 defaultValue=0>
 struct SimpleSubRecord
     {
     T value;
@@ -560,7 +567,7 @@ struct SimpleSubRecord
 
     SimpleSubRecord():
         isLoaded(false),
-        value(significand)
+        value(defaultValue)
         {
         //
         }
@@ -576,7 +583,7 @@ struct SimpleSubRecord
 
     bool IsLoaded() const
         {
-        return (isLoaded && value != significand);
+        return (isLoaded && value != defaultValue);
         }
     void Load()
         {
@@ -584,7 +591,7 @@ struct SimpleSubRecord
         }
     void Unload()
         {
-        value = significand;
+        value = defaultValue;
         isLoaded = false;
         }
 
@@ -630,11 +637,11 @@ struct SimpleSubRecord
         }
     void Write(UINT32 _Type, FileWriter &writer)
         {
-        if(isLoaded && value != significand)
+        if(isLoaded && value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
-    SimpleSubRecord<T, significand, exponent>& operator = (const SimpleSubRecord<T, significand, exponent> &rhs)
+    SimpleSubRecord<T, defaultValue>& operator = (const SimpleSubRecord<T, defaultValue> &rhs)
         {
         if(this != &rhs)
             {
@@ -643,30 +650,30 @@ struct SimpleSubRecord
             }
         return *this;
         }
-    bool operator ==(const SimpleSubRecord<T, significand, exponent> &other) const
+    bool operator ==(const SimpleSubRecord<T, defaultValue> &other) const
         {
         return (isLoaded == other.isLoaded &&
                 value == other.value);
         }
-    bool operator !=(const SimpleSubRecord<T, significand, exponent> &other) const
+    bool operator !=(const SimpleSubRecord<T, defaultValue> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<SINT32 significand, UINT32 exponent>
-struct SimpleSubRecord<FLOAT32, significand, exponent>
+template<const float &defaultValue=flt_0>
+struct SimpleFloatSubRecord
     {
     FLOAT32 value;
     bool isLoaded;
 
-    SimpleSubRecord():
+    SimpleFloatSubRecord():
         isLoaded(false),
-        value((FLOAT32)significand / Compile10Pow<exponent>::result)
+        value(defaultValue)
         {
         //
         }
-    ~SimpleSubRecord()
+    ~SimpleFloatSubRecord()
         {
         //
         }
@@ -678,7 +685,7 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
 
     bool IsLoaded() const
         {
-        return (isLoaded && !AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2));
+        return (isLoaded && !AlmostEqual(value, defaultValue, 2));
         }
 
     void Load()
@@ -688,7 +695,7 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
 
     void Unload()
         {
-        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
+        value = defaultValue;
         isLoaded = false;
         }
 
@@ -702,7 +709,7 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printf("SimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -714,7 +721,7 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("SimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printf("SimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -732,11 +739,11 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
         }
     void Write(UINT32 _Type, FileWriter &writer)
         {
-        if(isLoaded && value != significand)
+        if(isLoaded && value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
-    SimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SimpleSubRecord<FLOAT32, significand, exponent> &rhs)
+    SimpleFloatSubRecord<defaultValue>& operator = (const SimpleFloatSubRecord<defaultValue> &rhs)
         {
         if(this != &rhs)
             {
@@ -746,13 +753,13 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
         return *this;
         }
 
-    bool operator ==(const SimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator ==(const SimpleFloatSubRecord<defaultValue> &other) const
         {
         return (isLoaded == other.isLoaded &&
                 AlmostEqual(value, other.value, 2));
         }
 
-    bool operator !=(const SimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator !=(const SimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(*this == other);
         }
@@ -763,13 +770,13 @@ struct SimpleSubRecord<FLOAT32, significand, exponent>
 //Unloading them simply resets the values to default.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template<class T, SINT32 significand=0, UINT32 exponent=0>
+template<class T, SINT32 defaultValue=0>
 struct ReqSimpleSubRecord
     {
     T value;
 
     ReqSimpleSubRecord():
-        value(significand)
+        value(defaultValue)
         {
         //
         }
@@ -793,7 +800,7 @@ struct ReqSimpleSubRecord
         }
     void Unload()
         {
-        value = significand;
+        value = defaultValue;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -835,33 +842,33 @@ struct ReqSimpleSubRecord
         writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
-    ReqSimpleSubRecord<T, significand, exponent>& operator = (const ReqSimpleSubRecord<T, significand, exponent> &rhs)
+    ReqSimpleSubRecord<T, defaultValue>& operator = (const ReqSimpleSubRecord<T, defaultValue> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const ReqSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator ==(const ReqSimpleSubRecord<T, defaultValue> &other) const
         {
         return (value == other.value);
         }
-    bool operator !=(const ReqSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator !=(const ReqSimpleSubRecord<T, defaultValue> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<SINT32 significand, UINT32 exponent>
-struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
+template<const float &defaultValue=flt_0>
+struct ReqSimpleFloatSubRecord
     {
     FLOAT32 value;
 
-    ReqSimpleSubRecord():
-        value((FLOAT32)significand / Compile10Pow<exponent>::result)
+    ReqSimpleFloatSubRecord():
+        value(defaultValue)
         {
         //
         }
-    ~ReqSimpleSubRecord()
+    ~ReqSimpleFloatSubRecord()
         {
         //
         }
@@ -881,7 +888,7 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         }
     void Unload()
         {
-        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
+        value = defaultValue;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -889,7 +896,7 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("ReqSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printf("ReqSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -901,7 +908,7 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("ReqSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printf("ReqSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -921,17 +928,17 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
         writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
-    ReqSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const ReqSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
+    ReqSimpleFloatSubRecord<defaultValue>& operator = (const ReqSimpleFloatSubRecord<defaultValue> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const ReqSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator ==(const ReqSimpleFloatSubRecord<defaultValue> &other) const
         {
         return (AlmostEqual(value, other.value, 2));
         }
-    bool operator !=(const ReqSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator !=(const ReqSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(*this == other);
         }
@@ -940,13 +947,13 @@ struct ReqSimpleSubRecord<FLOAT32, significand, exponent>
 //Even if loaded, they are considered unloaded if they're equal to their defaults
 //Should only be used with simple data types (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template<class T, SINT32 significand=0, UINT32 exponent=0>
+template<class T, SINT32 defaultValue=0>
 struct OptSimpleSubRecord
     {
     T value;
 
     OptSimpleSubRecord():
-        value(significand)
+        value(defaultValue)
         {
         //
         }
@@ -961,7 +968,7 @@ struct OptSimpleSubRecord
 
     bool IsLoaded() const
         {
-        return (value != significand);
+        return (value != defaultValue);
         }
     void Load()
         {
@@ -969,12 +976,12 @@ struct OptSimpleSubRecord
         }
     void Unload()
         {
-        value = significand;
+        value = defaultValue;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
         {
-        if(value != significand)
+        if(value != defaultValue)
             {
             curPos += subSize;
             return false;
@@ -1012,37 +1019,37 @@ struct OptSimpleSubRecord
         }
     void Write(UINT32 _Type, FileWriter &writer)
         {
-        if(value != significand)
+        if(value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
-    OptSimpleSubRecord<T, significand, exponent>& operator = (const OptSimpleSubRecord<T, significand, exponent> &rhs)
+    OptSimpleSubRecord<T, defaultValue>& operator = (const OptSimpleSubRecord<T, defaultValue> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const OptSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator ==(const OptSimpleSubRecord<T, defaultValue> &other) const
         {
         return value == other.value;
         }
-    bool operator !=(const OptSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator !=(const OptSimpleSubRecord<T, defaultValue> &other) const
         {
         return value != other.value;
         }
     };
 
-template<SINT32 significand, UINT32 exponent>
-struct OptSimpleSubRecord<FLOAT32, significand, exponent>
+template<const float &defaultValue=flt_0>
+struct OptSimpleFloatSubRecord
     {
     FLOAT32 value;
 
-    OptSimpleSubRecord():
-        value((FLOAT32)significand / Compile10Pow<exponent>::result)
+    OptSimpleFloatSubRecord():
+        value(defaultValue)
         {
         //
         }
-    ~OptSimpleSubRecord()
+    ~OptSimpleFloatSubRecord()
         {
         Unload();
         }
@@ -1054,7 +1061,7 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
 
     bool IsLoaded() const
         {
-        return !(AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2));
+        return !(AlmostEqual(value, defaultValue, 2));
         }
     void Load()
         {
@@ -1062,12 +1069,12 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
         }
     void Unload()
         {
-        value = (FLOAT32)significand / Compile10Pow<exponent>::result;
+        value = defaultValue;
         }
 
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
         {
-        if(!(AlmostEqual(value, (FLOAT32)significand / Compile10Pow<exponent>::result, 2)))
+        if(!(AlmostEqual(value, defaultValue, 2)))
             {
             curPos += subSize;
             return false;
@@ -1075,7 +1082,7 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printf("OptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1087,7 +1094,7 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("OptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printf("OptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1107,17 +1114,17 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
-    OptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const OptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
+    OptSimpleFloatSubRecord<defaultValue>& operator = (const OptSimpleFloatSubRecord<defaultValue> &rhs)
         {
         if(this != &rhs)
             value = rhs.value;
         return *this;
         }
-    bool operator ==(const OptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator ==(const OptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return AlmostEqual(value, other.value, 2);
         }
-    bool operator !=(const OptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator !=(const OptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(AlmostEqual(value, other.value, 2));
         }
@@ -1128,7 +1135,7 @@ struct OptSimpleSubRecord<FLOAT32, significand, exponent>
 // still considered loaded.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template<class T, SINT32 significand=0, UINT32 exponent=0>
+template<class T, SINT32 defaultValue=0>
 struct SemiOptSimpleSubRecord
     {
     T *value;
@@ -1155,7 +1162,7 @@ struct SemiOptSimpleSubRecord
     void Load()
         {
         if(value == NULL)
-            value = new T(significand);
+            value = new T(defaultValue);
         }
     void Unload()
         {
@@ -1170,7 +1177,7 @@ struct SemiOptSimpleSubRecord
             curPos += subSize;
             return false;
             }
-        value = new T(significand);
+        value = new T(defaultValue);
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
@@ -1208,13 +1215,13 @@ struct SemiOptSimpleSubRecord
             writer.record_write_subrecord(_Type, value, sizeof(T));
         }
 
-    SemiOptSimpleSubRecord<T, significand, exponent>& operator = (const SemiOptSimpleSubRecord<T, significand, exponent> &rhs)
+    SemiOptSimpleSubRecord<T, defaultValue>& operator = (const SemiOptSimpleSubRecord<T, defaultValue> &rhs)
         {
         if(this != &rhs)
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    value = new T(significand);
+                    value = new T(defaultValue);
                 else
                     value->~T();
                 *value = *rhs.value;
@@ -1226,7 +1233,7 @@ struct SemiOptSimpleSubRecord
                 }
         return *this;
         }
-    bool operator ==(const SemiOptSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator ==(const SemiOptSimpleSubRecord<T, defaultValue> &other) const
         {
         if(!IsLoaded())
             {
@@ -1237,23 +1244,23 @@ struct SemiOptSimpleSubRecord
             return true;
         return false;
         }
-    bool operator !=(const SemiOptSimpleSubRecord<T, significand, exponent> &other) const
+    bool operator !=(const SemiOptSimpleSubRecord<T, defaultValue> &other) const
         {
         return !(*this == other);
         }
     };
 
-template<SINT32 significand, UINT32 exponent>
-struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
+template<const float &defaultValue=flt_0>
+struct SemiOptSimpleFloatSubRecord
     {
     FLOAT32 *value;
 
-    SemiOptSimpleSubRecord():
+    SemiOptSimpleFloatSubRecord():
         value(NULL)
         {
         //
         }
-    ~SemiOptSimpleSubRecord()
+    ~SemiOptSimpleFloatSubRecord()
         {
         Unload();
         }
@@ -1270,7 +1277,7 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
     void Load()
         {
         if(value == NULL)
-            value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
+            value = new FLOAT32(defaultValue);
         }
     void Unload()
         {
@@ -1285,11 +1292,11 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
             curPos += subSize;
             return false;
             }
-        value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
+        value = new FLOAT32(defaultValue);
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SemiOptSimpleSubRecord<FLOAT32>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printf("SemiOptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1301,7 +1308,7 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("SemiOptSimpleSubRecord<FLOAT32>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printf("SemiOptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1321,13 +1328,13 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
             writer.record_write_subrecord(_Type, value, sizeof(FLOAT32));
         }
 
-    SemiOptSimpleSubRecord<FLOAT32, significand, exponent>& operator = (const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &rhs)
+    SemiOptSimpleFloatSubRecord<defaultValue>& operator = (const SemiOptSimpleFloatSubRecord<defaultValue> &rhs)
         {
         if(this != &rhs)
             if(rhs.value != NULL)
                 {
                 if(value == NULL)
-                    value = new FLOAT32((FLOAT32)significand / Compile10Pow<exponent>::result);
+                    value = new FLOAT32(defaultValue);
                 *value = *rhs.value;
                 }
             else
@@ -1337,7 +1344,7 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
                 }
         return *this;
         }
-    bool operator ==(const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator ==(const SemiOptSimpleFloatSubRecord<defaultValue> &other) const
         {
         if(!IsLoaded())
             {
@@ -1348,7 +1355,7 @@ struct SemiOptSimpleSubRecord<FLOAT32, significand, exponent>
             return true;
         return false;
         }
-    bool operator !=(const SemiOptSimpleSubRecord<FLOAT32, significand, exponent> &other) const
+    bool operator !=(const SemiOptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(*this == other);
         }

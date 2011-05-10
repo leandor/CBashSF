@@ -142,7 +142,6 @@ CELLRecord::~CELLRecord()
     //Parent is a shared pointer that's deleted when the WRLD group is deleted
     }
 
-
 bool CELLRecord::HasSubRecords()
     {
     return true;
@@ -152,7 +151,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
 
-    if(RecordType == NULL || RecordType == 'RHCA')
+    if(RecordType == NULL || RecordType == REV32(ACHR))
         for(UINT32 x = 0; x < ACHR.size();++x)
             {
             stop = op.Accept(ACHR[x]);
@@ -165,7 +164,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
                 return stop;
             }
 
-    if(RecordType == NULL || RecordType == 'ERCA')
+    if(RecordType == NULL || RecordType == REV32(ACRE))
         for(UINT32 x = 0; x < ACRE.size();++x)
             {
             stop = op.Accept(ACRE[x]);
@@ -178,7 +177,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
                 return stop;
             }
 
-    if(RecordType == NULL || RecordType == 'RFER')
+    if(RecordType == NULL || RecordType == REV32(REFR))
         for(UINT32 x = 0; x < REFR.size();++x)
             {
             stop = op.Accept(REFR[x]);
@@ -191,7 +190,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
                 return stop;
             }
 
-    if(RecordType == NULL || RecordType == 'DRGP')
+    if(RecordType == NULL || RecordType == REV32(PGRD))
         {
         if(PGRD != NULL)
             {
@@ -200,7 +199,7 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
             }
         }
 
-    if(RecordType == NULL || RecordType == 'DNAL')
+    if(RecordType == NULL || RecordType == REV32(LAND))
         {
         if(LAND != NULL)
             {
@@ -374,7 +373,7 @@ void CELLRecord::SetMusicType(UINT8 Type)
 
 UINT32 CELLRecord::GetType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 STRING CELLRecord::GetStrType()
@@ -398,7 +397,7 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -411,40 +410,40 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'LLCX':
+            case REV32(XCLL):
                 XCLL.Read(buffer, subSize, curPos);
                 break;
-            case 'TMCX':
+            case REV32(XCMT):
                 XCMT.Read(buffer, subSize, curPos);
                 break;
-            case 'NWOX':
+            case REV32(XOWN):
                 Ownership.Load();
                 Ownership->XOWN.Read(buffer, subSize, curPos);
                 break;
-            case 'KNRX':
+            case REV32(XRNK):
                 Ownership.Load();
                 Ownership->XRNK.Read(buffer, subSize, curPos);
                 break;
-            case 'BLGX':
+            case REV32(XGLB):
                 Ownership.Load();
                 Ownership->XGLB.Read(buffer, subSize, curPos);
                 break;
-            case 'MCCX':
+            case REV32(XCCM):
                 XCCM.Read(buffer, subSize, curPos);
                 break;
-            case 'WLCX':
+            case REV32(XCLW):
                 XCLW.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCX':
+            case REV32(XCLR):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -458,10 +457,10 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'CLCX':
+            case REV32(XCLC):
                 XCLC.Read(buffer, subSize, curPos);
                 break;
-            case 'TWCX':
+            case REV32(XCWT):
                 XCWT.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -497,40 +496,40 @@ SINT32 CELLRecord::Unload()
 SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
 
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(XCLL.IsLoaded())
-        writer.record_write_subrecord('LLCX', XCLL.value, XCLL.GetSize());
+        writer.record_write_subrecord(REV32(XCLL), XCLL.value, XCLL.GetSize());
     if(XCMT.IsLoaded())
-        writer.record_write_subrecord('TMCX', &XCMT.value, XCMT.GetSize());
+        writer.record_write_subrecord(REV32(XCMT), &XCMT.value, XCMT.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        writer.record_write_subrecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
+        writer.record_write_subrecord(REV32(XOWN), &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
+            writer.record_write_subrecord(REV32(XRNK), Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            writer.record_write_subrecord(REV32(XGLB), &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XCCM.IsLoaded())
-        writer.record_write_subrecord('MCCX', &XCCM.value, XCCM.GetSize());
+        writer.record_write_subrecord(REV32(XCCM), &XCCM.value, XCCM.GetSize());
     if(XCLW.IsLoaded())
-        writer.record_write_subrecord('WLCX', &XCLW.value, XCLW.GetSize());
+        writer.record_write_subrecord(REV32(XCLW), &XCLW.value, XCLW.GetSize());
 
     if(XCLR.size())
-        writer.record_write_subrecord('RLCX', &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
+        writer.record_write_subrecord(REV32(XCLR), &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
     //else
-    //    writer.record_write_subheader('RLCX', 0);
+    //    writer.record_write_subheader(REV32(XCLR), 0);
 
     if(XCLC.IsLoaded() && !IsInterior())
-        writer.record_write_subrecord('CLCX', XCLC.value, XCLC.GetSize());
+        writer.record_write_subrecord(REV32(XCLC), XCLC.value, XCLC.GetSize());
     if(XCWT.IsLoaded())
-        writer.record_write_subrecord('TWCX', &XCWT.value, XCWT.GetSize());
+        writer.record_write_subrecord(REV32(XCWT), &XCWT.value, XCWT.GetSize());
     return -1;
     }
 

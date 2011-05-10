@@ -946,7 +946,7 @@ void CREARecord::SetServicesFlagMask(UINT32 Mask)
 
 UINT32 CREARecord::GetType()
     {
-    return 'AERC';
+    return REV32(CREA);
     }
 
 STRING CREARecord::GetStrType()
@@ -968,7 +968,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -981,34 +981,34 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'OLPS':
+            case REV32(SPLO):
                 _readBuffer(&curFormID, buffer, subSize, curPos);
                 SPLO.push_back(curFormID);
                 break;
-            case 'ZFIN':
+            case REV32(NIFZ):
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((char*)&buffer[curPos]) + 1)
                     NIFZ.push_back(StringRecord((char*)&buffer[curPos]));
                 curPos++;
                 break;
-            case 'TFIN':
+            case REV32(NIFT):
                 NIFT.Read(buffer, subSize, curPos);
                 //Hack
                 testNIFT = 0;
@@ -1017,70 +1017,70 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 if(testNIFT == 0)
                     NIFT.Unload();
                 break;
-            case 'SBCA':
+            case REV32(ACBS):
                 ACBS.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 newSNAM = new ReqSubRecord<GENSNAM>;
                 newSNAM->Read(buffer, subSize, curPos);
                 SNAM.push_back(newSNAM);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'OTNC':
+            case REV32(CNTO):
                 newCNTO = new ReqSubRecord<GENCNTO>;
                 newCNTO->Read(buffer, subSize, curPos);
                 CNTO.push_back(newCNTO);
                 break;
-            case 'TDIA':
+            case REV32(AIDT):
                 AIDT.Read(buffer, subSize, curPos);
                 break;
-            case 'DIKP':
+            case REV32(PKID):
                 _readBuffer(&curFormID, buffer, subSize, curPos);
                 PKID.push_back(curFormID);
                 break;
-            case 'ZFFK':
+            case REV32(KFFZ):
                 for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((char*)&buffer[curPos]) + 1)
                     KFFZ.push_back(StringRecord((char*)&buffer[curPos]));
                 curPos++;
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANB':
+            case REV32(BNAM):
                 BNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RCSC':
+            case REV32(CSCR):
                 CSCR.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 NAM1.Read(buffer, subSize, curPos);
                 break;
-            case 'TDSC':
+            case REV32(CSDT):
                 newSound = new CREASound;
                 newSound->CSDT.Read(buffer, subSize, curPos);
                 Sounds.push_back(newSound);
                 break;
-            case 'IDSC':
+            case REV32(CSDI):
                 if(newSound == NULL)
                     {
                     newSound = new CREASound;
@@ -1088,7 +1088,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 newSound->CSDI.Read(buffer, subSize, curPos);
                 break;
-            case 'CDSC':
+            case REV32(CSDC):
                 if(newSound == NULL)
                     {
                     newSound = new CREASound;
@@ -1159,22 +1159,22 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
     UINT32 cSize = 0;
 
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
 
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
 
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
 
     for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord('OLPS', &SPLO[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(UINT32));
 
     if(NIFZ.size())
         {
@@ -1183,7 +1183,7 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
             if(NIFZ[p].IsLoaded())
                 cSize += NIFZ[p].GetSize();
         if(cSize > 65535) cSize += 10;
-        writer.record_write_subheader('ZFIN', cSize);
+        writer.record_write_subheader(REV32(NIFZ), cSize);
         for(UINT32 p = 0; p < NIFZ.size(); p++)
             if(NIFZ[p].IsLoaded())
                 writer.record_write(NIFZ[p].value, NIFZ[p].GetSize());
@@ -1193,30 +1193,30 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
         }
 
     if(NIFT.IsLoaded())
-        writer.record_write_subrecord('TFIN', NIFT.value, NIFT.GetSize());
+        writer.record_write_subrecord(REV32(NIFT), NIFT.value, NIFT.GetSize());
 
     if(ACBS.IsLoaded())
-        writer.record_write_subrecord('SBCA', &ACBS.value, ACBS.GetSize());
+        writer.record_write_subrecord(REV32(ACBS), &ACBS.value, ACBS.GetSize());
 
     for(UINT32 p = 0; p < SNAM.size(); p++)
         if(SNAM[p]->IsLoaded())
-            writer.record_write_subrecord('MANS', &SNAM[p]->value, SNAM[p]->GetSize());
+            writer.record_write_subrecord(REV32(SNAM), &SNAM[p]->value, SNAM[p]->GetSize());
 
     if(INAM.IsLoaded())
-        writer.record_write_subrecord('MANI', &INAM.value, INAM.GetSize());
+        writer.record_write_subrecord(REV32(INAM), &INAM.value, INAM.GetSize());
 
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
 
     for(UINT32 p = 0; p < CNTO.size(); p++)
         if(CNTO[p]->IsLoaded())
-            writer.record_write_subrecord('OTNC', &CNTO[p]->value, sizeof(GENCNTO));
+            writer.record_write_subrecord(REV32(CNTO), &CNTO[p]->value, sizeof(GENCNTO));
 
     if(AIDT.IsLoaded())
-        writer.record_write_subrecord('TDIA', &AIDT.value, AIDT.GetSize());
+        writer.record_write_subrecord(REV32(AIDT), &AIDT.value, AIDT.GetSize());
 
     for(UINT32 p = 0; p < PKID.size(); p++)
-        writer.record_write_subrecord('DIKP', &PKID[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(PKID), &PKID[p], sizeof(UINT32));
 
     if(KFFZ.size())
         {
@@ -1224,7 +1224,7 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 cSize += KFFZ[p].GetSize();
-        writer.record_write_subheader('ZFFK', cSize);
+        writer.record_write_subheader(REV32(KFFZ), cSize);
         for(UINT32 p = 0; p < KFFZ.size(); p++)
             if(KFFZ[p].IsLoaded())
                 writer.record_write(KFFZ[p].value, KFFZ[p].GetSize());
@@ -1234,42 +1234,42 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
         }
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
 
     if(RNAM.IsLoaded())
-        writer.record_write_subrecord('MANR', &RNAM.value, RNAM.GetSize());
+        writer.record_write_subrecord(REV32(RNAM), &RNAM.value, RNAM.GetSize());
 
     if(ZNAM.IsLoaded())
-        writer.record_write_subrecord('MANZ', &ZNAM.value, ZNAM.GetSize());
+        writer.record_write_subrecord(REV32(ZNAM), &ZNAM.value, ZNAM.GetSize());
 
     if(TNAM.IsLoaded())
-        writer.record_write_subrecord('MANT', &TNAM.value, TNAM.GetSize());
+        writer.record_write_subrecord(REV32(TNAM), &TNAM.value, TNAM.GetSize());
 
     if(BNAM.IsLoaded())
-        writer.record_write_subrecord('MANB', &BNAM.value, BNAM.GetSize());
+        writer.record_write_subrecord(REV32(BNAM), &BNAM.value, BNAM.GetSize());
 
     if(WNAM.IsLoaded())
-        writer.record_write_subrecord('MANW', &WNAM.value, WNAM.GetSize());
+        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
 
     if(CSCR.IsLoaded())
-        writer.record_write_subrecord('RCSC', &CSCR.value, CSCR.GetSize());
+        writer.record_write_subrecord(REV32(CSCR), &CSCR.value, CSCR.GetSize());
 
     if(NAM0.IsLoaded())
-        writer.record_write_subrecord('0MAN', NAM0.value, NAM0.GetSize());
+        writer.record_write_subrecord(REV32(NAM0), NAM0.value, NAM0.GetSize());
 
     if(NAM1.IsLoaded())
-        writer.record_write_subrecord('1MAN', NAM1.value, NAM1.GetSize());
+        writer.record_write_subrecord(REV32(NAM1), NAM1.value, NAM1.GetSize());
 
     for(UINT32 p = 0; p < Sounds.size(); p++)
         {
         if(Sounds[p]->CSDT.IsLoaded())
-            writer.record_write_subrecord('TDSC', &Sounds[p]->CSDT.value, Sounds[p]->CSDT.GetSize());
+            writer.record_write_subrecord(REV32(CSDT), &Sounds[p]->CSDT.value, Sounds[p]->CSDT.GetSize());
 
         if(Sounds[p]->CSDI.IsLoaded())
-            writer.record_write_subrecord('IDSC', &Sounds[p]->CSDI.value, Sounds[p]->CSDI.GetSize());
+            writer.record_write_subrecord(REV32(CSDI), &Sounds[p]->CSDI.value, Sounds[p]->CSDI.GetSize());
 
         if(Sounds[p]->CSDC.IsLoaded())
-            writer.record_write_subrecord('CDSC', &Sounds[p]->CSDC.value, Sounds[p]->CSDC.GetSize());
+            writer.record_write_subrecord(REV32(CSDC), &Sounds[p]->CSDC.value, Sounds[p]->CSDC.GetSize());
         }
     return -1;
     }

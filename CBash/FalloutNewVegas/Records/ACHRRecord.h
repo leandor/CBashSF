@@ -43,8 +43,8 @@ class ACHRRecord : public FNVRecord //Placed NPC
         OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
         OptSimpleSubRecord<FORMID> XMRC; //Merchant Container
         OptSimpleSubRecord<SINT32> XCNT; //Count
-        OptSimpleSubRecord<FLOAT32> XRDS; //Radius
-        OptSimpleSubRecord<FLOAT32> XHLP; //Health
+        OptSimpleFloatSubRecord<flt_0> XRDS; //Radius
+        OptSimpleFloatSubRecord<flt_0> XHLP; //Health
         std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
         OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
@@ -54,7 +54,7 @@ class ACHRRecord : public FNVRecord //Placed NPC
         OptSimpleSubRecord<FORMID> XEMI; //Emittance
         OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
         //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
-        OptSimpleSubRecord<FLOAT32, 1> XSCL; //Scale
+        OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
         OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         ACHRRecord(unsigned char *_recData=NULL);

@@ -515,7 +515,7 @@ void INFORecord::SetDifficultyType(UINT8 Type)
 
 UINT32 INFORecord::GetType()
     {
-    return 'OFNI';
+    return REV32(INFO);
     }
 
 STRING INFORecord::GetStrType()
@@ -532,7 +532,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -545,95 +545,95 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'ITSQ':
+            case REV32(QSTI):
                 QSTI.Read(buffer, subSize, curPos);
                 break;
-            case 'CIPT':
+            case REV32(TPIC):
                 TPIC.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
-            case 'TDRT':
+            case REV32(TRDT):
                 TRDT.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 NAM1.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 NAM2.Read(buffer, subSize, curPos);
                 break;
-            case '3MAN':
+            case REV32(NAM3):
                 NAM3.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANL':
+            case REV32(LNAM):
                 LNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 CTDA.Read(buffer, subSize, curPos);
                 break;
-            case 'TLCT':
+            case REV32(TCLT):
                 TCLT.Read(buffer, subSize, curPos);
                 break;
-            case 'FLCT':
+            case REV32(TCLF):
                 TCLF.Read(buffer, subSize, curPos);
                 break;
-            case 'UFCT':
+            case REV32(TCFU):
                 TCFU.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 SCHR.Load();
                 SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 SCHR.Load();
                 SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 SCHR.Load();
                 SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 SCHR.Load();
                 SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 SCHR.Load();
                 SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 SCHR.Load();
                 SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 SCHR.Load();
                 SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'TXEN':
+            case REV32(NEXT):
                 //NEXT.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'DDNS':
+            case REV32(SNDD):
                 SNDD.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANK':
+            case REV32(KNAM):
                 KNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -698,30 +698,30 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     if(SCHR.IsLoaded())
         {
         if(SCHR->SCHR.IsLoaded())
-            SaveHandler.writeSubRecord('RHCS', SCHR->SCHR.value, SCHR->SCHR.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCHR), SCHR->SCHR.value, SCHR->SCHR.GetSize());
 
         if(SCHR->SCDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADCS', SCHR->SCDA.value, SCHR->SCDA.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCDA), SCHR->SCDA.value, SCHR->SCDA.GetSize());
 
         if(SCHR->SCTX.IsLoaded())
-            SaveHandler.writeSubRecord('XTCS', SCHR->SCTX.value, SCHR->SCTX.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCTX), SCHR->SCTX.value, SCHR->SCTX.GetSize());
 
         if(SCHR->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', SCHR->SLSD.value, SCHR->SLSD.GetSize());
+            SaveHandler.writeSubRecord(REV32(SLSD), SCHR->SLSD.value, SCHR->SLSD.GetSize());
 
         if(SCHR->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', SCHR->SCVR.value, SCHR->SCVR.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCVR), SCHR->SCVR.value, SCHR->SCVR.GetSize());
 
         if(SCHR->SCRO.IsLoaded())
-            SaveHandler.writeSubRecord('ORCS', SCHR->SCRO.value, SCHR->SCRO.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCRO), SCHR->SCRO.value, SCHR->SCRO.GetSize());
 
         if(SCHR->SCRV.IsLoaded())
-            SaveHandler.writeSubRecord('VRCS', SCHR->SCRV.value, SCHR->SCRV.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCRV), SCHR->SCRV.value, SCHR->SCRV.GetSize());
 
         }
 
     //if(NEXT.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('TXEN', NEXT.value, NEXT.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NEXT), NEXT.value, NEXT.GetSize());
     WRITE(SNDD);
     WRITE(RNAM);
     WRITE(ANAM);

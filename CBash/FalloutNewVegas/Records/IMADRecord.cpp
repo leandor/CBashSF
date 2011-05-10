@@ -132,7 +132,7 @@ bool IMADRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 IMADRecord::GetType()
     {
-    return 'DAMI';
+    return REV32(IMAD);
     }
 
 STRING IMADRecord::GetStrType()
@@ -149,7 +149,7 @@ SINT32 IMADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -162,181 +162,181 @@ SINT32 IMADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANB':
+            case REV32(BNAM):
                 BNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANV':
+            case REV32(VNAM):
                 VNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case '3MAN':
+            case REV32(NAM3):
                 NAM3.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANU':
+            case REV32(UNAM):
                 UNAM.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 NAM1.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 NAM2.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANY':
+            case REV32(YNAM):
                 YNAM.Read(buffer, subSize, curPos);
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 NAM4.Read(buffer, subSize, curPos);
                 break;
-            case '_00_':
+            case REV32(_00_):
                 _00_.Read(buffer, subSize, curPos);
                 break;
-            case '_04_':
+            case REV32(_40_):
                 _40_.Read(buffer, subSize, curPos);
                 break;
-            case '_10_':
+            case REV32(_01_):
                 _01_.Read(buffer, subSize, curPos);
                 break;
-            case '_14_':
+            case REV32(_41_):
                 _41_.Read(buffer, subSize, curPos);
                 break;
-            case '_20_':
+            case REV32(_02_):
                 _02_.Read(buffer, subSize, curPos);
                 break;
-            case '_24_':
+            case REV32(_42_):
                 _42_.Read(buffer, subSize, curPos);
                 break;
-            case '_30_':
+            case REV32(_03_):
                 _03_.Read(buffer, subSize, curPos);
                 break;
-            case '_34_':
+            case REV32(_43_):
                 _43_.Read(buffer, subSize, curPos);
                 break;
-            case '_40_':
+            case REV32(_04_):
                 _04_.Read(buffer, subSize, curPos);
                 break;
-            case '_44_':
+            case REV32(_44_):
                 _44_.Read(buffer, subSize, curPos);
                 break;
-            case '_50_':
+            case REV32(_05_):
                 _05_.Read(buffer, subSize, curPos);
                 break;
-            case '_54_':
+            case REV32(_45_):
                 _45_.Read(buffer, subSize, curPos);
                 break;
-            case '_60_':
+            case REV32(_06_):
                 _06_.Read(buffer, subSize, curPos);
                 break;
-            case '_64_':
+            case REV32(_46_):
                 _46_.Read(buffer, subSize, curPos);
                 break;
-            case '_70_':
+            case REV32(_07_):
                 _07_.Read(buffer, subSize, curPos);
                 break;
-            case '_74_':
+            case REV32(_47_):
                 _47_.Read(buffer, subSize, curPos);
                 break;
-            case '_80_':
+            case REV32(_08_):
                 _08_.Read(buffer, subSize, curPos);
                 break;
-            case '_84_':
+            case REV32(_48_):
                 _48_.Read(buffer, subSize, curPos);
                 break;
-            case '_90_':
+            case REV32(_09_):
                 _09_.Read(buffer, subSize, curPos);
                 break;
-            case '_94_':
+            case REV32(_49_):
                 _49_.Read(buffer, subSize, curPos);
                 break;
-            case '_A0_':
+            case REV32(_0A_):
                 _0A_.Read(buffer, subSize, curPos);
                 break;
-            case '_A4_':
+            case REV32(_4A_):
                 _4A_.Read(buffer, subSize, curPos);
                 break;
-            case '_B0_':
+            case REV32(_0B_):
                 _0B_.Read(buffer, subSize, curPos);
                 break;
-            case '_B4_':
+            case REV32(_4B_):
                 _4B_.Read(buffer, subSize, curPos);
                 break;
-            case '_C0_':
+            case REV32(_0C_):
                 _0C_.Read(buffer, subSize, curPos);
                 break;
-            case '_C4_':
+            case REV32(_4C_):
                 _4C_.Read(buffer, subSize, curPos);
                 break;
-            case '_D0_':
+            case REV32(_0D_):
                 _0D_.Read(buffer, subSize, curPos);
                 break;
-            case '_D4_':
+            case REV32(_4D_):
                 _4D_.Read(buffer, subSize, curPos);
                 break;
-            case '_E0_':
+            case REV32(_0E_):
                 _0E_.Read(buffer, subSize, curPos);
                 break;
-            case '_E4_':
+            case REV32(_4E_):
                 _4E_.Read(buffer, subSize, curPos);
                 break;
-            case '_F0_':
+            case REV32(_0F_):
                 _0F_.Read(buffer, subSize, curPos);
                 break;
-            case '_F4_':
+            case REV32(_4F_):
                 _4F_.Read(buffer, subSize, curPos);
                 break;
-            case '_01_':
+            case REV32(_10_):
                 _10_.Read(buffer, subSize, curPos);
                 break;
-            case '_05_':
+            case REV32(_50_):
                 _50_.Read(buffer, subSize, curPos);
                 break;
-            case '_11_':
+            case REV32(_11_):
                 _11_.Read(buffer, subSize, curPos);
                 break;
-            case '_15_':
+            case REV32(_51_):
                 _51_.Read(buffer, subSize, curPos);
                 break;
-            case '_21_':
+            case REV32(_12_):
                 _12_.Read(buffer, subSize, curPos);
                 break;
-            case '_25_':
+            case REV32(_52_):
                 _52_.Read(buffer, subSize, curPos);
                 break;
-            case '_31_':
+            case REV32(_13_):
                 _13_.Read(buffer, subSize, curPos);
                 break;
-            case '_35_':
+            case REV32(_53_):
                 _53_.Read(buffer, subSize, curPos);
                 break;
-            case '_41_':
+            case REV32(_14_):
                 _14_.Read(buffer, subSize, curPos);
                 break;
-            case '_45_':
+            case REV32(_54_):
                 _54_.Read(buffer, subSize, curPos);
                 break;
-            case 'DSDR':
+            case REV32(RDSD):
                 RDSD.Read(buffer, subSize, curPos);
                 break;
-            case 'ISDR':
+            case REV32(RDSI):
                 RDSI.Read(buffer, subSize, curPos);
                 break;
             default:

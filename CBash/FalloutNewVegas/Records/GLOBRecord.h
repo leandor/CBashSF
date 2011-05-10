@@ -30,7 +30,7 @@ class GLOBRecord : public FNVRecord //Global
     public:
         StringRecord EDID; //Editor ID
         ReqSimpleSubRecord<UINT8, 'f'> FNAM; //Type
-        ReqSimpleSubRecord<FLOAT32> FLTV; //Value
+        ReqSimpleFloatSubRecord<flt_0> FLTV; //Value
 
         GLOBRecord(unsigned char *_recData=NULL);
         GLOBRecord(GLOBRecord *srcRecord);

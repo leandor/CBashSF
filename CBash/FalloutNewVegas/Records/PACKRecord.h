@@ -247,13 +247,13 @@ class PACKRecord : public FNVRecord //Package
         std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
         OptSimpleSubRecord<UINT8> IDLF; //Idle Animation Flags
         OptSubRecord<UINT8> IDLC; //Idle Animation Count (may be a UINT32 instead, but only the lower 8 bits are used, so check size on read)
-        OptSimpleSubRecord<FLOAT32> IDLT; //Idle Timer Setting
+        OptSimpleFloatSubRecord<flt_0> IDLT; //Idle Timer Setting
         std::vector<FORMID> IDLA; //Animations
         RawRecord IDLB; //Unused
         //OptSubRecord<GENPKED> PKED; //Eat Marker (Empty)
         OptSimpleSubRecord<UINT32> PKE2; //Escort Distance
         OptSimpleSubRecord<FORMID> CNAM; //Combat Style
-        OptSimpleSubRecord<FLOAT32> PKFD; //Follow - Start Location - Trigger Radius
+        OptSimpleFloatSubRecord<flt_0> PKFD; //Follow - Start Location - Trigger Radius
         OptSubRecord<PACKPKPT> PKPT; //Patrol Flags
         OptSubRecord<PACKPKW3> PKW3; //Use Weapon Data
         OptSubRecord<PACKPTDT> PTD2; //Target 2

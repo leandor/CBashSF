@@ -168,7 +168,7 @@ void EFSHRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 EFSHRecord::GetType()
     {
-    return 'HSFE';
+    return REV32(EFSH);
     }
 
 STRING EFSHRecord::GetStrType()
@@ -185,7 +185,7 @@ SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -198,19 +198,19 @@ SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case '2OCI':
+            case REV32(ICO2):
                 ICO2.Read(buffer, subSize, curPos);
                 break;
-            case '7MAN':
+            case REV32(NAM7):
                 NAM7.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:

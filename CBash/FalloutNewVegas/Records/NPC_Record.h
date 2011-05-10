@@ -207,7 +207,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         OptSubRecord<NPC_DNAM> DNAM; //Skill Data
         UnorderedSparseArray<FORMID> PNAM; //Head Parts
         OptSimpleSubRecord<FORMID> HNAM; //Hair
-        OptSimpleSubRecord<FLOAT32> LNAM; //Hair length
+        OptSimpleFloatSubRecord<flt_0> LNAM; //Hair length
         OptSimpleSubRecord<FORMID> ENAM; //Eyes
         OptSubRecord<GENCLR> HCLR; //Hair Color
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
@@ -216,8 +216,8 @@ class NPC_Record : public FNVRecord //Non-Player Character
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
         ReqSimpleSubRecord<UINT16> NAM5; //Unknown
-        OptSimpleSubRecord<FLOAT32> NAM6; //Height
-        OptSimpleSubRecord<FLOAT32> NAM7; //Weight
+        OptSimpleFloatSubRecord<flt_0> NAM6; //Height
+        OptSimpleFloatSubRecord<flt_0> NAM7; //Weight
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);

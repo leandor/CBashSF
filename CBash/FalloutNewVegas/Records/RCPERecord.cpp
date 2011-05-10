@@ -84,7 +84,7 @@ bool RCPERecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 RCPERecord::GetType()
     {
-    return 'EPCR';
+    return REV32(RCPE);
     }
 
 STRING RCPERecord::GetStrType()
@@ -101,7 +101,7 @@ SINT32 RCPERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -114,25 +114,25 @@ SINT32 RCPERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 CTDA.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'LICR':
+            case REV32(RCIL):
                 RCIL.Read(buffer, subSize, curPos);
                 break;
-            case 'YQCR':
+            case REV32(RCQY):
                 RCQY.Read(buffer, subSize, curPos);
                 break;
-            case 'DOCR':
+            case REV32(RCOD):
                 RCOD.Read(buffer, subSize, curPos);
                 break;
             default:

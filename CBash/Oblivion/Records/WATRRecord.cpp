@@ -215,7 +215,7 @@ void WATRRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 WATRRecord::GetType()
     {
-    return 'RTAW';
+    return REV32(WATR);
     }
 
 STRING WATRRecord::GetStrType()
@@ -232,7 +232,7 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -245,28 +245,28 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -299,21 +299,21 @@ SINT32 WATRRecord::Unload()
 SINT32 WATRRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(TNAM.IsLoaded())
-        writer.record_write_subrecord('MANT', TNAM.value, TNAM.GetSize());
+        writer.record_write_subrecord(REV32(TNAM), TNAM.value, TNAM.GetSize());
     if(ANAM.IsLoaded())
-        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
     if(FNAM.IsLoaded())
-        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
     if(MNAM.IsLoaded())
-        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
     if(SNAM.IsLoaded())
-        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), DATA.value, DATA.GetSize());
     if(GNAM.IsLoaded())
-        writer.record_write_subrecord('MANG', GNAM.value, GNAM.GetSize());
+        writer.record_write_subrecord(REV32(GNAM), GNAM.value, GNAM.GetSize());
     return -1;
     }
 

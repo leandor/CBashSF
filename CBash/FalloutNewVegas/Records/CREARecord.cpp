@@ -2712,7 +2712,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -2792,28 +2792,28 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(TPLT):
                 TPLT.Read(buffer, subSize, curPos);
                 break;
-            case 'TSED':
+            case REV32(DEST):
                 Destructable.Load();
                 Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
-            case 'DTSD':
+            case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
-            case 'LDMD':
+            case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
-            case 'TDMD':
+            case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
-            case 'FTSD':
+            case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
             case REV32(SCRI):

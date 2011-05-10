@@ -40,58 +40,24 @@ class CELLRecord : public FNVRecord //Cell
             bool operator !=(const CELLXCLC &other) const;
             };
 
-        struct CELLLTMP //Light Template
+        struct CELLIMPF
             {
-            OptSimpleSubRecord<FORMID> LTMP; //Template
-            OptSimpleSubRecord<UINT32> LNAM; //Inherit Flags
+            char concSolid[30];
+            char concBroken[30];
+            char metalSolid[30];
+            char metalHollow[30];
+            char metalSheet[30];
+            char wood[30];
+            char sand[30];
+            char dirt[30];
+            char grass[30];
+            char water[30];
 
-            enum flagsFlags
-                {
-                fIsAmbientInherited             = 0x00000001,
-                fIsDirectionalColorInherited    = 0x00000002,
-                fIsFogColorInherited            = 0x00000004,
-                fIsFogNearInherited             = 0x00000008,
-                fIsFogFarInherited              = 0x00000010,
-                fIsDirectionalRotationInherited = 0x00000020,
-                fIsDirectionalFadeInherited     = 0x00000040,
-                fIsFogClipInherited             = 0x00000080,
-                fIsFogPowerInherited            = 0x00000100
-                };
+            CELLIMPF();
+            ~CELLIMPF();
 
-            bool   IsAmbientInherited();
-            void   IsAmbientInherited(bool value);
-            bool   IsDirectionalColorInherited();
-            void   IsDirectionalColorInherited(bool value);
-            bool   IsFogColorInherited();
-            void   IsFogColorInherited(bool value);
-            bool   IsFogNearInherited();
-            void   IsFogNearInherited(bool value);
-            bool   IsFogFarInherited();
-            void   IsFogFarInherited(bool value);
-            bool   IsDirectionalRotationInherited();
-            void   IsDirectionalRotationInherited(bool value);
-            bool   IsDirectionalFadeInherited();
-            void   IsDirectionalFadeInherited(bool value);
-            bool   IsFogClipInherited();
-            void   IsFogClipInherited(bool value);
-            bool   IsFogPowerInherited();
-            void   IsFogPowerInherited(bool value);
-            bool   IsFlagMask(UINT32 Mask, bool Exact=false);
-            void   SetFlagMask(UINT32 Mask);
-
-            bool operator ==(const CELLLTMP &other) const;
-            bool operator !=(const CELLLTMP &other) const;
-            };
-
-        struct CELLXCLW
-            {
-            FLOAT32 waterHeight;
-
-            CELLXCLW();
-            ~CELLXCLW();
-
-            bool operator ==(const CELLXCLW &other) const;
-            bool operator !=(const CELLXCLW &other) const;
+            bool operator ==(const CELLIMPF &other) const;
+            bool operator !=(const CELLIMPF &other) const;
             };
 
         enum flagsFlags
@@ -100,10 +66,24 @@ class CELLRecord : public FNVRecord //Cell
             fHasWater           = 0x00000002,
             fInvertFastTravel   = 0x00000004,
             fForceHideLand      = 0x00000008, //Exterior Cells
-            fIsOblivionInterior = 0x00000008, //From OBSE, unconfirmed
+            fIsOblivionInterior = 0x00000008, //Interior Cells
             fPublicPlace        = 0x00000020,
             fHandChanged        = 0x00000040,
             fBehaveLikeExterior = 0x00000080
+            };
+
+
+        enum lightFlags
+            {
+            fIsAmbientInherited             = 0x00000001,
+            fIsDirectionalColorInherited    = 0x00000002,
+            fIsFogColorInherited            = 0x00000004,
+            fIsFogNearInherited             = 0x00000008,
+            fIsFogFarInherited              = 0x00000010,
+            fIsDirectionalRotationInherited = 0x00000020,
+            fIsDirectionalFadeInherited     = 0x00000040,
+            fIsFogClipInherited             = 0x00000080,
+            fIsFogPowerInherited            = 0x00000100
             };
 
         enum xclcFlags
@@ -120,11 +100,12 @@ class CELLRecord : public FNVRecord //Cell
         OptSimpleSubRecord<UINT8> DATA; //Flags
         OptSubRecord<CELLXCLC> XCLC; //Grid
         OptSubRecord<FNVLIGHT> XCLL; //Lighting
-        std::vector<StringRecord> IMPF; //Footstep Materials
-        OptSubRecord<CELLLTMP> LTMP; //Light Template
-        OptSubRecord<CELLXCLW> XCLW; //Water Height
+        OptSubRecord<CELLIMPF> IMPF; //Footstep Materials
+        ReqSimpleSubRecord<FORMID> LTMP; //Light Template
+        ReqSimpleSubRecord<UINT32> LNAM; //Light Inherit Flags
+        SimpleFloatSubRecord<flt_max> XCLW; // waterHeight
         StringRecord XNAM; //Water Noise Texture
-        std::vector<FORMID> XCLR; //Regions
+        UnorderedPackedArray<FORMID> XCLR; //Regions
         OptSimpleSubRecord<FORMID> XCIM; //Image Space
         RawRecord XCET; //Unknown
         OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
@@ -134,10 +115,10 @@ class CELLRecord : public FNVRecord //Cell
         OptSimpleSubRecord<FORMID> XCAS; //Acoustic Space
         RawRecord XCMT; //Unused
         OptSimpleSubRecord<FORMID> XCMO; //Music Type
-        std::vector<Record *> ACHR;
-        std::vector<Record *> ACRE;
-        std::vector<Record *> REFR;
-        Record *LAND;
+        //std::vector<Record *> ACHR;
+        //std::vector<Record *> ACRE;
+        //std::vector<Record *> REFR;
+        //Record *LAND;
 
         Record *Parent;
 
@@ -151,20 +132,20 @@ class CELLRecord : public FNVRecord //Cell
 
         bool   IsInterior();
         void   IsInterior(bool value);
-        bool   HasWater();
-        void   HasWater(bool value);
-        bool   InvertFastTravel();
-        void   InvertFastTravel(bool value);
-        bool   ForceHideLand();
-        void   ForceHideLand(bool value);
+        bool   IsHasWater();
+        void   IsHasWater(bool value);
+        bool   IsInvertFastTravel();
+        void   IsInvertFastTravel(bool value);
+        bool   IsForceHideLand();
+        void   IsForceHideLand(bool value);
         bool   IsOblivionInterior();
         void   IsOblivionInterior(bool value);
-        bool   PublicPlace();
-        void   PublicPlace(bool value);
-        bool   HandChanged();
-        void   HandChanged(bool value);
-        bool   BehaveLikeExterior();
-        void   BehaveLikeExterior(bool value);
+        bool   IsPublicPlace();
+        void   IsPublicPlace(bool value);
+        bool   IsHandChanged();
+        void   IsHandChanged(bool value);
+        bool   IsBehaveLikeExterior();
+        void   IsBehaveLikeExterior(bool value);
         bool   IsFlagMask(UINT8 Mask, bool Exact=false);
         void   SetFlagMask(UINT8 Mask);
 
@@ -176,8 +157,29 @@ class CELLRecord : public FNVRecord //Cell
         void   IsQuad3ForceHidden(bool value);
         bool   IsQuad4ForceHidden();
         void   IsQuad4ForceHidden(bool value);
-        bool   IsHiddenFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetHiddenFlagMask(UINT8 Mask);
+        bool   IsQuadFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetQuadFlagMask(UINT32 Mask);
+
+        bool   IsLightAmbientInherited();
+        void   IsLightAmbientInherited(bool value);
+        bool   IsLightDirectionalColorInherited();
+        void   IsLightDirectionalColorInherited(bool value);
+        bool   IsLightFogColorInherited();
+        void   IsLightFogColorInherited(bool value);
+        bool   IsLightFogNearInherited();
+        void   IsLightFogNearInherited(bool value);
+        bool   IsLightFogFarInherited();
+        void   IsLightFogFarInherited(bool value);
+        bool   IsLightDirectionalRotationInherited();
+        void   IsLightDirectionalRotationInherited(bool value);
+        bool   IsLightDirectionalFadeInherited();
+        void   IsLightDirectionalFadeInherited(bool value);
+        bool   IsLightFogClipInherited();
+        void   IsLightFogClipInherited(bool value);
+        bool   IsLightFogPowerInherited();
+        void   IsLightFogPowerInherited(bool value);
+        bool   IsLightFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetLightFlagMask(UINT32 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

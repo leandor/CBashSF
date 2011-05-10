@@ -124,7 +124,7 @@ void QUSTRecord::SetScriptFlagMask(UINT16 Mask)
 
 UINT32 QUSTRecord::GetType()
     {
-    return 'TSUQ';
+    return REV32(QUST);
     }
 
 STRING QUSTRecord::GetStrType()
@@ -141,7 +141,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -154,74 +154,74 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 CTDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XDNI':
+            case REV32(INDX):
                 INDX.Read(buffer, subSize, curPos);
                 break;
-            case 'TDSQ':
+            case REV32(QSDT):
                 QSDT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 SCHR.Load();
                 SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 SCHR.Load();
                 SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 SCHR.Load();
                 SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 SCHR.Load();
                 SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 SCHR.Load();
                 SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 SCHR.Load();
                 SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 SCHR.Load();
                 SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case 'JBOQ':
+            case REV32(QOBJ):
                 QOBJ.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 NNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATSQ':
+            case REV32(QSTA):
                 QSTA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -274,25 +274,25 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     if(SCHR.IsLoaded())
         {
         if(SCHR->SCHR.IsLoaded())
-            SaveHandler.writeSubRecord('RHCS', SCHR->SCHR.value, SCHR->SCHR.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCHR), SCHR->SCHR.value, SCHR->SCHR.GetSize());
 
         if(SCHR->SCDA.IsLoaded())
-            SaveHandler.writeSubRecord('ADCS', SCHR->SCDA.value, SCHR->SCDA.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCDA), SCHR->SCDA.value, SCHR->SCDA.GetSize());
 
         if(SCHR->SCTX.IsLoaded())
-            SaveHandler.writeSubRecord('XTCS', SCHR->SCTX.value, SCHR->SCTX.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCTX), SCHR->SCTX.value, SCHR->SCTX.GetSize());
 
         if(SCHR->SLSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSLS', SCHR->SLSD.value, SCHR->SLSD.GetSize());
+            SaveHandler.writeSubRecord(REV32(SLSD), SCHR->SLSD.value, SCHR->SLSD.GetSize());
 
         if(SCHR->SCVR.IsLoaded())
-            SaveHandler.writeSubRecord('RVCS', SCHR->SCVR.value, SCHR->SCVR.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCVR), SCHR->SCVR.value, SCHR->SCVR.GetSize());
 
         if(SCHR->SCRO.IsLoaded())
-            SaveHandler.writeSubRecord('ORCS', SCHR->SCRO.value, SCHR->SCRO.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCRO), SCHR->SCRO.value, SCHR->SCRO.GetSize());
 
         if(SCHR->SCRV.IsLoaded())
-            SaveHandler.writeSubRecord('VRCS', SCHR->SCRV.value, SCHR->SCRV.GetSize());
+            SaveHandler.writeSubRecord(REV32(SCRV), SCHR->SCRV.value, SCHR->SCRV.GetSize());
 
         }
 

@@ -137,7 +137,7 @@ void TXSTRecord::SetObjectFlagMask(UINT8 Mask)
 
 UINT32 TXSTRecord::GetType()
     {
-    return 'TSXT';
+    return REV32(TXST);
     }
 
 STRING TXSTRecord::GetStrType()
@@ -154,7 +154,7 @@ SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -167,34 +167,34 @@ SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case '00XT':
+            case REV32(TX00):
                 TX00.Read(buffer, subSize, curPos);
                 break;
-            case '10XT':
+            case REV32(TX01):
                 TX01.Read(buffer, subSize, curPos);
                 break;
-            case '20XT':
+            case REV32(TX02):
                 TX02.Read(buffer, subSize, curPos);
                 break;
-            case '30XT':
+            case REV32(TX03):
                 TX03.Read(buffer, subSize, curPos);
                 break;
-            case '40XT':
+            case REV32(TX04):
                 TX04.Read(buffer, subSize, curPos);
                 break;
-            case '50XT':
+            case REV32(TX05):
                 TX05.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOD':
+            case REV32(DODT):
                 DODT.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             default:

@@ -73,7 +73,7 @@ bool RADSRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 RADSRecord::GetType()
     {
-    return 'SDAR';
+    return REV32(RADS);
     }
 
 STRING RADSRecord::GetStrType()
@@ -90,7 +90,7 @@ SINT32 RADSRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -103,10 +103,10 @@ SINT32 RADSRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:

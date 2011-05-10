@@ -228,7 +228,7 @@ void DIALRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 DIALRecord::GetType()
     {
-    return 'LAID';
+    return REV32(DIAL);
     }
 
 STRING DIALRecord::GetStrType()
@@ -245,7 +245,7 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -258,31 +258,31 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'ITSQ':
+            case REV32(QSTI):
                 QSTI.Read(buffer, subSize, curPos);
                 break;
-            case 'CFNI':
+            case REV32(INFC):
                 INFC.Read(buffer, subSize, curPos);
                 break;
-            case 'XFNI':
+            case REV32(INFX):
                 INFX.Read(buffer, subSize, curPos);
                 break;
-            case 'RTSQ':
+            case REV32(QSTR):
                 QSTR.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MUDT':
+            case REV32(TDUM):
                 TDUM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:

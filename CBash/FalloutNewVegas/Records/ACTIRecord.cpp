@@ -107,7 +107,7 @@ bool ACTIRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 ACTIRecord::GetType()
     {
-    return 'ITCA';
+    return REV32(ACTI);
     }
 
 STRING ACTIRecord::GetStrType()
@@ -124,7 +124,7 @@ SINT32 ACTIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -137,78 +137,78 @@ SINT32 ACTIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'TSED':
+            case REV32(DEST):
                 Destructable.Load();
                 Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
-            case 'DTSD':
+            case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
-            case 'LDMD':
+            case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
-            case 'TDMD':
+            case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
-            case 'FTSD':
+            case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANV':
+            case REV32(VNAM):
                 VNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'OTAX':
+            case REV32(XATO):
                 XATO.Read(buffer, subSize, curPos);
                 break;
             default:

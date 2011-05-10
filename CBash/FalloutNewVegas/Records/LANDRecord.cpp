@@ -83,7 +83,7 @@ bool LANDRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 LANDRecord::GetType()
     {
-    return 'DNAL';
+    return REV32(LAND);
     }
 
 STRING LANDRecord::GetStrType()
@@ -100,7 +100,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -113,28 +113,28 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'LMNV':
+            case REV32(VNML):
                 VNML.Read(buffer, subSize, curPos);
                 break;
-            case 'TGHV':
+            case REV32(VHGT):
                 VHGT.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCV':
+            case REV32(VCLR):
                 VCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'TXTB':
+            case REV32(BTXT):
                 BTXT.Read(buffer, subSize, curPos);
                 break;
-            case 'TXTA':
+            case REV32(ATXT):
                 ATXT.Read(buffer, subSize, curPos);
                 break;
-            case 'TXTV':
+            case REV32(VTXT):
                 VTXT.Read(buffer, subSize, curPos);
                 break;
-            case 'XETV':
+            case REV32(VTEX):
                 VTEX.Read(buffer, subSize, curPos);
                 break;
             default:

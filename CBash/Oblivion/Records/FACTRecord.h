@@ -50,7 +50,7 @@ class FACTRecord : public Record
         StringRecord FULL;
         std::vector<ReqSubRecord<GENXNAM> *> XNAM;
         ReqSimpleSubRecord<UINT8> DATA;
-        SemiOptSimpleSubRecord<FLOAT32, 1> CNAM; // crimeGoldMultiplier
+        SemiOptSimpleFloatSubRecord<flt_1> CNAM; // crimeGoldMultiplier
         std::vector<FACTRNAM *> RNAM;
 
         FACTRecord(unsigned char *_recData=NULL);

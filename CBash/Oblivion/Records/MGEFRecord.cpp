@@ -802,7 +802,7 @@ void MGEFRecord::SetOBMEFlagMask(UINT32 Mask)
 
 UINT32 MGEFRecord::GetType()
     {
-    return 'FEGM';
+    return REV32(MGEF);
     }
 
 
@@ -833,7 +833,7 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -846,49 +846,49 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'EMBO':
+            case REV32(OBME):
                 OBME.Load();
                 OBME->OBME.Read(buffer, subSize, curPos);
                 break;
-            case 'XDDE':
+            case REV32(EDDX):
                 OBME.Load();
                 memcpy(&OBME->EDDX.value.mgefCode[0], EDID.value, 4);
                 OBME->EDDX.value.mgefCode[4] = 0x00;
                 EDID.Unload();
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTAD':
+            case REV32(DATX):
                 OBME.Load();
                 OBME->DATX.Read(buffer, subSize, curPos);
                 break;
-            case 'ECSE':
+            case REV32(ESCE):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -943,60 +943,60 @@ SINT32 MGEFRecord::WriteRecord(FileWriter &writer)
         //So EDDX is written as if it was the EDID chunk, and vice versa
         //Hence the mismatched type in record_write_subrecord
         if(OBME->EDDX.IsLoaded())
-            writer.record_write_subrecord('DIDE', &OBME->EDDX.value.mgefCode[0], 5);
+            writer.record_write_subrecord(REV32(EDID), &OBME->EDDX.value.mgefCode[0], 5);
         if(OBME->OBME.IsLoaded())
-            writer.record_write_subrecord('EMBO', &OBME->OBME.value, OBME->OBME.GetSize());
+            writer.record_write_subrecord(REV32(OBME), &OBME->OBME.value, OBME->OBME.GetSize());
         if(EDID.IsLoaded())
-            writer.record_write_subrecord('XDDE', EDID.value, EDID.GetSize());
+            writer.record_write_subrecord(REV32(EDDX), EDID.value, EDID.GetSize());
         if(FULL.IsLoaded())
-            writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+            writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
         if(DESC.IsLoaded())
-            writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+            writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
         if(ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
         if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
             {
-            writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+            writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
             if(MODL->MODB.IsLoaded())
-                writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+                writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
             if(MODL->MODT.IsLoaded())
-                writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+                writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
             }
         if(DATA.IsLoaded())
             {
             DATA.value.numCounters = (UINT16)ESCE.size(); //Just to ensure that the proper value is written
-            writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+            writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
             }
         if(OBME->DATX.IsLoaded())
-            writer.record_write_subrecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
+            writer.record_write_subrecord(REV32(DATX), OBME->DATX.value, OBME->DATX.GetSize());
         if(ESCE.size())
-            writer.record_write_subrecord('ECSE', &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
+            writer.record_write_subrecord(REV32(ESCE), &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
         }
     else
         {
         if(EDID.IsLoaded())
-            writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+            writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
         if(FULL.IsLoaded())
-            writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+            writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
         if(DESC.IsLoaded())
-            writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+            writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
         if(ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
         if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
             {
-            writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+            writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
             if(MODL->MODB.IsLoaded())
-                writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+                writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
             if(MODL->MODT.IsLoaded())
-                writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+                writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
             }
         if(DATA.IsLoaded())
             {
             DATA.value.numCounters = (UINT16)ESCE.size(); //Just to ensure that the proper value is written
-            writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+            writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
             }
         if(ESCE.size())
-            writer.record_write_subrecord('ECSE', &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
+            writer.record_write_subrecord(REV32(ESCE), &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
         }
 
     return -1;

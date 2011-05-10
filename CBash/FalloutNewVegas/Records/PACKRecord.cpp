@@ -199,7 +199,7 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 PACKRecord::GetType()
     {
-    return 'KCAP';
+    return REV32(PACK);
     }
 
 STRING PACKRecord::GetStrType()
@@ -216,7 +216,7 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -229,210 +229,210 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'TDKP':
+            case REV32(PKDT):
                 PKDT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDLP':
+            case REV32(PLDT):
                 PLDT.Read(buffer, subSize, curPos);
                 break;
-            case '2DLP':
+            case REV32(PLD2):
                 PLD2.Read(buffer, subSize, curPos);
                 break;
-            case 'TDSP':
+            case REV32(PSDT):
                 PSDT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTP':
+            case REV32(PTDT):
                 PTDT.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 CTDA.Read(buffer, subSize, curPos);
                 break;
-            case 'FLDI':
+            case REV32(IDLF):
                 IDLF.Read(buffer, subSize, curPos);
                 break;
-            case 'CLDI':
+            case REV32(IDLC):
                 IDLC.Read(buffer, subSize, curPos);
                 break;
-            case 'TLDI':
+            case REV32(IDLT):
                 IDLT.Read(buffer, subSize, curPos);
                 break;
-            case 'ALDI':
+            case REV32(IDLA):
                 IDLA.Read(buffer, subSize, curPos);
                 break;
-            case 'BLDI':
+            case REV32(IDLB):
                 IDLB.Read(buffer, subSize, curPos);
                 break;
-            case 'DEKP':
+            case REV32(PKED):
                 //PKED.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '2EKP':
+            case REV32(PKE2):
                 PKE2.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'DFKP':
+            case REV32(PKFD):
                 PKFD.Read(buffer, subSize, curPos);
                 break;
-            case 'TPKP':
+            case REV32(PKPT):
                 PKPT.Read(buffer, subSize, curPos);
                 break;
-            case '3WKP':
+            case REV32(PKW3):
                 PKW3.Read(buffer, subSize, curPos);
                 break;
-            case '2DTP':
+            case REV32(PTD2):
                 PTD2.Read(buffer, subSize, curPos);
                 break;
-            case 'DIUP':
+            case REV32(PUID):
                 //PUID.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MAKP':
+            case REV32(PKAM):
                 //PKAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'DDKP':
+            case REV32(PKDD):
                 PKDD.Read(buffer, subSize, curPos);
                 break;
-            case 'ABOP':
+            case REV32(POBA):
                 //POBA.Load();
                 //POBA->POBA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 POBA.Load();
                 POBA->INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 POBA.Load();
                 POBA->SCHR.Load();
                 POBA->SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 POBA.Load();
                 POBA->TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'AEOP':
+            case REV32(POEA):
                 //POEA.Load();
                 //POEA->POEA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 POEA.Load();
                 POEA->INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 POEA.Load();
                 POEA->SCHR.Load();
                 POEA->SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 POEA.Load();
                 POEA->TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ACOP':
+            case REV32(POCA):
                 //POCA.Load();
                 //POCA->POCA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 POCA.Load();
                 POCA->INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 POCA.Load();
                 POCA->SCHR.Load();
                 POCA->SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 POCA.Load();
                 POCA->TNAM.Read(buffer, subSize, curPos);
                 break;
@@ -496,7 +496,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     WRITE(IDLB);
 
     //if(PKED.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('DEKP', PKED.value, PKED.GetSize());
+        //SaveHandler.writeSubRecord(REV32(PKED), PKED.value, PKED.GetSize());
     WRITE(PKE2);
     WRITE(CNAM);
     WRITE(PKFD);
@@ -505,120 +505,120 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     WRITE(PTD2);
 
     //if(PUID.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('DIUP', PUID.value, PUID.GetSize());
+        //SaveHandler.writeSubRecord(REV32(PUID), PUID.value, PUID.GetSize());
 
     //if(PKAM.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('MAKP', PKAM.value, PKAM.GetSize());
+        //SaveHandler.writeSubRecord(REV32(PKAM), PKAM.value, PKAM.GetSize());
     WRITE(PKDD);
 
     if(POBA.IsLoaded())
         {
         //if(POBA->POBA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('ABOP', POBA->POBA.value, POBA->POBA.GetSize());
+            //SaveHandler.writeSubRecord(REV32(POBA), POBA->POBA.value, POBA->POBA.GetSize());
 
         if(POBA->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', POBA->INAM.value, POBA->INAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(INAM), POBA->INAM.value, POBA->INAM.GetSize());
 
         if(POBA->SCHR.IsLoaded())
             {
             if(POBA->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord('RHCS', POBA->SCHR->SCHR.value, POBA->SCHR->SCHR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCHR), POBA->SCHR->SCHR.value, POBA->SCHR->SCHR.GetSize());
 
             if(POBA->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord('ADCS', POBA->SCHR->SCDA.value, POBA->SCHR->SCDA.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCDA), POBA->SCHR->SCDA.value, POBA->SCHR->SCDA.GetSize());
 
             if(POBA->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord('XTCS', POBA->SCHR->SCTX.value, POBA->SCHR->SCTX.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCTX), POBA->SCHR->SCTX.value, POBA->SCHR->SCTX.GetSize());
 
             if(POBA->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord('DSLS', POBA->SCHR->SLSD.value, POBA->SCHR->SLSD.GetSize());
+                SaveHandler.writeSubRecord(REV32(SLSD), POBA->SCHR->SLSD.value, POBA->SCHR->SLSD.GetSize());
 
             if(POBA->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord('RVCS', POBA->SCHR->SCVR.value, POBA->SCHR->SCVR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCVR), POBA->SCHR->SCVR.value, POBA->SCHR->SCVR.GetSize());
 
             if(POBA->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord('ORCS', POBA->SCHR->SCRO.value, POBA->SCHR->SCRO.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRO), POBA->SCHR->SCRO.value, POBA->SCHR->SCRO.GetSize());
 
             if(POBA->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord('VRCS', POBA->SCHR->SCRV.value, POBA->SCHR->SCRV.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRV), POBA->SCHR->SCRV.value, POBA->SCHR->SCRV.GetSize());
 
             }
         if(POBA->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', POBA->TNAM.value, POBA->TNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(TNAM), POBA->TNAM.value, POBA->TNAM.GetSize());
 
         }
 
     if(POEA.IsLoaded())
         {
         //if(POEA->POEA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('AEOP', POEA->POEA.value, POEA->POEA.GetSize());
+            //SaveHandler.writeSubRecord(REV32(POEA), POEA->POEA.value, POEA->POEA.GetSize());
 
         if(POEA->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', POEA->INAM.value, POEA->INAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(INAM), POEA->INAM.value, POEA->INAM.GetSize());
 
         if(POEA->SCHR.IsLoaded())
             {
             if(POEA->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord('RHCS', POEA->SCHR->SCHR.value, POEA->SCHR->SCHR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCHR), POEA->SCHR->SCHR.value, POEA->SCHR->SCHR.GetSize());
 
             if(POEA->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord('ADCS', POEA->SCHR->SCDA.value, POEA->SCHR->SCDA.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCDA), POEA->SCHR->SCDA.value, POEA->SCHR->SCDA.GetSize());
 
             if(POEA->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord('XTCS', POEA->SCHR->SCTX.value, POEA->SCHR->SCTX.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCTX), POEA->SCHR->SCTX.value, POEA->SCHR->SCTX.GetSize());
 
             if(POEA->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord('DSLS', POEA->SCHR->SLSD.value, POEA->SCHR->SLSD.GetSize());
+                SaveHandler.writeSubRecord(REV32(SLSD), POEA->SCHR->SLSD.value, POEA->SCHR->SLSD.GetSize());
 
             if(POEA->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord('RVCS', POEA->SCHR->SCVR.value, POEA->SCHR->SCVR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCVR), POEA->SCHR->SCVR.value, POEA->SCHR->SCVR.GetSize());
 
             if(POEA->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord('ORCS', POEA->SCHR->SCRO.value, POEA->SCHR->SCRO.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRO), POEA->SCHR->SCRO.value, POEA->SCHR->SCRO.GetSize());
 
             if(POEA->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord('VRCS', POEA->SCHR->SCRV.value, POEA->SCHR->SCRV.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRV), POEA->SCHR->SCRV.value, POEA->SCHR->SCRV.GetSize());
 
             }
         if(POEA->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', POEA->TNAM.value, POEA->TNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(TNAM), POEA->TNAM.value, POEA->TNAM.GetSize());
 
         }
 
     if(POCA.IsLoaded())
         {
         //if(POCA->POCA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('ACOP', POCA->POCA.value, POCA->POCA.GetSize());
+            //SaveHandler.writeSubRecord(REV32(POCA), POCA->POCA.value, POCA->POCA.GetSize());
 
         if(POCA->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', POCA->INAM.value, POCA->INAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(INAM), POCA->INAM.value, POCA->INAM.GetSize());
 
         if(POCA->SCHR.IsLoaded())
             {
             if(POCA->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord('RHCS', POCA->SCHR->SCHR.value, POCA->SCHR->SCHR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCHR), POCA->SCHR->SCHR.value, POCA->SCHR->SCHR.GetSize());
 
             if(POCA->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord('ADCS', POCA->SCHR->SCDA.value, POCA->SCHR->SCDA.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCDA), POCA->SCHR->SCDA.value, POCA->SCHR->SCDA.GetSize());
 
             if(POCA->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord('XTCS', POCA->SCHR->SCTX.value, POCA->SCHR->SCTX.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCTX), POCA->SCHR->SCTX.value, POCA->SCHR->SCTX.GetSize());
 
             if(POCA->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord('DSLS', POCA->SCHR->SLSD.value, POCA->SCHR->SLSD.GetSize());
+                SaveHandler.writeSubRecord(REV32(SLSD), POCA->SCHR->SLSD.value, POCA->SCHR->SLSD.GetSize());
 
             if(POCA->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord('RVCS', POCA->SCHR->SCVR.value, POCA->SCHR->SCVR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCVR), POCA->SCHR->SCVR.value, POCA->SCHR->SCVR.GetSize());
 
             if(POCA->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord('ORCS', POCA->SCHR->SCRO.value, POCA->SCHR->SCRO.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRO), POCA->SCHR->SCRO.value, POCA->SCHR->SCRO.GetSize());
 
             if(POCA->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord('VRCS', POCA->SCHR->SCRV.value, POCA->SCHR->SCRV.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRV), POCA->SCHR->SCRV.value, POCA->SCHR->SCRV.GetSize());
 
             }
         if(POCA->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', POCA->TNAM.value, POCA->TNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(TNAM), POCA->TNAM.value, POCA->TNAM.GetSize());
 
         }
 

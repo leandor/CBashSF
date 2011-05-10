@@ -1100,6 +1100,10 @@
 					<Filter
 						Name="Complex"
 						>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\CELLRecord.cpp"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="Simple"
@@ -2414,6 +2418,37 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\BOOKRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\CELLRecordAPI.cpp"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"

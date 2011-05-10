@@ -68,7 +68,7 @@ class LIGHRecord : public FNVRecord //Light
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         ReqSubRecord<LIGHDATA> DATA; //Data
-        OptSimpleSubRecord<FLOAT32> FNAM; //Fade value
+        OptSimpleFloatSubRecord<flt_0> FNAM; //Fade value
         OptSimpleSubRecord<FORMID> SNAM; //Sound
 
         LIGHRecord(unsigned char *_recData=NULL);

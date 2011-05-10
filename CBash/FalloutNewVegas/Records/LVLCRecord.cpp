@@ -126,7 +126,7 @@ void LVLCRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 LVLCRecord::GetType()
     {
-    return 'CLVL';
+    return REV32(LVLC);
     }
 
 STRING LVLCRecord::GetStrType()
@@ -143,7 +143,7 @@ SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -156,44 +156,44 @@ SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'DLVL':
+            case REV32(LVLD):
                 LVLD.Read(buffer, subSize, curPos);
                 break;
-            case 'FLVL':
+            case REV32(LVLF):
                 LVLF.Read(buffer, subSize, curPos);
                 break;
-            case 'OLVL':
+            case REV32(LVLO):
                 Entries.value.push_back(new FNVLVLO);
                 Entries.value.back()->LVLO.Read(buffer, subSize, curPos);
                 break;
-            case 'DEOC':
+            case REV32(COED):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new FNVLVLO);
                 Entries.value.back()->COED.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;

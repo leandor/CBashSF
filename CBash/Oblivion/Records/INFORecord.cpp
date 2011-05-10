@@ -485,7 +485,7 @@ void INFORecord::SetFlagMask(UINT8 Mask)
 
 UINT32 INFORecord::GetType()
     {
-    return 'OFNI';
+    return REV32(INFO);
     }
 
 STRING INFORecord::GetStrType()
@@ -495,7 +495,7 @@ STRING INFORecord::GetStrType()
 
 UINT32 INFORecord::GetParentType()
     {
-    return 'LAID';
+    return REV32(DIAL);
     }
 
 SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -508,7 +508,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -521,67 +521,67 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'ITSQ':
+            case REV32(QSTI):
                 QSTI.Read(buffer, subSize, curPos);
                 break;
-            case 'CIPT':
+            case REV32(TPIC):
                 TPIC.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 NAME.push_back(curFormID);
                 break;
-            case 'TDRT':
+            case REV32(TRDT):
                 Responses.push_back(new INFOResponse);
                 Responses.back()->TRDT.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 if(Responses.size() == 0)
                     Responses.push_back(new INFOResponse);
                 Responses.back()->NAM1.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 if(Responses.size() == 0)
                     Responses.push_back(new INFOResponse);
                 Responses.back()->NAM2.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTC':
-            case 'ADTC':
+            case REV32(CTDT):
+            case REV32(CTDA):
                 CTDA.push_back(new ReqSubRecord<GENCTDA>);
                 CTDA.back()->Read(buffer, subSize, curPos);
                 break;
-            case 'TLCT':
+            case REV32(TCLT):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 TCLT.push_back(curFormID);
                 break;
-            case 'FLCT':
+            case REV32(TCLF):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 TCLF.push_back(curFormID);
                 break;
-            case 'DHCS': //replace it with SCHR. SCHDs are always zero filled in oblivion.esm...
+            case REV32(SCHD): //replace it with SCHR. SCHDs are always zero filled in oblivion.esm...
                 curPos += subSize;
                 break;
-            case 'RHCS': //SCHDs are also larger than SCHRs, so the end will be truncated.
+            case REV32(SCHR): //SCHDs are also larger than SCHRs, so the end will be truncated.
                 SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 SCR_.push_back(new ReqSubRecord<GENSCR_>);
                 SCR_.back()->Read(buffer, subSize, curPos);
                 SCR_.back()->value.isSCRO = false;
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 SCR_.push_back(new ReqSubRecord<GENSCR_>);
                 SCR_.back()->Read(buffer, subSize, curPos);
                 SCR_.back()->value.isSCRO = true;
@@ -637,25 +637,25 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     Function_Arguments_Iterator curCTDAFunction;
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(QSTI.IsLoaded())
-        writer.record_write_subrecord('ITSQ', &QSTI.value, QSTI.GetSize());
+        writer.record_write_subrecord(REV32(QSTI), &QSTI.value, QSTI.GetSize());
     if(TPIC.IsLoaded())
-        writer.record_write_subrecord('CIPT', &TPIC.value, TPIC.GetSize());
+        writer.record_write_subrecord(REV32(TPIC), &TPIC.value, TPIC.GetSize());
     if(PNAM.IsLoaded())
-        writer.record_write_subrecord('MANP', PNAM.value, PNAM.GetSize());
+        writer.record_write_subrecord(REV32(PNAM), PNAM.value, PNAM.GetSize());
     for(UINT32 p = 0; p < NAME.size(); p++)
-        writer.record_write_subrecord('EMAN', &NAME[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(NAME), &NAME[p], sizeof(UINT32));
     if(Responses.size())
         {
         for(UINT32 p = 0; p < Responses.size(); p++)
             {
             if(Responses[p]->TRDT.IsLoaded())
-                writer.record_write_subrecord('TDRT', &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
+                writer.record_write_subrecord(REV32(TRDT), &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
             if(Responses[p]->NAM1.IsLoaded())
-                writer.record_write_subrecord('1MAN', Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
+                writer.record_write_subrecord(REV32(NAM1), Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
             if(Responses[p]->NAM2.IsLoaded())
-                writer.record_write_subrecord('2MAN', Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
+                writer.record_write_subrecord(REV32(NAM2), Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
             }
         }
     for(UINT32 p = 0; p < CTDA.size(); p++)
@@ -669,26 +669,26 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
         }
     for(UINT32 p = 0; p < TCLT.size(); p++)
-        writer.record_write_subrecord('TLCT', &TCLT[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(TCLT), &TCLT[p], sizeof(UINT32));
     for(UINT32 p = 0; p < TCLF.size(); p++)
-        writer.record_write_subrecord('FLCT', &TCLF[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(TCLF), &TCLF[p], sizeof(UINT32));
     //if(SCHD.IsLoaded())
-    //    writer.record_write_subrecord('DHCS', SCHD.value, SCHD.GetSize());
+    //    writer.record_write_subrecord(REV32(SCHD), SCHD.value, SCHD.GetSize());
     if(SCHR.IsLoaded())
-        writer.record_write_subrecord('RHCS', &SCHR.value, SCHR.GetSize());
+        writer.record_write_subrecord(REV32(SCHR), &SCHR.value, SCHR.GetSize());
     if(SCDA.IsLoaded())
-        writer.record_write_subrecord('ADCS', SCDA.value, SCDA.GetSize());
+        writer.record_write_subrecord(REV32(SCDA), SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        writer.record_write_subrecord('XTCS', SCTX.value, SCTX.GetSize());
+        writer.record_write_subrecord(REV32(SCTX), SCTX.value, SCTX.GetSize());
     for(UINT32 p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                writer.record_write_subrecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord(REV32(SCRO), &SCR_[p]->value.reference, sizeof(UINT32));
             else
-                writer.record_write_subrecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord(REV32(SCRV), &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 

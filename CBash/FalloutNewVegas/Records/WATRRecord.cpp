@@ -126,7 +126,7 @@ void WATRRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 WATRRecord::GetType()
     {
-    return 'RTAW';
+    return REV32(WATR);
     }
 
 STRING WATRRecord::GetStrType()
@@ -143,7 +143,7 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -156,37 +156,37 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 NNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
             default:

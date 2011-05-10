@@ -425,7 +425,7 @@ void FURNRecord::SetFlagMask(UINT32 Mask)
 
 UINT32 FURNRecord::GetType()
     {
-    return 'NRUF';
+    return REV32(FURN);
     }
 
 STRING FURNRecord::GetStrType()
@@ -442,7 +442,7 @@ SINT32 FURNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -455,28 +455,28 @@ SINT32 FURNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -506,21 +506,21 @@ SINT32 FURNRecord::Unload()
 SINT32 FURNRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
     if(MNAM.IsLoaded())
-        writer.record_write_subrecord('MANM', &MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord(REV32(MNAM), &MNAM.value, MNAM.GetSize());
     return -1;
     }
 

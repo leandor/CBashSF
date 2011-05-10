@@ -75,7 +75,7 @@ bool AVIFRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 AVIFRecord::GetType()
     {
-    return 'FIVA';
+    return REV32(AVIF);
     }
 
 STRING AVIFRecord::GetStrType()
@@ -92,7 +92,7 @@ SINT32 AVIFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -105,22 +105,22 @@ SINT32 AVIFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
             default:

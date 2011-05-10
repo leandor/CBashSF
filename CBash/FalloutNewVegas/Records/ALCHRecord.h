@@ -78,7 +78,7 @@ class ALCHRecord : public FNVRecord //Ingestible
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
-        ReqSimpleSubRecord<FLOAT32> DATA; //Weight
+        ReqSimpleFloatSubRecord<flt_0> DATA; //Weight
         ReqSubRecord<ALCHENIT> ENIT; //Effect Data
         UnorderedSparseArray<FNVEffect *> Effects; //Effects
         OptSubRecord<GENDESTRUCT> Destructable; //Destructable

@@ -1260,7 +1260,7 @@ void REFRRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 REFRRecord::GetType()
     {
-    return 'RFER';
+    return REV32(REFR);
     }
 
 STRING REFRRecord::GetStrType()
@@ -1277,7 +1277,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -1290,253 +1290,253 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCR':
+            case REV32(RCLR):
                 RCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
-            case 'NZEX':
+            case REV32(XEZN):
                 XEZN.Read(buffer, subSize, curPos);
                 break;
-            case 'DGRX':
+            case REV32(XRGD):
                 XRGD.Read(buffer, subSize, curPos);
                 break;
-            case 'BGRX':
+            case REV32(XRGB):
                 XRGB.Read(buffer, subSize, curPos);
                 break;
-            case 'MRPX':
+            case REV32(XPRM):
                 XPRM.Read(buffer, subSize, curPos);
                 break;
-            case 'IRTX':
+            case REV32(XTRI):
                 XTRI.Read(buffer, subSize, curPos);
                 break;
-            case 'PBMX':
+            case REV32(XMBP):
                 //XMBP.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'OBMX':
+            case REV32(XMBO):
                 XMBO.Read(buffer, subSize, curPos);
                 break;
-            case 'LETX':
+            case REV32(XTEL):
                 XTEL.Read(buffer, subSize, curPos);
                 break;
-            case 'KRMX':
+            case REV32(XMRK):
                 //XMRK.Load();
                 //XMRK->XMRK.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 XMRK.Load();
                 XMRK->FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case '1IMW':
+            case REV32(WMI1):
                 WMI1.Read(buffer, subSize, curPos);
                 break;
-            case 'KRMM':
+            case REV32(MMRK):
                 //MMRK.Load();
                 //MMRK->MMRK.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 MMRK.Load();
                 MMRK->FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 MMRK.Load();
                 MMRK->CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANB':
+            case REV32(BNAM):
                 MMRK.Load();
                 MMRK->BNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MMRK.Load();
                 MMRK->MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 MMRK.Load();
                 MMRK->NNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'FRSX':
+            case REV32(XSRF):
                 XSRF.Read(buffer, subSize, curPos);
                 break;
-            case 'DRSX':
+            case REV32(XSRD):
                 XSRD.Read(buffer, subSize, curPos);
                 break;
-            case 'GRTX':
+            case REV32(XTRG):
                 XTRG.Read(buffer, subSize, curPos);
                 break;
-            case 'MCLX':
+            case REV32(XLCM):
                 XLCM.Read(buffer, subSize, curPos);
                 break;
-            case 'DRPX':
+            case REV32(XPRD):
                 XPRD.Load();
                 XPRD->XPRD.Read(buffer, subSize, curPos);
                 break;
-            case 'APPX':
+            case REV32(XPPA):
                 //XPRD.Load();
                 //XPRD->XPPA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 XPRD.Load();
                 XPRD->INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 XPRD.Load();
                 XPRD->TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ODRX':
+            case REV32(XRDO):
                 XRDO.Read(buffer, subSize, curPos);
                 break;
-            case 'NWOX':
+            case REV32(XOWN):
                 XOWN.Load();
                 XOWN->XOWN.Read(buffer, subSize, curPos);
                 break;
-            case 'KNRX':
+            case REV32(XRNK):
                 XOWN.Load();
                 XOWN->XRNK.Read(buffer, subSize, curPos);
                 break;
-            case 'COLX':
+            case REV32(XLOC):
                 XLOC.Read(buffer, subSize, curPos);
                 break;
-            case 'TNCX':
+            case REV32(XCNT):
                 XCNT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDRX':
+            case REV32(XRDS):
                 XRDS.Read(buffer, subSize, curPos);
                 break;
-            case 'PLHX':
+            case REV32(XHLP):
                 XHLP.Read(buffer, subSize, curPos);
                 break;
-            case 'DARX':
+            case REV32(XRAD):
                 XRAD.Read(buffer, subSize, curPos);
                 break;
-            case 'GHCX':
+            case REV32(XCHG):
                 XCHG.Read(buffer, subSize, curPos);
                 break;
-            case 'TMAX':
+            case REV32(XAMT):
                 XAMT.Load();
                 XAMT->XAMT.Read(buffer, subSize, curPos);
                 break;
-            case 'CMAX':
+            case REV32(XAMC):
                 XAMT.Load();
                 XAMT->XAMC.Read(buffer, subSize, curPos);
                 break;
-            case 'RWPX':
+            case REV32(XPWR):
                 XPWR.Read(buffer, subSize, curPos);
                 break;
-            case 'WTLX':
+            case REV32(XLTW):
                 XLTW.Read(buffer, subSize, curPos);
                 break;
-            case 'RCDX':
+            case REV32(XDCR):
                 XDCR.Read(buffer, subSize, curPos);
                 break;
-            case 'RKLX':
+            case REV32(XLKR):
                 XLKR.Read(buffer, subSize, curPos);
                 break;
-            case 'PLCX':
+            case REV32(XCLP):
                 XCLP.Read(buffer, subSize, curPos);
                 break;
-            case 'DPAX':
+            case REV32(XAPD):
                 XAPD.Read(buffer, subSize, curPos);
                 break;
-            case 'RPAX':
+            case REV32(XAPR):
                 XAPR.Read(buffer, subSize, curPos);
                 break;
-            case 'OTAX':
+            case REV32(XATO):
                 XATO.Read(buffer, subSize, curPos);
                 break;
-            case 'PSEX':
+            case REV32(XESP):
                 XESP.Read(buffer, subSize, curPos);
                 break;
-            case 'IMEX':
+            case REV32(XEMI):
                 XEMI.Read(buffer, subSize, curPos);
                 break;
-            case 'RBMX':
+            case REV32(XMBR):
                 XMBR.Read(buffer, subSize, curPos);
                 break;
-            case 'TCAX':
+            case REV32(XACT):
                 XACT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 //ONAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'SBIX':
+            case REV32(XIBS):
                 //XIBS.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'PDNX':
+            case REV32(XNDP):
                 XNDP.Read(buffer, subSize, curPos);
                 break;
-            case 'DOPX':
+            case REV32(XPOD):
                 XPOD.Read(buffer, subSize, curPos);
                 break;
-            case 'LTPX':
+            case REV32(XPTL):
                 XPTL.Read(buffer, subSize, curPos);
                 break;
-            case 'DESX':
+            case REV32(XSED):
                 XSED.Read(buffer, subSize, curPos);
                 break;
-            case 'RMRX':
+            case REV32(XRMR):
                 XRMR.Read(buffer, subSize, curPos);
                 break;
-            case 'MRLX':
+            case REV32(XLRM):
                 XLRM.Read(buffer, subSize, curPos);
                 break;
-            case 'PCOX':
+            case REV32(XOCP):
                 XOCP.Read(buffer, subSize, curPos);
                 break;
-            case 'DROX':
+            case REV32(XORD):
                 XORD.Read(buffer, subSize, curPos);
                 break;
-            case 'DOLX':
+            case REV32(XLOD):
                 XLOD.Read(buffer, subSize, curPos);
                 break;
-            case 'LCSX':
+            case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -1625,17 +1625,17 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     WRITE(XTRI);
 
     //if(XMBP.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('PBMX', XMBP.value, XMBP.GetSize());
+        //SaveHandler.writeSubRecord(REV32(XMBP), XMBP.value, XMBP.GetSize());
     WRITE(XMBO);
     WRITE(XTEL);
 
     if(XMRK.IsLoaded())
         {
         //if(XMRK->XMRK.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('KRMX', XMRK->XMRK.value, XMRK->XMRK.GetSize());
+            //SaveHandler.writeSubRecord(REV32(XMRK), XMRK->XMRK.value, XMRK->XMRK.GetSize());
 
         if(XMRK->FNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANF', XMRK->FNAM.value, XMRK->FNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(FNAM), XMRK->FNAM.value, XMRK->FNAM.GetSize());
 
         }
 
@@ -1646,22 +1646,22 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     if(MMRK.IsLoaded())
         {
         //if(MMRK->MMRK.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('KRMM', MMRK->MMRK.value, MMRK->MMRK.GetSize());
+            //SaveHandler.writeSubRecord(REV32(MMRK), MMRK->MMRK.value, MMRK->MMRK.GetSize());
 
         if(MMRK->FULL.IsLoaded())
-            SaveHandler.writeSubRecord('LLUF', MMRK->FULL.value, MMRK->FULL.GetSize());
+            SaveHandler.writeSubRecord(REV32(FULL), MMRK->FULL.value, MMRK->FULL.GetSize());
 
         if(MMRK->CNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANC', MMRK->CNAM.value, MMRK->CNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(CNAM), MMRK->CNAM.value, MMRK->CNAM.GetSize());
 
         if(MMRK->BNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANB', MMRK->BNAM.value, MMRK->BNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(BNAM), MMRK->BNAM.value, MMRK->BNAM.GetSize());
 
         if(MMRK->MNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANM', MMRK->MNAM.value, MMRK->MNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(MNAM), MMRK->MNAM.value, MMRK->MNAM.GetSize());
 
         if(MMRK->NNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANN', MMRK->NNAM.value, MMRK->NNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(NNAM), MMRK->NNAM.value, MMRK->NNAM.GetSize());
 
         }
 
@@ -1673,40 +1673,40 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     if(XPRD.IsLoaded())
         {
         if(XPRD->XPRD.IsLoaded())
-            SaveHandler.writeSubRecord('DRPX', XPRD->XPRD.value, XPRD->XPRD.GetSize());
+            SaveHandler.writeSubRecord(REV32(XPRD), XPRD->XPRD.value, XPRD->XPRD.GetSize());
 
         //if(XPRD->XPPA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('APPX', XPRD->XPPA.value, XPRD->XPPA.GetSize());
+            //SaveHandler.writeSubRecord(REV32(XPPA), XPRD->XPPA.value, XPRD->XPPA.GetSize());
 
         if(XPRD->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', XPRD->INAM.value, XPRD->INAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(INAM), XPRD->INAM.value, XPRD->INAM.GetSize());
 
         if(XPRD->SCHR.IsLoaded())
             {
             if(XPRD->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord('RHCS', XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCHR), XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
 
             if(XPRD->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord('ADCS', XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCDA), XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
 
             if(XPRD->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord('XTCS', XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCTX), XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
 
             if(XPRD->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord('DSLS', XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
+                SaveHandler.writeSubRecord(REV32(SLSD), XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
 
             if(XPRD->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord('RVCS', XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCVR), XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
 
             if(XPRD->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord('ORCS', XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRO), XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
 
             if(XPRD->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord('VRCS', XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRV), XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
 
             }
         if(XPRD->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', XPRD->TNAM.value, XPRD->TNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(TNAM), XPRD->TNAM.value, XPRD->TNAM.GetSize());
 
         }
 
@@ -1715,10 +1715,10 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     if(XOWN.IsLoaded())
         {
         if(XOWN->XOWN.IsLoaded())
-            SaveHandler.writeSubRecord('NWOX', XOWN->XOWN.value, XOWN->XOWN.GetSize());
+            SaveHandler.writeSubRecord(REV32(XOWN), XOWN->XOWN.value, XOWN->XOWN.GetSize());
 
         if(XOWN->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', XOWN->XRNK.value, XOWN->XRNK.GetSize());
+            SaveHandler.writeSubRecord(REV32(XRNK), XOWN->XRNK.value, XOWN->XRNK.GetSize());
 
         }
 
@@ -1732,10 +1732,10 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     if(XAMT.IsLoaded())
         {
         if(XAMT->XAMT.IsLoaded())
-            SaveHandler.writeSubRecord('TMAX', XAMT->XAMT.value, XAMT->XAMT.GetSize());
+            SaveHandler.writeSubRecord(REV32(XAMT), XAMT->XAMT.value, XAMT->XAMT.GetSize());
 
         if(XAMT->XAMC.IsLoaded())
-            SaveHandler.writeSubRecord('CMAX', XAMT->XAMC.value, XAMT->XAMC.GetSize());
+            SaveHandler.writeSubRecord(REV32(XAMC), XAMT->XAMC.value, XAMT->XAMC.GetSize());
 
         }
 
@@ -1753,10 +1753,10 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     WRITE(XACT);
 
     //if(ONAM.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('MANO', ONAM.value, ONAM.GetSize());
+        //SaveHandler.writeSubRecord(REV32(ONAM), ONAM.value, ONAM.GetSize());
 
     //if(XIBS.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('SBIX', XIBS.value, XIBS.GetSize());
+        //SaveHandler.writeSubRecord(REV32(XIBS), XIBS.value, XIBS.GetSize());
     WRITE(XNDP);
     WRITE(XPOD);
     WRITE(XPTL);

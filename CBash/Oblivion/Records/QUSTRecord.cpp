@@ -423,7 +423,7 @@ void QUSTRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 QUSTRecord::GetType()
     {
-    return 'TSUQ';
+    return REV32(QUST);
     }
 
 STRING QUSTRecord::GetStrType()
@@ -446,7 +446,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -459,23 +459,23 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTC':
-            case 'ADTC':
+            case REV32(CTDT):
+            case REV32(CTDA):
                 switch(whichCTDA)
                     {
                     case 1:
@@ -500,18 +500,18 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'XDNI':
+            case REV32(INDX):
                 Stages.push_back(new QUSTStage);
                 Stages.back()->INDX.Read(buffer, subSize, curPos);
                 whichCTDA = 1;
                 break;
-            case 'TDSQ':
+            case REV32(QSDT):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
                 Stages.back()->Entries.push_back(new QUSTEntry);
                 Stages.back()->Entries.back()->QSDT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -519,7 +519,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.back()->Entries.push_back(new QUSTEntry);
                 Stages.back()->Entries.back()->CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -527,7 +527,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.back()->Entries.push_back(new QUSTEntry);
                 Stages.back()->Entries.back()->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -535,7 +535,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.back()->Entries.push_back(new QUSTEntry);
                 Stages.back()->Entries.back()->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -543,7 +543,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.back()->Entries.push_back(new QUSTEntry);
                 Stages.back()->Entries.back()->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -553,7 +553,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
                 Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = false;
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 if(Stages.size() == 0)
                     Stages.push_back(new QUSTStage);
 
@@ -563,7 +563,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
                 Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = true;
                 break;
-            case 'ATSQ':
+            case REV32(QSTA):
                 Targets.push_back(new QUSTTarget);
                 Targets.back()->QSTA.Read(buffer, subSize, curPos);
                 whichCTDA = 2;
@@ -610,15 +610,15 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
         curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
@@ -630,18 +630,18 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
         }
     if(Stages.size())
         for(UINT32 p = 0; p < Stages.size(); p++)
             {
             if(Stages[p]->INDX.IsLoaded())
-                writer.record_write_subrecord('XDNI', &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
+                writer.record_write_subrecord(REV32(INDX), &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
             if(Stages[p]->Entries.size())
                 for(UINT32 x = 0; x < Stages[p]->Entries.size(); x++)
                     {
                     if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                        writer.record_write_subrecord('TDSQ', &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
+                        writer.record_write_subrecord(REV32(QSDT), &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
                     for(UINT32 y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
                         {
                         curCTDAFunction = Function_Arguments.find(Stages[p]->Entries[x]->CTDA[y]->value.ifunc);
@@ -653,30 +653,30 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
                             if(CTDAFunction.second == eNONE)
                                 Stages[p]->Entries[x]->CTDA[y]->value.param2 = 0;
                             }
-                        writer.record_write_subrecord('ADTC', &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
+                        writer.record_write_subrecord(REV32(CTDA), &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
                         }
                     if(Stages[p]->Entries[x]->CNAM.IsLoaded())
-                        writer.record_write_subrecord('MANC', Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
+                        writer.record_write_subrecord(REV32(CNAM), Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
                     if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                        writer.record_write_subrecord('RHCS', &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
+                        writer.record_write_subrecord(REV32(SCHR), &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
                     if(Stages[p]->Entries[x]->SCDA.IsLoaded())
-                        writer.record_write_subrecord('ADCS', Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
+                        writer.record_write_subrecord(REV32(SCDA), Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
                     if(Stages[p]->Entries[x]->SCTX.IsLoaded())
-                        writer.record_write_subrecord('XTCS', Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
+                        writer.record_write_subrecord(REV32(SCTX), Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
                     if(Stages[p]->Entries[x]->SCR_.size())
                         for(UINT32 y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
                             if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
                                 if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
-                                    writer.record_write_subrecord('ORCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
+                                    writer.record_write_subrecord(REV32(SCRO), &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
                                 else
-                                    writer.record_write_subrecord('VRCS', &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
+                                    writer.record_write_subrecord(REV32(SCRV), &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
                     }
             }
     if(Targets.size())
         for(UINT32 p = 0; p < Targets.size(); p++)
             {
             if(Targets[p]->QSTA.IsLoaded())
-                writer.record_write_subrecord('ATSQ', &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
+                writer.record_write_subrecord(REV32(QSTA), &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
             for(UINT32 y = 0; y < Targets[p]->CTDA.size(); y++)
                 {
                 curCTDAFunction = Function_Arguments.find(Targets[p]->CTDA[y]->value.ifunc);
@@ -688,7 +688,7 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
                     if(CTDAFunction.second == eNONE)
                         Targets[p]->CTDA[y]->value.param2 = 0;
                     }
-                writer.record_write_subrecord('ADTC', &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
+                writer.record_write_subrecord(REV32(CTDA), &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
                 }
             }
     return -1;

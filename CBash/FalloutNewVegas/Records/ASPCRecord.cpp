@@ -438,7 +438,7 @@ void ASPCRecord::SetSpaceType(UINT32 Type)
 
 UINT32 ASPCRecord::GetType()
     {
-    return 'CPSA';
+    return REV32(ASPC);
     }
 
 STRING ASPCRecord::GetStrType()
@@ -456,7 +456,7 @@ SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -469,13 +469,13 @@ SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 switch(curSNAM)
                     {
                     case 0:
@@ -503,16 +503,16 @@ SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 ++curSNAM;
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TADR':
+            case REV32(RDAT):
                 RDAT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
             default:

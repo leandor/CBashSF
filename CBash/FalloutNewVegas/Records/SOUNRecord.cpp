@@ -252,7 +252,7 @@ void SOUNRecord::SetFlagMask(UINT32 Mask)
 
 UINT32 SOUNRecord::GetType()
     {
-    return 'NUOS';
+    return REV32(SOUN);
     }
 
 STRING SOUNRecord::GetStrType()
@@ -269,7 +269,7 @@ SINT32 SOUNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -282,31 +282,31 @@ SINT32 SOUNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'DDNS':
+            case REV32(SNDD):
                 SNDD.Read(buffer, subSize, curPos);
                 break;
-            case 'XDNS': //auto update to SNDD
+            case REV32(SNDX): //auto update to SNDD
                 SNDD.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA': //auto update to SNDD
+            case REV32(ANAM): //auto update to SNDD
                 _readBuffer(&SNDD.value.attenCurve[0], buffer, subSize, curPos);
                 break;
-            case 'MANG': //auto update to SNDD
+            case REV32(GNAM): //auto update to SNDD
                 _readBuffer(&SNDD.value.reverb, buffer, subSize, curPos);
                 break;
-            case 'MANH': //auto update to SNDD
+            case REV32(HNAM): //auto update to SNDD
                 _readBuffer(&SNDD.value.priority, buffer, subSize, curPos);
                 break;
             default:

@@ -129,7 +129,7 @@ void SCPTRecord::SetType(UINT32 Type)
 
 UINT32 SCPTRecord::GetType()
     {
-    return 'TPCS';
+    return REV32(SCPT);
     }
 
 STRING SCPTRecord::GetStrType()
@@ -147,7 +147,7 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -160,33 +160,33 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 VARS.push_back(new GENVARS);
                 VARS.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 if(VARS.size() == 0)
                     VARS.push_back(new GENVARS);
                 VARS.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 SCR_.push_back(new ReqSubRecord<GENSCR_>);
                 SCR_.back()->Read(buffer, subSize, curPos);
                 SCR_.back()->value.isSCRO = false;
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 SCR_.push_back(new ReqSubRecord<GENSCR_>);
                 SCR_.back()->Read(buffer, subSize, curPos);
                 SCR_.back()->value.isSCRO = true;
@@ -223,30 +223,30 @@ SINT32 SCPTRecord::Unload()
 SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(SCHR.IsLoaded())
         {
         SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-        writer.record_write_subrecord('RHCS', &SCHR.value, SCHR.GetSize());
+        writer.record_write_subrecord(REV32(SCHR), &SCHR.value, SCHR.GetSize());
         }
     if(SCDA.IsLoaded())
-        writer.record_write_subrecord('ADCS', SCDA.value, SCDA.GetSize());
+        writer.record_write_subrecord(REV32(SCDA), SCDA.value, SCDA.GetSize());
     if(SCTX.IsLoaded())
-        writer.record_write_subrecord('XTCS', SCTX.value, SCTX.GetSize());
+        writer.record_write_subrecord(REV32(SCTX), SCTX.value, SCTX.GetSize());
     for(UINT32 p = 0; p < VARS.size(); p++)
         {
         if(VARS[p]->SLSD.IsLoaded())
-            writer.record_write_subrecord('DSLS', &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
+            writer.record_write_subrecord(REV32(SLSD), &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
         if(VARS[p]->SCVR.IsLoaded())
-            writer.record_write_subrecord('RVCS', VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
+            writer.record_write_subrecord(REV32(SCVR), VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
         }
 
     for(UINT32 p = 0; p < SCR_.size(); p++)
         if(SCR_[p]->IsLoaded())
             if(SCR_[p]->value.isSCRO)
-                writer.record_write_subrecord('ORCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord(REV32(SCRO), &SCR_[p]->value.reference, sizeof(UINT32));
             else
-                writer.record_write_subrecord('VRCS', &SCR_[p]->value.reference, sizeof(UINT32));
+                writer.record_write_subrecord(REV32(SCRV), &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 

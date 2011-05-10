@@ -117,7 +117,7 @@ void TES4Record::IsESM(bool value)
 
 UINT32 TES4Record::GetType()
     {
-    return '4SET';
+    return REV32(TES4);
     }
 
 STRING TES4Record::GetStrType()
@@ -140,7 +140,7 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -153,30 +153,30 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'RDEH':
+            case REV32(HEDR):
                 HEDR.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TSAM':
+            case REV32(MAST):
                 curMAST.Read(buffer, subSize, curPos);
                 MAST.push_back(curMAST);
                 curMAST.Unload();
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 curPos += subSize;
                 break;
-            case 'TSFO':
+            case REV32(OFST):
                 OFST.Read(buffer, subSize, curPos);
                 break;
-            case 'ELED':
+            case REV32(DELE):
                 DELE.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 if(subSize % sizeof(FORMID) == 0)
                     {
                     if(subSize == 0)
@@ -190,7 +190,7 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'NRCS':
+            case REV32(SCRN):
                 SCRN.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -223,43 +223,43 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
     switch(whichGame)
         {
         case eIsOblivion:
-            writer.record_write_subrecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            writer.record_write_subrecord(REV32(HEDR), &HEDR.value, sizeof(TES4HEDR));
             if(OFST.IsLoaded())
-                writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
+                writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
             if(DELE.IsLoaded())
-                writer.record_write_subrecord('ELED', DELE.value, DELE.GetSize());
+                writer.record_write_subrecord(REV32(DELE), DELE.value, DELE.GetSize());
             if(CNAM.IsLoaded())
-                writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
+                writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
             if(SNAM.IsLoaded())
-                writer.record_write_subrecord('MANS', SNAM.value, SNAM.GetSize());
+                writer.record_write_subrecord(REV32(SNAM), SNAM.value, SNAM.GetSize());
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                writer.record_write_subrecord('TSAM', MAST[p].value, MAST[p].GetSize());
-                writer.record_write_subrecord('ATAD', &DATA[0], sizeof(DATA));
+                writer.record_write_subrecord(REV32(MAST), MAST[p].value, MAST[p].GetSize());
+                writer.record_write_subrecord(REV32(DATA), &DATA[0], sizeof(DATA));
                 }
             break;
         case eIsFallout3:
             printf("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
             return -1;
         case eIsFalloutNewVegas:
-            writer.record_write_subrecord('RDEH', &HEDR.value, sizeof(TES4HEDR));
+            writer.record_write_subrecord(REV32(HEDR), &HEDR.value, sizeof(TES4HEDR));
             if(OFST.IsLoaded())
-                writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
+                writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
             if(DELE.IsLoaded())
-                writer.record_write_subrecord('ELED', DELE.value, DELE.GetSize());
+                writer.record_write_subrecord(REV32(DELE), DELE.value, DELE.GetSize());
             if(CNAM.IsLoaded())
-                writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
+                writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
             if(SNAM.IsLoaded())
-                writer.record_write_subrecord('MANS', SNAM.value, SNAM.GetSize());
+                writer.record_write_subrecord(REV32(SNAM), SNAM.value, SNAM.GetSize());
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                writer.record_write_subrecord('TSAM', MAST[p].value, MAST[p].GetSize());
-                writer.record_write_subrecord('ATAD', &DATA[0], sizeof(DATA));
+                writer.record_write_subrecord(REV32(MAST), MAST[p].value, MAST[p].GetSize());
+                writer.record_write_subrecord(REV32(DATA), &DATA[0], sizeof(DATA));
                 }
             if(ONAM.size())
-                writer.record_write_subrecord('MANO', &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
+                writer.record_write_subrecord(REV32(ONAM), &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
             if(SCRN.IsLoaded())
-                writer.record_write_subrecord('NRCS', SCRN.value, SCRN.GetSize());
+                writer.record_write_subrecord(REV32(SCRN), SCRN.value, SCRN.GetSize());
             break;
         }
 

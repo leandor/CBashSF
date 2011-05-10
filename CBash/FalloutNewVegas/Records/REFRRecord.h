@@ -164,10 +164,10 @@ class REFRRecord : public FNVRecord //Placed Object
         OptSubRecord<FNVXOWN> Ownership; //Owner
         OptSubRecord<FNVXLOC> XLOC; //Lock Data
         OptSimpleSubRecord<SINT32> XCNT; //Count
-        OptSimpleSubRecord<FLOAT32> XRDS; //Radius
-        OptSimpleSubRecord<FLOAT32> XHLP; //Health
-        OptSimpleSubRecord<FLOAT32> XRAD; //Radiation
-        OptSimpleSubRecord<FLOAT32> XCHG; //Charge
+        OptSimpleFloatSubRecord<flt_0> XRDS; //Radius
+        OptSimpleFloatSubRecord<flt_0> XHLP; //Health
+        OptSimpleFloatSubRecord<flt_0> XRAD; //Radiation
+        OptSimpleFloatSubRecord<flt_0> XCHG; //Charge
         OptSubRecord<GENAMMO> Ammo; //Ammo
         std::vector<ReqSubRecord<GENXPWR> *> Reflections; //Reflected/Refracted By
         std::vector<FORMID> XLTW; //Lit Water
@@ -190,7 +190,7 @@ class REFRRecord : public FNVRecord //Placed Object
         OptSubRecord<GENPOSITION> XOCP; //Occlusion Plane Data
         std::vector<FORMID> XORD; //Linked Occlusion Planes (4 only?)
         OptSubRecord<GENXLOD> XLOD; //Distant LOD Data
-        OptSimpleSubRecord<FLOAT32, 1> XSCL; //Scale
+        OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
         OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         REFRRecord(unsigned char *_recData=NULL);

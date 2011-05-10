@@ -2176,7 +2176,7 @@ void WEAPRecord::SetSoundLevelType(UINT32 Type)
 
 UINT32 WEAPRecord::GetType()
     {
-    return 'PAEW';
+    return REV32(WEAP);
     }
 
 STRING WEAPRecord::GetStrType()
@@ -2199,7 +2199,7 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -2212,245 +2212,245 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'MTIE':
+            case REV32(EITM):
                 EITM.Read(buffer, subSize, curPos);
                 break;
-            case 'TMAE':
+            case REV32(EAMT):
                 EAMT.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case 'TSED':
+            case REV32(DEST):
                 Destructable.Load();
                 Destructable->DEST.Read(buffer, subSize, curPos);
                 break;
-            case 'DTSD':
+            case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
                 break;
-            case 'LDMD':
+            case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
                 break;
-            case 'TDMD':
+            case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
                 Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
                 break;
-            case 'FTSD':
+            case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
-            case 'LPER':
+            case REV32(REPL):
                 REPL.Read(buffer, subSize, curPos);
                 break;
-            case 'PYTE':
+            case REV32(ETYP):
                 ETYP.Read(buffer, subSize, curPos);
                 break;
-            case 'LPIB':
+            case REV32(BIPL):
                 BIPL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANY':
+            case REV32(YNAM):
                 YNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANZ':
+            case REV32(ZNAM):
                 ZNAM.Read(buffer, subSize, curPos);
                 break;
-            case '2DOM':
+            case REV32(MOD2):
                 MOD2.Load();
                 MOD2->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'T2OM':
+            case REV32(MO2T):
                 MOD2.Load();
                 MOD2->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'S2OM':
+            case REV32(MO2S):
                 MOD2.Load();
                 MOD2->Textures.Read(buffer, subSize, curPos);
                 break;
-            case '3DOM':
+            case REV32(MOD3):
                 MOD3.Load();
                 MOD3->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'T3OM':
+            case REV32(MO3T):
                 MOD3.Load();
                 MOD3->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'S3OM':
+            case REV32(MO3S):
                 MOD3.Load();
                 MOD3->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DSFE':
+            case REV32(EFSD):
                 EFSD.Read(buffer, subSize, curPos);
                 break;
-            case '4DOM':
+            case REV32(MOD4):
                 MOD4.Load();
                 MOD4->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'T4OM':
+            case REV32(MO4T):
                 MOD4.Load();
                 MOD4->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'S4OM':
+            case REV32(MO4S):
                 MOD4.Load();
                 MOD4->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'MNAV':
+            case REV32(VANM):
                 VANM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 NNAM.Read(buffer, subSize, curPos);
                 break;
-            case '1DWM':
+            case REV32(MWD1):
                 MWD1.Read(buffer, subSize, curPos);
                 break;
-            case '2DWM':
+            case REV32(MWD2):
                 MWD2.Read(buffer, subSize, curPos);
                 break;
-            case '3DWM':
+            case REV32(MWD3):
                 MWD3.Read(buffer, subSize, curPos);
                 break;
-            case '4DWM':
+            case REV32(MWD4):
                 MWD4.Read(buffer, subSize, curPos);
                 break;
-            case '5DWM':
+            case REV32(MWD5):
                 MWD5.Read(buffer, subSize, curPos);
                 break;
-            case '6DWM':
+            case REV32(MWD6):
                 MWD6.Read(buffer, subSize, curPos);
                 break;
-            case '7DWM':
+            case REV32(MWD7):
                 MWD7.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case '1MNW':
+            case REV32(WNM1):
                 WNM1.Read(buffer, subSize, curPos);
                 break;
-            case '2MNW':
+            case REV32(WNM2):
                 WNM2.Read(buffer, subSize, curPos);
                 break;
-            case '3MNW':
+            case REV32(WNM3):
                 WNM3.Read(buffer, subSize, curPos);
                 break;
-            case '4MNW':
+            case REV32(WNM4):
                 WNM4.Read(buffer, subSize, curPos);
                 break;
-            case '5MNW':
+            case REV32(WNM5):
                 WNM5.Read(buffer, subSize, curPos);
                 break;
-            case '6MNW':
+            case REV32(WNM6):
                 WNM6.Read(buffer, subSize, curPos);
                 break;
-            case '7MNW':
+            case REV32(WNM7):
                 WNM7.Read(buffer, subSize, curPos);
                 break;
-            case '1IMW':
+            case REV32(WMI1):
                 WMI1.Read(buffer, subSize, curPos);
                 break;
-            case '2IMW':
+            case REV32(WMI2):
                 WMI2.Read(buffer, subSize, curPos);
                 break;
-            case '3IMW':
+            case REV32(WMI3):
                 WMI3.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 if((curSound & fIsGun3DRead) == 0)
                     SNAM1.Read(buffer, subSize, curPos);
                 else
                     SNAM2.Read(buffer, subSize, curPos);
                 curSound |= fIsGun3DRead;
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case '7MAN':
+            case REV32(NAM7):
                 NAM7.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case '6MAN':
+            case REV32(NAM6):
                 NAM6.Read(buffer, subSize, curPos);
                 break;
-            case 'MANU':
+            case REV32(UNAM):
                 UNAM.Read(buffer, subSize, curPos);
                 break;
-            case '9MAN':
+            case REV32(NAM9):
                 NAM9.Read(buffer, subSize, curPos);
                 break;
-            case '8MAN':
+            case REV32(NAM8):
                 NAM8.Read(buffer, subSize, curPos);
                 break;
-            case '1SMW':
+            case REV32(WMS1):
                 if((curSound & fIsShoot3DRead) == 0)
                     WMS11.Read(buffer, subSize, curPos);
                 else
                     WMS12.Read(buffer, subSize, curPos);
                 curSound |= fIsShoot3DRead;
                 break;
-            case '2SMW':
+            case REV32(WMS2):
                 WMS2.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TDRC':
+            case REV32(CRDT):
                 CRDT.Read(buffer, subSize, curPos);
                 break;
-            case 'STAV':
+            case REV32(VATS):
                 VATS.Read(buffer, subSize, curPos);
                 break;
-            case 'MANV':
+            case REV32(VNAM):
                 VNAM.Read(buffer, subSize, curPos);
                 break;
             default:

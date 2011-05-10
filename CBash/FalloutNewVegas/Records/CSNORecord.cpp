@@ -117,7 +117,7 @@ void CSNORecord::SetFlagMask(UINT32 Mask)
 
 UINT32 CSNORecord::GetType()
     {
-    return 'ONSC';
+    return REV32(CSNO);
     }
 
 STRING CSNORecord::GetStrType()
@@ -134,7 +134,7 @@ SINT32 CSNORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -147,36 +147,36 @@ SINT32 CSNORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Read(buffer, subSize, curPos);
                 break;
-            case '2DOM':
+            case REV32(MOD2):
                 MOD2.Read(buffer, subSize, curPos);
                 break;
-            case '3DOM':
+            case REV32(MOD3):
                 MOD3.Read(buffer, subSize, curPos);
                 break;
-            case '4DOM':
+            case REV32(MOD4):
                 MOD4.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Load();
                 ICON->ICON.Read(buffer, subSize, curPos);
                 break;
-            case '2OCI':
+            case REV32(ICO2):
                 ICO2.Load();
                 ICO2->ICO2.Read(buffer, subSize, curPos);
                 break;
@@ -218,7 +218,7 @@ SINT32 CSNORecord::WriteRecord(FileWriter &writer)
     if(MODL.IsLoaded())
         {
         if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+            SaveHandler.writeSubRecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
 
         }
 
@@ -230,14 +230,14 @@ SINT32 CSNORecord::WriteRecord(FileWriter &writer)
     if(ICON.IsLoaded())
         {
         if(ICON->ICON.IsLoaded())
-            SaveHandler.writeSubRecord('NOCI', ICON->ICON.value, ICON->ICON.GetSize());
+            SaveHandler.writeSubRecord(REV32(ICON), ICON->ICON.value, ICON->ICON.GetSize());
 
         }
 
     if(ICO2.IsLoaded())
         {
         if(ICO2->ICO2.IsLoaded())
-            SaveHandler.writeSubRecord('2OCI', ICO2->ICO2.value, ICO2->ICO2.GetSize());
+            SaveHandler.writeSubRecord(REV32(ICO2), ICO2->ICO2.value, ICO2->ICO2.GetSize());
 
         }
 

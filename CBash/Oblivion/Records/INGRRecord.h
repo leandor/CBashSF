@@ -39,7 +39,7 @@ class INGRRecord : public Record
         OptSubRecord<GENMODEL> MODL;
         StringRecord ICON;
         OptSimpleSubRecord<FORMID> SCRI;
-        ReqSimpleSubRecord<FLOAT32> DATA;
+        ReqSimpleFloatSubRecord<flt_0> DATA;
         ReqSubRecord<GENENIT> ENIT;
         std::vector<GENEffect *> Effects;
         OptSubRecord<OBMEMAGIC> OBME;

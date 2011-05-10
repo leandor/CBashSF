@@ -701,7 +701,7 @@ void PACKRecord::SetTargetType(SINT32 Type)
 
 UINT32 PACKRecord::GetType()
     {
-    return 'KCAP';
+    return REV32(PACK);
     }
 
 STRING PACKRecord::GetStrType()
@@ -757,7 +757,7 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -770,10 +770,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'TDKP':
+            case REV32(PKDT):
                 switch(subSize)
                     {
                     case 4:
@@ -788,17 +788,17 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'TDLP':
+            case REV32(PLDT):
                 PLDT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDSP':
+            case REV32(PSDT):
                 PSDT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTP':
+            case REV32(PTDT):
                 PTDT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTC':
-            case 'ADTC':
+            case REV32(CTDT):
+            case REV32(CTDA):
                 newCTDA = new ReqSubRecord<GENCTDA>;
                 newCTDA->Read(buffer, subSize, curPos);
                 CTDA.push_back(newCTDA);
@@ -837,15 +837,15 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(PKDT.IsLoaded())
-        writer.record_write_subrecord('TDKP', &PKDT.value, PKDT.GetSize());
+        writer.record_write_subrecord(REV32(PKDT), &PKDT.value, PKDT.GetSize());
     if(PLDT.IsLoaded())
-        writer.record_write_subrecord('TDLP', PLDT.value, PLDT.GetSize());
+        writer.record_write_subrecord(REV32(PLDT), PLDT.value, PLDT.GetSize());
     if(PSDT.IsLoaded())
-        writer.record_write_subrecord('TDSP', &PSDT.value, PSDT.GetSize());
+        writer.record_write_subrecord(REV32(PSDT), &PSDT.value, PSDT.GetSize());
     if(PTDT.IsLoaded())
-        writer.record_write_subrecord('TDTP', PTDT.value, PTDT.GetSize());
+        writer.record_write_subrecord(REV32(PTDT), PTDT.value, PTDT.GetSize());
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
         curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
@@ -857,7 +857,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
         }
     return -1;
     }

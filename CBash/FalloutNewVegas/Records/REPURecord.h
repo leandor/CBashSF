@@ -32,7 +32,7 @@ class REPURecord : public FNVRecord //Reputation
         StringRecord FULL; //Name
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSimpleSubRecord<FLOAT32> DATA; //Value
+        OptSimpleFloatSubRecord<flt_0> DATA; //Value
 
         REPURecord(unsigned char *_recData=NULL);
         REPURecord(REPURecord *srcRecord);

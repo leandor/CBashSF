@@ -40,7 +40,7 @@ class ACHRRecord : public Record
         OptSimpleSubRecord<FORMID> XMRC;
         SimpleSubRecord<FORMID> XHRS;
         RawRecord XRGD;
-        OptSimpleSubRecord<FLOAT32, 1> XSCL; // scale
+        OptSimpleFloatSubRecord<flt_1> XSCL; // scale
         ReqSubRecord<GENPOSDATA> DATA;
 
         ACHRRecord(unsigned char *_recData=NULL);

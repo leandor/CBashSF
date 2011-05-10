@@ -26,7 +26,7 @@ namespace FNV
 {
 void RACERecord::RACEPart::Write(UINT32 index, FileWriter &writer)
     {
-    writer.record_write_subrecord('XDNI', &index, 4);
+    writer.record_write_subrecord(REV32(INDX), &index, 4);
     MODL.Write(writer);
     WRITE(ICON);
     WRITE(MICO);
@@ -34,7 +34,7 @@ void RACERecord::RACEPart::Write(UINT32 index, FileWriter &writer)
 
 void RACERecord::RACEPart::WriteIconsFirst(UINT32 index, FileWriter &writer)
     {
-    writer.record_write_subrecord('XDNI', &index, 4);
+    writer.record_write_subrecord(REV32(INDX), &index, 4);
     WRITE(ICON);
     WRITE(MICO);
     MODL.Write(writer);
@@ -346,7 +346,7 @@ void RACERecord::SetFlagMask(UINT32 Mask)
 
 UINT32 RACERecord::GetType()
     {
-    return 'ECAR';
+    return REV32(RACE);
     }
 
 STRING RACERecord::GetStrType()
@@ -374,7 +374,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -387,58 +387,58 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 ONAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANY':
+            case REV32(YNAM):
                 YNAM.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN': //Unknown empty marker
+            case REV32(NAM2): //Unknown empty marker
                 break;
-            case 'KCTV':
+            case REV32(VTCK):
                 VTCK.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANU':
+            case REV32(UNAM):
                 UNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RTTA':
+            case REV32(ATTR):
                 ATTR.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 curNAM = (curNAM & ~fIsBody) | fIsHead;
                 curINDX = -1;
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 curNAM = (curNAM & ~fIsFemale) | fIsMale;
                 break;
-            case 'XDNI':
+            case REV32(INDX):
                 _readBuffer(&curINDX, buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -642,7 +642,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -846,7 +846,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -1050,7 +1050,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -1254,7 +1254,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -1458,7 +1458,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -1638,7 +1638,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 switch(curINDX) //Part ID
                     {
                     case 0:
@@ -1818,20 +1818,20 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 curNAM = (curNAM & ~fIsMale) | fIsFemale;
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 curNAM = (curNAM & ~fIsHead) | fIsBody;
                 curINDX = -1;
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 HNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 ENAM.Read(buffer, subSize, curPos);
                 break;
-            case 'SGGF':
+            case REV32(FGGS):
                 curNAM &= ~(fIsBody |fIsHead);
                 switch(curNAM)
                     {
@@ -1849,7 +1849,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'AGGF':
+            case REV32(FGGA):
                 curNAM &= ~(fIsBody |fIsHead);
                 switch(curNAM)
                     {
@@ -1867,7 +1867,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'STGF':
+            case REV32(FGTS):
                 curNAM &= ~(fIsBody |fIsHead);
                 switch(curNAM)
                     {
@@ -1885,7 +1885,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 curNAM &= ~(fIsBody |fIsHead);
                 switch(curNAM)
                     {
@@ -2034,7 +2034,7 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     WRITE(ONAM);
     WRITE(YNAM);
 
-    writer.record_write_subheader('2MAN', 0);
+    writer.record_write_subheader(REV32(NAM2), 0);
     WRITE(VTCK);
     WRITE(DNAM);
     WRITE(CNAM);
@@ -2042,8 +2042,8 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     WRITE(UNAM);
     WRITE(ATTR);
 
-    writer.record_write_subheader('0MAN', 0);
-    writer.record_write_subheader('MANM', 0);
+    writer.record_write_subheader(REV32(NAM0), 0);
+    writer.record_write_subheader(REV32(MNAM), 0);
     UINT32 curINDX = 0;
     MHMOD0.Write(curINDX++, writer);
     MHMOD1.Write(curINDX++, writer);
@@ -2054,7 +2054,7 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     MHMOD6.Write(curINDX++, writer);
     MHMOD7.Write(curINDX, writer);
 
-    writer.record_write_subheader('MANF', 0);
+    writer.record_write_subheader(REV32(FNAM), 0);
     curINDX = 0;
     FHMOD0.Write(curINDX++, writer);
     FHMOD1.Write(curINDX++, writer);
@@ -2065,15 +2065,15 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     FHMOD6.Write(curINDX++, writer);
     FHMOD7.Write(curINDX, writer);
 
-    writer.record_write_subheader('1MAN', 0);
-    writer.record_write_subheader('MANM', 0);
+    writer.record_write_subheader(REV32(NAM1), 0);
+    writer.record_write_subheader(REV32(MNAM), 0);
     curINDX = 0;
     MBMOD0.WriteIconsFirst(curINDX++, writer);
     MBMOD1.WriteIconsFirst(curINDX++, writer);
     MBMOD2.WriteIconsFirst(curINDX++, writer);
     MBMOD3.WriteIconsFirst(curINDX, writer);
 
-    writer.record_write_subheader('MANF', 0);
+    writer.record_write_subheader(REV32(FNAM), 0);
     curINDX = 0;
     FBMOD0.WriteIconsFirst(curINDX++, writer);
     FBMOD1.WriteIconsFirst(curINDX++, writer);
@@ -2083,20 +2083,20 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     if(HNAM.value.size())
         WRITE(HNAM);
     else
-        writer.record_write_subheader('MANH', 0);
+        writer.record_write_subheader(REV32(HNAM), 0);
 
     if(ENAM.value.size())
         WRITE(ENAM);
     else
-        writer.record_write_subheader('MANE', 0);
+        writer.record_write_subheader(REV32(ENAM), 0);
 
-    writer.record_write_subheader('MANM', 0);
+    writer.record_write_subheader(REV32(MNAM), 0);
     WRITEAS(MaleFGGS,FGGS);
     WRITEAS(MaleFGGA,FGGA);
     WRITEAS(MaleFGTS,FGTS);
     WRITEAS(MaleSNAM,SNAM);
 
-    writer.record_write_subheader('MANF', 0);
+    writer.record_write_subheader(REV32(FNAM), 0);
     WRITEAS(FemaleFGGS,FGGS);
     WRITEAS(FemaleFGGA,FGGA);
     WRITEAS(FemaleFGTS,FGTS);

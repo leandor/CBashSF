@@ -133,7 +133,7 @@ bool CLMTRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 CLMTRecord::GetType()
     {
-    return 'TMLC';
+    return REV32(CLMT);
     }
 
 STRING CLMTRecord::GetStrType()
@@ -150,7 +150,7 @@ SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -163,10 +163,10 @@ SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'TSLW':
+            case REV32(WLST):
                 if(subSize % sizeof(CLMTWLST) == 0)
                     {
                     if(subSize == 0)
@@ -180,25 +180,25 @@ SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -229,28 +229,28 @@ SINT32 CLMTRecord::Unload()
 SINT32 CLMTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(Weathers.size())
-        writer.record_write_subrecord('TSLW', &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
+        writer.record_write_subrecord(REV32(WLST), &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
     //else
-    //    writer.record_write_subheader('TSLW', 0);
+    //    writer.record_write_subheader(REV32(WLST), 0);
 
     if(FNAM.IsLoaded())
-        writer.record_write_subrecord('MANF', FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord(REV32(FNAM), FNAM.value, FNAM.GetSize());
     if(GNAM.IsLoaded())
-        writer.record_write_subrecord('MANG', GNAM.value, GNAM.GetSize());
+        writer.record_write_subrecord(REV32(GNAM), GNAM.value, GNAM.GetSize());
 
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
 
     if(TNAM.IsLoaded())
-        writer.record_write_subrecord('MANT', &TNAM.value, TNAM.GetSize());
+        writer.record_write_subrecord(REV32(TNAM), &TNAM.value, TNAM.GetSize());
     return -1;
     }
 

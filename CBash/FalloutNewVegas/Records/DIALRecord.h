@@ -89,7 +89,7 @@ class DIALRecord : public FNVRecord //Dialog Topic
         std::vector<ReqSubRecord<DIALQSTI> *> QSTI; //Added Quests
         std::vector<ReqSubRecord<DIALQSTR> *> QSTR; //Removed Quests
         StringRecord FULL; //Name
-        OptSimpleSubRecord<FLOAT32> PNAM; //Priority
+        OptSimpleFloatSubRecord<flt_0> PNAM; //Priority
         StringRecord TDUM; //Unknown
         OptSubRecord<DIALDATA> DATA; //Dialog Data
         std::vector<Record *> INFO;

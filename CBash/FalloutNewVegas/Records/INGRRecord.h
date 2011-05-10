@@ -61,7 +61,7 @@ class INGRRecord : public FNVRecord //Ingredient
         StringRecord MICO; //Small Icon Filename
         OptSimpleSubRecord<FORMID> SCRI; //Script
         OptSimpleSubRecord<SINT32> ETYP; //Equipment Type
-        ReqSimpleSubRecord<FLOAT32> DATA; //Weight
+        ReqSimpleFloatSubRecord<flt_0> DATA; //Weight
         ReqSubRecord<GENENIT> ENIT; //Effect Data
         UnorderedSparseArray<FNVEffect *> Effects; //Effects
 

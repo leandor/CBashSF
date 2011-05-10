@@ -321,7 +321,7 @@ UINT16 LANDRecord::CalcPosition(const UINT8 &curQuadrant, const UINT32 &row, con
 
 UINT32 LANDRecord::GetType()
     {
-    return 'DNAL';
+    return REV32(LAND);
     }
 
 STRING LANDRecord::GetStrType()
@@ -331,7 +331,7 @@ STRING LANDRecord::GetStrType()
 
 UINT32 LANDRecord::GetParentType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
@@ -361,7 +361,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -374,29 +374,29 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'LMNV':
+            case REV32(VNML):
                 VNML.Read(buffer, subSize, curPos);
                 break;
-            case 'TGHV':
+            case REV32(VHGT):
                 VHGT.Read(buffer, subSize, curPos);
                 break;
-            case 'RLCV':
+            case REV32(VCLR):
                 VCLR.Read(buffer, subSize, curPos);
                 break;
-            case 'TXTB':
+            case REV32(BTXT):
                 curTexture = new ReqSubRecord<LANDGENTXT>;
                 curTexture->Read(buffer, subSize, curPos);
                 BTXT.push_back(curTexture);
                 break;
-            case 'TXTA':
+            case REV32(ATXT):
                 curLayer = new LANDLAYERS;
                 curLayer->ATXT.Read(buffer, subSize, curPos);
                 Layers.push_back(curLayer);
                 break;
-            case 'TXTV':
+            case REV32(VTXT):
                 if(subSize % sizeof(LANDVTXT) == 0)
                     {
                     if(subSize == 0)
@@ -432,7 +432,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //        break;
                 //    }
                 break;
-            case 'XETV':
+            case REV32(VTEX):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -481,28 +481,28 @@ SINT32 LANDRecord::Unload()
 SINT32 LANDRecord::WriteRecord(FileWriter &writer)
     {
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), DATA.value, DATA.GetSize());
     if(VNML.IsLoaded())
-        writer.record_write_subrecord('LMNV', VNML.value, VNML.GetSize());
+        writer.record_write_subrecord(REV32(VNML), VNML.value, VNML.GetSize());
     if(VHGT.IsLoaded())
-        writer.record_write_subrecord('TGHV', VHGT.value, VHGT.GetSize());
+        writer.record_write_subrecord(REV32(VHGT), VHGT.value, VHGT.GetSize());
     if(VCLR.IsLoaded())
-        writer.record_write_subrecord('RLCV', VCLR.value, VCLR.GetSize());
+        writer.record_write_subrecord(REV32(VCLR), VCLR.value, VCLR.GetSize());
     if(BTXT.size())
         for(UINT32 p = 0; p < BTXT.size(); p++)
             if(BTXT[p]->IsLoaded())
-                writer.record_write_subrecord('TXTB', &BTXT[p]->value, BTXT[p]->GetSize());
+                writer.record_write_subrecord(REV32(BTXT), &BTXT[p]->value, BTXT[p]->GetSize());
 
     if(Layers.size())
         for(UINT32 p = 0; p < Layers.size(); p++)
             {
             if(Layers[p]->ATXT.IsLoaded())
-                writer.record_write_subrecord('TXTA', &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
+                writer.record_write_subrecord(REV32(ATXT), &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
             if(Layers[p]->VTXT.size())
-                writer.record_write_subrecord('TXTV', &Layers[p]->VTXT[0], (UINT32)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
+                writer.record_write_subrecord(REV32(VTXT), &Layers[p]->VTXT[0], (UINT32)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
             }
     if(VTEX.size())
-        writer.record_write_subrecord('XETV', &VTEX[0], (UINT32)VTEX.size() * sizeof(UINT32));
+        writer.record_write_subrecord(REV32(VTEX), &VTEX[0], (UINT32)VTEX.size() * sizeof(UINT32));
 
     return -1;
     }

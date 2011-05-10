@@ -73,7 +73,7 @@ bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
 
-    if(RecordType == NULL || RecordType == 'OFNI')
+    if(RecordType == NULL || RecordType == REV32(INFO))
         for(UINT32 x = 0; x < INFO.size();++x)
             {
             stop = op.Accept(INFO[x]);
@@ -206,7 +206,7 @@ void DIALRecord::SetType(UINT8 Type)
 
 UINT32 DIALRecord::GetType()
     {
-    return 'LAID';
+    return REV32(DIAL);
     }
 
 STRING DIALRecord::GetStrType()
@@ -224,7 +224,7 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -237,21 +237,21 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'ITSQ':
+            case REV32(QSTI):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 QSTI.push_back(curFormID);
                 break;
-            case 'RTSQ':
+            case REV32(QSTR):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 QSTR.push_back(curFormID);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -283,15 +283,15 @@ SINT32 DIALRecord::Unload()
 SINT32 DIALRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     for(UINT32 p = 0; p < QSTI.size(); p++)
-        writer.record_write_subrecord('ITSQ', &QSTI[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(QSTI), &QSTI[p], sizeof(UINT32));
     for(UINT32 p = 0; p < QSTR.size(); p++)
-        writer.record_write_subrecord('RTSQ', &QSTR[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(QSTR), &QSTR[p], sizeof(UINT32));
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

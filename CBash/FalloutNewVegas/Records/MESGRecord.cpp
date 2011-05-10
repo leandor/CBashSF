@@ -91,7 +91,7 @@ bool MESGRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 MESGRecord::GetType()
     {
-    return 'GSEM';
+    return REV32(MESG);
     }
 
 STRING MESGRecord::GetStrType()
@@ -108,7 +108,7 @@ SINT32 MESGRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -121,58 +121,58 @@ SINT32 MESGRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 //NAM0.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 //NAM1.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 //NAM2.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '3MAN':
+            case REV32(NAM3):
                 //NAM3.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 //NAM4.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '5MAN':
+            case REV32(NAM5):
                 //NAM5.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '6MAN':
+            case REV32(NAM6):
                 //NAM6.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '7MAN':
+            case REV32(NAM7):
                 //NAM7.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '8MAN':
+            case REV32(NAM8):
                 //NAM8.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case '9MAN':
+            case REV32(NAM9):
                 //NAM9.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TXTI':
+            case REV32(ITXT):
                 ITXT.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 CTDA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -220,34 +220,34 @@ SINT32 MESGRecord::WriteRecord(FileWriter &writer)
     WRITE(INAM);
 
     //if(NAM0.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('0MAN', NAM0.value, NAM0.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM0), NAM0.value, NAM0.GetSize());
 
     //if(NAM1.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('1MAN', NAM1.value, NAM1.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM1), NAM1.value, NAM1.GetSize());
 
     //if(NAM2.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('2MAN', NAM2.value, NAM2.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM2), NAM2.value, NAM2.GetSize());
 
     //if(NAM3.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('3MAN', NAM3.value, NAM3.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM3), NAM3.value, NAM3.GetSize());
 
     //if(NAM4.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('4MAN', NAM4.value, NAM4.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM4), NAM4.value, NAM4.GetSize());
 
     //if(NAM5.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('5MAN', NAM5.value, NAM5.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM5), NAM5.value, NAM5.GetSize());
 
     //if(NAM6.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('6MAN', NAM6.value, NAM6.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM6), NAM6.value, NAM6.GetSize());
 
     //if(NAM7.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('7MAN', NAM7.value, NAM7.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM7), NAM7.value, NAM7.GetSize());
 
     //if(NAM8.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('8MAN', NAM8.value, NAM8.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM8), NAM8.value, NAM8.GetSize());
 
     //if(NAM9.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('9MAN', NAM9.value, NAM9.GetSize());
+        //SaveHandler.writeSubRecord(REV32(NAM9), NAM9.value, NAM9.GetSize());
     WRITE(DNAM);
     WRITE(TNAM);
     WRITE(ITXT);

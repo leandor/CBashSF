@@ -580,7 +580,7 @@ struct GENCLR
 
 struct GENMODEL
     {
-    ReqSimpleSubRecord<FLOAT32> MODB;
+    ReqSimpleFloatSubRecord<flt_0> MODB;
     StringRecord MODL;
     RawRecord MODT;
 
@@ -821,7 +821,7 @@ struct GENDODT
 
 struct GENPATROL
     {
-    ReqSimpleSubRecord<FLOAT32> XPRD; //Idle Time
+    ReqSimpleFloatSubRecord<flt_0> XPRD; //Idle Time
     ReqSimpleSubRecord<FORMID> INAM; //Idle
     ReqSubRecord<FNVSCHR> SCHR;
     RawRecord SCDA;
@@ -919,7 +919,7 @@ struct FNVAlternateTextures
 struct FNVMODEL
     {
     StringRecord MODL; //Model Filename
-    OptSimpleSubRecord<FLOAT32> MODB; //Bound Radius (Unknown?)
+    OptSimpleFloatSubRecord<flt_0> MODB; //Bound Radius (Unknown?)
     RawRecord MODT; //Texture Files Hashes
     FNVAlternateTextures Textures; //Alternate Textures
     OptSimpleSubRecord<UINT8> MODD; //FaceGen Model Flags
@@ -1355,8 +1355,8 @@ struct GENMMRK
     RawRecord FULL; //Unknown
     OptSimpleSubRecord<FORMID> CNAM; //Audio Location
     RawRecord BNAM; //Unknown
-    OptSimpleSubRecord<FLOAT32> MNAM; //Unknown
-    OptSimpleSubRecord<FLOAT32> NNAM; //Unknown
+    OptSimpleFloatSubRecord<flt_0> MNAM; //Unknown
+    OptSimpleFloatSubRecord<flt_0> NNAM; //Unknown
 
     bool operator ==(const GENMMRK &other) const;
     bool operator !=(const GENMMRK &other) const;
@@ -1492,10 +1492,13 @@ struct GENROOM
     bool operator ==(const GENROOM &other) const;
     bool operator !=(const GENROOM &other) const;
     };
+
 struct FNVXOWN
     {
     ReqSimpleSubRecord<FORMID> XOWN;
     SemiOptSimpleSubRecord<SINT32> XRNK; //Faction Rank
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const FNVXOWN &other) const;
     bool operator !=(const FNVXOWN &other) const;

@@ -167,9 +167,9 @@ class CREARecord : public Record
         ReqSubRecord<CREADATA> DATA;
         ReqSimpleSubRecord<UINT8> RNAM;
         OptSimpleSubRecord<FORMID> ZNAM;
-        ReqSimpleSubRecord<FLOAT32> TNAM;
-        ReqSimpleSubRecord<FLOAT32> BNAM;
-        ReqSimpleSubRecord<FLOAT32> WNAM;
+        ReqSimpleFloatSubRecord<flt_0> TNAM;
+        ReqSimpleFloatSubRecord<flt_0> BNAM;
+        ReqSimpleFloatSubRecord<flt_0> WNAM;
         OptSimpleSubRecord<FORMID> CSCR;
         StringRecord NAM0;
         StringRecord NAM1;

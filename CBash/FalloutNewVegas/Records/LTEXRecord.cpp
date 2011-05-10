@@ -435,7 +435,7 @@ void LTEXRecord::SetType(UINT8 Type)
 
 UINT32 LTEXRecord::GetType()
     {
-    return 'XETL';
+    return REV32(LTEX);
     }
 
 STRING LTEXRecord::GetStrType()
@@ -452,7 +452,7 @@ SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -465,25 +465,25 @@ SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 HNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
             default:

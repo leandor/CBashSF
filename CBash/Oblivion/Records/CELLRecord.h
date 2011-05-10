@@ -87,7 +87,7 @@ class CELLRecord : public Record
         SimpleSubRecord<UINT8> XCMT;
         OptSubRecord<GENXOWN> Ownership;
         SimpleSubRecord<FORMID> XCCM;
-        SimpleSubRecord<FLOAT32, -2147483648> XCLW; // waterHeight
+        SimpleFloatSubRecord<flt_n2147483648> XCLW; // waterHeight
         std::vector<FORMID> XCLR;
         SemiOptSubRecord<CELLXCLC> XCLC;
         SimpleSubRecord<FORMID> XCWT;

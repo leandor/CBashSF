@@ -33,10 +33,10 @@ class ALOCRecord : public FNVRecord //Media Location Controller
         RawRecord NAM1; //Flags and Enums, messily combined
         RawRecord NAM2; //Unknown
         RawRecord NAM3; //Unknown
-        OptSimpleSubRecord<FLOAT32> NAM4; //Location Delay
+        OptSimpleFloatSubRecord<flt_0> NAM4; //Location Delay
         OptSimpleSubRecord<UINT32> NAM5; //Day Start
         OptSimpleSubRecord<UINT32> NAM6; //Night Start
-        OptSimpleSubRecord<FLOAT32> NAM7; //Retrigger Delay
+        OptSimpleFloatSubRecord<flt_0> NAM7; //Retrigger Delay
         std::vector<FORMID> HNAM; //Neutral Media Sets
         std::vector<FORMID> ZNAM; //Ally Media Sets
         std::vector<FORMID> XNAM; //Friend Media Sets

@@ -83,7 +83,7 @@ ROADRecord::~ROADRecord()
 
 UINT32 ROADRecord::GetType()
     {
-    return 'DAOR';
+    return REV32(ROAD);
     }
 
 STRING ROADRecord::GetStrType()
@@ -93,7 +93,7 @@ STRING ROADRecord::GetStrType()
 
 UINT32 ROADRecord::GetParentType()
     {
-    return 'DLRW';
+    return REV32(WRLD);
     }
 
 SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -105,7 +105,7 @@ SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -118,7 +118,7 @@ SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'PRGP':
+            case REV32(PGRP):
                 if(subSize % sizeof(GENPGRP) == 0)
                     {
                     if(subSize == 0)
@@ -132,7 +132,7 @@ SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'RRGP':
+            case REV32(PGRR):
                 if(subSize % sizeof(ROADPGRR) == 0)
                     {
                     if(subSize == 0)
@@ -170,9 +170,9 @@ SINT32 ROADRecord::Unload()
 SINT32 ROADRecord::WriteRecord(FileWriter &writer)
     {
     if(PGRP.size())
-        writer.record_write_subrecord('PRGP', &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
+        writer.record_write_subrecord(REV32(PGRP), &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
     if(PGRR.size())
-        writer.record_write_subrecord('RRGP', &PGRR[0], sizeof(ROADPGRR) * (UINT32)PGRR.size());
+        writer.record_write_subrecord(REV32(PGRR), &PGRR[0], sizeof(ROADPGRR) * (UINT32)PGRR.size());
     return -1;
     }
 

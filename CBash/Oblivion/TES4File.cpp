@@ -78,62 +78,62 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
     PROFILE_FUNC
 
     enum IgTopRecords {
-        eIgGMST = 'TSMG' | 0x00001000, //Record::fIsIgnored
-        eIgGLOB = 'BOLG' | 0x00001000,
-        eIgCLAS = 'SALC' | 0x00001000,
-        eIgFACT = 'TCAF' | 0x00001000,
-        eIgHAIR = 'RIAH' | 0x00001000,
-        eIgEYES = 'SEYE' | 0x00001000,
-        eIgRACE = 'ECAR' | 0x00001000,
-        eIgSOUN = 'NUOS' | 0x00001000,
-        eIgSKIL = 'LIKS' | 0x00001000,
-        eIgMGEF = 'FEGM' | 0x00001000,
-        eIgSCPT = 'TPCS' | 0x00001000,
-        eIgLTEX = 'XETL' | 0x00001000,
-        eIgENCH = 'HCNE' | 0x00001000,
-        eIgSPEL = 'LEPS' | 0x00001000,
-        eIgBSGN = 'NGSB' | 0x00001000,
-        eIgACTI = 'ITCA' | 0x00001000,
-        eIgAPPA = 'APPA' | 0x00001000,
-        eIgARMO = 'OMRA' | 0x00001000,
-        eIgBOOK = 'KOOB' | 0x00001000,
-        eIgCLOT = 'TOLC' | 0x00001000,
-        eIgCONT = 'TNOC' | 0x00001000,
-        eIgDOOR = 'ROOD' | 0x00001000,
-        eIgINGR = 'RGNI' | 0x00001000,
-        eIgLIGH = 'HGIL' | 0x00001000,
-        eIgMISC = 'CSIM' | 0x00001000,
-        eIgSTAT = 'TATS' | 0x00001000,
-        eIgGRAS = 'SARG' | 0x00001000,
-        eIgTREE = 'EERT' | 0x00001000,
-        eIgFLOR = 'ROLF' | 0x00001000,
-        eIgFURN = 'NRUF' | 0x00001000,
-        eIgWEAP = 'PAEW' | 0x00001000,
-        eIgAMMO = 'OMMA' | 0x00001000,
-        eIgNPC_ = '_CPN' | 0x00001000,
-        eIgCREA = 'AERC' | 0x00001000,
-        eIgLVLC = 'CLVL' | 0x00001000,
-        eIgSLGM = 'MGLS' | 0x00001000,
-        eIgKEYM = 'MYEK' | 0x00001000,
-        eIgALCH = 'HCLA' | 0x00001000,
-        eIgSBSP = 'PSBS' | 0x00001000,
-        eIgSGST = 'TSGS' | 0x00001000,
-        eIgLVLI = 'ILVL' | 0x00001000,
-        eIgWTHR = 'RHTW' | 0x00001000,
-        eIgCLMT = 'TMLC' | 0x00001000,
-        eIgREGN = 'NGER' | 0x00001000,
-        eIgCELL = 'LLEC' | 0x00001000,
-        eIgWRLD = 'DLRW' | 0x00001000,
-        eIgDIAL = 'LAID' | 0x00001000,
-        eIgQUST = 'TSUQ' | 0x00001000,
-        eIgIDLE = 'ELDI' | 0x00001000,
-        eIgPACK = 'KCAP' | 0x00001000,
-        eIgCSTY = 'YTSC' | 0x00001000,
-        eIgLSCR = 'RCSL' | 0x00001000,
-        eIgLVSP = 'PSVL' | 0x00001000,
-        eIgANIO = 'OINA' | 0x00001000,
-        eIgWATR = 'RTAW' | 0x00001000,
-        eIgEFSH = 'HSFE' | 0x00001000
+        eIgGMST = REV32(GMST) | 0x00001000, //Record::fIsIgnored
+        eIgGLOB = REV32(GLOB) | 0x00001000,
+        eIgCLAS = REV32(CLAS) | 0x00001000,
+        eIgFACT = REV32(FACT) | 0x00001000,
+        eIgHAIR = REV32(HAIR) | 0x00001000,
+        eIgEYES = REV32(EYES) | 0x00001000,
+        eIgRACE = REV32(RACE) | 0x00001000,
+        eIgSOUN = REV32(SOUN) | 0x00001000,
+        eIgSKIL = REV32(SKIL) | 0x00001000,
+        eIgMGEF = REV32(MGEF) | 0x00001000,
+        eIgSCPT = REV32(SCPT) | 0x00001000,
+        eIgLTEX = REV32(LTEX) | 0x00001000,
+        eIgENCH = REV32(ENCH) | 0x00001000,
+        eIgSPEL = REV32(SPEL) | 0x00001000,
+        eIgBSGN = REV32(BSGN) | 0x00001000,
+        eIgACTI = REV32(ACTI) | 0x00001000,
+        eIgAPPA = REV32(APPA) | 0x00001000,
+        eIgARMO = REV32(ARMO) | 0x00001000,
+        eIgBOOK = REV32(BOOK) | 0x00001000,
+        eIgCLOT = REV32(CLOT) | 0x00001000,
+        eIgCONT = REV32(CONT) | 0x00001000,
+        eIgDOOR = REV32(DOOR) | 0x00001000,
+        eIgINGR = REV32(INGR) | 0x00001000,
+        eIgLIGH = REV32(LIGH) | 0x00001000,
+        eIgMISC = REV32(MISC) | 0x00001000,
+        eIgSTAT = REV32(STAT) | 0x00001000,
+        eIgGRAS = REV32(GRAS) | 0x00001000,
+        eIgTREE = REV32(TREE) | 0x00001000,
+        eIgFLOR = REV32(FLOR) | 0x00001000,
+        eIgFURN = REV32(FURN) | 0x00001000,
+        eIgWEAP = REV32(WEAP) | 0x00001000,
+        eIgAMMO = REV32(AMMO) | 0x00001000,
+        eIgNPC_ = REV32(NPC_) | 0x00001000,
+        eIgCREA = REV32(CREA) | 0x00001000,
+        eIgLVLC = REV32(LVLC) | 0x00001000,
+        eIgSLGM = REV32(SLGM) | 0x00001000,
+        eIgKEYM = REV32(KEYM) | 0x00001000,
+        eIgALCH = REV32(ALCH) | 0x00001000,
+        eIgSBSP = REV32(SBSP) | 0x00001000,
+        eIgSGST = REV32(SGST) | 0x00001000,
+        eIgLVLI = REV32(LVLI) | 0x00001000,
+        eIgWTHR = REV32(WTHR) | 0x00001000,
+        eIgCLMT = REV32(CLMT) | 0x00001000,
+        eIgREGN = REV32(REGN) | 0x00001000,
+        eIgCELL = REV32(CELL) | 0x00001000,
+        eIgWRLD = REV32(WRLD) | 0x00001000,
+        eIgDIAL = REV32(DIAL) | 0x00001000,
+        eIgQUST = REV32(QUST) | 0x00001000,
+        eIgIDLE = REV32(IDLE) | 0x00001000,
+        eIgPACK = REV32(PACK) | 0x00001000,
+        eIgCSTY = REV32(CSTY) | 0x00001000,
+        eIgLSCR = REV32(LSCR) | 0x00001000,
+        eIgLVSP = REV32(LVSP) | 0x00001000,
+        eIgANIO = REV32(ANIO) | 0x00001000,
+        eIgWATR = REV32(WATR) | 0x00001000,
+        eIgEFSH = REV32(EFSH) | 0x00001000
         };
     if(Flags.IsIgnoreExisting || !reader.IsOpen() || Flags.LoadedGRUPs)
         {
@@ -175,282 +175,282 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
             {
             //ADD DEFINITIONS HERE
             case eIgGMST:
-            case 'TSMG':
+            case REV32(GMST):
                 reader.read(&GMST.stamp, 4);
                 GMST.Skim(reader, GRUPSize, processor_full, indexer);
                 break;
             case eIgGLOB:
-            case 'BOLG':
+            case REV32(GLOB):
                 reader.read(&GLOB.stamp, 4);
                 GLOB.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCLAS:
-            case 'SALC':
+            case REV32(CLAS):
                 reader.read(&CLAS.stamp, 4);
                 CLAS.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgFACT:
-            case 'TCAF':
+            case REV32(FACT):
                 reader.read(&FACT.stamp, 4);
                 FACT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgHAIR:
-            case 'RIAH':
+            case REV32(HAIR):
                 reader.read(&HAIR.stamp, 4);
                 HAIR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgEYES: //Same as normal
-            case 'SEYE':
+            case REV32(EYES):
                 reader.read(&EYES.stamp, 4);
                 EYES.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgRACE:
-            case 'ECAR':
+            case REV32(RACE):
                 reader.read(&RACE.stamp, 4);
                 RACE.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSOUN:
-            case 'NUOS':
+            case REV32(SOUN):
                 reader.read(&SOUN.stamp, 4);
                 SOUN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSKIL:
-            case 'LIKS':
+            case REV32(SKIL):
                 reader.read(&SKIL.stamp, 4);
                 SKIL.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgMGEF:
-            case 'FEGM':
+            case REV32(MGEF):
                 reader.read(&MGEF.stamp, 4);
                 MGEF.Skim(reader, GRUPSize, processor_full, indexer);
                 break;
             case eIgSCPT:
-            case 'TPCS':
+            case REV32(SCPT):
                 reader.read(&SCPT.stamp, 4);
                 SCPT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgLTEX: //Same as normal
-            case 'XETL':
+            case REV32(LTEX):
                 reader.read(&LTEX.stamp, 4);
                 LTEX.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgENCH:
-            case 'HCNE':
+            case REV32(ENCH):
                 reader.read(&ENCH.stamp, 4);
                 ENCH.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgSPEL: //Same as normal
-            case 'LEPS':
+            case REV32(SPEL):
                 reader.read(&SPEL.stamp, 4);
                 SPEL.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgBSGN: //Same as normal
-            case 'NGSB':
+            case REV32(BSGN):
                 reader.read(&BSGN.stamp, 4);
                 BSGN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgACTI:
-            case 'ITCA':
+            case REV32(ACTI):
                 reader.read(&ACTI.stamp, 4);
                 ACTI.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgAPPA: //Same as normal
-            case 'APPA':
+            case REV32(APPA):
                 reader.read(&APPA.stamp, 4);
                 APPA.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgARMO: //Same as normal
-            case 'OMRA':
+            case REV32(ARMO):
                 reader.read(&ARMO.stamp, 4);
                 ARMO.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgBOOK:
-            case 'KOOB':
+            case REV32(BOOK):
                 reader.read(&BOOK.stamp, 4);
                 BOOK.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCLOT:
-            case 'TOLC':
+            case REV32(CLOT):
                 reader.read(&CLOT.stamp, 4);
                 CLOT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCONT:
-            case 'TNOC':
+            case REV32(CONT):
                 reader.read(&CONT.stamp, 4);
                 CONT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgDOOR:
-            case 'ROOD':
+            case REV32(DOOR):
                 reader.read(&DOOR.stamp, 4);
                 DOOR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgINGR:
-            case 'RGNI':
+            case REV32(INGR):
                 reader.read(&INGR.stamp, 4);
                 INGR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgLIGH:
-            case 'HGIL':
+            case REV32(LIGH):
                 reader.read(&LIGH.stamp, 4);
                 LIGH.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgMISC:
-            case 'CSIM':
+            case REV32(MISC):
                 reader.read(&MISC.stamp, 4);
                 MISC.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgSTAT: //Same as normal
-            case 'TATS':
+            case REV32(STAT):
                 reader.read(&STAT.stamp, 4);
                 STAT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgGRAS: //Same as normal
-            case 'SARG':
+            case REV32(GRAS):
                 reader.read(&GRAS.stamp, 4);
                 GRAS.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgTREE: //Same as normal
-            case 'EERT':
+            case REV32(TREE):
                 reader.read(&TREE.stamp, 4);
                 TREE.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgFLOR:
-            case 'ROLF':
+            case REV32(FLOR):
                 reader.read(&FLOR.stamp, 4);
                 FLOR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgFURN: //Same as normal
-            case 'NRUF':
+            case REV32(FURN):
                 reader.read(&FURN.stamp, 4);
                 FURN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgWEAP:
-            case 'PAEW':
+            case REV32(WEAP):
                 reader.read(&WEAP.stamp, 4);
                 WEAP.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgAMMO:
-            case 'OMMA':
+            case REV32(AMMO):
                 reader.read(&AMMO.stamp, 4);
                 AMMO.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgNPC_: //Same as normal
-            case '_CPN':
+            case REV32(NPC_):
                 reader.read(&NPC_.stamp, 4);
                 NPC_.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgCREA: //Same as normal
-            case 'AERC':
+            case REV32(CREA):
                 reader.read(&CREA.stamp, 4);
                 CREA.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgLVLC: //Same as normal
-            case 'CLVL':
+            case REV32(LVLC):
                 reader.read(&LVLC.stamp, 4);
                 LVLC.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSLGM:
-            case 'MGLS':
+            case REV32(SLGM):
                 reader.read(&SLGM.stamp, 4);
                 SLGM.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgKEYM:
-            case 'MYEK':
+            case REV32(KEYM):
                 reader.read(&KEYM.stamp, 4);
                 KEYM.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgALCH:
-            case 'HCLA':
+            case REV32(ALCH):
                 reader.read(&ALCH.stamp, 4);
                 ALCH.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSBSP:
-            case 'PSBS':
+            case REV32(SBSP):
                 reader.read(&SBSP.stamp, 4);
                 SBSP.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgSGST:
-            case 'TSGS':
+            case REV32(SGST):
                 reader.read(&SGST.stamp, 4);
                 SGST.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgLVLI: //Same as normal
-            case 'ILVL':
+            case REV32(LVLI):
                 reader.read(&LVLI.stamp, 4);
                 LVLI.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgWTHR: //Same as normal
-            case 'RHTW':
+            case REV32(WTHR):
                 reader.read(&WTHR.stamp, 4);
                 WTHR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCLMT:
-            case 'TMLC':
+            case REV32(CLMT):
                 reader.read(&CLMT.stamp, 4);
                 CLMT.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgREGN:
-            case 'NGER':
+            case REV32(REGN):
                 reader.read(&REGN.stamp, 4);
                 REGN.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgCELL:
-            case 'LLEC':
+            case REV32(CELL):
                 reader.read(&CELL.stamp, 4);
                 CELL.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgWRLD: //Same as normal
-            case 'DLRW':
+            case REV32(WRLD):
                 reader.read(&WRLD.stamp, 4);
                 WRLD.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgDIAL:
-            case 'LAID':
+            case REV32(DIAL):
                 reader.read(&DIAL.stamp, 4);
                 DIAL.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgQUST: //Same as normal
-            case 'TSUQ':
+            case REV32(QUST):
                 reader.read(&QUST.stamp, 4);
                 QUST.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgIDLE:
-            case 'ELDI':
+            case REV32(IDLE):
                 reader.read(&IDLE.stamp, 4);
                 IDLE.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgPACK:
-            case 'KCAP':
+            case REV32(PACK):
                 reader.read(&PACK.stamp, 4);
                 PACK.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgCSTY: //Same as normal
-            case 'YTSC':
+            case REV32(CSTY):
                 reader.read(&CSTY.stamp, 4);
                 CSTY.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgLSCR: //Same as normal
-            case 'RCSL':
+            case REV32(LSCR):
                 reader.read(&LSCR.stamp, 4);
                 LSCR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             //case eIgLVSP: //Same as normal
-            case 'PSVL':
+            case REV32(LVSP):
                 reader.read(&LVSP.stamp, 4);
                 LVSP.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgANIO:
-            case 'OINA':
+            case REV32(ANIO):
                 reader.read(&ANIO.stamp, 4);
                 ANIO.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgWATR:
-            case 'RTAW':
+            case REV32(WATR):
                 reader.read(&WATR.stamp, 4);
                 WATR.Skim(reader, GRUPSize, processor, indexer);
                 break;
             case eIgEFSH:
-            case 'HSFE':
+            case REV32(EFSH):
                 reader.read(&EFSH.stamp, 4);
                 EFSH.Skim(reader, GRUPSize, processor, indexer);
                 break;
@@ -485,130 +485,130 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
 
     switch(RecordType)
         {
-        case 'TSMG':
+        case REV32(GMST):
             return (UINT32)GMST.Records.size();
-        case 'BOLG':
+        case REV32(GLOB):
             return (UINT32)GLOB.Records.size();
-        case 'SALC':
+        case REV32(CLAS):
             return (UINT32)CLAS.Records.size();
-        case 'TCAF':
+        case REV32(FACT):
             return (UINT32)FACT.Records.size();
-        case 'RIAH':
+        case REV32(HAIR):
             return (UINT32)HAIR.Records.size();
-        case 'SEYE':
+        case REV32(EYES):
             return (UINT32)EYES.Records.size();
-        case 'ECAR':
+        case REV32(RACE):
             return (UINT32)RACE.Records.size();
-        case 'NUOS':
+        case REV32(SOUN):
             return (UINT32)SOUN.Records.size();
-        case 'LIKS':
+        case REV32(SKIL):
             return (UINT32)SKIL.Records.size();
-        case 'FEGM':
+        case REV32(MGEF):
             return (UINT32)MGEF.Records.size();
-        case 'TPCS':
+        case REV32(SCPT):
             return (UINT32)SCPT.Records.size();
-        case 'XETL':
+        case REV32(LTEX):
             return (UINT32)LTEX.Records.size();
-        case 'HCNE':
+        case REV32(ENCH):
             return (UINT32)ENCH.Records.size();
-        case 'LEPS':
+        case REV32(SPEL):
             return (UINT32)SPEL.Records.size();
-        case 'NGSB':
+        case REV32(BSGN):
             return (UINT32)BSGN.Records.size();
-        case 'ITCA':
+        case REV32(ACTI):
             return (UINT32)ACTI.Records.size();
-        case 'APPA':
+        case REV32(APPA):
             return (UINT32)APPA.Records.size();
-        case 'OMRA':
+        case REV32(ARMO):
             return (UINT32)ARMO.Records.size();
-        case 'KOOB':
+        case REV32(BOOK):
             return (UINT32)BOOK.Records.size();
-        case 'TOLC':
+        case REV32(CLOT):
             return (UINT32)CLOT.Records.size();
-        case 'TNOC':
+        case REV32(CONT):
             return (UINT32)CONT.Records.size();
-        case 'ROOD':
+        case REV32(DOOR):
             return (UINT32)DOOR.Records.size();
-        case 'RGNI':
+        case REV32(INGR):
             return (UINT32)INGR.Records.size();
-        case 'HGIL':
+        case REV32(LIGH):
             return (UINT32)LIGH.Records.size();
-        case 'CSIM':
+        case REV32(MISC):
             return (UINT32)MISC.Records.size();
-        case 'TATS':
+        case REV32(STAT):
             return (UINT32)STAT.Records.size();
-        case 'SARG':
+        case REV32(GRAS):
             return (UINT32)GRAS.Records.size();
-        case 'EERT':
+        case REV32(TREE):
             return (UINT32)TREE.Records.size();
-        case 'ROLF':
+        case REV32(FLOR):
             return (UINT32)FLOR.Records.size();
-        case 'NRUF':
+        case REV32(FURN):
             return (UINT32)FURN.Records.size();
-        case 'PAEW':
+        case REV32(WEAP):
             return (UINT32)WEAP.Records.size();
-        case 'OMMA':
+        case REV32(AMMO):
             return (UINT32)AMMO.Records.size();
-        case '_CPN':
+        case REV32(NPC_):
             return (UINT32)NPC_.Records.size();
-        case 'AERC':
+        case REV32(CREA):
             return (UINT32)CREA.Records.size();
-        case 'CLVL':
+        case REV32(LVLC):
             return (UINT32)LVLC.Records.size();
-        case 'MGLS':
+        case REV32(SLGM):
             return (UINT32)SLGM.Records.size();
-        case 'MYEK':
+        case REV32(KEYM):
             return (UINT32)KEYM.Records.size();
-        case 'HCLA':
+        case REV32(ALCH):
             return (UINT32)ALCH.Records.size();
-        case 'PSBS':
+        case REV32(SBSP):
             return (UINT32)SBSP.Records.size();
-        case 'TSGS':
+        case REV32(SGST):
             return (UINT32)SGST.Records.size();
-        case 'ILVL':
+        case REV32(LVLI):
             return (UINT32)LVLI.Records.size();
-        case 'RHTW':
+        case REV32(WTHR):
             return (UINT32)WTHR.Records.size();
-        case 'TMLC':
+        case REV32(CLMT):
             return (UINT32)CLMT.Records.size();
-        case 'NGER':
+        case REV32(REGN):
             return (UINT32)REGN.Records.size();
-        case 'LLEC':
+        case REV32(CELL):
             return (UINT32)CELL.Records.size();
-        case 'DLRW':
+        case REV32(WRLD):
             return (UINT32)WRLD.Records.size();
-        case 'LAID':
+        case REV32(DIAL):
             return (UINT32)DIAL.Records.size();
         ///////////////////////////////////////////////
         //SubRecords are counted via GetFieldAttribute API function
         //Fallthroughs are intentional
-        case 'DRGP':
-        case 'DNAL':
-        case 'RHCA':
-        case 'ERCA':
-        case 'RFER':
-        case 'DAOR':
-        case 'OFNI':
+        case REV32(PGRD):
+        case REV32(LAND):
+        case REV32(ACHR):
+        case REV32(ACRE):
+        case REV32(REFR):
+        case REV32(ROAD):
+        case REV32(INFO):
             printf("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         ///////////////////////////////////////////////
-        case 'TSUQ':
+        case REV32(QUST):
             return (UINT32)QUST.Records.size();
-        case 'ELDI':
+        case REV32(IDLE):
             return (UINT32)IDLE.Records.size();
-        case 'KCAP':
+        case REV32(PACK):
             return (UINT32)PACK.Records.size();
-        case 'YTSC':
+        case REV32(CSTY):
             return (UINT32)CSTY.Records.size();
-        case 'RCSL':
+        case REV32(LSCR):
             return (UINT32)LSCR.Records.size();
-        case 'PSVL':
+        case REV32(LVSP):
             return (UINT32)LVSP.Records.size();
-        case 'OINA':
+        case REV32(ANIO):
             return (UINT32)ANIO.Records.size();
-        case 'RTAW':
+        case REV32(WATR):
             return (UINT32)WATR.Records.size();
-        case 'HSFE':
+        case REV32(EFSH):
             return (UINT32)EFSH.Records.size();
         default:
             printf("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
@@ -631,7 +631,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 
     switch(RecordType)
         {
-        case 'TSMG':
+        case REV32(GMST):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
@@ -647,39 +647,39 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 ((GMSTRecord *)newRecord)->DATA.format = ((GMSTRecord *)newRecord)->EDID.value[0];
                 }
             break;
-        case 'BOLG':
+        case REV32(GLOB):
             GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
             newRecord = GLOB.Records.back();
             break;
-        case 'SALC':
+        case REV32(CLAS):
             CLAS.Records.push_back(new CLASRecord((CLASRecord *)SourceRecord));
             newRecord = CLAS.Records.back();
             break;
-        case 'TCAF':
+        case REV32(FACT):
             FACT.Records.push_back(new FACTRecord((FACTRecord *)SourceRecord));
             newRecord = FACT.Records.back();
             break;
-        case 'RIAH':
+        case REV32(HAIR):
             HAIR.Records.push_back(new HAIRRecord((HAIRRecord *)SourceRecord));
             newRecord = HAIR.Records.back();
             break;
-        case 'SEYE':
+        case REV32(EYES):
             EYES.Records.push_back(new EYESRecord((EYESRecord *)SourceRecord));
             newRecord = EYES.Records.back();
             break;
-        case 'ECAR':
+        case REV32(RACE):
             RACE.Records.push_back(new RACERecord((RACERecord *)SourceRecord));
             newRecord = RACE.Records.back();
             break;
-        case 'NUOS':
+        case REV32(SOUN):
             SOUN.Records.push_back(new SOUNRecord((SOUNRecord *)SourceRecord));
             newRecord = SOUN.Records.back();
             break;
-        case 'LIKS':
+        case REV32(SKIL):
             SKIL.Records.push_back(new SKILRecord((SKILRecord *)SourceRecord));
             newRecord = SKIL.Records.back();
             break;
-        case 'FEGM':
+        case REV32(MGEF):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create MGEF record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
@@ -700,143 +700,143 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                     ((MGEFRecord *)newRecord)->EDID.Copy(RecordEditorID);
                 }
             break;
-        case 'TPCS':
+        case REV32(SCPT):
             SCPT.Records.push_back(new SCPTRecord((SCPTRecord *)SourceRecord));
             newRecord = SCPT.Records.back();
             break;
-        case 'XETL':
+        case REV32(LTEX):
             LTEX.Records.push_back(new LTEXRecord((LTEXRecord *)SourceRecord));
             newRecord = LTEX.Records.back();
             break;
-        case 'HCNE':
+        case REV32(ENCH):
             ENCH.Records.push_back(new ENCHRecord((ENCHRecord *)SourceRecord));
             newRecord = ENCH.Records.back();
             break;
-        case 'LEPS':
+        case REV32(SPEL):
             SPEL.Records.push_back(new SPELRecord((SPELRecord *)SourceRecord));
             newRecord = SPEL.Records.back();
             break;
-        case 'NGSB':
+        case REV32(BSGN):
             BSGN.Records.push_back(new BSGNRecord((BSGNRecord *)SourceRecord));
             newRecord = BSGN.Records.back();
             break;
-        case 'ITCA':
+        case REV32(ACTI):
             ACTI.Records.push_back(new ACTIRecord((ACTIRecord *)SourceRecord));
             newRecord = ACTI.Records.back();
             break;
-        case 'APPA':
+        case REV32(APPA):
             APPA.Records.push_back(new APPARecord((APPARecord *)SourceRecord));
             newRecord = APPA.Records.back();
             break;
-        case 'OMRA':
+        case REV32(ARMO):
             ARMO.Records.push_back(new ARMORecord((ARMORecord *)SourceRecord));
             newRecord = ARMO.Records.back();
             break;
-        case 'KOOB':
+        case REV32(BOOK):
             BOOK.Records.push_back(new BOOKRecord((BOOKRecord *)SourceRecord));
             newRecord = BOOK.Records.back();
             break;
-        case 'TOLC':
+        case REV32(CLOT):
             CLOT.Records.push_back(new CLOTRecord((CLOTRecord *)SourceRecord));
             newRecord = CLOT.Records.back();
             break;
-        case 'TNOC':
+        case REV32(CONT):
             CONT.Records.push_back(new CONTRecord((CONTRecord *)SourceRecord));
             newRecord = CONT.Records.back();
             break;
-        case 'ROOD':
+        case REV32(DOOR):
             DOOR.Records.push_back(new DOORRecord((DOORRecord *)SourceRecord));
             newRecord = DOOR.Records.back();
             break;
-        case 'RGNI':
+        case REV32(INGR):
             INGR.Records.push_back(new INGRRecord((INGRRecord *)SourceRecord));
             newRecord = INGR.Records.back();
             break;
-        case 'HGIL':
+        case REV32(LIGH):
             LIGH.Records.push_back(new LIGHRecord((LIGHRecord *)SourceRecord));
             newRecord = LIGH.Records.back();
             break;
-        case 'CSIM':
+        case REV32(MISC):
             MISC.Records.push_back(new MISCRecord((MISCRecord *)SourceRecord));
             newRecord = MISC.Records.back();
             break;
-        case 'TATS':
+        case REV32(STAT):
             STAT.Records.push_back(new STATRecord((STATRecord *)SourceRecord));
             newRecord = STAT.Records.back();
             break;
-        case 'SARG':
+        case REV32(GRAS):
             GRAS.Records.push_back(new GRASRecord((GRASRecord *)SourceRecord));
             newRecord = GRAS.Records.back();
             break;
-        case 'EERT':
+        case REV32(TREE):
             TREE.Records.push_back(new TREERecord((TREERecord *)SourceRecord));
             newRecord = TREE.Records.back();
             break;
-        case 'ROLF':
+        case REV32(FLOR):
             FLOR.Records.push_back(new FLORRecord((FLORRecord *)SourceRecord));
             newRecord = FLOR.Records.back();
             break;
-        case 'NRUF':
+        case REV32(FURN):
             FURN.Records.push_back(new FURNRecord((FURNRecord *)SourceRecord));
             newRecord = FURN.Records.back();
             break;
-        case 'PAEW':
+        case REV32(WEAP):
             WEAP.Records.push_back(new WEAPRecord((WEAPRecord *)SourceRecord));
             newRecord = WEAP.Records.back();
             break;
-        case 'OMMA':
+        case REV32(AMMO):
             AMMO.Records.push_back(new AMMORecord((AMMORecord *)SourceRecord));
             newRecord = AMMO.Records.back();
             break;
-        case '_CPN':
+        case REV32(NPC_):
             NPC_.Records.push_back(new NPC_Record((NPC_Record *)SourceRecord));
             newRecord = NPC_.Records.back();
             break;
-        case 'AERC':
+        case REV32(CREA):
             CREA.Records.push_back(new CREARecord((CREARecord *)SourceRecord));
             newRecord = CREA.Records.back();
             break;
-        case 'CLVL':
+        case REV32(LVLC):
             LVLC.Records.push_back(new LVLCRecord((LVLCRecord *)SourceRecord));
             newRecord = LVLC.Records.back();
             break;
-        case 'MGLS':
+        case REV32(SLGM):
             SLGM.Records.push_back(new SLGMRecord((SLGMRecord *)SourceRecord));
             newRecord = SLGM.Records.back();
             break;
-        case 'MYEK':
+        case REV32(KEYM):
             KEYM.Records.push_back(new KEYMRecord((KEYMRecord *)SourceRecord));
             newRecord = KEYM.Records.back();
             break;
-        case 'HCLA':
+        case REV32(ALCH):
             ALCH.Records.push_back(new ALCHRecord((ALCHRecord *)SourceRecord));
             newRecord = ALCH.Records.back();
             break;
-        case 'PSBS':
+        case REV32(SBSP):
             SBSP.Records.push_back(new SBSPRecord((SBSPRecord *)SourceRecord));
             newRecord = SBSP.Records.back();
             break;
-        case 'TSGS':
+        case REV32(SGST):
             SGST.Records.push_back(new SGSTRecord((SGSTRecord *)SourceRecord));
             newRecord = SGST.Records.back();
             break;
-        case 'ILVL':
+        case REV32(LVLI):
             LVLI.Records.push_back(new LVLIRecord((LVLIRecord *)SourceRecord));
             newRecord = LVLI.Records.back();
             break;
-        case 'RHTW':
+        case REV32(WTHR):
             WTHR.Records.push_back(new WTHRRecord((WTHRRecord *)SourceRecord));
             newRecord = WTHR.Records.back();
             break;
-        case 'TMLC':
+        case REV32(CLMT):
             CLMT.Records.push_back(new CLMTRecord((CLMTRecord *)SourceRecord));
             newRecord = CLMT.Records.back();
             break;
-        case 'NGER':
+        case REV32(REGN):
             REGN.Records.push_back(new REGNRecord((REGNRecord *)SourceRecord));
             newRecord = REGN.Records.back();
             break;
-        case 'LLEC':
+        case REV32(CELL):
             if(ParentRecord == NULL)
                 {
                 CELL.Records.push_back(new CELLRecord((CELLRecord *)SourceRecord));
@@ -846,7 +846,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 }
             else
                 {
-                if(ParentRecord->GetType() != 'DLRW')
+                if(ParentRecord->GetType() != REV32(WRLD))
                     {
                     printf("TES4File::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
                     return NULL;
@@ -879,16 +879,16 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 ((CELLRecord *)newRecord)->Parent = ParentRecord;
                 }
             break;
-        case 'DLRW':
+        case REV32(WRLD):
             WRLD.Records.push_back(new WRLDRecord((WRLDRecord *)SourceRecord));
             newRecord = WRLD.Records.back();
             break;
-        case 'LAID':
+        case REV32(DIAL):
             DIAL.Records.push_back(new DIALRecord((DIALRecord *)SourceRecord));
             newRecord = DIAL.Records.back();
             break;
-        case 'DRGP':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+        case REV32(PGRD):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create PGRD record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be PGRD parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -901,8 +901,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((CELLRecord *)ParentRecord)->PGRD = new PGRDRecord((PGRDRecord *)SourceRecord);
             newRecord = ((CELLRecord *)ParentRecord)->PGRD;
             break;
-        case 'DNAL':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+        case REV32(LAND):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -915,8 +915,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
             newRecord = ((CELLRecord *)ParentRecord)->LAND;
             break;
-        case 'RHCA':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+        case REV32(ACHR):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -925,8 +925,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((CELLRecord *)ParentRecord)->ACHR.push_back(new ACHRRecord((ACHRRecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->ACHR.back();
             break;
-        case 'ERCA':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+        case REV32(ACRE):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -935,8 +935,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((CELLRecord *)ParentRecord)->ACRE.push_back(new ACRERecord((ACRERecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->ACRE.back();
             break;
-        case 'RFER':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LLEC')
+        case REV32(REFR):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -945,8 +945,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
             newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
             break;
-        case 'DAOR':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'DLRW')
+        case REV32(ROAD):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create ROAD record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be ROAD parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -959,8 +959,8 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((WRLDRecord *)ParentRecord)->ROAD = new ROADRecord((ROADRecord *)SourceRecord);
             newRecord = ((WRLDRecord *)ParentRecord)->ROAD;
             break;
-        case 'OFNI':
-            if(ParentRecord == NULL || ParentRecord->GetType() != 'LAID')
+        case REV32(INFO):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
                 printf("TES4File::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
@@ -969,39 +969,39 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             ((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
             newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
             break;
-        case 'TSUQ':
+        case REV32(QUST):
             QUST.Records.push_back(new QUSTRecord((QUSTRecord *)SourceRecord));
             newRecord = QUST.Records.back();
             break;
-        case 'ELDI':
+        case REV32(IDLE):
             IDLE.Records.push_back(new IDLERecord((IDLERecord *)SourceRecord));
             newRecord = IDLE.Records.back();
             break;
-        case 'KCAP':
+        case REV32(PACK):
             PACK.Records.push_back(new PACKRecord((PACKRecord *)SourceRecord));
             newRecord = PACK.Records.back();
             break;
-        case 'YTSC':
+        case REV32(CSTY):
             CSTY.Records.push_back(new CSTYRecord((CSTYRecord *)SourceRecord));
             newRecord = CSTY.Records.back();
             break;
-        case 'RCSL':
+        case REV32(LSCR):
             LSCR.Records.push_back(new LSCRRecord((LSCRRecord *)SourceRecord));
             newRecord = LSCR.Records.back();
             break;
-        case 'PSVL':
+        case REV32(LVSP):
             LVSP.Records.push_back(new LVSPRecord((LVSPRecord *)SourceRecord));
             newRecord = LVSP.Records.back();
             break;
-        case 'OINA':
+        case REV32(ANIO):
             ANIO.Records.push_back(new ANIORecord((ANIORecord *)SourceRecord));
             newRecord = ANIO.Records.back();
             break;
-        case 'RTAW':
+        case REV32(WATR):
             WATR.Records.push_back(new WATRRecord((WATRRecord *)SourceRecord));
             newRecord = WATR.Records.back();
             break;
-        case 'HSFE':
+        case REV32(EFSH):
             EFSH.Records.push_back(new EFSHRecord((EFSHRecord *)SourceRecord));
             newRecord = EFSH.Records.back();
             break;
@@ -1128,62 +1128,62 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
     TES4.Write(writer, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP('TSMG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GLOB.WriteGRUP('BOLG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLAS.WriteGRUP('SALC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FACT.WriteGRUP('TCAF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HAIR.WriteGRUP('RIAH', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EYES.WriteGRUP('SEYE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += RACE.WriteGRUP('ECAR', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SOUN.WriteGRUP('NUOS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SKIL.WriteGRUP('LIKS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MGEF.WriteGRUP('FEGM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SCPT.WriteGRUP('TPCS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LTEX.WriteGRUP('XETL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ENCH.WriteGRUP('HCNE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SPEL.WriteGRUP('LEPS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += BSGN.WriteGRUP('NGSB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ACTI.WriteGRUP('ITCA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += APPA.WriteGRUP('APPA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ARMO.WriteGRUP('OMRA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += BOOK.WriteGRUP('KOOB', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLOT.WriteGRUP('TOLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CONT.WriteGRUP('TNOC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += DOOR.WriteGRUP('ROOD', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += INGR.WriteGRUP('RGNI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LIGH.WriteGRUP('HGIL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MISC.WriteGRUP('CSIM', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += STAT.WriteGRUP('TATS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GRAS.WriteGRUP('SARG', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TREE.WriteGRUP('EERT', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FLOR.WriteGRUP('ROLF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FURN.WriteGRUP('NRUF', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WEAP.WriteGRUP('PAEW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += AMMO.WriteGRUP('OMMA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += NPC_.WriteGRUP('_CPN', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CREA.WriteGRUP('AERC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLC.WriteGRUP('CLVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SLGM.WriteGRUP('MGLS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += KEYM.WriteGRUP('MYEK', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ALCH.WriteGRUP('HCLA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SBSP.WriteGRUP('PSBS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SGST.WriteGRUP('TSGS', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLI.WriteGRUP('ILVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WTHR.WriteGRUP('RHTW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLMT.WriteGRUP('TMLC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += REGN.WriteGRUP('NGER', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GMST.WriteGRUP(REV32(GMST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.WriteGRUP(REV32(GLOB), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.WriteGRUP(REV32(CLAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.WriteGRUP(REV32(FACT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.WriteGRUP(REV32(HAIR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.WriteGRUP(REV32(EYES), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += RACE.WriteGRUP(REV32(RACE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.WriteGRUP(REV32(SOUN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SKIL.WriteGRUP(REV32(SKIL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MGEF.WriteGRUP(REV32(MGEF), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCPT.WriteGRUP(REV32(SCPT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LTEX.WriteGRUP(REV32(LTEX), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ENCH.WriteGRUP(REV32(ENCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SPEL.WriteGRUP(REV32(SPEL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BSGN.WriteGRUP(REV32(BSGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ACTI.WriteGRUP(REV32(ACTI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += APPA.WriteGRUP(REV32(APPA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ARMO.WriteGRUP(REV32(ARMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BOOK.WriteGRUP(REV32(BOOK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLOT.WriteGRUP(REV32(CLOT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CONT.WriteGRUP(REV32(CONT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DOOR.WriteGRUP(REV32(DOOR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += INGR.WriteGRUP(REV32(INGR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LIGH.WriteGRUP(REV32(LIGH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MISC.WriteGRUP(REV32(MISC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += STAT.WriteGRUP(REV32(STAT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GRAS.WriteGRUP(REV32(GRAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TREE.WriteGRUP(REV32(TREE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FLOR.WriteGRUP(REV32(FLOR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FURN.WriteGRUP(REV32(FURN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WEAP.WriteGRUP(REV32(WEAP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += AMMO.WriteGRUP(REV32(AMMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NPC_.WriteGRUP(REV32(NPC_), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CREA.WriteGRUP(REV32(CREA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLC.WriteGRUP(REV32(LVLC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SLGM.WriteGRUP(REV32(SLGM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += KEYM.WriteGRUP(REV32(KEYM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ALCH.WriteGRUP(REV32(ALCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SBSP.WriteGRUP(REV32(SBSP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SGST.WriteGRUP(REV32(SGST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLI.WriteGRUP(REV32(LVLI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WTHR.WriteGRUP(REV32(WTHR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLMT.WriteGRUP(REV32(CLMT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += REGN.WriteGRUP(REV32(REGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += DIAL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += QUST.WriteGRUP('TSUQ', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += IDLE.WriteGRUP('ELDI', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += PACK.WriteGRUP('KCAP', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CSTY.WriteGRUP('YTSC', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LSCR.WriteGRUP('RCSL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVSP.WriteGRUP('PSVL', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ANIO.WriteGRUP('OINA', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WATR.WriteGRUP('RTAW', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EFSH.WriteGRUP('HSFE', writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVSP.WriteGRUP(REV32(LVSP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(30, &formCount, 4);
@@ -1281,175 +1281,175 @@ void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordTyp
     //This visits only the top records specified.
     switch(TopRecordType)
         {
-        case '4SET':
+        case REV32(TES4):
             op.Accept(topRecord);
             break;
-        case 'TSMG':
+        case REV32(GMST):
             GMST.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'BOLG':
+        case REV32(GLOB):
             GLOB.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'SALC':
+        case REV32(CLAS):
             CLAS.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TCAF':
+        case REV32(FACT):
             FACT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'RIAH':
+        case REV32(HAIR):
             HAIR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'SEYE':
+        case REV32(EYES):
             EYES.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ECAR':
+        case REV32(RACE):
             RACE.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'NUOS':
+        case REV32(SOUN):
             SOUN.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'LIKS':
+        case REV32(SKIL):
             SKIL.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'FEGM':
+        case REV32(MGEF):
             MGEF.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TPCS':
+        case REV32(SCPT):
             SCPT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'XETL':
+        case REV32(LTEX):
             LTEX.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'HCNE':
+        case REV32(ENCH):
             ENCH.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'LEPS':
+        case REV32(SPEL):
             SPEL.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'NGSB':
+        case REV32(BSGN):
             BSGN.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ITCA':
+        case REV32(ACTI):
             ACTI.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'APPA':
+        case REV32(APPA):
             APPA.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'OMRA':
+        case REV32(ARMO):
             ARMO.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'KOOB':
+        case REV32(BOOK):
             BOOK.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TOLC':
+        case REV32(CLOT):
             CLOT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TNOC':
+        case REV32(CONT):
             CONT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ROOD':
+        case REV32(DOOR):
             DOOR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'RGNI':
+        case REV32(INGR):
             INGR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'HGIL':
+        case REV32(LIGH):
             LIGH.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'CSIM':
+        case REV32(MISC):
             MISC.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TATS':
+        case REV32(STAT):
             STAT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'SARG':
+        case REV32(GRAS):
             GRAS.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'EERT':
+        case REV32(TREE):
             TREE.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ROLF':
+        case REV32(FLOR):
             FLOR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'NRUF':
+        case REV32(FURN):
             FURN.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'PAEW':
+        case REV32(WEAP):
             WEAP.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'OMMA':
+        case REV32(AMMO):
             AMMO.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case '_CPN':
+        case REV32(NPC_):
             NPC_.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'AERC':
+        case REV32(CREA):
             CREA.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'CLVL':
+        case REV32(LVLC):
             LVLC.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'MGLS':
+        case REV32(SLGM):
             SLGM.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'MYEK':
+        case REV32(KEYM):
             KEYM.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'HCLA':
+        case REV32(ALCH):
             ALCH.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'PSBS':
+        case REV32(SBSP):
             SBSP.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TSGS':
+        case REV32(SGST):
             SGST.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ILVL':
+        case REV32(LVLI):
             LVLI.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'RHTW':
+        case REV32(WTHR):
             WTHR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TMLC':
+        case REV32(CLMT):
             CLMT.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'NGER':
+        case REV32(REGN):
             REGN.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'LLEC':
+        case REV32(CELL):
             CELL.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'DLRW':
+        case REV32(WRLD):
             WRLD.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'LAID':
+        case REV32(DIAL):
             DIAL.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'TSUQ':
+        case REV32(QUST):
             QUST.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'ELDI':
+        case REV32(IDLE):
             IDLE.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'KCAP':
+        case REV32(PACK):
             PACK.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'YTSC':
+        case REV32(CSTY):
             CSTY.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'RCSL':
+        case REV32(LSCR):
             LSCR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'PSVL':
+        case REV32(LVSP):
             LVSP.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'OINA':
+        case REV32(ANIO):
             ANIO.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'RTAW':
+        case REV32(WATR):
             WATR.VisitRecords(RecordType, op, DeepVisit);
             break;
-        case 'HSFE':
+        case REV32(EFSH):
             EFSH.VisitRecords(RecordType, op, DeepVisit);
             break;
         default:

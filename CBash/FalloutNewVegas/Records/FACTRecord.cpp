@@ -187,7 +187,7 @@ void FACTRecord::SetFlagMask(UINT16 Mask)
 
 UINT32 FACTRecord::GetType()
     {
-    return 'TCAF';
+    return REV32(FACT);
     }
 
 STRING FACTRecord::GetStrType()
@@ -204,7 +204,7 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -217,41 +217,41 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.value.push_back(new FACTRNAM);
                 RNAM.value.back()->RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
                 RNAM.value.back()->MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
                 RNAM.value.back()->FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
                 RNAM.value.back()->INAM.Read(buffer, subSize, curPos);
                 break;
-            case '1IMW':
+            case REV32(WMI1):
                 WMI1.Read(buffer, subSize, curPos);
                 break;
             default:

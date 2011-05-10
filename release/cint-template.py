@@ -138,7 +138,8 @@ class API_FIELDS(object):
                  'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
                  'FORMID_OR_STRING',
                  'UNKNOWN_OR_FORMID_OR_UINT32',
-                 'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
+                 'UNKNOWN_OR_SINT32', 'UNKNOWN_OR_UINT32_FLAG'
+                 'MGEFCODE_OR_UINT32',
                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
                  'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
                  'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
@@ -564,22 +565,23 @@ class CBashLIST(object):
             oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, x) for x in range(0, numElements)]
             SetCopyList(oElements, nValues)
 
-class CBashSINT32_OR_UNKNOWN(object):
-    def __init__(self, FieldID):
+class CBashUNKNOWN_OR_GENERIC(object):
+    def __init__(self, FieldID, Type):
         self._FieldID = FieldID
+        self._Type = Type
+        self._ResType = POINTER(Type)
     def __get__(self, instance, owner):
         type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
-        if type == API_FIELDS.SINT32:
-            _CGetField.restype = POINTER(c_long)
+        if type != API_FIELDS.UNKNOWN:
+            _CGetField.restype = self._ResType
             retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
             if(retValue): return retValue.contents.value
         return None
     def __set__(self, instance, nValue):
         type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
-        if type == API_FIELDS.SINT32:
+        if type != API_FIELDS.UNKNOWN:
             if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-            else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_long(nValue)), 0)
-
+            else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(self._Type(nValue)), 0)
 
 class CBashXSED(object):
     """To delete the field, you have to set the current accessor to None."""
@@ -5784,8 +5786,117 @@ class FnvNAVIRecord(FnvBaseRecord):
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=4):
+        ##Record Creation Flags
+        ##SetAsOverride       = 0x00000001,
+        ##SetAsWorldCell      = 0x00000002,
+        ##CopyWorldCellStatus = 0x00000004
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 61, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
+    STRING_MACRO(full, 7)
+    UINT8_MACRO(flags, 8)
+    UNKNOWN_OR_SINT32_MACRO(posX, 9)
+    UNKNOWN_OR_SINT32_MACRO(posY, 10)
+    UNKNOWN_OR_UINT32_FLAG_MACRO(quadFlags, 11)
+    UINT8_MACRO(ambientRed, 12)
+    UINT8_MACRO(ambientGreen, 13)
+    UINT8_MACRO(ambientBlue, 14)
+    UINT8_ARRAY_MACRO(unused1, 15, 1)
+    UINT8_MACRO(directionalRed, 16)
+    UINT8_MACRO(directionalGreen, 17)
+    UINT8_MACRO(directionalBlue, 18)
+    UINT8_ARRAY_MACRO(unused2, 19, 1)
+    UINT8_MACRO(fogRed, 20)
+    UINT8_MACRO(fogGreen, 21)
+    UINT8_MACRO(fogBlue, 22)
+    UINT8_ARRAY_MACRO(unused3, 23, 1)
+    FLOAT32_MACRO(fogNear, 24)
+    FLOAT32_MACRO(fogFar, 25)
+    SINT32_MACRO(directionalXY, 26)
+    SINT32_MACRO(directionalZ, 27)
+    FLOAT32_MACRO(directionalFade, 28)
+    FLOAT32_MACRO(fogClip, 29)
+    FLOAT32_MACRO(fogPower, 30)
+    STRING_MACRO(concSolid, 31)
+    STRING_MACRO(concBroken, 32)
+    STRING_MACRO(metalSolid, 33)
+    STRING_MACRO(metalHollow, 34)
+    STRING_MACRO(metalSheet, 35)
+    STRING_MACRO(wood, 36)
+    STRING_MACRO(sand, 37)
+    STRING_MACRO(dirt, 38)
+    STRING_MACRO(grass, 39)
+    STRING_MACRO(water, 40)
+    FORMID_MACRO(lightTemplate, 41)
+    UINT32_FLAG_MACRO(lightFlags, 42)
+    FLOAT32_MACRO(waterHeight, 43)
+    ISTRING_MACRO(waterNoisePath, 44)
+    FORMID_ARRAY_MACRO(regions, 45)
+    FORMID_MACRO(imageSpace, 46)
+    UINT8_ARRAY_MACRO(xcet_p, 47)
+    FORMID_MACRO(encounterZone, 48)
+    FORMID_MACRO(climate, 49)
+    FORMID_MACRO(water, 50)
+    FORMID_MACRO(owner, 51)
+    SINT32_MACRO(rank, 52)
+    FORMID_MACRO(acousticSpace, 53)
+    UINT8_ARRAY_MACRO(xcmt_p, 54)
+    FORMID_MACRO(music, 55)
+    
+    BasicFlagMACRO(IsInterior, flags, 0x00000001)
+    BasicFlagMACRO(IsHasWater, flags, 0x00000002)
+    BasicFlagMACRO(IsInvertFastTravel, flags, 0x00000004)
+    BasicFlagMACRO(IsForceHideLand, flags, 0x00000008) #Exterior cells only
+    BasicFlagMACRO(IsOblivionInterior, flags, 0x00000008) #Interior cells only
+    BasicFlagMACRO(IsPublicPlace, flags, 0x00000020)
+    BasicFlagMACRO(IsHandChanged, flags, 0x00000040)
+    BasicFlagMACRO(IsBehaveLikeExterior, flags, 0x00000080)
+    
+    BasicFlagMACRO(IsQuad1ForceHidden, quadFlags, 0x00000001)
+    BasicFlagMACRO(IsQuad2ForceHidden, quadFlags, 0x00000002)
+    BasicFlagMACRO(IsQuad3ForceHidden, quadFlags, 0x00000004)
+    BasicFlagMACRO(IsQuad4ForceHidden, quadFlags, 0x00000008)
+        
+    BasicFlagMACRO(IsLightAmbientInherited, lightFlags, 0x00000001)
+    BasicFlagMACRO(IsLightDirectionalColorInherited, lightFlags, 0x00000002)
+    BasicFlagMACRO(IsLightFogColorInherited, lightFlags, 0x00000004)
+    BasicFlagMACRO(IsLightFogNearInherited, lightFlags, 0x00000008)
+    BasicFlagMACRO(IsLightFogFarInherited, lightFlags, 0x00000010)
+    BasicFlagMACRO(IsLightDirectionalRotationInherited, lightFlags, 0x00000020)
+    BasicFlagMACRO(IsLightDirectionalFadeInherited, lightFlags, 0x00000040)
+    BasicFlagMACRO(IsLightFogClipInherited, lightFlags, 0x00000080)
+    BasicFlagMACRO(IsLightFogPowerInherited, lightFlags, 0x00000100)
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'flags', 'posX', 'posY', 'quadFlags',
+                                           'ambientRed', 'ambientGreen', 'ambientBlue',
+                                           'directionalRed', 'directionalGreen', 'directionalBlue',
+                                           'fogRed', 'fogGreen', 'fogBlue',
+                                           'fogNear', 'fogFar', 'directionalXY', 'directionalZ',
+                                           'directionalFade', 'fogClip', 'fogPower', 'concSolid',
+                                           'concBroken', 'metalSolid', 'metalHollow', 'metalSheet',
+                                           'wood', 'sand', 'dirt', 'grass', 'water',
+                                           'lightTemplate', 'lightFlags', 'waterHeight',
+                                           'waterNoisePath', 'regions', 'imageSpace', 'xcet_p',
+                                           'encounterZone', 'climate', 'water', 'owner',
+                                           'rank', 'acousticSpace', 'xcmt_p', 'music']
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'flags', 'posX', 'posY', 'quadFlags',
+                                             'ambientRed', 'ambientGreen', 'ambientBlue',
+                                             'directionalRed', 'directionalGreen', 'directionalBlue',
+                                             'fogRed', 'fogGreen', 'fogBlue',
+                                             'fogNear', 'fogFar', 'directionalXY', 'directionalZ',
+                                             'directionalFade', 'fogClip', 'fogPower', 'concSolid',
+                                             'concBroken', 'metalSolid', 'metalHollow', 'metalSheet',
+                                             'wood', 'sand', 'dirt', 'grass', 'water',
+                                             'lightTemplate', 'lightFlags', 'waterHeight',
+                                             'waterNoisePath', 'regions', 'imageSpace',
+                                             'encounterZone', 'climate', 'water', 'owner',
+                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p', 
 
 class FnvWRLDRecord(FnvBaseRecord):
     _Type = 'WRLD'
@@ -6947,8 +7058,8 @@ class ObCELLRecord(ObBaseRecord):
     FORMID_MACRO(climate, 29)
     FLOAT32_MACRO(waterHeight, 30)
     FORMID_ARRAY_MACRO(regions, 31)
-    SINT32_OR_UNKNOWN_MACRO(posX, 32)
-    SINT32_OR_UNKNOWN_MACRO(posY, 33)
+    UNKNOWN_OR_SINT32_MACRO(posX, 32)
+    UNKNOWN_OR_SINT32_MACRO(posY, 33)
     FORMID_MACRO(water, 34)
     SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 35, ObACHRRecord, 0)
     SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 36, ObACRERecord, 0)

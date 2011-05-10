@@ -30,7 +30,7 @@ class MUSCRecord : public FNVRecord //Music Type
     public:
         StringRecord EDID; //Editor ID
         StringRecord FNAM; //Filename
-        OptSimpleSubRecord<FLOAT32> ANAM; //dB (positive = Loop)
+        OptSimpleFloatSubRecord<flt_0> ANAM; //dB (positive = Loop)
 
         MUSCRecord(unsigned char *_recData=NULL);
         MUSCRecord(MUSCRecord *srcRecord);

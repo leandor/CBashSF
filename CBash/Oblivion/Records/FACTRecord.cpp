@@ -147,7 +147,7 @@ void FACTRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 FACTRecord::GetType()
     {
-    return 'TCAF';
+    return REV32(FACT);
     }
 
 STRING FACTRecord::GetStrType()
@@ -164,7 +164,7 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -177,37 +177,37 @@ SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.push_back(new ReqSubRecord<GENXNAM>);
                 XNAM.back()->Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANR':
+            case REV32(RNAM):
                 RNAM.push_back(new FACTRNAM);
                 RNAM.back()->RNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 if(RNAM.size() == 0)
                     RNAM.push_back(new FACTRNAM);
                 RNAM.back()->MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 if(RNAM.size() == 0)
                     RNAM.push_back(new FACTRNAM);
                 RNAM.back()->FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 if(RNAM.size() == 0)
                     RNAM.push_back(new FACTRNAM);
                 RNAM.back()->INAM.Read(buffer, subSize, curPos);
@@ -247,28 +247,28 @@ SINT32 FACTRecord::Unload()
 SINT32 FACTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     for(UINT32 p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
-            writer.record_write_subrecord('MANX', &XNAM[p]->value, XNAM[p]->GetSize());
+            writer.record_write_subrecord(REV32(XNAM), &XNAM[p]->value, XNAM[p]->GetSize());
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(CNAM.IsLoaded())
-        writer.record_write_subrecord('MANC', CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
 
     std::sort(RNAM.begin(), RNAM.end(), sortRNAM);
     for(UINT32 p = 0; p < RNAM.size(); p++)
         {
-        writer.record_write_subrecord('MANR', &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
+        writer.record_write_subrecord(REV32(RNAM), &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
         if(RNAM[p]->MNAM.IsLoaded())
-            writer.record_write_subrecord('MANM', RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
+            writer.record_write_subrecord(REV32(MNAM), RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
         if(RNAM[p]->FNAM.IsLoaded())
-            writer.record_write_subrecord('MANF', RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
+            writer.record_write_subrecord(REV32(FNAM), RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
         if(RNAM[p]->INAM.IsLoaded())
-            writer.record_write_subrecord('MANI', RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
+            writer.record_write_subrecord(REV32(INAM), RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
         }
     return -1;
     }

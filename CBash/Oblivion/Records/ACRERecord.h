@@ -38,7 +38,7 @@ class ACRERecord : public Record
         OptSubRecord<GENXLOD> XLOD;
         OptSubRecord<GENXESP> XESP;
         RawRecord XRGD;
-        OptSimpleSubRecord<FLOAT32, 1> XSCL; // scale
+        OptSimpleFloatSubRecord<flt_1> XSCL; // scale
         ReqSubRecord<GENPOSDATA> DATA;
 
         ACRERecord(unsigned char *_recData=NULL);

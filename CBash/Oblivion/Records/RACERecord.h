@@ -45,7 +45,7 @@ class RACERecord : public Record
 
         struct RACEMODEL
             {
-            ReqSimpleSubRecord<FLOAT32> MODB;
+            ReqSimpleFloatSubRecord<flt_0> MODB;
             StringRecord MODL;
             RawRecord MODT;
             StringRecord ICON;
@@ -69,8 +69,8 @@ class RACERecord : public Record
         SubRecord<RACEVNAM> VNAM;
         SubRecord<RACEDNAM> DNAM;
         ReqSimpleSubRecord<UINT8> CNAM;
-        OptSimpleSubRecord<FLOAT32> PNAM;
-        OptSimpleSubRecord<FLOAT32> UNAM;
+        OptSimpleFloatSubRecord<flt_0> PNAM;
+        OptSimpleFloatSubRecord<flt_0> UNAM;
         ReqSubRecord<RACEATTR> ATTR;
         OptSubRecord<RACEMODEL> MOD0;
         OptSubRecord<RACEMODEL> MOD1;

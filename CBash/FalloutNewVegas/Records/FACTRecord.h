@@ -69,7 +69,7 @@ class FACTRecord : public FNVRecord //Faction
         StringRecord FULL; //Name
         OrderedSparseArray<FNVXNAM *> XNAM; //Relations, not sure if record order matters
         ReqSubRecord<FACTDATA> DATA; //Data
-        SemiOptSimpleSubRecord<FLOAT32, 1> CNAM; //Unused
+        SemiOptSimpleFloatSubRecord<flt_1> CNAM; //Unused
         OrderedSparseArray<FACTRNAM *, sortRNAM> RNAM; // Ranks
         OptSimpleSubRecord<FORMID> WMI1; //Reputation
 

@@ -297,7 +297,7 @@ void RACERecord::SetFlagMask(UINT32 Mask)
 
 UINT32 RACERecord::GetType()
     {
-    return 'ECAR';
+    return REV32(RACE);
     }
 
 
@@ -318,7 +318,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -331,27 +331,27 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'OLPS':
+            case REV32(SPLO):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 SPLO.push_back(curFormID);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.push_back(new ReqSubRecord<GENXNAM>);
                 XNAM.back()->Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANV':
+            case REV32(VNAM):
                 if(VNAM.Read(buffer, subSize, curPos))
                     {
                     if(formID == VNAM.value.maleVoice)
@@ -360,40 +360,40 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         VNAM.value.femaleVoice = 0;
                     }
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANU':
+            case REV32(UNAM):
                 UNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RTTA':
+            case REV32(ATTR):
                 ATTR.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 curNAM = 0;
                 curINDX = -1;
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 curNAM = 1;
                 break;
-            case 'XDNI':
+            case REV32(INDX):
                 _readBuffer(&curINDX,buffer,subSize,curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 curNAM = 2;
                 curINDX = -1;
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 curNAM = 3;
                 curINDX = -1;
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 switch(curNAM)
                     {
                     case 0:
@@ -461,7 +461,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 switch(curNAM)
                     {
                     case 0:
@@ -575,7 +575,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 switch(curNAM)
                     {
                     case 0:
@@ -643,7 +643,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 switch(curNAM)
                     {
                     case 0:
@@ -711,7 +711,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -725,7 +725,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 if(subSize % sizeof(UINT32) == 0)
                     {
                     if(subSize == 0)
@@ -739,16 +739,16 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     curPos += subSize;
                     }
                 break;
-            case 'SGGF':
+            case REV32(FGGS):
                 FGGS.Read(buffer, subSize, curPos);
                 break;
-            case 'AGGF':
+            case REV32(FGGA):
                 FGGA.Read(buffer, subSize, curPos);
                 break;
-            case 'STGF':
+            case REV32(FGTS):
                 FGTS.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -825,242 +825,242 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     {
     UINT32 curINDX = 0;
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(DESC.IsLoaded())
-        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
 
     for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord('OLPS', &SPLO[p], sizeof(FORMID));
+        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(FORMID));
 
     for(UINT32 p = 0; p < XNAM.size(); p++)
         if(XNAM[p]->IsLoaded())
-            writer.record_write_subrecord('MANX', &XNAM[p]->value, XNAM[p]->GetSize());
+            writer.record_write_subrecord(REV32(XNAM), &XNAM[p]->value, XNAM[p]->GetSize());
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(VNAM.IsLoaded())
-        writer.record_write_subrecord('MANV', &VNAM.value, VNAM.GetSize());
+        writer.record_write_subrecord(REV32(VNAM), &VNAM.value, VNAM.GetSize());
     if(DNAM.IsLoaded())
-        writer.record_write_subrecord('MAND', &DNAM.value, DNAM.GetSize());
+        writer.record_write_subrecord(REV32(DNAM), &DNAM.value, DNAM.GetSize());
     if(CNAM.IsLoaded())
-        writer.record_write_subrecord('MANC', &CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
     if(PNAM.IsLoaded())
-        writer.record_write_subrecord('MANP', &PNAM.value, PNAM.GetSize());
+        writer.record_write_subrecord(REV32(PNAM), &PNAM.value, PNAM.GetSize());
     if(UNAM.IsLoaded())
-        writer.record_write_subrecord('MANU', &UNAM.value, UNAM.GetSize());
+        writer.record_write_subrecord(REV32(UNAM), &UNAM.value, UNAM.GetSize());
     if(ATTR.IsLoaded())
-        writer.record_write_subrecord('RTTA', &ATTR.value, ATTR.GetSize());
+        writer.record_write_subrecord(REV32(ATTR), &ATTR.value, ATTR.GetSize());
 
-    writer.record_write_subheader('0MAN', 0);
+    writer.record_write_subheader(REV32(NAM0), 0);
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD0.IsLoaded() && MOD0->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD0->MODL.value, MOD0->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD0->MODL.value, MOD0->MODL.GetSize());
         if(MOD0->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD0->MODB.value, MOD0->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD0->MODB.value, MOD0->MODB.GetSize());
         if(MOD0->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD0->MODT.value, MOD0->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD0->MODT.value, MOD0->MODT.GetSize());
         if(MOD0->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD0->ICON.value, MOD0->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD0->ICON.value, MOD0->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD1.IsLoaded() && MOD1->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD1->MODL.value, MOD1->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD1->MODL.value, MOD1->MODL.GetSize());
         if(MOD1->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD1->MODB.value, MOD1->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD1->MODB.value, MOD1->MODB.GetSize());
         if(MOD1->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD1->MODT.value, MOD1->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD1->MODT.value, MOD1->MODT.GetSize());
         if(MOD1->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD1->ICON.value, MOD1->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD1->ICON.value, MOD1->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD2->MODL.value, MOD2->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD2->MODL.value, MOD2->MODL.GetSize());
         if(MOD2->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD2->MODB.value, MOD2->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD2->MODB.value, MOD2->MODB.GetSize());
         if(MOD2->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD2->MODT.value, MOD2->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD2->MODT.value, MOD2->MODT.GetSize());
         if(MOD2->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD2->ICON.value, MOD2->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD2->ICON.value, MOD2->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD3->MODL.value, MOD3->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD3->MODL.value, MOD3->MODL.GetSize());
         if(MOD3->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD3->MODB.value, MOD3->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD3->MODB.value, MOD3->MODB.GetSize());
         if(MOD3->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD3->MODT.value, MOD3->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD3->MODT.value, MOD3->MODT.GetSize());
         if(MOD3->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD3->ICON.value, MOD3->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD3->ICON.value, MOD3->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD4->MODL.value, MOD4->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD4->MODL.value, MOD4->MODL.GetSize());
         if(MOD4->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD4->MODB.value, MOD4->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD4->MODB.value, MOD4->MODB.GetSize());
         if(MOD4->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD4->MODT.value, MOD4->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD4->MODT.value, MOD4->MODT.GetSize());
         if(MOD4->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD4->ICON.value, MOD4->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD4->ICON.value, MOD4->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD5.IsLoaded() && MOD5->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD5->MODL.value, MOD5->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD5->MODL.value, MOD5->MODL.GetSize());
         if(MOD5->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD5->MODB.value, MOD5->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD5->MODB.value, MOD5->MODB.GetSize());
         if(MOD5->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD5->MODT.value, MOD5->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD5->MODT.value, MOD5->MODT.GetSize());
         if(MOD5->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD5->ICON.value, MOD5->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD5->ICON.value, MOD5->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD6.IsLoaded() && MOD6->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD6->MODL.value, MOD6->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD6->MODL.value, MOD6->MODL.GetSize());
         if(MOD6->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD6->MODB.value, MOD6->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD6->MODB.value, MOD6->MODB.GetSize());
         if(MOD6->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD6->MODT.value, MOD6->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD6->MODT.value, MOD6->MODT.GetSize());
         if(MOD6->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD6->ICON.value, MOD6->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD6->ICON.value, MOD6->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD7.IsLoaded() && MOD7->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD7->MODL.value, MOD7->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD7->MODL.value, MOD7->MODL.GetSize());
         if(MOD7->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD7->MODB.value, MOD7->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD7->MODB.value, MOD7->MODB.GetSize());
         if(MOD7->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD7->MODT.value, MOD7->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD7->MODT.value, MOD7->MODT.GetSize());
         if(MOD7->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD7->ICON.value, MOD7->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD7->ICON.value, MOD7->ICON.GetSize());
         }
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MOD8.IsLoaded() && MOD8->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MOD8->MODL.value, MOD8->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MOD8->MODL.value, MOD8->MODL.GetSize());
         if(MOD8->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MOD8->MODB.value, MOD8->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MOD8->MODB.value, MOD8->MODB.GetSize());
         if(MOD8->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MOD8->MODT.value, MOD8->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MOD8->MODT.value, MOD8->MODT.GetSize());
         if(MOD8->ICON.IsLoaded())
-            writer.record_write_subrecord('NOCI', MOD8->ICON.value, MOD8->ICON.GetSize());
+            writer.record_write_subrecord(REV32(ICON), MOD8->ICON.value, MOD8->ICON.GetSize());
         }
 
     curINDX = 0;
-    writer.record_write_subheader('1MAN', 0);
-    writer.record_write_subheader('MANM', 0);
+    writer.record_write_subheader(REV32(NAM1), 0);
+    writer.record_write_subheader(REV32(MNAM), 0);
     if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MMODL->MODL.value, MMODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MMODL->MODL.value, MMODL->MODL.GetSize());
         if(MMODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MMODL->MODB.value, MMODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MMODL->MODB.value, MMODL->MODB.GetSize());
         if(MMODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MMODL->MODT.value, MMODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MMODL->MODT.value, MMODL->MODT.GetSize());
         }
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MICON0.IsLoaded())
-        writer.record_write_subrecord('NOCI', MICON0.value, MICON0.GetSize());
+        writer.record_write_subrecord(REV32(ICON), MICON0.value, MICON0.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MICON1.IsLoaded())
-        writer.record_write_subrecord('NOCI', MICON1.value, MICON1.GetSize());
+        writer.record_write_subrecord(REV32(ICON), MICON1.value, MICON1.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MICON2.IsLoaded())
-        writer.record_write_subrecord('NOCI', MICON2.value, MICON2.GetSize());
+        writer.record_write_subrecord(REV32(ICON), MICON2.value, MICON2.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MICON3.IsLoaded())
-        writer.record_write_subrecord('NOCI', MICON3.value, MICON3.GetSize());
+        writer.record_write_subrecord(REV32(ICON), MICON3.value, MICON3.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(MICON4.IsLoaded())
-        writer.record_write_subrecord('NOCI', MICON4.value, MICON4.GetSize());
+        writer.record_write_subrecord(REV32(ICON), MICON4.value, MICON4.GetSize());
 
     curINDX = 0;
-    writer.record_write_subheader('MANF', 0);
+    writer.record_write_subheader(REV32(FNAM), 0);
     if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', FMODL->MODL.value, FMODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), FMODL->MODL.value, FMODL->MODL.GetSize());
         if(FMODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &FMODL->MODB.value, FMODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &FMODL->MODB.value, FMODL->MODB.GetSize());
         if(FMODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', FMODL->MODT.value, FMODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), FMODL->MODT.value, FMODL->MODT.GetSize());
         }
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(FICON0.IsLoaded())
-        writer.record_write_subrecord('NOCI', FICON0.value, FICON0.GetSize());
+        writer.record_write_subrecord(REV32(ICON), FICON0.value, FICON0.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(FICON1.IsLoaded())
-        writer.record_write_subrecord('NOCI', FICON1.value, FICON1.GetSize());
+        writer.record_write_subrecord(REV32(ICON), FICON1.value, FICON1.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(FICON2.IsLoaded())
-        writer.record_write_subrecord('NOCI', FICON2.value, FICON2.GetSize());
+        writer.record_write_subrecord(REV32(ICON), FICON2.value, FICON2.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(FICON3.IsLoaded())
-        writer.record_write_subrecord('NOCI', FICON3.value, FICON3.GetSize());
+        writer.record_write_subrecord(REV32(ICON), FICON3.value, FICON3.GetSize());
     curINDX++;
 
-    writer.record_write_subrecord('XDNI', &curINDX, 4);
+    writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
     if(FICON4.IsLoaded())
-        writer.record_write_subrecord('NOCI', FICON4.value, FICON4.GetSize());
+        writer.record_write_subrecord(REV32(ICON), FICON4.value, FICON4.GetSize());
 
     if(HNAM.size())
-        writer.record_write_subrecord('MANH', &HNAM[0], (UINT32)HNAM.size() * sizeof(UINT32));
+        writer.record_write_subrecord(REV32(HNAM), &HNAM[0], (UINT32)HNAM.size() * sizeof(UINT32));
     else
-        writer.record_write_subheader('MANH', 0);
+        writer.record_write_subheader(REV32(HNAM), 0);
 
     if(ENAM.size())
-        writer.record_write_subrecord('MANE', &ENAM[0], (UINT32)ENAM.size() * sizeof(UINT32));
+        writer.record_write_subrecord(REV32(ENAM), &ENAM[0], (UINT32)ENAM.size() * sizeof(UINT32));
     else
-        writer.record_write_subheader('MANE', 0);
+        writer.record_write_subheader(REV32(ENAM), 0);
 
     if(FGGS.IsLoaded())
-        writer.record_write_subrecord('SGGF', FGGS.value, FGGS.GetSize());
+        writer.record_write_subrecord(REV32(FGGS), FGGS.value, FGGS.GetSize());
     if(FGGA.IsLoaded())
-        writer.record_write_subrecord('AGGF', FGGA.value, FGGA.GetSize());
+        writer.record_write_subrecord(REV32(FGGA), FGGA.value, FGGA.GetSize());
     if(FGTS.IsLoaded())
-        writer.record_write_subrecord('STGF', FGTS.value, FGTS.GetSize());
+        writer.record_write_subrecord(REV32(FGTS), FGTS.value, FGTS.GetSize());
 
     if(SNAM.IsLoaded())
-        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
 
     return -1;
     }

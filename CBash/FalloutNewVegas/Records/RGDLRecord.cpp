@@ -286,7 +286,7 @@ void RGDLRecord::SetMatchType(UINT8 Type)
 
 UINT32 RGDLRecord::GetType()
     {
-    return 'LDGR';
+    return REV32(RGDL);
     }
 
 STRING RGDLRecord::GetStrType()
@@ -303,7 +303,7 @@ SINT32 RGDLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -316,31 +316,31 @@ SINT32 RGDLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'REVN':
+            case REV32(NVER):
                 NVER.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANX':
+            case REV32(XNAM):
                 XNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'DFAR':
+            case REV32(RAFD):
                 RAFD.Read(buffer, subSize, curPos);
                 break;
-            case 'BFAR':
+            case REV32(RAFB):
                 RAFB.Read(buffer, subSize, curPos);
                 break;
-            case 'SPAR':
+            case REV32(RAPS):
                 RAPS.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
             default:

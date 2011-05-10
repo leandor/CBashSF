@@ -64,7 +64,7 @@ class LIGHRecord : public Record
         StringRecord FULL;
         StringRecord ICON;
         ReqSubRecord<LIGHDATA> DATA;
-        OptSimpleSubRecord<FLOAT32> FNAM;
+        OptSimpleFloatSubRecord<flt_0> FNAM;
         OptSimpleSubRecord<FORMID> SNAM;
 
         LIGHRecord(unsigned char *_recData=NULL);

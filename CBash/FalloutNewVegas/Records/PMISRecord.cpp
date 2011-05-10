@@ -177,7 +177,7 @@ void PMISRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 PMISRecord::GetType()
     {
-    return 'SIMP';
+    return REV32(PMIS);
     }
 
 STRING PMISRecord::GetStrType()
@@ -194,7 +194,7 @@ SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -207,126 +207,126 @@ SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
-            case 'NZEX':
+            case REV32(XEZN):
                 XEZN.Read(buffer, subSize, curPos);
                 break;
-            case 'DGRX':
+            case REV32(XRGD):
                 XRGD.Read(buffer, subSize, curPos);
                 break;
-            case 'BGRX':
+            case REV32(XRGB):
                 XRGB.Read(buffer, subSize, curPos);
                 break;
-            case 'DRPX':
+            case REV32(XPRD):
                 XPRD.Load();
                 XPRD->XPRD.Read(buffer, subSize, curPos);
                 break;
-            case 'APPX':
+            case REV32(XPPA):
                 //XPRD.Load();
                 //XPRD->XPPA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 XPRD.Load();
                 XPRD->INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCRO.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 XPRD.Load();
                 XPRD->SCHR.Load();
                 XPRD->SCHR->SCRV.Read(buffer, subSize, curPos);
                 break;
-            case 'MANT':
+            case REV32(TNAM):
                 XPRD.Load();
                 XPRD->TNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'NWOX':
+            case REV32(XOWN):
                 XOWN.Load();
                 XOWN->XOWN.Read(buffer, subSize, curPos);
                 break;
-            case 'KNRX':
+            case REV32(XRNK):
                 XOWN.Load();
                 XOWN->XRNK.Read(buffer, subSize, curPos);
                 break;
-            case 'TNCX':
+            case REV32(XCNT):
                 XCNT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDRX':
+            case REV32(XRDS):
                 XRDS.Read(buffer, subSize, curPos);
                 break;
-            case 'PLHX':
+            case REV32(XHLP):
                 XHLP.Read(buffer, subSize, curPos);
                 break;
-            case 'RWPX':
+            case REV32(XPWR):
                 XPWR.Read(buffer, subSize, curPos);
                 break;
-            case 'RCDX':
+            case REV32(XDCR):
                 XDCR.Read(buffer, subSize, curPos);
                 break;
-            case 'RKLX':
+            case REV32(XLKR):
                 XLKR.Read(buffer, subSize, curPos);
                 break;
-            case 'PLCX':
+            case REV32(XCLP):
                 XCLP.Read(buffer, subSize, curPos);
                 break;
-            case 'DPAX':
+            case REV32(XAPD):
                 XAPD.Read(buffer, subSize, curPos);
                 break;
-            case 'RPAX':
+            case REV32(XAPR):
                 XAPR.Read(buffer, subSize, curPos);
                 break;
-            case 'OTAX':
+            case REV32(XATO):
                 XATO.Read(buffer, subSize, curPos);
                 break;
-            case 'PSEX':
+            case REV32(XESP):
                 XESP.Read(buffer, subSize, curPos);
                 break;
-            case 'IMEX':
+            case REV32(XEMI):
                 XEMI.Read(buffer, subSize, curPos);
                 break;
-            case 'RBMX':
+            case REV32(XMBR):
                 XMBR.Read(buffer, subSize, curPos);
                 break;
-            case 'SBIX':
+            case REV32(XIBS):
                 //XIBS.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
-            case 'LCSX':
+            case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -382,50 +382,50 @@ SINT32 PMISRecord::WriteRecord(FileWriter &writer)
     if(XPRD.IsLoaded())
         {
         if(XPRD->XPRD.IsLoaded())
-            SaveHandler.writeSubRecord('DRPX', XPRD->XPRD.value, XPRD->XPRD.GetSize());
+            SaveHandler.writeSubRecord(REV32(XPRD), XPRD->XPRD.value, XPRD->XPRD.GetSize());
 
         //if(XPRD->XPPA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord('APPX', XPRD->XPPA.value, XPRD->XPPA.GetSize());
+            //SaveHandler.writeSubRecord(REV32(XPPA), XPRD->XPPA.value, XPRD->XPPA.GetSize());
 
         if(XPRD->INAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANI', XPRD->INAM.value, XPRD->INAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(INAM), XPRD->INAM.value, XPRD->INAM.GetSize());
 
         if(XPRD->SCHR.IsLoaded())
             {
             if(XPRD->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord('RHCS', XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCHR), XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
 
             if(XPRD->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord('ADCS', XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCDA), XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
 
             if(XPRD->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord('XTCS', XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCTX), XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
 
             if(XPRD->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord('DSLS', XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
+                SaveHandler.writeSubRecord(REV32(SLSD), XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
 
             if(XPRD->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord('RVCS', XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCVR), XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
 
             if(XPRD->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord('ORCS', XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRO), XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
 
             if(XPRD->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord('VRCS', XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
+                SaveHandler.writeSubRecord(REV32(SCRV), XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
 
             }
         if(XPRD->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord('MANT', XPRD->TNAM.value, XPRD->TNAM.GetSize());
+            SaveHandler.writeSubRecord(REV32(TNAM), XPRD->TNAM.value, XPRD->TNAM.GetSize());
 
         }
 
     if(XOWN.IsLoaded())
         {
         if(XOWN->XOWN.IsLoaded())
-            SaveHandler.writeSubRecord('NWOX', XOWN->XOWN.value, XOWN->XOWN.GetSize());
+            SaveHandler.writeSubRecord(REV32(XOWN), XOWN->XOWN.value, XOWN->XOWN.GetSize());
 
         if(XOWN->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord('KNRX', XOWN->XRNK.value, XOWN->XRNK.GetSize());
+            SaveHandler.writeSubRecord(REV32(XRNK), XOWN->XRNK.value, XOWN->XRNK.GetSize());
 
         }
 
@@ -444,7 +444,7 @@ SINT32 PMISRecord::WriteRecord(FileWriter &writer)
     WRITE(XMBR);
 
     //if(XIBS.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord('SBIX', XIBS.value, XIBS.GetSize());
+        //SaveHandler.writeSubRecord(REV32(XIBS), XIBS.value, XIBS.GetSize());
     WRITE(XSCL);
     WRITE(DATA);
 

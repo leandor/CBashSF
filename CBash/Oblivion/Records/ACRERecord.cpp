@@ -111,7 +111,7 @@ void ACRERecord::SetFlagMask(UINT8 Mask)
 
 UINT32 ACRERecord::GetType()
     {
-    return 'ERCA';
+    return REV32(ACRE);
     }
 
 STRING ACRERecord::GetStrType()
@@ -121,7 +121,7 @@ STRING ACRERecord::GetStrType()
 
 UINT32 ACRERecord::GetParentType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 SINT32 ACRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -133,7 +133,7 @@ SINT32 ACRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -146,37 +146,37 @@ SINT32 ACRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
-            case 'NWOX':
+            case REV32(XOWN):
                 Ownership.Load();
                 Ownership->XOWN.Read(buffer, subSize, curPos);
                 break;
-            case 'KNRX':
+            case REV32(XRNK):
                 Ownership.Load();
                 Ownership->XRNK.Read(buffer, subSize, curPos);
                 break;
-            case 'BLGX':
+            case REV32(XGLB):
                 Ownership.Load();
                 Ownership->XGLB.Read(buffer, subSize, curPos);
                 break;
-            case 'DOLX':
+            case REV32(XLOD):
                 XLOD.Read(buffer, subSize, curPos);
                 break;
-            case 'PSEX':
+            case REV32(XESP):
                 XESP.Read(buffer, subSize, curPos);
                 break;
-            case 'DGRX':
+            case REV32(XRGD):
                 XRGD.Read(buffer, subSize, curPos);
                 break;
-            case 'LCSX':
+            case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -209,34 +209,34 @@ SINT32 ACRERecord::Unload()
 SINT32 ACRERecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        writer.record_write_subrecord('EMAN', &NAME.value, NAME.GetSize());
+        writer.record_write_subrecord(REV32(NAME), &NAME.value, NAME.GetSize());
 
     if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
         {
-        writer.record_write_subrecord('NWOX', &Ownership->XOWN.value, Ownership->XOWN.GetSize());
+        writer.record_write_subrecord(REV32(XOWN), &Ownership->XOWN.value, Ownership->XOWN.GetSize());
         if(Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord('KNRX', Ownership->XRNK.value, Ownership->XRNK.GetSize());
+            writer.record_write_subrecord(REV32(XRNK), Ownership->XRNK.value, Ownership->XRNK.GetSize());
         if(Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord('BLGX', &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+            writer.record_write_subrecord(REV32(XGLB), &Ownership->XGLB.value, Ownership->XGLB.GetSize());
         }
 
     if(XLOD.IsLoaded())
-        writer.record_write_subrecord('DOLX', XLOD.value, XLOD.GetSize());
+        writer.record_write_subrecord(REV32(XLOD), XLOD.value, XLOD.GetSize());
 
     if(XESP.IsLoaded())
-        writer.record_write_subrecord('PSEX', XESP.value, XESP.GetSize());
+        writer.record_write_subrecord(REV32(XESP), XESP.value, XESP.GetSize());
 
     if(XRGD.IsLoaded())
-        writer.record_write_subrecord('DGRX', XRGD.value, XRGD.GetSize());
+        writer.record_write_subrecord(REV32(XRGD), XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        writer.record_write_subrecord('LCSX', &XSCL.value, XSCL.GetSize());
+        writer.record_write_subrecord(REV32(XSCL), &XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

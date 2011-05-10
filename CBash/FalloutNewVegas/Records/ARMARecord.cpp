@@ -697,7 +697,7 @@ void ARMARecord::SetDNAMFlagMask(UINT16 Mask)
 
 UINT32 ARMARecord::GetType()
     {
-    return 'AMRA';
+    return REV32(ARMA);
     }
 
 STRING ARMARecord::GetStrType()
@@ -714,7 +714,7 @@ SINT32 ARMARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -727,93 +727,93 @@ SINT32 ARMARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'TDMB':
+            case REV32(BMDT):
                 BMDT.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->MODS.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case '2DOM':
+            case REV32(MOD2):
                 MOD2.Load();
                 MOD2->MOD2.Read(buffer, subSize, curPos);
                 break;
-            case 'T2OM':
+            case REV32(MO2T):
                 MOD2.Load();
                 MOD2->MO2T.Read(buffer, subSize, curPos);
                 break;
-            case 'S2OM':
+            case REV32(MO2S):
                 MOD2.Load();
                 MOD2->MO2S.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case '3DOM':
+            case REV32(MOD3):
                 MOD3.Load();
                 MOD3->MOD3.Read(buffer, subSize, curPos);
                 break;
-            case 'T3OM':
+            case REV32(MO3T):
                 MOD3.Load();
                 MOD3->MO3T.Read(buffer, subSize, curPos);
                 break;
-            case 'S3OM':
+            case REV32(MO3S):
                 MOD3.Load();
                 MOD3->MO3S.Read(buffer, subSize, curPos);
                 break;
-            case 'DSOM':
+            case REV32(MOSD):
                 MOD3.Load();
                 MOD3->MOSD.Read(buffer, subSize, curPos);
                 break;
-            case '4DOM':
+            case REV32(MOD4):
                 MOD4.Load();
                 MOD4->MOD4.Read(buffer, subSize, curPos);
                 break;
-            case 'T4OM':
+            case REV32(MO4T):
                 MOD4.Load();
                 MOD4->MO4T.Read(buffer, subSize, curPos);
                 break;
-            case 'S4OM':
+            case REV32(MO4S):
                 MOD4.Load();
                 MOD4->MO4S.Read(buffer, subSize, curPos);
                 break;
-            case '2OCI':
+            case REV32(ICO2):
                 ICO2.Read(buffer, subSize, curPos);
                 break;
-            case '2CIM':
+            case REV32(MIC2):
                 MIC2.Read(buffer, subSize, curPos);
                 break;
-            case 'PYTE':
+            case REV32(ETYP):
                 ETYP.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -860,29 +860,29 @@ SINT32 ARMARecord::WriteRecord(FileWriter &writer)
     if(MODL.IsLoaded())
         {
         if(MODL->MODL.IsLoaded())
-            SaveHandler.writeSubRecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+            SaveHandler.writeSubRecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
 
         if(MODL->MODT.IsLoaded())
-            SaveHandler.writeSubRecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            SaveHandler.writeSubRecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
 
         if(MODL->MODS.IsLoaded())
-            SaveHandler.writeSubRecord('SDOM', MODL->MODS.value, MODL->MODS.GetSize());
+            SaveHandler.writeSubRecord(REV32(MODS), MODL->MODS.value, MODL->MODS.GetSize());
 
         if(MODL->MODD.IsLoaded())
-            SaveHandler.writeSubRecord('DDOM', MODL->MODD.value, MODL->MODD.GetSize());
+            SaveHandler.writeSubRecord(REV32(MODD), MODL->MODD.value, MODL->MODD.GetSize());
 
         }
 
     if(MOD2.IsLoaded())
         {
         if(MOD2->MOD2.IsLoaded())
-            SaveHandler.writeSubRecord('2DOM', MOD2->MOD2.value, MOD2->MOD2.GetSize());
+            SaveHandler.writeSubRecord(REV32(MOD2), MOD2->MOD2.value, MOD2->MOD2.GetSize());
 
         if(MOD2->MO2T.IsLoaded())
-            SaveHandler.writeSubRecord('T2OM', MOD2->MO2T.value, MOD2->MO2T.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO2T), MOD2->MO2T.value, MOD2->MO2T.GetSize());
 
         if(MOD2->MO2S.IsLoaded())
-            SaveHandler.writeSubRecord('S2OM', MOD2->MO2S.value, MOD2->MO2S.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO2S), MOD2->MO2S.value, MOD2->MO2S.GetSize());
 
         }
 
@@ -892,29 +892,29 @@ SINT32 ARMARecord::WriteRecord(FileWriter &writer)
     if(MOD3.IsLoaded())
         {
         if(MOD3->MOD3.IsLoaded())
-            SaveHandler.writeSubRecord('3DOM', MOD3->MOD3.value, MOD3->MOD3.GetSize());
+            SaveHandler.writeSubRecord(REV32(MOD3), MOD3->MOD3.value, MOD3->MOD3.GetSize());
 
         if(MOD3->MO3T.IsLoaded())
-            SaveHandler.writeSubRecord('T3OM', MOD3->MO3T.value, MOD3->MO3T.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO3T), MOD3->MO3T.value, MOD3->MO3T.GetSize());
 
         if(MOD3->MO3S.IsLoaded())
-            SaveHandler.writeSubRecord('S3OM', MOD3->MO3S.value, MOD3->MO3S.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO3S), MOD3->MO3S.value, MOD3->MO3S.GetSize());
 
         if(MOD3->MOSD.IsLoaded())
-            SaveHandler.writeSubRecord('DSOM', MOD3->MOSD.value, MOD3->MOSD.GetSize());
+            SaveHandler.writeSubRecord(REV32(MOSD), MOD3->MOSD.value, MOD3->MOSD.GetSize());
 
         }
 
     if(MOD4.IsLoaded())
         {
         if(MOD4->MOD4.IsLoaded())
-            SaveHandler.writeSubRecord('4DOM', MOD4->MOD4.value, MOD4->MOD4.GetSize());
+            SaveHandler.writeSubRecord(REV32(MOD4), MOD4->MOD4.value, MOD4->MOD4.GetSize());
 
         if(MOD4->MO4T.IsLoaded())
-            SaveHandler.writeSubRecord('T4OM', MOD4->MO4T.value, MOD4->MO4T.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO4T), MOD4->MO4T.value, MOD4->MO4T.GetSize());
 
         if(MOD4->MO4S.IsLoaded())
-            SaveHandler.writeSubRecord('S4OM', MOD4->MO4S.value, MOD4->MO4S.GetSize());
+            SaveHandler.writeSubRecord(REV32(MO4S), MOD4->MO4S.value, MOD4->MO4S.GetSize());
 
         }
 

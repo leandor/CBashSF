@@ -258,7 +258,7 @@ void MSETRecord::SetType(UINT32 Type)
 
 UINT32 MSETRecord::GetType()
     {
-    return 'TESM';
+    return REV32(MSET);
     }
 
 STRING MSETRecord::GetStrType()
@@ -275,7 +275,7 @@ SINT32 MSETRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -288,91 +288,91 @@ SINT32 MSETRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case '1MAN':
+            case REV32(NAM1):
                 NAM1.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 NAM2.Read(buffer, subSize, curPos);
                 break;
-            case '3MAN':
+            case REV32(NAM3):
                 NAM3.Read(buffer, subSize, curPos);
                 break;
-            case '4MAN':
+            case REV32(NAM4):
                 NAM4.Read(buffer, subSize, curPos);
                 break;
-            case '5MAN':
+            case REV32(NAM5):
                 NAM5.Read(buffer, subSize, curPos);
                 break;
-            case '6MAN':
+            case REV32(NAM6):
                 NAM6.Read(buffer, subSize, curPos);
                 break;
-            case '7MAN':
+            case REV32(NAM7):
                 NAM7.Read(buffer, subSize, curPos);
                 break;
-            case '8MAN':
+            case REV32(NAM8):
                 NAM8.Read(buffer, subSize, curPos);
                 break;
-            case '9MAN':
+            case REV32(NAM9):
                 NAM9.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANB':
+            case REV32(BNAM):
                 BNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANJ':
+            case REV32(JNAM):
                 JNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANK':
+            case REV32(KNAM):
                 KNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANL':
+            case REV32(LNAM):
                 LNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANN':
+            case REV32(NNAM):
                 NNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANO':
+            case REV32(ONAM):
                 ONAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANP':
+            case REV32(PNAM):
                 PNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MAND':
+            case REV32(DNAM):
                 DNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 ENAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 GNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 HNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANI':
+            case REV32(INAM):
                 INAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:

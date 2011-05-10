@@ -93,7 +93,7 @@ SKILRecord::~SKILRecord()
 
 UINT32 SKILRecord::GetType()
     {
-    return 'LIKS';
+    return REV32(SKIL);
     }
 
 STRING SKILRecord::GetStrType()
@@ -110,7 +110,7 @@ SINT32 SKILRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -123,31 +123,31 @@ SINT32 SKILRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'XDNI':
+            case REV32(INDX):
                 INDX.Read(buffer, subSize, curPos);
                 break;
-            case 'CSED':
+            case REV32(DESC):
                 DESC.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANJ':
+            case REV32(JNAM):
                 JNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANE':
+            case REV32(ENAM):
                 ENAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -181,23 +181,23 @@ SINT32 SKILRecord::Unload()
 SINT32 SKILRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(INDX.IsLoaded())
-        writer.record_write_subrecord('XDNI', &INDX.value, INDX.GetSize());
+        writer.record_write_subrecord(REV32(INDX), &INDX.value, INDX.GetSize());
     if(DESC.IsLoaded())
-        writer.record_write_subrecord('CSED', DESC.value, DESC.GetSize());
+        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(ANAM.IsLoaded())
-        writer.record_write_subrecord('MANA', ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord(REV32(ANAM), ANAM.value, ANAM.GetSize());
     if(JNAM.IsLoaded())
-        writer.record_write_subrecord('MANJ', JNAM.value, JNAM.GetSize());
+        writer.record_write_subrecord(REV32(JNAM), JNAM.value, JNAM.GetSize());
     if(ENAM.IsLoaded())
-        writer.record_write_subrecord('MANE', ENAM.value, ENAM.GetSize());
+        writer.record_write_subrecord(REV32(ENAM), ENAM.value, ENAM.GetSize());
     if(MNAM.IsLoaded())
-        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
     return -1;
     }
 

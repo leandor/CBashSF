@@ -138,7 +138,8 @@ class API_FIELDS(object):
                  'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
                  'FORMID_OR_STRING',
                  'UNKNOWN_OR_FORMID_OR_UINT32',
-                 'UNKNOWN_OR_SINT32', 'MGEFCODE_OR_UINT32',
+                 'UNKNOWN_OR_SINT32', 'UNKNOWN_OR_UINT32_FLAG'
+                 'MGEFCODE_OR_UINT32',
                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
                  'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
                  'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
@@ -564,22 +565,23 @@ class CBashLIST(object):
             oElements = [self._Type(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, x) for x in range(0, numElements)]
             SetCopyList(oElements, nValues)
 
-class CBashSINT32_OR_UNKNOWN(object):
-    def __init__(self, FieldID):
+class CBashUNKNOWN_OR_GENERIC(object):
+    def __init__(self, FieldID, Type):
         self._FieldID = FieldID
+        self._Type = Type
+        self._ResType = POINTER(Type)
     def __get__(self, instance, owner):
         type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
-        if type == API_FIELDS.SINT32:
-            _CGetField.restype = POINTER(c_long)
+        if type != API_FIELDS.UNKNOWN:
+            _CGetField.restype = self._ResType
             retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
             if(retValue): return retValue.contents.value
         return None
     def __set__(self, instance, nValue):
         type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
-        if type == API_FIELDS.SINT32:
+        if type != API_FIELDS.UNKNOWN:
             if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-            else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_long(nValue)), 0)
-
+            else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(self._Type(nValue)), 0)
 
 class CBashXSED(object):
     """To delete the field, you have to set the current accessor to None."""
@@ -6339,8 +6341,117 @@ class FnvNAVIRecord(FnvBaseRecord):
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=4):
+        ##Record Creation Flags
+        ##SetAsOverride       = 0x00000001,
+        ##SetAsWorldCell      = 0x00000002,
+        ##CopyWorldCellStatus = 0x00000004
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 61, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
+    full = CBashSTRING(7)
+    flags = CBashGeneric(8, c_ubyte)
+    posX = CBashUNKNOWN_OR_GENERIC(9, c_long)
+    posY = CBashUNKNOWN_OR_GENERIC(10, c_long)
+    quadFlags = CBashUNKNOWN_OR_GENERIC(11, c_ulong)
+    ambientRed = CBashGeneric(12, c_ubyte)
+    ambientGreen = CBashGeneric(13, c_ubyte)
+    ambientBlue = CBashGeneric(14, c_ubyte)
+    unused1 = CBashUINT8ARRAY(15, 1)
+    directionalRed = CBashGeneric(16, c_ubyte)
+    directionalGreen = CBashGeneric(17, c_ubyte)
+    directionalBlue = CBashGeneric(18, c_ubyte)
+    unused2 = CBashUINT8ARRAY(19, 1)
+    fogRed = CBashGeneric(20, c_ubyte)
+    fogGreen = CBashGeneric(21, c_ubyte)
+    fogBlue = CBashGeneric(22, c_ubyte)
+    unused3 = CBashUINT8ARRAY(23, 1)
+    fogNear = CBashFLOAT32(24)
+    fogFar = CBashFLOAT32(25)
+    directionalXY = CBashGeneric(26, c_long)
+    directionalZ = CBashGeneric(27, c_long)
+    directionalFade = CBashFLOAT32(28)
+    fogClip = CBashFLOAT32(29)
+    fogPower = CBashFLOAT32(30)
+    concSolid = CBashSTRING(31)
+    concBroken = CBashSTRING(32)
+    metalSolid = CBashSTRING(33)
+    metalHollow = CBashSTRING(34)
+    metalSheet = CBashSTRING(35)
+    wood = CBashSTRING(36)
+    sand = CBashSTRING(37)
+    dirt = CBashSTRING(38)
+    grass = CBashSTRING(39)
+    water = CBashSTRING(40)
+    lightTemplate = CBashFORMID(41)
+    lightFlags = CBashGeneric(42, c_ulong)
+    waterHeight = CBashFLOAT32(43)
+    waterNoisePath = CBashISTRING(44)
+    regions = CBashFORMIDARRAY(45)
+    imageSpace = CBashFORMID(46)
+    xcet_p = CBashUINT8ARRAY(47)
+    encounterZone = CBashFORMID(48)
+    climate = CBashFORMID(49)
+    water = CBashFORMID(50)
+    owner = CBashFORMID(51)
+    rank = CBashGeneric(52, c_long)
+    acousticSpace = CBashFORMID(53)
+    xcmt_p = CBashUINT8ARRAY(54)
+    music = CBashFORMID(55)
+    
+    IsInterior = CBashBasicFlag('flags', 0x00000001)
+    IsHasWater = CBashBasicFlag('flags', 0x00000002)
+    IsInvertFastTravel = CBashBasicFlag('flags', 0x00000004)
+    IsForceHideLand = CBashBasicFlag('flags', 0x00000008) #Exterior cells only
+    IsOblivionInterior = CBashBasicFlag('flags', 0x00000008) #Interior cells only
+    IsPublicPlace = CBashBasicFlag('flags', 0x00000020)
+    IsHandChanged = CBashBasicFlag('flags', 0x00000040)
+    IsBehaveLikeExterior = CBashBasicFlag('flags', 0x00000080)
+    
+    IsQuad1ForceHidden = CBashBasicFlag('quadFlags', 0x00000001)
+    IsQuad2ForceHidden = CBashBasicFlag('quadFlags', 0x00000002)
+    IsQuad3ForceHidden = CBashBasicFlag('quadFlags', 0x00000004)
+    IsQuad4ForceHidden = CBashBasicFlag('quadFlags', 0x00000008)
+        
+    IsLightAmbientInherited = CBashBasicFlag('lightFlags', 0x00000001)
+    IsLightDirectionalColorInherited = CBashBasicFlag('lightFlags', 0x00000002)
+    IsLightFogColorInherited = CBashBasicFlag('lightFlags', 0x00000004)
+    IsLightFogNearInherited = CBashBasicFlag('lightFlags', 0x00000008)
+    IsLightFogFarInherited = CBashBasicFlag('lightFlags', 0x00000010)
+    IsLightDirectionalRotationInherited = CBashBasicFlag('lightFlags', 0x00000020)
+    IsLightDirectionalFadeInherited = CBashBasicFlag('lightFlags', 0x00000040)
+    IsLightFogClipInherited = CBashBasicFlag('lightFlags', 0x00000080)
+    IsLightFogPowerInherited = CBashBasicFlag('lightFlags', 0x00000100)
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'flags', 'posX', 'posY', 'quadFlags',
+                                           'ambientRed', 'ambientGreen', 'ambientBlue',
+                                           'directionalRed', 'directionalGreen', 'directionalBlue',
+                                           'fogRed', 'fogGreen', 'fogBlue',
+                                           'fogNear', 'fogFar', 'directionalXY', 'directionalZ',
+                                           'directionalFade', 'fogClip', 'fogPower', 'concSolid',
+                                           'concBroken', 'metalSolid', 'metalHollow', 'metalSheet',
+                                           'wood', 'sand', 'dirt', 'grass', 'water',
+                                           'lightTemplate', 'lightFlags', 'waterHeight',
+                                           'waterNoisePath', 'regions', 'imageSpace', 'xcet_p',
+                                           'encounterZone', 'climate', 'water', 'owner',
+                                           'rank', 'acousticSpace', 'xcmt_p', 'music']
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'flags', 'posX', 'posY', 'quadFlags',
+                                             'ambientRed', 'ambientGreen', 'ambientBlue',
+                                             'directionalRed', 'directionalGreen', 'directionalBlue',
+                                             'fogRed', 'fogGreen', 'fogBlue',
+                                             'fogNear', 'fogFar', 'directionalXY', 'directionalZ',
+                                             'directionalFade', 'fogClip', 'fogPower', 'concSolid',
+                                             'concBroken', 'metalSolid', 'metalHollow', 'metalSheet',
+                                             'wood', 'sand', 'dirt', 'grass', 'water',
+                                             'lightTemplate', 'lightFlags', 'waterHeight',
+                                             'waterNoisePath', 'regions', 'imageSpace',
+                                             'encounterZone', 'climate', 'water', 'owner',
+                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p', 
 
 class FnvWRLDRecord(FnvBaseRecord):
     _Type = 'WRLD'
@@ -7595,8 +7706,8 @@ class ObCELLRecord(ObBaseRecord):
     climate = CBashFORMID(29)
     waterHeight = CBashFLOAT32(30)
     regions = CBashFORMIDARRAY(31)
-    posX = CBashSINT32_OR_UNKNOWN(32)
-    posY = CBashSINT32_OR_UNKNOWN(33)
+    posX = CBashUNKNOWN_OR_GENERIC(32, c_long)
+    posY = CBashUNKNOWN_OR_GENERIC(33, c_long)
     water = CBashFORMID(34)
     def create_ACHR(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACHR", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)

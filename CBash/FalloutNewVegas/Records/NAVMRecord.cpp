@@ -480,7 +480,7 @@ bool NAVMRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 NAVMRecord::GetType()
     {
-    return 'MVAN';
+    return REV32(NAVM);
     }
 
 STRING NAVMRecord::GetStrType()
@@ -497,7 +497,7 @@ SINT32 NAVMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -510,31 +510,31 @@ SINT32 NAVMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'REVN':
+            case REV32(NVER):
                 NVER.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'XVVN':
+            case REV32(NVVX):
                 NVVX.Read(buffer, subSize, curPos);
                 break;
-            case 'RTVN':
+            case REV32(NVTR):
                 NVTR.Read(buffer, subSize, curPos);
                 break;
-            case 'ACVN':
+            case REV32(NVCA):
                 NVCA.Read(buffer, subSize, curPos);
                 break;
-            case 'PDVN':
+            case REV32(NVDP):
                 NVDP.Read(buffer, subSize, curPos);
                 break;
-            case 'DGVN':
+            case REV32(NVGD):
                 NVGD.Read(buffer, subSize, curPos);
                 break;
-            case 'XEVN':
+            case REV32(NVEX):
                 NVEX.Read(buffer, subSize, curPos);
                 break;
             default:

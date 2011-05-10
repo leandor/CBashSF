@@ -58,7 +58,7 @@ class WRLDRecord : public FNVRecord //Worldspace
         OptSimpleSubRecord<FORMID> CNAM; //Climate
         OptSimpleSubRecord<FORMID> NAM2; //Water
         OptSimpleSubRecord<FORMID> NAM3; //LOD Water Type
-        OptSimpleSubRecord<FLOAT32> NAM4; //LOD Water Height
+        OptSimpleFloatSubRecord<flt_0> NAM4; //LOD Water Height
         OptSubRecord<GENDNAM> DNAM; //Land Data
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename

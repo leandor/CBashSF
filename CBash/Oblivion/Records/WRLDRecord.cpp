@@ -81,7 +81,7 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
 
-    if(RecordType == NULL || RecordType == 'DAOR')
+    if(RecordType == NULL || RecordType == REV32(ROAD))
         {
         if(ROAD != NULL)
             {
@@ -90,10 +90,10 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
             }
         }
 
-    if(RecordType == NULL || RecordType != 'LLEC' ||
-        RecordType != 'DRGP' || RecordType != 'DNAL' ||
-        RecordType != 'RFER' || RecordType != 'RHCA' ||
-        RecordType != 'ERCA')
+    if(RecordType == NULL || RecordType != REV32(CELL) ||
+        RecordType != REV32(PGRD) || RecordType != REV32(LAND) ||
+        RecordType != REV32(REFR) || RecordType != REV32(ACHR) ||
+        RecordType != REV32(ACRE))
         {
         if(CELL != NULL)
             {
@@ -253,7 +253,7 @@ void WRLDRecord::SetMusicType(UINT32 Type)
 
 UINT32 WRLDRecord::GetType()
     {
-    return 'DLRW';
+    return REV32(WRLD);
     }
 
 STRING WRLDRecord::GetStrType()
@@ -270,7 +270,7 @@ SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -283,40 +283,40 @@ SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'MANW':
+            case REV32(WNAM):
                 WNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANC':
+            case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
                 break;
-            case '2MAN':
+            case REV32(NAM2):
                 NAM2.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'MANM':
+            case REV32(MNAM):
                 MNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case '0MAN':
+            case REV32(NAM0):
                 NAM0.Read(buffer, subSize, curPos);
                 break;
-            case '9MAN':
+            case REV32(NAM9):
                 NAM9.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'TSFO':
+            case REV32(OFST):
                 OFST.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -353,29 +353,29 @@ SINT32 WRLDRecord::Unload()
 SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(WNAM.IsLoaded())
-        writer.record_write_subrecord('MANW', &WNAM.value, WNAM.GetSize());
+        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
     if(CNAM.IsLoaded())
-        writer.record_write_subrecord('MANC', &CNAM.value, CNAM.GetSize());
+        writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
     if(NAM2.IsLoaded())
-        writer.record_write_subrecord('2MAN', &NAM2.value, NAM2.GetSize());
+        writer.record_write_subrecord(REV32(NAM2), &NAM2.value, NAM2.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(MNAM.IsLoaded())
-        writer.record_write_subrecord('MANM', MNAM.value, MNAM.GetSize());
+        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     if(NAM0.IsLoaded())
-        writer.record_write_subrecord('0MAN', &NAM0.value, NAM0.GetSize());
+        writer.record_write_subrecord(REV32(NAM0), &NAM0.value, NAM0.GetSize());
     if(NAM9.IsLoaded())
-        writer.record_write_subrecord('9MAN', &NAM9.value, NAM9.GetSize());
+        writer.record_write_subrecord(REV32(NAM9), &NAM9.value, NAM9.GetSize());
     if(SNAM.IsLoaded())
-        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
     if(OFST.IsLoaded())
-        writer.record_write_subrecord('TSFO', OFST.value, OFST.GetSize());
+        writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
     return -1;
     }
 

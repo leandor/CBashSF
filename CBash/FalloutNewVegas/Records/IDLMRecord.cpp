@@ -107,7 +107,7 @@ void IDLMRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 IDLMRecord::GetType()
     {
-    return 'MLDI';
+    return REV32(IDLM);
     }
 
 STRING IDLMRecord::GetStrType()
@@ -124,7 +124,7 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -137,23 +137,23 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'FLDI':
+            case REV32(IDLF):
                 IDLF.Read(buffer, subSize, curPos);
                 break;
-            case 'CLDI':
+            case REV32(IDLC):
                 IDLC.Read(buffer, 1, curPos);
                 curPos += subSize - 1; //in case it was one of the UINT32 varieties
                 break;
-            case 'TLDI':
+            case REV32(IDLT):
                 IDLT.Read(buffer, subSize, curPos);
                 break;
-            case 'ALDI':
+            case REV32(IDLA):
                 IDLA.Read(buffer, subSize, curPos);
                 break;
             default:

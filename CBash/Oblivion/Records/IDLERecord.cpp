@@ -309,7 +309,7 @@ void IDLERecord::SetFlagMask(UINT8 Mask)
 
 UINT32 IDLERecord::GetType()
     {
-    return 'ELDI';
+    return REV32(IDLE);
     }
 
 STRING IDLERecord::GetStrType()
@@ -327,7 +327,7 @@ SINT32 IDLERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -340,31 +340,31 @@ SINT32 IDLERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'TDTC':
-            case 'ADTC':
+            case REV32(CTDT):
+            case REV32(CTDA):
                 newCTDA = new ReqSubRecord<GENCTDA>;
                 newCTDA->Read(buffer, subSize, curPos);
                 CTDA.push_back(newCTDA);
                 break;
-            case 'MANA':
+            case REV32(ANAM):
                 ANAM.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -399,14 +399,14 @@ SINT32 IDLERecord::WriteRecord(FileWriter &writer)
     Function_Arguments_Iterator curCTDAFunction;
 
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
     for(UINT32 p = 0; p < CTDA.size(); p++)
         {
@@ -419,12 +419,12 @@ SINT32 IDLERecord::WriteRecord(FileWriter &writer)
             if(CTDAFunction.second == eNONE)
                 CTDA[p]->value.param2 = 0;
             }
-        writer.record_write_subrecord('ADTC', &CTDA[p]->value, CTDA[p]->GetSize());
+        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
         }
     if(ANAM.IsLoaded())
-        writer.record_write_subrecord('MANA', &ANAM.value, ANAM.GetSize());
+        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

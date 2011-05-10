@@ -57,7 +57,7 @@ GLOBRecord::~GLOBRecord()
 
 UINT32 GLOBRecord::GetType()
     {
-    return 'BOLG';
+    return REV32(GLOB);
     }
 
 STRING GLOBRecord::GetStrType()
@@ -74,7 +74,7 @@ SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -87,13 +87,13 @@ SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'MANF':
+            case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'VTLF':
+            case REV32(FLTV):
                 FLTV.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -121,13 +121,13 @@ SINT32 GLOBRecord::Unload()
 SINT32 GLOBRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
 
     if(FNAM.IsLoaded())
-        writer.record_write_subrecord('MANF', &FNAM.value, FNAM.GetSize());
+        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
 
     if(FLTV.IsLoaded())
-        writer.record_write_subrecord('VTLF', &FLTV.value, FLTV.GetSize());
+        writer.record_write_subrecord(REV32(FLTV), &FLTV.value, FLTV.GetSize());
 
     return -1;
     }

@@ -138,7 +138,7 @@ void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
 
 UINT32 SCPTRecord::GetType()
     {
-    return 'TPCS';
+    return REV32(SCPT);
     }
 
 STRING SCPTRecord::GetStrType()
@@ -155,7 +155,7 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -168,32 +168,32 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'RHCS':
+            case REV32(SCHR):
                 SCHR.Read(buffer, subSize, curPos);
                 break;
-            case 'ADCS':
+            case REV32(SCDA):
                 SCDA.Read(buffer, subSize, curPos);
                 break;
-            case 'XTCS':
+            case REV32(SCTX):
                 SCTX.Read(buffer, subSize, curPos);
                 break;
-            case 'DSLS':
+            case REV32(SLSD):
                 VARS.value.push_back(new GENVARS);
                 VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case 'RVCS':
+            case REV32(SCVR):
                 if(VARS.value.size() == 0)
                     VARS.value.push_back(new GENVARS);
                 VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
-            case 'VRCS':
+            case REV32(SCRV):
                 SCR_.Read(buffer, subSize, curPos);
                 SCR_.value.back()->isSCRO = false;
                 break;
-            case 'ORCS':
+            case REV32(SCRO):
                 SCR_.Read(buffer, subSize, curPos);
                 SCR_.value.back()->isSCRO = true;
                 break;

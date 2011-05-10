@@ -291,7 +291,7 @@ void LTEXRecord::SetType(UINT8 Type)
 
 UINT32 LTEXRecord::GetType()
     {
-    return 'XETL';
+    return REV32(LTEX);
     }
 
 
@@ -310,7 +310,7 @@ SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -323,19 +323,19 @@ SINT32 LTEXRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'MANH':
+            case REV32(HNAM):
                 HNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANS':
+            case REV32(SNAM):
                 SNAM.Read(buffer, subSize, curPos);
                 break;
-            case 'MANG':
+            case REV32(GNAM):
                 _readBuffer(&curFormID,buffer,subSize,curPos);
                 GNAM.push_back(curFormID);
                 break;
@@ -366,15 +366,15 @@ SINT32 LTEXRecord::Unload()
 SINT32 LTEXRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(HNAM.IsLoaded())
-        writer.record_write_subrecord('MANH', &HNAM.value, HNAM.GetSize());
+        writer.record_write_subrecord(REV32(HNAM), &HNAM.value, HNAM.GetSize());
     if(SNAM.IsLoaded())
-        writer.record_write_subrecord('MANS', &SNAM.value, SNAM.GetSize());
+        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
     for(UINT32 p = 0; p < GNAM.size(); p++)
-        writer.record_write_subrecord('MANG', &GNAM[p], sizeof(UINT32));
+        writer.record_write_subrecord(REV32(GNAM), &GNAM[p], sizeof(UINT32));
     return -1;
     }
 

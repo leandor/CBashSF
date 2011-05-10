@@ -196,7 +196,7 @@ bool SGSTRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 SGSTRecord::GetType()
     {
-    return 'TSGS';
+    return REV32(SGST);
     }
 
 STRING SGSTRecord::GetStrType()
@@ -215,7 +215,7 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -228,54 +228,54 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'EMBO':
+            case REV32(OBME):
                 OBME.Load();
                 OBME->OBME.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 if(newEffect == NULL)
                     FULL.Read(buffer, subSize, curPos);
                 else
                     newEffect->FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'EMFE':
+            case REV32(EFME):
                 bNoOBME = false;
                 newEffect = new GENEffect;
                 newEffect->OBME.Load();
                 newEffect->OBME->EFME.Read(buffer, subSize, curPos);
                 break;
-            case 'DIFE':
+            case REV32(EFID):
                 if(bNoOBME || newEffect == NULL)
                     newEffect = new GENEffect;
                 newEffect->EFID.Read(buffer, subSize, curPos);
                 Effects.push_back(newEffect);
                 bNoOBME = true;
                 break;
-            case 'TIFE':
+            case REV32(EFIT):
                 if(newEffect == NULL)
                     {
                     newEffect = new GENEffect;
@@ -283,7 +283,7 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 newEffect->EFIT.Read(buffer, subSize, curPos);
                 break;
-            case 'TICS':
+            case REV32(SCIT):
                 if(newEffect == NULL)
                     {
                     newEffect = new GENEffect;
@@ -291,7 +291,7 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 newEffect->SCIT.Read(buffer, subSize, curPos);
                 break;
-            case 'IIFE':
+            case REV32(EFII):
                 if(newEffect == NULL)
                     {
                     newEffect = new GENEffect;
@@ -300,7 +300,7 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 newEffect->OBME.Load();
                 newEffect->OBME->EFII.Read(buffer, subSize, curPos);
                 break;
-            case 'XIFE':
+            case REV32(EFIX):
                 if(newEffect == NULL)
                     {
                     newEffect = new GENEffect;
@@ -309,10 +309,10 @@ SINT32 SGSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 newEffect->OBME.Load();
                 newEffect->OBME->EFIX.Read(buffer, subSize, curPos);
                 break;
-            case 'XXFE':
+            case REV32(EFXX):
                 curPos += subSize;
                 break;
-            case 'XTAD':
+            case REV32(DATX):
                 OBME.Load();
                 OBME->DATX.Read(buffer, subSize, curPos);
                 break;
@@ -348,47 +348,47 @@ SINT32 SGSTRecord::Unload()
 SINT32 SGSTRecord::WriteRecord(FileWriter &writer)
     {
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
     if(OBME.IsLoaded() && OBME->OBME.IsLoaded())
-        writer.record_write_subrecord('EMBO', &OBME->OBME.value, OBME->OBME.GetSize());
+        writer.record_write_subrecord(REV32(OBME), &OBME->OBME.value, OBME->OBME.GetSize());
     if(FULL.IsLoaded())
-        writer.record_write_subrecord('LLUF', FULL.value, FULL.GetSize());
+        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
     if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
         {
-        writer.record_write_subrecord('LDOM', MODL->MODL.value, MODL->MODL.GetSize());
+        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
         if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord('BDOM', &MODL->MODB.value, MODL->MODB.GetSize());
+            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
         if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord('TDOM', MODL->MODT.value, MODL->MODT.GetSize());
+            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
         }
     if(ICON.IsLoaded())
-        writer.record_write_subrecord('NOCI', ICON.value, ICON.GetSize());
+        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
     if(SCRI.IsLoaded())
-        writer.record_write_subrecord('IRCS', &SCRI.value, SCRI.GetSize());
+        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
     if(Effects.size())
         for(UINT32 p = 0; p < Effects.size(); p++)
             {
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFME.IsLoaded())
-                writer.record_write_subrecord('EMFE', &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
+                writer.record_write_subrecord(REV32(EFME), &Effects[p]->OBME->EFME.value, Effects[p]->OBME->EFME.GetSize());
             if(Effects[p]->EFID.IsLoaded())
-                writer.record_write_subrecord('DIFE', &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
+                writer.record_write_subrecord(REV32(EFID), &Effects[p]->EFID.value, Effects[p]->EFID.GetSize());
             if(Effects[p]->EFIT.IsLoaded())
-                writer.record_write_subrecord('TIFE', &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
+                writer.record_write_subrecord(REV32(EFIT), &Effects[p]->EFIT.value, Effects[p]->EFIT.GetSize());
             if(Effects[p]->SCIT.IsLoaded() || Effects[p]->FULL.IsLoaded())
-                writer.record_write_subrecord('TICS', Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
+                writer.record_write_subrecord(REV32(SCIT), Effects[p]->SCIT.value, Effects[p]->SCIT.GetSize());
             if(Effects[p]->FULL.IsLoaded())
-                writer.record_write_subrecord('LLUF', Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
+                writer.record_write_subrecord(REV32(FULL), Effects[p]->FULL.value, Effects[p]->FULL.GetSize());
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFII.IsLoaded())
-                writer.record_write_subrecord('IIFE', Effects[p]->OBME->EFII.value, Effects[p]->OBME->EFII.GetSize());
+                writer.record_write_subrecord(REV32(EFII), Effects[p]->OBME->EFII.value, Effects[p]->OBME->EFII.GetSize());
             if(Effects[p]->OBME.IsLoaded() && Effects[p]->OBME->EFIX.IsLoaded())
-                writer.record_write_subrecord('XIFE', Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
+                writer.record_write_subrecord(REV32(EFIX), Effects[p]->OBME->EFIX.value, Effects[p]->OBME->EFIX.GetSize());
             }
     if(Effects.size() && OBME.IsLoaded())
-        writer.record_write_subheader('XXFE', 0);
+        writer.record_write_subheader(REV32(EFXX), 0);
     if(OBME.IsLoaded() && OBME->DATX.IsLoaded())
-        writer.record_write_subrecord('XTAD', OBME->DATX.value, OBME->DATX.GetSize());
+        writer.record_write_subrecord(REV32(DATX), OBME->DATX.value, OBME->DATX.GetSize());
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

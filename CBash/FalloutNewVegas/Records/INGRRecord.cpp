@@ -279,7 +279,7 @@ void INGRRecord::SetEquipmentType(SINT32 Type)
 
 UINT32 INGRRecord::GetType()
     {
-    return 'RGNI';
+    return REV32(INGR);
     }
 
 STRING INGRRecord::GetStrType()
@@ -296,7 +296,7 @@ SINT32 INGRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -309,63 +309,63 @@ SINT32 INGRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DNBO':
+            case REV32(OBND):
                 OBND.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'LDOM':
+            case REV32(MODL):
                 MODL.Load();
                 MODL->MODL.Read(buffer, subSize, curPos);
                 break;
-            case 'BDOM':
+            case REV32(MODB):
                 MODL.Load();
                 MODL->MODB.Read(buffer, subSize, curPos);
                 break;
-            case 'TDOM':
+            case REV32(MODT):
                 MODL.Load();
                 MODL->MODT.Read(buffer, subSize, curPos);
                 break;
-            case 'SDOM':
+            case REV32(MODS):
                 MODL.Load();
                 MODL->Textures.Read(buffer, subSize, curPos);
                 break;
-            case 'DDOM':
+            case REV32(MODD):
                 MODL.Load();
                 MODL->MODD.Read(buffer, subSize, curPos);
                 break;
-            case 'NOCI':
+            case REV32(ICON):
                 ICON.Read(buffer, subSize, curPos);
                 break;
-            case 'OCIM':
+            case REV32(MICO):
                 MICO.Read(buffer, subSize, curPos);
                 break;
-            case 'IRCS':
+            case REV32(SCRI):
                 SCRI.Read(buffer, subSize, curPos);
                 break;
-            case 'PYTE':
+            case REV32(ETYP):
                 ETYP.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
-            case 'TINE':
+            case REV32(ENIT):
                 ENIT.Read(buffer, subSize, curPos);
                 break;
-            case 'DIFE':
+            case REV32(EFID):
                 Effects.value.push_back(new FNVEffect);
                 Effects.value.back()->EFID.Read(buffer, subSize, curPos);
                 break;
-            case 'TIFE':
+            case REV32(EFIT):
                 if(Effects.value.size() == 0)
                     Effects.value.push_back(new FNVEffect);
                 Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
                 break;
-            case 'ADTC':
+            case REV32(CTDA):
                 if(Effects.value.size() == 0)
                     Effects.value.push_back(new FNVEffect);
                 Effects.value.back()->CTDA.Read(buffer, subSize, curPos);

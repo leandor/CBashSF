@@ -229,7 +229,7 @@ void CSTYRecord::SetType(UINT32 Type)
 
 UINT32 CSTYRecord::GetType()
     {
-    return 'YTSC';
+    return REV32(CSTY);
     }
 
 STRING CSTYRecord::GetStrType()
@@ -246,7 +246,7 @@ SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -259,16 +259,16 @@ SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'DTSC':
+            case REV32(CSTD):
                 CSTD.Read(buffer, subSize, curPos);
                 break;
-            case 'DASC':
+            case REV32(CSAD):
                 CSAD.Read(buffer, subSize, curPos);
                 break;
-            case 'DSSC':
+            case REV32(CSSD):
                 CSSD.Read(buffer, subSize, curPos);
                 break;
             default:

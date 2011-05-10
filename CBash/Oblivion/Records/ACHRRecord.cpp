@@ -111,7 +111,7 @@ void ACHRRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 ACHRRecord::GetType()
     {
-    return 'RHCA';
+    return REV32(ACHR);
     }
 
 STRING ACHRRecord::GetStrType()
@@ -121,7 +121,7 @@ STRING ACHRRecord::GetStrType()
 
 UINT32 ACHRRecord::GetParentType()
     {
-    return 'LLEC';
+    return REV32(CELL);
     }
 
 SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -133,7 +133,7 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
             {
-            case 'XXXX':
+            case REV32(XXXX):
                 curPos += 2;
                 _readBuffer(&subSize, buffer, 4, curPos);
                 _readBuffer(&subType, buffer, 4, curPos);
@@ -146,39 +146,39 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             }
         switch(subType)
             {
-            case 'DIDE':
+            case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case 'EMAN':
+            case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
-            case 'ICPX':
+            case REV32(XPCI):
                 XPCI.Load();
                 XPCI->XPCI.Read(buffer, subSize, curPos);
                 break;
-            case 'LLUF':
+            case REV32(FULL):
                 XPCI.Load();
                 XPCI->FULL.Read(buffer, subSize, curPos);
                 break;
-            case 'DOLX':
+            case REV32(XLOD):
                 XLOD.Read(buffer, subSize, curPos);
                 break;
-            case 'PSEX':
+            case REV32(XESP):
                 XESP.Read(buffer, subSize, curPos);
                 break;
-            case 'CRMX':
+            case REV32(XMRC):
                 XMRC.Read(buffer, subSize, curPos);
                 break;
-            case 'SRHX':
+            case REV32(XHRS):
                 XHRS.Read(buffer, subSize, curPos);
                 break;
-            case 'DGRX':
+            case REV32(XRGD):
                 XRGD.Read(buffer, subSize, curPos);
                 break;
-            case 'LCSX':
+            case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
                 break;
-            case 'ATAD':
+            case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
@@ -215,40 +215,40 @@ SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     char null = 0;
 
     if(EDID.IsLoaded())
-        writer.record_write_subrecord('DIDE', EDID.value, EDID.GetSize());
+        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
 
     if(NAME.IsLoaded())
-        writer.record_write_subrecord('EMAN', &NAME.value, NAME.GetSize());
+        writer.record_write_subrecord(REV32(NAME), &NAME.value, NAME.GetSize());
 
     if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
         {
-        writer.record_write_subrecord('ICPX', &XPCI->XPCI.value, XPCI->XPCI.GetSize());
+        writer.record_write_subrecord(REV32(XPCI), &XPCI->XPCI.value, XPCI->XPCI.GetSize());
         if(XPCI->FULL.IsLoaded())
-            writer.record_write_subrecord('LLUF', XPCI->FULL.value, XPCI->FULL.GetSize());
+            writer.record_write_subrecord(REV32(FULL), XPCI->FULL.value, XPCI->FULL.GetSize());
         else
-            writer.record_write_subrecord('LLUF', &null, 1);
+            writer.record_write_subrecord(REV32(FULL), &null, 1);
         }
 
     if(XLOD.IsLoaded())
-        writer.record_write_subrecord('DOLX', XLOD.value, XLOD.GetSize());
+        writer.record_write_subrecord(REV32(XLOD), XLOD.value, XLOD.GetSize());
 
     if(XESP.IsLoaded())
-        writer.record_write_subrecord('PSEX', XESP.value, XESP.GetSize());
+        writer.record_write_subrecord(REV32(XESP), XESP.value, XESP.GetSize());
 
     if(XMRC.IsLoaded())
-        writer.record_write_subrecord('CRMX', &XMRC.value, XMRC.GetSize());
+        writer.record_write_subrecord(REV32(XMRC), &XMRC.value, XMRC.GetSize());
 
     if(XHRS.IsLoaded())
-        writer.record_write_subrecord('SRHX', &XHRS.value, XHRS.GetSize());
+        writer.record_write_subrecord(REV32(XHRS), &XHRS.value, XHRS.GetSize());
 
     if(XRGD.IsLoaded())
-        writer.record_write_subrecord('DGRX', XRGD.value, XRGD.GetSize());
+        writer.record_write_subrecord(REV32(XRGD), XRGD.value, XRGD.GetSize());
 
     if(XSCL.IsLoaded())
-        writer.record_write_subrecord('LCSX', &XSCL.value, XSCL.GetSize());
+        writer.record_write_subrecord(REV32(XSCL), &XSCL.value, XSCL.GetSize());
 
     if(DATA.IsLoaded())
-        writer.record_write_subrecord('ATAD', &DATA.value, DATA.GetSize());
+        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 

@@ -138,7 +138,7 @@ class REFRRecord : public Record
         OptSimpleSubRecord<FORMID> XTRG;
         SemiOptSubRecord<REFRXSED> XSED;
         OptSubRecord<GENXLOD> XLOD;
-        OptSimpleSubRecord<FLOAT32> XCHG;
+        OptSimpleFloatSubRecord<flt_0> XCHG;
         OptSimpleSubRecord<SINT32> XHLT;
         OptSubRecord<GENXPCI> XPCI;
         OptSimpleSubRecord<SINT32> XLCM;
@@ -147,7 +147,7 @@ class REFRRecord : public Record
         OptSimpleSubRecord<SINT32> XCNT;
         OptSubRecord<REFRMAPMARKER> Marker;
         //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-        OptSimpleSubRecord<FLOAT32, 1> XSCL; // scale
+        OptSimpleFloatSubRecord<flt_1> XSCL; // scale
         OptSimpleSubRecord<UINT8> XSOL;
         ReqSubRecord<GENPOSDATA> DATA;
 
