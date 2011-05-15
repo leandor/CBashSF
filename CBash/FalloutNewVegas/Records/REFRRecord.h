@@ -122,12 +122,6 @@ class REFRRecord : public FNVRecord //Placed Object
             eCurrentCellOnly
             };
 
-        enum xpwrTypes
-            {
-            eReflection = 0,
-            eRefraction
-            };
-
         enum xactFlags
             {
             fIsUseDefault    = 0x00000001,
@@ -141,75 +135,72 @@ class REFRRecord : public FNVRecord //Placed Object
             fIsOppositeParent = 0x00000001,
             fIsPopIn          = 0x00000002
             };
+
+        enum xlocFlags
+            {
+            fIsLeveledLock = 0x00000004
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        RawRecord RCLR; //Unused Linked Reference Color (Old Format?)
-        OptSimpleSubRecord<FORMID> NAME; //Base
+        ReqSimpleSubRecord<FORMID> NAME; //Base
         OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
         RawRecord XRGD; //Ragdoll Data
         RawRecord XRGB; //Ragdoll Biped Data
-        OptSubRecord<GENXPRM> XPRM; //Primitive
-        OptSimpleSubRecord<UINT32> XTRI; //Collision Layer
-        //OptSubRecord<GENXMBP> XMBP; //MultiBound Primitive Marker (Empty)
-        OptSubRecord<GENXMBO> XMBO; //BoundHalfExtents
-        OptSubRecord<GENXTEL> XTEL; //Teleport Destination
-        OptSubRecord<GENXMRK> XMRK; //Map Data
-        OptSubRecord<GENMMRK> MMRK; //Audio Data
-        RawRecord XSRF; //Unknown
-        RawRecord XSRD; //Unknown
-        OptSimpleSubRecord<FORMID> XTRG; //Target
-        OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
         OptSubRecord<GENPATROL> Patrol; //Patrol Data
-        OptSubRecord<GENXRDO> XRDO; //Radio Data
+        OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
         OptSubRecord<FNVXOWN> Ownership; //Owner
-        OptSubRecord<FNVXLOC> XLOC; //Lock Data
         OptSimpleSubRecord<SINT32> XCNT; //Count
         OptSimpleFloatSubRecord<flt_0> XRDS; //Radius
         OptSimpleFloatSubRecord<flt_0> XHLP; //Health
         OptSimpleFloatSubRecord<flt_0> XRAD; //Radiation
         OptSimpleFloatSubRecord<flt_0> XCHG; //Charge
-        OptSubRecord<GENAMMO> Ammo; //Ammo
-        std::vector<ReqSubRecord<GENXPWR> *> Reflections; //Reflected/Refracted By
-        std::vector<FORMID> XLTW; //Lit Water
-        std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
+        UnorderedSparseArray<GENXDCR *> XDCR; //Linked Decals
         OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
+        RawRecord RCLR; //Unused Linked Reference Color (Old Format?)
         OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
         StringRecord XATO; //Activation Prompt
         OptSubRecord<GENXESP> XESP; //Enable Parent
         OptSimpleSubRecord<FORMID> XEMI; //Emittance
         OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
+
+        OptSubRecord<GENXPRM> XPRM; //Primitive
+        OptSimpleSubRecord<UINT32> XTRI; //Collision Layer
+        //OptSubRecord<GENXMBP> XMBP; //MultiBound Primitive Marker (Empty) ?
+        OptSubRecord<GENXMBO> XMBO; //BoundHalfExtents
+        OptSubRecord<GENXTEL> XTEL; //Teleport Destination
+        OptSubRecord<GENMAPDATA> MapData; //Map Data
+        OptSubRecord<GENAUDIODATA> AudioData; //Audio Data
+        RawRecord XSRF; //Unknown
+        RawRecord XSRD; //Unknown
+        OptSimpleSubRecord<FORMID> XTRG; //Target
+        OptSubRecord<GENXRDO> XRDO; //Radio Data
+        SemiOptSubRecord<FNVXLOC> XLOC; //Lock Data
+        OptSubRecord<GENAMMO> Ammo; //Ammo
+        UnorderedSparseArray<GENXPWR *> XPWR; //Reflected/Refracted By
+        UnorderedSparseArray<FORMID> XLTW; //Lit Water
         OptSimpleSubRecord<UINT32> XACT; //Action Flag
         //OptSubRecord<GENONAM> ONAM; //Open by Default (Empty)
-        //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
         OptSubRecord<GENXNDP> XNDP; //Navigation Door Link
-        std::vector<FORMID> XPOD; //Portal Data
+        OptSubRecord<GENXPOD> XPOD; //Portal Data
         OptSubRecord<GENPOSITION> XPTL; //Portal Data
-        OptSimpleSubRecord<UINT8> XSED; //SpeedTree Seed
+        SemiOptSimpleSubRecord<UINT8> XSED; //SpeedTree Seed
         OptSubRecord<GENROOM> Room; //Room Data
         OptSubRecord<GENPOSITION> XOCP; //Occlusion Plane Data
-        std::vector<FORMID> XORD; //Linked Occlusion Planes (4 only?)
+        OptSubRecord<GENXORD> XORD; //Linked Occlusion Planes (4 only?)
         OptSubRecord<GENXLOD> XLOD; //Distant LOD Data
+
+        OptSimpleSubRecord<UINT8> XIBS; //Ignored By Sandbox (Empty, boolean, if != 0, write empty)
         OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
-        OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
+        ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
+
 
         REFRRecord(unsigned char *_recData=NULL);
         REFRRecord(REFRRecord *srcRecord);
         ~REFRRecord();
 
         bool   VisitFormIDs(FormIDOp &op);
-
-        bool   IsNoAlarm();
-        void   IsNoAlarm(bool value);
-        bool   Is0FlagMask(UINT8 Mask, bool Exact=false);
-        void   Set0FlagMask(UINT8 Mask);
-
-        bool   IsVisible();
-        void   IsVisible(bool value);
-        bool   IsCanTravelTo();
-        void   IsCanTravelTo(bool value);
-        bool   Is1FlagMask(UINT8 Mask, bool Exact=false);
-        void   Set1FlagMask(UINT8 Mask);
 
         bool   IsUseDefault();
         void   IsUseDefault(bool value);
@@ -219,8 +210,32 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsOpen(bool value);
         bool   IsOpenByDefault();
         void   IsOpenByDefault(bool value);
-        bool   Is3FlagMask(UINT8 Mask, bool Exact=false);
-        void   Set3FlagMask(UINT8 Mask);
+        bool   IsActionFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetActionFlagMask(UINT32 Mask);
+
+        bool   IsOppositeParent();
+        void   IsOppositeParent(bool value);
+        bool   IsPopIn();
+        void   IsPopIn(bool value);
+        bool   IsParentFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetParentFlagMask(UINT8 Mask);
+
+        bool   IsNoAlarm();
+        void   IsNoAlarm(bool value);
+        bool   IsDestFlagMask(UINT32 Mask, bool Exact=false);
+        void   SetDestFlagMask(UINT32 Mask);
+
+        bool   IsVisible();
+        void   IsVisible(bool value);
+        bool   IsCanTravelTo();
+        void   IsCanTravelTo(bool value);
+        bool   IsMapFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetMapFlagMask(UINT8 Mask);
+
+        bool   IsLeveledLock();
+        void   IsLeveledLock(bool value);
+        bool   IsLockFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetLockFlagMask(UINT8 Mask);
 
         bool   IsNone();
         void   IsNone(bool value);
@@ -230,8 +245,8 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsSphere(bool value);
         bool   IsPortalBox();
         void   IsPortalBox(bool value);
-        bool   Is0Type(UINT8 Type);
-        void   Set0Type(UINT8 Type);
+        bool   IsPrimitiveType(UINT32 Type);
+        void   SetPrimitiveType(UINT32 Type);
 
         bool   IsUnidentified();
         void   IsUnidentified(bool value);
@@ -319,8 +334,8 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsSpellExplosion(bool value);
         bool   IsDroppingPick();
         void   IsDroppingPick(bool value);
-        bool   Is1Type(UINT8 Type);
-        void   Set1Type(UINT8 Type);
+        bool   IsCollisionType(UINT32 Type);
+        void   SetCollisionType(UINT32 Type);
 
         bool   IsMarkerNone();
         void   IsMarkerNone(bool value);
@@ -352,8 +367,8 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsMetro(bool value);
         bool   IsVault();
         void   IsVault(bool value);
-        bool   Is2Type(UINT8 Type);
-        void   Set2Type(UINT8 Type);
+        bool   IsMapType(UINT8 Type);
+        void   SetMapType(UINT8 Type);
 
         bool   IsRadius();
         void   IsRadius(bool value);
@@ -365,22 +380,8 @@ class REFRRecord : public FNVRecord //Placed Object
         void   IsLinkedInteriors(bool value);
         bool   IsCurrentCellOnly();
         void   IsCurrentCellOnly(bool value);
-        bool   Is3Type(UINT8 Type);
-        void   Set3Type(UINT8 Type);
-
-        bool   IsReflection();
-        void   IsReflection(bool value);
-        bool   IsRefraction();
-        void   IsRefraction(bool value);
-        bool   Is4Type(UINT8 Type);
-        void   Set4Type(UINT8 Type);
-
-        bool   IsOppositeParent();
-        void   IsOppositeParent(bool value);
-        bool   IsPopIn();
-        void   IsPopIn(bool value);
-        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagMask(UINT8 Mask);
+        bool   IsBroadcastType(UINT32 Type);
+        void   SetBroadcastType(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
@@ -389,6 +390,7 @@ class REFRRecord : public FNVRecord //Placed Object
 
         UINT32 GetType();
         STRING GetStrType();
+        UINT32 GetParentType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

@@ -60,22 +60,11 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //rclr_p Unused
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return RCLR.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 8: //name Base
+        case 7: //base
             return FORMID_FIELD;
-        case 9: //xezn Encounter Zone
+        case 8: //encounterZone
             return FORMID_FIELD;
-        case 10: //xrgd_p Ragdoll Data
+        case 9: //xrgd_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -86,7 +75,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 11: //xrgb_p Ragdoll Biped Data
+        case 10: //xrgb_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -97,94 +86,381 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 12: //xprm XPRM ,, Struct
+        case 11: //idleTime
             return FLOAT32_FIELD;
-        case 13: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 14: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 15: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 16: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 17: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 18: //xprm XPRM ,, Struct
-            return FLOAT32_FIELD;
-        case 19: //xprm XPRM ,, Struct
-            return UINT32_FIELD;
-        case 20: //xtri Collision Layer
-            return UINT32_FIELD;
-        case 21: //xmbo XMBO ,, Struct
-            return FLOAT32_FIELD;
-        case 22: //xmbo XMBO ,, Struct
-            return FLOAT32_FIELD;
-        case 23: //xmbo XMBO ,, Struct
-            return FLOAT32_FIELD;
-        case 24: //xtel XTEL ,, Struct
+        case 12: //idle
             return FORMID_FIELD;
-        case 25: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 26: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 27: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 28: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 29: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 30: //xtel XTEL ,, Struct
-            return FLOAT32_FIELD;
-        case 31: //xtel XTEL ,, Struct
+        case 13: //unused1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return Patrol.IsLoaded() ? 4 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 14: //numRefs
             return UINT32_FIELD;
-        case 32: //fnam Flags
+        case 15: //compiledSize
+            return UINT32_FIELD;
+        case 16: //lastIndex
+            return UINT32_FIELD;
+        case 17: //scriptType
+            return UINT16_TYPE_FIELD;
+        case 18: //scriptFlags
+            return UINT16_FLAG_FIELD;
+        case 19: //compiled_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return Patrol.IsLoaded() ? Patrol->SCDA.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 20: //scriptText
+            return ISTRING_FIELD;
+        case 21: //vars
+            if(!Patrol.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //vars
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Patrol->VARS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Patrol->VARS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return UINT32_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 12;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 7;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 5: //name
+                    return ISTRING_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 22: //references
+            if(!Patrol.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //references
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return FORMID_OR_UINT32_ARRAY_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Patrol->SCR_.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Patrol->SCR_.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return Patrol->SCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 23: //topic
+            return FORMID_FIELD;
+        case 24: //levelMod
+            return SINT32_FIELD;
+        case 25: //owner
+            return FORMID_FIELD;
+        case 26: //rank
+            return SINT32_FIELD;
+        case 27: //count
+            return SINT32_FIELD;
+        case 28: //radius
+            return FLOAT32_FIELD;
+        case 29: //health
+            return FLOAT32_FIELD;
+        case 30: //radiation
+            return FLOAT32_FIELD;
+        case 31: //charge
+            return FLOAT32_FIELD;
+        case 32: //decals
+            if(ListFieldID == 0) //decals
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)XDCR.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= XDCR.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return FORMID_FIELD;
+                case 2: //unknown1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 24;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 33: //linkedReference
+            return FORMID_FIELD;
+        case 34: //startRed
             return UINT8_FIELD;
-        case 33: //full
+        case 35: //startRed
+            return UINT8_FIELD;
+        case 36: //startBlue
+            return UINT8_FIELD;
+        case 37: //unused2
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XCLP.IsLoaded() ? 1 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 38: //endRed
+            return UINT8_FIELD;
+        case 39: //endGreen
+            return UINT8_FIELD;
+        case 40: //endBlue
+            return UINT8_FIELD;
+        case 41: //unused3
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XCLP.IsLoaded() ? 1 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 42: //rclr_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return RCLR.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 43: //activateParentFlags
+            return UINT8_FLAG_FIELD;
+        case 44: //activateParentRefs
+            if(!ActivateParents.IsLoaded())
+                return UNKNOWN_FIELD;
+
+            if(ListFieldID == 0) //activateParentRefs
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)ActivateParents->XAPR.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= ActivateParents->XAPR.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return FORMID_FIELD;
+                case 2: //delay
+                    return FLOAT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 45: //prompt
             return STRING_FIELD;
-        case 34: //tnam TNAM ,, Struct
-            return UINT8_FIELD;
-        case 35: //tnam_p TNAM ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 1;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 36: //wmi1 Reputation
+        case 46: //parent
             return FORMID_FIELD;
-        case 37: //full_p Unknown
+        case 47: //parentFlags
+            return UINT8_FLAG_FIELD;
+        case 48: //unused4
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return FULL.GetSize();
+                    return XESP.IsLoaded() ? 3 : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 38: //cnam Audio Location
+        case 49: //emittance
             return FORMID_FIELD;
-        case 39: //bnam_p Unknown
+        case 50: //boundRef
+            return FORMID_FIELD;
+        case 51: //primitiveX
+            return FLOAT32_FIELD;
+        case 52: //primitiveY
+            return FLOAT32_FIELD;
+        case 53: //primitiveZ
+            return FLOAT32_FIELD;
+        case 54: //primitiveRed
+            return FLOAT32_FIELD;
+        case 55: //primitiveGreen
+            return FLOAT32_FIELD;
+        case 56: //primitiveBlue
+            return FLOAT32_FIELD;
+        case 57: //primitiveUnknown
+            return FLOAT32_FIELD;
+        case 58: //primitiveType
+            return UINT32_TYPE_FIELD;
+        case 59: //collisionType
+            return UINT32_TYPE_FIELD;
+        case 60: //extentX
+            return FLOAT32_FIELD;
+        case 61: //extentY
+            return FLOAT32_FIELD;
+        case 62: //extentZ
+            return FLOAT32_FIELD;
+        case 63: //destinationFid
+            return FORMID_FIELD;
+        case 64: //destinationPosX
+            return FLOAT32_FIELD;
+        case 65: //destinationPosY
+            return FLOAT32_FIELD;
+        case 66: //destinationPosZ
+            return FLOAT32_FIELD;
+        case 67: //destinationRotX
+            return RADIAN_FIELD;
+        case 68: //destinationRotY
+            return RADIAN_FIELD;
+        case 69: //destinationRotZ
+            return RADIAN_FIELD;
+        case 70: //destinationFlags
+            return UINT32_FLAG_FIELD;
+        case 71: //markerFlags
+            return UINT8_FLAG_FIELD;
+        case 72: //markerFull
+            return STRING_FIELD;
+        case 73: //markerType
+            return UINT8_TYPE_FIELD;
+        case 74: //unused5
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return BNAM.GetSize();
+                    return MapData.IsLoaded() ? 1 : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 40: //mnam
+        case 75: //markerReputation
+            return FORMID_FIELD;
+        case 76: //audioFull_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return AudioData.IsLoaded() ? AudioData->FULL.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 77: //audioLocation
+            return FORMID_FIELD;
+        case 78: //audioBnam_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return AudioData.IsLoaded() ? AudioData->BNAM.GetSize() : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 79: //audioUnknown1
             return FLOAT32_FIELD;
-        case 41: //nnam
+        case 80: //audioUnknown2
             return FLOAT32_FIELD;
-        case 42: //xsrf_p Unknown
+        case 81: //xsrf_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -195,7 +471,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 43: //xsrd_p Unknown
+        case 82: //xsrd_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -206,323 +482,211 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 44: //xtrg Target
+        case 83: //target
             return FORMID_FIELD;
-        case 45: //xlcm Level Modifier
+        case 84: //rangeRadius
+            return FLOAT32_FIELD;
+        case 85: //rangeType
+            return UINT32_TYPE_FIELD;
+        case 86: //staticPercentage
+            return FLOAT32_FIELD;
+        case 87: //positionReference
+            return FORMID_FIELD;
+        case 88: //lockLevel
+            return UINT8_FIELD;
+        case 89: //unused6
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XLOC.IsLoaded() ? 3 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 90: //lockKey
+            return FORMID_FIELD;
+        case 91: //lockFlags
+            return UINT8_FLAG_FIELD;
+        case 92: //unused7
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XLOC.IsLoaded() ? 3 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 93: //lockUnknown1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XLOC.IsLoaded() ? 8 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 94: //ammo
+            return FORMID_FIELD;
+        case 95: //ammoCount
             return SINT32_FIELD;
-        case 46: //xprd Idle Time
-            return FLOAT32_FIELD;
-        case 47: //inam Idle
-            return FORMID_FIELD;
-        case 48: //schr_p Basic Script Data
-            switch(WhichAttribute)
+        case 96: //reflrefrs
+            if(ListFieldID == 0) //reflrefrs
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)XPWR.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= XPWR.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return FORMID_FIELD;
+                case 2: //type
+                    return UINT32_TYPE_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 49: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 50: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 51: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 52: //schr Basic Script Data
+        case 97: //litWaters
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XLTW.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 98: //actionFlags
+            return UINT32_FLAG_FIELD;
+        case 99: //navMesh
+            return FORMID_FIELD;
+        case 100: //navUnknown1
             return UINT16_FIELD;
-        case 53: //schr Basic Script Data
+        case 101: //unused8
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return XNDP.IsLoaded() ? 2 : 0;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 102: //portalLinkedRoom1
+            return FORMID_FIELD;
+        case 103: //portalLinkedRoom2
+            return FORMID_FIELD;
+        case 104: //portalWidth
+            return FLOAT32_FIELD;
+        case 105: //portalHeight
+            return FLOAT32_FIELD;
+        case 106: //portalPosX
+            return FLOAT32_FIELD;
+        case 107: //portalPosY
+            return FLOAT32_FIELD;
+        case 108: //portalPosZ
+            return FLOAT32_FIELD;
+        case 109: //portalQ1
+            return FLOAT32_FIELD;
+        case 110: //portalQ2
+            return FLOAT32_FIELD;
+        case 111: //portalQ3
+            return FLOAT32_FIELD;
+        case 112: //portalQ4
+            return FLOAT32_FIELD;
+        case 113: //seed
+            return UINT8_FIELD;
+        case 114: //roomCount
             return UINT16_FIELD;
-        case 54: //scda_p Compiled Embedded Script
+        case 115: //roomUnknown1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return SCDA.GetSize();
+                    return Room.IsLoaded() && Room->XRMR.IsLoaded() ? 2 : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 55: //sctx Embedded Script Source
-            return ISTRING_FIELD;
-        case 56: //slsd Local Variable Data
-            return UINT32_FIELD;
-        case 57: //slsd_p Local Variable Data
+        case 116: //rooms
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
+                    return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 12;
+                    return Room.IsLoaded() ? Room->XLRM.value.size() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 58: //slsd Local Variable Data
-            return UINT8_FIELD;
-        case 59: //slsd_p Local Variable Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 7;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 60: //scvr Name
-            return ISTRING_FIELD;
-        case 61: //scro Global Reference
+        case 117: //occPlaneWidth
+            return FLOAT32_FIELD;
+        case 118: //occPlaneHeight
+            return FLOAT32_FIELD;
+        case 119: //occPlanePosX
+            return FLOAT32_FIELD;
+        case 120: //occPlanePosY
+            return FLOAT32_FIELD;
+        case 121: //occPlanePosZ
+            return FLOAT32_FIELD;
+        case 122: //occPlaneQ1
+            return FLOAT32_FIELD;
+        case 123: //occPlaneQ2
+            return FLOAT32_FIELD;
+        case 124: //occPlaneQ3
+            return FLOAT32_FIELD;
+        case 125: //occPlaneQ4
+            return FLOAT32_FIELD;
+        case 126: //occPlaneRight
             return FORMID_FIELD;
-        case 62: //scrv Local Variable
-            return UINT32_FIELD;
-        case 63: //tnam Topic
+        case 127: //occPlaneLeft
             return FORMID_FIELD;
-        case 64: //xrdo XRDO ,, Struct
-            return FLOAT32_FIELD;
-        case 65: //xrdo XRDO ,, Struct
-            return UINT32_FIELD;
-        case 66: //xrdo XRDO ,, Struct
-            return FLOAT32_FIELD;
-        case 67: //xrdo XRDO ,, Struct
+        case 128: //occPlaneBottom
             return FORMID_FIELD;
-        case 68: //xown Owner
+        case 129: //occPlaneTop
             return FORMID_FIELD;
-        case 69: //xrnk Faction rank
-            return SINT32_FIELD;
-        case 70: //xloc XLOC ,, Struct
-            return UINT8_FIELD;
-        case 71: //xloc_p XLOC ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 72: //xloc XLOC ,, Struct
-            return FORMID_FIELD;
-        case 73: //xloc XLOC ,, Struct
-            return UINT8_FIELD;
-        case 74: //xloc_p XLOC ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 75: //xloc_p XLOC ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 8;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 76: //xcnt Count
-            return SINT32_FIELD;
-        case 77: //xrds Radius
+        case 130: //lod1
             return FLOAT32_FIELD;
-        case 78: //xhlp Health
+        case 131: //lod2
             return FLOAT32_FIELD;
-        case 79: //xrad Radiation
+        case 132: //lod3
             return FLOAT32_FIELD;
-        case 80: //xchg Charge
+        case 133: //ignoredBySandbox
+            return BOOL_FIELD;
+        case 134: //scale
             return FLOAT32_FIELD;
-        case 81: //xamt Type
-            return FORMID_FIELD;
-        case 82: //xamc Count
-            return SINT32_FIELD;
-        case 83: //xpwr XPWR ,, Struct
-            return FORMID_FIELD;
-        case 84: //xpwr XPWR ,, Struct
-            return UINT32_FIELD;
-        case 85: //xltw Water
-            return FORMID_FIELD;
-        case 86: //xdcr XDCR ,, Struct
-            return FORMID_FIELD;
-        case 87: //xdcr_p XDCR ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return XDCR.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 88: //xlkr Linked Reference
-            return FORMID_FIELD;
-        case 89: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 90: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 91: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 92: //xclp_p XCLP ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 1;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 93: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 94: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 95: //xclp XCLP ,, Struct
-            return UINT8_FIELD;
-        case 96: //xclp_p XCLP ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 1;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 97: //xapd Flags
-            return UINT8_FIELD;
-        case 98: //xapr XAPR ,, Struct
-            return FORMID_FIELD;
-        case 99: //xapr XAPR ,, Struct
+        case 135: //posX
             return FLOAT32_FIELD;
-        case 100: //xato Activation Prompt
-            return ISTRING_FIELD;
-        case 101: //xesp Enable Parent
-            return FORMID_FIELD;
-        case 102: //xesp Enable Parent
-            return UINT8_FIELD;
-        case 103: //xesp_p Enable Parent
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 104: //xemi Emittance
-            return FORMID_FIELD;
-        case 105: //xmbr MultiBound Reference
-            return FORMID_FIELD;
-        case 106: //xact Action Flag
-            return UINT32_FIELD;
-        case 107: //xndp XNDP ,, Struct
-            return FORMID_FIELD;
-        case 108: //xndp XNDP ,, Struct
-            return UINT16_FIELD;
-        case 109: //xndp_p XNDP ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 110: //xpod Portal Data
-            return UNPARSED_FIELD;
-        case 111: //xptl XPTL ,, Struct
+        case 136: //posY
             return FLOAT32_FIELD;
-        case 112: //xptl XPTL ,, Struct
+        case 137: //posZ
             return FLOAT32_FIELD;
-        case 113: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 114: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 115: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 116: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 117: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 118: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 119: //xptl XPTL ,, Struct
-            return FLOAT32_FIELD;
-        case 120: //xsed SpeedTree Seed
-            return UINT8_FIELD;
-        case 121: //xrmr XRMR ,, Struct
-            return UINT16_FIELD;
-        case 122: //xrmr_p XRMR ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 123: //xlrm Linked Room
-            return FORMID_FIELD;
-        case 124: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 125: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 126: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 127: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 128: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 129: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 130: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 131: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 132: //xocp XOCP ,, Struct
-            return FLOAT32_FIELD;
-        case 133: //xord Linked Occlusion Planes
-            return UNPARSED_FIELD;
-        case 134: //xlod Distant LOD Data
-            return FLOAT32_FIELD;
-        case 135: //xlod Distant LOD Data
-            return FLOAT32_FIELD;
-        case 136: //xlod Distant LOD Data
-            return FLOAT32_FIELD;
-        case 137: //xscl Scale
-            return FLOAT32_FIELD;
-        case 138: //data Position/Rotation
-            return FLOAT32_FIELD;
-        case 139: //data Position/Rotation
-            return FLOAT32_FIELD;
-        case 140: //data Position/Rotation
-            return FLOAT32_FIELD;
-        case 141: //data Position/Rotation
-            return FLOAT32_FIELD;
-        case 142: //data Position/Rotation
-            return FLOAT32_FIELD;
-        case 143: //data Position/Rotation
-            return FLOAT32_FIELD;
+        case 138: //rotX
+            return RADIAN_FIELD;
+        case 139: //rotY
+            return RADIAN_FIELD;
+        case 140: //rotZ
+            return RADIAN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -547,301 +711,364 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //rclr_p Unused
-            *FieldValues = RCLR.value;
-            return NULL;
-        case 8: //name Base
-            return NAME.IsLoaded() ? &NAME->value8 : NULL;
-        case 9: //xezn Encounter Zone
-            return XEZN.IsLoaded() ? &XEZN->value9 : NULL;
-        case 10: //xrgd_p Ragdoll Data
+        case 7: //base
+            return &NAME.value;
+        case 8: //encounterZone
+            return &XEZN.value;
+        case 9: //XRGD
             *FieldValues = XRGD.value;
             return NULL;
-        case 11: //xrgb_p Ragdoll Biped Data
+        case 10: //XRGB
             *FieldValues = XRGB.value;
             return NULL;
-        case 12: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value12 : NULL;
-        case 13: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value13 : NULL;
-        case 14: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value14 : NULL;
-        case 15: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value15 : NULL;
-        case 16: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value16 : NULL;
-        case 17: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value17 : NULL;
-        case 18: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value18 : NULL;
-        case 19: //xprm XPRM ,, Struct
-            return XPRM.IsLoaded() ? &XPRM->value19 : NULL;
-        case 20: //xtri Collision Layer
-            return XTRI.IsLoaded() ? &XTRI->value20 : NULL;
-        case 21: //xmbo XMBO ,, Struct
-            return XMBO.IsLoaded() ? &XMBO->value21 : NULL;
-        case 22: //xmbo XMBO ,, Struct
-            return XMBO.IsLoaded() ? &XMBO->value22 : NULL;
-        case 23: //xmbo XMBO ,, Struct
-            return XMBO.IsLoaded() ? &XMBO->value23 : NULL;
-        case 24: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value24 : NULL;
-        case 25: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value25 : NULL;
-        case 26: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value26 : NULL;
-        case 27: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value27 : NULL;
-        case 28: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value28 : NULL;
-        case 29: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value29 : NULL;
-        case 30: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value30 : NULL;
-        case 31: //xtel XTEL ,, Struct
-            return XTEL.IsLoaded() ? &XTEL->value31 : NULL;
-        case 32: //fnam Flags
-            return XMRK.IsLoaded() ? &XMRK->FNAM->value32 : NULL;
-        case 33: //full
-            return FULL.value;
-        case 34: //tnam TNAM ,, Struct
-            return TNAM.IsLoaded() ? &TNAM->value34 : NULL;
-        case 35: //tnam_p TNAM ,, Struct
-            *FieldValues = TNAM.IsLoaded() ? &TNAM->value35[0] : NULL;
+        case 11: //idleTime
+            return Patrol.IsLoaded() ? &Patrol->XPRD.value : NULL;
+        case 12: //idle
+            return Patrol.IsLoaded() ? &Patrol->INAM.value : NULL;
+        case 13: //unused1
+            *FieldValues = Patrol.IsLoaded() ? &Patrol->SCHR.value.unused1[0] : NULL;
             return NULL;
-        case 36: //wmi1 Reputation
-            return WMI1.IsLoaded() ? &WMI1->value36 : NULL;
-        case 37: //full_p Unknown
-            *FieldValues = (MMRK.IsLoaded()) ? MMRK->FULL.value : NULL;
+        case 14: //numRefs
+            return Patrol.IsLoaded() ? &Patrol->SCHR.value.numRefs : NULL;
+        case 15: //compiledSize
+            return Patrol.IsLoaded() ? &Patrol->SCHR.value.compiledSize : NULL;
+        case 16: //lastIndex
+            return Patrol.IsLoaded() ? &Patrol->SCHR.value.lastIndex : NULL;
+        case 17: //scriptType
+            return Patrol.IsLoaded() ? &Patrol->SCHR.value.scriptType : NULL;
+        case 18: //scriptFlags
+            return Patrol.IsLoaded() ? &Patrol->SCHR.value.flags : NULL;
+        case 19: //compiled_p
+            *FieldValues = Patrol.IsLoaded() ? Patrol->SCDA.value : NULL;
             return NULL;
-        case 38: //cnam Audio Location
-            return MMRK.IsLoaded() ? &MMRK->CNAM->value38 : NULL;
-        case 39: //bnam_p Unknown
-            *FieldValues = (MMRK.IsLoaded()) ? MMRK->BNAM.value : NULL;
+        case 20: //scriptText
+            return Patrol.IsLoaded() ? Patrol->SCTX.value : NULL;
+        case 21: //vars
+            if(!Patrol.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= Patrol->VARS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return &Patrol->VARS.value[ListIndex]->SLSD.value.index;
+                case 2: //unused1
+                    *FieldValues = &Patrol->VARS.value[ListIndex]->SLSD.value.unused1[0];
+                    return NULL;
+                case 3: //flags
+                    return &Patrol->VARS.value[ListIndex]->SLSD.value.flags;
+                case 4: //unused2
+                    *FieldValues = &Patrol->VARS.value[ListIndex]->SLSD.value.unused2[0];
+                    return NULL;
+                case 5: //name
+                    return Patrol->VARS.value[ListIndex]->SCVR.value;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 40: //mnam
-            return MMRK.IsLoaded() ? &MMRK->MNAM->value40 : NULL;
-        case 41: //nnam
-            return MMRK.IsLoaded() ? &MMRK->NNAM->value41 : NULL;
-        case 42: //xsrf_p Unknown
+        case 22: //references
+            if(!Patrol.IsLoaded())
+                {
+                *FieldValues = NULL;
+                return NULL;
+                }
+            for(UINT32 x = 0; x < Patrol->SCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = Patrol->SCR_.value[x]->reference;
+            return NULL;
+        case 23: //topic
+            return Patrol.IsLoaded() ? &Patrol->TNAM.value : NULL;
+        case 24: //levelMod
+            return &XLCM.value;
+        case 25: //owner
+            return Ownership.IsLoaded() ? &Ownership->XOWN.value : NULL;
+        case 26: //rank
+            return Ownership.IsLoaded() ? Ownership->XRNK.value : NULL;
+        case 27: //count
+            return &XCNT.value;
+        case 28: //radius
+            return &XRDS.value;
+        case 29: //health
+            return &XHLP.value;
+        case 30: //radiation
+            return &XRAD.value;
+        case 31: //charge
+            return &XCHG.value;
+        case 32: //decals
+            if(ListIndex >= XDCR.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return &XDCR.value[ListIndex]->reference;
+                case 2: //unknown1
+                    *FieldValues = &XDCR.value[ListIndex]->unknown1[0];
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 33: //linkedReference
+            return &XLKR.value;
+        case 34: //startRed
+            return XCLP.IsLoaded() ? &XCLP->start.red : NULL;
+        case 35: //startRed
+            return XCLP.IsLoaded() ? &XCLP->start.green : NULL;
+        case 36: //startBlue
+            return XCLP.IsLoaded() ? &XCLP->start.blue : NULL;
+        case 37: //unused2
+            *FieldValues = XCLP.IsLoaded() ? &XCLP->start.unused1 : NULL;
+            return NULL;
+        case 38: //endRed
+            return XCLP.IsLoaded() ? &XCLP->end.red : NULL;
+        case 39: //endGreen
+            return XCLP.IsLoaded() ? &XCLP->end.green : NULL;
+        case 40: //endBlue
+            return XCLP.IsLoaded() ? &XCLP->end.blue : NULL;
+        case 41: //unused3
+            *FieldValues = XCLP.IsLoaded() ? &XCLP->end.unused1 : NULL;
+            return NULL;
+        case 42: //rclr_p
+            *FieldValues = RCLR.value;
+            return NULL;
+        case 43: //activateParentFlags
+            return ActivateParents.IsLoaded() ? &ActivateParents->XAPD.value : NULL;
+        case 44: //activateParentRefs
+            if(!ActivateParents.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= ActivateParents->XAPR.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return &ActivateParents->XAPR.value[ListIndex]->reference;
+                case 2: //delay
+                    return &ActivateParents->XAPR.value[ListIndex]->delay;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 45: //prompt
+            return XATO.value;
+        case 46: //parent
+            return XESP.IsLoaded() ? &XESP->parent : NULL;
+        case 47: //parentFlags
+            return XESP.IsLoaded() ? &XESP->flags : NULL;
+        case 48: //unused4
+            *FieldValues = XESP.IsLoaded() ? &XESP->unused1[0] : NULL;
+            return NULL;
+        case 49: //emittance
+            return &XEMI.value;
+        case 50: //boundRef
+            return &XMBR.value;
+        case 51: //primitiveX
+            return XPRM.IsLoaded() ? &XPRM->xBound : NULL;
+        case 52: //primitiveY
+            return XPRM.IsLoaded() ? &XPRM->yBound : NULL;
+        case 53: //primitiveZ
+            return XPRM.IsLoaded() ? &XPRM->zBound : NULL;
+        case 54: //primitiveRed
+            return XPRM.IsLoaded() ? &XPRM->red : NULL;
+        case 55: //primitiveGreen
+            return XPRM.IsLoaded() ? &XPRM->green : NULL;
+        case 56: //primitiveBlue
+            return XPRM.IsLoaded() ? &XPRM->blue : NULL;
+        case 57: //primitiveUnknown
+            return XPRM.IsLoaded() ? &XPRM->unknown : NULL;
+        case 58: //primitiveType
+            return XPRM.IsLoaded() ? &XPRM->type : NULL;
+        case 59: //collisionType
+            return &XTRI.value;
+        case 60: //extentX
+            return XMBO.IsLoaded() ? &XMBO->x : NULL;
+        case 61: //extentY
+            return XMBO.IsLoaded() ? &XMBO->y : NULL;
+        case 62: //extentZ
+            return XMBO.IsLoaded() ? &XMBO->z : NULL;
+        case 63: //destinationFid
+            return XTEL.IsLoaded() ? &XTEL->destinationFid : NULL;
+        case 64: //destinationPosX
+            return XTEL.IsLoaded() ? &XTEL->destination.posX : NULL;
+        case 65: //destinationPosY
+            return XTEL.IsLoaded() ? &XTEL->destination.posY : NULL;
+        case 66: //destinationPosZ
+            return XTEL.IsLoaded() ? &XTEL->destination.posZ : NULL;
+        case 67: //destinationRotX
+            return XTEL.IsLoaded() ? &XTEL->destination.rotX : NULL;
+        case 68: //destinationRotY
+            return XTEL.IsLoaded() ? &XTEL->destination.rotY : NULL;
+        case 69: //destinationRotZ
+            return XTEL.IsLoaded() ? &XTEL->destination.rotZ : NULL;
+        case 70: //destinationFlags
+            return XTEL.IsLoaded() ? &XTEL->flags : NULL;
+        case 71: //markerFlags
+            return MapData.IsLoaded() ? &MapData->FNAM.value : NULL;
+        case 72: //markerFull
+            return MapData.IsLoaded() ? MapData->FULL.value : NULL;
+        case 73: //markerType
+            return MapData.IsLoaded() ? &MapData->TNAM.value.markerType : NULL;
+        case 74: //unused5
+            *FieldValues = MapData.IsLoaded() ? &MapData->TNAM.value.unused1 : NULL;
+            return NULL;
+        case 75: //markerReputation
+            return MapData.IsLoaded() ? &MapData->WMI1.value : NULL;
+        case 76: //audioFull_p
+            *FieldValues = AudioData.IsLoaded() ? AudioData->FULL.value : NULL;
+            return NULL;
+        case 77: //audioLocation
+            return AudioData.IsLoaded() ? &AudioData->CNAM.value : NULL;
+        case 78: //audioBnam_p
+            *FieldValues = AudioData.IsLoaded() ? AudioData->BNAM.value : NULL;
+            return NULL;
+        case 79: //audioUnknown1
+            return AudioData.IsLoaded() ? &AudioData->MNAM.value : NULL;
+        case 80: //audioUnknown2
+            return AudioData.IsLoaded() ? &AudioData->NNAM.value : NULL;
+        case 81: //xsrf_p
             *FieldValues = XSRF.value;
             return NULL;
-        case 43: //xsrd_p Unknown
+        case 82: //xsrd_p
             *FieldValues = XSRD.value;
             return NULL;
-        case 44: //xtrg Target
-            return XTRG.IsLoaded() ? &XTRG->value44 : NULL;
-        case 45: //xlcm Level Modifier
-            return XLCM.IsLoaded() ? &XLCM->value45 : NULL;
-        case 46: //xprd Idle Time
-            return XPRD.IsLoaded() ? &XPRD->XPRD->value46 : NULL;
-        case 47: //inam Idle
-            return XPRD.IsLoaded() ? &XPRD->INAM->value47 : NULL;
-        case 48: //schr_p Basic Script Data
-            *FieldValues = (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value48[0] : NULL;
+        case 83: //target
+            return &XTRG.value;
+        case 84: //rangeRadius
+            return XRDO.IsLoaded() ? &XRDO->rangeRadius : NULL;
+        case 85: //rangeType
+            return XRDO.IsLoaded() ? &XRDO->rangeType : NULL;
+        case 86: //staticPercentage
+            return XRDO.IsLoaded() ? &XRDO->staticPercentage : NULL;
+        case 87: //positionReference
+            return XRDO.IsLoaded() ? &XRDO->positionReference : NULL;
+        case 88: //lockLevel
+            return XLOC.IsLoaded() ? &XLOC->level : NULL;
+        case 89: //unused6
+            *FieldValues = XLOC.IsLoaded() ? &XLOC->unused1[0] : NULL;
             return NULL;
-        case 49: //schr Basic Script Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value49 : NULL;
-        case 50: //schr Basic Script Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value50 : NULL;
-        case 51: //schr Basic Script Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value51 : NULL;
-        case 52: //schr Basic Script Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value52 : NULL;
-        case 53: //schr Basic Script Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCHR->value53 : NULL;
-        case 54: //scda_p Compiled Embedded Script
-            *FieldValues = (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? XPRD->SCHR->SCDA.value : NULL;
+        case 90: //lockKey
+            return XLOC.IsLoaded() ? &XLOC->key : NULL;
+        case 91: //lockFlags
+            return XLOC.IsLoaded() ? &XLOC->flags : NULL;
+        case 92: //unused7
+            *FieldValues = XLOC.IsLoaded() ? &XLOC->unused2[0] : NULL;
             return NULL;
-        case 55: //sctx Embedded Script Source
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? XPRD->SCHR->SCTX.value : NULL;
-        case 56: //slsd Local Variable Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SLSD->value56 : NULL;
-        case 57: //slsd_p Local Variable Data
-            *FieldValues = (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SLSD->value57[0] : NULL;
+        case 93: //lockUnknown1
+            *FieldValues = XLOC.IsLoaded() ? &XLOC->unknown[0] : NULL;
             return NULL;
-        case 58: //slsd Local Variable Data
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SLSD->value58 : NULL;
-        case 59: //slsd_p Local Variable Data
-            *FieldValues = (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SLSD->value59[0] : NULL;
+        case 94: //ammo
+            return Ammo.IsLoaded() ? &Ammo->XAMT.value : NULL;
+        case 95: //ammoCount
+            return Ammo.IsLoaded() ? &Ammo->XAMC.value : NULL;
+        case 96: //reflrefrs
+            if(ListIndex >= XPWR.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    return &XPWR.value[ListIndex]->reference;
+                case 2: //type
+                    return &XPWR.value[ListIndex]->type;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 60: //scvr Name
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? XPRD->SCHR->SCVR.value : NULL;
-        case 61: //scro Global Reference
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCRO->value61 : NULL;
-        case 62: //scrv Local Variable
-            return (XPRD.IsLoaded() && XPRD->SCHR.IsLoaded()) ? &XPRD->SCHR->SCRV->value62 : NULL;
-        case 63: //tnam Topic
-            return XPRD.IsLoaded() ? &XPRD->TNAM->value63 : NULL;
-        case 64: //xrdo XRDO ,, Struct
-            return XRDO.IsLoaded() ? &XRDO->value64 : NULL;
-        case 65: //xrdo XRDO ,, Struct
-            return XRDO.IsLoaded() ? &XRDO->value65 : NULL;
-        case 66: //xrdo XRDO ,, Struct
-            return XRDO.IsLoaded() ? &XRDO->value66 : NULL;
-        case 67: //xrdo XRDO ,, Struct
-            return XRDO.IsLoaded() ? &XRDO->value67 : NULL;
-        case 68: //xown Owner
-            return XOWN.IsLoaded() ? &XOWN->XOWN->value68 : NULL;
-        case 69: //xrnk Faction rank
-            return XOWN.IsLoaded() ? &XOWN->XRNK->value69 : NULL;
-        case 70: //xloc XLOC ,, Struct
-            return XLOC.IsLoaded() ? &XLOC->value70 : NULL;
-        case 71: //xloc_p XLOC ,, Struct
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->value71[0] : NULL;
+        case 97: //litWaters
+            *FieldValues = XLTW.IsLoaded() ? &XLTW.value[0] : NULL;
             return NULL;
-        case 72: //xloc XLOC ,, Struct
-            return XLOC.IsLoaded() ? &XLOC->value72 : NULL;
-        case 73: //xloc XLOC ,, Struct
-            return XLOC.IsLoaded() ? &XLOC->value73 : NULL;
-        case 74: //xloc_p XLOC ,, Struct
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->value74[0] : NULL;
+        case 98: //actionFlags
+            return &XACT.value;
+        case 99: //navMesh
+            return XNDP.IsLoaded() ? &XNDP->navMesh : NULL;
+        case 100: //navUnknown1
+            return XNDP.IsLoaded() ? &XNDP->unknown1 : NULL;
+        case 101: //unused8
+            *FieldValues = XNDP.IsLoaded() ? &XNDP->unused1[0] : NULL;
             return NULL;
-        case 75: //xloc_p XLOC ,, Struct
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->value75[0] : NULL;
+        case 102: //portalLinkedRoom1
+            return XPOD.IsLoaded() ? &XPOD->room1 : NULL;
+        case 103: //portalLinkedRoom2
+            return XPOD.IsLoaded() ? &XPOD->room2 : NULL;
+        case 104: //portalWidth
+            return XPTL.IsLoaded() ? &XPTL->width : NULL;
+        case 105: //portalHeight
+            return XPTL.IsLoaded() ? &XPTL->height : NULL;
+        case 106: //portalPosX
+            return XPTL.IsLoaded() ? &XPTL->xPos : NULL;
+        case 107: //portalPosY
+            return XPTL.IsLoaded() ? &XPTL->yPos : NULL;
+        case 108: //portalPosZ
+            return XPTL.IsLoaded() ? &XPTL->zPos : NULL;
+        case 109: //portalQ1
+            return XPTL.IsLoaded() ? &XPTL->q1 : NULL;
+        case 110: //portalQ2
+            return XPTL.IsLoaded() ? &XPTL->q2 : NULL;
+        case 111: //portalQ3
+            return XPTL.IsLoaded() ? &XPTL->q3 : NULL;
+        case 112: //portalQ4
+            return XPTL.IsLoaded() ? &XPTL->q4 : NULL;
+        case 113: //seed
+            return XSED.value;
+        case 114: //roomCount
+            return Room.IsLoaded() && Room->XRMR.IsLoaded() ? &Room->XRMR->count : NULL;
+        case 115: //roomUnknown1
+            *FieldValues = Room.IsLoaded() && Room->XRMR.IsLoaded() ? &Room->XRMR->unknown1[0] : NULL;
             return NULL;
-        case 76: //xcnt Count
-            return XCNT.IsLoaded() ? &XCNT->value76 : NULL;
-        case 77: //xrds Radius
-            return XRDS.IsLoaded() ? &XRDS->value77 : NULL;
-        case 78: //xhlp Health
-            return XHLP.IsLoaded() ? &XHLP->value78 : NULL;
-        case 79: //xrad Radiation
-            return XRAD.IsLoaded() ? &XRAD->value79 : NULL;
-        case 80: //xchg Charge
-            return XCHG.IsLoaded() ? &XCHG->value80 : NULL;
-        case 81: //xamt Type
-            return XAMT.IsLoaded() ? &XAMT->XAMT->value81 : NULL;
-        case 82: //xamc Count
-            return XAMT.IsLoaded() ? &XAMT->XAMC->value82 : NULL;
-        case 83: //xpwr XPWR ,, Struct
-            return XPWR.IsLoaded() ? &XPWR->value83 : NULL;
-        case 84: //xpwr XPWR ,, Struct
-            return XPWR.IsLoaded() ? &XPWR->value84 : NULL;
-        case 85: //xltw Water
-            return XLTW.IsLoaded() ? &XLTW->value85 : NULL;
-        case 86: //xdcr XDCR ,, Struct
-            return XDCR.IsLoaded() ? &XDCR->value86 : NULL;
-        case 87: //xdcr_p XDCR ,, Struct
-            *FieldValues = XDCR.value;
+        case 116: //rooms
+            *FieldValues = Room.IsLoaded() && Room->XLRM.IsLoaded() ? &Room->XLRM.value[0] : NULL;
             return NULL;
-        case 88: //xlkr Linked Reference
-            return XLKR.IsLoaded() ? &XLKR->value88 : NULL;
-        case 89: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value89 : NULL;
-        case 90: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value90 : NULL;
-        case 91: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value91 : NULL;
-        case 92: //xclp_p XCLP ,, Struct
-            *FieldValues = XCLP.IsLoaded() ? &XCLP->value92[0] : NULL;
-            return NULL;
-        case 93: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value93 : NULL;
-        case 94: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value94 : NULL;
-        case 95: //xclp XCLP ,, Struct
-            return XCLP.IsLoaded() ? &XCLP->value95 : NULL;
-        case 96: //xclp_p XCLP ,, Struct
-            *FieldValues = XCLP.IsLoaded() ? &XCLP->value96[0] : NULL;
-            return NULL;
-        case 97: //xapd Flags
-            return XAPD.IsLoaded() ? &XAPD->value97 : NULL;
-        case 98: //xapr XAPR ,, Struct
-            return XAPR.IsLoaded() ? &XAPR->value98 : NULL;
-        case 99: //xapr XAPR ,, Struct
-            return XAPR.IsLoaded() ? &XAPR->value99 : NULL;
-        case 100: //xato Activation Prompt
-            return XATO.value;
-        case 101: //xesp Enable Parent
-            return XESP.IsLoaded() ? &XESP->value101 : NULL;
-        case 102: //xesp Enable Parent
-            return XESP.IsLoaded() ? &XESP->value102 : NULL;
-        case 103: //xesp_p Enable Parent
-            *FieldValues = XESP.IsLoaded() ? &XESP->value103[0] : NULL;
-            return NULL;
-        case 104: //xemi Emittance
-            return XEMI.IsLoaded() ? &XEMI->value104 : NULL;
-        case 105: //xmbr MultiBound Reference
-            return XMBR.IsLoaded() ? &XMBR->value105 : NULL;
-        case 106: //xact Action Flag
-            return XACT.IsLoaded() ? &XACT->value106 : NULL;
-        case 107: //xndp XNDP ,, Struct
-            return XNDP.IsLoaded() ? &XNDP->value107 : NULL;
-        case 108: //xndp XNDP ,, Struct
-            return XNDP.IsLoaded() ? &XNDP->value108 : NULL;
-        case 109: //xndp_p XNDP ,, Struct
-            *FieldValues = XNDP.IsLoaded() ? &XNDP->value109[0] : NULL;
-            return NULL;
-        case 110: //xpod Portal Data
-            return UNPARSEDGET_FIELD110;
-        case 111: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value111 : NULL;
-        case 112: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value112 : NULL;
-        case 113: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value113 : NULL;
-        case 114: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value114 : NULL;
-        case 115: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value115 : NULL;
-        case 116: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value116 : NULL;
-        case 117: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value117 : NULL;
-        case 118: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value118 : NULL;
-        case 119: //xptl XPTL ,, Struct
-            return XPTL.IsLoaded() ? &XPTL->value119 : NULL;
-        case 120: //xsed SpeedTree Seed
-            return XSED.IsLoaded() ? &XSED->value120 : NULL;
-        case 121: //xrmr XRMR ,, Struct
-            return XRMR.IsLoaded() ? &XRMR->value121 : NULL;
-        case 122: //xrmr_p XRMR ,, Struct
-            *FieldValues = XRMR.IsLoaded() ? &XRMR->value122[0] : NULL;
-            return NULL;
-        case 123: //xlrm Linked Room
-            return XLRM.IsLoaded() ? &XLRM->value123 : NULL;
-        case 124: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value124 : NULL;
-        case 125: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value125 : NULL;
-        case 126: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value126 : NULL;
-        case 127: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value127 : NULL;
-        case 128: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value128 : NULL;
-        case 129: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value129 : NULL;
-        case 130: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value130 : NULL;
-        case 131: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value131 : NULL;
-        case 132: //xocp XOCP ,, Struct
-            return XOCP.IsLoaded() ? &XOCP->value132 : NULL;
-        case 133: //xord Linked Occlusion Planes
-            return UNPARSEDGET_FIELD133;
-        case 134: //xlod Distant LOD Data
-            return XLOD.IsLoaded() ? &XLOD->value134 : NULL;
-        case 135: //xlod Distant LOD Data
-            return XLOD.IsLoaded() ? &XLOD->value135 : NULL;
-        case 136: //xlod Distant LOD Data
-            return XLOD.IsLoaded() ? &XLOD->value136 : NULL;
-        case 137: //xscl Scale
-            return XSCL.IsLoaded() ? &XSCL->value137 : NULL;
-        case 138: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value138 : NULL;
-        case 139: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value139 : NULL;
-        case 140: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value140 : NULL;
-        case 141: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value141 : NULL;
-        case 142: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value142 : NULL;
-        case 143: //data Position/Rotation
-            return DATAPosRot.IsLoaded() ? &DATAPosRot->value143 : NULL;
+        case 117: //occPlaneWidth
+            return XOCP.IsLoaded() ? &XOCP->width : NULL;
+        case 118: //occPlaneHeight
+            return XOCP.IsLoaded() ? &XOCP->height : NULL;
+        case 119: //occPlanePosX
+            return XOCP.IsLoaded() ? &XOCP->xPos : NULL;
+        case 120: //occPlanePosY
+            return XOCP.IsLoaded() ? &XOCP->yPos : NULL;
+        case 121: //occPlanePosZ
+            return XOCP.IsLoaded() ? &XOCP->zPos : NULL;
+        case 122: //occPlaneQ1
+            return XOCP.IsLoaded() ? &XOCP->q1 : NULL;
+        case 123: //occPlaneQ2
+            return XOCP.IsLoaded() ? &XOCP->q2 : NULL;
+        case 124: //occPlaneQ3
+            return XOCP.IsLoaded() ? &XOCP->q3 : NULL;
+        case 125: //occPlaneQ4
+            return XOCP.IsLoaded() ? &XOCP->q4 : NULL;
+        case 126: //occPlaneRight
+            return XORD.IsLoaded() ? &XORD->right : NULL;
+        case 127: //occPlaneLeft
+            return XORD.IsLoaded() ? &XORD->left : NULL;
+        case 128: //occPlaneBottom
+            return XORD.IsLoaded() ? &XORD->bottom : NULL;
+        case 129: //occPlaneTop
+            return XORD.IsLoaded() ? &XORD->top : NULL;
+        case 130: //lod1
+            return XLOD.IsLoaded() ? &XLOD->lod1 : NULL;
+        case 131: //lod2
+            return XLOD.IsLoaded() ? &XLOD->lod2 : NULL;
+        case 132: //lod3
+            return XLOD.IsLoaded() ? &XLOD->lod3 : NULL;
+        case 133: //ignoredBySandbox
+            return &XIBS.value;
+        case 134: //scale
+            return &XSCL.value;
+        case 135: //posX
+            return &DATA.value.posX;
+        case 136: //posY
+            return &DATA.value.posY;
+        case 137: //posZ
+            return &DATA.value.posZ;
+        case 138: //rotX
+            return &DATA.value.rotX;
+        case 139: //rotY
+            return &DATA.value.rotY;
+        case 140: //rotZ
+            return &DATA.value.rotZ;
         default:
             return NULL;
         }
@@ -875,638 +1102,695 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //rclr_p Unused
-            RCLR.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 8: //name Base
-            NAME.Load();
-            NAME->value8 = *(FORMID *)FieldValue;
+        case 7: //base
+            NAME.value = *(FORMID *)FieldValue;
             return true;
-        case 9: //xezn Encounter Zone
-            XEZN.Load();
-            XEZN->value9 = *(FORMID *)FieldValue;
+        case 8: //encounterZone
+            XEZN.value = *(FORMID *)FieldValue;
             return true;
-        case 10: //xrgd_p Ragdoll Data
+        case 9: //XRGD
             XRGD.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 11: //xrgb_p Ragdoll Biped Data
+        case 10: //XRGB
             XRGB.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 12: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value12 = *(FLOAT32 *)FieldValue;
+        case 11: //idleTime
+            Patrol.Load();
+            Patrol->XPRD.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value13 = *(FLOAT32 *)FieldValue;
-            break;
-        case 14: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value14 = *(FLOAT32 *)FieldValue;
-            break;
-        case 15: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value15 = *(FLOAT32 *)FieldValue;
-            break;
-        case 16: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value16 = *(FLOAT32 *)FieldValue;
-            break;
-        case 17: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value17 = *(FLOAT32 *)FieldValue;
-            break;
-        case 18: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value18 = *(FLOAT32 *)FieldValue;
-            break;
-        case 19: //xprm XPRM ,, Struct
-            XPRM.Load();
-            XPRM->value19 = *(UINT32 *)FieldValue;
-            break;
-        case 20: //xtri Collision Layer
-            XTRI.Load();
-            XTRI->value20 = *(UINT32 *)FieldValue;
-            break;
-        case 21: //xmbo XMBO ,, Struct
-            XMBO.Load();
-            XMBO->value21 = *(FLOAT32 *)FieldValue;
-            break;
-        case 22: //xmbo XMBO ,, Struct
-            XMBO.Load();
-            XMBO->value22 = *(FLOAT32 *)FieldValue;
-            break;
-        case 23: //xmbo XMBO ,, Struct
-            XMBO.Load();
-            XMBO->value23 = *(FLOAT32 *)FieldValue;
-            break;
-        case 24: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value24 = *(FORMID *)FieldValue;
+        case 12: //idle
+            Patrol.Load();
+            Patrol->INAM.value = *(FORMID *)FieldValue;
             return true;
-        case 25: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value25 = *(FLOAT32 *)FieldValue;
-            break;
-        case 26: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value26 = *(FLOAT32 *)FieldValue;
-            break;
-        case 27: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value27 = *(FLOAT32 *)FieldValue;
-            break;
-        case 28: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value28 = *(FLOAT32 *)FieldValue;
-            break;
-        case 29: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value29 = *(FLOAT32 *)FieldValue;
-            break;
-        case 30: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value30 = *(FLOAT32 *)FieldValue;
-            break;
-        case 31: //xtel XTEL ,, Struct
-            XTEL.Load();
-            XTEL->value31 = *(UINT32 *)FieldValue;
-            break;
-        case 32: //fnam Flags
-            XMRK.Load();
-            XMRK->FNAM.Load();
-            XMRK->FNAM->value32 = *(UINT8 *)FieldValue;
-            break;
-        case 33: //full
-            FULL.Copy((STRING)FieldValue);
-            break;
-        case 34: //tnam TNAM ,, Struct
-            TNAM.Load();
-            TNAM->value34 = *(UINT8 *)FieldValue;
-            break;
-        case 35: //tnam_p TNAM ,, Struct
-            if(ArraySize != 1)
-                break;
-            TNAM.Load();
-            TNAM->value35[0] = ((UINT8ARRAY)FieldValue)[0];
-            break;
-        case 36: //wmi1 Reputation
-            WMI1.Load();
-            WMI1->value36 = *(FORMID *)FieldValue;
-            return true;
-        case 37: //full_p Unknown
-            MMRK.Load();
-            MMRK->FULL.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 38: //cnam Audio Location
-            MMRK.Load();
-            MMRK->CNAM.Load();
-            MMRK->CNAM->value38 = *(FORMID *)FieldValue;
-            return true;
-        case 39: //bnam_p Unknown
-            MMRK.Load();
-            MMRK->BNAM.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 40: //mnam
-            MMRK.Load();
-            MMRK->MNAM.Load();
-            MMRK->MNAM->value40 = *(FLOAT32 *)FieldValue;
-            break;
-        case 41: //nnam
-            MMRK.Load();
-            MMRK->NNAM.Load();
-            MMRK->NNAM->value41 = *(FLOAT32 *)FieldValue;
-            break;
-        case 42: //xsrf_p Unknown
-            XSRF.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 43: //xsrd_p Unknown
-            XSRD.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 44: //xtrg Target
-            XTRG.Load();
-            XTRG->value44 = *(FORMID *)FieldValue;
-            return true;
-        case 45: //xlcm Level Modifier
-            XLCM.Load();
-            XLCM->value45 = *(SINT32 *)FieldValue;
-            break;
-        case 46: //xprd Idle Time
-            XPRD.Load();
-            XPRD->XPRD.Load();
-            XPRD->XPRD->value46 = *(FLOAT32 *)FieldValue;
-            break;
-        case 47: //inam Idle
-            XPRD.Load();
-            XPRD->INAM.Load();
-            XPRD->INAM->value47 = *(FORMID *)FieldValue;
-            return true;
-        case 48: //schr_p Basic Script Data
+        case 13: //unused1
             if(ArraySize != 4)
                 break;
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value48[0] = ((UINT8ARRAY)FieldValue)[0];
-            XPRD->SCHR->SCHR->value48[1] = ((UINT8ARRAY)FieldValue)[1];
-            XPRD->SCHR->SCHR->value48[2] = ((UINT8ARRAY)FieldValue)[2];
-            XPRD->SCHR->SCHR->value48[3] = ((UINT8ARRAY)FieldValue)[3];
+            Patrol.Load();
+            Patrol->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Patrol->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            Patrol->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            Patrol->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 49: //schr Basic Script Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value49 = *(UINT32 *)FieldValue;
+        case 14: //numRefs
+            Patrol.Load();
+            Patrol->SCHR.value.numRefs = *(UINT32 *)FieldValue;
             break;
-        case 50: //schr Basic Script Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value50 = *(UINT32 *)FieldValue;
+        case 15: //compiledSize
+            Patrol.Load();
+            Patrol->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
             break;
-        case 51: //schr Basic Script Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value51 = *(UINT32 *)FieldValue;
+        case 16: //lastIndex
+            Patrol.Load();
+            Patrol->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
             break;
-        case 52: //schr Basic Script Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value52 = *(UINT16 *)FieldValue;
+        case 17: //scriptType
+            Patrol.Load();
+            Patrol->SetType(*(UINT16 *)FieldValue);
             break;
-        case 53: //schr Basic Script Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR.Load();
-            XPRD->SCHR->SCHR->value53 = *(UINT16 *)FieldValue;
+        case 18: //scriptFlags
+            Patrol.Load();
+            Patrol->SetScriptFlagMask(*(UINT16 *)FieldValue);
             break;
-        case 54: //scda_p Compiled Embedded Script
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+        case 19: //compiled_p
+            Patrol.Load();
+            Patrol->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 55: //sctx Embedded Script Source
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCTX.Copy((STRING)FieldValue);
+        case 20: //scriptText
+            Patrol.Load();
+            Patrol->SCTX.Copy((STRING)FieldValue);
             break;
-        case 56: //slsd Local Variable Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value56 = *(UINT32 *)FieldValue;
-            break;
-        case 57: //slsd_p Local Variable Data
-            if(ArraySize != 12)
+        case 21: //vars
+            Patrol.Load();
+            if(ListFieldID == 0) //varsSize
+                {
+                Patrol->VARS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Patrol->VARS.value.size())
                 break;
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value57[0] = ((UINT8ARRAY)FieldValue)[0];
-            XPRD->SCHR->SLSD->value57[1] = ((UINT8ARRAY)FieldValue)[1];
-            XPRD->SCHR->SLSD->value57[2] = ((UINT8ARRAY)FieldValue)[2];
-            XPRD->SCHR->SLSD->value57[3] = ((UINT8ARRAY)FieldValue)[3];
-            XPRD->SCHR->SLSD->value57[4] = ((UINT8ARRAY)FieldValue)[4];
-            XPRD->SCHR->SLSD->value57[5] = ((UINT8ARRAY)FieldValue)[5];
-            XPRD->SCHR->SLSD->value57[6] = ((UINT8ARRAY)FieldValue)[6];
-            XPRD->SCHR->SLSD->value57[7] = ((UINT8ARRAY)FieldValue)[7];
-            XPRD->SCHR->SLSD->value57[8] = ((UINT8ARRAY)FieldValue)[8];
-            XPRD->SCHR->SLSD->value57[9] = ((UINT8ARRAY)FieldValue)[9];
-            XPRD->SCHR->SLSD->value57[10] = ((UINT8ARRAY)FieldValue)[10];
-            XPRD->SCHR->SLSD->value57[11] = ((UINT8ARRAY)FieldValue)[11];
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    Patrol->VARS.value[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 12)
+                        break;
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    break;
+                case 3: //flags
+                    Patrol->VARS.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 4: //unused2
+                    if(ArraySize != 7)
+                        break;
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                    break;
+                case 5: //name
+                    Patrol->VARS.value[ListIndex]->SCVR.Copy((STRING)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 58: //slsd Local Variable Data
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value58 = *(UINT8 *)FieldValue;
-            break;
-        case 59: //slsd_p Local Variable Data
-            if(ArraySize != 7)
+        case 22: //references
+            Patrol.Load();
+            if(ListFieldID == 0) //referencesSize
+                {
+                Patrol->SCR_.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Patrol->SCR_.value.size())
                 break;
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SLSD.Load();
-            XPRD->SCHR->SLSD->value59[0] = ((UINT8ARRAY)FieldValue)[0];
-            XPRD->SCHR->SLSD->value59[1] = ((UINT8ARRAY)FieldValue)[1];
-            XPRD->SCHR->SLSD->value59[2] = ((UINT8ARRAY)FieldValue)[2];
-            XPRD->SCHR->SLSD->value59[3] = ((UINT8ARRAY)FieldValue)[3];
-            XPRD->SCHR->SLSD->value59[4] = ((UINT8ARRAY)FieldValue)[4];
-            XPRD->SCHR->SLSD->value59[5] = ((UINT8ARRAY)FieldValue)[5];
-            XPRD->SCHR->SLSD->value59[6] = ((UINT8ARRAY)FieldValue)[6];
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    //Borrowing ArraySize to flag if the new value is a formID
+                    Patrol->SCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    Patrol->SCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
+                    return ArraySize != 0;
+                default:
+                    break;
+                }
             break;
-        case 60: //scvr Name
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCVR.Copy((STRING)FieldValue);
-            break;
-        case 61: //scro Global Reference
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCRO.Load();
-            XPRD->SCHR->SCRO->value61 = *(FORMID *)FieldValue;
+        case 23: //topic
+            Patrol.Load();
+            Patrol->TNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 62: //scrv Local Variable
-            XPRD.Load();
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCRV.Load();
-            XPRD->SCHR->SCRV->value62 = *(UINT32 *)FieldValue;
+        case 24: //levelMod
+            XLCM.value = *(SINT32 *)FieldValue;
             break;
-        case 63: //tnam Topic
-            XPRD.Load();
-            XPRD->TNAM.Load();
-            XPRD->TNAM->value63 = *(FORMID *)FieldValue;
+        case 25: //owner
+            Ownership.Load();
+            Ownership->XOWN.value = *(FORMID *)FieldValue;
             return true;
-        case 64: //xrdo XRDO ,, Struct
-            XRDO.Load();
-            XRDO->value64 = *(FLOAT32 *)FieldValue;
+        case 26: //rank
+            Ownership.Load();
+            *Ownership->XRNK.value = *(SINT32 *)FieldValue;
             break;
-        case 65: //xrdo XRDO ,, Struct
-            XRDO.Load();
-            XRDO->value65 = *(UINT32 *)FieldValue;
+        case 27: //count
+            XCNT.value = *(SINT32 *)FieldValue;
             break;
-        case 66: //xrdo XRDO ,, Struct
-            XRDO.Load();
-            XRDO->value66 = *(FLOAT32 *)FieldValue;
+        case 28: //radius
+            XRDS.value = *(FLOAT32 *)FieldValue;
             break;
-        case 67: //xrdo XRDO ,, Struct
-            XRDO.Load();
-            XRDO->value67 = *(FORMID *)FieldValue;
+        case 29: //health
+            XHLP.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 30: //radiation
+            XRAD.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 31: //charge
+            XCHG.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 32: //decals
+            if(ListFieldID == 0) //decalsSize
+                {
+                XDCR.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= XDCR.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    XDCR.value[ListIndex]->reference = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //unknown1
+                    if(ArraySize != 24)
+                        break;
+                    XDCR.value[ListIndex]->unknown1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    XDCR.value[ListIndex]->unknown1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    XDCR.value[ListIndex]->unknown1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    XDCR.value[ListIndex]->unknown1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    XDCR.value[ListIndex]->unknown1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    XDCR.value[ListIndex]->unknown1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    XDCR.value[ListIndex]->unknown1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    XDCR.value[ListIndex]->unknown1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    XDCR.value[ListIndex]->unknown1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    XDCR.value[ListIndex]->unknown1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    XDCR.value[ListIndex]->unknown1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    XDCR.value[ListIndex]->unknown1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    XDCR.value[ListIndex]->unknown1[12] = ((UINT8ARRAY)FieldValue)[12];
+                    XDCR.value[ListIndex]->unknown1[13] = ((UINT8ARRAY)FieldValue)[13];
+                    XDCR.value[ListIndex]->unknown1[14] = ((UINT8ARRAY)FieldValue)[14];
+                    XDCR.value[ListIndex]->unknown1[15] = ((UINT8ARRAY)FieldValue)[15];
+                    XDCR.value[ListIndex]->unknown1[16] = ((UINT8ARRAY)FieldValue)[16];
+                    XDCR.value[ListIndex]->unknown1[17] = ((UINT8ARRAY)FieldValue)[17];
+                    XDCR.value[ListIndex]->unknown1[18] = ((UINT8ARRAY)FieldValue)[18];
+                    XDCR.value[ListIndex]->unknown1[19] = ((UINT8ARRAY)FieldValue)[19];
+                    XDCR.value[ListIndex]->unknown1[20] = ((UINT8ARRAY)FieldValue)[20];
+                    XDCR.value[ListIndex]->unknown1[21] = ((UINT8ARRAY)FieldValue)[21];
+                    XDCR.value[ListIndex]->unknown1[22] = ((UINT8ARRAY)FieldValue)[22];
+                    XDCR.value[ListIndex]->unknown1[23] = ((UINT8ARRAY)FieldValue)[23];
+                    break;
+                default:
+                    break;
+                }
+            break;
+        case 33: //linkedReference
+            XLKR.value = *(FORMID *)FieldValue;
             return true;
-        case 68: //xown Owner
-            XOWN.Load();
-            XOWN->XOWN.Load();
-            XOWN->XOWN->value68 = *(FORMID *)FieldValue;
-            return true;
-        case 69: //xrnk Faction rank
-            XOWN.Load();
-            XOWN->XRNK.Load();
-            XOWN->XRNK->value69 = *(SINT32 *)FieldValue;
+        case 34: //startRed
+            XCLP.Load();
+            XCLP->start.red = *(UINT8 *)FieldValue;
             break;
-        case 70: //xloc XLOC ,, Struct
+        case 35: //startRed
+            XCLP.Load();
+            XCLP->start.green = *(UINT8 *)FieldValue;
+            break;
+        case 36: //startBlue
+            XCLP.Load();
+            XCLP->start.blue = *(UINT8 *)FieldValue;
+            break;
+        case 37: //unused2
+            if(ArraySize != 1)
+                break;
+            XCLP.Load();
+            XCLP->start.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 38: //endRed
+            XCLP.Load();
+            XCLP->end.red = *(UINT8 *)FieldValue;
+            break;
+        case 39: //endGreen
+            XCLP.Load();
+            XCLP->end.green = *(UINT8 *)FieldValue;
+            break;
+        case 40: //endBlue
+            XCLP.Load();
+            XCLP->end.blue = *(UINT8 *)FieldValue;
+            break;
+        case 41: //unused3
+            if(ArraySize != 1)
+                break;
+            XCLP.Load();
+            XCLP->end.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 42: //rclr_p
+            RCLR.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 43: //activateParentFlags
+            ActivateParents.Load();
+            ActivateParents->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 44: //activateParentRefs
+            ActivateParents.Load();
+            if(ListFieldID == 0) //activateParentRefsSize
+                {
+                ActivateParents->XAPR.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= ActivateParents->XAPR.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    ActivateParents->XAPR.value[ListIndex]->reference = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //delay
+                    ActivateParents->XAPR.value[ListIndex]->delay = *(FLOAT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
+            break;
+        case 45: //prompt
+            XATO.Copy((STRING)FieldValue);
+            break;
+        case 46: //parent
+            XESP.Load();
+            XESP->parent = *(FORMID *)FieldValue;
+            return true;
+        case 47: //parentFlags
+            SetParentFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 48: //unused4
+            if(ArraySize != 3)
+                break;
+            XESP.Load();
+            XESP->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            XESP->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            XESP->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            break;
+        case 49: //emittance
+            XEMI.value = *(FORMID *)FieldValue;
+            return true;
+        case 50: //boundRef
+            XMBR.value = *(FORMID *)FieldValue;
+            return true;
+        case 51: //primitiveX
+            XPRM.Load();
+            XPRM->xBound = *(FLOAT32 *)FieldValue;
+            break;
+        case 52: //primitiveY
+            XPRM.Load();
+            XPRM->yBound = *(FLOAT32 *)FieldValue;
+            break;
+        case 53: //primitiveZ
+            XPRM.Load();
+            XPRM->zBound = *(FLOAT32 *)FieldValue;
+            break;
+        case 54: //primitiveRed
+            XPRM.Load();
+            XPRM->red = *(FLOAT32 *)FieldValue;
+            break;
+        case 55: //primitiveGreen
+            XPRM.Load();
+            XPRM->green = *(FLOAT32 *)FieldValue;
+            break;
+        case 56: //primitiveBlue
+            XPRM.Load();
+            XPRM->blue = *(FLOAT32 *)FieldValue;
+            break;
+        case 57: //primitiveUnknown
+            XPRM.Load();
+            XPRM->unknown = *(FLOAT32 *)FieldValue;
+            break;
+        case 58: //primitiveType
+            SetPrimitiveType(*(UINT32 *)FieldValue);
+            break;
+        case 59: //collisionType
+            SetCollisionType(*(UINT32 *)FieldValue);
+            break;
+        case 60: //extentX
+            XMBO.Load();
+            XMBO->x = *(FLOAT32 *)FieldValue;
+            break;
+        case 61: //extentY
+            XMBO.Load();
+            XMBO->y = *(FLOAT32 *)FieldValue;
+            break;
+        case 62: //extentZ
+            XMBO.Load();
+            XMBO->z = *(FLOAT32 *)FieldValue;
+            break;
+        case 63: //destinationFid
+            XTEL.Load();
+            XTEL->destinationFid = *(FORMID *)FieldValue;
+            return true;
+        case 64: //destinationPosX
+            XTEL.Load();
+            XTEL->destination.posX = *(FLOAT32 *)FieldValue;
+            break;
+        case 65: //destinationPosY
+            XTEL.Load();
+            XTEL->destination.posY = *(FLOAT32 *)FieldValue;
+            break;
+        case 66: //destinationPosZ
+            XTEL.Load();
+            XTEL->destination.posZ = *(FLOAT32 *)FieldValue;
+            break;
+        case 67: //destinationRotX
+            XTEL.Load();
+            XTEL->destination.rotX = *(FLOAT32 *)FieldValue;
+            break;
+        case 68: //destinationRotY
+            XTEL.Load();
+            XTEL->destination.rotY = *(FLOAT32 *)FieldValue;
+            break;
+        case 69: //destinationRotZ
+            XTEL.Load();
+            XTEL->destination.rotZ = *(FLOAT32 *)FieldValue;
+            break;
+        case 70: //destinationFlags
+            SetDestFlagMask(*(UINT32 *)FieldValue);
+            break;
+        case 71: //markerFlags
+            SetMapFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 72: //markerFull
+            MapData.Load();
+            MapData->FULL.Copy((STRING)FieldValue);
+            break;
+        case 73: //markerType
+            SetMapType(*(UINT8 *)FieldValue);
+            break;
+        case 74: //unused5
+            if(ArraySize != 1)
+                break;
+            MapData.Load();
+            MapData->TNAM.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            break;
+        case 75: //markerReputation
+            MapData.Load();
+            MapData->WMI1.value = *(FORMID *)FieldValue;
+            return true;
+        case 76: //audioFull_p
+            AudioData.Load();
+            AudioData->FULL.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 77: //audioLocation
+            AudioData.Load();
+            AudioData->CNAM.value = *(FORMID *)FieldValue;
+            return true;
+        case 78: //audioBnam_p
+            AudioData.Load();
+            AudioData->BNAM.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 79: //audioUnknown1
+            AudioData.Load();
+            AudioData->MNAM.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 80: //audioUnknown2
+            AudioData.Load();
+            AudioData->NNAM.value = *(FLOAT32 *)FieldValue;
+            break;
+        case 81: //xsrf_p
+            XSRF.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 82: //xsrd_p
+            XSRD.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            break;
+        case 83: //target
+            XTRG.value = *(FORMID *)FieldValue;
+            return true;
+        case 84: //rangeRadius
+            XRDO.Load();
+            XRDO->rangeRadius = *(FLOAT32 *)FieldValue;
+            break;
+        case 85: //rangeType
+            SetBroadcastType(*(UINT32 *)FieldValue);
+            break;
+        case 86: //staticPercentage
+            XRDO.Load();
+            XRDO->staticPercentage = *(FLOAT32 *)FieldValue;
+            break;
+        case 87: //positionReference
+            XRDO.Load();
+            XRDO->positionReference = *(FORMID *)FieldValue;
+            return true;
+        case 88: //lockLevel
             XLOC.Load();
-            XLOC->value70 = *(UINT8 *)FieldValue;
+            XLOC->level = *(UINT8 *)FieldValue;
             break;
-        case 71: //xloc_p XLOC ,, Struct
+        case 89: //unused6
             if(ArraySize != 3)
                 break;
             XLOC.Load();
-            XLOC->value71[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->value71[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->value71[2] = ((UINT8ARRAY)FieldValue)[2];
+            XLOC->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 72: //xloc XLOC ,, Struct
+        case 90: //lockKey
             XLOC.Load();
-            XLOC->value72 = *(FORMID *)FieldValue;
+            XLOC->key = *(FORMID *)FieldValue;
             return true;
-        case 73: //xloc XLOC ,, Struct
-            XLOC.Load();
-            XLOC->value73 = *(UINT8 *)FieldValue;
+        case 91: //lockFlags
+            SetLockFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 74: //xloc_p XLOC ,, Struct
+        case 92: //unused7
             if(ArraySize != 3)
                 break;
             XLOC.Load();
-            XLOC->value74[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->value74[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->value74[2] = ((UINT8ARRAY)FieldValue)[2];
+            XLOC->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->unused2[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 75: //xloc_p XLOC ,, Struct
+        case 93: //lockUnknown1
             if(ArraySize != 8)
                 break;
             XLOC.Load();
-            XLOC->value75[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->value75[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->value75[2] = ((UINT8ARRAY)FieldValue)[2];
-            XLOC->value75[3] = ((UINT8ARRAY)FieldValue)[3];
-            XLOC->value75[4] = ((UINT8ARRAY)FieldValue)[4];
-            XLOC->value75[5] = ((UINT8ARRAY)FieldValue)[5];
-            XLOC->value75[6] = ((UINT8ARRAY)FieldValue)[6];
-            XLOC->value75[7] = ((UINT8ARRAY)FieldValue)[7];
+            XLOC->unknown[0] = ((UINT8ARRAY)FieldValue)[0];
+            XLOC->unknown[1] = ((UINT8ARRAY)FieldValue)[1];
+            XLOC->unknown[2] = ((UINT8ARRAY)FieldValue)[2];
+            XLOC->unknown[3] = ((UINT8ARRAY)FieldValue)[3];
+            XLOC->unknown[4] = ((UINT8ARRAY)FieldValue)[4];
+            XLOC->unknown[5] = ((UINT8ARRAY)FieldValue)[5];
+            XLOC->unknown[6] = ((UINT8ARRAY)FieldValue)[6];
+            XLOC->unknown[7] = ((UINT8ARRAY)FieldValue)[7];
             break;
-        case 76: //xcnt Count
-            XCNT.Load();
-            XCNT->value76 = *(SINT32 *)FieldValue;
-            break;
-        case 77: //xrds Radius
-            XRDS.Load();
-            XRDS->value77 = *(FLOAT32 *)FieldValue;
-            break;
-        case 78: //xhlp Health
-            XHLP.Load();
-            XHLP->value78 = *(FLOAT32 *)FieldValue;
-            break;
-        case 79: //xrad Radiation
-            XRAD.Load();
-            XRAD->value79 = *(FLOAT32 *)FieldValue;
-            break;
-        case 80: //xchg Charge
-            XCHG.Load();
-            XCHG->value80 = *(FLOAT32 *)FieldValue;
-            break;
-        case 81: //xamt Type
-            XAMT.Load();
-            XAMT->XAMT.Load();
-            XAMT->XAMT->value81 = *(FORMID *)FieldValue;
+        case 94: //ammo
+            Ammo.Load();
+            Ammo->XAMT.value = *(FORMID *)FieldValue;
             return true;
-        case 82: //xamc Count
-            XAMT.Load();
-            XAMT->XAMC.Load();
-            XAMT->XAMC->value82 = *(SINT32 *)FieldValue;
+        case 95: //ammoCount
+            Ammo.Load();
+            Ammo->XAMC.value = *(SINT32 *)FieldValue;
             break;
-        case 83: //xpwr XPWR ,, Struct
-            XPWR.Load();
-            XPWR->value83 = *(FORMID *)FieldValue;
-            return true;
-        case 84: //xpwr XPWR ,, Struct
-            XPWR.Load();
-            XPWR->value84 = *(UINT32 *)FieldValue;
-            break;
-        case 85: //xltw Water
-            XLTW.Load();
-            XLTW->value85 = *(FORMID *)FieldValue;
-            return true;
-        case 86: //xdcr XDCR ,, Struct
-            XDCR.Load();
-            XDCR->value86 = *(FORMID *)FieldValue;
-            return true;
-        case 87: //xdcr_p XDCR ,, Struct
-            XDCR.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 88: //xlkr Linked Reference
-            XLKR.Load();
-            XLKR->value88 = *(FORMID *)FieldValue;
-            return true;
-        case 89: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value89 = *(UINT8 *)FieldValue;
-            break;
-        case 90: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value90 = *(UINT8 *)FieldValue;
-            break;
-        case 91: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value91 = *(UINT8 *)FieldValue;
-            break;
-        case 92: //xclp_p XCLP ,, Struct
-            if(ArraySize != 1)
+        case 96: //reflrefrs
+            if(ListFieldID == 0) //reflrefrsSize
+                {
+                XPWR.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= XPWR.value.size())
                 break;
-            XCLP.Load();
-            XCLP->value92[0] = ((UINT8ARRAY)FieldValue)[0];
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    XPWR.value[ListIndex]->reference = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //type
+                    XPWR.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 93: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value93 = *(UINT8 *)FieldValue;
-            break;
-        case 94: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value94 = *(UINT8 *)FieldValue;
-            break;
-        case 95: //xclp XCLP ,, Struct
-            XCLP.Load();
-            XCLP->value95 = *(UINT8 *)FieldValue;
-            break;
-        case 96: //xclp_p XCLP ,, Struct
-            if(ArraySize != 1)
-                break;
-            XCLP.Load();
-            XCLP->value96[0] = ((UINT8ARRAY)FieldValue)[0];
-            break;
-        case 97: //xapd Flags
-            XAPD.Load();
-            XAPD->value97 = *(UINT8 *)FieldValue;
-            break;
-        case 98: //xapr XAPR ,, Struct
-            XAPR.Load();
-            XAPR->value98 = *(FORMID *)FieldValue;
+        case 97: //litWaters
+            XLTW.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                XLTW.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 99: //xapr XAPR ,, Struct
-            XAPR.Load();
-            XAPR->value99 = *(FLOAT32 *)FieldValue;
+        case 98: //actionFlags
+            SetActionFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 100: //xato Activation Prompt
-            XATO.Copy((STRING)FieldValue);
-            break;
-        case 101: //xesp Enable Parent
-            XESP.Load();
-            XESP->value101 = *(FORMID *)FieldValue;
-            return true;
-        case 102: //xesp Enable Parent
-            XESP.Load();
-            XESP->value102 = *(UINT8 *)FieldValue;
-            break;
-        case 103: //xesp_p Enable Parent
-            if(ArraySize != 3)
-                break;
-            XESP.Load();
-            XESP->value103[0] = ((UINT8ARRAY)FieldValue)[0];
-            XESP->value103[1] = ((UINT8ARRAY)FieldValue)[1];
-            XESP->value103[2] = ((UINT8ARRAY)FieldValue)[2];
-            break;
-        case 104: //xemi Emittance
-            XEMI.Load();
-            XEMI->value104 = *(FORMID *)FieldValue;
-            return true;
-        case 105: //xmbr MultiBound Reference
-            XMBR.Load();
-            XMBR->value105 = *(FORMID *)FieldValue;
-            return true;
-        case 106: //xact Action Flag
-            XACT.Load();
-            XACT->value106 = *(UINT32 *)FieldValue;
-            break;
-        case 107: //xndp XNDP ,, Struct
+        case 99: //navMesh
             XNDP.Load();
-            XNDP->value107 = *(FORMID *)FieldValue;
+            XNDP->navMesh = *(FORMID *)FieldValue;
             return true;
-        case 108: //xndp XNDP ,, Struct
+        case 100: //navUnknown1
             XNDP.Load();
-            XNDP->value108 = *(UINT16 *)FieldValue;
+            XNDP->unknown1 = *(UINT16 *)FieldValue;
             break;
-        case 109: //xndp_p XNDP ,, Struct
+        case 101: //unused8
             if(ArraySize != 2)
                 break;
             XNDP.Load();
-            XNDP->value109[0] = ((UINT8ARRAY)FieldValue)[0];
-            XNDP->value109[1] = ((UINT8ARRAY)FieldValue)[1];
+            XNDP->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            XNDP->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 110: //xpod Portal Data
-            return UNPARSEDGET_FIELD110;
-        case 111: //xptl XPTL ,, Struct
+        case 102: //portalLinkedRoom1
+            XPOD.Load();
+            XPOD->room1 = *(FORMID *)FieldValue;
+            return true;
+        case 103: //portalLinkedRoom2
+            XPOD.Load();
+            XPOD->room2 = *(FORMID *)FieldValue;
+            return true;
+        case 104: //portalWidth
             XPTL.Load();
-            XPTL->value111 = *(FLOAT32 *)FieldValue;
+            XPTL->width = *(FLOAT32 *)FieldValue;
             break;
-        case 112: //xptl XPTL ,, Struct
+        case 105: //portalHeight
             XPTL.Load();
-            XPTL->value112 = *(FLOAT32 *)FieldValue;
+            XPTL->height = *(FLOAT32 *)FieldValue;
             break;
-        case 113: //xptl XPTL ,, Struct
+        case 106: //portalPosX
             XPTL.Load();
-            XPTL->value113 = *(FLOAT32 *)FieldValue;
+            XPTL->xPos = *(FLOAT32 *)FieldValue;
             break;
-        case 114: //xptl XPTL ,, Struct
+        case 107: //portalPosY
             XPTL.Load();
-            XPTL->value114 = *(FLOAT32 *)FieldValue;
+            XPTL->yPos = *(FLOAT32 *)FieldValue;
             break;
-        case 115: //xptl XPTL ,, Struct
+        case 108: //portalPosZ
             XPTL.Load();
-            XPTL->value115 = *(FLOAT32 *)FieldValue;
+            XPTL->zPos = *(FLOAT32 *)FieldValue;
             break;
-        case 116: //xptl XPTL ,, Struct
+        case 109: //portalQ1
             XPTL.Load();
-            XPTL->value116 = *(FLOAT32 *)FieldValue;
+            XPTL->q1 = *(FLOAT32 *)FieldValue;
             break;
-        case 117: //xptl XPTL ,, Struct
+        case 110: //portalQ2
             XPTL.Load();
-            XPTL->value117 = *(FLOAT32 *)FieldValue;
+            XPTL->q2 = *(FLOAT32 *)FieldValue;
             break;
-        case 118: //xptl XPTL ,, Struct
+        case 111: //portalQ3
             XPTL.Load();
-            XPTL->value118 = *(FLOAT32 *)FieldValue;
+            XPTL->q3 = *(FLOAT32 *)FieldValue;
             break;
-        case 119: //xptl XPTL ,, Struct
+        case 112: //portalQ4
             XPTL.Load();
-            XPTL->value119 = *(FLOAT32 *)FieldValue;
+            XPTL->q4 = *(FLOAT32 *)FieldValue;
             break;
-        case 120: //xsed SpeedTree Seed
-            XSED.Load();
-            XSED->value120 = *(UINT8 *)FieldValue;
+        case 113: //seed
+            *XSED.value = *(UINT8 *)FieldValue;
             break;
-        case 121: //xrmr XRMR ,, Struct
-            XRMR.Load();
-            XRMR->value121 = *(UINT16 *)FieldValue;
+        case 114: //roomCount
+            Room.Load();
+            Room->XRMR.Load();
+            Room->XRMR->count = *(UINT16 *)FieldValue;
             break;
-        case 122: //xrmr_p XRMR ,, Struct
+        case 115: //roomUnknown1
             if(ArraySize != 2)
                 break;
-            XRMR.Load();
-            XRMR->value122[0] = ((UINT8ARRAY)FieldValue)[0];
-            XRMR->value122[1] = ((UINT8ARRAY)FieldValue)[1];
+            Room.Load();
+            Room->XRMR.Load();
+            Room->XRMR->unknown1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Room->XRMR->unknown1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 123: //xlrm Linked Room
-            XLRM.Load();
-            XLRM->value123 = *(FORMID *)FieldValue;
+        case 116: //rooms
+            Room.Load();
+            Room->XLRM.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                Room->XLRM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 124: //xocp XOCP ,, Struct
+        case 117: //occPlaneWidth
             XOCP.Load();
-            XOCP->value124 = *(FLOAT32 *)FieldValue;
+            XOCP->width = *(FLOAT32 *)FieldValue;
             break;
-        case 125: //xocp XOCP ,, Struct
+        case 118: //occPlaneHeight
             XOCP.Load();
-            XOCP->value125 = *(FLOAT32 *)FieldValue;
+            XOCP->height = *(FLOAT32 *)FieldValue;
             break;
-        case 126: //xocp XOCP ,, Struct
+        case 119: //occPlanePosX
             XOCP.Load();
-            XOCP->value126 = *(FLOAT32 *)FieldValue;
+            XOCP->xPos = *(FLOAT32 *)FieldValue;
             break;
-        case 127: //xocp XOCP ,, Struct
+        case 120: //occPlanePosY
             XOCP.Load();
-            XOCP->value127 = *(FLOAT32 *)FieldValue;
+            XOCP->yPos = *(FLOAT32 *)FieldValue;
             break;
-        case 128: //xocp XOCP ,, Struct
+        case 121: //occPlanePosZ
             XOCP.Load();
-            XOCP->value128 = *(FLOAT32 *)FieldValue;
+            XOCP->zPos = *(FLOAT32 *)FieldValue;
             break;
-        case 129: //xocp XOCP ,, Struct
+        case 122: //occPlaneQ1
             XOCP.Load();
-            XOCP->value129 = *(FLOAT32 *)FieldValue;
+            XOCP->q1 = *(FLOAT32 *)FieldValue;
             break;
-        case 130: //xocp XOCP ,, Struct
+        case 123: //occPlaneQ2
             XOCP.Load();
-            XOCP->value130 = *(FLOAT32 *)FieldValue;
+            XOCP->q2 = *(FLOAT32 *)FieldValue;
             break;
-        case 131: //xocp XOCP ,, Struct
+        case 124: //occPlaneQ3
             XOCP.Load();
-            XOCP->value131 = *(FLOAT32 *)FieldValue;
+            XOCP->q3 = *(FLOAT32 *)FieldValue;
             break;
-        case 132: //xocp XOCP ,, Struct
+        case 125: //occPlaneQ4
             XOCP.Load();
-            XOCP->value132 = *(FLOAT32 *)FieldValue;
+            XOCP->q4 = *(FLOAT32 *)FieldValue;
             break;
-        case 133: //xord Linked Occlusion Planes
-            return UNPARSEDGET_FIELD133;
-        case 134: //xlod Distant LOD Data
+        case 126: //occPlaneRight
+            XORD.Load();
+            XORD->right = *(FORMID *)FieldValue;
+            return true;
+        case 127: //occPlaneLeft
+            XORD.Load();
+            XORD->left = *(FORMID *)FieldValue;
+            return true;
+        case 128: //occPlaneBottom
+            XORD.Load();
+            XORD->bottom = *(FORMID *)FieldValue;
+            return true;
+        case 129: //occPlaneTop
+            XORD.Load();
+            XORD->top = *(FORMID *)FieldValue;
+            return true;
+        case 130: //lod1
             XLOD.Load();
-            XLOD->value134 = *(FLOAT32 *)FieldValue;
+            XLOD->lod1 = *(FLOAT32 *)FieldValue;
             break;
-        case 135: //xlod Distant LOD Data
+        case 131: //lod2
             XLOD.Load();
-            XLOD->value135 = *(FLOAT32 *)FieldValue;
+            XLOD->lod2 = *(FLOAT32 *)FieldValue;
             break;
-        case 136: //xlod Distant LOD Data
+        case 132: //lod3
             XLOD.Load();
-            XLOD->value136 = *(FLOAT32 *)FieldValue;
+            XLOD->lod3 = *(FLOAT32 *)FieldValue;
             break;
-        case 137: //xscl Scale
-            XSCL.Load();
-            XSCL->value137 = *(FLOAT32 *)FieldValue;
+        case 133: //ignoredBySandbox
+            XIBS.value = *(UINT8 *)FieldValue;
             break;
-        case 138: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value138 = *(FLOAT32 *)FieldValue;
+        case 134: //scale
+            XSCL.value = *(FLOAT32 *)FieldValue;
             break;
-        case 139: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value139 = *(FLOAT32 *)FieldValue;
+        case 135: //posX
+            DATA.value.posX = *(FLOAT32 *)FieldValue;
             break;
-        case 140: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value140 = *(FLOAT32 *)FieldValue;
+        case 136: //posY
+            DATA.value.posY = *(FLOAT32 *)FieldValue;
             break;
-        case 141: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value141 = *(FLOAT32 *)FieldValue;
+        case 137: //posZ
+            DATA.value.posZ = *(FLOAT32 *)FieldValue;
             break;
-        case 142: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value142 = *(FLOAT32 *)FieldValue;
+        case 138: //rotX
+            DATA.value.rotX = *(FLOAT32 *)FieldValue;
             break;
-        case 143: //data Position/Rotation
-            DATAPosRot.Load();
-            DATAPosRot->value143 = *(FLOAT32 *)FieldValue;
+        case 139: //rotY
+            DATA.value.rotY = *(FLOAT32 *)FieldValue;
+            break;
+        case 140: //rotZ
+            DATA.value.rotZ = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;
@@ -1516,6 +1800,29 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVSCHR defaultSCHR;
+
+    GENVARS defaultVARS;
+    GENSCR_ defaultSCR_;
+    GENCLR defaultCLR;
+    GENXDCR defaultXDCR;
+    GENXAPR defaultXAPR;
+    GENXESP defaultXESP;
+    GENPOSDATA defaultDATA;
+
+    GENXTEL defaultXTEL;
+    GENXPRM defaultXPRM;
+    GENXMBO defaultXMBO;
+    GENTNAM defaultTNAM;
+    GENXRDO defaultXRDO;
+    FNVXLOC defaultXLOC;
+    GENXLOD defaultXLOD;
+    GENXORD defaultXORD;
+    GENPOSITION defaultPOS;
+    GENXPOD defaultXPOD;
+    GENXNDP defaultXNDP;
+    GENXPWR defaultXPWR;
+    GENXRMR defaultXRMR;
     switch(FieldID)
         {
         case 1: //flags1
@@ -1534,442 +1841,689 @@ void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //rclr_p Unused
-            RCLR.Unload();
-            return;
-        case 8: //name Base
+        case 7: //base
             NAME.Unload();
             return;
-        case 9: //xezn Encounter Zone
+        case 8: //encounterZone
             XEZN.Unload();
             return;
-        case 10: //xrgd_p Ragdoll Data
+        case 9: //XRGD
             XRGD.Unload();
             return;
-        case 11: //xrgb_p Ragdoll Biped Data
+        case 10: //XRGB
             XRGB.Unload();
             return;
-        case 12: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 11: //idleTime
+            if(Patrol.IsLoaded())
+                Patrol->XPRD.Unload();
             return;
-        case 13: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 12: //idle
+            if(Patrol.IsLoaded())
+                Patrol->INAM.Unload();
             return;
-        case 14: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 13: //unused1
+            if(Patrol.IsLoaded())
+                {
+                Patrol->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+                Patrol->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+                Patrol->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+                Patrol->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+                }
             return;
-        case 15: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 14: //numRefs
+            if(Patrol.IsLoaded())
+                Patrol->SCHR.value.numRefs = defaultSCHR.numRefs;
             return;
-        case 16: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 15: //compiledSize
+            if(Patrol.IsLoaded())
+                Patrol->SCHR.value.compiledSize = defaultSCHR.compiledSize;
             return;
-        case 17: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 16: //lastIndex
+            if(Patrol.IsLoaded())
+                Patrol->SCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
-        case 18: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 17: //scriptType
+            if(Patrol.IsLoaded())
+                Patrol->SCHR.value.scriptType = defaultSCHR.scriptType;
             return;
-        case 19: //xprm XPRM ,, Struct
-            XPRM.Unload();
+        case 18: //scriptFlags
+            if(Patrol.IsLoaded())
+                Patrol->SCHR.value.flags = defaultSCHR.flags;
             return;
-        case 20: //xtri Collision Layer
-            XTRI.Unload();
+        case 19: //compiled_p
+            if(Patrol.IsLoaded())
+                Patrol->SCDA.Unload();
             return;
-        case 21: //xmbo XMBO ,, Struct
-            XMBO.Unload();
+        case 20: //scriptText
+            if(Patrol.IsLoaded())
+                Patrol->SCTX.Unload();
             return;
-        case 22: //xmbo XMBO ,, Struct
-            XMBO.Unload();
+        case 21: //vars
+            if(!Patrol.IsLoaded())
+                return;
+
+            if(ListFieldID == 0) //varsSize
+                {
+                Patrol->VARS.Unload();
+                return;
+                }
+
+            if(ListIndex >= Patrol->VARS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    Patrol->VARS.value[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    return;
+                case 2: //unused1
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    return;
+                case 3: //flags
+                    Patrol->VARS.value[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    return;
+                case 4: //unused2
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    Patrol->VARS.value[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    return;
+                case 5: //name
+                    Patrol->VARS.value[ListIndex]->SCVR.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 23: //xmbo XMBO ,, Struct
-            XMBO.Unload();
+        case 22: //references
+            if(!Patrol.IsLoaded())
+                return;
+
+            if(ListFieldID == 0) //referencesSize
+                {
+                Patrol->SCR_.Unload();
+                return;
+                }
+
+            if(ListIndex >= Patrol->SCR_.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    Patrol->SCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    Patrol->SCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 24: //xtel XTEL ,, Struct
-            XTEL.Unload();
+        case 23: //topic
+            if(Patrol.IsLoaded())
+                Patrol->TNAM.Unload();
             return;
-        case 25: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 26: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 27: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 28: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 29: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 30: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 31: //xtel XTEL ,, Struct
-            XTEL.Unload();
-            return;
-        case 32: //fnam Flags
-            if(XMRK.IsLoaded())
-                XMRK->FNAM.Unload();
-            return;
-        case 33: //full
-            FULL.Unload();
-            return;
-        case 34: //tnam TNAM ,, Struct
-            TNAM.Unload();
-            return;
-        case 35: //tnam_p TNAM ,, Struct
-            TNAM.Unload();
-            return;
-        case 36: //wmi1 Reputation
-            WMI1.Unload();
-            return;
-        case 37: //full_p Unknown
-            if(MMRK.IsLoaded())
-                MMRK->FULL.Unload();
-            return;
-        case 38: //cnam Audio Location
-            if(MMRK.IsLoaded())
-                MMRK->CNAM.Unload();
-            return;
-        case 39: //bnam_p Unknown
-            if(MMRK.IsLoaded())
-                MMRK->BNAM.Unload();
-            return;
-        case 40: //mnam
-            if(MMRK.IsLoaded())
-                MMRK->MNAM.Unload();
-            return;
-        case 41: //nnam
-            if(MMRK.IsLoaded())
-                MMRK->NNAM.Unload();
-            return;
-        case 42: //xsrf_p Unknown
-            XSRF.Unload();
-            return;
-        case 43: //xsrd_p Unknown
-            XSRD.Unload();
-            return;
-        case 44: //xtrg Target
-            XTRG.Unload();
-            return;
-        case 45: //xlcm Level Modifier
+        case 24: //levelMod
             XLCM.Unload();
             return;
-        case 46: //xprd Idle Time
-            if(XPRD.IsLoaded())
-                XPRD->XPRD.Unload();
+        case 25: //owner
+            if(Ownership.IsLoaded())
+                Ownership->XOWN.Unload();
             return;
-        case 47: //inam Idle
-            if(XPRD.IsLoaded())
-                XPRD->INAM.Unload();
+        case 26: //rank
+            if(Ownership.IsLoaded())
+                Ownership->XRNK.Unload();
             return;
-        case 48: //schr_p Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 49: //schr Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 50: //schr Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 51: //schr Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 52: //schr Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 53: //schr Basic Script Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCHR.Unload();
-            return;
-        case 54: //scda_p Compiled Embedded Script
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCDA.Unload();
-            return;
-        case 55: //sctx Embedded Script Source
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCTX.Unload();
-            return;
-        case 56: //slsd Local Variable Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SLSD.Unload();
-            return;
-        case 57: //slsd_p Local Variable Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SLSD.Unload();
-            return;
-        case 58: //slsd Local Variable Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SLSD.Unload();
-            return;
-        case 59: //slsd_p Local Variable Data
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SLSD.Unload();
-            return;
-        case 60: //scvr Name
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCVR.Unload();
-            return;
-        case 61: //scro Global Reference
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCRO.Unload();
-            return;
-        case 62: //scrv Local Variable
-            if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded())
-                XPRD->SCHR->SCRV.Unload();
-            return;
-        case 63: //tnam Topic
-            if(XPRD.IsLoaded())
-                XPRD->TNAM.Unload();
-            return;
-        case 64: //xrdo XRDO ,, Struct
-            XRDO.Unload();
-            return;
-        case 65: //xrdo XRDO ,, Struct
-            XRDO.Unload();
-            return;
-        case 66: //xrdo XRDO ,, Struct
-            XRDO.Unload();
-            return;
-        case 67: //xrdo XRDO ,, Struct
-            XRDO.Unload();
-            return;
-        case 68: //xown Owner
-            if(XOWN.IsLoaded())
-                XOWN->XOWN.Unload();
-            return;
-        case 69: //xrnk Faction rank
-            if(XOWN.IsLoaded())
-                XOWN->XRNK.Unload();
-            return;
-        case 70: //xloc XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 71: //xloc_p XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 72: //xloc XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 73: //xloc XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 74: //xloc_p XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 75: //xloc_p XLOC ,, Struct
-            XLOC.Unload();
-            return;
-        case 76: //xcnt Count
+        case 27: //count
             XCNT.Unload();
             return;
-        case 77: //xrds Radius
+        case 28: //radius
             XRDS.Unload();
             return;
-        case 78: //xhlp Health
+        case 29: //health
             XHLP.Unload();
             return;
-        case 79: //xrad Radiation
+        case 30: //radiation
             XRAD.Unload();
             return;
-        case 80: //xchg Charge
+        case 31: //charge
             XCHG.Unload();
             return;
-        case 81: //xamt Type
-            if(XAMT.IsLoaded())
-                XAMT->XAMT.Unload();
+        case 32: //decals
+            if(ListFieldID == 0) //decalsSize
+                {
+                XDCR.Unload();
+                return;
+                }
+
+            if(ListIndex >= XDCR.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    XDCR.value[ListIndex]->reference = defaultXDCR.reference;
+                    return;
+                case 2: //unknown1
+                    XDCR.value[ListIndex]->unknown1[0] = defaultXDCR.unknown1[0];
+                    XDCR.value[ListIndex]->unknown1[1] = defaultXDCR.unknown1[1];
+                    XDCR.value[ListIndex]->unknown1[2] = defaultXDCR.unknown1[2];
+                    XDCR.value[ListIndex]->unknown1[3] = defaultXDCR.unknown1[3];
+                    XDCR.value[ListIndex]->unknown1[4] = defaultXDCR.unknown1[4];
+                    XDCR.value[ListIndex]->unknown1[5] = defaultXDCR.unknown1[5];
+                    XDCR.value[ListIndex]->unknown1[6] = defaultXDCR.unknown1[6];
+                    XDCR.value[ListIndex]->unknown1[7] = defaultXDCR.unknown1[7];
+                    XDCR.value[ListIndex]->unknown1[8] = defaultXDCR.unknown1[8];
+                    XDCR.value[ListIndex]->unknown1[9] = defaultXDCR.unknown1[9];
+                    XDCR.value[ListIndex]->unknown1[10] = defaultXDCR.unknown1[10];
+                    XDCR.value[ListIndex]->unknown1[11] = defaultXDCR.unknown1[11];
+                    XDCR.value[ListIndex]->unknown1[12] = defaultXDCR.unknown1[12];
+                    XDCR.value[ListIndex]->unknown1[13] = defaultXDCR.unknown1[13];
+                    XDCR.value[ListIndex]->unknown1[14] = defaultXDCR.unknown1[14];
+                    XDCR.value[ListIndex]->unknown1[15] = defaultXDCR.unknown1[15];
+                    XDCR.value[ListIndex]->unknown1[16] = defaultXDCR.unknown1[16];
+                    XDCR.value[ListIndex]->unknown1[17] = defaultXDCR.unknown1[17];
+                    XDCR.value[ListIndex]->unknown1[18] = defaultXDCR.unknown1[18];
+                    XDCR.value[ListIndex]->unknown1[19] = defaultXDCR.unknown1[19];
+                    XDCR.value[ListIndex]->unknown1[20] = defaultXDCR.unknown1[20];
+                    XDCR.value[ListIndex]->unknown1[21] = defaultXDCR.unknown1[21];
+                    XDCR.value[ListIndex]->unknown1[22] = defaultXDCR.unknown1[22];
+                    XDCR.value[ListIndex]->unknown1[23] = defaultXDCR.unknown1[23];
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 82: //xamc Count
-            if(XAMT.IsLoaded())
-                XAMT->XAMC.Unload();
-            return;
-        case 83: //xpwr XPWR ,, Struct
-            XPWR.Unload();
-            return;
-        case 84: //xpwr XPWR ,, Struct
-            XPWR.Unload();
-            return;
-        case 85: //xltw Water
-            XLTW.Unload();
-            return;
-        case 86: //xdcr XDCR ,, Struct
-            XDCR.Unload();
-            return;
-        case 87: //xdcr_p XDCR ,, Struct
-            XDCR.Unload();
-            return;
-        case 88: //xlkr Linked Reference
+        case 33: //linkedReference
             XLKR.Unload();
             return;
-        case 89: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 34: //startRed
+            if(XCLP.IsLoaded())
+                XCLP->start.red = defaultCLR.red;
             return;
-        case 90: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 35: //startRed
+            if(XCLP.IsLoaded())
+                XCLP->start.green = defaultCLR.green;
             return;
-        case 91: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 36: //startBlue
+            if(XCLP.IsLoaded())
+                XCLP->start.blue = defaultCLR.blue;
             return;
-        case 92: //xclp_p XCLP ,, Struct
-            XCLP.Unload();
+        case 37: //unused2
+            if(XCLP.IsLoaded())
+                XCLP->start.unused1 = defaultCLR.unused1;
             return;
-        case 93: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 38: //endRed
+            if(XCLP.IsLoaded())
+                XCLP->end.red = defaultCLR.red;
             return;
-        case 94: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 39: //endGreen
+            if(XCLP.IsLoaded())
+                XCLP->end.green = defaultCLR.green;
             return;
-        case 95: //xclp XCLP ,, Struct
-            XCLP.Unload();
+        case 40: //endBlue
+            if(XCLP.IsLoaded())
+                XCLP->end.blue = defaultCLR.blue;
             return;
-        case 96: //xclp_p XCLP ,, Struct
-            XCLP.Unload();
+        case 41: //unused3
+            if(XCLP.IsLoaded())
+                XCLP->end.unused1 = defaultCLR.unused1;
             return;
-        case 97: //xapd Flags
-            XAPD.Unload();
+        case 42: //rclr_p
+            RCLR.Unload();
             return;
-        case 98: //xapr XAPR ,, Struct
-            XAPR.Unload();
+        case 43: //activateParentFlags
+            if(ActivateParents.IsLoaded())
+                ActivateParents->XAPD.Unload();
             return;
-        case 99: //xapr XAPR ,, Struct
-            XAPR.Unload();
+        case 44: //activateParentRefs
+            if(!ActivateParents.IsLoaded())
+                return;
+
+            if(ListFieldID == 0) //activateParentRefsSize
+                {
+                ActivateParents->XAPR.Unload();
+                return;
+                }
+
+            if(ListIndex >= ActivateParents->XAPR.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    ActivateParents->XAPR.value[ListIndex]->reference = defaultXAPR.reference;
+                    return;
+                case 2: //delay
+                    ActivateParents->XAPR.value[ListIndex]->delay = defaultXAPR.delay;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 100: //xato Activation Prompt
+        case 45: //prompt
             XATO.Unload();
             return;
-        case 101: //xesp Enable Parent
-            XESP.Unload();
+        case 46: //parent
+            if(XESP.IsLoaded())
+                XESP->parent = defaultXESP.parent;
             return;
-        case 102: //xesp Enable Parent
-            XESP.Unload();
+        case 47: //parentFlags
+            if(XESP.IsLoaded())
+                SetParentFlagMask(defaultXESP.flags);
             return;
-        case 103: //xesp_p Enable Parent
-            XESP.Unload();
+        case 48: //unused4
+            if(XESP.IsLoaded())
+                {
+                XESP->unused1[0] = defaultXESP.unused1[0];
+                XESP->unused1[1] = defaultXESP.unused1[1];
+                XESP->unused1[2] = defaultXESP.unused1[2];
+                }
             return;
-        case 104: //xemi Emittance
+        case 49: //emittance
             XEMI.Unload();
             return;
-        case 105: //xmbr MultiBound Reference
+        case 50: //boundRef
             XMBR.Unload();
             return;
-        case 106: //xact Action Flag
+        case 51: //primitiveX
+            if(XPRM.IsLoaded())
+                XPRM->xBound = defaultXPRM.xBound;
+            return;
+        case 52: //primitiveY
+            if(XPRM.IsLoaded())
+                XPRM->yBound = defaultXPRM.yBound;
+            return;
+        case 53: //primitiveZ
+            if(XPRM.IsLoaded())
+                XPRM->zBound = defaultXPRM.zBound;
+            return;
+        case 54: //primitiveRed
+            if(XPRM.IsLoaded())
+                XPRM->red = defaultXPRM.red;
+            return;
+        case 55: //primitiveGreen
+            if(XPRM.IsLoaded())
+                XPRM->green = defaultXPRM.green;
+            return;
+        case 56: //primitiveBlue
+            if(XPRM.IsLoaded())
+                XPRM->blue = defaultXPRM.blue;
+            return;
+        case 57: //primitiveUnknown
+            if(XPRM.IsLoaded())
+                XPRM->unknown = defaultXPRM.unknown;
+            return;
+        case 58: //primitiveType
+            if(XPRM.IsLoaded())
+                SetPrimitiveType(defaultXPRM.type);
+            return;
+        case 59: //collisionType
+            XTRI.Unload();
+            return;
+        case 60: //extentX
+            if(XMBO.IsLoaded())
+                XMBO->x = defaultXMBO.x;
+            return;
+        case 61: //extentY
+            if(XMBO.IsLoaded())
+                XMBO->y = defaultXMBO.y;
+            return;
+        case 62: //extentZ
+            if(XMBO.IsLoaded())
+                XMBO->z = defaultXMBO.z;
+            return;
+        case 63: //destinationFid
+            if(XTEL.IsLoaded())
+                XTEL->destinationFid = defaultXTEL.destinationFid;
+            return;
+        case 64: //destinationPosX
+            if(XTEL.IsLoaded())
+                XTEL->destination.posX = defaultXTEL.destination.posX;
+            return;
+        case 65: //destinationPosY
+            if(XTEL.IsLoaded())
+                XTEL->destination.posY = defaultXTEL.destination.posY;
+            return;
+        case 66: //destinationPosZ
+            if(XTEL.IsLoaded())
+                XTEL->destination.posZ = defaultXTEL.destination.posZ;
+            return;
+        case 67: //destinationRotX
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotX = defaultXTEL.destination.rotX;
+            return;
+        case 68: //destinationRotY
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotY = defaultXTEL.destination.rotY;
+            return;
+        case 69: //destinationRotZ
+            if(XTEL.IsLoaded())
+                XTEL->destination.rotZ = defaultXTEL.destination.rotZ;
+            return;
+        case 70: //destinationFlags
+            if(XTEL.IsLoaded())
+                SetDestFlagMask(defaultXTEL.flags);
+            return;
+        case 71: //markerFlags
+            if(MapData.IsLoaded())
+                MapData->FNAM.Unload();
+            return;
+        case 72: //markerFull
+            if(MapData.IsLoaded())
+                MapData->FULL.Unload();
+            return;
+        case 73: //markerType
+            if(MapData.IsLoaded())
+                SetMapType(defaultTNAM.markerType);
+            return;
+        case 74: //unused5
+            if(MapData.IsLoaded())
+                MapData->TNAM.value.unused1 = defaultTNAM.unused1;
+            return;
+        case 75: //markerReputation
+            if(MapData.IsLoaded())
+                MapData->WMI1.Unload();
+            return;
+        case 76: //audioFull_p
+            if(AudioData.IsLoaded())
+                AudioData->FULL.Unload();
+            return;
+        case 77: //audioLocation
+            if(AudioData.IsLoaded())
+                AudioData->CNAM.Unload();
+            return;
+        case 78: //audioBnam_p
+            if(AudioData.IsLoaded())
+                AudioData->BNAM.Unload();
+            return;
+        case 79: //audioUnknown1
+            if(AudioData.IsLoaded())
+                AudioData->MNAM.Unload();
+            return;
+        case 80: //audioUnknown2
+            if(AudioData.IsLoaded())
+                AudioData->NNAM.Unload();
+            return;
+        case 81: //xsrf_p
+            XSRF.Unload();
+            return;
+        case 82: //xsrd_p
+            XSRD.Unload();
+            return;
+        case 83: //target
+            XTRG.Unload();
+            return;
+        case 84: //rangeRadius
+            if(XRDO.IsLoaded())
+                XRDO->rangeRadius = defaultXRDO.rangeRadius;
+            return;
+        case 85: //rangeType
+            if(XRDO.IsLoaded())
+                SetBroadcastType(defaultXRDO.rangeType);
+            return;
+        case 86: //staticPercentage
+            if(XRDO.IsLoaded())
+                XRDO->staticPercentage = defaultXRDO.staticPercentage;
+            return;
+        case 87: //positionReference
+            if(XRDO.IsLoaded())
+                XRDO->positionReference = defaultXRDO.positionReference;
+            return;
+        case 88: //lockLevel
+            if(XLOC.IsLoaded())
+                XLOC->level = defaultXLOC.level;
+            return;
+        case 89: //unused6
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unused1[0] = defaultXLOC.unused1[0];
+                XLOC->unused1[1] = defaultXLOC.unused1[1];
+                XLOC->unused1[2] = defaultXLOC.unused1[2];
+                }
+            return;
+        case 90: //lockKey
+            if(XLOC.IsLoaded())
+                XLOC->key = defaultXLOC.key;
+            return;
+        case 91: //lockFlags
+            if(XLOC.IsLoaded())
+                SetLockFlagMask(defaultXLOC.flags);
+            return;
+        case 92: //unused7
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unused2[0] = defaultXLOC.unused2[0];
+                XLOC->unused2[1] = defaultXLOC.unused2[1];
+                XLOC->unused2[2] = defaultXLOC.unused2[2];
+                }
+            return;
+        case 93: //lockUnknown1
+            if(XLOC.IsLoaded())
+                {
+                XLOC->unknown[0] = defaultXLOC.unknown[0];
+                XLOC->unknown[1] = defaultXLOC.unknown[1];
+                XLOC->unknown[2] = defaultXLOC.unknown[2];
+                XLOC->unknown[3] = defaultXLOC.unknown[3];
+                XLOC->unknown[4] = defaultXLOC.unknown[4];
+                XLOC->unknown[5] = defaultXLOC.unknown[5];
+                XLOC->unknown[6] = defaultXLOC.unknown[6];
+                XLOC->unknown[7] = defaultXLOC.unknown[7];
+                }
+            return;
+        case 94: //ammo
+            if(Ammo.IsLoaded())
+                Ammo->XAMT.Unload();
+            return;
+        case 95: //ammoCount
+            if(Ammo.IsLoaded())
+                Ammo->XAMC.Unload();
+            return;
+        case 96: //reflrefrs
+            if(ListFieldID == 0) //reflrefrsSize
+                {
+                XPWR.Unload();
+                return;
+                }
+
+            if(ListIndex >= XPWR.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    XPWR.value[ListIndex]->reference = defaultXPWR.reference;
+                    return;
+                case 2: //type
+                    XPWR.value[ListIndex]->type = defaultXPWR.type;
+                    return;
+                default:
+                    return;
+                }
+            return;
+        case 97: //litWaters
+            XLTW.Unload();
+            return;
+        case 98: //actionFlags
             XACT.Unload();
             return;
-        case 107: //xndp XNDP ,, Struct
-            XNDP.Unload();
+        case 99: //navMesh
+            if(XNDP.IsLoaded())
+                XNDP->navMesh = defaultXNDP.navMesh;
             return;
-        case 108: //xndp XNDP ,, Struct
-            XNDP.Unload();
+        case 100: //navUnknown1
+            if(XNDP.IsLoaded())
+                XNDP->unknown1 = defaultXNDP.unknown1;
             return;
-        case 109: //xndp_p XNDP ,, Struct
-            XNDP.Unload();
+        case 101: //unused8
+            if(XNDP.IsLoaded())
+                {
+                XNDP->unused1[0] = defaultXNDP.unused1[0];
+                XNDP->unused1[1] = defaultXNDP.unused1[1];
+                }
             return;
-        case 110: //xpod Portal Data
-            return UNPARSEDDEL_FIELD110;
-        case 111: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 102: //portalLinkedRoom1
+            if(XPOD.IsLoaded())
+                XPOD->room1 = defaultXPOD.room1;
             return;
-        case 112: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 103: //portalLinkedRoom2
+            if(XPOD.IsLoaded())
+                XPOD->room2 = defaultXPOD.room2;
             return;
-        case 113: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 104: //portalWidth
+            if(XPTL.IsLoaded())
+                XPTL->width = defaultPOS.width;
             return;
-        case 114: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 105: //portalHeight
+            if(XPTL.IsLoaded())
+                XPTL->height = defaultPOS.height;
             return;
-        case 115: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 106: //portalPosX
+            if(XPTL.IsLoaded())
+                XPTL->xPos = defaultPOS.xPos;
             return;
-        case 116: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 107: //portalPosY
+            if(XPTL.IsLoaded())
+                XPTL->yPos = defaultPOS.yPos;
             return;
-        case 117: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 108: //portalPosZ
+            if(XPTL.IsLoaded())
+                XPTL->zPos = defaultPOS.zPos;
             return;
-        case 118: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 109: //portalQ1
+            if(XPTL.IsLoaded())
+                XPTL->q1 = defaultPOS.q1;
             return;
-        case 119: //xptl XPTL ,, Struct
-            XPTL.Unload();
+        case 110: //portalQ2
+            if(XPTL.IsLoaded())
+                XPTL->q2 = defaultPOS.q2;
             return;
-        case 120: //xsed SpeedTree Seed
+        case 111: //portalQ3
+            if(XPTL.IsLoaded())
+                XPTL->q3 = defaultPOS.q3;
+            return;
+        case 112: //portalQ4
+            if(XPTL.IsLoaded())
+                XPTL->q4 = defaultPOS.q4;
+            return;
+        case 113: //seed
             XSED.Unload();
             return;
-        case 121: //xrmr XRMR ,, Struct
-            XRMR.Unload();
+        case 114: //roomCount
+            if(Room.IsLoaded() && Room->XRMR.IsLoaded())
+                Room->XRMR->count = defaultXRMR.count;
             return;
-        case 122: //xrmr_p XRMR ,, Struct
-            XRMR.Unload();
+        case 115: //roomUnknown1
+            if(Room.IsLoaded() && Room->XRMR.IsLoaded())
+                {
+                Room->XRMR->unknown1[0] = defaultXRMR.unknown1[0];
+                Room->XRMR->unknown1[1] = defaultXRMR.unknown1[1];
+                }
             return;
-        case 123: //xlrm Linked Room
-            XLRM.Unload();
+        case 116: //rooms
+            if(Room.IsLoaded())
+                Room->XLRM.Unload();
             return;
-        case 124: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 117: //occPlaneWidth
+            if(XOCP.IsLoaded())
+                XOCP->width = defaultPOS.width;
             return;
-        case 125: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 118: //occPlaneHeight
+            if(XOCP.IsLoaded())
+                XOCP->height = defaultPOS.height;
             return;
-        case 126: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 119: //occPlanePosX
+            if(XOCP.IsLoaded())
+                XOCP->xPos = defaultPOS.xPos;
             return;
-        case 127: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 120: //occPlanePosY
+            if(XOCP.IsLoaded())
+                XOCP->yPos = defaultPOS.yPos;
             return;
-        case 128: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 121: //occPlanePosZ
+            if(XOCP.IsLoaded())
+                XOCP->zPos = defaultPOS.zPos;
             return;
-        case 129: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 122: //occPlaneQ1
+            if(XOCP.IsLoaded())
+                XOCP->q1 = defaultPOS.q1;
             return;
-        case 130: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 123: //occPlaneQ2
+            if(XOCP.IsLoaded())
+                XOCP->q2 = defaultPOS.q2;
             return;
-        case 131: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 124: //occPlaneQ3
+            if(XOCP.IsLoaded())
+                XOCP->q3 = defaultPOS.q3;
             return;
-        case 132: //xocp XOCP ,, Struct
-            XOCP.Unload();
+        case 125: //occPlaneQ4
+            if(XOCP.IsLoaded())
+                XOCP->q4 = defaultPOS.q4;
             return;
-        case 133: //xord Linked Occlusion Planes
-            return UNPARSEDDEL_FIELD133;
-        case 134: //xlod Distant LOD Data
-            XLOD.Unload();
+        case 126: //occPlaneRight
+            if(XORD.IsLoaded())
+                XORD->right = defaultXORD.right;
             return;
-        case 135: //xlod Distant LOD Data
-            XLOD.Unload();
+        case 127: //occPlaneLeft
+            if(XORD.IsLoaded())
+                XORD->left = defaultXORD.left;
             return;
-        case 136: //xlod Distant LOD Data
-            XLOD.Unload();
+        case 128: //occPlaneBottom
+            if(XORD.IsLoaded())
+                XORD->bottom = defaultXORD.bottom;
             return;
-        case 137: //xscl Scale
+        case 129: //occPlaneTop
+            if(XORD.IsLoaded())
+                XORD->top = defaultXORD.top;
+            return;
+        case 130: //lod1
+            if(XLOD.IsLoaded())
+                XLOD->lod1 = defaultXLOD.lod1;
+            return;
+        case 131: //lod2
+            if(XLOD.IsLoaded())
+                XLOD->lod2 = defaultXLOD.lod2;
+            return;
+        case 132: //lod3
+            if(XLOD.IsLoaded())
+                XLOD->lod3 = defaultXLOD.lod3;
+            return;
+        case 133: //ignoredBySandbox
+            XIBS.Unload();
+            return;
+        case 134: //scale
             XSCL.Unload();
             return;
-        case 138: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 135: //posX
+            DATA.value.posX = defaultDATA.posX;
             return;
-        case 139: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 136: //posY
+            DATA.value.posY = defaultDATA.posY;
             return;
-        case 140: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 137: //posZ
+            DATA.value.posZ = defaultDATA.posZ;
             return;
-        case 141: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 138: //rotX
+            DATA.value.rotX = defaultDATA.rotX;
             return;
-        case 142: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 139: //rotY
+            DATA.value.rotY = defaultDATA.rotY;
             return;
-        case 143: //data Position/Rotation
-            DATAPosRot.Unload();
+        case 140: //rotZ
+            DATA.value.rotZ = defaultDATA.rotZ;
             return;
         default:
             return;

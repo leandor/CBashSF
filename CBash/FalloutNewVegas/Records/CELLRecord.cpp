@@ -138,7 +138,18 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
 
 CELLRecord::~CELLRecord()
     {
-    //
+    for(UINT32 x = 0; x < ACHR.size(); ++x)
+        delete ACHR[x];
+    for(UINT32 x = 0; x < ACRE.size(); ++x)
+        delete ACRE[x];
+    for(UINT32 x = 0; x < REFR.size(); ++x)
+        delete REFR[x];
+    for(UINT32 x = 0; x < PGRE.size(); ++x)
+        delete PGRE[x];
+    for(UINT32 x = 0; x < PMIS.size(); ++x)
+        delete PMIS[x];
+    for(UINT32 x = 0; x < NAVM.size(); ++x)
+        delete NAVM[x];
     }
 
 bool CELLRecord::HasSubRecords()
@@ -150,53 +161,84 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
 
-    //if(RecordType == NULL || RecordType == REV32(ACHR))
-    //    for(UINT32 x = 0; x < ACHR.size();++x)
-    //        {
-    //        stop = op.Accept(ACHR[x]);
-    //        if(ACHR[x] == NULL)
-    //            {
-    //            ACHR.erase(ACHR.begin() + x);
-    //            --x;
-    //            }
-    //        if(stop)
-    //            return stop;
-    //        }
+    if(RecordType == NULL || RecordType == REV32(ACHR))
+        for(UINT32 x = 0; x < ACHR.size();++x)
+            {
+            stop = op.Accept(ACHR[x]);
+            if(ACHR[x] == NULL)
+                {
+                ACHR.erase(ACHR.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
 
-    //if(RecordType == NULL || RecordType == REV32(ACRE))
-    //    for(UINT32 x = 0; x < ACRE.size();++x)
-    //        {
-    //        stop = op.Accept(ACRE[x]);
-    //        if(ACRE[x] == NULL)
-    //            {
-    //            ACRE.erase(ACRE.begin() + x);
-    //            --x;
-    //            }
-    //        if(stop)
-    //            return stop;
-    //        }
+    if(RecordType == NULL || RecordType == REV32(ACRE))
+        for(UINT32 x = 0; x < ACRE.size();++x)
+            {
+            stop = op.Accept(ACRE[x]);
+            if(ACRE[x] == NULL)
+                {
+                ACRE.erase(ACRE.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
 
-    //if(RecordType == NULL || RecordType == REV32(REFR))
-    //    for(UINT32 x = 0; x < REFR.size();++x)
-    //        {
-    //        stop = op.Accept(REFR[x]);
-    //        if(REFR[x] == NULL)
-    //            {
-    //            REFR.erase(REFR.begin() + x);
-    //            --x;
-    //            }
-    //        if(stop)
-    //            return stop;
-    //        }
+    if(RecordType == NULL || RecordType == REV32(REFR))
+        for(UINT32 x = 0; x < REFR.size();++x)
+            {
+            stop = op.Accept(REFR[x]);
+            if(REFR[x] == NULL)
+                {
+                REFR.erase(REFR.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
 
-    //if(RecordType == NULL || RecordType == REV32(PGRD))
-    //    {
-    //    if(PGRD != NULL)
-    //        {
-    //        if(op.Accept(PGRD))
-    //            return true;
-    //        }
-    //    }
+    if(RecordType == NULL || RecordType == REV32(PGRE))
+        for(UINT32 x = 0; x < PGRE.size();++x)
+            {
+            stop = op.Accept(PGRE[x]);
+            if(PGRE[x] == NULL)
+                {
+                PGRE.erase(PGRE.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
+    if(RecordType == NULL || RecordType == REV32(PMIS))
+        for(UINT32 x = 0; x < PMIS.size();++x)
+            {
+            stop = op.Accept(PMIS[x]);
+            if(PMIS[x] == NULL)
+                {
+                PMIS.erase(PMIS.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
+    if(RecordType == NULL || RecordType == REV32(NAVM))
+        for(UINT32 x = 0; x < NAVM.size();++x)
+            {
+            stop = op.Accept(NAVM[x]);
+            if(NAVM[x] == NULL)
+                {
+                NAVM.erase(NAVM.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
 
     //if(RecordType == NULL || RecordType == REV32(LAND))
     //    {
@@ -497,6 +539,13 @@ UINT32 CELLRecord::GetType()
 STRING CELLRecord::GetStrType()
     {
     return "CELL";
+    }
+
+UINT32 CELLRecord::GetParentType()
+    {
+    if(Parent != NULL)
+        return Parent->GetType();
+    return 0;
     }
 
 SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)

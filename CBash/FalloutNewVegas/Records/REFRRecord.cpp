@@ -51,102 +51,56 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    RCLR = srcRecord->RCLR;
     NAME = srcRecord->NAME;
     XEZN = srcRecord->XEZN;
     XRGD = srcRecord->XRGD;
     XRGB = srcRecord->XRGB;
-    XPRM = srcRecord->XPRM;
-    XTRI = srcRecord->XTRI;
-    XMBP = srcRecord->XMBP;
-    XMBO = srcRecord->XMBO;
-    XTEL = srcRecord->XTEL;
-    if(srcRecord->XMRK.IsLoaded())
-        {
-        XMRK.Load();
-        XMRK->XMRK = srcRecord->XMRK->XMRK;
-        XMRK->FNAM = srcRecord->XMRK->FNAM;
-        }
-    FULL = srcRecord->FULL;
-    TNAM = srcRecord->TNAM;
-    WMI1 = srcRecord->WMI1;
-    if(srcRecord->MMRK.IsLoaded())
-        {
-        MMRK.Load();
-        MMRK->MMRK = srcRecord->MMRK->MMRK;
-        MMRK->FULL = srcRecord->MMRK->FULL;
-        MMRK->CNAM = srcRecord->MMRK->CNAM;
-        MMRK->BNAM = srcRecord->MMRK->BNAM;
-        MMRK->MNAM = srcRecord->MMRK->MNAM;
-        MMRK->NNAM = srcRecord->MMRK->NNAM;
-        }
-    XSRF = srcRecord->XSRF;
-    XSRD = srcRecord->XSRD;
-    XTRG = srcRecord->XTRG;
+    Patrol = srcRecord->Patrol;
     XLCM = srcRecord->XLCM;
-    if(srcRecord->XPRD.IsLoaded())
-        {
-        XPRD.Load();
-        XPRD->XPRD = srcRecord->XPRD->XPRD;
-        XPRD->XPPA = srcRecord->XPRD->XPPA;
-        XPRD->INAM = srcRecord->XPRD->INAM;
-        if(srcRecord->XPRD->SCHR.IsLoaded())
-            {
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR = srcRecord->XPRD->SCHR->SCHR;
-            XPRD->SCHR->SCDA = srcRecord->XPRD->SCHR->SCDA;
-            XPRD->SCHR->SCTX = srcRecord->XPRD->SCHR->SCTX;
-            XPRD->SCHR->SLSD = srcRecord->XPRD->SCHR->SLSD;
-            XPRD->SCHR->SCVR = srcRecord->XPRD->SCHR->SCVR;
-            XPRD->SCHR->SCRO = srcRecord->XPRD->SCHR->SCRO;
-            XPRD->SCHR->SCRV = srcRecord->XPRD->SCHR->SCRV;
-            }
-        XPRD->TNAM = srcRecord->XPRD->TNAM;
-        }
-    XRDO = srcRecord->XRDO;
-    if(srcRecord->XOWN.IsLoaded())
-        {
-        XOWN.Load();
-        XOWN->XOWN = srcRecord->XOWN->XOWN;
-        XOWN->XRNK = srcRecord->XOWN->XRNK;
-        }
-    XLOC = srcRecord->XLOC;
+    Ownership = srcRecord->Ownership;
     XCNT = srcRecord->XCNT;
     XRDS = srcRecord->XRDS;
     XHLP = srcRecord->XHLP;
     XRAD = srcRecord->XRAD;
     XCHG = srcRecord->XCHG;
-    if(srcRecord->XAMT.IsLoaded())
-        {
-        XAMT.Load();
-        XAMT->XAMT = srcRecord->XAMT->XAMT;
-        XAMT->XAMC = srcRecord->XAMT->XAMC;
-        }
-    XPWR = srcRecord->XPWR;
-    XLTW = srcRecord->XLTW;
     XDCR = srcRecord->XDCR;
     XLKR = srcRecord->XLKR;
     XCLP = srcRecord->XCLP;
-    XAPD = srcRecord->XAPD;
-    XAPR = srcRecord->XAPR;
+    RCLR = srcRecord->RCLR;
+    ActivateParents = srcRecord->ActivateParents;
     XATO = srcRecord->XATO;
     XESP = srcRecord->XESP;
     XEMI = srcRecord->XEMI;
     XMBR = srcRecord->XMBR;
+    XPRM = srcRecord->XPRM;
+    XTRI = srcRecord->XTRI;
+    XMBO = srcRecord->XMBO;
+    XTEL = srcRecord->XTEL;
+    MapData = srcRecord->MapData;
+    AudioData = srcRecord->AudioData;
+    XSRF = srcRecord->XSRF;
+    XSRD = srcRecord->XSRD;
+    XTRG = srcRecord->XTRG;
+    XRDO = srcRecord->XRDO;
+    XLOC = srcRecord->XLOC;
+    Ammo = srcRecord->Ammo;
+    XPWR = srcRecord->XPWR;
+    XLTW = srcRecord->XLTW;
     XACT = srcRecord->XACT;
-    ONAM = srcRecord->ONAM;
-    XIBS = srcRecord->XIBS;
     XNDP = srcRecord->XNDP;
     XPOD = srcRecord->XPOD;
     XPTL = srcRecord->XPTL;
     XSED = srcRecord->XSED;
-    XRMR = srcRecord->XRMR;
-    XLRM = srcRecord->XLRM;
+    Room = srcRecord->Room;
     XOCP = srcRecord->XOCP;
     XORD = srcRecord->XORD;
     XLOD = srcRecord->XLOD;
+    XIBS = srcRecord->XIBS;
     XSCL = srcRecord->XSCL;
     DATA = srcRecord->DATA;
+
+    if(srcRecord->IsOpenByDefault())//bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
+        IsOpenByDefault(true);
     return;
     }
 
@@ -160,1102 +114,1012 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(NAME.IsLoaded())
-        op.Accept(NAME->value);
+    op.Accept(NAME.value);
     if(XEZN.IsLoaded())
-        op.Accept(XEZN->value);
-    //if(XTEL.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XTEL->value);
-    if(WMI1.IsLoaded())
-        op.Accept(WMI1->value);
-    if(MMRK.IsLoaded() && MMRK->CNAM.IsLoaded())
-        op.Accept(MMRK->CNAM->value);
-    if(XTRG.IsLoaded())
-        op.Accept(XTRG->value);
-    if(XPRD.IsLoaded() && XPRD->INAM.IsLoaded())
-        op.Accept(XPRD->INAM->value);
-    if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded() && XPRD->SCHR->SCRO.IsLoaded())
-        op.Accept(XPRD->SCHR->SCRO->value);
-    if(XPRD.IsLoaded() && XPRD->TNAM.IsLoaded())
-        op.Accept(XPRD->TNAM->value);
-    //if(XRDO.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XRDO->value);
-    if(XOWN.IsLoaded() && XOWN->XOWN.IsLoaded())
-        op.Accept(XOWN->XOWN->value);
-    //if(XLOC.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XLOC->value);
-    if(XAMT.IsLoaded() && XAMT->XAMT.IsLoaded())
-        op.Accept(XAMT->XAMT->value);
-    //if(XPWR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XPWR->value);
-    if(XLTW.IsLoaded())
-        op.Accept(XLTW->value);
-    //if(XDCR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XDCR->value);
+        op.Accept(XEZN.value);
+    if(Patrol.IsLoaded())
+        {
+        op.Accept(Patrol->INAM.value);
+        for(UINT32 x = 0; x < Patrol->SCR_.value.size(); x++)
+            if(Patrol->SCR_.value[x]->isSCRO)
+                op.Accept(Patrol->SCR_.value[x]->reference);
+        op.Accept(Patrol->TNAM.value);
+        }
+    if(Ownership.IsLoaded())
+        op.Accept(Ownership->XOWN.value);
+    for(UINT32 x = 0; x < XDCR.value.size(); x++)
+        op.Accept(XDCR.value[x]->reference);
     if(XLKR.IsLoaded())
-        op.Accept(XLKR->value);
-    //if(XAPR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XAPR->value);
-    //if(XESP.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XESP->value);
+        op.Accept(XLKR.value);
+    if(ActivateParents.IsLoaded())
+        for(UINT32 x = 0; x < ActivateParents->XAPR.value.size(); x++)
+            op.Accept(ActivateParents->XAPR.value[x]->reference);
+    if(XESP.IsLoaded())
+        op.Accept(XESP->parent);
     if(XEMI.IsLoaded())
-        op.Accept(XEMI->value);
+        op.Accept(XEMI.value);
     if(XMBR.IsLoaded())
-        op.Accept(XMBR->value);
-    //if(XNDP.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XNDP->value);
-    //if(XPOD.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XPOD->value);
-    if(XLRM.IsLoaded())
-        op.Accept(XLRM->value);
-    //if(XORD.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XORD->value);
+        op.Accept(XMBR.value);
+    if(XTEL.IsLoaded())
+        op.Accept(XTEL->destinationFid);
+    if(MapData.IsLoaded())
+        {
+        if(MapData->WMI1.IsLoaded())
+            op.Accept(MapData->WMI1.value);
+        }
+    if(AudioData.IsLoaded())
+        {
+        if(AudioData->CNAM.IsLoaded())
+            op.Accept(AudioData->CNAM.value);
+        }
+    if(XTRG.IsLoaded())
+        op.Accept(XTRG.value);
+    if(XRDO.IsLoaded())
+        op.Accept(XRDO->positionReference);
+    if(XLOC.IsLoaded())
+        op.Accept(XLOC->key);
+    if(Ammo.IsLoaded())
+        {
+        if(Ammo->XAMT.IsLoaded())
+            op.Accept(Ammo->XAMT.value);
+        }
+    for(UINT32 x = 0; x < XPWR.value.size(); x++)
+        op.Accept(XPWR.value[x]->reference);
+    for(UINT32 x = 0; x < XLTW.value.size(); x++)
+        op.Accept(XLTW.value[x]);
+    if(XNDP.IsLoaded())
+        op.Accept(XNDP->navMesh);
+    if(XPOD.IsLoaded())
+        {
+        op.Accept(XPOD->room1);
+        op.Accept(XPOD->room2);
+        }
+    if(Room.IsLoaded())
+        for(UINT32 x = 0; x < Room->XLRM.value.size(); x++)
+            op.Accept(Room->XLRM.value[x]);
+    if(XORD.IsLoaded())
+        {
+        op.Accept(XORD->right);
+        op.Accept(XORD->left);
+        op.Accept(XORD->bottom);
+        op.Accept(XORD->top);
+        }
 
     return op.Stop();
     }
 
-bool REFRRecord::IsNoAlarm()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoAlarm) != 0;
-    }
-
-void REFRRecord::IsNoAlarm(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoAlarm) : (Dummy->flags & ~fIsNoAlarm);
-    }
-
-bool REFRRecord::Is0FlagMask(UINT8 Mask, bool Exact)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
-    }
-
-void REFRRecord::Set0FlagMask(UINT8 Mask)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsVisible()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsVisible) != 0;
-    }
-
-void REFRRecord::IsVisible(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsVisible) : (Dummy->flags & ~fIsVisible);
-    }
-
-bool REFRRecord::IsCanTravelTo()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsCanTravelTo) != 0;
-    }
-
-void REFRRecord::IsCanTravelTo(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsCanTravelTo) : (Dummy->flags & ~fIsCanTravelTo);
-    }
-
-bool REFRRecord::Is1FlagMask(UINT8 Mask, bool Exact)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
-    }
-
-void REFRRecord::Set1FlagMask(UINT8 Mask)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
 bool REFRRecord::IsUseDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseDefault) != 0;
+    return (XACT.value & fIsUseDefault) != 0;
     }
 
 void REFRRecord::IsUseDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseDefault) : (Dummy->flags & ~fIsUseDefault);
+    XACT.value = value ? (XACT.value | fIsUseDefault) : (XACT.value & ~fIsUseDefault);
     }
 
 bool REFRRecord::IsActivate()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsActivate) != 0;
+    return (XACT.value & fIsActivate) != 0;
     }
 
 void REFRRecord::IsActivate(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsActivate) : (Dummy->flags & ~fIsActivate);
+    XACT.value = value ? (XACT.value | fIsActivate) : (XACT.value & ~fIsActivate);
     }
 
 bool REFRRecord::IsOpen()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOpen) != 0;
+    return (XACT.value & fIsOpen) != 0;
     }
 
 void REFRRecord::IsOpen(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOpen) : (Dummy->flags & ~fIsOpen);
+    XACT.value = value ? (XACT.value | fIsOpen) : (XACT.value & ~fIsOpen);
     }
 
 bool REFRRecord::IsOpenByDefault()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOpenByDefault) != 0;
+    return (XACT.value & fIsOpenByDefault) != 0;
     }
 
 void REFRRecord::IsOpenByDefault(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOpenByDefault) : (Dummy->flags & ~fIsOpenByDefault);
+    XACT.value = value ? (XACT.value | fIsOpenByDefault) : (XACT.value & ~fIsOpenByDefault);
     }
 
-bool REFRRecord::Is3FlagMask(UINT8 Mask, bool Exact)
+bool REFRRecord::IsActionFlagMask(UINT32 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((XACT.value & Mask) == Mask) : ((XACT.value & Mask) != 0);
     }
 
-void REFRRecord::Set3FlagMask(UINT8 Mask)
+void REFRRecord::SetActionFlagMask(UINT32 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsNone()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
-    }
-
-void REFRRecord::IsNone(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
-    }
-
-bool REFRRecord::IsBox()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBox);
-    }
-
-void REFRRecord::IsBox(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBox : eDummyDefault;
-    }
-
-bool REFRRecord::IsSphere()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSphere);
-    }
-
-void REFRRecord::IsSphere(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSphere : eDummyDefault;
-    }
-
-bool REFRRecord::IsPortalBox()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePortalBox);
-    }
-
-void REFRRecord::IsPortalBox(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePortalBox : eDummyDefault;
-    }
-
-bool REFRRecord::Is0Type(UINT8 Type)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void REFRRecord::Set0Type(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsUnidentified()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUnidentified);
-    }
-
-void REFRRecord::IsUnidentified(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUnidentified : eDummyDefault;
-    }
-
-bool REFRRecord::IsStatic()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eStatic);
-    }
-
-void REFRRecord::IsStatic(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eStatic : eDummyDefault;
-    }
-
-bool REFRRecord::IsAnimStatic()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAnimStatic);
-    }
-
-void REFRRecord::IsAnimStatic(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAnimStatic : eDummyDefault;
-    }
-
-bool REFRRecord::IsTransparent()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTransparent);
-    }
-
-void REFRRecord::IsTransparent(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTransparent : eDummyDefault;
-    }
-
-bool REFRRecord::IsClutter()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eClutter);
-    }
-
-void REFRRecord::IsClutter(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eClutter : eDummyDefault;
-    }
-
-bool REFRRecord::IsWeapon()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWeapon);
-    }
-
-void REFRRecord::IsWeapon(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWeapon : eDummyDefault;
-    }
-
-bool REFRRecord::IsProjectile()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eProjectile);
-    }
-
-void REFRRecord::IsProjectile(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eProjectile : eDummyDefault;
-    }
-
-bool REFRRecord::IsSpell()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSpell);
-    }
-
-void REFRRecord::IsSpell(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSpell : eDummyDefault;
-    }
-
-bool REFRRecord::IsBiped()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eBiped);
-    }
-
-void REFRRecord::IsBiped(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eBiped : eDummyDefault;
-    }
-
-bool REFRRecord::IsTrees()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTrees);
-    }
-
-void REFRRecord::IsTrees(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTrees : eDummyDefault;
-    }
-
-bool REFRRecord::IsProps()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eProps);
-    }
-
-void REFRRecord::IsProps(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eProps : eDummyDefault;
-    }
-
-bool REFRRecord::IsWater()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWater);
-    }
-
-void REFRRecord::IsWater(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWater : eDummyDefault;
-    }
-
-bool REFRRecord::IsTrigger()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTrigger);
-    }
-
-void REFRRecord::IsTrigger(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTrigger : eDummyDefault;
-    }
-
-bool REFRRecord::IsTerrain()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTerrain);
-    }
-
-void REFRRecord::IsTerrain(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTerrain : eDummyDefault;
-    }
-
-bool REFRRecord::IsTrap()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTrap);
-    }
-
-void REFRRecord::IsTrap(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTrap : eDummyDefault;
-    }
-
-bool REFRRecord::IsNonCollidable()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNonCollidable);
-    }
-
-void REFRRecord::IsNonCollidable(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNonCollidable : eDummyDefault;
-    }
-
-bool REFRRecord::IsCloudTrap()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCloudTrap);
-    }
-
-void REFRRecord::IsCloudTrap(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCloudTrap : eDummyDefault;
-    }
-
-bool REFRRecord::IsGround()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGround);
-    }
-
-void REFRRecord::IsGround(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGround : eDummyDefault;
-    }
-
-bool REFRRecord::IsPortal()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePortal);
-    }
-
-void REFRRecord::IsPortal(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePortal : eDummyDefault;
-    }
-
-bool REFRRecord::IsDebrisSmall()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDebrisSmall);
-    }
-
-void REFRRecord::IsDebrisSmall(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDebrisSmall : eDummyDefault;
-    }
-
-bool REFRRecord::IsDebrisLarge()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDebrisLarge);
-    }
-
-void REFRRecord::IsDebrisLarge(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDebrisLarge : eDummyDefault;
-    }
-
-bool REFRRecord::IsAcousticSpace()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAcousticSpace);
-    }
-
-void REFRRecord::IsAcousticSpace(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAcousticSpace : eDummyDefault;
-    }
-
-bool REFRRecord::IsActorZone()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eActorZone);
-    }
-
-void REFRRecord::IsActorZone(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eActorZone : eDummyDefault;
-    }
-
-bool REFRRecord::IsProjectileZone()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eProjectileZone);
-    }
-
-void REFRRecord::IsProjectileZone(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eProjectileZone : eDummyDefault;
-    }
-
-bool REFRRecord::IsGasTrap()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eGasTrap);
-    }
-
-void REFRRecord::IsGasTrap(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eGasTrap : eDummyDefault;
-    }
-
-bool REFRRecord::IsShellCasing()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eShellCasing);
-    }
-
-void REFRRecord::IsShellCasing(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eShellCasing : eDummyDefault;
-    }
-
-bool REFRRecord::IsTransparentSmall()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTransparentSmall);
-    }
-
-void REFRRecord::IsTransparentSmall(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTransparentSmall : eDummyDefault;
-    }
-
-bool REFRRecord::IsInvisibleWall()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eInvisibleWall);
-    }
-
-void REFRRecord::IsInvisibleWall(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eInvisibleWall : eDummyDefault;
-    }
-
-bool REFRRecord::IsTransparentSmallAnim()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTransparentSmallAnim);
-    }
-
-void REFRRecord::IsTransparentSmallAnim(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTransparentSmallAnim : eDummyDefault;
-    }
-
-bool REFRRecord::IsDeadBip()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDeadBip);
-    }
-
-void REFRRecord::IsDeadBip(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDeadBip : eDummyDefault;
-    }
-
-bool REFRRecord::IsCharController()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCharController);
-    }
-
-void REFRRecord::IsCharController(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCharController : eDummyDefault;
-    }
-
-bool REFRRecord::IsAvoidBox()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eAvoidBox);
-    }
-
-void REFRRecord::IsAvoidBox(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eAvoidBox : eDummyDefault;
-    }
-
-bool REFRRecord::IsCollisionBox()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCollisionBox);
-    }
-
-void REFRRecord::IsCollisionBox(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCollisionBox : eDummyDefault;
-    }
-
-bool REFRRecord::IsCameraSphere()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCameraSphere);
-    }
-
-void REFRRecord::IsCameraSphere(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCameraSphere : eDummyDefault;
-    }
-
-bool REFRRecord::IsDoorDetection()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDoorDetection);
-    }
-
-void REFRRecord::IsDoorDetection(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDoorDetection : eDummyDefault;
-    }
-
-bool REFRRecord::IsCameraPick()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCameraPick);
-    }
-
-void REFRRecord::IsCameraPick(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCameraPick : eDummyDefault;
-    }
-
-bool REFRRecord::IsItemPick()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eItemPick);
-    }
-
-void REFRRecord::IsItemPick(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eItemPick : eDummyDefault;
-    }
-
-bool REFRRecord::IsLineOfSight()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLineOfSight);
-    }
-
-void REFRRecord::IsLineOfSight(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLineOfSight : eDummyDefault;
-    }
-
-bool REFRRecord::IsPathPick()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePathPick);
-    }
-
-void REFRRecord::IsPathPick(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePathPick : eDummyDefault;
-    }
-
-bool REFRRecord::IsCustomPick1()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCustomPick1);
-    }
-
-void REFRRecord::IsCustomPick1(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCustomPick1 : eDummyDefault;
-    }
-
-bool REFRRecord::IsCustomPick2()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCustomPick2);
-    }
-
-void REFRRecord::IsCustomPick2(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCustomPick2 : eDummyDefault;
-    }
-
-bool REFRRecord::IsSpellExplosion()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSpellExplosion);
-    }
-
-void REFRRecord::IsSpellExplosion(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSpellExplosion : eDummyDefault;
-    }
-
-bool REFRRecord::IsDroppingPick()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDroppingPick);
-    }
-
-void REFRRecord::IsDroppingPick(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDroppingPick : eDummyDefault;
-    }
-
-bool REFRRecord::Is1Type(UINT8 Type)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void REFRRecord::Set1Type(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsMarkerNone()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMarkerNone);
-    }
-
-void REFRRecord::IsMarkerNone(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMarkerNone : eDummyDefault;
-    }
-
-bool REFRRecord::IsCity()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCity);
-    }
-
-void REFRRecord::IsCity(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCity : eDummyDefault;
-    }
-
-bool REFRRecord::IsSettlement()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSettlement);
-    }
-
-void REFRRecord::IsSettlement(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSettlement : eDummyDefault;
-    }
-
-bool REFRRecord::IsEncampment()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEncampment);
-    }
-
-void REFRRecord::IsEncampment(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEncampment : eDummyDefault;
-    }
-
-bool REFRRecord::IsNaturalLandmark()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNaturalLandmark);
-    }
-
-void REFRRecord::IsNaturalLandmark(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNaturalLandmark : eDummyDefault;
-    }
-
-bool REFRRecord::IsCave()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCave);
-    }
-
-void REFRRecord::IsCave(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCave : eDummyDefault;
-    }
-
-bool REFRRecord::IsFactory()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eFactory);
-    }
-
-void REFRRecord::IsFactory(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eFactory : eDummyDefault;
-    }
-
-bool REFRRecord::IsMonument()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMonument);
-    }
-
-void REFRRecord::IsMonument(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMonument : eDummyDefault;
-    }
-
-bool REFRRecord::IsMilitary()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMilitary);
-    }
-
-void REFRRecord::IsMilitary(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMilitary : eDummyDefault;
-    }
-
-bool REFRRecord::IsOffice()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eOffice);
-    }
-
-void REFRRecord::IsOffice(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eOffice : eDummyDefault;
-    }
-
-bool REFRRecord::IsTownRuins()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTownRuins);
-    }
-
-void REFRRecord::IsTownRuins(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTownRuins : eDummyDefault;
-    }
-
-bool REFRRecord::IsUrbanRuins()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eUrbanRuins);
-    }
-
-void REFRRecord::IsUrbanRuins(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eUrbanRuins : eDummyDefault;
-    }
-
-bool REFRRecord::IsSewerRuins()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eSewerRuins);
-    }
-
-void REFRRecord::IsSewerRuins(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eSewerRuins : eDummyDefault;
-    }
-
-bool REFRRecord::IsMetro()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMetro);
-    }
-
-void REFRRecord::IsMetro(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMetro : eDummyDefault;
-    }
-
-bool REFRRecord::IsVault()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eVault);
-    }
-
-void REFRRecord::IsVault(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eVault : eDummyDefault;
-    }
-
-bool REFRRecord::Is2Type(UINT8 Type)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void REFRRecord::Set2Type(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsRadius()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRadius);
-    }
-
-void REFRRecord::IsRadius(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRadius : eDummyDefault;
-    }
-
-bool REFRRecord::IsEverywhere()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eEverywhere);
-    }
-
-void REFRRecord::IsEverywhere(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eEverywhere : eDummyDefault;
-    }
-
-bool REFRRecord::IsWorldAndLinkedInteriors()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eWorldAndLinkedInteriors);
-    }
-
-void REFRRecord::IsWorldAndLinkedInteriors(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eWorldAndLinkedInteriors : eDummyDefault;
-    }
-
-bool REFRRecord::IsLinkedInteriors()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eLinkedInteriors);
-    }
-
-void REFRRecord::IsLinkedInteriors(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eLinkedInteriors : eDummyDefault;
-    }
-
-bool REFRRecord::IsCurrentCellOnly()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCurrentCellOnly);
-    }
-
-void REFRRecord::IsCurrentCellOnly(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCurrentCellOnly : eDummyDefault;
-    }
-
-bool REFRRecord::Is3Type(UINT8 Type)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void REFRRecord::Set3Type(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
-    }
-
-bool REFRRecord::IsReflection()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eReflection);
-    }
-
-void REFRRecord::IsReflection(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eReflection : eDummyDefault;
-    }
-
-bool REFRRecord::IsRefraction()
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRefraction);
-    }
-
-void REFRRecord::IsRefraction(bool value)
-    {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRefraction : eDummyDefault;
-    }
-
-bool REFRRecord::Is4Type(UINT8 Type)
-    {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
-    }
-
-void REFRRecord::Set4Type(UINT8 Type)
-    {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    XACT.value = Mask;
     }
 
 bool REFRRecord::IsOppositeParent()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOppositeParent) != 0;
+    if(!XESP.IsLoaded()) return false;
+    return (XESP->flags & fIsOppositeParent) != 0;
     }
 
 void REFRRecord::IsOppositeParent(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
+    if(!XESP.IsLoaded()) return;
+    XESP->flags = value ? (XESP->flags | fIsOppositeParent) : (XESP->flags & ~fIsOppositeParent);
     }
 
 bool REFRRecord::IsPopIn()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPopIn) != 0;
+    if(!XESP.IsLoaded()) return false;
+    return (XESP->flags & fIsPopIn) != 0;
     }
 
 void REFRRecord::IsPopIn(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
+    if(!XESP.IsLoaded()) return;
+    XESP->flags = value ? (XESP->flags | fIsPopIn) : (XESP->flags & ~fIsPopIn);
     }
 
-bool REFRRecord::IsFlagMask(UINT8 Mask, bool Exact)
+bool REFRRecord::IsParentFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    if(!XESP.IsLoaded()) return false;
+    return Exact ? ((XESP->flags & Mask) == Mask) : ((XESP->flags & Mask) != 0);
     }
 
-void REFRRecord::SetFlagMask(UINT8 Mask)
+void REFRRecord::SetParentFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    XESP.Load();
+    XESP->flags = Mask;
+    }
+
+bool REFRRecord::IsNoAlarm()
+    {
+    if(!XTEL.IsLoaded()) return false;
+    return (XTEL->flags & fIsNoAlarm) != 0;
+    }
+
+void REFRRecord::IsNoAlarm(bool value)
+    {
+    if(!XTEL.IsLoaded()) return;
+    XTEL->flags = value ? (XTEL->flags | fIsNoAlarm) : (XTEL->flags & ~fIsNoAlarm);
+    }
+
+bool REFRRecord::IsDestFlagMask(UINT32 Mask, bool Exact)
+    {
+    if(!XTEL.IsLoaded()) return false;
+    return Exact ? ((XTEL->flags & Mask) == Mask) : ((XTEL->flags & Mask) != 0);
+    }
+
+void REFRRecord::SetDestFlagMask(UINT32 Mask)
+    {
+    XTEL.Load();
+    XTEL->flags = Mask;
+    }
+
+bool REFRRecord::IsVisible()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return (MapData->FNAM.value & fIsVisible) != 0;
+    }
+
+void REFRRecord::IsVisible(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->FNAM.value = value ? (MapData->FNAM.value | fIsVisible) : (MapData->FNAM.value & ~fIsVisible);
+    }
+
+bool REFRRecord::IsCanTravelTo()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return (MapData->FNAM.value & fIsCanTravelTo) != 0;
+    }
+
+void REFRRecord::IsCanTravelTo(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->FNAM.value = value ? (MapData->FNAM.value | fIsCanTravelTo) : (MapData->FNAM.value & ~fIsCanTravelTo);
+    }
+
+bool REFRRecord::IsMapFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!MapData.IsLoaded()) return false;
+    return Exact ? ((MapData->FNAM.value & Mask) == Mask) : ((MapData->FNAM.value & Mask) != 0);
+    }
+
+void REFRRecord::SetMapFlagMask(UINT8 Mask)
+    {
+    MapData.Load();
+    MapData->FNAM.value = Mask;
+    }
+
+bool REFRRecord::IsLeveledLock()
+    {
+    if(!XLOC.IsLoaded()) return false;
+    return (XLOC->flags & fIsLeveledLock) != 0;
+    }
+
+void REFRRecord::IsLeveledLock(bool value)
+    {
+    if(!XLOC.IsLoaded()) return;
+    XLOC->flags = value ? (XLOC->flags | fIsLeveledLock) : (XLOC->flags & ~fIsLeveledLock);
+    }
+
+bool REFRRecord::IsLockFlagMask(UINT8 Mask, bool Exact)
+    {
+    if(!XLOC.IsLoaded()) return false;
+    return Exact ? ((XLOC->flags & Mask) == Mask) : ((XLOC->flags & Mask) != 0);
+    }
+
+void REFRRecord::SetLockFlagMask(UINT8 Mask)
+    {
+    XLOC.Load();
+    XLOC->flags = Mask;
+    }
+
+bool REFRRecord::IsNone()
+    {
+    if(!XPRM.IsLoaded()) return false;
+    return XPRM->type == eNone;
+    }
+
+void REFRRecord::IsNone(bool value)
+    {
+    if(!XPRM.IsLoaded()) return;
+    XPRM->type = value ? eNone : eBox;
+    }
+
+bool REFRRecord::IsBox()
+    {
+    if(!XPRM.IsLoaded()) return false;
+    return XPRM->type == eBox;
+    }
+
+void REFRRecord::IsBox(bool value)
+    {
+    if(!XPRM.IsLoaded()) return;
+    XPRM->type = value ? eBox : eNone;
+    }
+
+bool REFRRecord::IsSphere()
+    {
+    if(!XPRM.IsLoaded()) return false;
+    return XPRM->type == eSphere;
+    }
+
+void REFRRecord::IsSphere(bool value)
+    {
+    if(!XPRM.IsLoaded()) return;
+    XPRM->type = value ? eSphere : eNone;
+    }
+
+bool REFRRecord::IsPortalBox()
+    {
+    if(!XPRM.IsLoaded()) return false;
+    return XPRM->type == ePortalBox;
+    }
+
+void REFRRecord::IsPortalBox(bool value)
+    {
+    if(!XPRM.IsLoaded()) return;
+    XPRM->type = value ? ePortalBox : eNone;
+    }
+
+bool REFRRecord::IsPrimitiveType(UINT32 Type)
+    {
+    if(!XPRM.IsLoaded()) return false;
+    return XPRM->type == Type;
+    }
+
+void REFRRecord::SetPrimitiveType(UINT32 Type)
+    {
+    XPRM.Load();
+    XPRM->type = Type;
+    }
+
+bool REFRRecord::IsUnidentified()
+    {
+    return XTRI.value == eUnidentified;
+    }
+
+void REFRRecord::IsUnidentified(bool value)
+    {
+    XTRI.value = value ? eUnidentified : eStatic;
+    }
+
+bool REFRRecord::IsStatic()
+    {
+    return XTRI.value == eStatic;
+    }
+
+void REFRRecord::IsStatic(bool value)
+    {
+    XTRI.value = value ? eStatic : eUnidentified;
+    }
+
+bool REFRRecord::IsAnimStatic()
+    {
+    return XTRI.value == eAnimStatic;
+    }
+
+void REFRRecord::IsAnimStatic(bool value)
+    {
+    XTRI.value = value ? eAnimStatic : eUnidentified;
+    }
+
+bool REFRRecord::IsTransparent()
+    {
+    return XTRI.value == eTransparent;
+    }
+
+void REFRRecord::IsTransparent(bool value)
+    {
+    XTRI.value = value ? eTransparent : eUnidentified;
+    }
+
+bool REFRRecord::IsClutter()
+    {
+    return XTRI.value == eClutter;
+    }
+
+void REFRRecord::IsClutter(bool value)
+    {
+    XTRI.value = value ? eClutter : eUnidentified;
+    }
+
+bool REFRRecord::IsWeapon()
+    {
+    return XTRI.value == eWeapon;
+    }
+
+void REFRRecord::IsWeapon(bool value)
+    {
+    XTRI.value = value ? eWeapon : eUnidentified;
+    }
+
+bool REFRRecord::IsProjectile()
+    {
+    return XTRI.value == eProjectile;
+    }
+
+void REFRRecord::IsProjectile(bool value)
+    {
+    XTRI.value = value ? eProjectile : eUnidentified;
+    }
+
+bool REFRRecord::IsSpell()
+    {
+    return XTRI.value == eSpell;
+    }
+
+void REFRRecord::IsSpell(bool value)
+    {
+    XTRI.value = value ? eSpell : eUnidentified;
+    }
+
+bool REFRRecord::IsBiped()
+    {
+    return XTRI.value == eBiped;
+    }
+
+void REFRRecord::IsBiped(bool value)
+    {
+    XTRI.value = value ? eBiped : eUnidentified;
+    }
+
+bool REFRRecord::IsTrees()
+    {
+    return XTRI.value == eTrees;
+    }
+
+void REFRRecord::IsTrees(bool value)
+    {
+    XTRI.value = value ? eTrees : eUnidentified;
+    }
+
+bool REFRRecord::IsProps()
+    {
+    return XTRI.value == eProps;
+    }
+
+void REFRRecord::IsProps(bool value)
+    {
+    XTRI.value = value ? eProps : eUnidentified;
+    }
+
+bool REFRRecord::IsWater()
+    {
+    return XTRI.value == eWater;
+    }
+
+void REFRRecord::IsWater(bool value)
+    {
+    XTRI.value = value ? eWater : eUnidentified;
+    }
+
+bool REFRRecord::IsTrigger()
+    {
+    return XTRI.value == eTrigger;
+    }
+
+void REFRRecord::IsTrigger(bool value)
+    {
+    XTRI.value = value ? eTrigger : eUnidentified;
+    }
+
+bool REFRRecord::IsTerrain()
+    {
+    return XTRI.value == eTerrain;
+    }
+
+void REFRRecord::IsTerrain(bool value)
+    {
+    XTRI.value = value ? eTerrain : eUnidentified;
+    }
+
+bool REFRRecord::IsTrap()
+    {
+    return XTRI.value == eTrap;
+    }
+
+void REFRRecord::IsTrap(bool value)
+    {
+    XTRI.value = value ? eTrap : eUnidentified;
+    }
+
+bool REFRRecord::IsNonCollidable()
+    {
+    return XTRI.value == eNonCollidable;
+    }
+
+void REFRRecord::IsNonCollidable(bool value)
+    {
+    XTRI.value = value ? eNonCollidable : eUnidentified;
+    }
+
+bool REFRRecord::IsCloudTrap()
+    {
+    return XTRI.value == eCloudTrap;
+    }
+
+void REFRRecord::IsCloudTrap(bool value)
+    {
+    XTRI.value = value ? eCloudTrap : eUnidentified;
+    }
+
+bool REFRRecord::IsGround()
+    {
+    return XTRI.value == eGround;
+    }
+
+void REFRRecord::IsGround(bool value)
+    {
+    XTRI.value = value ? eGround : eUnidentified;
+    }
+
+bool REFRRecord::IsPortal()
+    {
+    return XTRI.value == ePortal;
+    }
+
+void REFRRecord::IsPortal(bool value)
+    {
+    XTRI.value = value ? ePortal : eUnidentified;
+    }
+
+bool REFRRecord::IsDebrisSmall()
+    {
+    return XTRI.value == eDebrisSmall;
+    }
+
+void REFRRecord::IsDebrisSmall(bool value)
+    {
+    XTRI.value = value ? eDebrisSmall : eUnidentified;
+    }
+
+bool REFRRecord::IsDebrisLarge()
+    {
+    return XTRI.value == eDebrisLarge;
+    }
+
+void REFRRecord::IsDebrisLarge(bool value)
+    {
+    XTRI.value = value ? eDebrisLarge : eUnidentified;
+    }
+
+bool REFRRecord::IsAcousticSpace()
+    {
+    return XTRI.value == eAcousticSpace;
+    }
+
+void REFRRecord::IsAcousticSpace(bool value)
+    {
+    XTRI.value = value ? eAcousticSpace : eUnidentified;
+    }
+
+bool REFRRecord::IsActorZone()
+    {
+    return XTRI.value == eActorZone;
+    }
+
+void REFRRecord::IsActorZone(bool value)
+    {
+    XTRI.value = value ? eActorZone : eUnidentified;
+    }
+
+bool REFRRecord::IsProjectileZone()
+    {
+    return XTRI.value == eProjectileZone;
+    }
+
+void REFRRecord::IsProjectileZone(bool value)
+    {
+    XTRI.value = value ? eProjectileZone : eUnidentified;
+    }
+
+bool REFRRecord::IsGasTrap()
+    {
+    return XTRI.value == eGasTrap;
+    }
+
+void REFRRecord::IsGasTrap(bool value)
+    {
+    XTRI.value = value ? eGasTrap : eUnidentified;
+    }
+
+bool REFRRecord::IsShellCasing()
+    {
+    return XTRI.value == eShellCasing;
+    }
+
+void REFRRecord::IsShellCasing(bool value)
+    {
+    XTRI.value = value ? eShellCasing : eUnidentified;
+    }
+
+bool REFRRecord::IsTransparentSmall()
+    {
+    return XTRI.value == eTransparentSmall;
+    }
+
+void REFRRecord::IsTransparentSmall(bool value)
+    {
+    XTRI.value = value ? eTransparentSmall : eUnidentified;
+    }
+
+bool REFRRecord::IsInvisibleWall()
+    {
+    return XTRI.value == eInvisibleWall;
+    }
+
+void REFRRecord::IsInvisibleWall(bool value)
+    {
+    XTRI.value = value ? eInvisibleWall : eUnidentified;
+    }
+
+bool REFRRecord::IsTransparentSmallAnim()
+    {
+    return XTRI.value == eTransparentSmallAnim;
+    }
+
+void REFRRecord::IsTransparentSmallAnim(bool value)
+    {
+    XTRI.value = value ? eTransparentSmallAnim : eUnidentified;
+    }
+
+bool REFRRecord::IsDeadBip()
+    {
+    return XTRI.value == eDeadBip;
+    }
+
+void REFRRecord::IsDeadBip(bool value)
+    {
+    XTRI.value = value ? eDeadBip : eUnidentified;
+    }
+
+bool REFRRecord::IsCharController()
+    {
+    return XTRI.value == eCharController;
+    }
+
+void REFRRecord::IsCharController(bool value)
+    {
+    XTRI.value = value ? eCharController : eUnidentified;
+    }
+
+bool REFRRecord::IsAvoidBox()
+    {
+    return XTRI.value == eAvoidBox;
+    }
+
+void REFRRecord::IsAvoidBox(bool value)
+    {
+    XTRI.value = value ? eAvoidBox : eUnidentified;
+    }
+
+bool REFRRecord::IsCollisionBox()
+    {
+    return XTRI.value == eCollisionBox;
+    }
+
+void REFRRecord::IsCollisionBox(bool value)
+    {
+    XTRI.value = value ? eCollisionBox : eUnidentified;
+    }
+
+bool REFRRecord::IsCameraSphere()
+    {
+    return XTRI.value == eCameraSphere;
+    }
+
+void REFRRecord::IsCameraSphere(bool value)
+    {
+    XTRI.value = value ? eCameraSphere : eUnidentified;
+    }
+
+bool REFRRecord::IsDoorDetection()
+    {
+    return XTRI.value == eDoorDetection;
+    }
+
+void REFRRecord::IsDoorDetection(bool value)
+    {
+    XTRI.value = value ? eDoorDetection : eUnidentified;
+    }
+
+bool REFRRecord::IsCameraPick()
+    {
+    return XTRI.value == eCameraPick;
+    }
+
+void REFRRecord::IsCameraPick(bool value)
+    {
+    XTRI.value = value ? eCameraPick : eUnidentified;
+    }
+
+bool REFRRecord::IsItemPick()
+    {
+    return XTRI.value == eItemPick;
+    }
+
+void REFRRecord::IsItemPick(bool value)
+    {
+    XTRI.value = value ? eItemPick : eUnidentified;
+    }
+
+bool REFRRecord::IsLineOfSight()
+    {
+    return XTRI.value == eLineOfSight;
+    }
+
+void REFRRecord::IsLineOfSight(bool value)
+    {
+    XTRI.value = value ? eLineOfSight : eUnidentified;
+    }
+
+bool REFRRecord::IsPathPick()
+    {
+    return XTRI.value == ePathPick;
+    }
+
+void REFRRecord::IsPathPick(bool value)
+    {
+    XTRI.value = value ? ePathPick : eUnidentified;
+    }
+
+bool REFRRecord::IsCustomPick1()
+    {
+    return XTRI.value == eCustomPick1;
+    }
+
+void REFRRecord::IsCustomPick1(bool value)
+    {
+    XTRI.value = value ? eCustomPick1 : eUnidentified;
+    }
+
+bool REFRRecord::IsCustomPick2()
+    {
+    return XTRI.value == eCustomPick2;
+    }
+
+void REFRRecord::IsCustomPick2(bool value)
+    {
+    XTRI.value = value ? eCustomPick2 : eUnidentified;
+    }
+
+bool REFRRecord::IsSpellExplosion()
+    {
+    return XTRI.value == eSpellExplosion;
+    }
+
+void REFRRecord::IsSpellExplosion(bool value)
+    {
+    XTRI.value = value ? eSpellExplosion : eUnidentified;
+    }
+
+bool REFRRecord::IsDroppingPick()
+    {
+    return XTRI.value == eDroppingPick;
+    }
+
+void REFRRecord::IsDroppingPick(bool value)
+    {
+    XTRI.value = value ? eDroppingPick : eUnidentified;
+    }
+
+bool REFRRecord::IsCollisionType(UINT32 Type)
+    {
+    return XTRI.value == Type;
+    }
+
+void REFRRecord::SetCollisionType(UINT32 Type)
+    {
+    XTRI.value = Type;
+    }
+
+bool REFRRecord::IsMarkerNone()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eMarkerNone;
+    }
+
+void REFRRecord::IsMarkerNone(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eMarkerNone : eCity;
+    }
+
+bool REFRRecord::IsCity()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eCity;
+    }
+
+void REFRRecord::IsCity(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eCity : eMarkerNone;
+    }
+
+bool REFRRecord::IsSettlement()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eSettlement;
+    }
+
+void REFRRecord::IsSettlement(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eSettlement : eMarkerNone;
+    }
+
+bool REFRRecord::IsEncampment()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eEncampment;
+    }
+
+void REFRRecord::IsEncampment(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eEncampment : eMarkerNone;
+    }
+
+bool REFRRecord::IsNaturalLandmark()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eNaturalLandmark;
+    }
+
+void REFRRecord::IsNaturalLandmark(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eNaturalLandmark : eMarkerNone;
+    }
+
+bool REFRRecord::IsCave()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eCave;
+    }
+
+void REFRRecord::IsCave(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eCave : eMarkerNone;
+    }
+
+bool REFRRecord::IsFactory()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eFactory;
+    }
+
+void REFRRecord::IsFactory(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eFactory : eMarkerNone;
+    }
+
+bool REFRRecord::IsMonument()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eMonument;
+    }
+
+void REFRRecord::IsMonument(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eMonument : eMarkerNone;
+    }
+
+bool REFRRecord::IsMilitary()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eMilitary;
+    }
+
+void REFRRecord::IsMilitary(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eMilitary : eMarkerNone;
+    }
+
+bool REFRRecord::IsOffice()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eOffice;
+    }
+
+void REFRRecord::IsOffice(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eOffice : eMarkerNone;
+    }
+
+bool REFRRecord::IsTownRuins()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eTownRuins;
+    }
+
+void REFRRecord::IsTownRuins(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eTownRuins : eMarkerNone;
+    }
+
+bool REFRRecord::IsUrbanRuins()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eUrbanRuins;
+    }
+
+void REFRRecord::IsUrbanRuins(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eUrbanRuins : eMarkerNone;
+    }
+
+bool REFRRecord::IsSewerRuins()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eSewerRuins;
+    }
+
+void REFRRecord::IsSewerRuins(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eSewerRuins : eMarkerNone;
+    }
+
+bool REFRRecord::IsMetro()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eMetro;
+    }
+
+void REFRRecord::IsMetro(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eMetro : eMarkerNone;
+    }
+
+bool REFRRecord::IsVault()
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == eVault;
+    }
+
+void REFRRecord::IsVault(bool value)
+    {
+    if(!MapData.IsLoaded()) return;
+    MapData->TNAM.value.markerType = value ? eVault : eMarkerNone;
+    }
+
+bool REFRRecord::IsMapType(UINT8 Type)
+    {
+    if(!MapData.IsLoaded()) return false;
+    return MapData->TNAM.value.markerType == Type;
+    }
+
+void REFRRecord::SetMapType(UINT8 Type)
+    {
+    MapData.Load();
+    MapData->TNAM.value.markerType = Type;
+    }
+
+bool REFRRecord::IsRadius()
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == eRadius;
+    }
+
+void REFRRecord::IsRadius(bool value)
+    {
+    if(!XRDO.IsLoaded()) return;
+    XRDO->rangeType = value ? eRadius : eEverywhere;
+    }
+
+bool REFRRecord::IsEverywhere()
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == eEverywhere;
+    }
+
+void REFRRecord::IsEverywhere(bool value)
+    {
+    if(!XRDO.IsLoaded()) return;
+    XRDO->rangeType = value ? eEverywhere : eRadius;
+    }
+
+bool REFRRecord::IsWorldAndLinkedInteriors()
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == eWorldAndLinkedInteriors;
+    }
+
+void REFRRecord::IsWorldAndLinkedInteriors(bool value)
+    {
+    if(!XRDO.IsLoaded()) return;
+    XRDO->rangeType = value ? eWorldAndLinkedInteriors : eRadius;
+    }
+
+bool REFRRecord::IsLinkedInteriors()
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == eLinkedInteriors;
+    }
+
+void REFRRecord::IsLinkedInteriors(bool value)
+    {
+    if(!XRDO.IsLoaded()) return;
+    XRDO->rangeType = value ? eLinkedInteriors : eRadius;
+    }
+
+bool REFRRecord::IsCurrentCellOnly()
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == eCurrentCellOnly;
+    }
+
+void REFRRecord::IsCurrentCellOnly(bool value)
+    {
+    if(!XRDO.IsLoaded()) return;
+    XRDO->rangeType = value ? eCurrentCellOnly : eRadius;
+    }
+
+bool REFRRecord::IsBroadcastType(UINT32 Type)
+    {
+    if(!XRDO.IsLoaded()) return false;
+    return XRDO->rangeType == Type;
+    }
+
+void REFRRecord::SetBroadcastType(UINT32 Type)
+    {
+    XRDO.Load();
+    XRDO->rangeType = Type;
     }
 
 UINT32 REFRRecord::GetType()
@@ -1268,11 +1132,17 @@ STRING REFRRecord::GetStrType()
     return "REFR";
     }
 
+UINT32 REFRRecord::GetParentType()
+    {
+    return REV32(CELL);
+    }
+
 SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
+    UINT32 lastRecord = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -1293,9 +1163,6 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(EDID):
                 EDID.Read(buffer, subSize, curPos);
                 break;
-            case REV32(RCLR):
-                RCLR.Read(buffer, subSize, curPos);
-                break;
             case REV32(NAME):
                 NAME.Read(buffer, subSize, curPos);
                 break;
@@ -1308,138 +1175,80 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XRGB):
                 XRGB.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XPRM):
-                XPRM.Read(buffer, subSize, curPos);
+            case REV32(XPRD):
+                Patrol.Load();
+                Patrol->XPRD.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XTRI):
-                XTRI.Read(buffer, subSize, curPos);
+            case REV32(XPPA):
+                //XPPA, Patrol Script Marker (Empty)
+                lastRecord = REV32(XPPA);
                 break;
-            case REV32(XMBP):
-                //XMBP.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+            case REV32(INAM):
+                Patrol.Load();
+                Patrol->INAM.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XMBO):
-                XMBO.Read(buffer, subSize, curPos);
+            case REV32(SCHR):
+                Patrol.Load();
+                Patrol->SCHR.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XTEL):
-                XTEL.Read(buffer, subSize, curPos);
+            case REV32(SCDA):
+                Patrol.Load();
+                Patrol->SCDA.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XMRK):
-                //XMRK.Load();
-                //XMRK->XMRK.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+            case REV32(SCTX):
+                Patrol.Load();
+                Patrol->SCTX.Read(buffer, subSize, curPos);
                 break;
-            case REV32(FNAM):
-                XMRK.Load();
-                XMRK->FNAM.Read(buffer, subSize, curPos);
+            case REV32(SLSD):
+                Patrol.Load();
+                Patrol->VARS.value.push_back(new GENVARS);
+                Patrol->VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
-            case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+            case REV32(SCVR):
+                Patrol.Load();
+                if(Patrol->VARS.value.size() == 0)
+                    Patrol->VARS.value.push_back(new GENVARS);
+                Patrol->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                break;
+            case REV32(SCRO):
+                Patrol.Load();
+                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.value.back()->isSCRO = true;
+                break;
+            case REV32(SCRV):
+                Patrol.Load();
+                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(WMI1):
-                WMI1.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MMRK):
-                //MMRK.Load();
-                //MMRK->MMRK.Read(buffer, subSize, curPos); //FILL IN MANUALLY
-                break;
-            case REV32(FULL):
-                MMRK.Load();
-                MMRK->FULL.Read(buffer, subSize, curPos);
-                break;
-            case REV32(CNAM):
-                MMRK.Load();
-                MMRK->CNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(BNAM):
-                MMRK.Load();
-                MMRK->BNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MNAM):
-                MMRK.Load();
-                MMRK->MNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(NNAM):
-                MMRK.Load();
-                MMRK->NNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XSRF):
-                XSRF.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XSRD):
-                XSRD.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XTRG):
-                XTRG.Read(buffer, subSize, curPos);
+                switch(lastRecord)
+                    {
+                    case REV32(XPPA):
+                        Patrol.Load();
+                        Patrol->TNAM.Read(buffer, subSize, curPos);
+                        break;
+                    case REV32(XMRK):
+                        MapData.Load();
+                        MapData->TNAM.Read(buffer, subSize, curPos);
+                        break;
+                    default:
+                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
+                        printf("  Size = %i\n", subSize);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        curPos += subSize;
+                        break;
+                    }
                 break;
             case REV32(XLCM):
                 XLCM.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XPRD):
-                XPRD.Load();
-                XPRD->XPRD.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XPPA):
-                //XPRD.Load();
-                //XPRD->XPPA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
-                break;
-            case REV32(INAM):
-                XPRD.Load();
-                XPRD->INAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCHR):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCHR.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCDA):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCDA.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCTX):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCTX.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SLSD):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SLSD.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCVR):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCVR.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCRO):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCRO.Read(buffer, subSize, curPos);
-                break;
-            case REV32(SCRV):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCRV.Read(buffer, subSize, curPos);
-                break;
-            case REV32(TNAM):
-                XPRD.Load();
-                XPRD->TNAM.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XRDO):
-                XRDO.Read(buffer, subSize, curPos);
-                break;
             case REV32(XOWN):
-                XOWN.Load();
-                XOWN->XOWN.Read(buffer, subSize, curPos);
+                Ownership.Load();
+                Ownership->XOWN.Read(buffer, subSize, curPos);
                 break;
             case REV32(XRNK):
-                XOWN.Load();
-                XOWN->XRNK.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XLOC):
-                XLOC.Read(buffer, subSize, curPos);
+                Ownership.Load();
+                Ownership->XRNK.Read(buffer, subSize, curPos);
                 break;
             case REV32(XCNT):
                 XCNT.Read(buffer, subSize, curPos);
@@ -1456,20 +1265,6 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XCHG):
                 XCHG.Read(buffer, subSize, curPos);
                 break;
-            case REV32(XAMT):
-                XAMT.Load();
-                XAMT->XAMT.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XAMC):
-                XAMT.Load();
-                XAMT->XAMC.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XPWR):
-                XPWR.Read(buffer, subSize, curPos);
-                break;
-            case REV32(XLTW):
-                XLTW.Read(buffer, subSize, curPos);
-                break;
             case REV32(XDCR):
                 XDCR.Read(buffer, subSize, curPos);
                 break;
@@ -1479,11 +1274,16 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XCLP):
                 XCLP.Read(buffer, subSize, curPos);
                 break;
+            case REV32(RCLR):
+                RCLR.Read(buffer, subSize, curPos);
+                break;
             case REV32(XAPD):
-                XAPD.Read(buffer, subSize, curPos);
+                ActivateParents.Load();
+                ActivateParents->XAPD.Read(buffer, subSize, curPos);
                 break;
             case REV32(XAPR):
-                XAPR.Read(buffer, subSize, curPos);
+                ActivateParents.Load();
+                ActivateParents->XAPR.Read(buffer, subSize, curPos);
                 break;
             case REV32(XATO):
                 XATO.Read(buffer, subSize, curPos);
@@ -1497,14 +1297,98 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XMBR):
                 XMBR.Read(buffer, subSize, curPos);
                 break;
+            case REV32(XPRM):
+                XPRM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XTRI):
+                XTRI.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XMBO):
+                XMBO.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XTEL):
+                XTEL.Read(buffer, subSize, curPos);
+                break;
+            case REV32(FNAM):
+                MapData.Load();
+                MapData->FNAM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(WMI1):
+                MapData.Load();
+                MapData->WMI1.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XMRK):
+                lastRecord = REV32(XMRK);
+                break;
+            case REV32(MMRK):
+                lastRecord = REV32(MMRK);
+                break;
+            case REV32(FULL):
+                switch(lastRecord)
+                    {
+                    case REV32(XMRK):
+                        MapData.Load();
+                        MapData->FULL.Read(buffer, subSize, curPos);
+                        break;
+                    case REV32(MMRK):
+                        AudioData.Load();
+                        AudioData->FULL.Read(buffer, subSize, curPos);
+                        break;
+                    default:
+                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
+                        printf("  Size = %i\n", subSize);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        curPos += subSize;
+                        break;
+                    }
+                break;
+            case REV32(CNAM):
+                AudioData.Load();
+                AudioData->CNAM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(BNAM):
+                AudioData.Load();
+                AudioData->BNAM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(MNAM):
+                AudioData.Load();
+                AudioData->MNAM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(NNAM):
+                AudioData.Load();
+                AudioData->NNAM.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XSRF):
+                XSRF.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XSRD):
+                XSRD.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XTRG):
+                XTRG.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XRDO):
+                XRDO.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XLOC):
+                XLOC.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XAMT):
+                Ammo.Load();
+                Ammo->XAMT.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XAMC):
+                Ammo.Load();
+                Ammo->XAMC.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XPWR):
+                XPWR.Read(buffer, subSize, curPos);
+                break;
+            case REV32(XLTW):
+                XLTW.Read(buffer, subSize, curPos);
+                break;
             case REV32(XACT):
                 XACT.Read(buffer, subSize, curPos);
-                break;
-            case REV32(ONAM):
-                //ONAM.Read(buffer, subSize, curPos); //FILL IN MANUALLY
-                break;
-            case REV32(XIBS):
-                //XIBS.Read(buffer, subSize, curPos); //FILL IN MANUALLY
                 break;
             case REV32(XNDP):
                 XNDP.Read(buffer, subSize, curPos);
@@ -1519,10 +1403,12 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 XSED.Read(buffer, subSize, curPos);
                 break;
             case REV32(XRMR):
-                XRMR.Read(buffer, subSize, curPos);
+                Room.Load();
+                Room->XRMR.Read(buffer, subSize, curPos);
                 break;
             case REV32(XLRM):
-                XLRM.Read(buffer, subSize, curPos);
+                Room.Load();
+                Room->XLRM.Read(buffer, subSize, curPos);
                 break;
             case REV32(XOCP):
                 XOCP.Read(buffer, subSize, curPos);
@@ -1533,8 +1419,16 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XLOD):
                 XLOD.Read(buffer, subSize, curPos);
                 break;
+            case REV32(XIBS):
+                //XIBS.Read(buffer, subSize, curPos);
+                XIBS.value = 1;
+                break;
             case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
+                break;
+            case REV32(ONAM):
+                IsOpenByDefault(true);
+                curPos += subSize;
                 break;
             case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
@@ -1555,59 +1449,53 @@ SINT32 REFRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
-    RCLR.Unload();
     NAME.Unload();
     XEZN.Unload();
     XRGD.Unload();
     XRGB.Unload();
-    XPRM.Unload();
-    XTRI.Unload();
-    //XMBP.Unload(); //FILL IN MANUALLY
-    XMBO.Unload();
-    XTEL.Unload();
-    XMRK.Unload();
-    FULL.Unload();
-    TNAM.Unload();
-    WMI1.Unload();
-    MMRK.Unload();
-    XSRF.Unload();
-    XSRD.Unload();
-    XTRG.Unload();
+    Patrol.Unload();
     XLCM.Unload();
-    XPRD.Unload();
-    XRDO.Unload();
-    XOWN.Unload();
-    XLOC.Unload();
+    Ownership.Unload();
     XCNT.Unload();
     XRDS.Unload();
     XHLP.Unload();
     XRAD.Unload();
     XCHG.Unload();
-    XAMT.Unload();
-    XPWR.Unload();
-    XLTW.Unload();
     XDCR.Unload();
     XLKR.Unload();
     XCLP.Unload();
-    XAPD.Unload();
-    XAPR.Unload();
+    RCLR.Unload();
+    ActivateParents.Unload();
     XATO.Unload();
     XESP.Unload();
     XEMI.Unload();
     XMBR.Unload();
+    XPRM.Unload();
+    XTRI.Unload();
+    XMBO.Unload();
+    XTEL.Unload();
+    MapData.Unload();
+    AudioData.Unload();
+    XSRF.Unload();
+    XSRD.Unload();
+    XTRG.Unload();
+    XRDO.Unload();
+    XLOC.Unload();
+    Ammo.Unload();
+    XPWR.Unload();
+    XLTW.Unload();
     XACT.Unload();
-    //ONAM.Unload(); //FILL IN MANUALLY
-    //XIBS.Unload(); //FILL IN MANUALLY
     XNDP.Unload();
     XPOD.Unload();
     XPTL.Unload();
     XSED.Unload();
-    XRMR.Unload();
-    XLRM.Unload();
+    Room.Unload();
     XOCP.Unload();
     XORD.Unload();
     XLOD.Unload();
+    XIBS.Unload();
     XSCL.Unload();
     DATA.Unload();
     return 1;
@@ -1616,217 +1504,107 @@ SINT32 REFRRecord::Unload()
 SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-    WRITE(RCLR);
     WRITE(NAME);
     WRITE(XEZN);
     WRITE(XRGD);
     WRITE(XRGB);
-    WRITE(XPRM);
-    WRITE(XTRI);
-
-    //if(XMBP.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord(REV32(XMBP), XMBP.value, XMBP.GetSize());
-    WRITE(XMBO);
-    WRITE(XTEL);
-
-    if(XMRK.IsLoaded())
-        {
-        //if(XMRK->XMRK.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord(REV32(XMRK), XMRK->XMRK.value, XMRK->XMRK.GetSize());
-
-        if(XMRK->FNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(FNAM), XMRK->FNAM.value, XMRK->FNAM.GetSize());
-
-        }
-
-    WRITE(FULL);
-    WRITE(TNAM);
-    WRITE(WMI1);
-
-    if(MMRK.IsLoaded())
-        {
-        //if(MMRK->MMRK.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord(REV32(MMRK), MMRK->MMRK.value, MMRK->MMRK.GetSize());
-
-        if(MMRK->FULL.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(FULL), MMRK->FULL.value, MMRK->FULL.GetSize());
-
-        if(MMRK->CNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(CNAM), MMRK->CNAM.value, MMRK->CNAM.GetSize());
-
-        if(MMRK->BNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(BNAM), MMRK->BNAM.value, MMRK->BNAM.GetSize());
-
-        if(MMRK->MNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(MNAM), MMRK->MNAM.value, MMRK->MNAM.GetSize());
-
-        if(MMRK->NNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(NNAM), MMRK->NNAM.value, MMRK->NNAM.GetSize());
-
-        }
-
-    WRITE(XSRF);
-    WRITE(XSRD);
-    WRITE(XTRG);
+    Patrol.Write(writer);
     WRITE(XLCM);
-
-    if(XPRD.IsLoaded())
-        {
-        if(XPRD->XPRD.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XPRD), XPRD->XPRD.value, XPRD->XPRD.GetSize());
-
-        //if(XPRD->XPPA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord(REV32(XPPA), XPRD->XPPA.value, XPRD->XPPA.GetSize());
-
-        if(XPRD->INAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(INAM), XPRD->INAM.value, XPRD->INAM.GetSize());
-
-        if(XPRD->SCHR.IsLoaded())
-            {
-            if(XPRD->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCHR), XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
-
-            if(XPRD->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCDA), XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
-
-            if(XPRD->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCTX), XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
-
-            if(XPRD->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SLSD), XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
-
-            if(XPRD->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCVR), XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
-
-            if(XPRD->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCRO), XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
-
-            if(XPRD->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCRV), XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
-
-            }
-        if(XPRD->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(TNAM), XPRD->TNAM.value, XPRD->TNAM.GetSize());
-
-        }
-
-    WRITE(XRDO);
-
-    if(XOWN.IsLoaded())
-        {
-        if(XOWN->XOWN.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XOWN), XOWN->XOWN.value, XOWN->XOWN.GetSize());
-
-        if(XOWN->XRNK.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XRNK), XOWN->XRNK.value, XOWN->XRNK.GetSize());
-
-        }
-
-    WRITE(XLOC);
+    Ownership.Write(writer);
     WRITE(XCNT);
     WRITE(XRDS);
     WRITE(XHLP);
     WRITE(XRAD);
     WRITE(XCHG);
-
-    if(XAMT.IsLoaded())
-        {
-        if(XAMT->XAMT.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XAMT), XAMT->XAMT.value, XAMT->XAMT.GetSize());
-
-        if(XAMT->XAMC.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XAMC), XAMT->XAMC.value, XAMT->XAMC.GetSize());
-
-        }
-
-    WRITE(XPWR);
-    WRITE(XLTW);
     WRITE(XDCR);
     WRITE(XLKR);
     WRITE(XCLP);
-    WRITE(XAPD);
-    WRITE(XAPR);
+    WRITE(RCLR);
+    ActivateParents.Write(writer);
     WRITE(XATO);
     WRITE(XESP);
     WRITE(XEMI);
     WRITE(XMBR);
+    WRITE(XPRM);
+    WRITE(XTRI);
+    WRITE(XMBO);
+    WRITE(XTEL);
+    MapData.Write(writer);
+    AudioData.Write(writer);
+    WRITE(XSRF);
+    WRITE(XSRD);
+    WRITE(XTRG);
+    WRITE(XRDO);
+    WRITE(XLOC);
+    Ammo.Write(writer);
+    WRITE(XPWR);
+    WRITE(XLTW);
     WRITE(XACT);
-
-    //if(ONAM.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord(REV32(ONAM), ONAM.value, ONAM.GetSize());
-
-    //if(XIBS.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord(REV32(XIBS), XIBS.value, XIBS.GetSize());
     WRITE(XNDP);
     WRITE(XPOD);
     WRITE(XPTL);
     WRITE(XSED);
-    WRITE(XRMR);
-    WRITE(XLRM);
+    Room.Write(writer);
     WRITE(XOCP);
     WRITE(XORD);
     WRITE(XLOD);
+    if(IsOpenByDefault())
+        WRITEEMPTY(ONAM);
+    if(XIBS.IsLoaded())
+        WRITEEMPTY(XIBS);
     WRITE(XSCL);
     WRITE(DATA);
-
     return -1;
     }
 
 bool REFRRecord::operator ==(const REFRRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            RCLR == other.RCLR &&
             NAME == other.NAME &&
             XEZN == other.XEZN &&
             XRGD == other.XRGD &&
             XRGB == other.XRGB &&
-            XPRM == other.XPRM &&
-            XTRI == other.XTRI &&
-            //Empty &&
-            XMBO == other.XMBO &&
-            XTEL == other.XTEL &&
-            //EmptyFNAM == other.FNAM &&
-            FULL.equals(other.FULL) &&
-            TNAM == other.TNAM &&
-            WMI1 == other.WMI1 &&
-            //EmptyFULL == other.FULL &&
-            XSRF == other.XSRF &&
-            XSRD == other.XSRD &&
-            XTRG == other.XTRG &&
+            Patrol == other.Patrol &&
             XLCM == other.XLCM &&
-            XPRD == other.XPRD &&
-            XRDO == other.XRDO &&
-            XOWN == other.XOWN &&
-            XLOC == other.XLOC &&
+            Ownership == other.Ownership &&
             XCNT == other.XCNT &&
             XRDS == other.XRDS &&
             XHLP == other.XHLP &&
             XRAD == other.XRAD &&
             XCHG == other.XCHG &&
-            XAMT == other.XAMT &&
-            XPWR == other.XPWR &&
-            XLTW == other.XLTW &&
             XDCR == other.XDCR &&
             XLKR == other.XLKR &&
             XCLP == other.XCLP &&
-            XAPD == other.XAPD &&
-            XAPR == other.XAPR &&
-            XATO.equalsi(other.XATO) &&
+            RCLR == other.RCLR &&
+            ActivateParents == other.ActivateParents &&
+            XATO.equals(other.XATO) &&
             XESP == other.XESP &&
             XEMI == other.XEMI &&
             XMBR == other.XMBR &&
+            XPRM == other.XPRM &&
+            XTRI == other.XTRI &&
+            XMBO == other.XMBO &&
+            XTEL == other.XTEL &&
+            MapData == other.MapData &&
+            AudioData == other.AudioData &&
+            XSRF == other.XSRF &&
+            XSRD == other.XSRD &&
+            XTRG == other.XTRG &&
+            XRDO == other.XRDO &&
+            XLOC == other.XLOC &&
+            Ammo == other.Ammo &&
+            XPWR == other.XPWR &&
+            XLTW == other.XLTW &&
             XACT == other.XACT &&
-            //Empty &&
-            //Empty &&
             XNDP == other.XNDP &&
             XPOD == other.XPOD &&
             XPTL == other.XPTL &&
             XSED == other.XSED &&
-            XRMR == other.XRMR &&
-            XLRM == other.XLRM &&
+            Room == other.Room &&
             XOCP == other.XOCP &&
             XORD == other.XORD &&
             XLOD == other.XLOD &&
+            XIBS == other.XIBS &&
             XSCL == other.XSCL &&
             DATA == other.DATA);
     }

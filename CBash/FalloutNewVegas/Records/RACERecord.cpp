@@ -2034,7 +2034,7 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     WRITE(ONAM);
     WRITE(YNAM);
 
-    writer.record_write_subheader(REV32(NAM2), 0);
+    WRITEEMPTY(NAM2);
     WRITE(VTCK);
     WRITE(DNAM);
     WRITE(CNAM);
@@ -2042,8 +2042,8 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     WRITE(UNAM);
     WRITE(ATTR);
 
-    writer.record_write_subheader(REV32(NAM0), 0);
-    writer.record_write_subheader(REV32(MNAM), 0);
+    WRITEEMPTY(NAM0);
+    WRITEEMPTY(MNAM);
     UINT32 curINDX = 0;
     MHMOD0.Write(curINDX++, writer);
     MHMOD1.Write(curINDX++, writer);
@@ -2054,7 +2054,7 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     MHMOD6.Write(curINDX++, writer);
     MHMOD7.Write(curINDX, writer);
 
-    writer.record_write_subheader(REV32(FNAM), 0);
+    WRITEEMPTY(FNAM);
     curINDX = 0;
     FHMOD0.Write(curINDX++, writer);
     FHMOD1.Write(curINDX++, writer);
@@ -2065,15 +2065,15 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     FHMOD6.Write(curINDX++, writer);
     FHMOD7.Write(curINDX, writer);
 
-    writer.record_write_subheader(REV32(NAM1), 0);
-    writer.record_write_subheader(REV32(MNAM), 0);
+    WRITEEMPTY(NAM1);
+    WRITEEMPTY(MNAM);
     curINDX = 0;
     MBMOD0.WriteIconsFirst(curINDX++, writer);
     MBMOD1.WriteIconsFirst(curINDX++, writer);
     MBMOD2.WriteIconsFirst(curINDX++, writer);
     MBMOD3.WriteIconsFirst(curINDX, writer);
 
-    writer.record_write_subheader(REV32(FNAM), 0);
+    WRITEEMPTY(FNAM);
     curINDX = 0;
     FBMOD0.WriteIconsFirst(curINDX++, writer);
     FBMOD1.WriteIconsFirst(curINDX++, writer);
@@ -2083,20 +2083,20 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     if(HNAM.value.size())
         WRITE(HNAM);
     else
-        writer.record_write_subheader(REV32(HNAM), 0);
+        WRITEEMPTY(HNAM);
 
     if(ENAM.value.size())
         WRITE(ENAM);
     else
-        writer.record_write_subheader(REV32(ENAM), 0);
+        WRITEEMPTY(ENAM);
 
-    writer.record_write_subheader(REV32(MNAM), 0);
+    WRITEEMPTY(MNAM);
     WRITEAS(MaleFGGS,FGGS);
     WRITEAS(MaleFGGA,FGGA);
     WRITEAS(MaleFGTS,FGTS);
     WRITEAS(MaleSNAM,SNAM);
 
-    writer.record_write_subheader(REV32(FNAM), 0);
+    WRITEEMPTY(FNAM);
     WRITEAS(FemaleFGGS,FGGS);
     WRITEAS(FemaleFGGA,FGGA);
     WRITEAS(FemaleFGTS,FGTS);

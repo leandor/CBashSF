@@ -34,6 +34,9 @@ GPL License and Copyright Notice ============================================
 #include "Oblivion/Records/ROADRecord.h"
 #include "Oblivion/Records/LANDRecord.h"
 #include "FalloutNewVegas/Records/CELLRecord.h"
+#include "FalloutNewVegas/Records/ACHRRecord.h"
+#include "FalloutNewVegas/Records/ACRERecord.h"
+#include "FalloutNewVegas/Records/REFRRecord.h"
 #include "Visitors.h"
 #include <vector>
 #include <math.h>
@@ -1762,86 +1765,71 @@ class FNVGRUPRecords<FNV::CELLRecord>
                         reader.skip(16); //skip the rest of the header
                         continue;
                     case REV32(ACHR):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
-                        //curRecord = new FNV::ACHRRecord(reader.getBuffer(reader.tell()) + 16);
-                        //if(processor(curRecord))
-                        //    {
-                        //    if(Records.size() == 0)
-                        //        {
-                        //        indexer.Accept(curRecord);
-                        //        ((CELLRecord *)Records.back())->ACHR.push_back(curRecord);
-                        //        }
-                        //    else
-                        //        {
-                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
-                        //        delete curRecord;
-                        //        }
-                        //    }
+                        curRecord = new FNV::ACHRRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->ACHR.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     case REV32(ACRE):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
-                        //curRecord = new FNV::ACRERecord(reader.getBuffer(reader.tell()) + 16);
-                        //if(processor(curRecord))
-                        //    {
-                        //    if(Records.size() == 0)
-                        //        {
-                        //        indexer.Accept(curRecord);
-                        //        ((CELLRecord *)Records.back())->ACRE.push_back(curRecord);
-                        //        }
-                        //    else
-                        //        {
-                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
-                        //        delete curRecord;
-                        //        }
-                        //    }
+                        curRecord = new FNV::ACRERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->ACRE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     case REV32(REFR):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
-                        //curRecord = new FNV::REFRRecord(reader.getBuffer(reader.tell()) + 16);
-                        //if(processor(curRecord))
-                        //    {
-                        //    if(Records.size() == 0)
-                        //        {
-                        //        indexer.Accept(curRecord);
-                        //        ((CELLRecord *)Records.back())->REFR.push_back(curRecord);
-                        //        }
-                        //    else
-                        //        {
-                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
-                        //        delete curRecord;
-                        //        }
-                        //    }
+                        curRecord = new FNV::REFRRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->REFR.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     case REV32(PGRE):
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        break;
+                    case REV32(PMIS):
                         reader.skip(16); //skip the rest of the header since it isn't implemented
                         break;
                     case REV32(NAVM):
                         reader.skip(16); //skip the rest of the header since it isn't implemented
                         break;
-                    //case REV32(PGRD):
-                        //curRecord = new FNV::PGRDRecord(reader.getBuffer(reader.tell()) + 16);
-                        //if(processor(curRecord))
-                        //    {
-                        //    if(Records.size() == 0)
-                        //        {
-                        //        if(((CELLRecord *)Records.back())->PGRD == NULL)
-                        //            {
-                        //            indexer.Accept(curRecord);
-                        //            ((CELLRecord *)Records.back())->PGRD = curRecord;
-                        //            }
-                        //        else
-                        //            {
-                        //            printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curRecord->formID, reader.tell(), reader.getFileName(), Records.back()->formID, ((CELLRecord *)Records.back())->PGRD->formID);
-                        //            delete curRecord;
-                        //            }
-                        //        }
-                        //    else
-                        //        {
-                        //        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
-                        //        delete curRecord;
-                        //        }
-                        //    }
-                        //break;
                     default:
                         printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         #ifdef CBASH_DEBUG_CHUNK

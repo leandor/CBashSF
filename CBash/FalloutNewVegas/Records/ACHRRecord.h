@@ -35,17 +35,18 @@ class ACHRRecord : public FNVRecord //Placed NPC
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSimpleSubRecord<FORMID> NAME; //Base
+        ReqSimpleSubRecord<FORMID> NAME; //Base
         OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
         RawRecord XRGD; //Ragdoll Data
         RawRecord XRGB; //Ragdoll Biped Data
         OptSubRecord<GENPATROL> Patrol; //Patrol Data
         OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
+
         OptSimpleSubRecord<FORMID> XMRC; //Merchant Container
         OptSimpleSubRecord<SINT32> XCNT; //Count
         OptSimpleFloatSubRecord<flt_0> XRDS; //Radius
         OptSimpleFloatSubRecord<flt_0> XHLP; //Health
-        std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
+        UnorderedSparseArray<GENXDCR *> XDCR; //Linked Decals
         OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
         OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
@@ -53,9 +54,9 @@ class ACHRRecord : public FNVRecord //Placed NPC
         OptSubRecord<GENXESP> XESP; //Enable Parent
         OptSimpleSubRecord<FORMID> XEMI; //Emittance
         OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
-        //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
+        OptSimpleSubRecord<UINT8> XIBS; //Ignored By Sandbox (Empty, boolean, if != 0, write empty)
         OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
-        OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
+        ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         ACHRRecord(unsigned char *_recData=NULL);
         ACHRRecord(ACHRRecord *srcRecord);
@@ -77,6 +78,7 @@ class ACHRRecord : public FNVRecord //Placed NPC
 
         UINT32 GetType();
         STRING GetStrType();
+        UINT32 GetParentType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

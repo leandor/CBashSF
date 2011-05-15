@@ -504,10 +504,7 @@ void GENEffect::IsHostile(bool value)
 bool GENEffect::IsFlagMask(UINT8 Mask, bool Exact)
     {
     if(!SCIT.IsLoaded()) return false;
-    if(Exact)
-        return (SCIT->flags & Mask) == Mask;
-    else
-        return (SCIT->flags & Mask) != 0;
+    return Exact ? (SCIT->flags & Mask) == Mask : (SCIT->flags & Mask) != 0;
     }
 
 void GENEffect::SetFlagMask(UINT8 Mask)
@@ -871,10 +868,7 @@ void GENEffect::OBME_IsUsingHiddenOverride(bool value)
 bool GENEffect::OBME_IsOverrideFlagMask(UINT32 Mask, bool Exact)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return false;
-    if(Exact)
-        return (OBME->EFIX->efixOverrides & Mask) == Mask;
-    else
-        return (OBME->EFIX->efixOverrides & Mask) != 0;
+    return Exact ? (OBME->EFIX->efixOverrides & Mask) == Mask : (OBME->EFIX->efixOverrides & Mask) != 0;
     }
 
 void GENEffect::OBME_SetOverrideFlagMask(UINT32 Mask)
@@ -1108,10 +1102,7 @@ void GENEffect::OBME_IsHidden(bool value)
 bool GENEffect::OBME_IsFlagMask(UINT32 Mask, bool Exact)
     {
     if(!OBME.IsLoaded() || !OBME->EFIX.IsLoaded()) return false;
-    if(Exact)
-        return (OBME->EFIX->efixFlags & Mask) == Mask;
-    else
-        return (OBME->EFIX->efixFlags & Mask) != 0;
+    return Exact ? (OBME->EFIX->efixFlags & Mask) == Mask : (OBME->EFIX->efixFlags & Mask) != 0;
     }
 
 void GENEffect::OBME_SetFlagMask(UINT32 Mask)
@@ -1478,10 +1469,7 @@ void GENCTDA::IsUseGlobal(bool value)
 
 bool GENCTDA::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(Exact)
-        return ((operType & 0x0F) & (Mask & 0x0F)) == Mask;
-    else
-        return ((operType & 0x0F) & (Mask & 0x0F)) != 0;
+    return Exact ? ((operType & 0x0F) & (Mask & 0x0F)) == Mask : ((operType & 0x0F) & (Mask & 0x0F)) != 0;
     }
 
 void GENCTDA::SetFlagMask(UINT8 Mask)
@@ -2051,6 +2039,23 @@ bool GENDODT::operator !=(const GENDODT &other) const
     return !(*this == other);
     }
 
+void GENPATROL::Write(FileWriter &writer)
+    {
+    WRITE(XPRD);
+    WRITEEMPTY(XPPA);
+    WRITE(INAM);
+    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    VARS.Write(writer);
+    SCR_.Write(writer, true);
+    WRITE(TNAM);
+    }
+
 bool GENPATROL::IsScriptEnabled()
     {
     return (SCHR.value.flags & fIsEnabled) != 0;
@@ -2063,10 +2068,7 @@ void GENPATROL::IsScriptEnabled(bool value)
 
 bool GENPATROL::IsScriptFlagMask(UINT16 Mask, bool Exact)
     {
-    if(Exact)
-        return (SCHR.value.flags & Mask) == Mask;
-    else
-        return (SCHR.value.flags & Mask) != 0;
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
     }
 
 void GENPATROL::SetScriptFlagMask(UINT16 Mask)
@@ -2074,33 +2076,56 @@ void GENPATROL::SetScriptFlagMask(UINT16 Mask)
     SCHR.value.flags = Mask;
     }
 
+bool GENPATROL::IsObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void GENPATROL::IsObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool GENPATROL::IsQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void GENPATROL::IsQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool GENPATROL::IsEffect()
+    {
+    return SCHR.value.scriptType == eEffect;
+    }
+
+void GENPATROL::IsEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eEffect : eObject;
+    }
+
+bool GENPATROL::IsType(UINT16 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void GENPATROL::SetType(UINT16 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
 bool GENPATROL::operator ==(const GENPATROL &other) const
     {
-    if(XPRD == other.XPRD &&
-        SCHR == other.SCHR &&
-        INAM == other.INAM &&
-        TNAM == other.TNAM &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        VARS.size() == other.VARS.size() &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Record order doesn't matter on vars, so equality testing isn't easy
-        //Instead, they're keyed by var index (SLSD.value.index)
-        //The proper solution would be to see if each indexed var matches the other
-        //But they're usually ordered, so the lazy approach is to not bother
-        //Fix-up later
-        for(UINT32 x = 0; x < VARS.size(); ++x)
-            if(*VARS[x] != *other.VARS[x])
-                return false;
-
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-        return true;
-        }
-    return false;
+    return (XPRD == other.XPRD &&
+            SCHR == other.SCHR &&
+            INAM == other.INAM &&
+            TNAM == other.TNAM &&
+            SCDA == other.SCDA &&
+            SCTX.equalsi(other.SCTX) &&
+            VARS == other.VARS &&
+            SCR_ == other.SCR_);
     }
 bool GENPATROL::operator !=(const GENPATROL &other) const
     {
@@ -2792,10 +2817,7 @@ void FNVCTDA::IsUseGlobal(bool value)
 
 bool FNVCTDA::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(Exact)
-        return ((operType & 0x0F) & (Mask & 0x0F)) == Mask;
-    else
-        return ((operType & 0x0F) & (Mask & 0x0F)) != 0;
+    return Exact ? ((operType & 0x0F) & (Mask & 0x0F)) == Mask : ((operType & 0x0F) & (Mask & 0x0F)) != 0;
     }
 
 void FNVCTDA::SetFlagMask(UINT8 Mask)
@@ -3004,7 +3026,7 @@ void DESTSTAGE::Write(FileWriter &writer)
         WRITE(DMDL);
         WRITE(DMDT);
         }
-    writer.record_write_subheader(REV32(DSTF), 0);
+    WRITEEMPTY(DSTF);
     }
 
 bool DESTSTAGE::IsCapDamage()
@@ -3443,7 +3465,16 @@ bool GENXTEL::operator !=(const GENXTEL &other) const
     return !(*this == other);
     }
 
-bool GENXMRK::operator ==(const GENXMRK &other) const
+void GENMAPDATA::Write(FileWriter &writer)
+    {
+    WRITEEMPTY(XMRK);
+    WRITE(FNAM);
+    WRITE(FULL);
+    WRITE(TNAM);
+    WRITE(WMI1);
+    }
+
+bool GENMAPDATA::operator ==(const GENMAPDATA &other) const
     {
     return (FNAM == other.FNAM &&
             FULL.equals(other.FULL) &&
@@ -3451,12 +3482,22 @@ bool GENXMRK::operator ==(const GENXMRK &other) const
             WMI1 == other.WMI1);
     }
 
-bool GENXMRK::operator !=(const GENXMRK &other) const
+bool GENMAPDATA::operator !=(const GENMAPDATA &other) const
     {
     return !(*this == other);
     }
 
-bool GENMMRK::operator ==(const GENMMRK &other) const
+void GENAUDIODATA::Write(FileWriter &writer)
+    {
+    WRITEEMPTY(MMRK);
+    WRITE(FULL);
+    WRITE(CNAM);
+    WRITE(BNAM);
+    WRITE(MNAM);
+    WRITE(NNAM);
+    }
+
+bool GENAUDIODATA::operator ==(const GENAUDIODATA &other) const
     {
     return (FULL == other.FULL &&
             CNAM == other.CNAM &&
@@ -3465,7 +3506,7 @@ bool GENMMRK::operator ==(const GENMMRK &other) const
             NNAM == other.NNAM);
     }
 
-bool GENMMRK::operator !=(const GENMMRK &other) const
+bool GENAUDIODATA::operator !=(const GENAUDIODATA &other) const
     {
     return !(*this == other);
     }
@@ -3497,6 +3538,12 @@ bool GENXRDO::operator !=(const GENXRDO &other) const
     return !(*this == other);
     }
 
+void GENAMMO::Write(FileWriter &writer)
+    {
+    WRITE(XAMT);
+    WRITE(XAMC);
+    }
+
 bool GENAMMO::operator ==(const GENAMMO &other) const
     {
     return (XAMT == other.XAMT &&
@@ -3508,10 +3555,52 @@ bool GENAMMO::operator !=(const GENAMMO &other) const
     return !(*this == other);
     }
 
+GENXPWR::GENXPWR():
+    reference(0),
+    type(0)
+    {
+    //
+    }
+
+GENXPWR::~GENXPWR()
+    {
+    //
+    }
+
+bool GENXPWR::IsReflection()
+    {
+    return type == eReflection;
+    }
+
+void GENXPWR::IsReflection(bool value)
+    {
+    type = value ? eReflection : eRefraction;
+    }
+
+bool GENXPWR::IsRefraction()
+    {
+    return type == eRefraction;
+    }
+
+void GENXPWR::IsRefraction(bool value)
+    {
+    type = value ? eRefraction : eReflection;
+    }
+
+bool GENXPWR::IsType(UINT32 Type)
+    {
+    return type == Type;
+    }
+
+void GENXPWR::SetType(UINT32 Type)
+    {
+    type = Type;
+    }
+
 bool GENXPWR::operator ==(const GENXPWR &other) const
     {
-    return (XAMT == other.XAMT &&
-            XAMC == other.XAMC);
+    return (reference == other.reference &&
+            type == other.type);
     }
 
 bool GENXPWR::operator !=(const GENXPWR &other) const
@@ -3522,7 +3611,7 @@ bool GENXPWR::operator !=(const GENXPWR &other) const
 GENXDCR::GENXDCR():
     reference(0)
     {
-    //
+    memset(&unknown1[0], 0x00, sizeof(unknown1));
     }
 
 GENXDCR::~GENXDCR()
@@ -3592,6 +3681,12 @@ bool GENACTPARENT::IsFlagMask(UINT8 Mask, bool Exact)
 void GENACTPARENT::SetFlagMask(UINT8 Mask)
     {
     XAPD.value = Mask;
+    }
+
+void GENACTPARENT::Write(FileWriter &writer)
+    {
+    WRITE(XAPD);
+    WRITE(XAPR);
     }
 
 bool GENACTPARENT::operator ==(const GENACTPARENT &other) const
@@ -3686,6 +3781,12 @@ bool GENXRMR::operator ==(const GENXRMR &other) const
 bool GENXRMR::operator !=(const GENXRMR &other) const
     {
     return !(*this == other);
+    }
+
+void GENROOM::Write(FileWriter &writer)
+    {
+    WRITE(XRMR);
+    WRITE(XLRM);
     }
 
 bool GENROOM::operator ==(const GENROOM &other) const
@@ -3945,6 +4046,54 @@ bool FNVLIGHT::operator ==(const FNVLIGHT &other) const
     }
 
 bool FNVLIGHT::operator !=(const FNVLIGHT &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXPOD::GENXPOD():
+    room1(0),
+    room2(0)
+    {
+    //
+    }
+GENXPOD::~GENXPOD()
+    {
+    //
+    }
+
+bool GENXPOD::operator ==(const GENXPOD &other) const
+    {
+    return (room1 == other.room1 &&
+            room2 == other.room2);
+    }
+
+bool GENXPOD::operator !=(const GENXPOD &other) const
+    {
+    return !(*this == other);
+    }
+
+GENXORD::GENXORD():
+    right(0),
+    left(0),
+    bottom(0),
+    top(0)
+    {
+    //
+    }
+GENXORD::~GENXORD()
+    {
+    //
+    }
+
+bool GENXORD::operator ==(const GENXORD &other) const
+    {
+    return (right == other.right &&
+            left == other.left &&
+            bottom == other.bottom &&
+            top == other.top);
+    }
+
+bool GENXORD::operator !=(const GENXORD &other) const
     {
     return !(*this == other);
     }

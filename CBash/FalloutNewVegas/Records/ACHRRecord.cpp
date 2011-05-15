@@ -55,25 +55,7 @@ ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
     XEZN = srcRecord->XEZN;
     XRGD = srcRecord->XRGD;
     XRGB = srcRecord->XRGB;
-    if(srcRecord->XPRD.IsLoaded())
-        {
-        XPRD.Load();
-        XPRD->XPRD = srcRecord->XPRD->XPRD;
-        XPRD->XPPA = srcRecord->XPRD->XPPA;
-        XPRD->INAM = srcRecord->XPRD->INAM;
-        if(srcRecord->XPRD->SCHR.IsLoaded())
-            {
-            XPRD->SCHR.Load();
-            XPRD->SCHR->SCHR = srcRecord->XPRD->SCHR->SCHR;
-            XPRD->SCHR->SCDA = srcRecord->XPRD->SCHR->SCDA;
-            XPRD->SCHR->SCTX = srcRecord->XPRD->SCHR->SCTX;
-            XPRD->SCHR->SLSD = srcRecord->XPRD->SCHR->SLSD;
-            XPRD->SCHR->SCVR = srcRecord->XPRD->SCHR->SCVR;
-            XPRD->SCHR->SCRO = srcRecord->XPRD->SCHR->SCRO;
-            XPRD->SCHR->SCRV = srcRecord->XPRD->SCHR->SCRV;
-            }
-        XPRD->TNAM = srcRecord->XPRD->TNAM;
-        }
+    Patrol = srcRecord->Patrol;
     XLCM = srcRecord->XLCM;
     XMRC = srcRecord->XMRC;
     XCNT = srcRecord->XCNT;
@@ -82,8 +64,7 @@ ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
     XDCR = srcRecord->XDCR;
     XLKR = srcRecord->XLKR;
     XCLP = srcRecord->XCLP;
-    XAPD = srcRecord->XAPD;
-    XAPR = srcRecord->XAPR;
+    ActivateParents = srcRecord->ActivateParents;
     XATO = srcRecord->XATO;
     XESP = srcRecord->XESP;
     XEMI = srcRecord->XEMI;
@@ -104,67 +85,70 @@ bool ACHRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(NAME.IsLoaded())
-        op.Accept(NAME->value);
+    op.Accept(NAME.value);
     if(XEZN.IsLoaded())
-        op.Accept(XEZN->value);
-    if(XPRD.IsLoaded() && XPRD->INAM.IsLoaded())
-        op.Accept(XPRD->INAM->value);
-    if(XPRD.IsLoaded() && XPRD->SCHR.IsLoaded() && XPRD->SCHR->SCRO.IsLoaded())
-        op.Accept(XPRD->SCHR->SCRO->value);
-    if(XPRD.IsLoaded() && XPRD->TNAM.IsLoaded())
-        op.Accept(XPRD->TNAM->value);
+        op.Accept(XEZN.value);
+    if(Patrol.IsLoaded())
+        {
+        op.Accept(Patrol->INAM.value);
+        for(UINT32 x = 0; x < Patrol->SCR_.value.size(); x++)
+            if(Patrol->SCR_.value[x]->isSCRO)
+                op.Accept(Patrol->SCR_.value[x]->reference);
+        op.Accept(Patrol->TNAM.value);
+        }
     if(XMRC.IsLoaded())
-        op.Accept(XMRC->value);
-    //if(XDCR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XDCR->value);
+        op.Accept(XMRC.value);
+    for(UINT32 x = 0; x < XDCR.value.size(); x++)
+        op.Accept(XDCR.value[x]->reference);
     if(XLKR.IsLoaded())
-        op.Accept(XLKR->value);
-    //if(XAPR.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XAPR->value);
-    //if(XESP.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(XESP->value);
+        op.Accept(XLKR.value);
+    if(ActivateParents.IsLoaded())
+        {
+        for(UINT32 x = 0; x < ActivateParents->XAPR.value.size(); x++)
+            op.Accept(ActivateParents->XAPR.value[x]->reference);
+        }
+    if(XESP.IsLoaded())
+        op.Accept(XESP->parent);
     if(XEMI.IsLoaded())
-        op.Accept(XEMI->value);
+        op.Accept(XEMI.value);
     if(XMBR.IsLoaded())
-        op.Accept(XMBR->value);
+        op.Accept(XMBR.value);
 
     return op.Stop();
     }
+
 bool ACHRRecord::IsOppositeParent()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsOppositeParent) != 0;
+    return XESP.IsLoaded() ? (XESP->flags & fIsOppositeParent) != 0 : false;
     }
 
 void ACHRRecord::IsOppositeParent(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsOppositeParent) : (Dummy->flags & ~fIsOppositeParent);
+    if(!XESP.IsLoaded()) return;
+    XESP->flags = value ? (XESP->flags | fIsOppositeParent) : (XESP->flags & ~fIsOppositeParent);
     }
 
 bool ACHRRecord::IsPopIn()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsPopIn) != 0;
+    return XESP.IsLoaded() ? (XESP->flags & fIsPopIn) != 0 : false;
     }
 
 void ACHRRecord::IsPopIn(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsPopIn) : (Dummy->flags & ~fIsPopIn);
+    if(!XESP.IsLoaded()) return;
+    XESP->flags = value ? (XESP->flags | fIsPopIn) : (XESP->flags & ~fIsPopIn);
     }
 
 bool ACHRRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    if(!XESP.IsLoaded()) return false;
+    return Exact ? ((XESP->flags & Mask) == Mask) : ((XESP->flags & Mask) != 0);
     }
 
 void ACHRRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    XESP.Load();
+    XESP->flags = Mask;
     }
 
 UINT32 ACHRRecord::GetType()
@@ -175,6 +159,11 @@ UINT32 ACHRRecord::GetType()
 STRING ACHRRecord::GetStrType()
     {
     return "ACHR";
+    }
+
+UINT32 ACHRRecord::GetParentType()
+    {
+    return REV32(CELL);
     }
 
 SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
@@ -215,55 +204,52 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 XRGB.Read(buffer, subSize, curPos);
                 break;
             case REV32(XPRD):
-                XPRD.Load();
-                XPRD->XPRD.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->XPRD.Read(buffer, subSize, curPos);
                 break;
             case REV32(XPPA):
-                //XPRD.Load();
-                //XPRD->XPPA.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //XPPA, Patrol Script Marker (Empty)
                 break;
             case REV32(INAM):
-                XPRD.Load();
-                XPRD->INAM.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->INAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCHR):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCHR.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->SCHR.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCDA):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCDA.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->SCDA.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCTX):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCTX.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->SCTX.Read(buffer, subSize, curPos);
                 break;
             case REV32(SLSD):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SLSD.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->VARS.value.push_back(new GENVARS);
+                Patrol->VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCVR):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCVR.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                if(Patrol->VARS.value.size() == 0)
+                    Patrol->VARS.value.push_back(new GENVARS);
+                Patrol->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCRO):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCRO.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.value.back()->isSCRO = true;
                 break;
             case REV32(SCRV):
-                XPRD.Load();
-                XPRD->SCHR.Load();
-                XPRD->SCHR->SCRV.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(TNAM):
-                XPRD.Load();
-                XPRD->TNAM.Read(buffer, subSize, curPos);
+                Patrol.Load();
+                Patrol->TNAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(XLCM):
                 XLCM.Read(buffer, subSize, curPos);
@@ -290,10 +276,12 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 XCLP.Read(buffer, subSize, curPos);
                 break;
             case REV32(XAPD):
-                XAPD.Read(buffer, subSize, curPos);
+                ActivateParents.Load();
+                ActivateParents->XAPD.Read(buffer, subSize, curPos);
                 break;
             case REV32(XAPR):
-                XAPR.Read(buffer, subSize, curPos);
+                ActivateParents.Load();
+                ActivateParents->XAPR.Read(buffer, subSize, curPos);
                 break;
             case REV32(XATO):
                 XATO.Read(buffer, subSize, curPos);
@@ -308,7 +296,8 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 XMBR.Read(buffer, subSize, curPos);
                 break;
             case REV32(XIBS):
-                //XIBS.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //XIBS.Read(buffer, subSize, curPos);
+                XIBS.value = 1;
                 break;
             case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
@@ -337,7 +326,7 @@ SINT32 ACHRRecord::Unload()
     XEZN.Unload();
     XRGD.Unload();
     XRGB.Unload();
-    XPRD.Unload();
+    Patrol.Unload();
     XLCM.Unload();
     XMRC.Unload();
     XCNT.Unload();
@@ -346,13 +335,12 @@ SINT32 ACHRRecord::Unload()
     XDCR.Unload();
     XLKR.Unload();
     XCLP.Unload();
-    XAPD.Unload();
-    XAPR.Unload();
+    ActivateParents.Unload();
     XATO.Unload();
     XESP.Unload();
     XEMI.Unload();
     XMBR.Unload();
-    //XIBS.Unload(); //FILL IN MANUALLY
+    XIBS.Unload();
     XSCL.Unload();
     DATA.Unload();
     return 1;
@@ -365,47 +353,7 @@ SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     WRITE(XEZN);
     WRITE(XRGD);
     WRITE(XRGB);
-
-    if(XPRD.IsLoaded())
-        {
-        if(XPRD->XPRD.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(XPRD), XPRD->XPRD.value, XPRD->XPRD.GetSize());
-
-        //if(XPRD->XPPA.IsLoaded()) //FILL IN MANUALLY
-            //SaveHandler.writeSubRecord(REV32(XPPA), XPRD->XPPA.value, XPRD->XPPA.GetSize());
-
-        if(XPRD->INAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(INAM), XPRD->INAM.value, XPRD->INAM.GetSize());
-
-        if(XPRD->SCHR.IsLoaded())
-            {
-            if(XPRD->SCHR->SCHR.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCHR), XPRD->SCHR->SCHR.value, XPRD->SCHR->SCHR.GetSize());
-
-            if(XPRD->SCHR->SCDA.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCDA), XPRD->SCHR->SCDA.value, XPRD->SCHR->SCDA.GetSize());
-
-            if(XPRD->SCHR->SCTX.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCTX), XPRD->SCHR->SCTX.value, XPRD->SCHR->SCTX.GetSize());
-
-            if(XPRD->SCHR->SLSD.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SLSD), XPRD->SCHR->SLSD.value, XPRD->SCHR->SLSD.GetSize());
-
-            if(XPRD->SCHR->SCVR.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCVR), XPRD->SCHR->SCVR.value, XPRD->SCHR->SCVR.GetSize());
-
-            if(XPRD->SCHR->SCRO.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCRO), XPRD->SCHR->SCRO.value, XPRD->SCHR->SCRO.GetSize());
-
-            if(XPRD->SCHR->SCRV.IsLoaded())
-                SaveHandler.writeSubRecord(REV32(SCRV), XPRD->SCHR->SCRV.value, XPRD->SCHR->SCRV.GetSize());
-
-            }
-        if(XPRD->TNAM.IsLoaded())
-            SaveHandler.writeSubRecord(REV32(TNAM), XPRD->TNAM.value, XPRD->TNAM.GetSize());
-
-        }
-
+    Patrol.Write(writer);
     WRITE(XLCM);
     WRITE(XMRC);
     WRITE(XCNT);
@@ -414,46 +362,42 @@ SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     WRITE(XDCR);
     WRITE(XLKR);
     WRITE(XCLP);
-    WRITE(XAPD);
-    WRITE(XAPR);
+    ActivateParents.Write(writer);
     WRITE(XATO);
     WRITE(XESP);
     WRITE(XEMI);
     WRITE(XMBR);
-
-    //if(XIBS.IsLoaded()) //FILL IN MANUALLY
-        //SaveHandler.writeSubRecord(REV32(XIBS), XIBS.value, XIBS.GetSize());
+    if(XIBS.IsLoaded())
+        WRITEEMPTY(XIBS);
     WRITE(XSCL);
     WRITE(DATA);
-
     return -1;
     }
 
 bool ACHRRecord::operator ==(const ACHRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            NAME == other.NAME &&
+    return (NAME == other.NAME &&
+            XIBS.IsLoaded() == other.XIBS.IsLoaded() &&
             XEZN == other.XEZN &&
-            XRGD == other.XRGD &&
-            XRGB == other.XRGB &&
-            XPRD == other.XPRD &&
             XLCM == other.XLCM &&
             XMRC == other.XMRC &&
             XCNT == other.XCNT &&
             XRDS == other.XRDS &&
             XHLP == other.XHLP &&
-            XDCR == other.XDCR &&
             XLKR == other.XLKR &&
             XCLP == other.XCLP &&
-            XAPD == other.XAPD &&
-            XAPR == other.XAPR &&
-            XATO.equalsi(other.XATO) &&
             XESP == other.XESP &&
             XEMI == other.XEMI &&
             XMBR == other.XMBR &&
-            //Empty &&
+            DATA == other.DATA &&
             XSCL == other.XSCL &&
-            DATA == other.DATA);
+            XDCR == other.XDCR &&
+            EDID.equalsi(other.EDID) &&
+            XATO.equals(other.XATO) &&
+            XRGD == other.XRGD &&
+            XRGB == other.XRGB &&
+            ActivateParents == other.ActivateParents &&
+            Patrol == other.Patrol);
     }
 
 bool ACHRRecord::operator !=(const ACHRRecord &other) const

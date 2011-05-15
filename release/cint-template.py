@@ -2066,6 +2066,610 @@ class FnvTES4Record(object):
     exportattrs = copyattrs = ['flags1', 'versionControl1', 'formVersion', 'versionControl2', 'version', 'numRecords', 'nextObject',
                  'author', 'description', 'masters', 'overrides', 'screenshot_p']
 
+class FnvACHRRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'ACHR'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    SINT32_MACRO(levelMod, 24)
+    FORMID_MACRO(merchantContainer, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
+    
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
+    
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    BOOL_MACRO(ignoredBySandbox, 47)
+    FLOAT32_MACRO(scale, 48)
+    FLOAT32_MACRO(posX, 49)
+    FLOAT32_MACRO(posY, 50)
+    FLOAT32_MACRO(posZ, 51)
+    RADIAN_MACRO(rotX, 52)
+    RADIAN_MACRO(rotY, 53)
+    RADIAN_MACRO(rotZ, 54)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'levelMod',
+                                           'merchantContainer', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'levelMod',
+                                             'merchantContainer', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+    
+class FnvACRERecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+
+    _Type = 'ACRE'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    SINT32_MACRO(levelMod, 24)
+    FORMID_MACRO(owner, 25)
+    SINT32_MACRO(rank, 26)
+    FORMID_MACRO(merchantContainer, 27)
+    SINT32_MACRO(count, 28)
+    FLOAT32_MACRO(radius, 29)
+    FLOAT32_MACRO(health, 30)
+    
+    LIST_MACRO(decals, 31, self.Decal)
+    FORMID_MACRO(linkedReference, 32)
+    UINT8_MACRO(startRed, 33)
+    UINT8_MACRO(startGreen, 34)
+    UINT8_MACRO(startBlue, 35)
+    UINT8_ARRAY_MACRO(unused2, 36, 1)
+    UINT8_MACRO(endRed, 37)
+    UINT8_MACRO(endGreen, 38)
+    UINT8_MACRO(endBlue, 39)
+    UINT8_ARRAY_MACRO(unused3, 40, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 41)
+    
+    LIST_MACRO(activateParentRefs, 42, self.ParentRef)
+    STRING_MACRO(prompt, 43)
+    FORMID_MACRO(parent, 44)
+    UINT8_FLAG_MACRO(parentFlags, 45)
+    UINT8_ARRAY_MACRO(unused4, 46, 3)
+    FORMID_MACRO(emittance, 47)
+    FORMID_MACRO(boundRef, 48)
+    BOOL_MACRO(ignoredBySandbox, 49)
+    FLOAT32_MACRO(scale, 50)
+    FLOAT32_MACRO(posX, 51)
+    FLOAT32_MACRO(posY, 52)
+    FLOAT32_MACRO(posZ, 53)
+    RADIAN_MACRO(rotX, 54)
+    RADIAN_MACRO(rotY, 55)
+    RADIAN_MACRO(rotZ, 56)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'levelMod', 'owner',
+                                           'rank', 'merchantContainer', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'levelMod', 'owner',
+                                             'rank', 'merchantContainer', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+    
+class FnvREFRRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'REFR'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+        
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+    
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    SINT32_MACRO(levelMod, 24)
+    FORMID_MACRO(owner, 25)
+    SINT32_MACRO(rank, 26)
+    SINT32_MACRO(count, 27)
+    FLOAT32_MACRO(radius, 28)
+    FLOAT32_MACRO(health, 29)
+    FLOAT32_MACRO(radiation, 30)
+    FLOAT32_MACRO(charge, 31)
+    
+    LIST_MACRO(decals, 32, self.Decal)
+    FORMID_MACRO(linkedReference, 33)
+    UINT8_MACRO(startRed, 34)
+    UINT8_MACRO(startRed, 35)
+    UINT8_MACRO(startBlue, 36)
+    UINT8_ARRAY_MACRO(unused2, 37, 1)
+    UINT8_MACRO(endRed, 38)
+    UINT8_MACRO(endGreen, 39)
+    UINT8_MACRO(endBlue, 40)
+    UINT8_ARRAY_MACRO(unused3, 41, 1)
+    UINT8_ARRAY_MACRO(rclr_p, 42)
+    UINT8_FLAG_MACRO(activateParentFlags, 43)
+    
+    LIST_MACRO(activateParentRefs, 44, self.ParentRef)
+    STRING_MACRO(prompt, 45)
+    FORMID_MACRO(parent, 46)
+    UINT8_FLAG_MACRO(parentFlags, 47)
+    UINT8_ARRAY_MACRO(unused4, 48, 3)
+    FORMID_MACRO(emittance, 49)
+    FORMID_MACRO(boundRef, 50)
+    FLOAT32_MACRO(primitiveX, 51)
+    FLOAT32_MACRO(primitiveY, 52)
+    FLOAT32_MACRO(primitiveZ, 53)
+    FLOAT32_MACRO(primitiveRed, 54)
+    FLOAT32_MACRO(primitiveGreen, 55)
+    FLOAT32_MACRO(primitiveBlue, 56)
+    FLOAT32_MACRO(primitiveUnknown, 57)
+    UINT32_TYPE_MACRO(primitiveType, 58)
+    UINT32_TYPE_MACRO(collisionType, 59)
+    FLOAT32_MACRO(extentX, 60)
+    FLOAT32_MACRO(extentY, 61)
+    FLOAT32_MACRO(extentZ, 62)
+    FORMID_MACRO(destinationFid, 63)
+    FLOAT32_MACRO(destinationPosX, 64)
+    FLOAT32_MACRO(destinationPosY, 65)
+    FLOAT32_MACRO(destinationPosZ, 66)
+    RADIAN_MACRO(destinationRotX, 67)
+    RADIAN_MACRO(destinationRotY, 68)
+    RADIAN_MACRO(destinationRotZ, 69)
+    UINT32_FLAG_MACRO(destinationFlags, 70)
+    UINT8_FLAG_MACRO(markerFlags, 71)
+    STRING_MACRO(markerFull, 72)
+    UINT8_TYPE_MACRO(markerType, 73)
+    UINT8_ARRAY_MACRO(unused5, 74, 1)
+    FORMID_MACRO(markerReputation, 75)
+    UINT8_ARRAY_MACRO(audioFull_p, 76)
+    FORMID_MACRO(audioLocation, 77)
+    UINT8_ARRAY_MACRO(audioBnam_p, 78)
+    FLOAT32_MACRO(audioUnknown1, 79)
+    FLOAT32_MACRO(audioUnknown2, 80)
+    UINT8_ARRAY_MACRO(xsrf_p, 81)
+    UINT8_ARRAY_MACRO(xsrd_p, 82)
+    FORMID_MACRO(target, 83)
+    FLOAT32_MACRO(rangeRadius, 84)
+    UINT32_TYPE_MACRO(rangeType, 85)
+    FLOAT32_MACRO(staticPercentage, 86)
+    FORMID_MACRO(positionReference, 87)
+    UINT8_MACRO(lockLevel, 88)
+    UINT8_ARRAY_MACRO(unused6, 89, 3)
+    FORMID_MACRO(lockKey, 90)
+    UINT8_FLAG_MACRO(lockFlags, 91)
+    UINT8_ARRAY_MACRO(unused7, 92, 3)
+    UINT8_ARRAY_MACRO(lockUnknown1, 93)
+    FORMID_MACRO(ammo, 94)
+    SINT32_MACRO(ammoCount, 95)
+    
+    LIST_MACRO(reflrefrs, 96, self.ReflRefr)
+    FORMID_ARRAY_MACRO(litWaters, 97)
+    UINT32_FLAG_MACRO(actionFlags, 98)
+    FORMID_MACRO(navMesh, 99)
+    UINT16_MACRO(navUnknown1, 100)
+    UINT8_ARRAY_MACRO(unused8, 101, 2)
+    FORMID_MACRO(portalLinkedRoom1, 102)
+    FORMID_MACRO(portalLinkedRoom2, 103)
+    FLOAT32_MACRO(portalWidth, 104)
+    FLOAT32_MACRO(portalHeight, 105)
+    FLOAT32_MACRO(portalPosX, 106)
+    FLOAT32_MACRO(portalPosY, 107)
+    FLOAT32_MACRO(portalPosZ, 108)
+    FLOAT32_MACRO(portalQ1, 109)
+    FLOAT32_MACRO(portalQ2, 110)
+    FLOAT32_MACRO(portalQ3, 111)
+    FLOAT32_MACRO(portalQ4, 112)
+    UINT8_MACRO(seed, 113)
+    UINT16_MACRO(roomCount, 114)
+    UINT8_ARRAY_MACRO(roomUnknown1, 115)
+    FORMID_ARRAY_MACRO(rooms, 116)
+    FLOAT32_MACRO(occPlaneWidth, 117)
+    FLOAT32_MACRO(occPlaneHeight, 118)
+    FLOAT32_MACRO(occPlanePosX, 119)
+    FLOAT32_MACRO(occPlanePosY, 120)
+    FLOAT32_MACRO(occPlanePosZ, 121)
+    FLOAT32_MACRO(occPlaneQ1, 122)
+    FLOAT32_MACRO(occPlaneQ2, 123)
+    FLOAT32_MACRO(occPlaneQ3, 124)
+    FLOAT32_MACRO(occPlaneQ4, 125)
+    FORMID_MACRO(occPlaneRight, 126)
+    FORMID_MACRO(occPlaneLeft, 127)
+    FORMID_MACRO(occPlaneBottom, 128)
+    FORMID_MACRO(occPlaneTop, 129)
+    FLOAT32_MACRO(lod1, 130)
+    FLOAT32_MACRO(lod2, 131)
+    FLOAT32_MACRO(lod3, 132)
+    BOOL_MACRO(ignoredBySandbox, 133)
+    FLOAT32_MACRO(scale, 134)
+    FLOAT32_MACRO(posX, 135)
+    FLOAT32_MACRO(posY, 136)
+    FLOAT32_MACRO(posZ, 137)
+    RADIAN_MACRO(rotX, 138)
+    RADIAN_MACRO(rotY, 139)
+    RADIAN_MACRO(rotZ, 140)
+    
+    BasicFlagMACRO(IsNoAlarm, destinationFlags, 0x00000001)
+    
+    BasicFlagMACRO(IsVisible, markerFlags, 0x00000001)
+    BasicFlagMACRO(IsCanTravelTo, markerFlags, 0x00000002)
+    
+    BasicFlagMACRO(IsUseDefault, actionFlags, 0x00000001)
+    BasicFlagMACRO(IsActivate, actionFlags, 0x00000002)
+    BasicFlagMACRO(IsOpen, actionFlags, 0x00000004)
+    BasicFlagMACRO(IsOpenByDefault, actionFlags, 0x00000008)
+
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicFlagMACRO(IsLeveledLock, lockFlags, 0x00000004)
+
+    BasicTypeMACRO(IsNone, primitiveType, 0, IsBox)
+    BasicTypeMACRO(IsBox, primitiveType, 1, IsNone)
+    BasicTypeMACRO(IsSphere, primitiveType, 2, IsNone)
+    BasicTypeMACRO(IsPortalBox, primitiveType, 3, IsNone)
+
+    BasicTypeMACRO(IsUnidentified, collisionType, 0, IsStatic)
+    BasicTypeMACRO(IsStatic, collisionType, 1, IsUnidentified)
+    BasicTypeMACRO(IsAnimStatic, collisionType, 2, IsUnidentified)
+    BasicTypeMACRO(IsTransparent, collisionType, 3, IsUnidentified)
+    BasicTypeMACRO(IsClutter, collisionType, 4, IsUnidentified)
+    BasicTypeMACRO(IsWeapon, collisionType, 5, IsUnidentified)
+    BasicTypeMACRO(IsProjectile, collisionType, 6, IsUnidentified)
+    BasicTypeMACRO(IsSpell, collisionType, 7, IsUnidentified)
+    BasicTypeMACRO(IsBiped, collisionType, 8, IsUnidentified)
+    BasicTypeMACRO(IsTrees, collisionType, 9, IsUnidentified)
+    BasicTypeMACRO(IsProps, collisionType, 10, IsUnidentified)
+    BasicTypeMACRO(IsWater, collisionType, 11, IsUnidentified)
+    BasicTypeMACRO(IsTrigger, collisionType, 12, IsUnidentified)
+    BasicTypeMACRO(IsTerrain, collisionType, 13, IsUnidentified)
+    BasicTypeMACRO(IsTrap, collisionType, 14, IsUnidentified)
+    BasicTypeMACRO(IsNonCollidable, collisionType, 15, IsUnidentified)
+    BasicTypeMACRO(IsCloudTrap, collisionType, 16, IsUnidentified)
+    BasicTypeMACRO(IsGround, collisionType, 17, IsUnidentified)
+    BasicTypeMACRO(IsPortal, collisionType, 18, IsUnidentified)
+    BasicTypeMACRO(IsDebrisSmall, collisionType, 19, IsUnidentified)
+    BasicTypeMACRO(IsDebrisLarge, collisionType, 20, IsUnidentified)
+    BasicTypeMACRO(IsAcousticSpace, collisionType, 21, IsUnidentified)
+    BasicTypeMACRO(IsActorZone, collisionType, 22, IsUnidentified)
+    BasicTypeMACRO(IsProjectileZone, collisionType, 23, IsUnidentified)
+    BasicTypeMACRO(IsGasTrap, collisionType, 24, IsUnidentified)
+    BasicTypeMACRO(IsShellCasing, collisionType, 25, IsUnidentified)
+    BasicTypeMACRO(IsTransparentSmall, collisionType, 26, IsUnidentified)
+    BasicTypeMACRO(IsInvisibleWall, collisionType, 27, IsUnidentified)
+    BasicTypeMACRO(IsTransparentSmallAnim, collisionType, 28, IsUnidentified)
+    BasicTypeMACRO(IsDeadBip, collisionType, 29, IsUnidentified)
+    BasicTypeMACRO(IsCharController, collisionType, 30, IsUnidentified)
+    BasicTypeMACRO(IsAvoidBox, collisionType, 31, IsUnidentified)
+    BasicTypeMACRO(IsCollisionBox, collisionType, 32, IsUnidentified)
+    BasicTypeMACRO(IsCameraSphere, collisionType, 33, IsUnidentified)
+    BasicTypeMACRO(IsDoorDetection, collisionType, 34, IsUnidentified)
+    BasicTypeMACRO(IsCameraPick, collisionType, 35, IsUnidentified)
+    BasicTypeMACRO(IsItemPick, collisionType, 36, IsUnidentified)
+    BasicTypeMACRO(IsLineOfSight, collisionType, 37, IsUnidentified)
+    BasicTypeMACRO(IsPathPick, collisionType, 38, IsUnidentified)
+    BasicTypeMACRO(IsCustomPick1, collisionType, 39, IsUnidentified)
+    BasicTypeMACRO(IsCustomPick2, collisionType, 40, IsUnidentified)
+    BasicTypeMACRO(IsSpellExplosion, collisionType, 41, IsUnidentified)
+    BasicTypeMACRO(IsDroppingPick, collisionType, 42, IsUnidentified)
+
+    BasicTypeMACRO(IsMarkerNone, markerType, 0, IsMarkerNone)
+    BasicTypeMACRO(IsCity, markerType, 1, IsMarkerNone)
+    BasicTypeMACRO(IsSettlement, markerType, 2, IsMarkerNone)
+    BasicTypeMACRO(IsEncampment, markerType, 3, IsMarkerNone)
+    BasicTypeMACRO(IsNaturalLandmark, markerType, 4, IsMarkerNone)
+    BasicTypeMACRO(IsCave, markerType, 5, IsMarkerNone)
+    BasicTypeMACRO(IsFactory, markerType, 6, IsMarkerNone)
+    BasicTypeMACRO(IsMonument, markerType, 7, IsMarkerNone)
+    BasicTypeMACRO(IsMilitary, markerType, 8, IsMarkerNone)
+    BasicTypeMACRO(IsOffice, markerType, 9, IsMarkerNone)
+    BasicTypeMACRO(IsTownRuins, markerType, 10, IsMarkerNone)
+    BasicTypeMACRO(IsUrbanRuins, markerType, 11, IsMarkerNone)
+    BasicTypeMACRO(IsSewerRuins, markerType, 12, IsMarkerNone)
+    BasicTypeMACRO(IsMetro, markerType, 13, IsMarkerNone)
+    BasicTypeMACRO(IsVault, markerType, 14, IsMarkerNone)
+    
+    BasicTypeMACRO(IsRadius, rangeType, 0, IsEverywhere)
+    BasicTypeMACRO(IsEverywhere, rangeType, 1, IsRadius)
+    BasicTypeMACRO(IsWorldAndLinkedInteriors, rangeType, 2, IsRadius)
+    BasicTypeMACRO(IsLinkedInteriors, rangeType, 3, IsRadius)
+    BasicTypeMACRO(IsCurrentCellOnly, rangeType, 4, IsRadius)
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs',
+                                           'compiledSize', 'lastIndex', 'scriptType',
+                                           'scriptFlags', 'compiled_p', 'scriptText',
+                                           'vars_list', 'references', 'topic', 'levelMod',
+                                           'owner', 'rank', 'count', 'radius', 'health',
+                                           'radiation', 'charge', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startRed', 'startBlue', 
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'rclr_p', 'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt', 'parent',
+                                           'parentFlags', 'emittance', 'boundRef',
+                                           'primitiveX', 'primitiveY', 'primitiveZ',
+                                           'primitiveRed', 'primitiveGreen', 'primitiveBlue',
+                                           'primitiveUnknown', 'primitiveType',
+                                           'collisionType', 'extentX', 'extentY', 'extentZ',
+                                           'destinationFid', 'destinationPosX',
+                                           'destinationPosY', 'destinationPosZ',
+                                           'destinationRotX', 'destinationRotY',
+                                           'destinationRotZ', 'destinationFlags',
+                                           'markerFlags', 'markerFull', 'markerType',
+                                           'markerReputation', 'audioFull_p', 'audioLocation',
+                                           'audioBnam_p', 'audioUnknown1', 'audioUnknown2',
+                                           'xsrf_p', 'xsrd_p', 'target', 'rangeRadius',
+                                           'rangeType', 'staticPercentage', 'positionReference',
+                                           'lockLevel', 'lockKey', 'lockFlags', 'lockUnknown1',
+                                           'ammo', 'ammoCount', 'reflrefrs_list', 'litWaters',
+                                           'actionFlags', 'navMesh', 'navUnknown1',
+                                           'portalLinkedRoom1', 'portalLinkedRoom2',
+                                           'portalWidth', 'portalHeight', 'portalPosX',
+                                           'portalPosY', 'portalPosZ', 'portalQ1', 'portalQ2',
+                                           'portalQ3', 'portalQ4', 'seed', 'roomCount',
+                                           'roomUnknown1', 'rooms', 'occPlaneWidth',
+                                           'occPlaneHeight', 'occPlanePosX', 'occPlanePosY',
+                                           'occPlanePosZ', 'occPlaneQ1', 'occPlaneQ2',
+                                           'occPlaneQ3', 'occPlaneQ4', 'occPlaneRight',
+                                           'occPlaneLeft', 'occPlaneBottom', 'occPlaneTop',
+                                           'lod1', 'lod2', 'lod3', 'ignoredBySandbox',
+                                           'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs',
+                                             'compiledSize', 'lastIndex', 'scriptType',
+                                             'scriptFlags', 'scriptText',
+                                             'vars_list', 'references', 'topic', 'levelMod',
+                                             'owner', 'rank', 'count', 'radius', 'health',
+                                             'radiation', 'charge', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startRed', 'startBlue', 
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt', 'parent',
+                                             'parentFlags', 'emittance', 'boundRef',
+                                             'primitiveX', 'primitiveY', 'primitiveZ',
+                                             'primitiveRed', 'primitiveGreen', 'primitiveBlue',
+                                             'primitiveUnknown', 'primitiveType',
+                                             'collisionType', 'extentX', 'extentY', 'extentZ',
+                                             'destinationFid', 'destinationPosX',
+                                             'destinationPosY', 'destinationPosZ',
+                                             'destinationRotX', 'destinationRotY',
+                                             'destinationRotZ', 'destinationFlags',
+                                             'markerFlags', 'markerFull', 'markerType',
+                                             'markerReputation', 'audioLocation',
+                                             'audioUnknown1', 'audioUnknown2',
+                                             'target', 'rangeRadius',
+                                             'rangeType', 'staticPercentage', 'positionReference',
+                                             'lockLevel', 'lockKey', 'lockFlags', 'lockUnknown1',
+                                             'ammo', 'ammoCount', 'reflrefrs_list', 'litWaters',
+                                             'actionFlags', 'navMesh', 'navUnknown1',
+                                             'portalLinkedRoom1', 'portalLinkedRoom2',
+                                             'portalWidth', 'portalHeight', 'portalPosX',
+                                             'portalPosY', 'portalPosZ', 'portalQ1', 'portalQ2',
+                                             'portalQ3', 'portalQ4', 'seed', 'roomCount',
+                                             'roomUnknown1', 'rooms', 'occPlaneWidth',
+                                             'occPlaneHeight', 'occPlanePosX', 'occPlanePosY',
+                                             'occPlanePosZ', 'occPlaneQ1', 'occPlaneQ2',
+                                             'occPlaneQ3', 'occPlaneQ4', 'occPlaneRight',
+                                             'occPlaneLeft', 'occPlaneBottom', 'occPlaneTop',
+                                             'lod1', 'lod2', 'lod3', 'ignoredBySandbox',
+                                             'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p', 
+    
+class FnvPGRERecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PGRE'
+    
+    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    
+class FnvPMISRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PMIS'
+    
+    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    
+class FnvNAVMRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'NAVM'
+    
+    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -5796,7 +6400,7 @@ class FnvCELLRecord(FnvBaseRecord):
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
-        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 61, 0, 0, 0, 0, 0, 0, 0)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 62, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
 
@@ -5849,6 +6453,12 @@ class FnvCELLRecord(FnvBaseRecord):
     FORMID_MACRO(acousticSpace, 53)
     UINT8_ARRAY_MACRO(xcmt_p, 54)
     FORMID_MACRO(music, 55)
+    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 56, FnvACHRRecord, 0)
+    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 57, FnvACRERecord, 0)
+    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 58, FnvREFRRecord, 0)
+    SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 59, FnvPGRERecord, 0)
+    SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 60, FnvPMISRecord, 0)
+    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 61, FnvNAVMRecord, 0)
     
     BasicFlagMACRO(IsInterior, flags, 0x00000001)
     BasicFlagMACRO(IsHasWater, flags, 0x00000002)
@@ -9285,6 +9895,13 @@ type_record = dict([('BASE',ObBaseRecord),(None,None),('',None),
                     ('QUST',ObQUSTRecord),('IDLE',ObIDLERecord),('PACK',ObPACKRecord),
                     ('CSTY',ObCSTYRecord),('LSCR',ObLSCRRecord),('LVSP',ObLVSPRecord),
                     ('ANIO',ObANIORecord),('WATR',ObWATRRecord),('EFSH',ObEFSHRecord)])
+
+fnv_validTypes = set([])
+
+fnv_aggregateTypes = set([])
+
+fnv_pickupables = set([])
+
 fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('GMST',FnvGMSTRecord),('TXST',FnvTXSTRecord),('MICN',FnvMICNRecord),
                         ('GLOB',FnvGLOBRecord),('CLAS',FnvCLASRecord),('FACT',FnvFACTRecord),
@@ -9303,7 +9920,9 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('IDLM',FnvIDLMRecord),('NOTE',FnvNOTERecord),('COBJ',FnvCOBJRecord),
                         ('PROJ',FnvPROJRecord),('LVLI',FnvLVLIRecord),('WTHR',FnvWTHRRecord),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
-                        ('CELL',FnvCELLRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
+                        ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
+                        ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
+                        ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
                         ('WATR',FnvWATRRecord),('EFSH',FnvEFSHRecord),('EXPL',FnvEXPLRecord),
@@ -9762,6 +10381,78 @@ class FnvModFile(object):
     FnvModRecordsMACRO(SLPD)
 
     @property
+    def ACHRS(self):
+        achrs = []
+        for cell in self.CELL:
+            achrs += cell.ACHR
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): achrs += cell.ACHR
+            for cell in world.CELLS:
+                achrs += cell.ACHR
+        return achrs
+
+    @property
+    def ACRES(self):
+        acres = []
+        for cell in self.CELL:
+            acres += cell.ACRE
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): acres += cell.ACRE
+            for cell in world.CELLS:
+                acres += cell.ACRE
+        return acres
+
+    @property
+    def REFRS(self):
+        refrs = []
+        for cell in self.CELL:
+            refrs += cell.REFR
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): refrs += cell.REFR
+            for cell in world.CELLS:
+                refrs += cell.REFR
+        return refrs
+
+    @property
+    def PGRES(self):
+        pgres = []
+        for cell in self.CELL:
+            pgres += cell.PGRE
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pgres += cell.PGRE
+            for cell in world.CELLS:
+                pgres += cell.PGRE
+        return pgres
+
+    @property
+    def PMISS(self):
+        pmiss = []
+        for cell in self.CELL:
+            pmiss += cell.PMIS
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pmiss += cell.PMIS
+            for cell in world.CELLS:
+                pmiss += cell.PMIS
+        return pmiss
+
+    @property
+    def NAVMS(self):
+        navms = []
+        for cell in self.CELL:
+            navms += cell.NAVM
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): navms += cell.NAVM
+            for cell in world.CELLS:
+                navms += cell.NAVM
+        return navms
+
+    @property
     def tops(self):
         return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
                      ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
@@ -9817,7 +10508,9 @@ class FnvModFile(object):
                      ("IDLM", self.IDLM),("NOTE", self.NOTE),("COBJ", self.COBJ),
                      ("PROJ", self.PROJ),("LVLI", self.LVLI),("WTHR", self.WTHR),
                      ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
-                     ("CELL", self.CELL),("WRLD", self.WRLD),("DIAL", self.DIAL),
+                     ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
+                     ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
+                     ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),
                      ("WATR", self.WATR),("EFSH", self.EFSH),("EXPL", self.EXPL),

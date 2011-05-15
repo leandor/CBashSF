@@ -958,6 +958,20 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
             return (UINT32)NAVI.Records.size();
         case REV32(CELL):
             return (UINT32)CELL.Records.size();
+        ///////////////////////////////////////////////
+        //SubRecords are counted via GetFieldAttribute API function
+        //Fallthroughs are intentional
+        case REV32(INFO):
+        case REV32(ACHR):
+        case REV32(ACRE):
+        case REV32(REFR):
+        case REV32(PGRE):
+        case REV32(PMIS):
+        case REV32(NAVM):
+        case REV32(LAND):
+            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            break;
+        ///////////////////////////////////////////////
         case REV32(WRLD):
             //return (UINT32)WRLD.Records.size();
         case REV32(DIAL):
@@ -1343,6 +1357,90 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(DIAL):
             //DIAL.Records.push_back(new FNV::DIALRecord((FNV::DIALRecord *)SourceRecord));
             //newRecord = DIAL.Records.back();
+            //break;
+        case REV32(INFO):
+            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
+            //    {
+            //    printf("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
+            //    return NULL;
+            //    }
+
+            //((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
+            //newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
+            //break;
+        case REV32(ACHR):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->ACHR.push_back(new FNV::ACHRRecord((FNV::ACHRRecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->ACHR.back();
+            break;
+        case REV32(ACRE):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->ACRE.push_back(new FNV::ACRERecord((FNV::ACRERecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->ACRE.back();
+            break;
+        case REV32(REFR):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->REFR.push_back(new FNV::REFRRecord((FNV::REFRRecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->REFR.back();
+            break;
+        case REV32(PGRE):
+            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+            //    {
+            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+            //    return NULL;
+            //    }
+
+            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
+            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
+            //break;
+        case REV32(PMIS):
+            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+            //    {
+            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+            //    return NULL;
+            //    }
+
+            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
+            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
+            //break;
+        case REV32(NAVM):
+            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+            //    {
+            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+            //    return NULL;
+            //    }
+
+            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
+            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
+            //break;
+        case REV32(LAND):
+            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+            //    {
+            //    printf("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
+            //    return NULL;
+            //    }
+
+            ////If a cell land already exists, return it instead of making a new one
+            //if(((CELLRecord *)ParentRecord)->LAND != NULL)
+            //    return ((CELLRecord *)ParentRecord)->LAND;
+
+            //((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
+            //newRecord = ((CELLRecord *)ParentRecord)->LAND;
             //break;
         case REV32(QUST):
             //QUST.Records.push_back(new FNV::QUSTRecord((FNV::QUSTRecord *)SourceRecord));

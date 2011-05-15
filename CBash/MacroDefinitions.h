@@ -300,3 +300,4 @@
 #define WRITE(x) x.Write(REV32(x), writer)
 #define WRITEREQ(x) x.ReqWrite(REV32(x), writer)
 #define WRITEAS(x,y) x.Write(REV32(y), writer)
+#define WRITEEMPTY(x) writer.record_write_subheader(REV32(x), 0);

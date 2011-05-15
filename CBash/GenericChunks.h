@@ -822,12 +822,13 @@ struct GENDODT
 struct GENPATROL
     {
     ReqSimpleFloatSubRecord<flt_0> XPRD; //Idle Time
+    //XPPA, Patrol Script Marker (Empty)
     ReqSimpleSubRecord<FORMID> INAM; //Idle
     ReqSubRecord<FNVSCHR> SCHR;
     RawRecord SCDA;
     NonNullStringRecord SCTX;
-    std::vector<GENVARS *> VARS;
-    std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+    OrderedSparseArray<GENVARS *, sortVARS> VARS;
+    OrderedSparseArray<GENSCR_ *> SCR_;
     ReqSimpleSubRecord<FORMID> TNAM; //Topic
 
     enum schrFlags
@@ -835,10 +836,28 @@ struct GENPATROL
         fIsEnabled = 0x0001
         };
 
+    enum scriptTypeTypes
+        {
+        eObject = 0x0000,
+        eQuest  = 0x0001,
+        eEffect = 0x0100
+        };
+
     bool IsScriptEnabled();
     void IsScriptEnabled(bool value);
     bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
     void SetScriptFlagMask(UINT16 Mask);
+
+    bool IsObject();
+    void IsObject(bool value);
+    bool IsQuest();
+    void IsQuest(bool value);
+    bool IsEffect();
+    void IsEffect(bool value);
+    bool IsType(UINT16 Type);
+    void SetType(UINT16 Type);
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const GENPATROL &other) const;
     bool operator !=(const GENPATROL &other) const;
@@ -1339,27 +1358,33 @@ struct GENXTEL
     bool operator !=(const GENXTEL &other) const;
     };
 
-struct GENXMRK
+struct GENMAPDATA
     {
+    //XMRK; //Map Data Marker (Empty)
     ReqSimpleSubRecord<UINT8> FNAM; //Flags
     StringRecord FULL; //Name
     ReqSubRecord<GENTNAM> TNAM; //Type
     OptSimpleSubRecord<FORMID> WMI1; //Reputation
 
-    bool operator ==(const GENXMRK &other) const;
-    bool operator !=(const GENXMRK &other) const;
+    void Write(FileWriter &writer);
+
+    bool operator ==(const GENMAPDATA &other) const;
+    bool operator !=(const GENMAPDATA &other) const;
     };
 
-struct GENMMRK
+struct GENAUDIODATA
     {
+    //MMRK; //Audio Data Marker (Empty)
     RawRecord FULL; //Unknown
     OptSimpleSubRecord<FORMID> CNAM; //Audio Location
     RawRecord BNAM; //Unknown
     OptSimpleFloatSubRecord<flt_0> MNAM; //Unknown
     OptSimpleFloatSubRecord<flt_0> NNAM; //Unknown
 
-    bool operator ==(const GENMMRK &other) const;
-    bool operator !=(const GENMMRK &other) const;
+    void Write(FileWriter &writer);
+
+    bool operator ==(const GENAUDIODATA &other) const;
+    bool operator !=(const GENAUDIODATA &other) const;
     };
 
 struct GENXRDO
@@ -1381,23 +1406,41 @@ struct GENAMMO
     OptSimpleSubRecord<FORMID> XAMT; //Type
     OptSimpleSubRecord<SINT32> XAMC; //Count
 
+    void Write(FileWriter &writer);
+
     bool operator ==(const GENAMMO &other) const;
     bool operator !=(const GENAMMO &other) const;
     };
 
 struct GENXPWR
     {
-    OptSimpleSubRecord<FORMID> XAMT; //Reference
-    OptSimpleSubRecord<UINT32> XAMC; //Flags
+    FORMID reference; //reference
+    UINT32 type; //type
+
+    enum xpwrTypes
+        {
+        eReflection = 0,
+        eRefraction
+        };
+
+    GENXPWR();
+    ~GENXPWR();
+
+    bool IsReflection();
+    void IsReflection(bool value);
+    bool IsRefraction();
+    void IsRefraction(bool value);
+    bool IsType(UINT32 Type);
+    void SetType(UINT32 Type);
 
     bool operator ==(const GENXPWR &other) const;
     bool operator !=(const GENXPWR &other) const;
     };
 
-struct GENXDCR
+struct GENXDCR //Linked Decal (almost entirely unused, possibly not fully implemented by Bethesda)
     {
     FORMID reference; //Reference
-    //Unknown? OptSimpleSubRecord<SINT32> XAMC; //Count
+    UINT8  unknown1[24]; //Unknown (zero filled)
 
     GENXDCR();
     ~GENXDCR();
@@ -1429,7 +1472,7 @@ struct GENXAPR
 
 struct GENACTPARENT
     {
-    OptSimpleSubRecord<UINT8> XAPD; //Flags
+    ReqSimpleSubRecord<UINT8> XAPD; //Flags
     UnorderedSparseArray<GENXAPR *> XAPR; //Activate Parent Refs
 
     enum flagsFlags
@@ -1437,10 +1480,12 @@ struct GENACTPARENT
         fIsParentActivateOnly = 0x00000001
         };
 
-    bool   IsParentActivateOnly();
-    void   IsParentActivateOnly(bool value);
-    bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-    void   SetFlagMask(UINT8 Mask);
+    bool IsParentActivateOnly();
+    void IsParentActivateOnly(bool value);
+    bool IsFlagMask(UINT8 Mask, bool Exact=false);
+    void SetFlagMask(UINT8 Mask);
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const GENACTPARENT &other) const;
     bool operator !=(const GENACTPARENT &other) const;
@@ -1488,6 +1533,8 @@ struct GENROOM
     {
     OptSubRecord<GENXRMR> XRMR; //Room Data
     UnorderedPackedArray<FORMID> XLRM; //Linked Rooms
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const GENROOM &other) const;
     bool operator !=(const GENROOM &other) const;
@@ -1589,4 +1636,26 @@ struct FNVLIGHT
 
     bool operator ==(const FNVLIGHT &other) const;
     bool operator !=(const FNVLIGHT &other) const;
+    };
+
+struct GENXPOD
+    {
+    FORMID room1, room2;
+
+    GENXPOD();
+    ~GENXPOD();
+
+    bool operator ==(const GENXPOD &other) const;
+    bool operator !=(const GENXPOD &other) const;
+    };
+
+struct GENXORD
+    {
+    FORMID right, left, bottom, top;
+
+    GENXORD();
+    ~GENXORD();
+
+    bool operator ==(const GENXORD &other) const;
+    bool operator !=(const GENXORD &other) const;
     };

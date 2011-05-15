@@ -245,45 +245,74 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UNKNOWN_FIELD;
         case 55: //music
             return FORMID_FIELD;
-        //case 56: //ACHR
-        //    switch(WhichAttribute)
-        //        {
-        //        case 0: //fieldType
-        //            return SUBRECORD_ARRAY_FIELD;
-        //        case 1: //fieldSize
-        //            return (UINT32)ACHR.size();
-        //        default:
-        //            return UNKNOWN_FIELD;
-        //        }
-        //    return UNKNOWN_FIELD;
-        //case 57: //ACRE
-        //    switch(WhichAttribute)
-        //        {
-        //        case 0: //fieldType
-        //            return SUBRECORD_ARRAY_FIELD;
-        //        case 1: //fieldSize
-        //            return (UINT32)ACRE.size();
-        //        default:
-        //            return UNKNOWN_FIELD;
-        //        }
-        //    return UNKNOWN_FIELD;
-        //case 58: //REFR
-        //    switch(WhichAttribute)
-        //        {
-        //        case 0: //fieldType
-        //            return SUBRECORD_ARRAY_FIELD;
-        //        case 1: //fieldSize
-        //            return (UINT32)REFR.size();
-        //        default:
-        //            return UNKNOWN_FIELD;
-        //        }
-        //    return UNKNOWN_FIELD;
-        //case 59: //PGRD
-        //    return SUBRECORD_FIELD;
-        //case 60: //LAND
-        //    return SUBRECORD_FIELD;
-        //case 61: //Parent
-        //    return PARENTRECORD_FIELD;
+        case 56: //ACHR
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)ACHR.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 57: //ACRE
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)ACRE.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 58: //REFR
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)REFR.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 59: //PGRE
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)PGRE.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 60: //PMIS
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)PMIS.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 61: //NAVM
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)NAVM.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 62: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -412,24 +441,34 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 55: //music
             return &XCMO.value;
-        //case 56: //ACHR
-        //    for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
-        //        ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
-        //    return NULL;
-        //case 57: //ACRE
-        //    for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
-        //        ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
-        //    return NULL;
-        //case 58: //REFR
-        //    for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
-        //        ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
-        //    return NULL;
-        //case 59: //PGRD
-        //    return PGRD;
-        //case 60: //LAND
-        //    return LAND;
-        //case 61: //Parent
-        //    return Parent;
+        case 56: //ACHR
+            for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
+            return NULL;
+        case 57: //ACRE
+            for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
+            return NULL;
+            //*FieldValues = ACRE.size() != 0 ? &ACRE[0] : NULL;
+            //return NULL;
+        case 58: //REFR
+            for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
+            return NULL;
+        case 59: //PGRE
+            for(UINT32 p = 0;p < (UINT32)PGRE.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = PGRE[p];
+            return NULL;
+        case 60: //PMIS
+            for(UINT32 p = 0;p < (UINT32)PMIS.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = PMIS[p];
+            return NULL;
+        case 61: //NAVM
+            for(UINT32 p = 0;p < (UINT32)NAVM.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = NAVM[p];
+            return NULL;
+        case 62: //Parent
+            return Parent;
         default:
             return NULL;
         }

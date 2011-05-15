@@ -957,10 +957,12 @@ struct OptSimpleSubRecord
         {
         //
         }
+
     ~OptSimpleSubRecord()
         {
-        Unload();
+        //
         }
+
     UINT32 GetSize() const
         {
         return sizeof(T);
@@ -970,10 +972,12 @@ struct OptSimpleSubRecord
         {
         return (value != defaultValue);
         }
+
     void Load()
         {
         //
         }
+
     void Unload()
         {
         value = defaultValue;
@@ -986,37 +990,40 @@ struct OptSimpleSubRecord
             curPos += subSize;
             return false;
             }
+
         if(subSize > sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
-                printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                       "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                       subSize, sizeof(T));
-                CBASH_CHUNK_DEBUG
-            #endif
+        #ifdef CBASH_CHUNK_WARN
+            printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            CBASH_CHUNK_DEBUG
+        #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        #ifdef CBASH_CHUNK_LCHECK
-            else if(subSize < sizeof(T))
+    #ifdef CBASH_CHUNK_LCHECK
+        else if(subSize < sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
-                printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                       "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                       subSize, sizeof(T));
-                CBASH_CHUNK_DEBUG
-            #endif
+        #ifdef CBASH_CHUNK_WARN
+            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            CBASH_CHUNK_DEBUG
+        #endif
             memcpy(&value, buffer + curPos, subSize);
             }
-        #endif
+    #endif
         else
             memcpy(&value, buffer + curPos, subSize);
+
         curPos += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(value != defaultValue)
@@ -1029,10 +1036,12 @@ struct OptSimpleSubRecord
             value = rhs.value;
         return *this;
         }
+
     bool operator ==(const OptSimpleSubRecord<T, defaultValue> &other) const
         {
         return value == other.value;
         }
+
     bool operator !=(const OptSimpleSubRecord<T, defaultValue> &other) const
         {
         return value != other.value;

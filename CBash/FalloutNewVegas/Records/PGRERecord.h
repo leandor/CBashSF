@@ -77,6 +77,7 @@ class PGRERecord : public FNVRecord //Placed Grenade
 
         UINT32 GetType();
         STRING GetStrType();
+        UINT32 GetParentType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

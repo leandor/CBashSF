@@ -115,9 +115,12 @@ class CELLRecord : public FNVRecord //Cell
         OptSimpleSubRecord<FORMID> XCAS; //Acoustic Space
         RawRecord XCMT; //Unused
         OptSimpleSubRecord<FORMID> XCMO; //Music Type
-        //std::vector<Record *> ACHR;
-        //std::vector<Record *> ACRE;
-        //std::vector<Record *> REFR;
+        std::vector<Record *> ACHR;
+        std::vector<Record *> ACRE;
+        std::vector<Record *> REFR;
+        std::vector<Record *> PGRE;
+        std::vector<Record *> PMIS;
+        std::vector<Record *> NAVM;
         //Record *LAND;
 
         Record *Parent;
@@ -188,6 +191,7 @@ class CELLRecord : public FNVRecord //Cell
 
         UINT32 GetType();
         STRING GetStrType();
+        UINT32 GetParentType();
 
         SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
         SINT32 Unload();

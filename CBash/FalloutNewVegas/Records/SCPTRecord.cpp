@@ -76,6 +76,26 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
+bool SCPTRecord::IsScriptEnabled()
+    {
+    return (SCHR.value.flags & fIsEnabled) != 0;
+    }
+
+void SCPTRecord::IsScriptEnabled(bool value)
+    {
+    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
+    }
+
+bool SCPTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)
+    {
+    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
+    }
+
+void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
+    {
+    SCHR.value.flags = Mask;
+    }
+
 bool SCPTRecord::IsObject()
     {
     return SCHR.value.scriptType == eObject;
@@ -114,26 +134,6 @@ bool SCPTRecord::IsType(UINT16 Type)
 void SCPTRecord::SetType(UINT16 Type)
     {
     SCHR.value.scriptType = Type;
-    }
-
-bool SCPTRecord::IsScriptEnabled()
-    {
-    return (SCHR.value.flags & fIsEnabled) != 0;
-    }
-
-void SCPTRecord::IsScriptEnabled(bool value)
-    {
-    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
-    }
-
-bool SCPTRecord::IsScriptFlagMask(UINT16 Mask, bool Exact)
-    {
-    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
-    }
-
-void SCPTRecord::SetScriptFlagMask(UINT16 Mask)
-    {
-    SCHR.value.flags = Mask;
     }
 
 UINT32 SCPTRecord::GetType()
@@ -227,8 +227,8 @@ SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
     SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-    for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
-        SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
     WRITE(SCHR);
     WRITE(SCDA);
     WRITE(SCTX);

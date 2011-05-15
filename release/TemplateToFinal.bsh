@@ -640,8 +640,24 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString(" SINT32_OR_UNKNOWN_MACRO\\((.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString(" $1 = CBashSINT32_OR_UNKNOWN($2)");
+SearchAndReplace.setSearchString(" UNKNOWN_OR_SINT32_MACRO\\((.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_GENERIC($2, c_long)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UNKNOWN_OR_UINT32_FLAG_MACRO\\((.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_GENERIC($2, c_ulong)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" FORMID_OR_STRING_MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_STRING($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -810,6 +826,14 @@ SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString(" SINT16_ARRAY_MACRO\\((.*?), (.*?)(?!,)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashSINT16ARRAY($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" BOOL_MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric($2, c_bool)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
