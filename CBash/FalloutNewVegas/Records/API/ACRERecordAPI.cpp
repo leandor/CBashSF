@@ -1044,7 +1044,7 @@ void ACRERecord::DeleteField(FIELD_IDENTIFIERS)
                     Patrol->VARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
                     return;
                 case 3: //flags
-                    Patrol->VARS.value[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    Patrol->VARS.value[ListIndex]->SetFlagMask(defaultVARS.SLSD.value.flags);
                     return;
                 case 4: //unused2
                     Patrol->VARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];

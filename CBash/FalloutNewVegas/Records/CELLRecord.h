@@ -120,6 +120,9 @@ class CELLRecord : public FNVRecord //Cell
         std::vector<Record *> REFR;
         std::vector<Record *> PGRE;
         std::vector<Record *> PMIS;
+        std::vector<Record *> PBEA;
+        std::vector<Record *> PFLA;
+        std::vector<Record *> PCBE;
         std::vector<Record *> NAVM;
         //Record *LAND;
 

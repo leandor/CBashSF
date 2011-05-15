@@ -25,7 +25,7 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
-class PMISRecord : public FNVRecord //Placed Missile
+class PFLARecord : public FNVRecord //Placed Grenade
     {
     private:
         enum xespFlags
@@ -57,9 +57,9 @@ class PMISRecord : public FNVRecord //Placed Missile
         OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
         ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
-        PMISRecord(unsigned char *_recData=NULL);
-        PMISRecord(PMISRecord *srcRecord);
-        ~PMISRecord();
+        PFLARecord(unsigned char *_recData=NULL);
+        PFLARecord(PFLARecord *srcRecord);
+        ~PFLARecord();
 
         bool   VisitFormIDs(FormIDOp &op);
 
@@ -83,7 +83,7 @@ class PMISRecord : public FNVRecord //Placed Missile
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
-        bool operator ==(const PMISRecord &other) const;
-        bool operator !=(const PMISRecord &other) const;
+        bool operator ==(const PFLARecord &other) const;
+        bool operator !=(const PFLARecord &other) const;
     };
 }

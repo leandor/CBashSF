@@ -1113,6 +1113,34 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\PBEARecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PCBERecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PCBERecordAPI.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PFLARecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PFLARecordAPI.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PGRERecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PMISRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\REFRRecord.cpp"
 							>
 						</File>
@@ -3267,6 +3295,18 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PBEARecordAPI.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PGRERecordAPI.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\PMISRecordAPI.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\PROJRecordAPI.cpp"
 							>
 						</File>
@@ -3964,6 +4004,18 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PBEARecord.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PCBERecord.h"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\PFLARecord.h"
 							>
 						</File>
 						<File

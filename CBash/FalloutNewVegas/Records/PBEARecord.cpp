@@ -20,17 +20,17 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\Common.h"
-#include "PMISRecord.h"
+#include "PBEARecord.h"
 
 namespace FNV
 {
-PMISRecord::PMISRecord(unsigned char *_recData):
+PBEARecord::PBEARecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
     //
     }
 
-PMISRecord::PMISRecord(PMISRecord *srcRecord):
+PBEARecord::PBEARecord(PBEARecord *srcRecord):
     FNVRecord()
     {
     if(srcRecord == NULL)
@@ -75,12 +75,12 @@ PMISRecord::PMISRecord(PMISRecord *srcRecord):
     return;
     }
 
-PMISRecord::~PMISRecord()
+PBEARecord::~PBEARecord()
     {
     //
     }
 
-bool PMISRecord::VisitFormIDs(FormIDOp &op)
+bool PBEARecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
@@ -117,56 +117,56 @@ bool PMISRecord::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-bool PMISRecord::IsOppositeParent()
+bool PBEARecord::IsOppositeParent()
     {
     return XESP.IsLoaded() ? (XESP->flags & fIsOppositeParent) != 0 : false;
     }
 
-void PMISRecord::IsOppositeParent(bool value)
+void PBEARecord::IsOppositeParent(bool value)
     {
     if(!XESP.IsLoaded()) return;
     XESP->flags = value ? (XESP->flags | fIsOppositeParent) : (XESP->flags & ~fIsOppositeParent);
     }
 
-bool PMISRecord::IsPopIn()
+bool PBEARecord::IsPopIn()
     {
     return XESP.IsLoaded() ? (XESP->flags & fIsPopIn) != 0 : false;
     }
 
-void PMISRecord::IsPopIn(bool value)
+void PBEARecord::IsPopIn(bool value)
     {
     if(!XESP.IsLoaded()) return;
     XESP->flags = value ? (XESP->flags | fIsPopIn) : (XESP->flags & ~fIsPopIn);
     }
 
-bool PMISRecord::IsFlagMask(UINT8 Mask, bool Exact)
+bool PBEARecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
     if(!XESP.IsLoaded()) return false;
     return Exact ? ((XESP->flags & Mask) == Mask) : ((XESP->flags & Mask) != 0);
     }
 
-void PMISRecord::SetFlagMask(UINT8 Mask)
+void PBEARecord::SetFlagMask(UINT8 Mask)
     {
     XESP.Load();
     XESP->flags = Mask;
     }
 
-UINT32 PMISRecord::GetType()
+UINT32 PBEARecord::GetType()
     {
-    return REV32(PMIS);
+    return REV32(PBEA);
     }
 
-STRING PMISRecord::GetStrType()
+STRING PBEARecord::GetStrType()
     {
-    return "PMIS";
+    return "PBEA";
     }
 
-UINT32 PMISRecord::GetParentType()
+UINT32 PBEARecord::GetParentType()
     {
     return REV32(CELL);
     }
 
-SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PBEARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
@@ -312,7 +312,7 @@ SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
-                printf("  PMIS: %08X - Unknown subType = %04x\n", formID, subType);
+                printf("  PBEA: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
                 printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
@@ -322,7 +322,7 @@ SINT32 PMISRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     return 0;
     }
 
-SINT32 PMISRecord::Unload()
+SINT32 PBEARecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
@@ -352,7 +352,7 @@ SINT32 PMISRecord::Unload()
     return 1;
     }
 
-SINT32 PMISRecord::WriteRecord(FileWriter &writer)
+SINT32 PBEARecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(NAME);
@@ -380,7 +380,7 @@ SINT32 PMISRecord::WriteRecord(FileWriter &writer)
     return -1;
     }
 
-bool PMISRecord::operator ==(const PMISRecord &other) const
+bool PBEARecord::operator ==(const PBEARecord &other) const
     {
     return (NAME == other.NAME &&
             XIBS.IsLoaded() == other.XIBS.IsLoaded() &&
@@ -406,7 +406,7 @@ bool PMISRecord::operator ==(const PMISRecord &other) const
             Ownership == other.Ownership);
     }
 
-bool PMISRecord::operator !=(const PMISRecord &other) const
+bool PBEARecord::operator !=(const PBEARecord &other) const
     {
     return !(*this == other);
     }

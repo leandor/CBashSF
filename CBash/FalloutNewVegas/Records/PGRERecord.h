@@ -35,7 +35,7 @@ class PGRERecord : public FNVRecord //Placed Grenade
             };
     public:
         StringRecord EDID; //Editor ID
-        OptSimpleSubRecord<FORMID> NAME; //Base
+        ReqSimpleSubRecord<FORMID> NAME; //Base
         OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
         RawRecord XRGD; //Ragdoll Data
         RawRecord XRGB; //Ragdoll Biped Data
@@ -44,8 +44,7 @@ class PGRERecord : public FNVRecord //Placed Grenade
         OptSimpleSubRecord<SINT32> XCNT; //Count
         OptSimpleFloatSubRecord<flt_0> XRDS; //Radius
         OptSimpleFloatSubRecord<flt_0> XHLP; //Health
-        std::vector<ReqSubRecord<GENXPWR> *> Reflections; //Reflected/Refracted By
-        std::vector<ReqSubRecord<GENXDCR> *> Decals; //Linked Decals
+        UnorderedSparseArray<GENXDCR *> XDCR; //Linked Decals
         OptSimpleSubRecord<FORMID> XLKR; //Linked Reference
         OptSubRecord<GENXCLP> XCLP; //Linked Reference Color
         OptSubRecord<GENACTPARENT> ActivateParents; //Activate Parents
@@ -53,9 +52,10 @@ class PGRERecord : public FNVRecord //Placed Grenade
         OptSubRecord<GENXESP> XESP; //Enable Parent
         OptSimpleSubRecord<FORMID> XEMI; //Emittance
         OptSimpleSubRecord<FORMID> XMBR; //MultiBound Reference
-        //OptSubRecord<GENXIBS> XIBS; //Ignored By Sandbox (Empty)
+        UnorderedSparseArray<GENXPWR *> XPWR; //Reflected/Refracted By
+        OptSimpleSubRecord<UINT8> XIBS; //Ignored By Sandbox (Empty, boolean, if != 0, write empty)
         OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
-        OptSubRecord<GENPOSDATA> DATA; //Position/Rotation
+        ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
         PGRERecord(unsigned char *_recData=NULL);
         PGRERecord(PGRERecord *srcRecord);

@@ -37,6 +37,11 @@ GPL License and Copyright Notice ============================================
 #include "FalloutNewVegas/Records/ACHRRecord.h"
 #include "FalloutNewVegas/Records/ACRERecord.h"
 #include "FalloutNewVegas/Records/REFRRecord.h"
+#include "FalloutNewVegas/Records/PGRERecord.h"
+#include "FalloutNewVegas/Records/PMISRecord.h"
+#include "FalloutNewVegas/Records/PBEARecord.h"
+#include "FalloutNewVegas/Records/PFLARecord.h"
+#include "FalloutNewVegas/Records/PCBERecord.h"
 #include "Visitors.h"
 #include <vector>
 #include <math.h>
@@ -1822,10 +1827,99 @@ class FNVGRUPRecords<FNV::CELLRecord>
                             }
                         break;
                     case REV32(PGRE):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        curRecord = new FNV::PGRERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->PGRE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     case REV32(PMIS):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        curRecord = new FNV::PMISRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->PMIS.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PBEA):
+                        curRecord = new FNV::PBEARecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->PBEA.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PFLA):
+                        curRecord = new FNV::PFLARecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->PFLA.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PCBE):
+                        curRecord = new FNV::PCBERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->PCBE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     case REV32(NAVM):
                         reader.skip(16); //skip the rest of the header since it isn't implemented

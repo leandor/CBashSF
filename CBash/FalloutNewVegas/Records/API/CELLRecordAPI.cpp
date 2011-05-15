@@ -300,7 +300,40 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 61: //NAVM
+        case 61: //PBEA
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)PBEA.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 62: //PFLA
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)PFLA.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 63: //PCBE
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)PCBE.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 64: //NAVM
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -311,7 +344,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 62: //Parent
+        case 65: //Parent
             return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -463,11 +496,23 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             for(UINT32 p = 0;p < (UINT32)PMIS.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PMIS[p];
             return NULL;
-        case 61: //NAVM
+        case 61: //PBEA
+            for(UINT32 p = 0;p < (UINT32)PBEA.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = PBEA[p];
+            return NULL;
+        case 62: //PFLA
+            for(UINT32 p = 0;p < (UINT32)PFLA.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = PFLA[p];
+            return NULL;
+        case 63: //PCBE
+            for(UINT32 p = 0;p < (UINT32)PCBE.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = PCBE[p];
+            return NULL;
+        case 64: //NAVM
             for(UINT32 p = 0;p < (UINT32)NAVM.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = NAVM[p];
             return NULL;
-        case 62: //Parent
+        case 65: //Parent
             return Parent;
         default:
             return NULL;

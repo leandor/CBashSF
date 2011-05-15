@@ -967,6 +967,9 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(REFR):
         case REV32(PGRE):
         case REV32(PMIS):
+        case REV32(PBEA):
+        case REV32(PFLA):
+        case REV32(PCBE):
         case REV32(NAVM):
         case REV32(LAND):
             printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
@@ -1399,25 +1402,55 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = ((FNV::CELLRecord *)ParentRecord)->REFR.back();
             break;
         case REV32(PGRE):
-            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
-            //    {
-            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //    return NULL;
-            //    }
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create PGRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
 
-            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
-            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
-            //break;
+            ((FNV::CELLRecord *)ParentRecord)->PGRE.push_back(new FNV::PGRERecord((FNV::PGRERecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->PGRE.back();
+            break;
         case REV32(PMIS):
-            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
-            //    {
-            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //    return NULL;
-            //    }
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create PMIS record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
 
-            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
-            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
-            //break;
+            ((FNV::CELLRecord *)ParentRecord)->PMIS.push_back(new FNV::PMISRecord((FNV::PMISRecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->PMIS.back();
+            break;
+        case REV32(PBEA):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create PBEA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->PBEA.push_back(new FNV::PBEARecord((FNV::PBEARecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->PBEA.back();
+            break;
+        case REV32(PFLA):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create PFLA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->PFLA.push_back(new FNV::PFLARecord((FNV::PFLARecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->PFLA.back();
+            break;
+        case REV32(PCBE):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create PCBE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            ((FNV::CELLRecord *)ParentRecord)->PCBE.push_back(new FNV::PCBERecord((FNV::PCBERecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->PCBE.back();
+            break;
         case REV32(NAVM):
             //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
             //    {

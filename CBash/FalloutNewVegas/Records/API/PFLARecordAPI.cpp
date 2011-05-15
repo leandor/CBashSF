@@ -20,11 +20,11 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #include "..\..\..\Common.h"
-#include "..\PMISRecord.h"
+#include "..\PFLARecord.h"
 
 namespace FNV
 {
-UINT32 PMISRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
+UINT32 PFLARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
         {
@@ -406,7 +406,7 @@ UINT32 PMISRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     return UNKNOWN_FIELD;
     }
 
-void * PMISRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
+void * PFLARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     {
     switch(FieldID)
         {
@@ -605,7 +605,7 @@ void * PMISRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     return NULL;
     }
 
-bool PMISRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
+bool PFLARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
     {
     switch(FieldID)
         {
@@ -975,7 +975,7 @@ bool PMISRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
     return false;
     }
 
-void PMISRecord::DeleteField(FIELD_IDENTIFIERS)
+void PFLARecord::DeleteField(FIELD_IDENTIFIERS)
     {
     FNVSCHR defaultSCHR;
 

@@ -154,12 +154,15 @@ def TestRegressions():
 ####    assertCLMT(Current, newMod)
 ####    assertREGN(Current, newMod)
 ####    assertNAVI(Current, newMod)
-    assertCELL(Current, newMod)
+##    assertCELL(Current, newMod)
 ##    assertACHR(Current, newMod)
 ##    assertACRE(Current, newMod)
-    assertREFR(Current, newMod)
-##    assertPGRE(Current, newMod)
-##    assertPMIS(Current, newMod)
+##    assertREFR(Current, newMod)
+    assertPGRE(Current, newMod)
+    assertPMIS(Current, newMod)
+    assertPBEA(Current, newMod)
+    assertPFLA(Current, newMod)
+    assertPCBE(Current, newMod)
 ##    assertNAVM(Current, newMod)
     ##    assertWRLD(Current, newMod)
     ##    assertDIAL(Current, newMod)
@@ -8970,6 +8973,7 @@ def assertPGRE(Current, newMod):
     print "PGRE:Finished testing"
 
 def assertPMIS(Current, newMod):
+    return #none in master
     record = Current.LoadOrderMods[0].PMISS[0]
     d(record)
     print
@@ -9020,6 +9024,165 @@ def assertPMIS(Current, newMod):
 
 
     print "PMIS:Finished testing"
+
+def assertPBEA(Current, newMod):
+    return #none in master
+    record = Current.LoadOrderMods[0].PBEAS[0]
+    d(record)
+    print
+    return
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+    nrecord = newMod.create_PBEA()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001037)#xx
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+
+
+    record = Current.LoadOrderMods[0].PBEAS[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+
+    print "PBEA:Finished testing"
+
+def assertPFLA(Current, newMod):
+    return #none in master
+    record = Current.LoadOrderMods[0].PFLAS[0]
+    d(record)
+    print
+    return
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+    nrecord = newMod.create_PFLA()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001037)#xx
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+
+
+    record = Current.LoadOrderMods[0].PFLAS[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+
+    print "PFLA:Finished testing"
+
+def assertPCBE(Current, newMod):
+    return #none in master
+    record = Current.LoadOrderMods[0].PCBES[0]
+    d(record)
+    print
+    return
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+    nrecord = newMod.create_PCBE()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001037)#xx
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+
+
+    record = Current.LoadOrderMods[0].PCBES[0]
+    newrecord = record.CopyAsOverride(newMod)
+                                                  
+    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+
+    print "PCBE:Finished testing"
 
 def assertNAVM(Current, newMod):
     record = Current.LoadOrderMods[0].NAVMS[0]

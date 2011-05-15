@@ -2651,17 +2651,656 @@ class FnvPGRERecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PGRE'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    FORMID_MACRO(owner, 24)
+    SINT32_MACRO(rank, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
     
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    
+    LIST_MACRO(reflrefrs, 47, self.ReflRefr)
+    BOOL_MACRO(ignoredBySandbox, 48)
+    FLOAT32_MACRO(scale, 49)
+    FLOAT32_MACRO(posX, 50)
+    FLOAT32_MACRO(posY, 51)
+    FLOAT32_MACRO(posZ, 52)
+    RADIAN_MACRO(rotX, 53)
+    RADIAN_MACRO(rotY, 54)
+    RADIAN_MACRO(rotZ, 55)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+        
 class FnvPMISRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PMIS'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    FORMID_MACRO(owner, 24)
+    SINT32_MACRO(rank, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
     
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    
+    LIST_MACRO(reflrefrs, 47, self.ReflRefr)
+    BOOL_MACRO(ignoredBySandbox, 48)
+    FLOAT32_MACRO(scale, 49)
+    FLOAT32_MACRO(posX, 50)
+    FLOAT32_MACRO(posY, 51)
+    FLOAT32_MACRO(posZ, 52)
+    RADIAN_MACRO(rotX, 53)
+    RADIAN_MACRO(rotY, 54)
+    RADIAN_MACRO(rotZ, 55)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPBEARecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PBEA'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    FORMID_MACRO(owner, 24)
+    SINT32_MACRO(rank, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
+    
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
+    
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    
+    LIST_MACRO(reflrefrs, 47, self.ReflRefr)
+    BOOL_MACRO(ignoredBySandbox, 48)
+    FLOAT32_MACRO(scale, 49)
+    FLOAT32_MACRO(posX, 50)
+    FLOAT32_MACRO(posY, 51)
+    FLOAT32_MACRO(posZ, 52)
+    RADIAN_MACRO(rotX, 53)
+    RADIAN_MACRO(rotY, 54)
+    RADIAN_MACRO(rotZ, 55)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPFLARecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PFLA'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    FORMID_MACRO(owner, 24)
+    SINT32_MACRO(rank, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
+    
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
+    
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    
+    LIST_MACRO(reflrefrs, 47, self.ReflRefr)
+    BOOL_MACRO(ignoredBySandbox, 48)
+    FLOAT32_MACRO(scale, 49)
+    FLOAT32_MACRO(posX, 50)
+    FLOAT32_MACRO(posY, 51)
+    FLOAT32_MACRO(posZ, 52)
+    RADIAN_MACRO(rotX, 53)
+    RADIAN_MACRO(rotY, 54)
+    RADIAN_MACRO(rotZ, 55)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPCBERecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PCBE'
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        FLOAT32_LISTMACRO(delay, 2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        FORMID_LISTMACRO(reference, 1)
+        UINT32_TYPE_LISTMACRO(type, 2)
+        
+        BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
+        BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    FORMID_MACRO(base, 7)
+    FORMID_MACRO(encounterZone, 8)
+    UINT8_ARRAY_MACRO(xrgd_p, 9)
+    UINT8_ARRAY_MACRO(xrgb_p, 10)
+    FLOAT32_MACRO(idleTime, 11)
+    FORMID_MACRO(idle, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 4)
+    UINT32_MACRO(numRefs, 14)
+    UINT32_MACRO(compiledSize, 15)
+    UINT32_MACRO(lastIndex, 16)
+    UINT16_TYPE_MACRO(scriptType, 17)
+    UINT16_FLAG_MACRO(scriptFlags, 18)
+    UINT8_ARRAY_MACRO(compiled_p, 19)
+    ISTRING_MACRO(scriptText, 20)
+
+    LIST_MACRO(vars, 21, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
+    FORMID_MACRO(topic, 23)
+    FORMID_MACRO(owner, 24)
+    SINT32_MACRO(rank, 25)
+    SINT32_MACRO(count, 26)
+    FLOAT32_MACRO(radius, 27)
+    FLOAT32_MACRO(health, 28)
+    
+    LIST_MACRO(decals, 29, self.Decal)
+    FORMID_MACRO(linkedReference, 30)
+    UINT8_MACRO(startRed, 31)
+    UINT8_MACRO(startGreen, 32)
+    UINT8_MACRO(startBlue, 33)
+    UINT8_ARRAY_MACRO(unused2, 34, 1)
+    UINT8_MACRO(endRed, 35)
+    UINT8_MACRO(endGreen, 36)
+    UINT8_MACRO(endBlue, 37)
+    UINT8_ARRAY_MACRO(unused3, 38, 1)
+    UINT8_FLAG_MACRO(activateParentFlags, 39)
+    
+    LIST_MACRO(activateParentRefs, 40, self.ParentRef)
+    STRING_MACRO(prompt, 41)
+    FORMID_MACRO(parent, 42)
+    UINT8_FLAG_MACRO(parentFlags, 43)
+    UINT8_ARRAY_MACRO(unused4, 44, 3)
+    FORMID_MACRO(emittance, 45)
+    FORMID_MACRO(boundRef, 46)
+    
+    LIST_MACRO(reflrefrs, 47, self.ReflRefr)
+    BOOL_MACRO(ignoredBySandbox, 48)
+    FLOAT32_MACRO(scale, 49)
+    FLOAT32_MACRO(posX, 50)
+    FLOAT32_MACRO(posY, 51)
+    FLOAT32_MACRO(posZ, 52)
+    RADIAN_MACRO(rotX, 53)
+    RADIAN_MACRO(rotY, 54)
+    RADIAN_MACRO(rotZ, 55)
+
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+    
+    BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
+    BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+ 
 class FnvNAVMRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -6400,7 +7039,7 @@ class FnvCELLRecord(FnvBaseRecord):
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
-        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 62, 0, 0, 0, 0, 0, 0, 0)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 65, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
 
@@ -6458,7 +7097,10 @@ class FnvCELLRecord(FnvBaseRecord):
     SUBRECORD_ARRAY_MACRO(REFR, "REFR", 58, FnvREFRRecord, 0)
     SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 59, FnvPGRERecord, 0)
     SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 60, FnvPMISRecord, 0)
-    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 61, FnvNAVMRecord, 0)
+    SUBRECORD_ARRAY_MACRO(PBEA, "PBEA", 61, FnvPBEARecord, 0)
+    SUBRECORD_ARRAY_MACRO(PFLA, "PFLA", 62, FnvPFLARecord, 0)
+    SUBRECORD_ARRAY_MACRO(PCBE, "PCBE", 63, FnvPCBERecord, 0)
+    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 64, FnvNAVMRecord, 0)
     
     BasicFlagMACRO(IsInterior, flags, 0x00000001)
     BasicFlagMACRO(IsHasWater, flags, 0x00000002)
@@ -9922,6 +10564,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
+                        ('PBEA',FnvPBEARecord),
                         ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
@@ -10441,6 +11084,42 @@ class FnvModFile(object):
         return pmiss
 
     @property
+    def PBEAS(self):
+        pbeas = []
+        for cell in self.CELL:
+            pbeas += cell.PBEA
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pbeas += cell.PBEA
+            for cell in world.CELLS:
+                pbeas += cell.PBEA
+        return pbeas
+
+    @property
+    def PFLAS(self):
+        pflas = []
+        for cell in self.CELL:
+            pflas += cell.PFLA
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pflas += cell.PFLA
+            for cell in world.CELLS:
+                pflas += cell.PFLA
+        return pflas
+
+    @property
+    def PCBES(self):
+        pcbes = []
+        for cell in self.CELL:
+            pcbes += cell.PCBE
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pcbes += cell.PCBE
+            for cell in world.CELLS:
+                pcbes += cell.PCBE
+        return pcbes
+
+    @property
     def NAVMS(self):
         navms = []
         for cell in self.CELL:
@@ -10510,6 +11189,7 @@ class FnvModFile(object):
                      ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
                      ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
+                     ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
                      ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),

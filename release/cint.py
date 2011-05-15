@@ -2741,17 +2741,791 @@ class FnvPGRERecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PGRE'
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        unknown1 = CBashUINT8ARRAY_LIST(2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        delay = CBashFLOAT32_LIST(2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        
+        IsReflection = CBashBasicType('type', 0, 'IsRefraction')
+        IsRefraction = CBashBasicType('type', 1, 'IsReflection')
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    base = CBashFORMID(7)
+    encounterZone = CBashFORMID(8)
+    xrgd_p = CBashUINT8ARRAY(9)
+    xrgb_p = CBashUINT8ARRAY(10)
+    idleTime = CBashFLOAT32(11)
+    idle = CBashFORMID(12)
+    unused1 = CBashUINT8ARRAY(13, 4)
+    numRefs = CBashGeneric(14, c_ulong)
+    compiledSize = CBashGeneric(15, c_ulong)
+    lastIndex = CBashGeneric(16, c_ulong)
+    scriptType = CBashGeneric(17, c_ushort)
+    scriptFlags = CBashGeneric(18, c_ushort)
+    compiled_p = CBashUINT8ARRAY(19)
+    scriptText = CBashISTRING(20)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 21, length)
+    vars = CBashLIST(21, Var)
+    vars_list = CBashLIST(21, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(22)
+    topic = CBashFORMID(23)
+    owner = CBashFORMID(24)
+    rank = CBashGeneric(25, c_long)
+    count = CBashGeneric(26, c_long)
+    radius = CBashFLOAT32(27)
+    health = CBashFLOAT32(28)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    def create_decal(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Decal(self._CollectionID, self._ModID, self._RecordID, 29, length)
+    decals = CBashLIST(29, Decal)
+    decals_list = CBashLIST(29, Decal, True)
+
+    linkedReference = CBashFORMID(30)
+    startRed = CBashGeneric(31, c_ubyte)
+    startGreen = CBashGeneric(32, c_ubyte)
+    startBlue = CBashGeneric(33, c_ubyte)
+    unused2 = CBashUINT8ARRAY(34, 1)
+    endRed = CBashGeneric(35, c_ubyte)
+    endGreen = CBashGeneric(36, c_ubyte)
+    endBlue = CBashGeneric(37, c_ubyte)
+    unused3 = CBashUINT8ARRAY(38, 1)
+    activateParentFlags = CBashGeneric(39, c_ubyte)
     
+    def create_activateParentRef(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ParentRef(self._CollectionID, self._ModID, self._RecordID, 40, length)
+    activateParentRefs = CBashLIST(40, ParentRef)
+    activateParentRefs_list = CBashLIST(40, ParentRef, True)
+
+    prompt = CBashSTRING(41)
+    parent = CBashFORMID(42)
+    parentFlags = CBashGeneric(43, c_ubyte)
+    unused4 = CBashUINT8ARRAY(44, 3)
+    emittance = CBashFORMID(45)
+    boundRef = CBashFORMID(46)
+    
+    def create_reflrefr(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ReflRefr(self._CollectionID, self._ModID, self._RecordID, 47, length)
+    reflrefrs = CBashLIST(47, ReflRefr)
+    reflrefrs_list = CBashLIST(47, ReflRefr, True)
+
+    ignoredBySandbox = CBashGeneric(48, c_bool)
+    scale = CBashFLOAT32(49)
+    posX = CBashFLOAT32(50)
+    posY = CBashFLOAT32(51)
+    posZ = CBashFLOAT32(52)
+    rotX = CBashFLOAT32(53)
+    rotX_degrees = CBashDEGREES(53)
+    rotY = CBashFLOAT32(54)
+    rotY_degrees = CBashDEGREES(54)
+    rotZ = CBashFLOAT32(55)
+    rotZ_degrees = CBashDEGREES(55)
+
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
+    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
+
+    IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+        
 class FnvPMISRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PMIS'
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        unknown1 = CBashUINT8ARRAY_LIST(2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        delay = CBashFLOAT32_LIST(2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        
+        IsReflection = CBashBasicType('type', 0, 'IsRefraction')
+        IsRefraction = CBashBasicType('type', 1, 'IsReflection')
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    base = CBashFORMID(7)
+    encounterZone = CBashFORMID(8)
+    xrgd_p = CBashUINT8ARRAY(9)
+    xrgb_p = CBashUINT8ARRAY(10)
+    idleTime = CBashFLOAT32(11)
+    idle = CBashFORMID(12)
+    unused1 = CBashUINT8ARRAY(13, 4)
+    numRefs = CBashGeneric(14, c_ulong)
+    compiledSize = CBashGeneric(15, c_ulong)
+    lastIndex = CBashGeneric(16, c_ulong)
+    scriptType = CBashGeneric(17, c_ushort)
+    scriptFlags = CBashGeneric(18, c_ushort)
+    compiled_p = CBashUINT8ARRAY(19)
+    scriptText = CBashISTRING(20)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 21, length)
+    vars = CBashLIST(21, Var)
+    vars_list = CBashLIST(21, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(22)
+    topic = CBashFORMID(23)
+    owner = CBashFORMID(24)
+    rank = CBashGeneric(25, c_long)
+    count = CBashGeneric(26, c_long)
+    radius = CBashFLOAT32(27)
+    health = CBashFLOAT32(28)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    def create_decal(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Decal(self._CollectionID, self._ModID, self._RecordID, 29, length)
+    decals = CBashLIST(29, Decal)
+    decals_list = CBashLIST(29, Decal, True)
+
+    linkedReference = CBashFORMID(30)
+    startRed = CBashGeneric(31, c_ubyte)
+    startGreen = CBashGeneric(32, c_ubyte)
+    startBlue = CBashGeneric(33, c_ubyte)
+    unused2 = CBashUINT8ARRAY(34, 1)
+    endRed = CBashGeneric(35, c_ubyte)
+    endGreen = CBashGeneric(36, c_ubyte)
+    endBlue = CBashGeneric(37, c_ubyte)
+    unused3 = CBashUINT8ARRAY(38, 1)
+    activateParentFlags = CBashGeneric(39, c_ubyte)
     
+    def create_activateParentRef(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ParentRef(self._CollectionID, self._ModID, self._RecordID, 40, length)
+    activateParentRefs = CBashLIST(40, ParentRef)
+    activateParentRefs_list = CBashLIST(40, ParentRef, True)
+
+    prompt = CBashSTRING(41)
+    parent = CBashFORMID(42)
+    parentFlags = CBashGeneric(43, c_ubyte)
+    unused4 = CBashUINT8ARRAY(44, 3)
+    emittance = CBashFORMID(45)
+    boundRef = CBashFORMID(46)
+    
+    def create_reflrefr(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ReflRefr(self._CollectionID, self._ModID, self._RecordID, 47, length)
+    reflrefrs = CBashLIST(47, ReflRefr)
+    reflrefrs_list = CBashLIST(47, ReflRefr, True)
+
+    ignoredBySandbox = CBashGeneric(48, c_bool)
+    scale = CBashFLOAT32(49)
+    posX = CBashFLOAT32(50)
+    posY = CBashFLOAT32(51)
+    posZ = CBashFLOAT32(52)
+    rotX = CBashFLOAT32(53)
+    rotX_degrees = CBashDEGREES(53)
+    rotY = CBashFLOAT32(54)
+    rotY_degrees = CBashDEGREES(54)
+    rotZ = CBashFLOAT32(55)
+    rotZ_degrees = CBashDEGREES(55)
+
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
+    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
+
+    IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPBEARecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PBEA'
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        unknown1 = CBashUINT8ARRAY_LIST(2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        delay = CBashFLOAT32_LIST(2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        
+        IsReflection = CBashBasicType('type', 0, 'IsRefraction')
+        IsRefraction = CBashBasicType('type', 1, 'IsReflection')
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    base = CBashFORMID(7)
+    encounterZone = CBashFORMID(8)
+    xrgd_p = CBashUINT8ARRAY(9)
+    xrgb_p = CBashUINT8ARRAY(10)
+    idleTime = CBashFLOAT32(11)
+    idle = CBashFORMID(12)
+    unused1 = CBashUINT8ARRAY(13, 4)
+    numRefs = CBashGeneric(14, c_ulong)
+    compiledSize = CBashGeneric(15, c_ulong)
+    lastIndex = CBashGeneric(16, c_ulong)
+    scriptType = CBashGeneric(17, c_ushort)
+    scriptFlags = CBashGeneric(18, c_ushort)
+    compiled_p = CBashUINT8ARRAY(19)
+    scriptText = CBashISTRING(20)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 21, length)
+    vars = CBashLIST(21, Var)
+    vars_list = CBashLIST(21, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(22)
+    topic = CBashFORMID(23)
+    owner = CBashFORMID(24)
+    rank = CBashGeneric(25, c_long)
+    count = CBashGeneric(26, c_long)
+    radius = CBashFLOAT32(27)
+    health = CBashFLOAT32(28)
+    
+    def create_decal(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Decal(self._CollectionID, self._ModID, self._RecordID, 29, length)
+    decals = CBashLIST(29, Decal)
+    decals_list = CBashLIST(29, Decal, True)
+
+    linkedReference = CBashFORMID(30)
+    startRed = CBashGeneric(31, c_ubyte)
+    startGreen = CBashGeneric(32, c_ubyte)
+    startBlue = CBashGeneric(33, c_ubyte)
+    unused2 = CBashUINT8ARRAY(34, 1)
+    endRed = CBashGeneric(35, c_ubyte)
+    endGreen = CBashGeneric(36, c_ubyte)
+    endBlue = CBashGeneric(37, c_ubyte)
+    unused3 = CBashUINT8ARRAY(38, 1)
+    activateParentFlags = CBashGeneric(39, c_ubyte)
+    
+    def create_activateParentRef(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ParentRef(self._CollectionID, self._ModID, self._RecordID, 40, length)
+    activateParentRefs = CBashLIST(40, ParentRef)
+    activateParentRefs_list = CBashLIST(40, ParentRef, True)
+
+    prompt = CBashSTRING(41)
+    parent = CBashFORMID(42)
+    parentFlags = CBashGeneric(43, c_ubyte)
+    unused4 = CBashUINT8ARRAY(44, 3)
+    emittance = CBashFORMID(45)
+    boundRef = CBashFORMID(46)
+    
+    def create_reflrefr(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ReflRefr(self._CollectionID, self._ModID, self._RecordID, 47, length)
+    reflrefrs = CBashLIST(47, ReflRefr)
+    reflrefrs_list = CBashLIST(47, ReflRefr, True)
+
+    ignoredBySandbox = CBashGeneric(48, c_bool)
+    scale = CBashFLOAT32(49)
+    posX = CBashFLOAT32(50)
+    posY = CBashFLOAT32(51)
+    posZ = CBashFLOAT32(52)
+    rotX = CBashFLOAT32(53)
+    rotX_degrees = CBashDEGREES(53)
+    rotY = CBashFLOAT32(54)
+    rotY_degrees = CBashDEGREES(54)
+    rotZ = CBashFLOAT32(55)
+    rotZ_degrees = CBashDEGREES(55)
+
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
+    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
+
+    IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPFLARecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PFLA'
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        unknown1 = CBashUINT8ARRAY_LIST(2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        delay = CBashFLOAT32_LIST(2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        
+        IsReflection = CBashBasicType('type', 0, 'IsRefraction')
+        IsRefraction = CBashBasicType('type', 1, 'IsReflection')
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    base = CBashFORMID(7)
+    encounterZone = CBashFORMID(8)
+    xrgd_p = CBashUINT8ARRAY(9)
+    xrgb_p = CBashUINT8ARRAY(10)
+    idleTime = CBashFLOAT32(11)
+    idle = CBashFORMID(12)
+    unused1 = CBashUINT8ARRAY(13, 4)
+    numRefs = CBashGeneric(14, c_ulong)
+    compiledSize = CBashGeneric(15, c_ulong)
+    lastIndex = CBashGeneric(16, c_ulong)
+    scriptType = CBashGeneric(17, c_ushort)
+    scriptFlags = CBashGeneric(18, c_ushort)
+    compiled_p = CBashUINT8ARRAY(19)
+    scriptText = CBashISTRING(20)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 21, length)
+    vars = CBashLIST(21, Var)
+    vars_list = CBashLIST(21, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(22)
+    topic = CBashFORMID(23)
+    owner = CBashFORMID(24)
+    rank = CBashGeneric(25, c_long)
+    count = CBashGeneric(26, c_long)
+    radius = CBashFLOAT32(27)
+    health = CBashFLOAT32(28)
+    
+    def create_decal(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Decal(self._CollectionID, self._ModID, self._RecordID, 29, length)
+    decals = CBashLIST(29, Decal)
+    decals_list = CBashLIST(29, Decal, True)
+
+    linkedReference = CBashFORMID(30)
+    startRed = CBashGeneric(31, c_ubyte)
+    startGreen = CBashGeneric(32, c_ubyte)
+    startBlue = CBashGeneric(33, c_ubyte)
+    unused2 = CBashUINT8ARRAY(34, 1)
+    endRed = CBashGeneric(35, c_ubyte)
+    endGreen = CBashGeneric(36, c_ubyte)
+    endBlue = CBashGeneric(37, c_ubyte)
+    unused3 = CBashUINT8ARRAY(38, 1)
+    activateParentFlags = CBashGeneric(39, c_ubyte)
+    
+    def create_activateParentRef(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ParentRef(self._CollectionID, self._ModID, self._RecordID, 40, length)
+    activateParentRefs = CBashLIST(40, ParentRef)
+    activateParentRefs_list = CBashLIST(40, ParentRef, True)
+
+    prompt = CBashSTRING(41)
+    parent = CBashFORMID(42)
+    parentFlags = CBashGeneric(43, c_ubyte)
+    unused4 = CBashUINT8ARRAY(44, 3)
+    emittance = CBashFORMID(45)
+    boundRef = CBashFORMID(46)
+    
+    def create_reflrefr(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ReflRefr(self._CollectionID, self._ModID, self._RecordID, 47, length)
+    reflrefrs = CBashLIST(47, ReflRefr)
+    reflrefrs_list = CBashLIST(47, ReflRefr, True)
+
+    ignoredBySandbox = CBashGeneric(48, c_bool)
+    scale = CBashFLOAT32(49)
+    posX = CBashFLOAT32(50)
+    posY = CBashFLOAT32(51)
+    posZ = CBashFLOAT32(52)
+    rotX = CBashFLOAT32(53)
+    rotX_degrees = CBashDEGREES(53)
+    rotY = CBashFLOAT32(54)
+    rotY_degrees = CBashDEGREES(54)
+    rotZ = CBashFLOAT32(55)
+    rotZ_degrees = CBashDEGREES(55)
+
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
+    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
+
+    IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+
+class FnvPCBERecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
+        self._ParentID = ParentID
+    _Type = 'PCBE'
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+        
+    class Decal(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        unknown1 = CBashUINT8ARRAY_LIST(2, 24)
+        copyattrs = ['reference', 'unknown1']
+        exportattrs = ['reference']#, 'unknown1'
+
+    class ParentRef(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        delay = CBashFLOAT32_LIST(2)
+        exportattrs = copyattrs = ['reference', 'delay']
+
+    class ReflRefr(ListComponent):
+        reference = CBashFORMID_LIST(1)
+        type = CBashGeneric_LIST(2, c_ulong)
+        
+        IsReflection = CBashBasicType('type', 0, 'IsRefraction')
+        IsRefraction = CBashBasicType('type', 1, 'IsReflection')
+        exportattrs = copyattrs = ['reference', 'type']
+        
+    base = CBashFORMID(7)
+    encounterZone = CBashFORMID(8)
+    xrgd_p = CBashUINT8ARRAY(9)
+    xrgb_p = CBashUINT8ARRAY(10)
+    idleTime = CBashFLOAT32(11)
+    idle = CBashFORMID(12)
+    unused1 = CBashUINT8ARRAY(13, 4)
+    numRefs = CBashGeneric(14, c_ulong)
+    compiledSize = CBashGeneric(15, c_ulong)
+    lastIndex = CBashGeneric(16, c_ulong)
+    scriptType = CBashGeneric(17, c_ushort)
+    scriptFlags = CBashGeneric(18, c_ushort)
+    compiled_p = CBashUINT8ARRAY(19)
+    scriptText = CBashISTRING(20)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 21, length)
+    vars = CBashLIST(21, Var)
+    vars_list = CBashLIST(21, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(22)
+    topic = CBashFORMID(23)
+    owner = CBashFORMID(24)
+    rank = CBashGeneric(25, c_long)
+    count = CBashGeneric(26, c_long)
+    radius = CBashFLOAT32(27)
+    health = CBashFLOAT32(28)
+    
+    def create_decal(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Decal(self._CollectionID, self._ModID, self._RecordID, 29, length)
+    decals = CBashLIST(29, Decal)
+    decals_list = CBashLIST(29, Decal, True)
+
+    linkedReference = CBashFORMID(30)
+    startRed = CBashGeneric(31, c_ubyte)
+    startGreen = CBashGeneric(32, c_ubyte)
+    startBlue = CBashGeneric(33, c_ubyte)
+    unused2 = CBashUINT8ARRAY(34, 1)
+    endRed = CBashGeneric(35, c_ubyte)
+    endGreen = CBashGeneric(36, c_ubyte)
+    endBlue = CBashGeneric(37, c_ubyte)
+    unused3 = CBashUINT8ARRAY(38, 1)
+    activateParentFlags = CBashGeneric(39, c_ubyte)
+    
+    def create_activateParentRef(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ParentRef(self._CollectionID, self._ModID, self._RecordID, 40, length)
+    activateParentRefs = CBashLIST(40, ParentRef)
+    activateParentRefs_list = CBashLIST(40, ParentRef, True)
+
+    prompt = CBashSTRING(41)
+    parent = CBashFORMID(42)
+    parentFlags = CBashGeneric(43, c_ubyte)
+    unused4 = CBashUINT8ARRAY(44, 3)
+    emittance = CBashFORMID(45)
+    boundRef = CBashFORMID(46)
+    
+    def create_reflrefr(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.ReflRefr(self._CollectionID, self._ModID, self._RecordID, 47, length)
+    reflrefrs = CBashLIST(47, ReflRefr)
+    reflrefrs_list = CBashLIST(47, ReflRefr, True)
+
+    ignoredBySandbox = CBashGeneric(48, c_bool)
+    scale = CBashFLOAT32(49)
+    posX = CBashFLOAT32(50)
+    posY = CBashFLOAT32(51)
+    posZ = CBashFLOAT32(52)
+    rotX = CBashFLOAT32(53)
+    rotX_degrees = CBashDEGREES(53)
+    rotY = CBashFLOAT32(54)
+    rotY_degrees = CBashDEGREES(54)
+    rotZ = CBashFLOAT32(55)
+    rotZ_degrees = CBashDEGREES(55)
+
+    IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+    
+    IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
+    IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
+
+    IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+    
+    copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
+                                           'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType', 'scriptFlags',
+                                           'compiled_p', 'scriptText', 'vars_list',
+                                           'references', 'topic', 'owner',
+                                           'rank', 'count',
+                                           'radius', 'health', 'decals_list',
+                                           'linkedReference',
+                                           'startRed', 'startGreen', 'startBlue',
+                                           'endRed', 'endGreen', 'endBlue',
+                                           'activateParentFlags',
+                                           'activateParentRefs_list', 'prompt',
+                                           'parent', 'parentFlags', 'emittance',
+                                           'boundRef', 'reflrefrs_list',
+                                           'ignoredBySandbox', 'scale',
+                                           'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
+    
+    exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
+                                             'idleTime', 'idle', 'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType', 'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'topic', 'owner',
+                                             'rank', 'count',
+                                             'radius', 'health', 'decals_list',
+                                             'linkedReference',
+                                             'startRed', 'startGreen', 'startBlue',
+                                             'endRed', 'endGreen', 'endBlue',
+                                             'activateParentFlags',
+                                             'activateParentRefs_list', 'prompt',
+                                             'parent', 'parentFlags', 'emittance',
+                                             'boundRef', 'reflrefrs_list',
+                                             'ignoredBySandbox', 'scale',
+                                             'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
+ 
 class FnvNAVMRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -7027,7 +7801,7 @@ class FnvCELLRecord(FnvBaseRecord):
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
-        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 62, 0, 0, 0, 0, 0, 0, 0)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 65, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
 
@@ -7110,11 +7884,29 @@ class FnvCELLRecord(FnvBaseRecord):
         return None
     PMIS = CBashSUBRECORDARRAY(60, FnvPMISRecord, "PMIS", 0)
 
+    def create_PBEA(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PBEA", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvPBEARecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    PBEA = CBashSUBRECORDARRAY(61, FnvPBEARecord, "PBEA", 0)
+
+    def create_PFLA(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PFLA", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvPFLARecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    PFLA = CBashSUBRECORDARRAY(62, FnvPFLARecord, "PFLA", 0)
+
+    def create_PCBE(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PCBE", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvPCBERecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    PCBE = CBashSUBRECORDARRAY(63, FnvPCBERecord, "PCBE", 0)
+
     def create_NAVM(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("NAVM", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvNAVMRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    NAVM = CBashSUBRECORDARRAY(61, FnvNAVMRecord, "NAVM", 0)
+    NAVM = CBashSUBRECORDARRAY(64, FnvNAVMRecord, "NAVM", 0)
 
     
     IsInterior = CBashBasicFlag('flags', 0x00000001)
@@ -10977,6 +11769,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
+                        ('PBEA',FnvPBEARecord),
                         ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
@@ -12281,6 +13074,42 @@ class FnvModFile(object):
         return pmiss
 
     @property
+    def PBEAS(self):
+        pbeas = []
+        for cell in self.CELL:
+            pbeas += cell.PBEA
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pbeas += cell.PBEA
+            for cell in world.CELLS:
+                pbeas += cell.PBEA
+        return pbeas
+
+    @property
+    def PFLAS(self):
+        pflas = []
+        for cell in self.CELL:
+            pflas += cell.PFLA
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pflas += cell.PFLA
+            for cell in world.CELLS:
+                pflas += cell.PFLA
+        return pflas
+
+    @property
+    def PCBES(self):
+        pcbes = []
+        for cell in self.CELL:
+            pcbes += cell.PCBE
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): pcbes += cell.PCBE
+            for cell in world.CELLS:
+                pcbes += cell.PCBE
+        return pcbes
+
+    @property
     def NAVMS(self):
         navms = []
         for cell in self.CELL:
@@ -12350,6 +13179,7 @@ class FnvModFile(object):
                      ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
                      ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
+                     ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
                      ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),

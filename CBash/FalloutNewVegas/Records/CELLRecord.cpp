@@ -148,6 +148,12 @@ CELLRecord::~CELLRecord()
         delete PGRE[x];
     for(UINT32 x = 0; x < PMIS.size(); ++x)
         delete PMIS[x];
+    for(UINT32 x = 0; x < PBEA.size(); ++x)
+        delete PBEA[x];
+    for(UINT32 x = 0; x < PFLA.size(); ++x)
+        delete PFLA[x];
+    for(UINT32 x = 0; x < PCBE.size(); ++x)
+        delete PCBE[x];
     for(UINT32 x = 0; x < NAVM.size(); ++x)
         delete NAVM[x];
     }
