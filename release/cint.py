@@ -3531,8 +3531,122 @@ class FnvNAVMRecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'NAVM'
+    class Vertex(ListComponent):
+        x = CBashFLOAT32_LIST(1)
+        y = CBashFLOAT32_LIST(2)
+        z = CBashFLOAT32_LIST(3)
+
+        exportattrs = copyattrs = ['x', 'y', 'z']
+        
+    class Triangle(ListComponent):
+        vertex1 = CBashGeneric_LIST(1, c_short)
+        vertex2 = CBashGeneric_LIST(2, c_short)
+        vertex3 = CBashGeneric_LIST(3, c_short)
+        edge1 = CBashGeneric_LIST(4, c_short)
+        edge2 = CBashGeneric_LIST(5, c_short)
+        edge3 = CBashGeneric_LIST(6, c_short)
+        flags = CBashGeneric_LIST(7, c_ulong)
+
+        IsTriangle0External = CBashBasicFlag('flags', 0x00000001)
+        IsTriangle1External = CBashBasicFlag('flags', 0x00000002)
+        IsTriangle2External = CBashBasicFlag('flags', 0x00000004)
+        IsUnknown4 = CBashBasicFlag('flags', 0x00000008)
+        IsUnknown5 = CBashBasicFlag('flags', 0x00000010)
+        IsUnknown6 = CBashBasicFlag('flags', 0x00000020)
+        IsUnknown7 = CBashBasicFlag('flags', 0x00000040)
+        IsUnknown8 = CBashBasicFlag('flags', 0x00000080)
+        IsUnknown9 = CBashBasicFlag('flags', 0x00000100)
+        IsUnknown10 = CBashBasicFlag('flags', 0x00000200)
+        IsUnknown11 = CBashBasicFlag('flags', 0x00000400)
+        IsUnknown12 = CBashBasicFlag('flags', 0x00000800)
+        IsUnknown13 = CBashBasicFlag('flags', 0x00001000)
+        IsUnknown14 = CBashBasicFlag('flags', 0x00002000)
+        IsUnknown15 = CBashBasicFlag('flags', 0x00004000)
+        IsUnknown16 = CBashBasicFlag('flags', 0x00008000)
+        IsUnknown17 = CBashBasicFlag('flags', 0x00010000)
+        IsUnknown18 = CBashBasicFlag('flags', 0x00020000)
+        IsUnknown19 = CBashBasicFlag('flags', 0x00040000)
+        IsUnknown20 = CBashBasicFlag('flags', 0x00080000)
+        IsUnknown21 = CBashBasicFlag('flags', 0x00100000)
+        IsUnknown22 = CBashBasicFlag('flags', 0x00200000)
+        IsUnknown23 = CBashBasicFlag('flags', 0x00400000)
+        IsUnknown24 = CBashBasicFlag('flags', 0x00800000)
+        IsUnknown25 = CBashBasicFlag('flags', 0x01000000)
+        IsUnknown26 = CBashBasicFlag('flags', 0x02000000)
+        IsUnknown27 = CBashBasicFlag('flags', 0x04000000)
+        IsUnknown28 = CBashBasicFlag('flags', 0x08000000)
+        IsUnknown29 = CBashBasicFlag('flags', 0x10000000)
+        IsUnknown30 = CBashBasicFlag('flags', 0x20000000)
+        IsUnknown31 = CBashBasicFlag('flags', 0x40000000)
+        IsUnknown32 = CBashBasicFlag('flags', 0x80000000)
+        exportattrs = copyattrs = ['vertex1', 'vertex2', 'vertex3', 'edge1', 'edge2', 'edge3', 'flags']
+        
+    class Door(ListComponent):
+        door = CBashFORMID_LIST(1)
+        unknown1 = CBashGeneric_LIST(2, c_ushort)
+        unused1 = CBashUINT8ARRAY_LIST(3, 2)
+        
+        exportattrs = copyattrs = ['door', 'unknown1']
+        
+    class Connection(ListComponent):
+        unknown1 = CBashUINT8ARRAY_LIST(1)
+        mesh = CBashFORMID_LIST(2)
+        triangle = CBashGeneric_LIST(3, c_ushort)
+        
+        exportattrs = copyattrs = ['unknown1', 'mesh', 'triangle']
+        
+    version = CBashGeneric(7, c_ulong)
+    cell = CBashFORMID(8)
+    numVertices = CBashGeneric(9, c_ulong)
+    numTriangles = CBashGeneric(10, c_ulong)
+    numConnections = CBashGeneric(11, c_ulong)
+    numUnknown = CBashGeneric(12, c_ulong)
+    numDoors = CBashGeneric(13, c_ulong)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    def create_vertic(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Vertex(self._CollectionID, self._ModID, self._RecordID, 14, length)
+    vertices = CBashLIST(14, Vertex)
+    vertices_list = CBashLIST(14, Vertex, True)
+    
+    def create_triangl(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Triangle(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    triangles = CBashLIST(15, Triangle)
+    triangles_list = CBashLIST(15, Triangle, True)
+
+    unknown1 = CBashSINT16ARRAY(16)
+    
+    def create_door(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Door(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    doors = CBashLIST(17, Door)
+    doors_list = CBashLIST(17, Door, True)
+
+    nvgd_p = CBashUINT8ARRAY(18)
+    
+    def create_connection(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Connection(self._CollectionID, self._ModID, self._RecordID, 19, length)
+    connections = CBashLIST(19, Connection)
+    connections_list = CBashLIST(19, Connection, True)
+
+    copyattrs = FnvBaseRecord.baseattrs + ['version', 'cell', 'numVertices',
+                                           'numTriangles', 'numConnections',
+                                           'numUnknown', 'numDoors',
+                                           'vertices_list', 'triangles_list',
+                                           'unknown1', 'doors_list', 'nvgd_p',
+                                           'connections_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['version', 'cell', 'numVertices',
+                                             'numTriangles', 'numConnections',
+                                             'numUnknown', 'numDoors',
+                                             'vertices_list', 'triangles_list',
+                                             'unknown1', 'doors_list',
+                                             'connections_list']# 'nvgd_p',
     
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'

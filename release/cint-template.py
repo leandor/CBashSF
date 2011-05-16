@@ -3306,8 +3306,98 @@ class FnvNAVMRecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'NAVM'
+    class Vertex(ListComponent):
+        FLOAT32_LISTMACRO(x, 1)
+        FLOAT32_LISTMACRO(y, 2)
+        FLOAT32_LISTMACRO(z, 3)
+
+        exportattrs = copyattrs = ['x', 'y', 'z']
+        
+    class Triangle(ListComponent):
+        SINT16_LISTMACRO(vertex1, 1)
+        SINT16_LISTMACRO(vertex2, 2)
+        SINT16_LISTMACRO(vertex3, 3)
+        SINT16_LISTMACRO(edge1, 4)
+        SINT16_LISTMACRO(edge2, 5)
+        SINT16_LISTMACRO(edge3, 6)
+        UINT32_FLAG_LISTMACRO(flags, 7)
+
+        BasicFlagMACRO(IsTriangle0External, flags, 0x00000001)
+        BasicFlagMACRO(IsTriangle1External, flags, 0x00000002)
+        BasicFlagMACRO(IsTriangle2External, flags, 0x00000004)
+        BasicFlagMACRO(IsUnknown4, flags, 0x00000008)
+        BasicFlagMACRO(IsUnknown5, flags, 0x00000010)
+        BasicFlagMACRO(IsUnknown6, flags, 0x00000020)
+        BasicFlagMACRO(IsUnknown7, flags, 0x00000040)
+        BasicFlagMACRO(IsUnknown8, flags, 0x00000080)
+        BasicFlagMACRO(IsUnknown9, flags, 0x00000100)
+        BasicFlagMACRO(IsUnknown10, flags, 0x00000200)
+        BasicFlagMACRO(IsUnknown11, flags, 0x00000400)
+        BasicFlagMACRO(IsUnknown12, flags, 0x00000800)
+        BasicFlagMACRO(IsUnknown13, flags, 0x00001000)
+        BasicFlagMACRO(IsUnknown14, flags, 0x00002000)
+        BasicFlagMACRO(IsUnknown15, flags, 0x00004000)
+        BasicFlagMACRO(IsUnknown16, flags, 0x00008000)
+        BasicFlagMACRO(IsUnknown17, flags, 0x00010000)
+        BasicFlagMACRO(IsUnknown18, flags, 0x00020000)
+        BasicFlagMACRO(IsUnknown19, flags, 0x00040000)
+        BasicFlagMACRO(IsUnknown20, flags, 0x00080000)
+        BasicFlagMACRO(IsUnknown21, flags, 0x00100000)
+        BasicFlagMACRO(IsUnknown22, flags, 0x00200000)
+        BasicFlagMACRO(IsUnknown23, flags, 0x00400000)
+        BasicFlagMACRO(IsUnknown24, flags, 0x00800000)
+        BasicFlagMACRO(IsUnknown25, flags, 0x01000000)
+        BasicFlagMACRO(IsUnknown26, flags, 0x02000000)
+        BasicFlagMACRO(IsUnknown27, flags, 0x04000000)
+        BasicFlagMACRO(IsUnknown28, flags, 0x08000000)
+        BasicFlagMACRO(IsUnknown29, flags, 0x10000000)
+        BasicFlagMACRO(IsUnknown30, flags, 0x20000000)
+        BasicFlagMACRO(IsUnknown31, flags, 0x40000000)
+        BasicFlagMACRO(IsUnknown32, flags, 0x80000000)
+        exportattrs = copyattrs = ['vertex1', 'vertex2', 'vertex3', 'edge1', 'edge2', 'edge3', 'flags']
+        
+    class Door(ListComponent):
+        FORMID_LISTMACRO(door, 1)
+        UINT16_LISTMACRO(unknown1, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 3, 2)
+        
+        exportattrs = copyattrs = ['door', 'unknown1']
+        
+    class Connection(ListComponent):
+        UINT8_ARRAY_LISTMACRO(unknown1, 1)
+        FORMID_LISTMACRO(mesh, 2)
+        UINT16_LISTMACRO(triangle, 3)
+        
+        exportattrs = copyattrs = ['unknown1', 'mesh', 'triangle']
+        
+    UINT32_MACRO(version, 7)
+    FORMID_MACRO(cell, 8)
+    UINT32_MACRO(numVertices, 9)
+    UINT32_MACRO(numTriangles, 10)
+    UINT32_MACRO(numConnections, 11)
+    UINT32_MACRO(numUnknown, 12)
+    UINT32_MACRO(numDoors, 13)
     
-    copyattrs = exportattrs = FnvBaseRecord.baseattrs + []
+    LIST_MACRO(vertices, 14, self.Vertex)    
+    LIST_MACRO(triangles, 15, self.Triangle)
+    SINT16_ARRAY_MACRO(unknown1, 16)
+    
+    LIST_MACRO(doors, 17, self.Door)
+    UINT8_ARRAY_MACRO(nvgd_p, 18)
+    
+    LIST_MACRO(connections, 19, self.Connection)
+    copyattrs = FnvBaseRecord.baseattrs + ['version', 'cell', 'numVertices',
+                                           'numTriangles', 'numConnections',
+                                           'numUnknown', 'numDoors',
+                                           'vertices_list', 'triangles_list',
+                                           'unknown1', 'doors_list', 'nvgd_p',
+                                           'connections_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['version', 'cell', 'numVertices',
+                                             'numTriangles', 'numConnections',
+                                             'numUnknown', 'numDoors',
+                                             'vertices_list', 'triangles_list',
+                                             'unknown1', 'doors_list',
+                                             'connections_list']# 'nvgd_p',
     
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'

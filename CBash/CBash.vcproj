@@ -1113,6 +1113,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\PBEARecord.cpp"
 							>
 						</File>
@@ -3257,6 +3261,10 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\NAVIRecordAPI.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\NAVMRecordAPI.cpp"
 							>
 						</File>
 						<File

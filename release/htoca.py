@@ -51,8 +51,13 @@ for curFile in glob.glob('*.h'):
                 print line
                 raise
             inStruct = True
+            braceCount = 0
         elif inStruct:
-            if '};' in line:
+            if '{' in line:
+                braceCount += 1
+            if '}' in line:
+                braceCount -= 1
+            if '};' in line and braceCount == 0:
                 inStruct = False
                 str_vars[qual] = (tag, vars)
                 str_funcs[qual] = (tag, funcs)
@@ -170,11 +175,17 @@ for curFile in glob.glob('*.h'):
                 print line
                 raise
             inStruct = True
+            braceCount = 0
         elif inStruct:
-            if '};' in line:
+            if '{' in line:
+                braceCount += 1
+            if '}' in line:
+                braceCount -= 1
+            if '};' in line and braceCount == 0:
                 inStruct = False
                 str_vars[qual] = (tag, vars)
                 str_funcs[qual] = (tag, funcs)
+                types.append(tag)
                 vars = []
                 funcs = []
             elif '(' in line:
@@ -313,6 +324,9 @@ for curFile in glob.glob('*.h'):
             if t in str_vars:
                 madeChanges = True
                 v += str_vars[t][1]
+            elif cltag + '::' + t in str_vars:
+                madeChanges = True
+                v += str_vars[cltag + '::' + t][1]
             else:
                 v += [(name, type, size, ip, vars)]
         return v
@@ -330,104 +344,222 @@ for curFile in glob.glob('*.h'):
 
     topchunks = [v[0] for v in cl_vars]
 
-    indent = 1
     def makeFids(vs, history=[]):
         global madeChanges, indent
-        v = []
+        attrs = []
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
+            if 'unused' in name.lower() and size == 0:
+                size = 1
+            if s == 1 and vars[0][0] == '':
+                s = 0
+                t = vars[0][1]
             if s > 0:
-                if s == 1 and vars[0][0] == '':
-                    vk = makeFids([(name, vars[0][1], size, ip, [])], history + [(name, type, ip)])
-                else:
-                    indent += 1
-                    vk = makeFids(vars, history + [(name, type, ip)])
-                    indent -= 1
-                if vk:
+                vk = makeFids(vars, history + [(name, type, ip)])
+                if 'Array' in type and len(vk):
+                    topname, toptype, topip = name, type, ip
+                    caseNum = 1
+                    x = []
                     pre = []
                     prel = []
                     if len(history):
                         for hn, ht, hp in history:
-                            default = 'default%s' % hn
-                            if 'Simple' in ht:
-                                pre += ['%s.' % hn]
-                            else:
-                                if 'Req' in ht:
-                                    pre += ['%s.value.' % hn]
-                                elif 'SemiOpt' in ht:
-                                    prel += ['%s.IsLoaded()' % hn]
-                                    pre += ['%s->' % hn]
-                                elif 'Opt' in ht:
-                                    prel += ['%s.IsLoaded()' % hn]
-                                    pre += ['%s->' % hn]
-                                elif 'Array' in ht:
-                                    pre += ['%s.' % hn]
-                                else:
-                                    pre += ['%s.value.' % hn]
+                            if 'SemiOpt' in ht:
+                                prel += ['%s.IsLoaded()' % hn]
+                                pre += ['%s->' % hn]
+                            elif 'Opt' in ht:
+                                prel += ['%s.IsLoaded()' % hn]
+                                pre += ['%s->' % hn]
+                    else:
+                        pre += ['%s.' % topname]
+                        if 'SemiOpt' in toptype:
+                            prel += ['%s.IsLoaded()' % topname]
+                        elif 'Opt' in toptype:
+                            prel += ['%s.IsLoaded()' % topname]
+                    loads = ' && '.join(prel)
                     pres = ''.join(pre)
-                    if 'Req' not in type and 'Array' not in type:
-                        v += ['%sif(%s%s.IsLoaded())' % ('    ' * indent, pres, name,)]
+##                    if prel:
+##                        attrs.append('            %s\n' % (loads,))
+                    attrs.append('    for(UINT32 ListIndex = 0; ListIndex < %svalue.size(); ListIndex++)\n' % (pres,))
                     if len(vk) > 1:
-                        v += ['%s{' % ('    ' * (indent + 1),)]
-                    v += vk
+                        attrs.append('        {\n')
+                    for attr in vk:
+                        did = False
+                        for pre in prel:
+                            if pre in attr:
+                                did = True
+                                break
+                        if did: continue                            
+
+
+                        if 'SCR_' == topname:
+                            x.append('    for(UINT32 x = 0; x < %sSCR_.value.size(); x++)\n' % (pres,))
+                            x.append('        if(%sSCR_.value[x]->isSCRO)\n' % (pre,))
+                            x.append('            op.Accept(%sSCR_.value[x]->reference);' % (pres,))
+                        else:
+                            rf = attr.rfind(topname)
+                            if rf > 0:
+                                if topip:
+                                    attr = attr[:attr.rfind(topname) + len(topname)] + '.value[ListIndex]->' + attr[attr.rfind(topname) + len(topname) + 1:]
+                                else:
+                                    attr = attr[:attr.rfind(topname) + len(topname)] + '.value[ListIndex].' + attr[attr.rfind(topname) + len(topname) + 1:]
+                            if len(vk) > 1:
+                                x.append('        ' + attr)
+                            else:
+                                x.append('    ' + attr)
                     if len(vk) > 1:
-                        v += ['%s}' % ('    ' * (indent + 1),)]
-            if t == 'FORMID' or name == 'SCR_':
-                pre = ''
+                        attrs.append('        }\n')
+                    attrs += x
+                elif vk:
+                    attrs += vk
+            else:
+                pre = []
+                prel = []
                 if len(history):
                     for hn, ht, hp in history:
                         if 'Simple' in ht:
-                            pre += '%s.' % hn
+                            pre += ['%s.' % hn]
                         else:
                             if 'Req' in ht:
-                                pre += '%s.value.' % hn
+                                pre += ['%s.value.' % hn]
                             elif 'SemiOpt' in ht:
-                                pre += '%s->' % hn
+                                prel += ['%s.IsLoaded()' % hn]
+                                pre += ['%s->' % hn]
                             elif 'Opt' in ht:
-                                pre += '%s->' % hn
+                                prel += ['%s.IsLoaded()' % hn]
+                                pre += ['%s->' % hn]
                             elif 'Array' in ht:
-                                pre += '%s.' % hn
+                                pre += ['%s.' % hn]
                             else:
-                                pre += '%s.value.' % hn
+                                pre += ['%s.value.' % hn]
+                pres = ''.join(pre)
+                if 'StringRecord' in t:
+                    continue
+                elif t == 'RawRecord':
+                    continue
+                elif t == 'FORMID':
+                    if size:
+                        if size > 1:
+                            for z in range(size):
+                                attrs.append('    op.Accept(%s%s[%d]);\n' % (pres, name, z))
+                        else:
+                            attrs.append('    op.Accept(%s%s);\n' % (pres, name))
+                    elif 'Array' in type:
+                        attrs.append('UNKNOWN\n')
+                    else:
+                        if 'Simple' in type:
+                            pres += '%s.' % name
+                            if 'SemiOpt' in type:
+                                attrs.append('    op.Accept(*%svalue);\n' % (pres))
+                            else:
+                                attrs.append('    op.Accept(%svalue);\n' % (pres))
+                        else:
+                            attrs.append('    op.Accept(%s%s);\n' % (pres, name))
+        return attrs
 
-                    ln, lt, lp = history[-1]
-                    if 'Simple' in lt:
-                        if 'Req' not in lt:
-                            indent += 1
-                        if 'SemiOpt' in lt:
-                            v.append('%sop.Accept(*%svalue);' % ('    ' * indent, pre,))
-                        else:
-                            v.append('%sop.Accept(%svalue);' % ('    ' * indent, pre,))
-                        if 'Req' not in lt:
-                            indent -= 1
-                    elif 'Array' in lt:
-                        if lp:
-                            v.append('%sfor(UINT32 x = 0; x < %svalue.size(); x++)\n%sop.Accept(%svalue[x]->%s);' % ('    ' * (indent - 1),pre,'    ' * indent,pre, name))
-                        else:
-                            v.append('%sfor(UINT32 x = 0; x < %svalue.size(); x++)\n%sop.Accept(%svalue[x]);' % ('    ' * (indent - 1),pre,'    ' * indent,pre))
-                    elif name == 'SCR_':
-                        v.append('%sfor(UINT32 x = 0; x < %sSCR_.value.size(); x++)\n%sif(%sSCR_.value[x]->isSCRO)\n%sop.Accept(%sSCR_.value[x]->reference);' % ('    ' * indent,pre,'    ' * (indent + 1),pre, '    ' * (indent + 2),pre))
-                    else:
-                        v.append('%sop.Accept(%s%s);' % ('    ' * indent, pre, name,))
-                else:
-                    if 'Simple' in type:
-                        pre += '%s.' % name
-                        if 'SemiOpt' in type:
-                            v.append('%sop.Accept(%svalue);' % ('    ' * indent, pre,))
-                        else:
-                            v.append('%sop.Accept(&%svalue);' % ('    ' * indent, pre,))
-                    else:
-                        if 'Req' in type:
-                            pre += '%s.value.' % name
-                        elif 'SemiOpt' in type:
-                            pre += '%s->' % name
-                        elif 'Opt' in type:
-                            pre += '%s->' % name
-                        else:
-                            pre += '%s.value.' % name
-                        v.append('%sop.Accept(&%s%s);' % ('    ' * indent, pre, name,))
-        return v
+    indent = 1
+    if False:
+        pass
+        ##    def makeFids(vs, history=[]):
+        ##        global madeChanges, indent
+        ##        v = []
+        ##        for name, type, size, ip, vars in vs:
+        ##            t = type.strip(' *')
+        ##            s = len(vars)
+        ##            if s > 0:
+        ##                if s == 1 and vars[0][0] == '':
+        ##                    vk = makeFids([(name, vars[0][1], size, ip, [])], history + [(name, type, ip)])
+        ##                    print vk
+        ##                    print [(name, vars, size, ip, [])], history + [(name, type, ip)]
+        ##                else:
+        ##                    indent += 1
+        ##                    vk = makeFids(vars, history + [(name, type, ip)])
+        ##                    indent -= 1
+        ##                if vk:
+        ##                    pre = []
+        ##                    prel = []
+        ##                    if len(history):
+        ##                        for hn, ht, hp in history:
+        ##                            default = 'default%s' % hn
+        ##                            if 'Simple' in ht:
+        ##                                pre += ['%s.' % hn]
+        ##                            else:
+        ##                                if 'Req' in ht:
+        ##                                    pre += ['%s.value.' % hn]
+        ##                                elif 'SemiOpt' in ht:
+        ##                                    prel += ['%s.IsLoaded()' % hn]
+        ##                                    pre += ['%s->' % hn]
+        ##                                elif 'Opt' in ht:
+        ##                                    prel += ['%s.IsLoaded()' % hn]
+        ##                                    pre += ['%s->' % hn]
+        ##                                elif 'Array' in ht:
+        ##                                    pre += ['%s.' % hn]
+        ##                                else:
+        ##                                    pre += ['%s.value.' % hn]
+        ##                    pres = ''.join(pre)
+        ##                    if 'Req' not in type and 'Array' not in type:
+        ##                        v += ['%sif(%s%s.IsLoaded())' % ('    ' * indent, pres, name,)]
+        ##                    if len(vk) > 1:
+        ##                        v += ['%s{' % ('    ' * (indent + 1),)]
+        ##                    v += vk
+        ##                    if len(vk) > 1:
+        ##                        v += ['%s}' % ('    ' * (indent + 1),)]
+        ##            if t == 'FORMID' or name == 'SCR_':
+        ##                pre = ''
+        ##                if len(history):
+        ##                    for hn, ht, hp in history:
+        ##                        if 'Simple' in ht:
+        ##                            pre += '%s.' % hn
+        ##                        else:
+        ##                            if 'Req' in ht:
+        ##                                pre += '%s.value.' % hn
+        ##                            elif 'SemiOpt' in ht:
+        ##                                pre += '%s->' % hn
+        ##                            elif 'Opt' in ht:
+        ##                                pre += '%s->' % hn
+        ##                            elif 'Array' in ht:
+        ##                                pre += '%s.' % hn
+        ##                            else:
+        ##                                pre += '%s.value.' % hn
+        ##
+        ##                    ln, lt, lp = history[-1]
+        ##                    if 'Simple' in lt:
+        ##                        if 'Req' not in lt:
+        ##                            indent += 1
+        ##                        if 'SemiOpt' in lt:
+        ##                            v.append('%sop.Accept(*%svalue);' % ('    ' * indent, pre,))
+        ##                        else:
+        ##                            v.append('%sop.Accept(%svalue);' % ('    ' * indent, pre,))
+        ##                        if 'Req' not in lt:
+        ##                            indent -= 1
+        ##                    elif 'Array' in lt:
+        ##                        if lp:
+        ##                            v.append('%sfor(UINT32 x = 0; x < %svalue.size(); x++)\n%sop.Accept(%svalue[x]->%s);' % ('    ' * (indent - 1),pre,'    ' * indent,pre, name))
+        ##                        else:
+        ##                            v.append('%sfor(UINT32 x = 0; x < %svalue.size(); x++)\n%sop.Accept(%svalue[x]);' % ('    ' * (indent - 1),pre,'    ' * indent,pre))
+        ##                    elif name == 'SCR_':
+        ##                        v.append('%sfor(UINT32 x = 0; x < %sSCR_.value.size(); x++)\n%sif(%sSCR_.value[x]->isSCRO)\n%sop.Accept(%sSCR_.value[x]->reference);' % ('    ' * indent,pre,'    ' * (indent + 1),pre, '    ' * (indent + 2),pre))
+        ##                    else:
+        ##                        v.append('%sop.Accept(%s%s);' % ('    ' * indent, pre, name,))
+        ##                else:
+        ##                    if 'Simple' in type:
+        ##                        pre += '%s.' % name
+        ##                        if 'SemiOpt' in type:
+        ##                            v.append('%sop.Accept(%svalue);' % ('    ' * indent, pre,))
+        ##                        else:
+        ##                            v.append('%sop.Accept(&%svalue);' % ('    ' * indent, pre,))
+        ##                    else:
+        ##                        if 'Req' in type:
+        ##                            pre += '%s.value.' % name
+        ##                        elif 'SemiOpt' in type:
+        ##                            pre += '%s->' % name
+        ##                        elif 'Opt' in type:
+        ##                            pre += '%s->' % name
+        ##                        else:
+        ##                            pre += '%s.value.' % name
+        ##                        v.append('%sop.Accept(&%s%s);' % ('    ' * indent, pre, name,))
+        ##        return v
 
     fidVars = []
     madeChanges = True
@@ -591,66 +723,103 @@ for curFile in glob.glob('*.h'):
         f.write('namespace FNV\n{\n')
         for str, (tag, vars) in str_funcs.iteritems():
             if "::" in str:
-                raise "test"
-                print str
-                print tag
-                print vars
-                qual, func, fvars = vars
-                print str, tag, qual, func, fvars
-        ##        vars = str_vars[qual]
-                print qual, func, fvars
-                print cl_funcs
-                print
-                if func == na:
-                    struct = '%s::%s():\n' % (name, func)
-                    body = ''
-                    hadVars = False
-                    for _rec, type, n, s in vars:
-                        if s is None:
-                            hadVars = True
-                            if type == 'FLOAT32':
-                                struct += '    %s(0.0f),\n' % (n,)
-                            else:
-                                struct += '    %s(0),\n' % (n,)
-                        else:
-                            body += '    memset(&%s[0], 0x00, sizeof(%s));\n' % (n, n)
-                    if hadVars:
-                        struct = struct[:-2] + '\n'
+                group = []
+                groups = []
+                lfunc = None
+                didgroups = False
+                for qual, func, fvars in vars:
+                    if func == lfunc:
+                        continue
+                    if func == tag:
+                        continue
+                    if func == '~%s' % (tag):
+                        continue
+                    if func == '==':
+                        continue
+                    if func == '!=':
+                        continue
+                    lfunc = func
+                    group += [(qual, func)]
+                    if func[:3] == 'Set':
+                        groups.append([func[-4:] == 'Type'] + group)
+                        group = []
+                for qual, func, fvars in vars:
+                    svars = str_vars[qual][1]
+                    if func == tag:
+                        struct = '%s::%s():\n' % (qual, func)
+                        body = ''
                         hadVars = False
-                    struct += '    {\n'
-                    struct += body if len(body) > 1 else '    //\n'
-                    struct += '    }\n\n'
-                elif func == '~%s' % (na):
-                    struct = '%s::%s()\n    {\n    //\n    }\n\n' % (name, func)
-                elif func == '==':
-                    struct = 'bool %s::operator ==(const %s &other) const\n    {\n    return (' % (name, na)
-                    hadVars = False
-                    v = []
-                    for _rec, type, n, s in vars:
-                        if 'unused' in n.lower():
-                            continue
-                        if s is None:
-                            if type == 'FLOAT32':
-                                v += ['AlmostEqual(%s,other.%s,2)' % (n, n)]
+                        for n, type, s, ip, ssvars in svars:
+                            if ssvars:
+                                raise "test"
+                            if ip:
+                                struct += '    %s(NULL),\n' % (n,)
+                            elif s == 0:
+                                hadVars = True
+                                if type == 'FLOAT32':
+                                    struct += '    %s(0.0f),\n' % (n,)
+                                else:
+                                    struct += '    %s(0),\n' % (n,)
                             else:
-                                v += ['%s == other.%s' % (n, n)]
-                        else:
-                            try:
-                                size = int(s)
-                            except ValueError:
-                                try:
-                                    size = int(s, 16)
-                                except:
-                                    raise
-                            for x in range(size):
-                                v += ['%s[%d] == other.%s[%d]' % (n, x, n, x)]
-                    struct += ' &&\n            '.join(v) + ');\n'
-                    struct += '    }\n\n'
-                elif func == '!=':
-                    struct = 'bool %s::operator !=(const %s &other) const\n    {\n    return !(*this == other);\n    }\n\n' % (name, na)
-                else:
-                    struct = 'XYXX %s::%s(XYXX)\n    {\n    //XYXX\n    }\n\n' % (name, func)
-                f.write(struct)
+                                body += '    memset(&%s[0], 0x00, sizeof(%s));\n' % (n, n)
+                        if hadVars:
+                            struct = struct[:-2] + '\n'
+                            hadVars = False
+                        struct += '    {\n'
+                        struct += body if len(body) > 1 else '    //\n'
+                        struct += '    }\n\n'
+                    elif func == '~%s' % (tag):
+                        struct = '%s::%s()\n    {\n    //\n    }\n\n' % (qual, func)
+                    elif func == '==':
+                        struct = 'bool %s::operator ==(%s) const\n    {\n    return (' % (qual, fvars)
+                        hadVars = False
+                        v = []
+                        for n, type, s, ip, ssvars in svars:
+                            if ssvars:
+                                raise "test"
+                            if 'unused' in n.lower():
+                                continue
+                            if s == 0:
+                                if ip:
+                                    v += ['(%s != NULL && other.%s != NULL && *%s == *other.%s)' % (n, n, n, n)]
+                                elif type == 'FLOAT32':
+                                    v += ['AlmostEqual(%s,other.%s,2)' % (n, n)]
+                                else:
+                                    v += ['%s == other.%s' % (n, n)]
+                            else:
+                                if ip:
+                                    v += ['(%s != NULL && other.%s != NULL)' % (n, n)]
+                                for x in range(s):
+                                    v += ['%s[%d] == other.%s[%d]' % (n, x, n, x)]
+                        struct += ' &&\n            '.join(v) + ');\n'
+                        struct += '    }\n\n'
+                    elif func == '!=':
+                        struct = 'bool %s::operator !=(%s) const\n    {\n    return !(*this == other);\n    }\n\n' % (qual, fvars)
+                    elif groups:
+                        if didgroups:
+                            continue
+                        for x, group in enumerate(groups):
+                            isType = group[0]
+                            dummy = '%sDummy%d' % (qual, x)
+                            for qual, func in group[1:-2]:
+                                if isType:
+                                    stype = func[2:]
+                                    f.write('bool %s::%s()\n    {\n    if(!%s.IsLoaded()) return false;\n    return %s->type == e%s;\n    }\n\nvoid %s::%s(bool value)\n    {\n    if(!%s.IsLoaded()) return;\n    %s->type = value ? e%s : e%s;\n    }\n\n' % (qual, func, dummy, dummy, stype, qual, func, dummy, dummy, stype, dummy))
+                                else:
+                                    f.write('bool %s::%s()\n    {\n    if(!%s.IsLoaded()) return false;\n    return (%s->flags & f%s) != 0;\n    }\n\nvoid %s::%s(bool value)\n    {\n    if(!%s.IsLoaded()) return;\n    %s->flags = value ? (%s->flags | f%s) : (%s->flags & ~f%s);\n    }\n\n' % (qual, func, dummy, dummy, func, qual, func, dummy, dummy, dummy, func, dummy, func))
+                            qual, func = group[-2]
+                            if isType:
+                                f.write('bool %s::%s(UINT8 Type)\n    {\n    if(!%s.IsLoaded()) return false;\n    return %s->type == Type;\n    }\n\n' % (qual, func, dummy, dummy))
+                            else:
+                                f.write('bool %s::%s(UINT8 Mask, bool Exact)\n    {\n    if(!%s.IsLoaded()) return false;\n    return Exact ? ((%s->flags & Mask) == Mask) : ((%s->flags & Mask) != 0);\n    }\n\n' % (qual, func, dummy, dummy, dummy))
+                            qual, func = group[-1]
+                            if isType:
+                                f.write('void %s::%s(UINT8 Type)\n    {\n    %s.Load();\n    %s->type = Type;\n    }\n\n' % (qual, func, dummy, dummy))
+                            else:
+                                f.write('void %s::%s(UINT8 Mask)\n    {\n    %s.Load();\n    %s->flags = Mask;\n    }\n\n' % (qual, func, dummy, dummy))
+                        didgroups = True
+                        continue
+                    f.write(struct)
         f.write('%s::%s(unsigned char *_recData):\n    FNVRecord(_recData)\n    {\n    //\n    }\n\n' % (cltag, cltag))
         f.write('%s::%s(%s *srcRecord):\n    FNVRecord()\n    {\n    if(srcRecord == NULL)\n        return;\n\n    flags = srcRecord->flags;\n    formID = srcRecord->formID;\n    flagsUnk = srcRecord->flagsUnk;\n    formVersion = srcRecord->formVersion;\n    versionControl2[0] = srcRecord->versionControl2[0];\n    versionControl2[1] = srcRecord->versionControl2[1];\n\n    if(!srcRecord->IsChanged())\n        {\n        IsLoaded(false);\n        recData = srcRecord->recData;\n        return;\n        }\n\n' % (cltag, cltag, cltag))
         for topchunk in topchunks:
@@ -660,8 +829,8 @@ for curFile in glob.glob('*.h'):
 
         if len(fidVars):
             f.write('bool %s::VisitFormIDs(FormIDOp &op)\n    {\n    if(!IsLoaded())\n        return false;\n\n' % cltag)
-            f.write('\n'.join(fidVars))
-            f.write('\n\n    return op.Stop();\n    }\n\n')
+            f.write(''.join(fidVars))
+            f.write('\n    return op.Stop();\n    }\n\n')
 
         group = []
         groups = []

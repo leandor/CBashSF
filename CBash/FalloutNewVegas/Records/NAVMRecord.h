@@ -195,14 +195,14 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
 
     public:
         StringRecord EDID; //Editor ID
-        OptSimpleSubRecord<UINT32> NVER; //Version
-        OptSubRecord<NAVMDATA> DATA; //Data
-        std::vector<NAVMVertex> NVVX; //Vertices
-        std::vector<NAVMNVTR> NVTR; //Triangles
-        RawRecord NVCA; //Unknown
-        std::vector<NAVMNVDP> NVDP; //Doors
+        ReqSimpleSubRecord<UINT32> NVER; //Version
+        ReqSubRecord<NAVMDATA> DATA; //Data
+        UnorderedPackedArray<NAVMVertex> NVVX; //Vertices
+        UnorderedPackedArray<NAVMNVTR> NVTR; //Triangles
+        UnorderedPackedArray<SINT16> NVCA; //Unknown
+        UnorderedPackedArray<NAVMNVDP> NVDP; //Doors
         RawRecord NVGD; //Unknown
-        std::vector<NAVMNVEX> NVEX; //External Connections
+        UnorderedPackedArray<NAVMNVEX> NVEX; //External Connections
 
         NAVMRecord(unsigned char *_recData=NULL);
         NAVMRecord(NAVMRecord *srcRecord);

@@ -60,50 +60,139 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //nver Version
+        case 7: //version
             return UINT32_FIELD;
-        case 8: //data DATA ,, Struct
+        case 8: //cell
             return FORMID_FIELD;
-        case 9: //data DATA ,, Struct
+        case 9: //numVertices
             return UINT32_FIELD;
-        case 10: //data DATA ,, Struct
+        case 10: //numTriangles
             return UINT32_FIELD;
-        case 11: //data DATA ,, Struct
+        case 11: //numConnections
             return UINT32_FIELD;
-        case 12: //data DATA ,, Struct
+        case 12: //numUnknown
             return UINT32_FIELD;
-        case 13: //data DATA ,, Struct
+        case 13: //numDoors
             return UINT32_FIELD;
-        case 14: //nvvx NVVX ,, Struct
-            return FLOAT32_FIELD;
-        case 15: //nvvx NVVX ,, Struct
-            return FLOAT32_FIELD;
-        case 16: //nvvx NVVX ,, Struct
-            return FLOAT32_FIELD;
-        case 17: //nvtr NVTR ,, Struct
-            return SINT16_FIELD;
-        case 18: //nvtr NVTR ,, Struct
-            return SINT16_FIELD;
-        case 19: //nvtr NVTR ,, Struct
-            return UINT32_FIELD;
-        case 20: //nvca Unknown
-            return UNPARSED_FIELD;
-        case 21: //nvdp NVDP ,, Struct
-            return FORMID_FIELD;
-        case 22: //nvdp NVDP ,, Struct
-            return UINT16_FIELD;
-        case 23: //nvdp_p NVDP ,, Struct
-            switch(WhichAttribute)
+        case 14: //vertices
+            if(ListFieldID == 0) //vertices
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)NVVX.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= NVVX.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //x
+                    return FLOAT32_FIELD;
+                case 2: //y
+                    return FLOAT32_FIELD;
+                case 3: //z
+                    return FLOAT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 24: //nvgd_p NVGD ,, Struct
+        case 15: //triangles
+            if(ListFieldID == 0) //triangles
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)NVTR.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= NVTR.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //vertex1
+                    return SINT16_FIELD;
+                case 2: //vertex2
+                    return SINT16_FIELD;
+                case 3: //vertex3
+                    return SINT16_FIELD;
+                case 4: //edge1
+                    return SINT16_FIELD;
+                case 5: //edge2
+                    return SINT16_FIELD;
+                case 6: //edge3
+                    return SINT16_FIELD;
+                case 7: //flags
+                    return UINT32_FLAG_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 16: //unknown1
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SINT16_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)NVCA.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 17: //doors
+            if(ListFieldID == 0) //doors
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)NVDP.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= NVDP.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //door
+                    return FORMID_FIELD;
+                case 2: //unknown1
+                    return UINT16_FIELD;
+                case 3: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 2;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 18: //nvgd_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -114,50 +203,45 @@ UINT32 NAVMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 25: //nvgd_p NVGD ,, Struct
-            switch(WhichAttribute)
+        case 19: //connections
+            if(ListFieldID == 0) //connections
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)NVEX.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= NVEX.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //unknown1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 4;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 2: //mesh
+                    return FORMID_FIELD;
+                case 3: //triangle
+                    return UINT16_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 26: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 27: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 28: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 29: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 30: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 31: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 32: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 33: //nvgd NVGD ,, Struct
-            return FLOAT32_FIELD;
-        case 34: //nvgd NVGD ,, Struct
-            return UINT16_FIELD;
-        case 35: //nvex_p NVEX ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 36: //nvex NVEX ,, Struct
-            return FORMID_FIELD;
-        case 37: //nvex NVEX ,, Struct
-            return UINT16_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -182,72 +266,100 @@ void * NAVMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //nver Version
-            return NVER.IsLoaded() ? &NVER->value7 : NULL;
-        case 8: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value8 : NULL;
-        case 9: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value9 : NULL;
-        case 10: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value10 : NULL;
-        case 11: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value11 : NULL;
-        case 12: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value12 : NULL;
-        case 13: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value13 : NULL;
-        case 14: //nvvx NVVX ,, Struct
-            return NVVX.IsLoaded() ? &NVVX->value14 : NULL;
-        case 15: //nvvx NVVX ,, Struct
-            return NVVX.IsLoaded() ? &NVVX->value15 : NULL;
-        case 16: //nvvx NVVX ,, Struct
-            return NVVX.IsLoaded() ? &NVVX->value16 : NULL;
-        case 17: //nvtr NVTR ,, Struct
-            return NVTR.IsLoaded() ? &NVTR->value17 : NULL;
-        case 18: //nvtr NVTR ,, Struct
-            return NVTR.IsLoaded() ? &NVTR->value18 : NULL;
-        case 19: //nvtr NVTR ,, Struct
-            return NVTR.IsLoaded() ? &NVTR->value19 : NULL;
-        case 20: //nvca Unknown
-            return UNPARSEDGET_FIELD20;
-        case 21: //nvdp NVDP ,, Struct
-            return NVDP.IsLoaded() ? &NVDP->value21 : NULL;
-        case 22: //nvdp NVDP ,, Struct
-            return NVDP.IsLoaded() ? &NVDP->value22 : NULL;
-        case 23: //nvdp_p NVDP ,, Struct
-            *FieldValues = NVDP.IsLoaded() ? &NVDP->value23[0] : NULL;
+        case 7: //version
+            return &NVER.value;
+        case 8: //cell
+            return &DATA.value.cell;
+        case 9: //numVertices
+            return &DATA.value.numVertices;
+        case 10: //numTriangles
+            return &DATA.value.numTriangles;
+        case 11: //numConnections
+            return &DATA.value.numConnections;
+        case 12: //numUnknown
+            return &DATA.value.numNVCA;
+        case 13: //numDoors
+            return &DATA.value.numDoors;
+        case 14: //vertices
+            if(ListIndex >= NVVX.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //x
+                    return &NVVX.value[ListIndex].x;
+                case 2: //y
+                    return &NVVX.value[ListIndex].y;
+                case 3: //z
+                    return &NVVX.value[ListIndex].z;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 24: //nvgd_p NVGD ,, Struct
+        case 15: //triangles
+            if(ListIndex >= NVTR.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //vertex1
+                    return &NVTR.value[ListIndex].vertex1;
+                case 2: //vertex2
+                    return &NVTR.value[ListIndex].vertex2;
+                case 3: //vertex3
+                    return &NVTR.value[ListIndex].vertex3;
+                case 4: //edge1
+                    return &NVTR.value[ListIndex].edge1;
+                case 5: //edge2
+                    return &NVTR.value[ListIndex].edge2;
+                case 6: //edge3
+                    return &NVTR.value[ListIndex].edge3;
+                case 7: //flags
+                    return &NVTR.value[ListIndex].flags;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 16: //unknown1
+            *FieldValues = NVCA.IsLoaded() ? &NVCA.value[0] : NULL;
+            return NULL;
+        case 17: //doors
+            if(ListIndex >= NVDP.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //door
+                    return &NVDP.value[ListIndex].door;
+                case 2: //unknown1
+                    return &NVDP.value[ListIndex].unknown1;
+                case 3: //unused1
+                    *FieldValues = &NVDP.value[ListIndex].unused1[0];
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 18: //nvgd_p
             *FieldValues = NVGD.value;
             return NULL;
-        case 25: //nvgd_p NVGD ,, Struct
-            *FieldValues = NVGD.IsLoaded() ? &NVGD->value25[0] : NULL;
+        case 19: //connections
+            if(ListIndex >= NVEX.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //unknown1
+                    *FieldValues = &NVEX.value[ListIndex].unknown1[0];
+                    return NULL;
+                case 2: //mesh
+                    return &NVEX.value[ListIndex].mesh;
+                case 3: //triangle
+                    return &NVEX.value[ListIndex].triangle;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 26: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value26 : NULL;
-        case 27: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value27 : NULL;
-        case 28: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value28 : NULL;
-        case 29: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value29 : NULL;
-        case 30: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value30 : NULL;
-        case 31: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value31 : NULL;
-        case 32: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value32 : NULL;
-        case 33: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value33 : NULL;
-        case 34: //nvgd NVGD ,, Struct
-            return NVGD.IsLoaded() ? &NVGD->value34 : NULL;
-        case 35: //nvex_p NVEX ,, Struct
-            *FieldValues = NVEX.IsLoaded() ? &NVEX->value35[0] : NULL;
-            return NULL;
-        case 36: //nvex NVEX ,, Struct
-            return NVEX.IsLoaded() ? &NVEX->value36 : NULL;
-        case 37: //nvex NVEX ,, Struct
-            return NVEX.IsLoaded() ? &NVEX->value37 : NULL;
         default:
             return NULL;
         }
@@ -281,139 +393,159 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //nver Version
-            NVER.Load();
-            NVER->value7 = *(UINT32 *)FieldValue;
+        case 7: //version
+            NVER.value = *(UINT32 *)FieldValue;
             break;
-        case 8: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value8 = *(FORMID *)FieldValue;
+        case 8: //cell
+            DATA.value.cell = *(FORMID *)FieldValue;
             return true;
-        case 9: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value9 = *(UINT32 *)FieldValue;
+        case 9: //numVertices
+            DATA.value.numVertices = *(UINT32 *)FieldValue;
             break;
-        case 10: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value10 = *(UINT32 *)FieldValue;
+        case 10: //numTriangles
+            DATA.value.numTriangles = *(UINT32 *)FieldValue;
             break;
-        case 11: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value11 = *(UINT32 *)FieldValue;
+        case 11: //numConnections
+            DATA.value.numConnections = *(UINT32 *)FieldValue;
             break;
-        case 12: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value12 = *(UINT32 *)FieldValue;
+        case 12: //numUnknown
+            DATA.value.numNVCA = *(UINT32 *)FieldValue;
             break;
-        case 13: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value13 = *(UINT32 *)FieldValue;
+        case 13: //numDoors
+            DATA.value.numDoors = *(UINT32 *)FieldValue;
             break;
-        case 14: //nvvx NVVX ,, Struct
-            NVVX.Load();
-            NVVX->value14 = *(FLOAT32 *)FieldValue;
-            break;
-        case 15: //nvvx NVVX ,, Struct
-            NVVX.Load();
-            NVVX->value15 = *(FLOAT32 *)FieldValue;
-            break;
-        case 16: //nvvx NVVX ,, Struct
-            NVVX.Load();
-            NVVX->value16 = *(FLOAT32 *)FieldValue;
-            break;
-        case 17: //nvtr NVTR ,, Struct
-            NVTR.Load();
-            NVTR->value17 = *(SINT16 *)FieldValue;
-            break;
-        case 18: //nvtr NVTR ,, Struct
-            NVTR.Load();
-            NVTR->value18 = *(SINT16 *)FieldValue;
-            break;
-        case 19: //nvtr NVTR ,, Struct
-            NVTR.Load();
-            NVTR->value19 = *(UINT32 *)FieldValue;
-            break;
-        case 20: //nvca Unknown
-            return UNPARSEDGET_FIELD20;
-        case 21: //nvdp NVDP ,, Struct
-            NVDP.Load();
-            NVDP->value21 = *(FORMID *)FieldValue;
-            return true;
-        case 22: //nvdp NVDP ,, Struct
-            NVDP.Load();
-            NVDP->value22 = *(UINT16 *)FieldValue;
-            break;
-        case 23: //nvdp_p NVDP ,, Struct
-            if(ArraySize != 2)
+        case 14: //vertices
+            if(ListFieldID == 0) //verticesSize
+                {
+                NVVX.resize(ArraySize);
+                DATA.value.numVertices = ArraySize;
+                return false;
+                }
+
+            if(ListIndex >= NVVX.value.size())
                 break;
-            NVDP.Load();
-            NVDP->value23[0] = ((UINT8ARRAY)FieldValue)[0];
-            NVDP->value23[1] = ((UINT8ARRAY)FieldValue)[1];
+
+            switch(ListFieldID)
+                {
+                case 1: //x
+                    NVVX.value[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    break;
+                case 2: //y
+                    NVVX.value[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    break;
+                case 3: //z
+                    NVVX.value[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 24: //nvgd_p NVGD ,, Struct
+        case 15: //triangles
+            if(ListFieldID == 0) //trianglesSize
+                {
+                NVTR.resize(ArraySize);
+                DATA.value.numTriangles = ArraySize;
+                return false;
+                }
+
+            if(ListIndex >= NVTR.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //vertex1
+                    NVTR.value[ListIndex].vertex1 = *(SINT16 *)FieldValue;
+                    break;
+                case 2: //vertex2
+                    NVTR.value[ListIndex].vertex2 = *(SINT16 *)FieldValue;
+                    break;
+                case 3: //vertex3
+                    NVTR.value[ListIndex].vertex3 = *(SINT16 *)FieldValue;
+                    break;
+                case 4: //edge1
+                    NVTR.value[ListIndex].edge1 = *(SINT16 *)FieldValue;
+                    break;
+                case 5: //edge2
+                    NVTR.value[ListIndex].edge2 = *(SINT16 *)FieldValue;
+                    break;
+                case 6: //edge3
+                    NVTR.value[ListIndex].edge3 = *(SINT16 *)FieldValue;
+                    break;
+                case 7: //flags
+                    NVTR.value[ListIndex].flags = *(UINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
+            break;
+        case 16: //unknown1
+            NVCA.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                NVCA.value[x] = ((SINT16ARRAY)FieldValue)[x];
+            DATA.value.numNVCA = ArraySize;
+            break;
+        case 17: //doors
+            if(ListFieldID == 0) //doorsSize
+                {
+                NVDP.resize(ArraySize);
+                DATA.value.numDoors = ArraySize;
+                return false;
+                }
+
+            if(ListIndex >= NVDP.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //door
+                    NVDP.value[ListIndex].door = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //unknown1
+                    NVDP.value[ListIndex].unknown1 = *(UINT16 *)FieldValue;
+                    break;
+                case 3: //unused1
+                    if(ArraySize != 2)
+                        break;
+                    NVDP.value[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    NVDP.value[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    break;
+                default:
+                    break;
+                }
+            break;
+        case 18: //nvgd_p
             NVGD.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 25: //nvgd_p NVGD ,, Struct
-            if(ArraySize != 4)
+        case 19: //connections
+            if(ListFieldID == 0) //connectionsSize
+                {
+                NVEX.resize(ArraySize);
+                DATA.value.numConnections = ArraySize;
+                return false;
+                }
+
+            if(ListIndex >= NVEX.value.size())
                 break;
-            NVGD.Load();
-            NVGD->value25[0] = ((UINT8ARRAY)FieldValue)[0];
-            NVGD->value25[1] = ((UINT8ARRAY)FieldValue)[1];
-            NVGD->value25[2] = ((UINT8ARRAY)FieldValue)[2];
-            NVGD->value25[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 26: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value26 = *(FLOAT32 *)FieldValue;
-            break;
-        case 27: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value27 = *(FLOAT32 *)FieldValue;
-            break;
-        case 28: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value28 = *(FLOAT32 *)FieldValue;
-            break;
-        case 29: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value29 = *(FLOAT32 *)FieldValue;
-            break;
-        case 30: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value30 = *(FLOAT32 *)FieldValue;
-            break;
-        case 31: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value31 = *(FLOAT32 *)FieldValue;
-            break;
-        case 32: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value32 = *(FLOAT32 *)FieldValue;
-            break;
-        case 33: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value33 = *(FLOAT32 *)FieldValue;
-            break;
-        case 34: //nvgd NVGD ,, Struct
-            NVGD.Load();
-            NVGD->value34 = *(UINT16 *)FieldValue;
-            break;
-        case 35: //nvex_p NVEX ,, Struct
-            if(ArraySize != 4)
-                break;
-            NVEX.Load();
-            NVEX->value35[0] = ((UINT8ARRAY)FieldValue)[0];
-            NVEX->value35[1] = ((UINT8ARRAY)FieldValue)[1];
-            NVEX->value35[2] = ((UINT8ARRAY)FieldValue)[2];
-            NVEX->value35[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 36: //nvex NVEX ,, Struct
-            NVEX.Load();
-            NVEX->value36 = *(FORMID *)FieldValue;
-            return true;
-        case 37: //nvex NVEX ,, Struct
-            NVEX.Load();
-            NVEX->value37 = *(UINT16 *)FieldValue;
+
+            switch(ListFieldID)
+                {
+                case 1: //unknown1
+                    if(ArraySize != 4)
+                        break;
+                    NVEX.value[ListIndex].unknown1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    NVEX.value[ListIndex].unknown1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    NVEX.value[ListIndex].unknown1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    NVEX.value[ListIndex].unknown1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    break;
+                case 2: //mesh
+                    NVEX.value[ListIndex].mesh = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //triangle
+                    NVEX.value[ListIndex].triangle = *(UINT16 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -423,6 +555,11 @@ bool NAVMRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void NAVMRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    NAVMDATA defaultDATA;
+    NAVMVertex defaultNVVX;
+    NAVMNVTR defaultNVTR;
+    NAVMNVDP defaultNVDP;
+    NAVMNVEX defaultNVEX;
     switch(FieldID)
         {
         case 1: //flags1
@@ -441,97 +578,148 @@ void NAVMRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //nver Version
+        case 7: //version
             NVER.Unload();
             return;
-        case 8: //data DATA ,, Struct
-            DATA.Unload();
+        case 8: //cell
+            DATA.value.cell = defaultDATA.cell;
             return;
-        case 9: //data DATA ,, Struct
-            DATA.Unload();
+        case 9: //numVertices
+            DATA.value.numVertices = defaultDATA.numVertices;
             return;
-        case 10: //data DATA ,, Struct
-            DATA.Unload();
+        case 10: //numTriangles
+            DATA.value.numTriangles = defaultDATA.numTriangles;
             return;
-        case 11: //data DATA ,, Struct
-            DATA.Unload();
+        case 11: //numConnections
+            DATA.value.numConnections = defaultDATA.numConnections;
             return;
-        case 12: //data DATA ,, Struct
-            DATA.Unload();
+        case 12: //numUnknown
+            DATA.value.numNVCA = defaultDATA.numNVCA;
             return;
-        case 13: //data DATA ,, Struct
-            DATA.Unload();
+        case 13: //numDoors
+            DATA.value.numDoors = defaultDATA.numDoors;
             return;
-        case 14: //nvvx NVVX ,, Struct
-            NVVX.Unload();
+        case 14: //vertices
+            if(ListFieldID == 0) //verticesSize
+                {
+                NVVX.Unload();
+                return;
+                }
+
+            if(ListIndex >= NVVX.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //x
+                    NVVX.value[ListIndex].x = defaultNVVX.x;
+                    return;
+                case 2: //y
+                    NVVX.value[ListIndex].y = defaultNVVX.y;
+                    return;
+                case 3: //z
+                    NVVX.value[ListIndex].z = defaultNVVX.z;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 15: //nvvx NVVX ,, Struct
-            NVVX.Unload();
+        case 15: //triangles
+            if(ListFieldID == 0) //trianglesSize
+                {
+                NVTR.Unload();
+                return;
+                }
+
+            if(ListIndex >= NVTR.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //vertex1
+                    NVTR.value[ListIndex].vertex1 = defaultNVTR.vertex1;
+                    return;
+                case 2: //vertex2
+                    NVTR.value[ListIndex].vertex2 = defaultNVTR.vertex2;
+                    return;
+                case 3: //vertex3
+                    NVTR.value[ListIndex].vertex3 = defaultNVTR.vertex3;
+                    return;
+                case 4: //edge1
+                    NVTR.value[ListIndex].edge1 = defaultNVTR.edge1;
+                    return;
+                case 5: //edge2
+                    NVTR.value[ListIndex].edge2 = defaultNVTR.edge2;
+                    return;
+                case 6: //edge3
+                    NVTR.value[ListIndex].edge3 = defaultNVTR.edge3;
+                    return;
+                case 7: //flags
+                    NVTR.value[ListIndex].flags = defaultNVTR.flags;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 16: //nvvx NVVX ,, Struct
-            NVVX.Unload();
+        case 16: //unknown1
+            NVCA.Unload();
             return;
-        case 17: //nvtr NVTR ,, Struct
-            NVTR.Unload();
+        case 17: //doors
+            if(ListFieldID == 0) //doorsSize
+                {
+                NVDP.Unload();
+                return;
+                }
+
+            if(ListIndex >= NVDP.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //door
+                    NVDP.value[ListIndex].door = defaultNVDP.door;
+                    return;
+                case 2: //unknown1
+                    NVDP.value[ListIndex].unknown1 = defaultNVDP.unknown1;
+                    return;
+                case 3: //unused1
+                    NVDP.value[ListIndex].unused1[0] = defaultNVDP.unused1[0];
+                    NVDP.value[ListIndex].unused1[1] = defaultNVDP.unused1[1];
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 18: //nvtr NVTR ,, Struct
-            NVTR.Unload();
-            return;
-        case 19: //nvtr NVTR ,, Struct
-            NVTR.Unload();
-            return;
-        case 20: //nvca Unknown
-            return UNPARSEDDEL_FIELD20;
-        case 21: //nvdp NVDP ,, Struct
-            NVDP.Unload();
-            return;
-        case 22: //nvdp NVDP ,, Struct
-            NVDP.Unload();
-            return;
-        case 23: //nvdp_p NVDP ,, Struct
-            NVDP.Unload();
-            return;
-        case 24: //nvgd_p NVGD ,, Struct
+        case 18: //nvgd_p
             NVGD.Unload();
             return;
-        case 25: //nvgd_p NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 26: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 27: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 28: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 29: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 30: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 31: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 32: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 33: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 34: //nvgd NVGD ,, Struct
-            NVGD.Unload();
-            return;
-        case 35: //nvex_p NVEX ,, Struct
-            NVEX.Unload();
-            return;
-        case 36: //nvex NVEX ,, Struct
-            NVEX.Unload();
-            return;
-        case 37: //nvex NVEX ,, Struct
-            NVEX.Unload();
+        case 19: //connections
+            if(ListFieldID == 0) //connectionsSize
+                {
+                NVEX.Unload();
+                return;
+                }
+
+            if(ListIndex >= NVEX.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //unknown1
+                    NVEX.value[ListIndex].unknown1[0] = defaultNVEX.unknown1[0];
+                    NVEX.value[ListIndex].unknown1[1] = defaultNVEX.unknown1[1];
+                    NVEX.value[ListIndex].unknown1[2] = defaultNVEX.unknown1[2];
+                    NVEX.value[ListIndex].unknown1[3] = defaultNVEX.unknown1[3];
+                    return;
+                case 2: //mesh
+                    NVEX.value[ListIndex].mesh = defaultNVEX.mesh;
+                    return;
+                case 3: //triangle
+                    NVEX.value[ListIndex].triangle = defaultNVEX.triangle;
+                    return;
+                default:
+                    return;
+                }
             return;
         default:
             return;

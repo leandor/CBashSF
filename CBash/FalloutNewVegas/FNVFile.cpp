@@ -1452,15 +1452,15 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = ((FNV::CELLRecord *)ParentRecord)->PCBE.back();
             break;
         case REV32(NAVM):
-            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
-            //    {
-            //    printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //    return NULL;
-            //    }
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create NAVM record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
 
-            //((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
-            //newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
-            //break;
+            ((FNV::CELLRecord *)ParentRecord)->NAVM.push_back(new FNV::NAVMRecord((FNV::NAVMRecord *)SourceRecord));
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->NAVM.back();
+            break;
         case REV32(LAND):
             //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
             //    {

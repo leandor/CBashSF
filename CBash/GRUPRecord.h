@@ -42,6 +42,7 @@ GPL License and Copyright Notice ============================================
 #include "FalloutNewVegas/Records/PBEARecord.h"
 #include "FalloutNewVegas/Records/PFLARecord.h"
 #include "FalloutNewVegas/Records/PCBERecord.h"
+#include "FalloutNewVegas/Records/NAVMRecord.h"
 #include "Visitors.h"
 #include <vector>
 #include <math.h>
@@ -1922,7 +1923,23 @@ class FNVGRUPRecords<FNV::CELLRecord>
                             }
                         break;
                     case REV32(NAVM):
-                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        curRecord = new FNV::NAVMRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::CELLRecord *)Records.back())->NAVM.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
                         break;
                     default:
                         printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
