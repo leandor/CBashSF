@@ -54,8 +54,8 @@ LVLIRecord::LVLIRecord(LVLIRecord *srcRecord):
     OBND = srcRecord->OBND;
     LVLD = srcRecord->LVLD;
     LVLF = srcRecord->LVLF;
+    LVLG = srcRecord->LVLG;
     Entries = srcRecord->Entries;
-    MODL = srcRecord->MODL;
     return;
     }
 
@@ -75,12 +75,8 @@ bool LVLIRecord::VisitFormIDs(FormIDOp &op)
         if(Entries.value[x]->IsGlobal())
             op.Accept(Entries.value[x]->COED->globalOrRank);
         }
-    if(MODL.IsLoaded())
-        {
-        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
-            op.Accept(MODL->Textures.MODS[x]->texture);
-        }
-
+    if(LVLG.IsLoaded())
+        op.Accept(LVLG.value);
     return op.Stop();
     }
 
@@ -168,6 +164,9 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(LVLF):
                 LVLF.Read(buffer, subSize, curPos);
                 break;
+            case REV32(LVLG):
+                LVLG.Read(buffer, subSize, curPos);
+                break;
             case REV32(LVLO):
                 Entries.value.push_back(new FNVLVLO);
                 Entries.value.back()->LVLO.Read(buffer, subSize, curPos);
@@ -176,26 +175,6 @@ SINT32 LVLIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new FNVLVLO);
                 Entries.value.back()->COED.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MODL):
-                MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MODB):
-                MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MODT):
-                MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MODS):
-                MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
-                break;
-            case REV32(MODD):
-                MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -217,8 +196,8 @@ SINT32 LVLIRecord::Unload()
     OBND.Unload();
     LVLD.Unload();
     LVLF.Unload();
+    LVLG.Unload();
     Entries.Unload();
-    MODL.Unload();
     return 1;
     }
 
@@ -228,8 +207,8 @@ SINT32 LVLIRecord::WriteRecord(FileWriter &writer)
     WRITE(OBND);
     WRITE(LVLD);
     WRITE(LVLF);
+    WRITE(LVLG);
     Entries.Write(writer);
-    MODL.Write(writer);
     return -1;
     }
 
@@ -239,8 +218,8 @@ bool LVLIRecord::operator ==(const LVLIRecord &other) const
             OBND == other.OBND &&
             LVLD == other.LVLD &&
             LVLF == other.LVLF &&
-            Entries == other.Entries &&
-            MODL == other.MODL);
+            LVLG == other.LVLG &&
+            Entries == other.Entries);
     }
 
 bool LVLIRecord::operator !=(const LVLIRecord &other) const

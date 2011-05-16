@@ -394,3 +394,25 @@ void RecordIndexer::SetModFile(ModFile *_curModFile)
     {
     curModFile = _curModFile;
     }
+
+RecordChanger::RecordChanger(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):
+    RecordOp(),
+    reader(_FormIDHandler, _Expanders)
+    {
+    //
+    }
+
+RecordChanger::~RecordChanger()
+    {
+    //
+    }
+
+bool RecordChanger::Accept(Record *&curRecord)
+    {
+    //Ensure the record is read
+    reader.Accept(curRecord);
+    //Mark it as changed
+    curRecord->IsChanged(true);
+
+    return stop;
+    }

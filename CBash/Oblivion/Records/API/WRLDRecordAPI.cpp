@@ -246,7 +246,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
     {
     GENMNAM defaultMNAM;
-    GENNAM defaultUNK;
+    GENNAM0 defaultNAM0;
+    GENNAM9 defaultNAM9;
 
     switch(FieldID)
         {
@@ -302,16 +303,16 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
             DATA.Unload();
             return;
         case 17: //xMinObjBounds
-            NAM0.value.x = defaultUNK.x;
+            NAM0.value.x = defaultNAM0.x;
             return;
         case 18: //yMinObjBounds
-            NAM0.value.y = defaultUNK.y;
+            NAM0.value.y = defaultNAM0.y;
             return;
         case 19: //xMaxObjBounds
-            NAM9.value.x = defaultUNK.x;
+            NAM9.value.x = defaultNAM9.x;
             return;
         case 20: //yMaxObjBounds
-            NAM9.value.y = defaultUNK.y;
+            NAM9.value.y = defaultNAM9.y;
             return;
         case 21: //soundType
             SNAM.Unload();

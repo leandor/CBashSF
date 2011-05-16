@@ -1769,25 +1769,50 @@ bool GENMNAM::operator !=(const GENMNAM &other) const
     return !(*this == other);
     }
 
-GENNAM::GENNAM():
-    x(0.0f),
-    y(0.0f)
+GENNAM0::GENNAM0():
+    x(flt_max),
+    y(flt_max)
     {
     //
     }
 
-GENNAM::~GENNAM()
+GENNAM0::~GENNAM0()
     {
     //
     }
 
-bool GENNAM::operator ==(const GENNAM &other) const
+bool GENNAM0::operator ==(const GENNAM0 &other) const
     {
     return (AlmostEqual(x,other.x,2) &&
             AlmostEqual(y,other.y,2));
     }
 
-bool GENNAM::operator !=(const GENNAM &other) const
+bool GENNAM0::operator !=(const GENNAM0 &other) const
+    {
+    return !(*this == other);
+    }
+
+GENNAM9::GENNAM9():
+    x(flt_max),
+    y(flt_max)
+    {
+    //For whatever reason, the CS defaults these two to an invalid float
+    memset(&((unsigned char *)&x)[3], 0xFF, 1);
+    memset(&((unsigned char *)&y)[3], 0xFF, 1);
+    }
+
+GENNAM9::~GENNAM9()
+    {
+    //
+    }
+
+bool GENNAM9::operator ==(const GENNAM9 &other) const
+    {
+    return (AlmostEqual(x,other.x,2) &&
+            AlmostEqual(y,other.y,2));
+    }
+
+bool GENNAM9::operator !=(const GENNAM9 &other) const
     {
     return !(*this == other);
     }
@@ -3309,7 +3334,7 @@ bool FNVCNTO::operator !=(const FNVCNTO &other) const
     }
 
 GENDNAM::GENDNAM():
-    defaultLandHeight(0.0f),
+    defaultLandHeight(-2048.0f),
     defaultWaterHeight(0.0f)
     {
     //
@@ -3332,7 +3357,7 @@ bool GENDNAM::operator !=(const GENDNAM &other) const
     }
 
 GENONAM::GENONAM():
-    mapScale(0.0f),
+    mapScale(1.0f),
     xCellOffset(0.0f),
     yCellOffset(0.0f)
     {
@@ -4094,6 +4119,44 @@ bool GENXORD::operator ==(const GENXORD &other) const
     }
 
 bool GENXORD::operator !=(const GENXORD &other) const
+    {
+    return !(*this == other);
+    }
+
+GENIMPF::GENIMPF()
+    {
+    memset(&concSolid[0], 0x00, sizeof(concSolid));
+    memset(&concBroken[0], 0x00, sizeof(concBroken));
+    memset(&metalSolid[0], 0x00, sizeof(metalSolid));
+    memset(&metalHollow[0], 0x00, sizeof(metalHollow));
+    memset(&metalSheet[0], 0x00, sizeof(metalSheet));
+    memset(&wood[0], 0x00, sizeof(wood));
+    memset(&sand[0], 0x00, sizeof(sand));
+    memset(&dirt[0], 0x00, sizeof(dirt));
+    memset(&grass[0], 0x00, sizeof(grass));
+    memset(&water[0], 0x00, sizeof(water));
+    }
+
+GENIMPF::~GENIMPF()
+    {
+    //
+    }
+
+bool GENIMPF::operator ==(const GENIMPF &other) const
+    {
+    return (strcmp(&concSolid[0], &other.concSolid[0]) == 0 &&
+            strcmp(&concBroken[0], &other.concBroken[0]) == 0 &&
+            strcmp(&metalSolid[0], &other.metalSolid[0]) == 0 &&
+            strcmp(&metalHollow[0], &other.metalHollow[0]) == 0 &&
+            strcmp(&metalSheet[0], &other.metalSheet[0]) == 0 &&
+            strcmp(&wood[0], &other.wood[0]) == 0 &&
+            strcmp(&sand[0], &other.sand[0]) == 0 &&
+            strcmp(&dirt[0], &other.dirt[0]) == 0 &&
+            strcmp(&grass[0], &other.grass[0]) == 0 &&
+            strcmp(&water[0], &other.water[0]) == 0);
+    }
+
+bool GENIMPF::operator !=(const GENIMPF &other) const
     {
     return !(*this == other);
     }

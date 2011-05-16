@@ -113,7 +113,13 @@ class LANDRecord : public FNVRecord //Landscape
         struct LANDLAYERS
             {
             ReqSubRecord<LANDGENTXT> ATXT;
-            std::vector<LANDVTXT> VTXT;
+            UnorderedPackedArray<LANDVTXT> VTXT; //Actually ordered...            
+            //Record order doesn't matter on opacities, so equality testing isn't easy
+            //Instead, they're keyed by position (VTXT.value.position)
+            //The proper solution would be to see if the opacity at each position matches
+            //Fix-up later
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const LANDLAYERS &other) const;
             bool operator !=(const LANDLAYERS &other) const;
@@ -163,9 +169,9 @@ class LANDRecord : public FNVRecord //Landscape
         OptSubRecord<LANDVNML> VNML; //Vertex Normals
         OptSubRecord<LANDVHGT> VHGT; //Vertex Height Map
         OptSubRecord<LANDVCLR> VCLR; //Vertex Colours
-        std::vector<ReqSubRecord<LANDGENTXT> *> BTXT;
-        std::vector<LANDLAYERS *> Layers; //Layers
-        std::vector<FORMID> VTEX;
+        UnorderedSparseArray<LANDGENTXT *> BTXT; //Base Layer Header
+        UnorderedSparseArray<LANDLAYERS *> Layers; //Layers
+        UnorderedPackedArray<FORMID> VTEX;
         //LANDMERGED *Merged;
 
         LANDRecord *WestLand;

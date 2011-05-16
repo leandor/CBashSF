@@ -1392,3 +1392,11 @@ SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString("create_triangl");
+SearchAndReplace.setReplaceString("create_triangle");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);

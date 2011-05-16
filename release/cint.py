@@ -735,7 +735,6 @@ class CBashFORMID_OR_STRING(object):
                 _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
             elif type == API_FIELDS.STRING:
                 _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
-            
 
 class CBashFORMID_OR_UINT32_ARRAY(object):
     def __init__(self, FieldID, Size=None):
@@ -1903,7 +1902,7 @@ class FnvBaseRecord(object):
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
+        #recordMasters = set(FnvModFile(self._CollectionID, self._ModID).TES4.masters)
         #sort oldest to newest rather than newest to oldest
         #conflicts = self.Conflicts(GetExtendedConflicts)
         #Less pythonic, but optimized for better speed.
@@ -1936,7 +1935,7 @@ class FnvBaseRecord(object):
         if CopyFlags is None: CopyFlags = self._CopyFlags
         targetID = 0
         if hasattr(self, '_ParentID'):
-            if isinstance(target, ObModFile): targetID = self._ParentID
+            if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001,
@@ -1954,7 +1953,7 @@ class FnvBaseRecord(object):
         if CopyFlags is None: CopyFlags = self._CopyFlags
         targetID = 0
         if hasattr(self, '_ParentID'):
-            if isinstance(target, ObModFile): targetID = self._ParentID
+            if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001,
@@ -1970,8 +1969,8 @@ class FnvBaseRecord(object):
     def Parent(self):
         ParentID = getattr(self, '_ParentID', 0)
         if ParentID:
-            testRecord = ObBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
-            RecordType = type_record[testRecord.recType]
+            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
+            RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
                 return RecordType(self._CollectionID, self._ModID, ParentID, 0, 0)
         return None
@@ -2098,7 +2097,7 @@ class FnvACHRRecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -2109,7 +2108,7 @@ class FnvACHRRecord(FnvBaseRecord):
         reference = CBashFORMID_LIST(1)
         delay = CBashFLOAT32_LIST(2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -2139,7 +2138,7 @@ class FnvACHRRecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2157,7 +2156,7 @@ class FnvACHRRecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2184,14 +2183,14 @@ class FnvACHRRecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(54)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2207,7 +2206,7 @@ class FnvACHRRecord(FnvBaseRecord):
                                            'parent', 'parentFlags', 'emittance',
                                            'boundRef', 'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2223,7 +2222,7 @@ class FnvACHRRecord(FnvBaseRecord):
                                              'parent', 'parentFlags', 'emittance',
                                              'boundRef', 'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-    
+
 class FnvACRERecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2239,7 +2238,7 @@ class FnvACRERecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -2250,7 +2249,7 @@ class FnvACRERecord(FnvBaseRecord):
         reference = CBashFORMID_LIST(1)
         delay = CBashFLOAT32_LIST(2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -2282,7 +2281,7 @@ class FnvACRERecord(FnvBaseRecord):
     count = CBashGeneric(28, c_long)
     radius = CBashFLOAT32(29)
     health = CBashFLOAT32(30)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 31, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 31, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2300,7 +2299,7 @@ class FnvACRERecord(FnvBaseRecord):
     endBlue = CBashGeneric(39, c_ubyte)
     unused3 = CBashUINT8ARRAY(40, 1)
     activateParentFlags = CBashGeneric(41, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 42, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 42, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2327,14 +2326,14 @@ class FnvACRERecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(56)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2350,7 +2349,7 @@ class FnvACRERecord(FnvBaseRecord):
                                            'parent', 'parentFlags', 'emittance',
                                            'boundRef', 'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2366,7 +2365,7 @@ class FnvACRERecord(FnvBaseRecord):
                                              'parent', 'parentFlags', 'emittance',
                                              'boundRef', 'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-    
+
 class FnvREFRRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2381,7 +2380,7 @@ class FnvREFRRecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -2392,15 +2391,15 @@ class FnvREFRRecord(FnvBaseRecord):
         reference = CBashFORMID_LIST(1)
         delay = CBashFLOAT32_LIST(2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -2415,7 +2414,7 @@ class FnvREFRRecord(FnvBaseRecord):
     scriptFlags = CBashGeneric(18, c_ushort)
     compiled_p = CBashUINT8ARRAY(19)
     scriptText = CBashISTRING(20)
-    
+
     def create_var(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 21, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2433,7 +2432,7 @@ class FnvREFRRecord(FnvBaseRecord):
     health = CBashFLOAT32(29)
     radiation = CBashFLOAT32(30)
     charge = CBashFLOAT32(31)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 32, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 32, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2452,7 +2451,7 @@ class FnvREFRRecord(FnvBaseRecord):
     unused3 = CBashUINT8ARRAY(41, 1)
     rclr_p = CBashUINT8ARRAY(42)
     activateParentFlags = CBashGeneric(43, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 44, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 44, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2514,7 +2513,7 @@ class FnvREFRRecord(FnvBaseRecord):
     lockUnknown1 = CBashUINT8ARRAY(93)
     ammo = CBashFORMID(94)
     ammoCount = CBashGeneric(95, c_long)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 96, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 96, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2569,12 +2568,12 @@ class FnvREFRRecord(FnvBaseRecord):
     rotY_degrees = CBashDEGREES(139)
     rotZ = CBashFLOAT32(140)
     rotZ_degrees = CBashDEGREES(140)
-    
+
     IsNoAlarm = CBashBasicFlag('destinationFlags', 0x00000001)
-    
+
     IsVisible = CBashBasicFlag('markerFlags', 0x00000001)
     IsCanTravelTo = CBashBasicFlag('markerFlags', 0x00000002)
-    
+
     IsUseDefault = CBashBasicFlag('actionFlags', 0x00000001)
     IsActivate = CBashBasicFlag('actionFlags', 0x00000002)
     IsOpen = CBashBasicFlag('actionFlags', 0x00000004)
@@ -2649,7 +2648,7 @@ class FnvREFRRecord(FnvBaseRecord):
     IsSewerRuins = CBashBasicType('markerType', 12, 'IsMarkerNone')
     IsMetro = CBashBasicType('markerType', 13, 'IsMarkerNone')
     IsVault = CBashBasicType('markerType', 14, 'IsMarkerNone')
-    
+
     IsRadius = CBashBasicType('rangeType', 0, 'IsEverywhere')
     IsEverywhere = CBashBasicType('rangeType', 1, 'IsRadius')
     IsWorldAndLinkedInteriors = CBashBasicType('rangeType', 2, 'IsRadius')
@@ -2663,7 +2662,7 @@ class FnvREFRRecord(FnvBaseRecord):
                                            'owner', 'rank', 'count', 'radius', 'health',
                                            'radiation', 'charge', 'decals_list',
                                            'linkedReference',
-                                           'startRed', 'startRed', 'startBlue', 
+                                           'startRed', 'startRed', 'startBlue',
                                            'endRed', 'endGreen', 'endBlue',
                                            'rclr_p', 'activateParentFlags',
                                            'activateParentRefs_list', 'prompt', 'parent',
@@ -2703,7 +2702,7 @@ class FnvREFRRecord(FnvBaseRecord):
                                              'owner', 'rank', 'count', 'radius', 'health',
                                              'radiation', 'charge', 'decals_list',
                                              'linkedReference',
-                                             'startRed', 'startRed', 'startBlue', 
+                                             'startRed', 'startRed', 'startBlue',
                                              'endRed', 'endGreen', 'endBlue',
                                              'activateParentFlags',
                                              'activateParentRefs_list', 'prompt', 'parent',
@@ -2734,8 +2733,8 @@ class FnvREFRRecord(FnvBaseRecord):
                                              'occPlaneQ3', 'occPlaneQ4', 'occPlaneRight',
                                              'occPlaneLeft', 'occPlaneBottom', 'occPlaneTop',
                                              'lod1', 'lod2', 'lod3', 'ignoredBySandbox',
-                                             'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p', 
-    
+                                             'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p',
+
 class FnvPGRERecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2750,7 +2749,7 @@ class FnvPGRERecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -2765,11 +2764,11 @@ class FnvPGRERecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -2799,7 +2798,7 @@ class FnvPGRERecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2817,7 +2816,7 @@ class FnvPGRERecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2831,7 +2830,7 @@ class FnvPGRERecord(FnvBaseRecord):
     unused4 = CBashUINT8ARRAY(44, 3)
     emittance = CBashFORMID(45)
     boundRef = CBashFORMID(46)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2852,14 +2851,14 @@ class FnvPGRERecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(55)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2876,7 +2875,7 @@ class FnvPGRERecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2893,7 +2892,7 @@ class FnvPGRERecord(FnvBaseRecord):
                                              'boundRef', 'reflrefrs_list',
                                              'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-        
+
 class FnvPMISRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2908,7 +2907,7 @@ class FnvPMISRecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -2923,11 +2922,11 @@ class FnvPMISRecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -2957,7 +2956,7 @@ class FnvPMISRecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2975,7 +2974,7 @@ class FnvPMISRecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -2989,7 +2988,7 @@ class FnvPMISRecord(FnvBaseRecord):
     unused4 = CBashUINT8ARRAY(44, 3)
     emittance = CBashFORMID(45)
     boundRef = CBashFORMID(46)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3010,14 +3009,14 @@ class FnvPMISRecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(55)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3034,7 +3033,7 @@ class FnvPMISRecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3066,7 +3065,7 @@ class FnvPBEARecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -3081,11 +3080,11 @@ class FnvPBEARecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -3115,7 +3114,7 @@ class FnvPBEARecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3133,7 +3132,7 @@ class FnvPBEARecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3147,7 +3146,7 @@ class FnvPBEARecord(FnvBaseRecord):
     unused4 = CBashUINT8ARRAY(44, 3)
     emittance = CBashFORMID(45)
     boundRef = CBashFORMID(46)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3168,14 +3167,14 @@ class FnvPBEARecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(55)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3192,7 +3191,7 @@ class FnvPBEARecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3224,7 +3223,7 @@ class FnvPFLARecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -3239,11 +3238,11 @@ class FnvPFLARecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -3273,7 +3272,7 @@ class FnvPFLARecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3291,7 +3290,7 @@ class FnvPFLARecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3305,7 +3304,7 @@ class FnvPFLARecord(FnvBaseRecord):
     unused4 = CBashUINT8ARRAY(44, 3)
     emittance = CBashFORMID(45)
     boundRef = CBashFORMID(46)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3326,14 +3325,14 @@ class FnvPFLARecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(55)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3350,7 +3349,7 @@ class FnvPFLARecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3382,7 +3381,7 @@ class FnvPCBERecord(FnvBaseRecord):
 
         IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         reference = CBashFORMID_LIST(1)
         unknown1 = CBashUINT8ARRAY_LIST(2, 24)
@@ -3397,11 +3396,11 @@ class FnvPCBERecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         reference = CBashFORMID_LIST(1)
         type = CBashGeneric_LIST(2, c_ulong)
-        
+
         IsReflection = CBashBasicType('type', 0, 'IsRefraction')
         IsRefraction = CBashBasicType('type', 1, 'IsReflection')
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     base = CBashFORMID(7)
     encounterZone = CBashFORMID(8)
     xrgd_p = CBashUINT8ARRAY(9)
@@ -3431,7 +3430,7 @@ class FnvPCBERecord(FnvBaseRecord):
     count = CBashGeneric(26, c_long)
     radius = CBashFLOAT32(27)
     health = CBashFLOAT32(28)
-    
+
     def create_decal(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 29, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3449,7 +3448,7 @@ class FnvPCBERecord(FnvBaseRecord):
     endBlue = CBashGeneric(37, c_ubyte)
     unused3 = CBashUINT8ARRAY(38, 1)
     activateParentFlags = CBashGeneric(39, c_ubyte)
-    
+
     def create_activateParentRef(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3463,7 +3462,7 @@ class FnvPCBERecord(FnvBaseRecord):
     unused4 = CBashUINT8ARRAY(44, 3)
     emittance = CBashFORMID(45)
     boundRef = CBashFORMID(46)
-    
+
     def create_reflrefr(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 47, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3484,14 +3483,14 @@ class FnvPCBERecord(FnvBaseRecord):
     rotZ_degrees = CBashDEGREES(55)
 
     IsEnabled = CBashBasicFlag('scriptFlags', 0x0001)
-    
+
     IsOppositeParent = CBashBasicFlag('parentFlags', 0x00000001)
     IsPopIn = CBashBasicFlag('parentFlags', 0x00000002)
 
     IsObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
     IsQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
     IsEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3508,7 +3507,7 @@ class FnvPCBERecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3525,7 +3524,7 @@ class FnvPCBERecord(FnvBaseRecord):
                                              'boundRef', 'reflrefrs_list',
                                              'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
- 
+
 class FnvNAVMRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -3537,7 +3536,7 @@ class FnvNAVMRecord(FnvBaseRecord):
         z = CBashFLOAT32_LIST(3)
 
         exportattrs = copyattrs = ['x', 'y', 'z']
-        
+
     class Triangle(ListComponent):
         vertex1 = CBashGeneric_LIST(1, c_short)
         vertex2 = CBashGeneric_LIST(2, c_short)
@@ -3580,21 +3579,21 @@ class FnvNAVMRecord(FnvBaseRecord):
         IsUnknown31 = CBashBasicFlag('flags', 0x40000000)
         IsUnknown32 = CBashBasicFlag('flags', 0x80000000)
         exportattrs = copyattrs = ['vertex1', 'vertex2', 'vertex3', 'edge1', 'edge2', 'edge3', 'flags']
-        
+
     class Door(ListComponent):
         door = CBashFORMID_LIST(1)
         unknown1 = CBashGeneric_LIST(2, c_ushort)
         unused1 = CBashUINT8ARRAY_LIST(3, 2)
-        
+
         exportattrs = copyattrs = ['door', 'unknown1']
-        
+
     class Connection(ListComponent):
         unknown1 = CBashUINT8ARRAY_LIST(1)
         mesh = CBashFORMID_LIST(2)
         triangle = CBashGeneric_LIST(3, c_ushort)
-        
+
         exportattrs = copyattrs = ['unknown1', 'mesh', 'triangle']
-        
+
     version = CBashGeneric(7, c_ulong)
     cell = CBashFORMID(8)
     numVertices = CBashGeneric(9, c_ulong)
@@ -3602,15 +3601,15 @@ class FnvNAVMRecord(FnvBaseRecord):
     numConnections = CBashGeneric(11, c_ulong)
     numUnknown = CBashGeneric(12, c_ulong)
     numDoors = CBashGeneric(13, c_ulong)
-    
+
     def create_vertic(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
         return self.Vertex(self._CollectionID, self._ModID, self._RecordID, 14, length)
     vertices = CBashLIST(14, Vertex)
     vertices_list = CBashLIST(14, Vertex, True)
-    
-    def create_triangl(self):
+
+    def create_triangle(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
         return self.Triangle(self._CollectionID, self._ModID, self._RecordID, 15, length)
@@ -3618,7 +3617,7 @@ class FnvNAVMRecord(FnvBaseRecord):
     triangles_list = CBashLIST(15, Triangle, True)
 
     unknown1 = CBashSINT16ARRAY(16)
-    
+
     def create_door(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3627,7 +3626,7 @@ class FnvNAVMRecord(FnvBaseRecord):
     doors_list = CBashLIST(17, Door, True)
 
     nvgd_p = CBashUINT8ARRAY(18)
-    
+
     def create_connection(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -3647,7 +3646,187 @@ class FnvNAVMRecord(FnvBaseRecord):
                                              'vertices_list', 'triangles_list',
                                              'unknown1', 'doors_list',
                                              'connections_list']# 'nvgd_p',
-    
+
+class FnvLANDRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
+        self._ParentID = ParentID
+
+    _Type = 'LAND'
+    class Normal(ListX2Component):
+        x = CBashGeneric_LISTX2(1, c_ubyte)
+        y = CBashGeneric_LISTX2(2, c_ubyte)
+        z = CBashGeneric_LISTX2(3, c_ubyte)
+        exportattrs = copyattrs = ['x', 'y', 'z']
+
+    class Height(ListX2Component):
+        height = CBashGeneric_LISTX2(1, c_byte)
+        exportattrs = copyattrs = ['height']
+
+    class Color(ListX2Component):
+        red = CBashGeneric_LISTX2(1, c_ubyte)
+        green = CBashGeneric_LISTX2(2, c_ubyte)
+        blue = CBashGeneric_LISTX2(3, c_ubyte)
+        exportattrs = copyattrs = ['red', 'green', 'blue']
+
+    class BaseTexture(ListComponent):
+        texture = CBashFORMID_LIST(1)
+        quadrant = CBashGeneric_LIST(2, c_byte)
+        unused1 = CBashUINT8ARRAY_LIST(3, 1)
+        layer = CBashGeneric_LIST(4, c_short)
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer']
+
+    class AlphaLayer(ListComponent):
+        class Opacity(ListX2Component):
+            position = CBashGeneric_LISTX2(1, c_ushort)
+            unused1 = CBashUINT8ARRAY_LISTX2(2, 2)
+            opacity = CBashFLOAT32_LISTX2(3)
+            exportattrs = copyattrs = ['position', 'opacity']
+        texture = CBashFORMID_LIST(1)
+        quadrant = CBashGeneric_LIST(2, c_byte)
+        unused1 = CBashUINT8ARRAY_LIST(3, 1)
+        layer = CBashGeneric_LIST(4, c_short)
+
+        def create_opacity(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.Opacity(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 5, length)
+        opacities = CBashLIST_LIST(5, Opacity)
+        opacities_list = CBashLIST_LIST(5, Opacity, True)
+
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer', 'opacities_list']
+
+    class VertexTexture(ListComponent):
+        texture = CBashFORMID_LIST(1)
+        exportattrs = copyattrs = ['texture']
+
+    class Position(ListX2Component):
+        height = CBashFLOAT32_LISTX2(1)
+        normalX = CBashGeneric_LISTX2(2, c_ubyte)
+        normalY = CBashGeneric_LISTX2(3, c_ubyte)
+        normalZ = CBashGeneric_LISTX2(4, c_ubyte)
+        red = CBashGeneric_LISTX2(5, c_ubyte)
+        green = CBashGeneric_LISTX2(6, c_ubyte)
+        blue = CBashGeneric_LISTX2(7, c_ubyte)
+        baseTexture = CBashFORMID_LISTX2(8)
+        alphaLayer1Texture = CBashFORMID_LISTX2(9)
+        alphaLayer1Opacity = CBashFLOAT32_LISTX2(10)
+        alphaLayer2Texture = CBashFORMID_LISTX2(11)
+        alphaLayer2Opacity = CBashFLOAT32_LISTX2(12)
+        alphaLayer3Texture = CBashFORMID_LISTX2(13)
+        alphaLayer3Opacity = CBashFLOAT32_LISTX2(14)
+        alphaLayer4Texture = CBashFORMID_LISTX2(15)
+        alphaLayer4Opacity = CBashFLOAT32_LISTX2(16)
+        alphaLayer5Texture = CBashFORMID_LISTX2(17)
+        alphaLayer5Opacity = CBashFLOAT32_LISTX2(18)
+        alphaLayer6Texture = CBashFORMID_LISTX2(19)
+        alphaLayer6Opacity = CBashFLOAT32_LISTX2(20)
+        alphaLayer7Texture = CBashFORMID_LISTX2(21)
+        alphaLayer7Opacity = CBashFLOAT32_LISTX2(22)
+        alphaLayer8Texture = CBashFORMID_LISTX2(23)
+        alphaLayer8Opacity = CBashFLOAT32_LISTX2(24)
+        exportattrs = copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
+                     'red', 'green', 'blue', 'baseTexture',
+                     'alphaLayer1Texture', 'alphaLayer1Opacity',
+                     'alphaLayer2Texture', 'alphaLayer2Opacity',
+                     'alphaLayer3Texture', 'alphaLayer3Opacity',
+                     'alphaLayer4Texture', 'alphaLayer4Opacity',
+                     'alphaLayer5Texture', 'alphaLayer5Opacity',
+                     'alphaLayer6Texture', 'alphaLayer6Opacity',
+                     'alphaLayer7Texture', 'alphaLayer7Opacity',
+                     'alphaLayer8Texture', 'alphaLayer8Opacity']
+
+    data_p = CBashUINT8ARRAY(7)
+
+    def get_normals(self):
+        return [[self.Normal(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_normals(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.normals
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    normals = property(get_normals, set_normals)
+    def get_normals_list(self):
+        return [ExtractCopyList([self.Normal(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+
+    normals_list = property(get_normals_list, set_normals)
+
+    heightOffset = CBashFLOAT32(9)
+
+    def get_heights(self):
+        return [[self.Height(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_heights(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.heights
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    heights = property(get_heights, set_heights)
+    def get_heights_list(self):
+        return [ExtractCopyList([self.Height(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    heights_list = property(get_heights_list, set_heights)
+
+    unused1 = CBashUINT8ARRAY(11, 3)
+
+    def get_colors(self):
+        return [[self.Color(self._CollectionID, self._ModID, self._RecordID, 12, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_colors(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.colors
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    colors = property(get_colors, set_colors)
+    def get_colors_list(self):
+        return [ExtractCopyList([self.Color(self._CollectionID, self._ModID, self._RecordID, 12, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    colors_list = property(get_colors_list, set_colors)
+
+    def create_baseTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 13, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.BaseTexture(self._CollectionID, self._ModID, self._RecordID, 13, length)
+    baseTextures = CBashLIST(13, BaseTexture)
+    baseTextures_list = CBashLIST(13, BaseTexture, True)
+
+    def create_alphaLayer(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.AlphaLayer(self._CollectionID, self._ModID, self._RecordID, 14, length)
+    alphaLayers = CBashLIST(14, AlphaLayer)
+    alphaLayers_list = CBashLIST(14, AlphaLayer, True)
+
+    def create_vertexTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.VertexTexture(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    vertexTextures = CBashLIST(15, VertexTexture)
+    vertexTextures_list = CBashLIST(15, VertexTexture, True)
+
+    ##The Positions accessor is unique in that it duplicates the above accessors. It just presents the data in a more friendly format.
+    def get_Positions(self):
+        return [[self.Position(self._CollectionID, self._ModID, self._RecordID, 16, row, 0, column) for column in range(0,33)] for row in range(0,33)]
+    def set_Positions(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.Positions
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    Positions = property(get_Positions, set_Positions)
+    def get_Positions_list(self):
+        return [ExtractCopyList([self.Position(self._CollectionID, self._ModID, self._RecordID, 16, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    Positions_list = property(get_Positions_list, set_Positions)
+    copyattrs = FnvBaseRecord.baseattrs + ['data_p', 'normals_list', 'heights_list', 'heightOffset',
+                                        'colors_list', 'baseTextures_list', 'alphaLayers_list',
+                                        'vertexTextures_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['normals_list', 'heights_list', 'heightOffset',
+                                        'colors_list', 'baseTextures_list', 'alphaLayers_list',
+                                        'vertexTextures_list'] #'data_p',
+
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -5527,7 +5706,7 @@ class FnvTREERecord(FnvBaseRecord):
     rockSpeed = CBashFLOAT32(27)
     rustleSpeed = CBashFLOAT32(28)
     widthBill = CBashFLOAT32(29)
-    heightBill = CBashFLOAT32(30)     
+    heightBill = CBashFLOAT32(30)
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2',
                                            'modPath', 'modb', 'modt_p',
@@ -5676,7 +5855,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     model3Path = CBashISTRING(50)
     model13Path = CBashISTRING(51)
     model23Path = CBashISTRING(52)
-    model123Path = CBashISTRING(53)            
+    model123Path = CBashISTRING(53)
     impact = CBashFORMID(54)
     model = CBashFORMID(55)
     model1 = CBashFORMID(56)
@@ -5789,7 +5968,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsUse1stPersonISAnimations = CBashInvertedFlag('IsDontUse1stPersonISAnimations')
     IsNonPlayable = CBashBasicFlag('flags', 0x80)
     IsPlayable = CBashInvertedFlag('IsNonPlayable')
-    
+
     IsPlayerOnly = CBashBasicFlag('extraFlags', 0x00000001)
     IsNPCsUseAmmo = CBashBasicFlag('extraFlags', 0x00000002)
     IsNoJamAfterReload = CBashBasicFlag('extraFlags', 0x00000004)
@@ -5830,7 +6009,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsStimpack = CBashBasicType('equipmentType', 11, 'IsNone')
     IsEdible = CBashBasicType('equipmentType', 12, 'IsNone')
     IsAlcohol = CBashBasicType('equipmentType', 13, 'IsNone')
-    
+
     IsHand2Hand = CBashBasicType('animType', 0, 'IsMelee1Hand')
     IsMelee1Hand = CBashBasicType('animType', 1, 'IsHand2Hand')
     IsMelee2Hand = CBashBasicType('animType', 2, 'IsHand2Hand')
@@ -5845,7 +6024,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsLandMine1Hand = CBashBasicType('animType', 11, 'IsHand2Hand')
     IsMineDrop1Hand = CBashBasicType('animType', 12, 'IsHand2Hand')
     IsThrown1Hand = CBashBasicType('animType', 13, 'IsHand2Hand')
-    
+
     IsHandGrip1 = CBashBasicType('gripAnim', 230, 'IsHandGrip2')
     IsHandGrip2 = CBashBasicType('gripAnim', 231, 'IsHandGrip1')
     IsHandGrip3 = CBashBasicType('gripAnim', 232, 'IsHandGrip1')
@@ -5853,7 +6032,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsHandGrip5 = CBashBasicType('gripAnim', 234, 'IsHandGrip1')
     IsHandGrip6 = CBashBasicType('gripAnim', 235, 'IsHandGrip1')
     IsHandGripDefault = CBashBasicType('gripAnim', 236, 'IsHandGrip1')
-    
+
     IsReloadA = CBashBasicType('reloadAnim', 0, 'IsReloadB')
     IsReloadB = CBashBasicType('reloadAnim', 1, 'IsReloadA')
     IsReloadC = CBashBasicType('reloadAnim', 2, 'IsReloadA')
@@ -5877,7 +6056,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsReloadX = CBashBasicType('reloadAnim', 20, 'IsReloadA')
     IsReloadY = CBashBasicType('reloadAnim', 21, 'IsReloadA')
     IsReloadZ = CBashBasicType('reloadAnim', 22, 'IsReloadA')
-    
+
     IsAttackLeft = CBashBasicType('attackAnim', 26, 'IsAttackRight')
     IsAttackRight = CBashBasicType('attackAnim', 32, 'IsAttackLeft')
     IsAttack3 = CBashBasicType('attackAnim', 38, 'IsAttackLeft')
@@ -5901,13 +6080,13 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsPlaceMine = CBashBasicType('attackAnim', 102, 'IsAttackLeft')
     IsPlaceMine2 = CBashBasicType('attackAnim', 108, 'IsAttackLeft')
     IsAttackDefault = CBashBasicType('attackAnim', 255, 'IsAttackLeft')
-    
+
     IsNormalFormulaBehavior = CBashBasicType('weaponAV', 0, 'IsDismemberOnly')
     IsDismemberOnly = CBashBasicType('weaponAV', 1, 'IsNormalFormulaBehavior')
     IsExplodeOnly = CBashBasicType('weaponAV', 2, 'IsNormalFormulaBehavior')
     IsNoDismemberExplode = CBashBasicType('weaponAV', 3, 'IsNormalFormulaBehavior')
     IsDismemberExplode = CBashInvertedFlag('IsNoDismemberExplode')
-    
+
     IsOnHitPerception = CBashBasicType('onHit', 0, 'IsEndurance')
     IsOnHitEndurance = CBashBasicType('onHit', 1, 'IsPerception')
     IsOnHitLeftAttack = CBashBasicType('onHit', 2, 'IsPerception')
@@ -5915,12 +6094,12 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsOnHitLeftMobility = CBashBasicType('onHit', 4, 'IsPerception')
     IsOnHitRightMobilty = CBashBasicType('onHit', 5, 'IsPerception')
     IsOnHitBrain = CBashBasicType('onHit', 6, 'IsPerception')
-    
+
     IsRumbleConstant = CBashBasicType('rumbleType', 0, 'IsSquare')
     IsRumbleSquare = CBashBasicType('rumbleType', 1, 'IsConstant')
     IsRumbleTriangle = CBashBasicType('rumbleType', 2, 'IsConstant')
     IsRumbleSawtooth = CBashBasicType('rumbleType', 3, 'IsConstant')
-    
+
     IsUnknown0 = CBashBasicType('overridePwrAtkAnim', 0, 'IsAttackCustom1Power')
     IsAttackCustom1Power = CBashBasicType('overridePwrAtkAnim', 97, 'IsAttackCustom2Power')
     IsAttackCustom2Power = CBashBasicType('overridePwrAtkAnim', 98, 'IsAttackCustom1Power')
@@ -5928,7 +6107,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsAttackCustom4Power = CBashBasicType('overridePwrAtkAnim', 100, 'IsAttackCustom1Power')
     IsAttackCustom5Power = CBashBasicType('overridePwrAtkAnim', 101, 'IsAttackCustom1Power')
     IsAttackCustomDefault = CBashBasicType('overridePwrAtkAnim', 255, 'IsAttackCustom1Power')
-    
+
     IsModReloadA = CBashBasicType('reloadAnimMod', 0, 'IsModReloadB')
     IsModReloadB = CBashBasicType('reloadAnimMod', 1, 'IsModReloadA')
     IsModReloadC = CBashBasicType('reloadAnimMod', 2, 'IsModReloadA')
@@ -5952,13 +6131,13 @@ class FnvWEAPRecord(FnvBaseRecord):
     IsModReloadX = CBashBasicType('reloadAnimMod', 20, 'IsModReloadA')
     IsModReloadY = CBashBasicType('reloadAnimMod', 21, 'IsModReloadA')
     IsModReloadZ = CBashBasicType('reloadAnimMod', 22, 'IsModReloadA')
-    
+
     IsVATSNotSilent = CBashBasicType('silenceType', 0, 'IsVATSSilent')
     IsVATSSilent = CBashBasicType('silenceType', 1, 'IsVATSNotSilent')
-    
+
     IsVATSNotModRequired = CBashBasicType('modRequiredType', 0, 'IsVATSNotModRequired')
     IsVATSModRequired = CBashBasicType('modRequiredType', 1, 'IsVATSModRequired')
-    
+
     IsLoud = CBashBasicType('soundLevelType', 0, 'IsNormal')
     IsNormal = CBashBasicType('soundLevelType', 1, 'IsLoud')
     IsSilent = CBashBasicType('soundLevelType', 2, 'IsLoud')
@@ -6057,7 +6236,7 @@ class FnvWEAPRecord(FnvBaseRecord):
                                              'critMult', 'critFlags', 'critEffect',
                                              'vatsEffect', 'vatsSkill', 'vatsDamageMult', 'AP',
                                              'silenceType', 'modRequiredType',
-                                             'soundLevelType']#'modt_p', 
+                                             'soundLevelType']#'modt_p',
 
 class FnvAMMORecord(FnvBaseRecord):
     _Type = 'AMMO'
@@ -6135,7 +6314,7 @@ class FnvAMMORecord(FnvBaseRecord):
                                              'weight', 'consumedAmmo',
                                              'consumedPercentage', 'shortName',
                                              'abbreviation', 'effects']
-    
+
 class FnvNPC_Record(FnvBaseRecord):
     _Type = 'NPC_'
     def mergeFilter(self,modSet):
@@ -6191,7 +6370,7 @@ class FnvNPC_Record(FnvBaseRecord):
     destructable_list = CBashGrouped(37, FNVDestructable, True)
 
     script = CBashFORMID(42)
-    
+
     def create_item(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 43, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 43, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -6265,7 +6444,7 @@ class FnvNPC_Record(FnvBaseRecord):
     unknown = CBashGeneric(107, c_ushort)
     height = CBashFLOAT32(108)
     weight = CBashFLOAT32(109)
-    
+
     IsFemale = CBashBasicFlag('flags', 0x00000001)
     IsEssential = CBashBasicFlag('flags', 0x00000002)
     IsCharGenFacePreset = CBashBasicFlag('flags', 0x00000004)
@@ -6300,12 +6479,12 @@ class FnvNPC_Record(FnvBaseRecord):
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
     IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
-    
+
     IsUnaggressive = CBashBasicType('aggression', 0, 'IsAggressive')
     IsAggressive = CBashBasicType('aggression', 1, 'IsUnaggressive')
     IsVeryAggressive = CBashBasicType('aggression', 2, 'IsUnaggressive')
     IsFrenzied = CBashBasicType('aggression', 3, 'IsUnaggressive')
-    
+
     IsCowardly = CBashBasicType('confidence', 0, 'IsCautious')
     IsCautious = CBashBasicType('confidence', 1, 'IsCowardly')
     IsAverage = CBashBasicType('confidence', 2, 'IsCowardly')
@@ -6429,7 +6608,7 @@ class FnvCREARecord(FnvBaseRecord):
         sounds = CBashLIST_LIST(2, Sound)
         sounds_list = CBashLIST_LIST(2, Sound, True)
 
-        
+
         IsLeftFoot = CBashBasicType('soundType', 0, 'IsRightFoot')
         IsRightFoot = CBashBasicType('soundType', 1, 'IsLeftFoot')
         IsLeftBackFoot = CBashBasicType('soundType', 2, 'IsLeftFoot')
@@ -6547,7 +6726,7 @@ class FnvCREARecord(FnvBaseRecord):
     impactType = CBashGeneric(79, c_ulong)
     soundLevel = CBashGeneric(80, c_ulong)
     inheritsSoundsFrom = CBashFORMID(81)
-    
+
     def create_soundTyp(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 82, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 82, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -6611,7 +6790,7 @@ class FnvCREARecord(FnvBaseRecord):
     IsUseBaseData = CBashBasicFlag('templateFlags', 0x00000080)
     IsUseInventory = CBashBasicFlag('templateFlags', 0x00000100)
     IsUseScript = CBashBasicFlag('templateFlags', 0x00000200)
-    
+
     IsAggroRadiusBehavior = CBashBasicFlag('aggroFlags', 0x01)
 
     IsServicesWeapons = CBashBasicFlag('services', 0x00000001)
@@ -6633,7 +6812,7 @@ class FnvCREARecord(FnvBaseRecord):
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
     IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
-    
+
     IsAnimal = CBashBasicType('creatureType', 0, 'IsMutatedAnimal')
     IsMutatedAnimal = CBashBasicType('creatureType', 1, 'IsAnimal')
     IsMutatedInsect = CBashBasicType('creatureType', 2, 'IsAnimal')
@@ -6642,16 +6821,16 @@ class FnvCREARecord(FnvBaseRecord):
     IsFeralGhoul = CBashBasicType('creatureType', 5, 'IsAnimal')
     IsRobot = CBashBasicType('creatureType', 6, 'IsAnimal')
     IsGiant = CBashBasicType('creatureType', 7, 'IsAnimal')
-    
+
     IsLoud = CBashBasicType('soundLevel', 0, 'IsNormal')
     IsNormal = CBashBasicType('soundLevel', 1, 'IsLoud')
     IsSilent = CBashBasicType('soundLevel', 2, 'IsLoud')
-    
+
     IsUnaggressive = CBashBasicType('aggression', 0, 'IsAggressive')
     IsAggressive = CBashBasicType('aggression', 1, 'IsUnaggressive')
     IsVeryAggressive = CBashBasicType('aggression', 2, 'IsUnaggressive')
     IsFrenzied = CBashBasicType('aggression', 3, 'IsUnaggressive')
-    
+
     IsCowardly = CBashBasicType('confidence', 0, 'IsCautious')
     IsCautious = CBashBasicType('confidence', 1, 'IsCowardly')
     IsAverage = CBashBasicType('confidence', 2, 'IsCowardly')
@@ -6868,7 +7047,7 @@ class FnvLVLCRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
-        
+
     class Entry(ListComponent):
         level = CBashGeneric_LIST(1, c_short)
         unused1 = CBashUINT8ARRAY_LIST(2, 2)
@@ -6908,7 +7087,7 @@ class FnvLVLCRecord(FnvBaseRecord):
     altTextures_list = CBashLIST(19, FNVAltTexture, True)
 
     modelFlags = CBashGeneric(20, c_ubyte)
-    
+
     IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
     IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
     IsUseAll = CBashBasicFlag('flags', 0x00000004)
@@ -6927,7 +7106,7 @@ class FnvLVLCRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'chanceNone', 'flags',
                                              'entries_list', 'modPath',
-                                             'modb', 
+                                             'modb',
                                              'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvLVLNRecord(FnvBaseRecord):
@@ -6975,7 +7154,7 @@ class FnvLVLNRecord(FnvBaseRecord):
     altTextures_list = CBashLIST(19, FNVAltTexture, True)
 
     modelFlags = CBashGeneric(20, c_ubyte)
-    
+
     IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
     IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
     IsUseAll = CBashBasicFlag('flags', 0x00000004)
@@ -6994,7 +7173,7 @@ class FnvLVLNRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'chanceNone', 'flags',
                                              'entries_list', 'modPath',
-                                             'modb', 
+                                             'modb',
                                              'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvKEYMRecord(FnvBaseRecord):
@@ -7080,7 +7259,7 @@ class FnvALCHRecord(FnvBaseRecord):
     value = CBashGeneric(24, c_long)
     flags = CBashGeneric(25, c_ubyte)
     unused1 = CBashUINT8ARRAY(26, 3)
-    
+
     withdrawalEffect = CBashFORMID(27)
     addictionChance = CBashGeneric(28, c_long)
     consumeSound = CBashFORMID(29)
@@ -7156,7 +7335,7 @@ class FnvIDLMRecord(FnvBaseRecord):
     count = CBashGeneric(14, c_ubyte)
     timer = CBashFLOAT32(15)
     animations = CBashFORMIDARRAY(16)
-    
+
     IsRunInSequence = CBashBasicFlag('flags', 0x00000001)
     IsDoOnce = CBashBasicFlag('flags', 0x00000004)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
@@ -7249,7 +7428,7 @@ class FnvCOBJRecord(FnvBaseRecord):
     dropSound = CBashFORMID(23)
     value = CBashGeneric(24, c_long)
     weight = CBashFLOAT32(25)
-    
+
     IsHead = CBashBasicFlag('modelFlags', 0x01)
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
@@ -7335,7 +7514,7 @@ class FnvPROJRecord(FnvBaseRecord):
     IsTorso = CBashBasicFlag('modelFlags', 0x02)
     IsRightHand = CBashBasicFlag('modelFlags', 0x04)
     IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
-    
+
     IsMissile = CBashBasicType('projType', 1, 'IsLobber')
     IsLobber = CBashBasicType('projType', 2, 'IsMissile')
     IsBeam = CBashBasicType('projType', 4, '')
@@ -7387,7 +7566,7 @@ class FnvLVLIRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
-        
+
     class Entry(ListComponent):
         level = CBashGeneric_LIST(1, c_short)
         unused1 = CBashUINT8ARRAY_LIST(2, 2)
@@ -7407,47 +7586,23 @@ class FnvLVLIRecord(FnvBaseRecord):
     boundZ2 = CBashGeneric(12, c_short)
     chanceNone = CBashGeneric(13, c_ubyte)
     flags = CBashGeneric(14, c_ubyte)
+    globalId = CBashFORMID(15)
 
     def create_entry(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 15, length)
-    entries = CBashLIST(15, Entry)
-    entries_list = CBashLIST(15, Entry, True)
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 16, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Entry(self._CollectionID, self._ModID, self._RecordID, 16, length)
+    entries = CBashLIST(16, Entry)
+    entries_list = CBashLIST(16, Entry, True)
 
-    modPath = CBashISTRING(16)
-    modb = CBashFLOAT32(17)
-    modt_p = CBashUINT8ARRAY(18)
 
-    def create_altTexture(self):
-        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 1)
-        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 19, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
-        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 19, length)
-    altTextures = CBashLIST(19, FNVAltTexture)
-    altTextures_list = CBashLIST(19, FNVAltTexture, True)
-
-    modelFlags = CBashGeneric(20, c_ubyte)
-    
     IsCalcFromAllLevels = CBashBasicFlag('flags', 0x00000001)
     IsCalcForEachItem = CBashBasicFlag('flags', 0x00000002)
     IsUseAll = CBashBasicFlag('flags', 0x00000004)
-
-    IsHead = CBashBasicFlag('modelFlags', 0x01)
-    IsTorso = CBashBasicFlag('modelFlags', 0x02)
-    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
-    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
-    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                           'boundX2', 'boundY2', 'boundZ2',
-                                           'chanceNone', 'flags',
-                                           'entries_list', 'modPath',
-                                           'modb', 'modt_p',
-                                           'altTextures_list', 'modelFlags']
-    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                             'boundX2', 'boundY2', 'boundZ2',
-                                             'chanceNone', 'flags',
-                                             'entries_list', 'modPath',
-                                             'modb', 
-                                             'altTextures_list', 'modelFlags']#'modt_p',
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'chanceNone', 'flags',
+                                                         'globalId', 'entries_list']
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'
@@ -7468,12 +7623,12 @@ class FnvWTHRRecord(FnvBaseRecord):
         nightGreen = CBashGeneric_GROUP(13, c_ubyte)
         nightBlue = CBashGeneric_GROUP(14, c_ubyte)
         unused4 = CBashUINT8ARRAY_GROUP(15, 1)
-        
+
         noonRed = CBashGeneric_GROUP(16, c_ubyte)
         noonGreen = CBashGeneric_GROUP(17, c_ubyte)
         noonBlue = CBashGeneric_GROUP(18, c_ubyte)
         unused5 = CBashUINT8ARRAY_GROUP(19, 1)
-        
+
         midnightRed = CBashGeneric_GROUP(20, c_ubyte)
         midnightGreen = CBashGeneric_GROUP(21, c_ubyte)
         midnightBlue = CBashGeneric_GROUP(22, c_ubyte)
@@ -7575,7 +7730,7 @@ class FnvWTHRRecord(FnvBaseRecord):
     boltRed = CBashGeneric(287, c_ubyte)
     boltGreen = CBashGeneric(288, c_ubyte)
     boltBlue = CBashGeneric(289, c_ubyte)
-    
+
     def create_sound(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 290, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 290, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -7639,7 +7794,7 @@ class FnvWTHRRecord(FnvBaseRecord):
                                              'boltFadeIn', 'boltFadeOut',
                                              'boltFrequency', 'weatherType',
                                              'boltRed', 'boltGreen', 'boltBlue',
-                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p', 
+                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p',
 
 class FnvCLMTRecord(FnvBaseRecord):
     _Type = 'CLMT'
@@ -7808,7 +7963,7 @@ class FnvREGNRecord(FnvBaseRecord):
         sounds = CBashLIST_LIST(13, Sound)
         sounds_list = CBashLIST_LIST(13, Sound, True)
 
-        
+
         def create_weather(self):
             length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 1)
             CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 14, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -7817,9 +7972,9 @@ class FnvREGNRecord(FnvBaseRecord):
         weathers_list = CBashLIST_LIST(14, Weather, True)
 
         imposters = CBashFORMIDARRAY_LIST(15)
-        
+
         IsOverride = CBashBasicFlag('flags', 0x00000001)
-        
+
         IsObject = CBashBasicType('entryType', 2, 'IsWeather')
         IsWeather = CBashBasicType('entryType', 3, 'IsObject')
         IsMap = CBashBasicType('entryType', 4, 'IsObject')
@@ -7829,7 +7984,7 @@ class FnvREGNRecord(FnvBaseRecord):
         IsImposter = CBashBasicType('entryType', 8, 'IsObject')
         IsDefault = CBashBasicType('musicType', 0, 'IsPublic')
         IsPublic = CBashBasicType('musicType', 1, 'IsDefault')
-        IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')        
+        IsDungeon = CBashBasicType('musicType', 2, 'IsDefault')
         exportattrs = copyattrs = ['entryType', 'flags', 'priority', 'objects_list',
                                    'mapName', 'iconPath', 'grasses_list', 'musicType',
                                    'music', 'incidentalMedia', 'battleMedias',
@@ -7875,7 +8030,7 @@ class FnvNAVIRecord(FnvBaseRecord):
                      'xGrid', 'yGrid', 'unknown2_p']
         exportattrs = ['mesh', 'location',
                        'xGrid', 'yGrid']#'unknown1', 'unknown2_p'
-        
+
     class _NVCI(ListComponent):
         unknown1 = CBashFORMID_LIST(1)
         unknown2 = CBashFORMIDARRAY_LIST(2)
@@ -7883,7 +8038,7 @@ class FnvNAVIRecord(FnvBaseRecord):
         doors = CBashFORMIDARRAY_LIST(4)
         exportattrs = copyattrs = ['unknown1', 'unknown2',
                                    'unknown3', 'doors']
-        
+
     version = CBashGeneric(7, c_ulong)
 
     def create_NVMI(self):
@@ -7893,7 +8048,7 @@ class FnvNAVIRecord(FnvBaseRecord):
     NVMI = CBashLIST(8, _NVMI)
     NVMI_list = CBashLIST(8, _NVMI, True)
 
-    
+
     def create_NVCI(self):
         length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 1)
         CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 9, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
@@ -7915,9 +8070,28 @@ class FnvCELLRecord(FnvBaseRecord):
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
-        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 65, 0, 0, 0, 0, 0, 0, 0)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 67, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
+
+    class SwappedImpact(ListComponent):
+        material = CBashGeneric_LIST(1, c_ulong)
+        oldImpact = CBashFORMID_LIST(2)
+        newImpact = CBashFORMID_LIST(3)
+
+        IsStone = CBashBasicType('material', 0, 'IsDirt')
+        IsDirt = CBashBasicType('material', 1, 'IsStone')
+        IsGrass = CBashBasicType('material', 2, 'IsStone')
+        IsGlass = CBashBasicType('material', 3, 'IsStone')
+        IsMetal = CBashBasicType('material', 4, 'IsStone')
+        IsWood = CBashBasicType('material', 5, 'IsStone')
+        IsOrganic = CBashBasicType('material', 6, 'IsStone')
+        IsCloth = CBashBasicType('material', 7, 'IsStone')
+        IsWater = CBashBasicType('material', 8, 'IsStone')
+        IsHollowMetal = CBashBasicType('material', 9, 'IsStone')
+        IsOrganicBug = CBashBasicType('material', 10, 'IsStone')
+        IsOrganicGlow = CBashBasicType('material', 11, 'IsStone')
+        exportattrs = copyattrs = ['material', 'oldImpact', 'newImpact']
 
     full = CBashSTRING(7)
     flags = CBashGeneric(8, c_ubyte)
@@ -7943,86 +8117,100 @@ class FnvCELLRecord(FnvBaseRecord):
     directionalFade = CBashFLOAT32(28)
     fogClip = CBashFLOAT32(29)
     fogPower = CBashFLOAT32(30)
-    concSolid = CBashSTRING(31)
-    concBroken = CBashSTRING(32)
-    metalSolid = CBashSTRING(33)
-    metalHollow = CBashSTRING(34)
-    metalSheet = CBashSTRING(35)
-    wood = CBashSTRING(36)
-    sand = CBashSTRING(37)
-    dirt = CBashSTRING(38)
-    grass = CBashSTRING(39)
-    water = CBashSTRING(40)
-    lightTemplate = CBashFORMID(41)
-    lightFlags = CBashGeneric(42, c_ulong)
-    waterHeight = CBashFLOAT32(43)
-    waterNoisePath = CBashISTRING(44)
-    regions = CBashFORMIDARRAY(45)
-    imageSpace = CBashFORMID(46)
-    xcet_p = CBashUINT8ARRAY(47)
-    encounterZone = CBashFORMID(48)
-    climate = CBashFORMID(49)
-    water = CBashFORMID(50)
-    owner = CBashFORMID(51)
-    rank = CBashGeneric(52, c_long)
-    acousticSpace = CBashFORMID(53)
-    xcmt_p = CBashUINT8ARRAY(54)
-    music = CBashFORMID(55)
+
+    def create_swappedImpact(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 31, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 31, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.SwappedImpact(self._CollectionID, self._ModID, self._RecordID, 31, length)
+    swappedImpacts = CBashLIST(31, SwappedImpact)
+    swappedImpacts_list = CBashLIST(31, SwappedImpact, True)
+
+    concSolid = CBashSTRING(32)
+    concBroken = CBashSTRING(33)
+    metalSolid = CBashSTRING(34)
+    metalHollow = CBashSTRING(35)
+    metalSheet = CBashSTRING(36)
+    wood = CBashSTRING(37)
+    sand = CBashSTRING(38)
+    dirt = CBashSTRING(39)
+    grass = CBashSTRING(40)
+    water = CBashSTRING(41)
+    lightTemplate = CBashFORMID(42)
+    lightFlags = CBashGeneric(43, c_ulong)
+    waterHeight = CBashFLOAT32(44)
+    waterNoisePath = CBashISTRING(45)
+    regions = CBashFORMIDARRAY(46)
+    imageSpace = CBashFORMID(47)
+    xcet_p = CBashUINT8ARRAY(48)
+    encounterZone = CBashFORMID(49)
+    climate = CBashFORMID(50)
+    water = CBashFORMID(51)
+    owner = CBashFORMID(52)
+    rank = CBashGeneric(53, c_long)
+    acousticSpace = CBashFORMID(54)
+    xcmt_p = CBashUINT8ARRAY(55)
+    music = CBashFORMID(56)
     def create_ACHR(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACHR", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvACHRRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    ACHR = CBashSUBRECORDARRAY(56, FnvACHRRecord, "ACHR", 0)
+    ACHR = CBashSUBRECORDARRAY(57, FnvACHRRecord, "ACHR", 0)
 
     def create_ACRE(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("ACRE", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvACRERecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    ACRE = CBashSUBRECORDARRAY(57, FnvACRERecord, "ACRE", 0)
+    ACRE = CBashSUBRECORDARRAY(58, FnvACRERecord, "ACRE", 0)
 
     def create_REFR(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("REFR", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvREFRRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    REFR = CBashSUBRECORDARRAY(58, FnvREFRRecord, "REFR", 0)
+    REFR = CBashSUBRECORDARRAY(59, FnvREFRRecord, "REFR", 0)
 
     def create_PGRE(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PGRE", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvPGRERecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    PGRE = CBashSUBRECORDARRAY(59, FnvPGRERecord, "PGRE", 0)
+    PGRE = CBashSUBRECORDARRAY(60, FnvPGRERecord, "PGRE", 0)
 
     def create_PMIS(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PMIS", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvPMISRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    PMIS = CBashSUBRECORDARRAY(60, FnvPMISRecord, "PMIS", 0)
+    PMIS = CBashSUBRECORDARRAY(61, FnvPMISRecord, "PMIS", 0)
 
     def create_PBEA(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PBEA", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvPBEARecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    PBEA = CBashSUBRECORDARRAY(61, FnvPBEARecord, "PBEA", 0)
+    PBEA = CBashSUBRECORDARRAY(62, FnvPBEARecord, "PBEA", 0)
 
     def create_PFLA(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PFLA", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvPFLARecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    PFLA = CBashSUBRECORDARRAY(62, FnvPFLARecord, "PFLA", 0)
+    PFLA = CBashSUBRECORDARRAY(63, FnvPFLARecord, "PFLA", 0)
 
     def create_PCBE(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("PCBE", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvPCBERecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    PCBE = CBashSUBRECORDARRAY(63, FnvPCBERecord, "PCBE", 0)
+    PCBE = CBashSUBRECORDARRAY(64, FnvPCBERecord, "PCBE", 0)
 
     def create_NAVM(self, EditorID=0, FormID=0):
         RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("NAVM", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
         if(RecordID): return FnvNAVMRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
         return None
-    NAVM = CBashSUBRECORDARRAY(64, FnvNAVMRecord, "NAVM", 0)
+    NAVM = CBashSUBRECORDARRAY(65, FnvNAVMRecord, "NAVM", 0)
 
-    
+    def create_LAND(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("LAND", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvLANDRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    LAND = CBashSUBRECORD(66, FnvLANDRecord, "LAND", 0)
+
+
     IsInterior = CBashBasicFlag('flags', 0x00000001)
     IsHasWater = CBashBasicFlag('flags', 0x00000002)
     IsInvertFastTravel = CBashBasicFlag('flags', 0x00000004)
@@ -8031,12 +8219,12 @@ class FnvCELLRecord(FnvBaseRecord):
     IsPublicPlace = CBashBasicFlag('flags', 0x00000020)
     IsHandChanged = CBashBasicFlag('flags', 0x00000040)
     IsBehaveLikeExterior = CBashBasicFlag('flags', 0x00000080)
-    
+
     IsQuad1ForceHidden = CBashBasicFlag('quadFlags', 0x00000001)
     IsQuad2ForceHidden = CBashBasicFlag('quadFlags', 0x00000002)
     IsQuad3ForceHidden = CBashBasicFlag('quadFlags', 0x00000004)
     IsQuad4ForceHidden = CBashBasicFlag('quadFlags', 0x00000008)
-        
+
     IsLightAmbientInherited = CBashBasicFlag('lightFlags', 0x00000001)
     IsLightDirectionalColorInherited = CBashBasicFlag('lightFlags', 0x00000002)
     IsLightFogColorInherited = CBashBasicFlag('lightFlags', 0x00000004)
@@ -8069,12 +8257,143 @@ class FnvCELLRecord(FnvBaseRecord):
                                              'lightTemplate', 'lightFlags', 'waterHeight',
                                              'waterNoisePath', 'regions', 'imageSpace',
                                              'encounterZone', 'climate', 'water', 'owner',
-                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p', 
+                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p',
 
 class FnvWRLDRecord(FnvBaseRecord):
     _Type = 'WRLD'
+    class SwappedImpact(ListComponent):
+        material = CBashGeneric_LIST(1, c_ulong)
+        oldImpact = CBashFORMID_LIST(2)
+        newImpact = CBashFORMID_LIST(3)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        IsStone = CBashBasicType('material', 0, 'IsDirt')
+        IsDirt = CBashBasicType('material', 1, 'IsStone')
+        IsGrass = CBashBasicType('material', 2, 'IsStone')
+        IsGlass = CBashBasicType('material', 3, 'IsStone')
+        IsMetal = CBashBasicType('material', 4, 'IsStone')
+        IsWood = CBashBasicType('material', 5, 'IsStone')
+        IsOrganic = CBashBasicType('material', 6, 'IsStone')
+        IsCloth = CBashBasicType('material', 7, 'IsStone')
+        IsWater = CBashBasicType('material', 8, 'IsStone')
+        IsHollowMetal = CBashBasicType('material', 9, 'IsStone')
+        IsOrganicBug = CBashBasicType('material', 10, 'IsStone')
+        IsOrganicGlow = CBashBasicType('material', 11, 'IsStone')
+        exportattrs = copyattrs = ['material', 'oldImpact', 'newImpact']
+
+    full = CBashSTRING(7)
+    encounterZone = CBashFORMID(8)
+    parent = CBashFORMID(9)
+    parentFlags = CBashGeneric(10, c_ushort)
+    climate = CBashFORMID(11)
+    water = CBashFORMID(12)
+    lodWater = CBashFORMID(13)
+    lodWaterHeight = CBashFLOAT32(14)
+    defaultLandHeight = CBashFLOAT32(15)
+    defaultWaterHeight = CBashFLOAT32(16)
+    iconPath = CBashISTRING(17)
+    smallIconPath = CBashISTRING(18)
+    dimX = CBashGeneric(19, c_long)
+    dimY = CBashGeneric(20, c_long)
+    NWCellX = CBashGeneric(21, c_short)
+    NWCellY = CBashGeneric(22, c_short)
+    SECellX = CBashGeneric(23, c_short)
+    SECellY = CBashGeneric(24, c_short)
+    mapScale = CBashFLOAT32(25)
+    xCellOffset = CBashFLOAT32(26)
+    yCellOffset = CBashFLOAT32(27)
+    imageSpace = CBashFORMID(28)
+    flags = CBashGeneric(29, c_ubyte)
+    xMinObjBounds = CBashFLOAT32(30)
+    yMinObjBounds = CBashFLOAT32(31)
+    xMaxObjBounds = CBashFLOAT32(32)
+    yMaxObjBounds = CBashFLOAT32(33)
+    music = CBashFORMID(34)
+    canopyShadowPath = CBashISTRING(35)
+    waterNoisePath = CBashISTRING(36)
+
+    def create_swappedImpact(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 37, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 37, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.SwappedImpact(self._CollectionID, self._ModID, self._RecordID, 37, length)
+    swappedImpacts = CBashLIST(37, SwappedImpact)
+    swappedImpacts_list = CBashLIST(37, SwappedImpact, True)
+
+    concSolid = CBashSTRING(38)
+    concBroken = CBashSTRING(39)
+    metalSolid = CBashSTRING(40)
+    metalHollow = CBashSTRING(41)
+    metalSheet = CBashSTRING(42)
+    wood = CBashSTRING(43)
+    sand = CBashSTRING(44)
+    dirt = CBashSTRING(45)
+    grass = CBashSTRING(46)
+    water = CBashSTRING(47)
+    ofst_p = CBashUINT8ARRAY(48)
+
+    def create_WorldCELL(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CELL", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 2)
+        if(RecordID): return FnvCELLRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 2)
+        return None
+    WorldCELL = CBashSUBRECORD(49, FnvCELLRecord, "CELL", 2)
+
+    def create_CELLS(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("CELL", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvCELLRecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    CELLS = CBashSUBRECORDARRAY(50, FnvCELLRecord, "CELL", 0)
+
+
+    IsSmallWorld = CBashBasicFlag('flags', 0x01)
+    IsNoFastTravel = CBashBasicFlag('flags', 0x02)
+    IsUnknown2 = CBashBasicFlag('flags', 0x04)
+    IsNoLODWater = CBashBasicFlag('flags', 0x10)
+    IsNoLODNoise = CBashBasicFlag('flags', 0x20)
+    IsNoNPCFallDmg = CBashBasicFlag('flags', 0x40)
+
+    IsUseLandData = CBashBasicFlag('parentFlags', 0x0001)
+    IsUseLODData = CBashBasicFlag('parentFlags', 0x0002)
+    IsUseMapData = CBashBasicFlag('parentFlags', 0x0004)
+    IsUseWaterData = CBashBasicFlag('parentFlags', 0x0008)
+    IsUseClimateData = CBashBasicFlag('parentFlags', 0x0010)
+    IsUseImageSpaceData = CBashBasicFlag('parentFlags', 0x0020)
+    IsUnknown1 = CBashBasicFlag('parentFlags', 0x0040)
+    IsNeedsWaterAdjustment = CBashBasicFlag('parentFlags', 0x0080)
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'encounterZone', 'parent',
+                                           'parentFlags', 'climate', 'water',
+                                           'lodWater', 'lodWaterHeight',
+                                           'defaultLandHeight',
+                                           'defaultWaterHeight', 'iconPath',
+                                           'smallIconPath', 'dimX', 'dimY',
+                                           'NWCellX', 'NWCellY', 'SECellX',
+                                           'SECellY', 'mapScale', 'xCellOffset',
+                                           'yCellOffset', 'imageSpace', 'flags',
+                                           'xMinObjBounds', 'yMinObjBounds',
+                                           'xMaxObjBounds', 'yMaxObjBounds',
+                                           'music', 'canopyShadowPath',
+                                           'waterNoisePath',
+                                           'swappedImpacts_list', 'concSolid',
+                                           'concBroken', 'metalSolid',
+                                           'metalHollow', 'metalSheet', 'wood',
+                                           'sand', 'dirt', 'grass', 'water',
+                                           'ofst_p']
+
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'encounterZone', 'parent',
+                                             'parentFlags', 'climate', 'water',
+                                             'lodWater', 'lodWaterHeight',
+                                             'defaultLandHeight',
+                                             'defaultWaterHeight', 'iconPath',
+                                             'smallIconPath', 'dimX', 'dimY',
+                                             'NWCellX', 'NWCellY', 'SECellX',
+                                             'SECellY', 'mapScale', 'xCellOffset',
+                                             'yCellOffset', 'imageSpace', 'flags',
+                                             'xMinObjBounds', 'yMinObjBounds',
+                                             'xMaxObjBounds', 'yMaxObjBounds',
+                                             'music', 'canopyShadowPath',
+                                             'waterNoisePath',
+                                             'swappedImpacts_list', 'concSolid',
+                                             'concBroken', 'metalSolid',
+                                             'metalHollow', 'metalSheet', 'wood',
+                                             'sand', 'dirt', 'grass', 'water']#,'ofst_p'
 
 class FnvDIALRecord(FnvBaseRecord):
     _Type = 'DIAL'
@@ -8921,18 +9240,21 @@ class ObLANDRecord(ObBaseRecord):
                      'alphaLayer7Texture', 'alphaLayer7Opacity',
                      'alphaLayer8Texture', 'alphaLayer8Opacity']
 
-    data = CBashUINT8ARRAY(5)
+    data_p = CBashUINT8ARRAY(5)
 
     def get_normals(self):
         return [[self.Normal(self._CollectionID, self._ModID, self._RecordID, 6, x, 0, y) for y in range(0,33)] for x in range(0,33)]
     def set_normals(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.normals, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.normals
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     normals = property(get_normals, set_normals)
     def get_normals_list(self):
-        return ExtractCopyList(self.normals)
+        return [ExtractCopyList([self.Normal(self._CollectionID, self._ModID, self._RecordID, 6, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+
     normals_list = property(get_normals_list, set_normals)
 
     heightOffset = CBashFLOAT32(7)
@@ -8942,11 +9264,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_heights(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.heights, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.heights
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     heights = property(get_heights, set_heights)
     def get_heights_list(self):
-        return ExtractCopyList(self.heights)
+        return [ExtractCopyList([self.Height(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     heights_list = property(get_heights_list, set_heights)
 
     unused1 = CBashUINT8ARRAY(9, 3)
@@ -8956,11 +9280,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_colors(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.colors, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.colors
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     colors = property(get_colors, set_colors)
     def get_colors_list(self):
-        return ExtractCopyList(self.colors)
+        return [ExtractCopyList([self.Color(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     colors_list = property(get_colors_list, set_colors)
 
     def create_baseTexture(self):
@@ -8990,11 +9316,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_Positions(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.Positions, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.Positions
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     Positions = property(get_Positions, set_Positions)
     def get_Positions_list(self):
-        return ExtractCopyList(self.Positions)
+        return [ExtractCopyList([self.Position(self._CollectionID, self._ModID, self._RecordID, 14, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     Positions_list = property(get_Positions_list, set_Positions)
     copyattrs = ObBaseRecord.baseattrs + ['data_p', 'normals_list', 'heights_list', 'heightOffset',
                                         'colors_list', 'baseTextures_list', 'alphaLayers_list',
@@ -11883,7 +12211,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
-                        ('PBEA',FnvPBEARecord),
+                        ('PBEA',FnvPBEARecord),('LAND',FnvLANDRecord),
                         ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
@@ -13236,6 +13564,22 @@ class FnvModFile(object):
         return navms
 
     @property
+    def LANDS(self):
+        lands = []
+        for cell in self.CELL:
+            land = cell.LAND
+            if(land): lands += [land]
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell):
+                land = cell.LAND
+                if(land): lands += [land]
+            for cell in world.CELLS:
+                land = cell.LAND
+                if(land): lands += [land]
+        return lands
+
+    @property
     def tops(self):
         return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
                      ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
@@ -13294,6 +13638,7 @@ class FnvModFile(object):
                      ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
                      ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
+                     ("LAND", self.LANDS),
                      ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),

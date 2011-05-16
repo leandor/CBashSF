@@ -853,7 +853,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
         }
 
     //See if an existing record was returned instead of the requested copy
-    if(RecordCopy->formID != curRecord->formID)
+    if(options.ExistingReturned)
         return RecordCopy;
 
     //Give the record a new formID if it isn't an override record
@@ -887,8 +887,15 @@ SINT32 Collection::DeleteRecord(ModFile *&curModFile, Record *&curRecord, Record
     RecordDeleter deleter(curRecord, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
 
     UINT32 RecordType = curRecord->GetType();
-    UINT32 TopType = ParentRecord != NULL ? (ParentRecord->GetParentType() ? ParentRecord->GetParentType() : ParentRecord->GetType()) : RecordType;
-
+    UINT32 TopType = ParentRecord != NULL ?
+                        (ParentRecord->GetParentType() ?
+                            ParentRecord->GetParentType() :
+                            ParentRecord->GetType()) :
+                        RecordType;
+    //if(ParentRecord != NULL)
+    //    DPRINT("Deleting %08X (%s) under %08X (%s) vs (%c%c%c%c) under (%c%c%c%c)", curRecord->formID, curRecord->GetStrType(), ParentRecord->formID, ParentRecord->GetStrType(), ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3]);
+    //else
+    //    DPRINT("Deleting %08X (%s) vs (%c%c%c%c)", curRecord->formID, curRecord->GetStrType(), ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3]);
     curModFile->VisitRecords(TopType, RecordType, deleter, true);
     return deleter.GetCount();
     }

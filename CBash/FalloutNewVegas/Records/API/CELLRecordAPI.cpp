@@ -168,35 +168,65 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FLOAT32_FIELD;
         case 30: //fogPower
             return FLOAT32_FIELD;
-        case 31: //concSolid
+        case 31: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpacts
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)IMPS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    return UINT32_TYPE_FIELD;
+                case 2: //oldImpact
+                    return FORMID_FIELD;
+                case 3: //newImpact
+                    return FORMID_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 32: //concSolid
             return STRING_FIELD;
-        case 32: //concBroken
+        case 33: //concBroken
             return STRING_FIELD;
-        case 33: //metalSolid
+        case 34: //metalSolid
             return STRING_FIELD;
-        case 34: //metalHollow
+        case 35: //metalHollow
             return STRING_FIELD;
-        case 35: //metalSheet
+        case 36: //metalSheet
             return STRING_FIELD;
-        case 36: //wood
+        case 37: //wood
             return STRING_FIELD;
-        case 37: //sand
+        case 38: //sand
             return STRING_FIELD;
-        case 38: //dirt
+        case 39: //dirt
             return STRING_FIELD;
-        case 39: //grass
+        case 40: //grass
             return STRING_FIELD;
-        case 40: //water
+        case 41: //water
             return STRING_FIELD;
-        case 41: //lightTemplate
+        case 42: //lightTemplate
             return FORMID_FIELD;
-        case 42: //lightFlags
+        case 43: //lightFlags
             return UINT32_FLAG_FIELD;
-        case 43: //waterHeight
+        case 44: //waterHeight
             return FLOAT32_FIELD;
-        case 44: //waterNoisePath
+        case 45: //waterNoisePath
             return ISTRING_FIELD;
-        case 45: //regions
+        case 46: //regions
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -207,9 +237,9 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 46: //imageSpace
+        case 47: //imageSpace
             return FORMID_FIELD;
-        case 47: //xcet_p
+        case 48: //xcet_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -220,19 +250,19 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 48: //encounterZone
+        case 49: //encounterZone
             return FORMID_FIELD;
-        case 49: //climate
+        case 50: //climate
             return FORMID_FIELD;
-        case 50: //water
+        case 51: //water
             return FORMID_FIELD;
-        case 51: //owner
+        case 52: //owner
             return FORMID_FIELD;
-        case 52: //rank
+        case 53: //rank
             return SINT32_FIELD;
-        case 53: //acousticSpace
+        case 54: //acousticSpace
             return FORMID_FIELD;
-        case 54: //xcmt_p
+        case 55: //xcmt_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -243,9 +273,9 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 55: //music
+        case 56: //music
             return FORMID_FIELD;
-        case 56: //ACHR
+        case 57: //ACHR
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -256,7 +286,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 57: //ACRE
+        case 58: //ACRE
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -267,7 +297,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 58: //REFR
+        case 59: //REFR
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -278,7 +308,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 59: //PGRE
+        case 60: //PGRE
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -289,7 +319,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 60: //PMIS
+        case 61: //PMIS
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -300,7 +330,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 61: //PBEA
+        case 62: //PBEA
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -311,7 +341,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 62: //PFLA
+        case 63: //PFLA
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -322,7 +352,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 63: //PCBE
+        case 64: //PCBE
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -333,7 +363,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 64: //NAVM
+        case 65: //NAVM
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -344,7 +374,9 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 65: //Parent
+        case 66: //LAND
+            return SUBRECORD_FIELD;
+        case 67: //Parent
             return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -421,98 +453,116 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return XCLL.IsLoaded() ? &XCLL->fogClip : NULL;
         case 30: //fogPower
             return XCLL.IsLoaded() ? &XCLL->fogPower : NULL;
-        case 31: //concSolid
+        case 31: //swappedImpacts
+            if(ListIndex >= IMPS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    return &IMPS.value[ListIndex]->material;
+                case 2: //oldImpact
+                    return &IMPS.value[ListIndex]->oldImpact;
+                case 3: //newImpact
+                    return &IMPS.value[ListIndex]->newImpact;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 32: //concSolid
             return IMPF.IsLoaded() ? &IMPF->concSolid[0] : NULL;
-        case 32: //concBroken
+        case 33: //concBroken
             return IMPF.IsLoaded() ? &IMPF->concBroken[0] : NULL;
-        case 33: //metalSolid
+        case 34: //metalSolid
             return IMPF.IsLoaded() ? &IMPF->metalSolid[0] : NULL;
-        case 34: //metalHollow
+        case 35: //metalHollow
             return IMPF.IsLoaded() ? &IMPF->metalHollow[0] : NULL;
-        case 35: //metalSheet
+        case 36: //metalSheet
             return IMPF.IsLoaded() ? &IMPF->metalSheet[0] : NULL;
-        case 36: //wood
+        case 37: //wood
             return IMPF.IsLoaded() ? &IMPF->wood[0] : NULL;
-        case 37: //sand
+        case 38: //sand
             return IMPF.IsLoaded() ? &IMPF->sand[0] : NULL;
-        case 38: //dirt
+        case 39: //dirt
             return IMPF.IsLoaded() ? &IMPF->dirt[0] : NULL;
-        case 39: //grass
+        case 40: //grass
             return IMPF.IsLoaded() ? &IMPF->grass[0] : NULL;
-        case 40: //water
+        case 41: //water
             return IMPF.IsLoaded() ? &IMPF->water[0] : NULL;
-        case 41: //lightTemplate
+        case 42: //lightTemplate
             return &LTMP.value;
-        case 42: //lightFlags
+        case 43: //lightFlags
             return &LNAM.value;
-        case 43: //waterHeight
+        case 44: //waterHeight
             return &XCLW.value;
-        case 44: //waterNoisePath
+        case 45: //waterNoisePath
             return XNAM.value;
-        case 45: //regions
+        case 46: //regions
             *FieldValues = XCLR.IsLoaded() ? &XCLR.value[0] : NULL;
             return NULL;
-        case 46: //imageSpace
+        case 47: //imageSpace
             return &XCIM.value;
-        case 47: //xcet_p
+        case 48: //xcet_p
             *FieldValues = XCET.value;
             return NULL;
-        case 48: //encounterZone
+        case 49: //encounterZone
             return &XEZN.value;
-        case 49: //climate
+        case 50: //climate
             return &XCCM.value;
-        case 50: //water
+        case 51: //water
             return &XCWT.value;
-        case 51: //owner
+        case 52: //owner
             return Ownership.IsLoaded() ? &Ownership->XOWN.value : NULL;
-        case 52: //rank
+        case 53: //rank
             return Ownership.IsLoaded() ? Ownership->XRNK.value : NULL;
-        case 53: //acousticSpace
+        case 54: //acousticSpace
             return &XCAS.value;
-        case 54: //xcmt_p
+        case 55: //xcmt_p
             *FieldValues = XCMT.value;
             return NULL;
-        case 55: //music
+        case 56: //music
             return &XCMO.value;
-        case 56: //ACHR
+        case 57: //ACHR
             for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
             return NULL;
-        case 57: //ACRE
+        case 58: //ACRE
             for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
             return NULL;
             //*FieldValues = ACRE.size() != 0 ? &ACRE[0] : NULL;
             //return NULL;
-        case 58: //REFR
+        case 59: //REFR
             for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
             return NULL;
-        case 59: //PGRE
+        case 60: //PGRE
             for(UINT32 p = 0;p < (UINT32)PGRE.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PGRE[p];
             return NULL;
-        case 60: //PMIS
+        case 61: //PMIS
             for(UINT32 p = 0;p < (UINT32)PMIS.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PMIS[p];
             return NULL;
-        case 61: //PBEA
+        case 62: //PBEA
             for(UINT32 p = 0;p < (UINT32)PBEA.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PBEA[p];
             return NULL;
-        case 62: //PFLA
+        case 63: //PFLA
             for(UINT32 p = 0;p < (UINT32)PFLA.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PFLA[p];
             return NULL;
-        case 63: //PCBE
+        case 64: //PCBE
             for(UINT32 p = 0;p < (UINT32)PCBE.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = PCBE[p];
             return NULL;
-        case 64: //NAVM
+        case 65: //NAVM
             for(UINT32 p = 0;p < (UINT32)NAVM.size();++p)
                 ((RECORDIDARRAY)FieldValues)[p] = NAVM[p];
             return NULL;
-        case 65: //Parent
+        case 66: //LAND
+            return LAND;
+        case 67: //Parent
             return Parent;
         default:
             return NULL;
@@ -652,134 +702,159 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             XCLL.Load();
             XCLL->fogPower = *(FLOAT32 *)FieldValue;
             break;
-        case 31: //concSolid
+        case 31: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpactsSize
+                {
+                IMPS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    IMPS.value[ListIndex]->material = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //oldImpact
+                    IMPS.value[ListIndex]->oldImpact = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //newImpact
+                    IMPS.value[ListIndex]->newImpact = *(FORMID *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
+            break;
+        case 32: //concSolid
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->concSolid[0], 0x00, sizeof(IMPF->concSolid));
             memcpy(&IMPF->concSolid[0], FieldValue, ArraySize);
-            IMPF->concSolid[ArraySize + 1] = 0x00;
             break;
-        case 32: //concBroken
+        case 33: //concBroken
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->concBroken[0], 0x00, sizeof(IMPF->concBroken));
             memcpy(&IMPF->concBroken[0], FieldValue, ArraySize);
-            IMPF->concBroken[ArraySize + 1] = 0x00;
             break;
-        case 33: //metalSolid
+        case 34: //metalSolid
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->metalSolid[0], 0x00, sizeof(IMPF->metalSolid));
             memcpy(&IMPF->metalSolid[0], FieldValue, ArraySize);
-            IMPF->metalSolid[ArraySize + 1] = 0x00;
             break;
-        case 34: //metalHollow
+        case 35: //metalHollow
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->metalHollow[0], 0x00, sizeof(IMPF->metalHollow));
             memcpy(&IMPF->metalHollow[0], FieldValue, ArraySize);
-            IMPF->metalHollow[ArraySize + 1] = 0x00;
             break;
-        case 35: //metalSheet
+        case 36: //metalSheet
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->metalSheet[0], 0x00, sizeof(IMPF->metalSheet));
             memcpy(&IMPF->metalSheet[0], FieldValue, ArraySize);
-            IMPF->metalSheet[ArraySize + 1] = 0x00;
             break;
-        case 36: //wood
+        case 37: //wood
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->wood[0], 0x00, sizeof(IMPF->wood));
             memcpy(&IMPF->wood[0], FieldValue, ArraySize);
-            IMPF->wood[ArraySize + 1] = 0x00;
             break;
-        case 37: //sand
+        case 38: //sand
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->sand[0], 0x00, sizeof(IMPF->sand));
             memcpy(&IMPF->sand[0], FieldValue, ArraySize);
-            IMPF->sand[ArraySize + 1] = 0x00;
             break;
-        case 38: //dirt
+        case 39: //dirt
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->dirt[0], 0x00, sizeof(IMPF->dirt));
             memcpy(&IMPF->dirt[0], FieldValue, ArraySize);
-            IMPF->dirt[ArraySize + 1] = 0x00;
             break;
-        case 39: //grass
+        case 40: //grass
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->grass[0], 0x00, sizeof(IMPF->grass));
             memcpy(&IMPF->grass[0], FieldValue, ArraySize);
-            IMPF->grass[ArraySize + 1] = 0x00;
             break;
-        case 40: //water
+        case 41: //water
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
+            memset(&IMPF->water[0], 0x00, sizeof(IMPF->water));
             memcpy(&IMPF->water[0], FieldValue, ArraySize);
-            IMPF->water[ArraySize + 1] = 0x00;
             break;
-        case 41: //lightTemplate
+        case 42: //lightTemplate
             LTMP.value = *(FORMID *)FieldValue;
             return true;
-        case 42: //lightFlags
+        case 43: //lightFlags
             SetLightFlagMask(*(UINT32 *)FieldValue);
             break;
-        case 43: //waterHeight
+        case 44: //waterHeight
             XCLW.value = *(FLOAT32 *)FieldValue;
             break;
-        case 44: //waterNoisePath
+        case 45: //waterNoisePath
             XNAM.Copy((STRING)FieldValue);
             break;
-        case 45: //regions
+        case 46: //regions
             XCLR.value.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 XCLR.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 46: //imageSpace
+        case 47: //imageSpace
             XCIM.value = *(FORMID *)FieldValue;
             return true;
-        case 47: //xcet_p
+        case 48: //xcet_p
             XCET.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 48: //encounterZone
+        case 49: //encounterZone
             XEZN.value = *(FORMID *)FieldValue;
             return true;
-        case 49: //climate
+        case 50: //climate
             XCCM.value = *(FORMID *)FieldValue;
             return true;
-        case 50: //water
+        case 51: //water
             XCWT.value = *(FORMID *)FieldValue;
             return true;
-        case 51: //owner
+        case 52: //owner
             Ownership.Load();
             Ownership->XOWN.value = *(FORMID *)FieldValue;
             return true;
-        case 52: //rank
+        case 53: //rank
             Ownership.Load();
             Ownership->XRNK.Load();
             *Ownership->XRNK.value = *(SINT32 *)FieldValue;
             break;
-        case 53: //acousticSpace
+        case 54: //acousticSpace
             XCAS.value = *(FORMID *)FieldValue;
             return true;
-        case 54: //XCMT
+        case 55: //xcmt_p
             XCMT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 55: //music
+        case 56: //music
             XCMO.value = *(FORMID *)FieldValue;
             return true;
         default:
@@ -792,6 +867,7 @@ void CELLRecord::DeleteField(FIELD_IDENTIFIERS)
     {
     CELLXCLC defaultXCLC;
     FNVLIGHT defaultXCLL;
+    GENIMPS defaultIMPS;
     switch(FieldID)
         {
         case 1: //flags1
@@ -904,91 +980,116 @@ void CELLRecord::DeleteField(FIELD_IDENTIFIERS)
             if(XCLL.IsLoaded())
                 XCLL->fogPower = defaultXCLL.fogPower;
             return;
-        case 31: //concSolid
+        case 31: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpactsSize
+                {
+                IMPS.Unload();
+                return;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    IMPS.value[ListIndex]->material = defaultIMPS.material;
+                    return;
+                case 2: //oldImpact
+                    IMPS.value[ListIndex]->oldImpact = defaultIMPS.oldImpact;
+                    return;
+                case 3: //newImpact
+                    IMPS.value[ListIndex]->newImpact = defaultIMPS.newImpact;
+                    return;
+                default:
+                    return;
+                }
+            return;
+        case 32: //concSolid
             if(IMPF.IsLoaded())
                 memset(&IMPF->concSolid[0], 0x00, sizeof(IMPF->concSolid));
             return;
-        case 32: //concBroken
+        case 33: //concBroken
             if(IMPF.IsLoaded())
                 memset(&IMPF->concBroken[0], 0x00, sizeof(IMPF->concBroken));
             return;
-        case 33: //metalSolid
+        case 34: //metalSolid
             if(IMPF.IsLoaded())
                 memset(&IMPF->metalSolid[0], 0x00, sizeof(IMPF->metalSolid));
             return;
-        case 34: //metalHollow
+        case 35: //metalHollow
             if(IMPF.IsLoaded())
                 memset(&IMPF->metalHollow[0], 0x00, sizeof(IMPF->metalHollow));
             return;
-        case 35: //metalSheet
+        case 36: //metalSheet
             if(IMPF.IsLoaded())
                 memset(&IMPF->metalSheet[0], 0x00, sizeof(IMPF->metalSheet));
             return;
-        case 36: //wood
+        case 37: //wood
             if(IMPF.IsLoaded())
                 memset(&IMPF->wood[0], 0x00, sizeof(IMPF->wood));
             return;
-        case 37: //sand
+        case 38: //sand
             if(IMPF.IsLoaded())
                 memset(&IMPF->sand[0], 0x00, sizeof(IMPF->sand));
             return;
-        case 38: //dirt
+        case 39: //dirt
             if(IMPF.IsLoaded())
                 memset(&IMPF->dirt[0], 0x00, sizeof(IMPF->dirt));
             return;
-        case 39: //grass
+        case 40: //grass
             if(IMPF.IsLoaded())
                 memset(&IMPF->grass[0], 0x00, sizeof(IMPF->grass));
             return;
-        case 40: //water
+        case 41: //water
             if(IMPF.IsLoaded())
                 memset(&IMPF->water[0], 0x00, sizeof(IMPF->water));
             return;
-        case 41: //lightTemplate
+        case 42: //lightTemplate
             LTMP.Unload();
             return;
-        case 42: //lightFlags
+        case 43: //lightFlags
             LNAM.Unload();
             return;
-        case 43: //waterHeight
+        case 44: //waterHeight
             XCLW.Unload();
             return;
-        case 44: //waterNoisePath
+        case 45: //waterNoisePath
             XNAM.Unload();
             return;
-        case 45: //regions
+        case 46: //regions
             XCLR.Unload();
             return;
-        case 46: //imageSpace
+        case 47: //imageSpace
             XCIM.Unload();
             return;
-        case 47: //xcet_p
+        case 48: //xcet_p
             XCET.Unload();
             return;
-        case 48: //encounterZone
+        case 49: //encounterZone
             XEZN.Unload();
             return;
-        case 49: //climate
+        case 50: //climate
             XCCM.Unload();
             return;
-        case 50: //water
+        case 51: //water
             XCWT.Unload();
             return;
-        case 51: //owner
+        case 52: //owner
             if(Ownership.IsLoaded())
                 Ownership->XOWN.Unload();
             return;
-        case 52: //rank
+        case 53: //rank
             if(Ownership.IsLoaded())
                 Ownership->XRNK.Unload();
             return;
-        case 53: //acousticSpace
+        case 54: //acousticSpace
             XCAS.Unload();
             return;
-        case 54: //XCMT
+        case 55: //xcmt_p
             XCMT.Unload();
             return;
-        case 55: //music
+        case 56: //music
             XCMO.Unload();
             return;
         default:

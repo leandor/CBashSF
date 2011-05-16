@@ -49,52 +49,18 @@ bool CELLRecord::CELLXCLC::operator !=(const CELLXCLC &other) const
     return !(*this == other);
     }
 
-CELLRecord::CELLIMPF::CELLIMPF()
-    {
-    memset(&concSolid[0], 0x00, sizeof(concSolid));
-    memset(&concBroken[0], 0x00, sizeof(concBroken));
-    memset(&metalSolid[0], 0x00, sizeof(metalSolid));
-    memset(&metalHollow[0], 0x00, sizeof(metalHollow));
-    memset(&metalSheet[0], 0x00, sizeof(metalSheet));
-    memset(&wood[0], 0x00, sizeof(wood));
-    memset(&sand[0], 0x00, sizeof(sand));
-    memset(&dirt[0], 0x00, sizeof(dirt));
-    memset(&grass[0], 0x00, sizeof(grass));
-    memset(&water[0], 0x00, sizeof(water));
-    }
-
-CELLRecord::CELLIMPF::~CELLIMPF()
-    {
-    //
-    }
-
-bool CELLRecord::CELLIMPF::operator ==(const CELLIMPF &other) const
-    {
-    return (strcmp(&concSolid[0], &other.concSolid[0]) == 0 &&
-            strcmp(&concBroken[0], &other.concBroken[0]) == 0 &&
-            strcmp(&metalSolid[0], &other.metalSolid[0]) == 0 &&
-            strcmp(&metalHollow[0], &other.metalHollow[0]) == 0 &&
-            strcmp(&metalSheet[0], &other.metalSheet[0]) == 0 &&
-            strcmp(&wood[0], &other.wood[0]) == 0 &&
-            strcmp(&sand[0], &other.sand[0]) == 0 &&
-            strcmp(&dirt[0], &other.dirt[0]) == 0 &&
-            strcmp(&grass[0], &other.grass[0]) == 0 &&
-            strcmp(&water[0], &other.water[0]) == 0);
-    }
-
-bool CELLRecord::CELLIMPF::operator !=(const CELLIMPF &other) const
-    {
-    return !(*this == other);
-    }
-
 CELLRecord::CELLRecord(unsigned char *_recData):
-    FNVRecord(_recData)
+    FNVRecord(_recData),
+    LAND(NULL),
+    Parent(NULL)
     {
     //
     }
 
 CELLRecord::CELLRecord(CELLRecord *srcRecord):
-    FNVRecord()
+    FNVRecord(),
+    LAND(NULL),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -118,6 +84,7 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     DATA = srcRecord->DATA;
     XCLC = srcRecord->XCLC;
     XCLL = srcRecord->XCLL;
+    IMPS = srcRecord->IMPS;
     IMPF = srcRecord->IMPF;
     LTMP = srcRecord->LTMP;
     LNAM = srcRecord->LNAM;
@@ -156,6 +123,7 @@ CELLRecord::~CELLRecord()
         delete PCBE[x];
     for(UINT32 x = 0; x < NAVM.size(); ++x)
         delete NAVM[x];
+    delete LAND;
     }
 
 bool CELLRecord::HasSubRecords()
@@ -232,6 +200,45 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
                 return stop;
             }
 
+    if(RecordType == NULL || RecordType == REV32(PBEA))
+        for(UINT32 x = 0; x < PBEA.size();++x)
+            {
+            stop = op.Accept(PBEA[x]);
+            if(PBEA[x] == NULL)
+                {
+                PBEA.erase(PBEA.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
+    if(RecordType == NULL || RecordType == REV32(PFLA))
+        for(UINT32 x = 0; x < PFLA.size();++x)
+            {
+            stop = op.Accept(PFLA[x]);
+            if(PFLA[x] == NULL)
+                {
+                PFLA.erase(PFLA.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
+    if(RecordType == NULL || RecordType == REV32(PCBE))
+        for(UINT32 x = 0; x < PCBE.size();++x)
+            {
+            stop = op.Accept(PCBE[x]);
+            if(PCBE[x] == NULL)
+                {
+                PCBE.erase(PCBE.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
     if(RecordType == NULL || RecordType == REV32(NAVM))
         for(UINT32 x = 0; x < NAVM.size();++x)
             {
@@ -245,15 +252,14 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
                 return stop;
             }
 
-
-    //if(RecordType == NULL || RecordType == REV32(LAND))
-    //    {
-    //    if(LAND != NULL)
-    //        {
-    //        if(op.Accept(LAND))
-    //            return true;
-    //        }
-    //    }
+    if(RecordType == NULL || RecordType == REV32(LAND))
+        {
+        if(LAND != NULL)
+            {
+            if(op.Accept(LAND))
+                return true;
+            }
+        }
 
     return op.Stop();
     }
@@ -263,6 +269,11 @@ bool CELLRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
+    for(UINT32 ListIndex = 0; ListIndex < IMPS.value.size(); ListIndex++)
+        {
+        op.Accept(IMPS.value[ListIndex]->oldImpact);
+        op.Accept(IMPS.value[ListIndex]->newImpact);
+        }
     op.Accept(LTMP.value);
     for(UINT32 x = 0; x < XCLR.value.size(); x++)
         op.Accept(XCLR.value[x]);
@@ -591,6 +602,9 @@ SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XCLL):
                 XCLL.Read(buffer, subSize, curPos);
                 break;
+            case REV32(IMPS):
+                IMPS.Read(buffer, subSize, curPos);
+                break;
             case REV32(IMPF):
                 IMPF.Read(buffer, subSize, curPos);
                 break;
@@ -662,6 +676,7 @@ SINT32 CELLRecord::Unload()
     DATA.Unload();
     XCLC.Unload();
     XCLL.Unload();
+    IMPS.Unload();
     IMPF.Unload();
     LTMP.Unload();
     LNAM.Unload();
@@ -687,10 +702,17 @@ SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     WRITE(DATA);
     WRITE(XCLC);
     WRITE(XCLL);
+    WRITE(IMPS);    
     WRITE(IMPF);
-    WRITE(LTMP);
-    WRITE(LNAM);
-    WRITE(XCLW);
+    if(LNAM.value != 0 || LTMP.value != 0)
+        {
+        WRITE(LTMP);
+        WRITE(LNAM);
+        }
+    if(XCLW.IsLoaded())
+        WRITE(XCLW);
+    else if(IsHasWater())
+        WRITEREQ(XCLW);
     WRITE(XNAM);
     WRITE(XCLR);
     WRITE(XCIM);
@@ -720,6 +742,7 @@ bool CELLRecord::operator ==(const CELLRecord &other) const
             XCWT == other.XCWT &&
             XCAS == other.XCAS &&
             XCMO == other.XCMO &&
+            IMPS == other.IMPS &&
             XCLR == other.XCLR &&
             Ownership == other.Ownership &&
             EDID.equalsi(other.EDID) &&

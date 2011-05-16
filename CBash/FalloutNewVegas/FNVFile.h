@@ -77,7 +77,7 @@ GPL License and Copyright Notice ============================================
 #include "Records/REGNRecord.h"
 #include "Records/NAVIRecord.h"
 #include "Records/CELLRecord.h"
-//#include "Records/WRLDRecord.h"
+#include "Records/WRLDRecord.h"
 //#include "Records/DIALRecord.h"
 //#include "Records/QUSTRecord.h"
 //#include "Records/IDLERecord.h"
@@ -182,7 +182,7 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::REGNRecord> REGN;
         FNVGRUPRecords<FNV::NAVIRecord> NAVI;
         FNVGRUPRecords<FNV::CELLRecord> CELL;
-        //FNVGRUPRecords<FNV::WRLDRecord> WRLD;
+        FNVGRUPRecords<FNV::WRLDRecord> WRLD;
         //FNVGRUPRecords<FNV::DIALRecord> DIAL;
         //FNVGRUPRecords<FNV::QUSTRecord> QUST;
         //FNVGRUPRecords<FNV::IDLERecord> IDLE;

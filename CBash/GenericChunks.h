@@ -703,15 +703,26 @@ struct GENMNAM
     bool operator !=(const GENMNAM &other) const;
     };
 
-struct GENNAM
+struct GENNAM0
     {
     FLOAT32 x, y;
 
-    GENNAM();
-    ~GENNAM();
+    GENNAM0();
+    ~GENNAM0();
 
-    bool operator ==(const GENNAM &other) const;
-    bool operator !=(const GENNAM &other) const;
+    bool operator ==(const GENNAM0 &other) const;
+    bool operator !=(const GENNAM0 &other) const;
+    };
+
+struct GENNAM9
+    {
+    FLOAT32 x, y;
+
+    GENNAM9();
+    ~GENNAM9();
+
+    bool operator ==(const GENNAM9 &other) const;
+    bool operator !=(const GENNAM9 &other) const;
     };
 
 struct GENTNAM
@@ -1658,4 +1669,24 @@ struct GENXORD
 
     bool operator ==(const GENXORD &other) const;
     bool operator !=(const GENXORD &other) const;
+    };
+
+struct GENIMPF
+    {
+    char concSolid[30];
+    char concBroken[30];
+    char metalSolid[30];
+    char metalHollow[30];
+    char metalSheet[30];
+    char wood[30];
+    char sand[30];
+    char dirt[30];
+    char grass[30];
+    char water[30];
+
+    GENIMPF();
+    ~GENIMPF();
+
+    bool operator ==(const GENIMPF &other) const;
+    bool operator !=(const GENIMPF &other) const;
     };

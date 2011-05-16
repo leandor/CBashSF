@@ -154,17 +154,18 @@ def TestRegressions():
 ####    assertCLMT(Current, newMod)
 ####    assertREGN(Current, newMod)
 ####    assertNAVI(Current, newMod)
-##    assertCELL(Current, newMod)
-##    assertACHR(Current, newMod)
-##    assertACRE(Current, newMod)
-##    assertREFR(Current, newMod)
-##    assertPGRE(Current, newMod)
-##    assertPMIS(Current, newMod)
-##    assertPBEA(Current, newMod)
-##    assertPFLA(Current, newMod)
-##    assertPCBE(Current, newMod)
-    assertNAVM(Current, newMod)
-    ##    assertWRLD(Current, newMod)
+####    assertCELL(Current, newMod)
+####    assertACHR(Current, newMod)
+####    assertACRE(Current, newMod)
+####    assertREFR(Current, newMod)
+####    assertPGRE(Current, newMod)
+####    assertPMIS(Current, newMod)
+####    assertPBEA(Current, newMod)
+####    assertPFLA(Current, newMod)
+####    assertPCBE(Current, newMod)
+####    assertNAVM(Current, newMod)
+####    assertWRLD(Current, newMod)
+####    assertLAND(Current, newMod)
     ##    assertDIAL(Current, newMod)
     ##    assertQUST(Current, newMod)
     ##    assertIDLE(Current, newMod)
@@ -9160,7 +9161,7 @@ def assertPCBE(Current, newMod):
 
     record = Current.LoadOrderMods[0].PCBES[0]
     newrecord = record.CopyAsOverride(newMod)
-                                                  
+
     assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
 
     newrecord.flags1 = 10
@@ -9235,6 +9236,58 @@ def assertNAVM(Current, newMod):
 
 
     print "NAVM:Finished testing"
+
+def assertLAND(Current, newMod):
+    record = Current.LoadOrderMods[0].LANDS[0]
+    d(record)
+    print
+    return
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+    nrecord = newMod.create_LAND()
+
+    nrecord.flags1 = 10
+    nrecord.versionControl1 = [1, 3, 2, 6]
+    nrecord.formVersion = 1
+    nrecord.versionControl2 = [2, 3]
+    nrecord.eid = r'WarTest'
+
+
+    assert nrecord.fid == ('TestRegressions.esp', 0x001037)#xx
+    assert nrecord.flags1 == 0x80000000 | 10
+    assert nrecord.versionControl1 == [1, 3, 2, 6]
+    assert nrecord.formVersion == 1
+    assert nrecord.versionControl2 == [2, 3]
+    assert nrecord.eid == 'WarTest'
+    assert nrecord.eid == 'WArTest'
+
+
+    record = Current.LoadOrderMods[0].LANDS[0]
+    newrecord = record.CopyAsOverride(newMod)
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x0)#xx
+
+    newrecord.flags1 = 10
+    newrecord.versionControl1 = [1, 3, 2, 6]
+    newrecord.formVersion = 1
+    newrecord.versionControl2 = [2, 3]
+    newrecord.eid = r'WarTest'
+
+
+    assert newrecord.fid == ('FalloutNV.esm', 0x31D94)
+    assert newrecord.flags1 == 0x80000000 | 10
+    assert newrecord.versionControl1 == [1, 3, 2, 6]
+    assert newrecord.formVersion == 1
+    assert newrecord.versionControl2 == [2, 3]
+    assert newrecord.eid == 'WarTest'
+    assert newrecord.eid == 'WArTest'
+
+
+    assert record.fid == ('FalloutNV.esm', 0x0)#xx
+
+
+    print "LAND:Finished testing"
 
 def assertWRLD(Current, newMod):
     record = Current.LoadOrderMods[0].WRLD[0]
@@ -11784,6 +11837,186 @@ def assertSLPD(Current, newMod):
 
     print "SLPD:Finished testing"
 
+
+def TestReadWrite():
+    Current = ObCollection(CollectionType=2)
+    Current.addMod("FalloutNV.esm", MinLoad=False)
+    Current.addMod("TestRW.esp", IgnoreExisting=True)
+    Current.load()
+    newMod = Current.LookupModFile("TestRW.esp")
+
+    for record in Current.LoadOrderMods[0].CELL:
+        record.lightTemplate = record.lightTemplate #marks record as changed so it's fully copied
+        trgCellOver = record.CopyAsOverride(newMod)
+        trgCellNew = record.CopyAsNew(newMod)
+        for npcRef in record.ACHR:
+            npcRef.base = npcRef.base #marks record as changed so it's fully copied
+            npcRef.CopyAsOverride(trgCellOver)
+            npcRef.CopyAsNew(trgCellNew)
+            npcRef.DeleteRecord()
+        for creaRef in record.ACRE:
+            creaRef.base = creaRef.base #marks record as changed so it's fully copied
+            creaRef.CopyAsOverride(trgCellOver)
+            creaRef.CopyAsNew(trgCellNew)
+            creaRef.DeleteRecord()
+        for objRef in record.REFR:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+
+        for objRef in record.PGRE:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        for objRef in record.PMIS:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        for objRef in record.PBEA:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        for objRef in record.PFLA:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        for objRef in record.PCBE:
+            objRef.base = objRef.base #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        for objRef in record.NAVM:
+            objRef.version = objRef.version #marks record as changed so it's fully copied
+            objRef.CopyAsOverride(trgCellOver)
+            objRef.CopyAsNew(trgCellNew)
+            objRef.DeleteRecord()
+        record.DeleteRecord()
+
+    for record in Current.LoadOrderMods[0].WRLD:
+        trgWrldOver = record.CopyAsOverride(newMod)
+        trgWrldNew = record.CopyAsNew(newMod)
+        cell = record.WorldCELL
+        if(cell != None):
+            cell.lightTemplate = cell.lightTemplate #marks record as changed so it's fully copied
+            trgCellOver = cell.CopyAsOverride(trgWrldOver)
+            trgCellNew = cell.CopyAsNew(trgWrldNew)
+            for npcRef in cell.ACHR:
+                npcRef.base = npcRef.base #marks record as changed so it's fully copied
+                npcRef.CopyAsOverride(trgCellOver)
+                npcRef.CopyAsNew(trgCellNew)
+                npcRef.DeleteRecord()
+            for creaRef in cell.ACRE:
+                creaRef.base = creaRef.base #marks record as changed so it's fully copied
+                creaRef.CopyAsOverride(trgCellOver)
+                creaRef.CopyAsNew(trgCellNew)
+                creaRef.DeleteRecord()
+            for objRef in cell.REFR:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+
+            for objRef in cell.PGRE:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in cell.PMIS:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in cell.PBEA:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in cell.PFLA:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in cell.PCBE:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in cell.NAVM:
+                objRef.version = objRef.version #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            cell.DeleteRecord()
+        for wrldCell in record.CELLS:
+            wrldCell.lightTemplate = wrldCell.lightTemplate #marks record as changed so it's fully copied
+            trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
+            trgCellNew = wrldCell.CopyAsNew(trgWrldNew)
+            cLand = wrldCell.LAND
+            if(cLand != None):
+                cLand.data_p = cLand.data_p #marks record as changed so it's fully copied
+                cLand.CopyAsOverride(trgCellOver)
+                cLand.CopyAsNew(trgCellNew)
+                cLand.DeleteRecord()
+            for npcRef in wrldCell.ACHR:
+                npcRef.base = npcRef.base #marks record as changed so it's fully copied
+                npcRef.CopyAsOverride(trgCellOver)
+                npcRef.CopyAsNew(trgCellNew)
+                npcRef.DeleteRecord()
+            for creaRef in wrldCell.ACRE:
+                creaRef.base = creaRef.base #marks record as changed so it's fully copied
+                creaRef.CopyAsOverride(trgCellOver)
+                creaRef.CopyAsNew(trgCellNew)
+                creaRef.DeleteRecord()
+            for objRef in wrldCell.REFR:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+
+            for objRef in wrldCell.PGRE:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in wrldCell.PMIS:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in wrldCell.PBEA:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in wrldCell.PFLA:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in wrldCell.PCBE:
+                objRef.base = objRef.base #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            for objRef in wrldCell.NAVM:
+                objRef.version = objRef.version #marks record as changed so it's fully copied
+                objRef.CopyAsOverride(trgCellOver)
+                objRef.CopyAsNew(trgCellNew)
+                objRef.DeleteRecord()
+            wrldCell.DeleteRecord()
+        record.DeleteRecord()
+
+    print "TestReadWrite:Save Test - TestRW.esp"
+
+##    phonenumber = raw_input(">")
+    newMod.save()
+##    phonenumber = raw_input("!")
+    print "TestReadWrite:Finished testing"
 from timeit import Timer
 
 ##print "1TestMinimalLoad"
@@ -11836,4 +12069,6 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-TestRegressions()
+##TestRegressions()
+TestReadWrite()
+

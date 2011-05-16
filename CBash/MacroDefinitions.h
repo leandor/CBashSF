@@ -296,6 +296,8 @@
 #define DEBUGPRINT2(...)       fprintf(stderr, __VA_ARGS__)
 #define DPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
 
+#define QDPRINT fprintf(stderr, WHERESTR "\n", WHEREARG)
+
 #define REV32(x)((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
 #define WRITE(x) x.Write(REV32(x), writer)
 #define WRITEREQ(x) x.ReqWrite(REV32(x), writer)

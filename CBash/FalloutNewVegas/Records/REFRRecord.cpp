@@ -1423,6 +1423,10 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //XIBS.Read(buffer, subSize, curPos);
                 XIBS.value = 1;
                 break;
+            case REV32(XMBP):
+                //XMBP.Read(buffer, subSize, curPos);
+                XMBP.Load();
+                break;
             case REV32(XSCL):
                 XSCL.Read(buffer, subSize, curPos);
                 break;
@@ -1496,6 +1500,7 @@ SINT32 REFRRecord::Unload()
     XORD.Unload();
     XLOD.Unload();
     XIBS.Unload();
+    XMBP.Unload();
     XSCL.Unload();
     DATA.Unload();
     return 1;
@@ -1552,6 +1557,8 @@ SINT32 REFRRecord::WriteRecord(FileWriter &writer)
         WRITEEMPTY(ONAM);
     if(XIBS.IsLoaded())
         WRITEEMPTY(XIBS);
+    if(XMBP.IsLoaded())
+        WRITEEMPTY(XMBP);
     WRITE(XSCL);
     WRITE(DATA);
     return -1;

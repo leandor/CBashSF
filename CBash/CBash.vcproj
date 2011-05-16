@@ -1113,6 +1113,10 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\LANDRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\NAVMRecord.cpp"
 							>
 						</File>
@@ -1146,6 +1150,10 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\REFRRecord.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\WRLDRecord.cpp"
 							>
 						</File>
 					</Filter>
@@ -3062,6 +3070,37 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\LANDRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\LIGHRecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -3588,6 +3627,37 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\WEAPRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\WRLDRecordAPI.cpp"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"

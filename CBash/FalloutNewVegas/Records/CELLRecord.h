@@ -40,26 +40,6 @@ class CELLRecord : public FNVRecord //Cell
             bool operator !=(const CELLXCLC &other) const;
             };
 
-        struct CELLIMPF
-            {
-            char concSolid[30];
-            char concBroken[30];
-            char metalSolid[30];
-            char metalHollow[30];
-            char metalSheet[30];
-            char wood[30];
-            char sand[30];
-            char dirt[30];
-            char grass[30];
-            char water[30];
-
-            CELLIMPF();
-            ~CELLIMPF();
-
-            bool operator ==(const CELLIMPF &other) const;
-            bool operator !=(const CELLIMPF &other) const;
-            };
-
         enum flagsFlags
             {
             fIsInterior         = 0x00000001,
@@ -100,10 +80,11 @@ class CELLRecord : public FNVRecord //Cell
         OptSimpleSubRecord<UINT8> DATA; //Flags
         OptSubRecord<CELLXCLC> XCLC; //Grid
         OptSubRecord<FNVLIGHT> XCLL; //Lighting
-        OptSubRecord<CELLIMPF> IMPF; //Footstep Materials
+        UnorderedSparseArray<GENIMPS *> IMPS; //Swapped Impact
+        OptSubRecord<GENIMPF> IMPF; //Footstep Materials
         ReqSimpleSubRecord<FORMID> LTMP; //Light Template
         ReqSimpleSubRecord<UINT32> LNAM; //Light Inherit Flags
-        SimpleFloatSubRecord<flt_max> XCLW; // waterHeight
+        SimpleFloatSubRecord<flt_max> XCLW; //waterHeight
         StringRecord XNAM; //Water Noise Texture
         UnorderedPackedArray<FORMID> XCLR; //Regions
         OptSimpleSubRecord<FORMID> XCIM; //Image Space
@@ -124,7 +105,7 @@ class CELLRecord : public FNVRecord //Cell
         std::vector<Record *> PFLA;
         std::vector<Record *> PCBE;
         std::vector<Record *> NAVM;
-        //Record *LAND;
+        Record *LAND;
 
         Record *Parent;
 

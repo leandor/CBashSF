@@ -25,13 +25,15 @@ GPL License and Copyright Notice ============================================
 namespace FNV
 {
 WRLDRecord::WRLDRecord(unsigned char *_recData):
-    FNVRecord(_recData)
+    FNVRecord(_recData),
+    CELL(NULL)
     {
     //
     }
 
 WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
-    FNVRecord()
+    FNVRecord(),
+    CELL(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -79,7 +81,61 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
 
 WRLDRecord::~WRLDRecord()
     {
-    //
+    delete CELL;
+    for(UINT32 x = 0; x < CELLS.size(); ++x)
+        delete CELLS[x];
+    }
+
+bool WRLDRecord::HasSubRecords()
+    {
+    return true;
+    }
+
+bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
+    {
+    bool stop;
+
+    //if(RecordType == NULL || RecordType == REV32(ROAD))
+    //    {
+    //    if(ROAD != NULL)
+    //        {
+    //        if(op.Accept(ROAD))
+    //            return true;
+    //        }
+    //    }
+
+    if(RecordType == NULL || 
+        RecordType != REV32(CELL) ||
+        RecordType != REV32(ACHR) || 
+        RecordType != REV32(ACRE) ||
+        RecordType != REV32(REFR) ||
+        RecordType != REV32(PGRE) ||
+        RecordType != REV32(PMIS) ||
+        RecordType != REV32(PBEA) ||
+        RecordType != REV32(PFLA) ||
+        RecordType != REV32(PCBE) ||
+        RecordType != REV32(NAVM))
+        {
+        if(CELL != NULL)
+            {
+            if(op.Accept(CELL))
+                return true;
+            }
+
+        for(UINT32 x = 0; x < CELLS.size();++x)
+            {
+            stop = op.Accept(CELLS[x]);
+            if(CELLS[x] == NULL)
+                {
+                CELLS.erase(CELLS.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+        }
+
+    return op.Stop();
     }
 
 bool WRLDRecord::VisitFormIDs(FormIDOp &op)
@@ -88,23 +144,204 @@ bool WRLDRecord::VisitFormIDs(FormIDOp &op)
         return false;
 
     if(XEZN.IsLoaded())
-        op.Accept(XEZN->value);
+        op.Accept(XEZN.value);
     if(WNAM.IsLoaded())
-        op.Accept(WNAM->value);
+        op.Accept(WNAM.value);
     if(CNAM.IsLoaded())
-        op.Accept(CNAM->value);
-    if(NAM2.IsLoaded())
-        op.Accept(NAM2->value);
-    if(NAM3.IsLoaded())
-        op.Accept(NAM3->value);
+        op.Accept(CNAM.value);
+    op.Accept(NAM2.value);
+    op.Accept(NAM3.value);
     if(INAM.IsLoaded())
-        op.Accept(INAM->value);
+        op.Accept(INAM.value);
     if(ZNAM.IsLoaded())
-        op.Accept(ZNAM->value);
-    //if(IMPS.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(IMPS->value);
+        op.Accept(ZNAM.value);
+    for(UINT32 ListIndex = 0; ListIndex < IMPS.value.size(); ListIndex++)
+        {
+        op.Accept(IMPS.value[ListIndex]->oldImpact);
+        op.Accept(IMPS.value[ListIndex]->newImpact);
+        }
 
     return op.Stop();
+    }
+
+bool WRLDRecord::IsSmallWorld()
+    {
+    return (DATA.value & fIsSmallWorld) != 0;
+    }
+
+void WRLDRecord::IsSmallWorld(bool value)
+    {
+    DATA.value = value ? (DATA.value | fIsSmallWorld) : (DATA.value & ~fIsSmallWorld);
+    }
+
+bool WRLDRecord::IsNoFastTravel()
+    {
+    return (DATA.value & fIsNoFastTravel) != 0;
+    }
+
+void WRLDRecord::IsNoFastTravel(bool value)
+    {
+    DATA.value = value ? (DATA.value | fIsNoFastTravel) : (DATA.value & ~fIsNoFastTravel);
+    }
+
+bool WRLDRecord::IsFastTravel()
+    {
+    return !IsNoFastTravel();
+    }
+
+void WRLDRecord::IsFastTravel(bool value)
+    {
+    IsNoFastTravel(!value);
+    }
+
+bool WRLDRecord::IsNoLODWater()
+    {
+    return (DATA.value & fIsNoLODWater) != 0;
+    }
+
+void WRLDRecord::IsNoLODWater(bool value)
+    {
+    DATA.value = value ? (DATA.value | fIsNoLODWater) : (DATA.value & ~fIsNoLODWater);
+    }
+
+bool WRLDRecord::IsLODWater()
+    {
+    return !IsNoLODWater();
+    }
+
+void WRLDRecord::IsLODWater(bool value)
+    {
+    IsNoLODWater(!value);
+    }
+
+bool WRLDRecord::IsNoLODNoise()
+    {
+    return (DATA.value & fIsNoLODNoise) != 0;
+    }
+
+void WRLDRecord::IsNoLODNoise(bool value)
+    {
+    DATA.value = value ? (DATA.value | fIsNoLODNoise) : (DATA.value & ~fIsNoLODNoise);
+    }
+
+bool WRLDRecord::IsLODNoise()
+    {
+    return !IsNoLODNoise();
+    }
+
+void WRLDRecord::IsLODNoise(bool value)
+    {
+    IsNoLODNoise(!value);
+    }
+
+bool WRLDRecord::IsNoNPCFallDmg()
+    {
+    return (DATA.value & fIsNoNPCFallDmg) != 0;
+    }
+
+void WRLDRecord::IsNoNPCFallDmg(bool value)
+    {
+    DATA.value = value ? (DATA.value | fIsNoNPCFallDmg) : (DATA.value & ~fIsNoNPCFallDmg);
+    }
+
+bool WRLDRecord::IsNPCFallDmg()
+    {
+    return !IsNoNPCFallDmg();
+    }
+
+void WRLDRecord::IsNPCFallDmg(bool value)
+    {
+    IsNoNPCFallDmg(!value);
+    }
+
+bool WRLDRecord::IsFlagMask(UINT8 Mask, bool Exact)
+    {
+    return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
+    }
+
+void WRLDRecord::SetFlagMask(UINT8 Mask)
+    {
+    DATA.value = Mask;
+    }
+
+bool WRLDRecord::IsUseLandData()
+    {
+    return (PNAM.value & fIsUseLandData) != 0;
+    }
+
+void WRLDRecord::IsUseLandData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseLandData) : (PNAM.value & ~fIsUseLandData);
+    }
+
+bool WRLDRecord::IsUseLODData()
+    {
+    return (PNAM.value & fIsUseLODData) != 0;
+    }
+
+void WRLDRecord::IsUseLODData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseLODData) : (PNAM.value & ~fIsUseLODData);
+    }
+
+bool WRLDRecord::IsUseMapData()
+    {
+    return (PNAM.value & fIsUseMapData) != 0;
+    }
+
+void WRLDRecord::IsUseMapData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseMapData) : (PNAM.value & ~fIsUseMapData);
+    }
+
+bool WRLDRecord::IsUseWaterData()
+    {
+    return (PNAM.value & fIsUseWaterData) != 0;
+    }
+
+void WRLDRecord::IsUseWaterData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseWaterData) : (PNAM.value & ~fIsUseWaterData);
+    }
+
+bool WRLDRecord::IsUseClimateData()
+    {
+    return (PNAM.value & fIsUseClimateData) != 0;
+    }
+
+void WRLDRecord::IsUseClimateData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseClimateData) : (PNAM.value & ~fIsUseClimateData);
+    }
+
+bool WRLDRecord::IsUseImageSpaceData()
+    {
+    return (PNAM.value & fIsUseImageSpaceData) != 0;
+    }
+
+void WRLDRecord::IsUseImageSpaceData(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsUseImageSpaceData) : (PNAM.value & ~fIsUseImageSpaceData);
+    }
+
+bool WRLDRecord::IsNeedsWaterAdjustment()
+    {
+    return (PNAM.value & fIsNeedsWaterAdjustment) != 0;
+    }
+
+void WRLDRecord::IsNeedsWaterAdjustment(bool value)
+    {
+    PNAM.value = value ? (PNAM.value | fIsNeedsWaterAdjustment) : (PNAM.value & ~fIsNeedsWaterAdjustment);
+    }
+
+bool WRLDRecord::IsUseFlagMask(UINT16 Mask, bool Exact)
+    {
+    return Exact ? ((PNAM.value & Mask) == Mask) : ((PNAM.value & Mask) != 0);
+    }
+
+void WRLDRecord::SetUseFlagMask(UINT16 Mask)
+    {
+    PNAM.value = Mask;
     }
 
 UINT32 WRLDRecord::GetType()
@@ -275,8 +512,8 @@ SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
     WRITE(NAM0);
     WRITE(NAM9);
     WRITE(ZNAM);
-    WRITE(NNAM);
-    WRITE(XNAM);
+    WRITEREQ(NNAM);
+    WRITEREQ(XNAM);
     WRITE(IMPS);
     WRITE(IMPF);
     WRITE(OFST);
@@ -286,9 +523,7 @@ SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
 
 bool WRLDRecord::operator ==(const WRLDRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            FULL.equals(other.FULL) &&
-            XEZN == other.XEZN &&
+    return (XEZN == other.XEZN &&
             WNAM == other.WNAM &&
             PNAM == other.PNAM &&
             CNAM == other.CNAM &&
@@ -296,8 +531,6 @@ bool WRLDRecord::operator ==(const WRLDRecord &other) const
             NAM3 == other.NAM3 &&
             NAM4 == other.NAM4 &&
             DNAM == other.DNAM &&
-            ICON.equalsi(other.ICON) &&
-            MICO.equalsi(other.MICO) &&
             MNAM == other.MNAM &&
             ONAM == other.ONAM &&
             INAM == other.INAM &&
@@ -305,6 +538,10 @@ bool WRLDRecord::operator ==(const WRLDRecord &other) const
             NAM0 == other.NAM0 &&
             NAM9 == other.NAM9 &&
             ZNAM == other.ZNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MICO.equalsi(other.MICO) &&
             NNAM.equalsi(other.NNAM) &&
             XNAM.equalsi(other.XNAM) &&
             IMPS == other.IMPS &&

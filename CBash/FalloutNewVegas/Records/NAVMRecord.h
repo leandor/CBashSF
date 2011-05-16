@@ -180,6 +180,8 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
             bool operator !=(const NAVMNVDP &other) const;
             };
 
+        #pragma pack(push)
+        #pragma pack(2)
         struct NAVMNVEX // External Connection
             {
             UINT8   unknown1[4];
@@ -192,6 +194,7 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
             bool operator ==(const NAVMNVEX &other) const;
             bool operator !=(const NAVMNVEX &other) const;
             };
+        #pragma pack(pop)
 
     public:
         StringRecord EDID; //Editor ID

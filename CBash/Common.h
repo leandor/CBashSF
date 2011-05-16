@@ -369,6 +369,9 @@ class CreateRecordOptions
         bool SetAsWorldCell;
         bool CopyWorldCellStatus;
 
+        //Internal use
+        bool ExistingReturned;
+
         UINT32 GetFlags();
     };
 
@@ -741,6 +744,10 @@ struct SimpleFloatSubRecord
         {
         if(isLoaded && value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
+        }
+    void ReqWrite(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
     SimpleFloatSubRecord<defaultValue>& operator = (const SimpleFloatSubRecord<defaultValue> &rhs)

@@ -30,52 +30,52 @@ class WRLDRecord : public FNVRecord //Worldspace
     private:
         enum pnamFlags
             {
-            fIsUseLandData          = 0x00000001,
-            fIsUseLODData           = 0x00000002,
-            fIsUseMapData           = 0x00000004,
-            fIsUseWaterData         = 0x00000008,
-            fIsUseClimateData       = 0x00000010,
-            fIsUseImageSpaceData    = 0x00000020,
-            fIsUnknown1             = 0x00000040,
-            fIsNeedsWaterAdjustment = 0x00000080
+            fIsUseLandData          = 0x0001,
+            fIsUseLODData           = 0x0002,
+            fIsUseMapData           = 0x0004,
+            fIsUseWaterData         = 0x0008,
+            fIsUseClimateData       = 0x0010,
+            fIsUseImageSpaceData    = 0x0020,
+            fIsUnknown1             = 0x0040,
+            fIsNeedsWaterAdjustment = 0x0080
             };
 
         enum flagsFlags
             {
-            fIsSmallWorld   = 0x00000001,
-            fIsNoFastTravel = 0x00000002,
-            fIsUnknown2     = 0x00000004,
-            fIsNoLODWater   = 0x00000010,
-            fIsNoLODNoise   = 0x00000020,
-            fIsNoNPCFallDmg = 0x00000040
+            fIsSmallWorld   = 0x01,
+            fIsNoFastTravel = 0x02,
+            fIsUnknown2     = 0x04,
+            fIsNoLODWater   = 0x10,
+            fIsNoLODNoise   = 0x20,
+            fIsNoNPCFallDmg = 0x40
             };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSimpleSubRecord<FORMID> XEZN; //Encounter Zone
-        OptSimpleSubRecord<FORMID> WNAM; //Worldspace
-        OptSimpleSubRecord<UINT16> PNAM; //PNAM
+        OptSimpleSubRecord<FORMID> WNAM; //Parent Worldspace
+        OptSimpleSubRecord<UINT16> PNAM; //Parent Flags
         OptSimpleSubRecord<FORMID> CNAM; //Climate
-        OptSimpleSubRecord<FORMID> NAM2; //Water
-        OptSimpleSubRecord<FORMID> NAM3; //LOD Water Type
-        OptSimpleFloatSubRecord<flt_0> NAM4; //LOD Water Height
-        OptSubRecord<GENDNAM> DNAM; //Land Data
+        ReqSimpleSubRecord<FORMID, 0x18> NAM2; //Water
+        ReqSimpleSubRecord<FORMID, 0x18> NAM3; //LOD Water Type
+        SemiOptSimpleFloatSubRecord<flt_0> NAM4; //LOD Water Height
+        ReqSubRecord<GENDNAM> DNAM; //Land Data
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSubRecord<GENMNAM> MNAM; //Map Data
-        OptSubRecord<GENONAM> ONAM; //World Map Offset Data
+        SemiOptSubRecord<GENMNAM> MNAM; //Map Data
+        ReqSubRecord<GENONAM> ONAM; //World Map Offset Data
         OptSimpleSubRecord<FORMID> INAM; //Image Space
-        OptSimpleSubRecord<UINT8> DATA; //Flags
-        OptSubRecord<GENNAM> NAM0; //Min Object Bounds
-        OptSubRecord<GENNAM> NAM9; //Max Object Bounds
+        ReqSimpleSubRecord<UINT8, fIsSmallWorld> DATA; //Flags
+        ReqSubRecord<GENNAM0> NAM0; //Min Object Bounds
+        ReqSubRecord<GENNAM9> NAM9; //Max Object Bounds
         OptSimpleSubRecord<FORMID> ZNAM; //Music
-        StringRecord NNAM; //Canopy Shadow
-        StringRecord XNAM; //Water Noise Texture
-        std::vector<ReqSubRecord<GENIMPS> *> IMPS; //Swapped Impact
-        std::vector<StringRecord> IMPF; //Footstep Materials
+        StringRecord NNAM; //Canopy Shadow (REQ)
+        StringRecord XNAM; //Water Noise Texture (REQ)
+        UnorderedSparseArray<GENIMPS *> IMPS; //Swapped Impact
+        OptSubRecord<GENIMPF> IMPF; //Footstep Materials
         RawRecord OFST; //Unknown
 
-        Record *ROAD;
+        //Record *ROAD;
         Record *CELL;
         std::vector<Record *> CELLS;
 

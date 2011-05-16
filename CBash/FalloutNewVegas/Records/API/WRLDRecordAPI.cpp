@@ -62,90 +62,134 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
-        case 8: //xezn Encounter Zone
+        case 8: //encounterZone
             return FORMID_FIELD;
-        case 9: //wnam Worldspace
+        case 9: //parent
             return FORMID_FIELD;
-        case 10: //pnam PNAM ,, Struct
-            return UINT8_FIELD;
-        case 11: //pnam_p PNAM ,, Struct
-            switch(WhichAttribute)
+        case 10: //parentFlags
+            return UINT16_FLAG_FIELD;
+        case 11: //climate
+            return FORMID_FIELD;
+        case 12: //water
+            return FORMID_FIELD;
+        case 13: //lodWater
+            return FORMID_FIELD;
+        case 14: //lodWaterHeight
+            return FLOAT32_FIELD;
+        case 15: //defaultLandHeight
+            return FLOAT32_FIELD;
+        case 16: //defaultWaterHeight
+            return FLOAT32_FIELD;
+        case 17: //iconPath
+            return ISTRING_FIELD;
+        case 18: //smallIconPath
+            return ISTRING_FIELD;
+        case 19: //dimX
+            return SINT32_FIELD;
+        case 20: //dimY
+            return SINT32_FIELD;
+        case 21: //NWCellX
+            return SINT16_FIELD;
+        case 22: //NWCellY
+            return SINT16_FIELD;
+        case 23: //SECellX
+            return SINT16_FIELD;
+        case 24: //SECellY
+            return SINT16_FIELD;
+        case 25: //mapScale
+            return FLOAT32_FIELD;
+        case 26: //xCellOffset
+            return FLOAT32_FIELD;
+        case 27: //yCellOffset
+            return FLOAT32_FIELD;
+        case 28: //imageSpace
+            return FORMID_FIELD;
+        case 29: //flags
+            return UINT8_FLAG_FIELD;
+        case 30: //xMinObjBounds
+            return FLOAT32_FIELD;
+        case 31: //yMinObjBounds
+            return FLOAT32_FIELD;
+        case 32: //xMaxObjBounds
+            return FLOAT32_FIELD;
+        case 33: //yMaxObjBounds
+            return FLOAT32_FIELD;
+        case 34: //music
+            return FORMID_FIELD;
+        case 35: //canopyShadowPath
+            return ISTRING_FIELD;
+        case 36: //waterNoisePath
+            return ISTRING_FIELD;
+        case 37: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpacts
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 1;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)IMPS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    return UINT32_TYPE_FIELD;
+                case 2: //oldImpact
+                    return FORMID_FIELD;
+                case 3: //newImpact
+                    return FORMID_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 12: //cnam Climate
-            return FORMID_FIELD;
-        case 13: //nam2 Water
-            return FORMID_FIELD;
-        case 14: //nam3 LOD Water Type
-            return FORMID_FIELD;
-        case 15: //nam4 LOD Water Height
-            return FLOAT32_FIELD;
-        case 16: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 17: //dnam DNAM ,, Struct
-            return FLOAT32_FIELD;
-        case 18: //iconPath
-            return ISTRING_FIELD;
-        case 19: //smallIconPath
-            return ISTRING_FIELD;
-        case 20: //mnam MNAM ,, Struct
-            return SINT32_FIELD;
-        case 21: //mnam MNAM ,, Struct
-            return SINT32_FIELD;
-        case 22: //mnam MNAM ,, Struct
-            return SINT16_FIELD;
-        case 23: //mnam MNAM ,, Struct
-            return SINT16_FIELD;
-        case 24: //mnam MNAM ,, Struct
-            return SINT16_FIELD;
-        case 25: //mnam MNAM ,, Struct
-            return SINT16_FIELD;
-        case 26: //onam ONAM ,, Struct
-            return FLOAT32_FIELD;
-        case 27: //onam ONAM ,, Struct
-            return FLOAT32_FIELD;
-        case 28: //onam ONAM ,, Struct
-            return FLOAT32_FIELD;
-        case 29: //inam Image Space
-            return FORMID_FIELD;
-        case 30: //flags
-            return UINT8_FIELD;
-        case 31: //nam0 NAM0 ,, Struct
-            return FLOAT32_FIELD;
-        case 32: //nam0 NAM0 ,, Struct
-            return FLOAT32_FIELD;
-        case 33: //nam9 NAM9 ,, Struct
-            return FLOAT32_FIELD;
-        case 34: //nam9 NAM9 ,, Struct
-            return FLOAT32_FIELD;
-        case 35: //znam Music
-            return FORMID_FIELD;
-        case 36: //nnam Canopy Shadow
-            return ISTRING_FIELD;
-        case 37: //xnam Water Noise Texture
-            return ISTRING_FIELD;
-        case 38: //imps IMPS ,, Struct
-            return UINT32_FIELD;
-        case 39: //imps IMPS ,, Struct
-            return FORMID_FIELD;
-        case 40: //imps IMPS ,, Struct
-            return FORMID_FIELD;
-        case 41: //impf Footstep Materials
-            return UNPARSED_FIELD;
-        case 42: //ofst_p Unknown
+        case 38: //concSolid
+            return STRING_FIELD;
+        case 39: //concBroken
+            return STRING_FIELD;
+        case 40: //metalSolid
+            return STRING_FIELD;
+        case 41: //metalHollow
+            return STRING_FIELD;
+        case 42: //metalSheet
+            return STRING_FIELD;
+        case 43: //wood
+            return STRING_FIELD;
+        case 44: //sand
+            return STRING_FIELD;
+        case 45: //dirt
+            return STRING_FIELD;
+        case 46: //grass
+            return STRING_FIELD;
+        case 47: //water
+            return STRING_FIELD;
+        case 48: //ofst_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
                     return OFST.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 49: //CELL
+            return SUBRECORD_FIELD;
+        case 50: //CELLS
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)CELLS.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -175,77 +219,108 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //xezn Encounter Zone
-            return XEZN.IsLoaded() ? &XEZN->value8 : NULL;
-        case 9: //wnam Worldspace
-            return WNAM.IsLoaded() ? &WNAM->value9 : NULL;
-        case 10: //pnam PNAM ,, Struct
-            return PNAM.IsLoaded() ? &PNAM->value10 : NULL;
-        case 11: //pnam_p PNAM ,, Struct
-            *FieldValues = PNAM.IsLoaded() ? &PNAM->value11[0] : NULL;
-            return NULL;
-        case 12: //cnam Climate
-            return CNAM.IsLoaded() ? &CNAM->value12 : NULL;
-        case 13: //nam2 Water
-            return NAM2.IsLoaded() ? &NAM2->value13 : NULL;
-        case 14: //nam3 LOD Water Type
-            return NAM3.IsLoaded() ? &NAM3->value14 : NULL;
-        case 15: //nam4 LOD Water Height
-            return NAM4.IsLoaded() ? &NAM4->value15 : NULL;
-        case 16: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value16 : NULL;
-        case 17: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value17 : NULL;
-        case 18: //iconPath
+        case 8: //encounterZone
+            return &XEZN.value;
+        case 9: //parent
+            return &WNAM.value;
+        case 10: //parentFlags
+            return &PNAM.value;
+        case 11: //climate
+            return &CNAM.value;
+        case 12: //water
+            return &NAM2.value;
+        case 13: //lodWater
+            return &NAM3.value;
+        case 14: //lodWaterHeight
+            return NAM4.value;
+        case 15: //defaultLandHeight
+            return &DNAM.value.defaultLandHeight;
+        case 16: //defaultWaterHeight
+            return &DNAM.value.defaultWaterHeight;
+        case 17: //iconPath
             return ICON.value;
-        case 19: //smallIconPath
+        case 18: //smallIconPath
             return MICO.value;
-        case 20: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value20 : NULL;
-        case 21: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value21 : NULL;
-        case 22: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value22 : NULL;
-        case 23: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value23 : NULL;
-        case 24: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value24 : NULL;
-        case 25: //mnam MNAM ,, Struct
-            return MNAM.IsLoaded() ? &MNAM->value25 : NULL;
-        case 26: //onam ONAM ,, Struct
-            return ONAM.IsLoaded() ? &ONAM->value26 : NULL;
-        case 27: //onam ONAM ,, Struct
-            return ONAM.IsLoaded() ? &ONAM->value27 : NULL;
-        case 28: //onam ONAM ,, Struct
-            return ONAM.IsLoaded() ? &ONAM->value28 : NULL;
-        case 29: //inam Image Space
-            return INAM.IsLoaded() ? &INAM->value29 : NULL;
-        case 30: //flags
-            return DATA.IsLoaded() ? &DATA->value30 : NULL;
-        case 31: //nam0 NAM0 ,, Struct
-            return NAM0.IsLoaded() ? &NAM0->value31 : NULL;
-        case 32: //nam0 NAM0 ,, Struct
-            return NAM0.IsLoaded() ? &NAM0->value32 : NULL;
-        case 33: //nam9 NAM9 ,, Struct
-            return NAM9.IsLoaded() ? &NAM9->value33 : NULL;
-        case 34: //nam9 NAM9 ,, Struct
-            return NAM9.IsLoaded() ? &NAM9->value34 : NULL;
-        case 35: //znam Music
-            return ZNAM.IsLoaded() ? &ZNAM->value35 : NULL;
-        case 36: //nnam Canopy Shadow
+        case 19: //dimX
+            return MNAM.IsLoaded() ? &MNAM->dimX : NULL;
+        case 20: //dimY
+            return MNAM.IsLoaded() ? &MNAM->dimY : NULL;
+        case 21: //NWCellX
+            return MNAM.IsLoaded() ? &MNAM->NWCellX : NULL;
+        case 22: //NWCellY
+            return MNAM.IsLoaded() ? &MNAM->NWCellY : NULL;
+        case 23: //SECellX
+            return MNAM.IsLoaded() ? &MNAM->SECellX : NULL;
+        case 24: //SECellY
+            return MNAM.IsLoaded() ? &MNAM->SECellY : NULL;
+        case 25: //mapScale
+            return &ONAM.value.mapScale;
+        case 26: //xCellOffset
+            return &ONAM.value.xCellOffset;
+        case 27: //yCellOffset
+            return &ONAM.value.yCellOffset;
+        case 28: //imageSpace
+            return &INAM.value;
+        case 29: //flags
+            return &DATA.value;
+        case 30: //xMinObjBounds
+            return &NAM0.value.x;
+        case 31: //yMinObjBounds
+            return &NAM0.value.y;
+        case 32: //xMaxObjBounds
+            return &NAM9.value.x;
+        case 33: //yMaxObjBounds
+            return &NAM9.value.y;
+        case 34: //music
+            return &ZNAM.value;
+        case 35: //canopyShadowPath
             return NNAM.value;
-        case 37: //xnam Water Noise Texture
+        case 36: //waterNoisePath
             return XNAM.value;
-        case 38: //imps IMPS ,, Struct
-            return IMPS.IsLoaded() ? &IMPS->value38 : NULL;
-        case 39: //imps IMPS ,, Struct
-            return IMPS.IsLoaded() ? &IMPS->value39 : NULL;
-        case 40: //imps IMPS ,, Struct
-            return IMPS.IsLoaded() ? &IMPS->value40 : NULL;
-        case 41: //impf Footstep Materials
-            return UNPARSEDGET_FIELD41;
-        case 42: //ofst_p Unknown
+        case 37: //swappedImpacts
+            if(ListIndex >= IMPS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    return &IMPS.value[ListIndex]->material;
+                case 2: //oldImpact
+                    return &IMPS.value[ListIndex]->oldImpact;
+                case 3: //newImpact
+                    return &IMPS.value[ListIndex]->newImpact;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 38: //concSolid
+            return IMPF.IsLoaded() ? &IMPF->concSolid[0] : NULL;
+        case 39: //concBroken
+            return IMPF.IsLoaded() ? &IMPF->concBroken[0] : NULL;
+        case 40: //metalSolid
+            return IMPF.IsLoaded() ? &IMPF->metalSolid[0] : NULL;
+        case 41: //metalHollow
+            return IMPF.IsLoaded() ? &IMPF->metalHollow[0] : NULL;
+        case 42: //metalSheet
+            return IMPF.IsLoaded() ? &IMPF->metalSheet[0] : NULL;
+        case 43: //wood
+            return IMPF.IsLoaded() ? &IMPF->wood[0] : NULL;
+        case 44: //sand
+            return IMPF.IsLoaded() ? &IMPF->sand[0] : NULL;
+        case 45: //dirt
+            return IMPF.IsLoaded() ? &IMPF->dirt[0] : NULL;
+        case 46: //grass
+            return IMPF.IsLoaded() ? &IMPF->grass[0] : NULL;
+        case 47: //water
+            return IMPF.IsLoaded() ? &IMPF->water[0] : NULL;
+        case 48: //ofst_p
             *FieldValues = OFST.value;
+            return NULL;
+        case 49: //CELL
+            return CELL;
+        case 50: //CELLS
+            for(UINT32 p = 0;p < (UINT32)CELLS.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = CELLS[p];
             return NULL;
         default:
             return NULL;
@@ -283,139 +358,206 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //xezn Encounter Zone
-            XEZN.Load();
-            XEZN->value8 = *(FORMID *)FieldValue;
+        case 8: //encounterZone
+            XEZN.value = *(FORMID *)FieldValue;
             return true;
-        case 9: //wnam Worldspace
-            WNAM.Load();
-            WNAM->value9 = *(FORMID *)FieldValue;
+        case 9: //parent
+            WNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 10: //pnam PNAM ,, Struct
-            PNAM.Load();
-            PNAM->value10 = *(UINT8 *)FieldValue;
+        case 10: //parentFlags
+            PNAM.value = *(UINT16 *)FieldValue;
             break;
-        case 11: //pnam_p PNAM ,, Struct
-            if(ArraySize != 1)
-                break;
-            PNAM.Load();
-            PNAM->value11[0] = ((UINT8ARRAY)FieldValue)[0];
-            break;
-        case 12: //cnam Climate
-            CNAM.Load();
-            CNAM->value12 = *(FORMID *)FieldValue;
+        case 11: //climate
+            CNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 13: //nam2 Water
-            NAM2.Load();
-            NAM2->value13 = *(FORMID *)FieldValue;
+        case 12: //water
+            NAM2.value = *(FORMID *)FieldValue;
             return true;
-        case 14: //nam3 LOD Water Type
-            NAM3.Load();
-            NAM3->value14 = *(FORMID *)FieldValue;
+        case 13: //lodWater
+            NAM3.value = *(FORMID *)FieldValue;
             return true;
-        case 15: //nam4 LOD Water Height
+        case 14: //lodWaterHeight
             NAM4.Load();
-            NAM4->value15 = *(FLOAT32 *)FieldValue;
+            *NAM4.value = *(FLOAT32 *)FieldValue;
             break;
-        case 16: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value16 = *(FLOAT32 *)FieldValue;
+        case 15: //defaultLandHeight
+            DNAM.value.defaultLandHeight = *(FLOAT32 *)FieldValue;
             break;
-        case 17: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value17 = *(FLOAT32 *)FieldValue;
+        case 16: //defaultWaterHeight
+            DNAM.value.defaultWaterHeight = *(FLOAT32 *)FieldValue;
             break;
-        case 18: //iconPath
+        case 17: //iconPath
             ICON.Copy((STRING)FieldValue);
             break;
-        case 19: //smallIconPath
+        case 18: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 20: //mnam MNAM ,, Struct
+        case 19: //dimX
             MNAM.Load();
-            MNAM->value20 = *(SINT32 *)FieldValue;
+            MNAM->dimX = *(SINT32 *)FieldValue;
             break;
-        case 21: //mnam MNAM ,, Struct
+        case 20: //dimY
             MNAM.Load();
-            MNAM->value21 = *(SINT32 *)FieldValue;
+            MNAM->dimY = *(SINT32 *)FieldValue;
             break;
-        case 22: //mnam MNAM ,, Struct
+        case 21: //NWCellX
             MNAM.Load();
-            MNAM->value22 = *(SINT16 *)FieldValue;
+            MNAM->NWCellX = *(SINT16 *)FieldValue;
             break;
-        case 23: //mnam MNAM ,, Struct
+        case 22: //NWCellY
             MNAM.Load();
-            MNAM->value23 = *(SINT16 *)FieldValue;
+            MNAM->NWCellY = *(SINT16 *)FieldValue;
             break;
-        case 24: //mnam MNAM ,, Struct
+        case 23: //SECellX
             MNAM.Load();
-            MNAM->value24 = *(SINT16 *)FieldValue;
+            MNAM->SECellX = *(SINT16 *)FieldValue;
             break;
-        case 25: //mnam MNAM ,, Struct
+        case 24: //SECellY
             MNAM.Load();
-            MNAM->value25 = *(SINT16 *)FieldValue;
+            MNAM->SECellY = *(SINT16 *)FieldValue;
             break;
-        case 26: //onam ONAM ,, Struct
-            ONAM.Load();
-            ONAM->value26 = *(FLOAT32 *)FieldValue;
+        case 25: //mapScale
+            ONAM.value.mapScale = *(FLOAT32 *)FieldValue;
             break;
-        case 27: //onam ONAM ,, Struct
-            ONAM.Load();
-            ONAM->value27 = *(FLOAT32 *)FieldValue;
+        case 26: //xCellOffset
+            ONAM.value.xCellOffset = *(FLOAT32 *)FieldValue;
             break;
-        case 28: //onam ONAM ,, Struct
-            ONAM.Load();
-            ONAM->value28 = *(FLOAT32 *)FieldValue;
+        case 27: //yCellOffset
+            ONAM.value.yCellOffset = *(FLOAT32 *)FieldValue;
             break;
-        case 29: //inam Image Space
-            INAM.Load();
-            INAM->value29 = *(FORMID *)FieldValue;
+        case 28: //imageSpace
+            INAM.value = *(FORMID *)FieldValue;
             return true;
-        case 30: //flags
-            DATA.Load();
-            DATA->value30 = *(UINT8 *)FieldValue;
+        case 29: //flags
+            DATA.value = *(UINT8 *)FieldValue;
             break;
-        case 31: //nam0 NAM0 ,, Struct
-            NAM0.Load();
-            NAM0->value31 = *(FLOAT32 *)FieldValue;
+        case 30: //xMinObjBounds
+            NAM0.value.x = *(FLOAT32 *)FieldValue;
             break;
-        case 32: //nam0 NAM0 ,, Struct
-            NAM0.Load();
-            NAM0->value32 = *(FLOAT32 *)FieldValue;
+        case 31: //yMinObjBounds
+            NAM0.value.y = *(FLOAT32 *)FieldValue;
             break;
-        case 33: //nam9 NAM9 ,, Struct
-            NAM9.Load();
-            NAM9->value33 = *(FLOAT32 *)FieldValue;
+        case 32: //xMaxObjBounds
+            NAM9.value.x = *(FLOAT32 *)FieldValue;
             break;
-        case 34: //nam9 NAM9 ,, Struct
-            NAM9.Load();
-            NAM9->value34 = *(FLOAT32 *)FieldValue;
+        case 33: //yMaxObjBounds
+            NAM9.value.y = *(FLOAT32 *)FieldValue;
             break;
-        case 35: //znam Music
-            ZNAM.Load();
-            ZNAM->value35 = *(FORMID *)FieldValue;
+        case 34: //music
+            ZNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 36: //nnam Canopy Shadow
+        case 35: //canopyShadowPath
             NNAM.Copy((STRING)FieldValue);
             break;
-        case 37: //xnam Water Noise Texture
+        case 36: //waterNoisePath
             XNAM.Copy((STRING)FieldValue);
             break;
-        case 38: //imps IMPS ,, Struct
-            IMPS.Load();
-            IMPS->value38 = *(UINT32 *)FieldValue;
+        case 37: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpactsSize
+                {
+                IMPS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    IMPS.value[ListIndex]->material = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //oldImpact
+                    IMPS.value[ListIndex]->oldImpact = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //newImpact
+                    IMPS.value[ListIndex]->newImpact = *(FORMID *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
             break;
-        case 39: //imps IMPS ,, Struct
-            IMPS.Load();
-            IMPS->value39 = *(FORMID *)FieldValue;
-            return true;
-        case 40: //imps IMPS ,, Struct
-            IMPS.Load();
-            IMPS->value40 = *(FORMID *)FieldValue;
-            return true;
-        case 41: //impf Footstep Materials
-            return UNPARSEDGET_FIELD41;
-        case 42: //ofst_p Unknown
+        case 38: //concSolid
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->concSolid[0], 0x00, sizeof(IMPF->concSolid));
+            memcpy(&IMPF->concSolid[0], FieldValue, ArraySize);
+            break;
+        case 39: //concBroken
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->concBroken[0], 0x00, sizeof(IMPF->concBroken));
+            memcpy(&IMPF->concBroken[0], FieldValue, ArraySize);
+            break;
+        case 40: //metalSolid
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->metalSolid[0], 0x00, sizeof(IMPF->metalSolid));
+            memcpy(&IMPF->metalSolid[0], FieldValue, ArraySize);
+            break;
+        case 41: //metalHollow
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->metalHollow[0], 0x00, sizeof(IMPF->metalHollow));
+            memcpy(&IMPF->metalHollow[0], FieldValue, ArraySize);
+            break;
+        case 42: //metalSheet
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->metalSheet[0], 0x00, sizeof(IMPF->metalSheet));
+            memcpy(&IMPF->metalSheet[0], FieldValue, ArraySize);
+            break;
+        case 43: //wood
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->wood[0], 0x00, sizeof(IMPF->wood));
+            memcpy(&IMPF->wood[0], FieldValue, ArraySize);
+            break;
+        case 44: //sand
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->sand[0], 0x00, sizeof(IMPF->sand));
+            memcpy(&IMPF->sand[0], FieldValue, ArraySize);
+            break;
+        case 45: //dirt
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->dirt[0], 0x00, sizeof(IMPF->dirt));
+            memcpy(&IMPF->dirt[0], FieldValue, ArraySize);
+            break;
+        case 46: //grass
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->grass[0], 0x00, sizeof(IMPF->grass));
+            memcpy(&IMPF->grass[0], FieldValue, ArraySize);
+            break;
+        case 47: //water
+            ArraySize = strlen((STRING)FieldValue);
+            if(ArraySize > 29)
+                break;
+            IMPF.Load();
+            memset(&IMPF->water[0], 0x00, sizeof(IMPF->water));
+            memcpy(&IMPF->water[0], FieldValue, ArraySize);
+            break;
+        case 48: //ofst_p
             OFST.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
         default:
@@ -426,6 +568,12 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    GENDNAM defaultDNAM;
+    GENMNAM defaultMNAM;
+    GENONAM defaultONAM;
+    GENNAM0 defaultNAM0;
+    GENNAM9 defaultNAM9;
+    GENIMPS defaultIMPS;
     switch(FieldID)
         {
         case 1: //flags1
@@ -447,108 +595,165 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //xezn Encounter Zone
+        case 8: //encounterZone
             XEZN.Unload();
             return;
-        case 9: //wnam Worldspace
+        case 9: //parent
             WNAM.Unload();
             return;
-        case 10: //pnam PNAM ,, Struct
+        case 10: //parentFlags
             PNAM.Unload();
             return;
-        case 11: //pnam_p PNAM ,, Struct
-            PNAM.Unload();
-            return;
-        case 12: //cnam Climate
+        case 11: //climate
             CNAM.Unload();
             return;
-        case 13: //nam2 Water
+        case 12: //water
             NAM2.Unload();
             return;
-        case 14: //nam3 LOD Water Type
+        case 13: //lodWater
             NAM3.Unload();
             return;
-        case 15: //nam4 LOD Water Height
+        case 14: //lodWaterHeight
             NAM4.Unload();
             return;
-        case 16: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 15: //defaultLandHeight
+            DNAM.value.defaultLandHeight = defaultDNAM.defaultLandHeight;
             return;
-        case 17: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 16: //defaultWaterHeight
+            DNAM.value.defaultWaterHeight = defaultDNAM.defaultWaterHeight;
             return;
-        case 18: //iconPath
+        case 17: //iconPath
             ICON.Unload();
             return;
-        case 19: //smallIconPath
+        case 18: //smallIconPath
             MICO.Unload();
             return;
-        case 20: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 19: //dimX
+            if(MNAM.IsLoaded())
+                MNAM->dimX = defaultMNAM.dimX;
             return;
-        case 21: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 20: //dimY
+            if(MNAM.IsLoaded())
+                MNAM->dimY = defaultMNAM.dimY;
             return;
-        case 22: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 21: //NWCellX
+            if(MNAM.IsLoaded())
+                MNAM->NWCellX = defaultMNAM.NWCellX;
             return;
-        case 23: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 22: //NWCellY
+            if(MNAM.IsLoaded())
+                MNAM->NWCellY = defaultMNAM.NWCellY;
             return;
-        case 24: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 23: //SECellX
+            if(MNAM.IsLoaded())
+                MNAM->SECellX = defaultMNAM.SECellX;
             return;
-        case 25: //mnam MNAM ,, Struct
-            MNAM.Unload();
+        case 24: //SECellY
+            if(MNAM.IsLoaded())
+                MNAM->SECellY = defaultMNAM.SECellY;
             return;
-        case 26: //onam ONAM ,, Struct
-            ONAM.Unload();
+        case 25: //mapScale
+            ONAM.value.mapScale = defaultONAM.mapScale;
             return;
-        case 27: //onam ONAM ,, Struct
-            ONAM.Unload();
+        case 26: //xCellOffset
+            ONAM.value.xCellOffset = defaultONAM.xCellOffset;
             return;
-        case 28: //onam ONAM ,, Struct
-            ONAM.Unload();
+        case 27: //yCellOffset
+            ONAM.value.yCellOffset = defaultONAM.yCellOffset;
             return;
-        case 29: //inam Image Space
+        case 28: //imageSpace
             INAM.Unload();
             return;
-        case 30: //flags
+        case 29: //flags
             DATA.Unload();
             return;
-        case 31: //nam0 NAM0 ,, Struct
-            NAM0.Unload();
+        case 30: //xMinObjBounds
+            NAM0.value.x = defaultNAM0.x;
             return;
-        case 32: //nam0 NAM0 ,, Struct
-            NAM0.Unload();
+        case 31: //yMinObjBounds
+            NAM0.value.y = defaultNAM0.y;
             return;
-        case 33: //nam9 NAM9 ,, Struct
-            NAM9.Unload();
+        case 32: //xMaxObjBounds
+            NAM9.value.x = defaultNAM9.x;
             return;
-        case 34: //nam9 NAM9 ,, Struct
-            NAM9.Unload();
+        case 33: //yMaxObjBounds
+            NAM9.value.y = defaultNAM9.y;
             return;
-        case 35: //znam Music
+        case 34: //music
             ZNAM.Unload();
             return;
-        case 36: //nnam Canopy Shadow
+        case 35: //canopyShadowPath
             NNAM.Unload();
             return;
-        case 37: //xnam Water Noise Texture
+        case 36: //waterNoisePath
             XNAM.Unload();
             return;
-        case 38: //imps IMPS ,, Struct
-            IMPS.Unload();
+        case 37: //swappedImpacts
+            if(ListFieldID == 0) //swappedImpactsSize
+                {
+                IMPS.Unload();
+                return;
+                }
+
+            if(ListIndex >= IMPS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //material
+                    IMPS.value[ListIndex]->material = defaultIMPS.material;
+                    return;
+                case 2: //oldImpact
+                    IMPS.value[ListIndex]->oldImpact = defaultIMPS.oldImpact;
+                    return;
+                case 3: //newImpact
+                    IMPS.value[ListIndex]->newImpact = defaultIMPS.newImpact;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 39: //imps IMPS ,, Struct
-            IMPS.Unload();
+        case 38: //concSolid
+            if(IMPF.IsLoaded())
+                memset(&IMPF->concSolid[0], 0x00, sizeof(IMPF->concSolid));
             return;
-        case 40: //imps IMPS ,, Struct
-            IMPS.Unload();
+        case 39: //concBroken
+            if(IMPF.IsLoaded())
+                memset(&IMPF->concBroken[0], 0x00, sizeof(IMPF->concBroken));
             return;
-        case 41: //impf Footstep Materials
-            return UNPARSEDDEL_FIELD41;
-        case 42: //ofst_p Unknown
+        case 40: //metalSolid
+            if(IMPF.IsLoaded())
+                memset(&IMPF->metalSolid[0], 0x00, sizeof(IMPF->metalSolid));
+            return;
+        case 41: //metalHollow
+            if(IMPF.IsLoaded())
+                memset(&IMPF->metalHollow[0], 0x00, sizeof(IMPF->metalHollow));
+            return;
+        case 42: //metalSheet
+            if(IMPF.IsLoaded())
+                memset(&IMPF->metalSheet[0], 0x00, sizeof(IMPF->metalSheet));
+            return;
+        case 43: //wood
+            if(IMPF.IsLoaded())
+                memset(&IMPF->wood[0], 0x00, sizeof(IMPF->wood));
+            return;
+        case 44: //sand
+            if(IMPF.IsLoaded())
+                memset(&IMPF->sand[0], 0x00, sizeof(IMPF->sand));
+            return;
+        case 45: //dirt
+            if(IMPF.IsLoaded())
+                memset(&IMPF->dirt[0], 0x00, sizeof(IMPF->dirt));
+            return;
+        case 46: //grass
+            if(IMPF.IsLoaded())
+                memset(&IMPF->grass[0], 0x00, sizeof(IMPF->grass));
+            return;
+        case 47: //water
+            if(IMPF.IsLoaded())
+                memset(&IMPF->water[0], 0x00, sizeof(IMPF->water));
+            return;
+        case 48: //ofst_p
             OFST.Unload();
             return;
         default:

@@ -530,10 +530,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgWRLD: //Same as normal
             case REV32(WRLD):
-                //reader.read(&WRLD.stamp, 4);
-                //reader.read(&WRLD.unknown, 4);
-                //WRLD.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&WRLD.stamp, 4);
+                reader.read(&WRLD.unknown, 4);
+                WRLD.Skim(reader, GRUPSize, processor, indexer, fullReader);
+                break;
             case eIgDIAL:
             case REV32(DIAL):
                 //reader.read(&DIAL.stamp, 4);
@@ -845,6 +845,12 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             }
         };
+    //Testing snippet
+    //if(Flags.IsFullLoad)
+    //    {
+    //    RecordChanger changer(FormIDHandler, Expanders);
+    //    VisitAllRecords(changer);
+    //    }
     return 1;
     }
 
@@ -976,7 +982,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
             break;
         ///////////////////////////////////////////////
         case REV32(WRLD):
-            //return (UINT32)WRLD.Records.size();
+            return (UINT32)WRLD.Records.size();
         case REV32(DIAL):
             //return (UINT32)DIAL.Records.size();
         case REV32(QUST):
@@ -1311,51 +1317,52 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = NAVI.Records.back();
             break;
         case REV32(CELL):
-            //if(ParentRecord == NULL)
-            //    {
+            if(ParentRecord == NULL)
+                {
                 CELL.Records.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
                 newRecord = CELL.Records.back();
 
                 ((FNV::CELLRecord *)newRecord)->IsInterior(true);
-            //    }
-            //else
-            //    {
-            //    if(ParentRecord->GetType() != REV32(WRLD))
-            //        {
-            //        printf("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //        return NULL;
-            //        }
+                }
+            else
+                {
+                if(ParentRecord->GetType() != REV32(WRLD))
+                    {
+                    printf("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                    return NULL;
+                    }
 
-            //    if(options.CopyWorldCellStatus)
-            //        {
-            //        if(((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->Parent)->CELL->formID == SourceRecord->formID)
-            //            options.SetAsWorldCell = true;
-            //        else
-            //            options.SetAsWorldCell = false;
-            //        }
+                if(options.CopyWorldCellStatus)
+                    {
+                    if(((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->Parent)->CELL->formID == SourceRecord->formID)
+                        options.SetAsWorldCell = true;
+                    else
+                        options.SetAsWorldCell = false;
+                    }
 
-            //    if(options.SetAsWorldCell)
-            //        {
-            //        //If a world cell already exists, return it instead of making a new one
-            //        if(((FNV::WRLDRecord *)ParentRecord)->CELL != NULL)
-            //            return ((FNV::WRLDRecord *)ParentRecord)->CELL;
+                if(options.SetAsWorldCell)
+                    {
+                    //If a world cell already exists, return it instead of making a new one
+                    if(((FNV::WRLDRecord *)ParentRecord)->CELL != NULL)
+                        {
+                        options.ExistingReturned = true;
+                        return ((FNV::WRLDRecord *)ParentRecord)->CELL;
+                        }
+                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL = new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord);
+                    }
+                else
+                    {
+                    ((FNV::WRLDRecord *)ParentRecord)->CELLS.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
+                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELLS.back();
+                    }
 
-            //        ((FNV::WRLDRecord *)ParentRecord)->CELL = new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord);
-            //        newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL;
-            //        }
-            //    else
-            //        {
-            //        ((FNV::WRLDRecord *)ParentRecord)->CELLS.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
-            //        newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELLS.back();
-            //        }
-
-            //    ((FNV::CELLRecord *)newRecord)->IsInterior(false);
-            //    ((FNV::CELLRecord *)newRecord)->Parent = ParentRecord;
-            //    }
+                ((FNV::CELLRecord *)newRecord)->IsInterior(false);
+                ((FNV::CELLRecord *)newRecord)->Parent = ParentRecord;
+                }
             break;
         case REV32(WRLD):
-            //WRLD.Records.push_back(new FNV::WRLDRecord((FNV::WRLDRecord *)SourceRecord));
-            //newRecord = WRLD.Records.back();
+            WRLD.Records.push_back(new FNV::WRLDRecord((FNV::WRLDRecord *)SourceRecord));
+            newRecord = WRLD.Records.back();
             break;
         case REV32(DIAL):
             //DIAL.Records.push_back(new FNV::DIALRecord((FNV::DIALRecord *)SourceRecord));
@@ -1462,19 +1469,22 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = ((FNV::CELLRecord *)ParentRecord)->NAVM.back();
             break;
         case REV32(LAND):
-            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
-            //    {
-            //    printf("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //    return NULL;
-            //    }
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
 
-            ////If a cell land already exists, return it instead of making a new one
-            //if(((CELLRecord *)ParentRecord)->LAND != NULL)
-            //    return ((CELLRecord *)ParentRecord)->LAND;
+            //If a cell land already exists, return it instead of making a new one
+            if(((FNV::CELLRecord *)ParentRecord)->LAND != NULL)
+                {
+                options.ExistingReturned = true;
+                return ((FNV::CELLRecord *)ParentRecord)->LAND;
+                }
 
-            //((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
-            //newRecord = ((CELLRecord *)ParentRecord)->LAND;
-            //break;
+            ((FNV::CELLRecord *)ParentRecord)->LAND = new FNV::LANDRecord((FNV::LANDRecord *)SourceRecord);
+            newRecord = ((FNV::CELLRecord *)ParentRecord)->LAND;
+            break;
         case REV32(QUST):
             //QUST.Records.push_back(new FNV::QUSTRecord((FNV::QUSTRecord *)SourceRecord));
             //newRecord = QUST.Records.back();
@@ -1746,7 +1756,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(REGN.VisitRecords(NULL, checker, false)) continue;
         if(NAVI.VisitRecords(NULL, checker, false)) continue;
         if(CELL.VisitRecords(NULL, checker, true)) continue;
-        //if(WRLD.VisitRecords(NULL, checker, true)) continue;
+        if(WRLD.VisitRecords(NULL, checker, true)) continue;
         //if(DIAL.VisitRecords(NULL, checker, true)) continue;
         //if(QUST.VisitRecords(NULL, checker, false)) continue;
         //if(IDLE.VisitRecords(NULL, checker, false)) continue;
@@ -1884,7 +1894,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += REGN.WriteGRUP(REV32(REGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += NAVI.WriteGRUP(REV32(NAVI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WRLD.WriteGRUP(REV32(WRLD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += DIAL.WriteGRUP(REV32(DIAL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -2007,7 +2017,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     REGN.VisitRecords(NULL, op, true);
     NAVI.VisitRecords(NULL, op, true);
     CELL.VisitRecords(NULL, op, true);
-    //WRLD.VisitRecords(NULL, op, true);
+    WRLD.VisitRecords(NULL, op, true);
     //DIAL.VisitRecords(NULL, op, true);
     //QUST.VisitRecords(NULL, op, true);
     //IDLE.VisitRecords(NULL, op, true);
@@ -2234,8 +2244,8 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             CELL.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(WRLD):
-            //WRLD.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            WRLD.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(DIAL):
             //DIAL.VisitRecords(RecordType, op, DeepVisit);
             //break;

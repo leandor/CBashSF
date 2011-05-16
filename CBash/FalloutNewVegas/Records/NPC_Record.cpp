@@ -1261,7 +1261,13 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRI.Read(buffer, subSize, curPos);
                 break;
             case REV32(CNTO):
-                CNTO.Read(buffer, subSize, curPos);
+                CNTO.value.push_back(new FNVCNTO);
+                CNTO.value.back()->CNTO.Read(buffer, subSize, curPos);
+                break;
+            case REV32(COED):
+                if(CNTO.value.size() == 0)
+                    CNTO.value.push_back(new FNVCNTO);
+                CNTO.value.back()->COED.Read(buffer, subSize, curPos);
                 break;
             case REV32(AIDT):
                 AIDT.Read(buffer, subSize, curPos);
@@ -1388,7 +1394,7 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     WRITE(EAMT);
     Destructable.Write(writer);
     WRITE(SCRI);
-    WRITE(CNTO);
+    CNTO.Write(writer);
     WRITE(AIDT);
     WRITE(PKID);
     WRITE(CNAM);

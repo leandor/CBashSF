@@ -53,8 +53,8 @@ class WRLDRecord : public Record
         StringRecord ICON;
         SemiOptSubRecord<GENMNAM> MNAM;
         ReqSimpleSubRecord<UINT8> DATA;
-        ReqSubRecord<GENNAM> NAM0;
-        ReqSubRecord<GENNAM> NAM9;
+        ReqSubRecord<GENNAM0> NAM0;
+        ReqSubRecord<GENNAM9> NAM9;
         OptSimpleSubRecord<UINT32> SNAM;
         RawRecord OFST;
 

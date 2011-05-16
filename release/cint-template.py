@@ -735,7 +735,6 @@ class CBashFORMID_OR_STRING(object):
                 _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
             elif type == API_FIELDS.STRING:
                 _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
-            
 
 class CBashFORMID_OR_UINT32_ARRAY(object):
     def __init__(self, FieldID, Size=None):
@@ -1885,7 +1884,7 @@ class FnvBaseRecord(object):
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
+        #recordMasters = set(FnvModFile(self._CollectionID, self._ModID).TES4.masters)
         #sort oldest to newest rather than newest to oldest
         #conflicts = self.Conflicts(GetExtendedConflicts)
         #Less pythonic, but optimized for better speed.
@@ -1918,7 +1917,7 @@ class FnvBaseRecord(object):
         if CopyFlags is None: CopyFlags = self._CopyFlags
         targetID = 0
         if hasattr(self, '_ParentID'):
-            if isinstance(target, ObModFile): targetID = self._ParentID
+            if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001,
@@ -1936,7 +1935,7 @@ class FnvBaseRecord(object):
         if CopyFlags is None: CopyFlags = self._CopyFlags
         targetID = 0
         if hasattr(self, '_ParentID'):
-            if isinstance(target, ObModFile): targetID = self._ParentID
+            if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001,
@@ -1952,8 +1951,8 @@ class FnvBaseRecord(object):
     def Parent(self):
         ParentID = getattr(self, '_ParentID', 0)
         if ParentID:
-            testRecord = ObBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
-            RecordType = type_record[testRecord.recType]
+            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
+            RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
                 return RecordType(self._CollectionID, self._ModID, ParentID, 0, 0)
         return None
@@ -2080,7 +2079,7 @@ class FnvACHRRecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2091,7 +2090,7 @@ class FnvACHRRecord(FnvBaseRecord):
         FORMID_LISTMACRO(reference, 1)
         FLOAT32_LISTMACRO(delay, 2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2115,7 +2114,7 @@ class FnvACHRRecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -2127,7 +2126,7 @@ class FnvACHRRecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -2145,14 +2144,14 @@ class FnvACHRRecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 54)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2168,7 +2167,7 @@ class FnvACHRRecord(FnvBaseRecord):
                                            'parent', 'parentFlags', 'emittance',
                                            'boundRef', 'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2184,7 +2183,7 @@ class FnvACHRRecord(FnvBaseRecord):
                                              'parent', 'parentFlags', 'emittance',
                                              'boundRef', 'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-    
+
 class FnvACRERecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2200,7 +2199,7 @@ class FnvACRERecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2211,7 +2210,7 @@ class FnvACRERecord(FnvBaseRecord):
         FORMID_LISTMACRO(reference, 1)
         FLOAT32_LISTMACRO(delay, 2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2237,7 +2236,7 @@ class FnvACRERecord(FnvBaseRecord):
     SINT32_MACRO(count, 28)
     FLOAT32_MACRO(radius, 29)
     FLOAT32_MACRO(health, 30)
-    
+
     LIST_MACRO(decals, 31, self.Decal)
     FORMID_MACRO(linkedReference, 32)
     UINT8_MACRO(startRed, 33)
@@ -2249,7 +2248,7 @@ class FnvACRERecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 39)
     UINT8_ARRAY_MACRO(unused3, 40, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 41)
-    
+
     LIST_MACRO(activateParentRefs, 42, self.ParentRef)
     STRING_MACRO(prompt, 43)
     FORMID_MACRO(parent, 44)
@@ -2267,14 +2266,14 @@ class FnvACRERecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 56)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2290,7 +2289,7 @@ class FnvACRERecord(FnvBaseRecord):
                                            'parent', 'parentFlags', 'emittance',
                                            'boundRef', 'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2306,7 +2305,7 @@ class FnvACRERecord(FnvBaseRecord):
                                              'parent', 'parentFlags', 'emittance',
                                              'boundRef', 'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-    
+
 class FnvREFRRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2321,7 +2320,7 @@ class FnvREFRRecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2332,15 +2331,15 @@ class FnvREFRRecord(FnvBaseRecord):
         FORMID_LISTMACRO(reference, 1)
         FLOAT32_LISTMACRO(delay, 2)
         exportattrs = copyattrs = ['reference', 'delay']
-        
+
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2355,7 +2354,7 @@ class FnvREFRRecord(FnvBaseRecord):
     UINT16_FLAG_MACRO(scriptFlags, 18)
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
-    
+
     LIST_MACRO(vars, 21, self.Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
@@ -2367,7 +2366,7 @@ class FnvREFRRecord(FnvBaseRecord):
     FLOAT32_MACRO(health, 29)
     FLOAT32_MACRO(radiation, 30)
     FLOAT32_MACRO(charge, 31)
-    
+
     LIST_MACRO(decals, 32, self.Decal)
     FORMID_MACRO(linkedReference, 33)
     UINT8_MACRO(startRed, 34)
@@ -2380,7 +2379,7 @@ class FnvREFRRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused3, 41, 1)
     UINT8_ARRAY_MACRO(rclr_p, 42)
     UINT8_FLAG_MACRO(activateParentFlags, 43)
-    
+
     LIST_MACRO(activateParentRefs, 44, self.ParentRef)
     STRING_MACRO(prompt, 45)
     FORMID_MACRO(parent, 46)
@@ -2433,7 +2432,7 @@ class FnvREFRRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(lockUnknown1, 93)
     FORMID_MACRO(ammo, 94)
     SINT32_MACRO(ammoCount, 95)
-    
+
     LIST_MACRO(reflrefrs, 96, self.ReflRefr)
     FORMID_ARRAY_MACRO(litWaters, 97)
     UINT32_FLAG_MACRO(actionFlags, 98)
@@ -2479,12 +2478,12 @@ class FnvREFRRecord(FnvBaseRecord):
     RADIAN_MACRO(rotX, 138)
     RADIAN_MACRO(rotY, 139)
     RADIAN_MACRO(rotZ, 140)
-    
+
     BasicFlagMACRO(IsNoAlarm, destinationFlags, 0x00000001)
-    
+
     BasicFlagMACRO(IsVisible, markerFlags, 0x00000001)
     BasicFlagMACRO(IsCanTravelTo, markerFlags, 0x00000002)
-    
+
     BasicFlagMACRO(IsUseDefault, actionFlags, 0x00000001)
     BasicFlagMACRO(IsActivate, actionFlags, 0x00000002)
     BasicFlagMACRO(IsOpen, actionFlags, 0x00000004)
@@ -2559,7 +2558,7 @@ class FnvREFRRecord(FnvBaseRecord):
     BasicTypeMACRO(IsSewerRuins, markerType, 12, IsMarkerNone)
     BasicTypeMACRO(IsMetro, markerType, 13, IsMarkerNone)
     BasicTypeMACRO(IsVault, markerType, 14, IsMarkerNone)
-    
+
     BasicTypeMACRO(IsRadius, rangeType, 0, IsEverywhere)
     BasicTypeMACRO(IsEverywhere, rangeType, 1, IsRadius)
     BasicTypeMACRO(IsWorldAndLinkedInteriors, rangeType, 2, IsRadius)
@@ -2573,7 +2572,7 @@ class FnvREFRRecord(FnvBaseRecord):
                                            'owner', 'rank', 'count', 'radius', 'health',
                                            'radiation', 'charge', 'decals_list',
                                            'linkedReference',
-                                           'startRed', 'startRed', 'startBlue', 
+                                           'startRed', 'startRed', 'startBlue',
                                            'endRed', 'endGreen', 'endBlue',
                                            'rclr_p', 'activateParentFlags',
                                            'activateParentRefs_list', 'prompt', 'parent',
@@ -2613,7 +2612,7 @@ class FnvREFRRecord(FnvBaseRecord):
                                              'owner', 'rank', 'count', 'radius', 'health',
                                              'radiation', 'charge', 'decals_list',
                                              'linkedReference',
-                                             'startRed', 'startRed', 'startBlue', 
+                                             'startRed', 'startRed', 'startBlue',
                                              'endRed', 'endGreen', 'endBlue',
                                              'activateParentFlags',
                                              'activateParentRefs_list', 'prompt', 'parent',
@@ -2644,8 +2643,8 @@ class FnvREFRRecord(FnvBaseRecord):
                                              'occPlaneQ3', 'occPlaneQ4', 'occPlaneRight',
                                              'occPlaneLeft', 'occPlaneBottom', 'occPlaneTop',
                                              'lod1', 'lod2', 'lod3', 'ignoredBySandbox',
-                                             'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p', 
-    
+                                             'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p',
+
 class FnvPGRERecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2660,7 +2659,7 @@ class FnvPGRERecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2675,11 +2674,11 @@ class FnvPGRERecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2703,7 +2702,7 @@ class FnvPGRERecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -2715,7 +2714,7 @@ class FnvPGRERecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -2723,7 +2722,7 @@ class FnvPGRERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused4, 44, 3)
     FORMID_MACRO(emittance, 45)
     FORMID_MACRO(boundRef, 46)
-    
+
     LIST_MACRO(reflrefrs, 47, self.ReflRefr)
     BOOL_MACRO(ignoredBySandbox, 48)
     FLOAT32_MACRO(scale, 49)
@@ -2735,14 +2734,14 @@ class FnvPGRERecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 55)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2759,7 +2758,7 @@ class FnvPGRERecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2776,7 +2775,7 @@ class FnvPGRERecord(FnvBaseRecord):
                                              'boundRef', 'reflrefrs_list',
                                              'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
-        
+
 class FnvPMISRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -2791,7 +2790,7 @@ class FnvPMISRecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2806,11 +2805,11 @@ class FnvPMISRecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2834,7 +2833,7 @@ class FnvPMISRecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -2846,7 +2845,7 @@ class FnvPMISRecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -2854,7 +2853,7 @@ class FnvPMISRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused4, 44, 3)
     FORMID_MACRO(emittance, 45)
     FORMID_MACRO(boundRef, 46)
-    
+
     LIST_MACRO(reflrefrs, 47, self.ReflRefr)
     BOOL_MACRO(ignoredBySandbox, 48)
     FLOAT32_MACRO(scale, 49)
@@ -2866,14 +2865,14 @@ class FnvPMISRecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 55)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -2890,7 +2889,7 @@ class FnvPMISRecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -2922,7 +2921,7 @@ class FnvPBEARecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2937,11 +2936,11 @@ class FnvPBEARecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -2965,7 +2964,7 @@ class FnvPBEARecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -2977,7 +2976,7 @@ class FnvPBEARecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -2985,7 +2984,7 @@ class FnvPBEARecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused4, 44, 3)
     FORMID_MACRO(emittance, 45)
     FORMID_MACRO(boundRef, 46)
-    
+
     LIST_MACRO(reflrefrs, 47, self.ReflRefr)
     BOOL_MACRO(ignoredBySandbox, 48)
     FLOAT32_MACRO(scale, 49)
@@ -2997,14 +2996,14 @@ class FnvPBEARecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 55)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3021,7 +3020,7 @@ class FnvPBEARecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3053,7 +3052,7 @@ class FnvPFLARecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -3068,11 +3067,11 @@ class FnvPFLARecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -3096,7 +3095,7 @@ class FnvPFLARecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -3108,7 +3107,7 @@ class FnvPFLARecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -3116,7 +3115,7 @@ class FnvPFLARecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused4, 44, 3)
     FORMID_MACRO(emittance, 45)
     FORMID_MACRO(boundRef, 46)
-    
+
     LIST_MACRO(reflrefrs, 47, self.ReflRefr)
     BOOL_MACRO(ignoredBySandbox, 48)
     FLOAT32_MACRO(scale, 49)
@@ -3128,14 +3127,14 @@ class FnvPFLARecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 55)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3152,7 +3151,7 @@ class FnvPFLARecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3184,7 +3183,7 @@ class FnvPCBERecord(FnvBaseRecord):
 
         BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
         exportattrs = copyattrs = ['index', 'flags', 'name']
-        
+
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -3199,11 +3198,11 @@ class FnvPCBERecord(FnvBaseRecord):
     class ReflRefr(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT32_TYPE_LISTMACRO(type, 2)
-        
+
         BasicTypeMACRO(IsReflection, type, 0, IsRefraction)
         BasicTypeMACRO(IsRefraction, type, 1, IsReflection)
         exportattrs = copyattrs = ['reference', 'type']
-        
+
     FORMID_MACRO(base, 7)
     FORMID_MACRO(encounterZone, 8)
     UINT8_ARRAY_MACRO(xrgd_p, 9)
@@ -3227,7 +3226,7 @@ class FnvPCBERecord(FnvBaseRecord):
     SINT32_MACRO(count, 26)
     FLOAT32_MACRO(radius, 27)
     FLOAT32_MACRO(health, 28)
-    
+
     LIST_MACRO(decals, 29, self.Decal)
     FORMID_MACRO(linkedReference, 30)
     UINT8_MACRO(startRed, 31)
@@ -3239,7 +3238,7 @@ class FnvPCBERecord(FnvBaseRecord):
     UINT8_MACRO(endBlue, 37)
     UINT8_ARRAY_MACRO(unused3, 38, 1)
     UINT8_FLAG_MACRO(activateParentFlags, 39)
-    
+
     LIST_MACRO(activateParentRefs, 40, self.ParentRef)
     STRING_MACRO(prompt, 41)
     FORMID_MACRO(parent, 42)
@@ -3247,7 +3246,7 @@ class FnvPCBERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(unused4, 44, 3)
     FORMID_MACRO(emittance, 45)
     FORMID_MACRO(boundRef, 46)
-    
+
     LIST_MACRO(reflrefrs, 47, self.ReflRefr)
     BOOL_MACRO(ignoredBySandbox, 48)
     FLOAT32_MACRO(scale, 49)
@@ -3259,14 +3258,14 @@ class FnvPCBERecord(FnvBaseRecord):
     RADIAN_MACRO(rotZ, 55)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
-    
+
     BasicFlagMACRO(IsOppositeParent, parentFlags, 0x00000001)
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
-    
+
     copyattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone', 'xrgd_p', 'xrgb_p',
                                            'idleTime', 'idle', 'numRefs', 'compiledSize',
                                            'lastIndex', 'scriptType', 'scriptFlags',
@@ -3283,7 +3282,7 @@ class FnvPCBERecord(FnvBaseRecord):
                                            'boundRef', 'reflrefrs_list',
                                            'ignoredBySandbox', 'scale',
                                            'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']
-    
+
     exportattrs = FnvBaseRecord.baseattrs + ['base', 'encounterZone',
                                              'idleTime', 'idle', 'numRefs', 'compiledSize',
                                              'lastIndex', 'scriptType', 'scriptFlags',
@@ -3300,7 +3299,7 @@ class FnvPCBERecord(FnvBaseRecord):
                                              'boundRef', 'reflrefrs_list',
                                              'ignoredBySandbox', 'scale',
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
- 
+
 class FnvNAVMRecord(FnvBaseRecord):
     def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
@@ -3312,7 +3311,7 @@ class FnvNAVMRecord(FnvBaseRecord):
         FLOAT32_LISTMACRO(z, 3)
 
         exportattrs = copyattrs = ['x', 'y', 'z']
-        
+
     class Triangle(ListComponent):
         SINT16_LISTMACRO(vertex1, 1)
         SINT16_LISTMACRO(vertex2, 2)
@@ -3355,21 +3354,21 @@ class FnvNAVMRecord(FnvBaseRecord):
         BasicFlagMACRO(IsUnknown31, flags, 0x40000000)
         BasicFlagMACRO(IsUnknown32, flags, 0x80000000)
         exportattrs = copyattrs = ['vertex1', 'vertex2', 'vertex3', 'edge1', 'edge2', 'edge3', 'flags']
-        
+
     class Door(ListComponent):
         FORMID_LISTMACRO(door, 1)
         UINT16_LISTMACRO(unknown1, 2)
         UINT8_ARRAY_LISTMACRO(unused1, 3, 2)
-        
+
         exportattrs = copyattrs = ['door', 'unknown1']
-        
+
     class Connection(ListComponent):
         UINT8_ARRAY_LISTMACRO(unknown1, 1)
         FORMID_LISTMACRO(mesh, 2)
         UINT16_LISTMACRO(triangle, 3)
-        
+
         exportattrs = copyattrs = ['unknown1', 'mesh', 'triangle']
-        
+
     UINT32_MACRO(version, 7)
     FORMID_MACRO(cell, 8)
     UINT32_MACRO(numVertices, 9)
@@ -3377,14 +3376,14 @@ class FnvNAVMRecord(FnvBaseRecord):
     UINT32_MACRO(numConnections, 11)
     UINT32_MACRO(numUnknown, 12)
     UINT32_MACRO(numDoors, 13)
-    
-    LIST_MACRO(vertices, 14, self.Vertex)    
+
+    LIST_MACRO(vertices, 14, self.Vertex)
     LIST_MACRO(triangles, 15, self.Triangle)
     SINT16_ARRAY_MACRO(unknown1, 16)
-    
+
     LIST_MACRO(doors, 17, self.Door)
     UINT8_ARRAY_MACRO(nvgd_p, 18)
-    
+
     LIST_MACRO(connections, 19, self.Connection)
     copyattrs = FnvBaseRecord.baseattrs + ['version', 'cell', 'numVertices',
                                            'numTriangles', 'numConnections',
@@ -3398,7 +3397,163 @@ class FnvNAVMRecord(FnvBaseRecord):
                                              'vertices_list', 'triangles_list',
                                              'unknown1', 'doors_list',
                                              'connections_list']# 'nvgd_p',
-    
+
+class FnvLANDRecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
+        self._ParentID = ParentID
+
+    _Type = 'LAND'
+    class Normal(ListX2Component):
+        UINT8_LISTX2MACRO(x, 1)
+        UINT8_LISTX2MACRO(y, 2)
+        UINT8_LISTX2MACRO(z, 3)
+        exportattrs = copyattrs = ['x', 'y', 'z']
+
+    class Height(ListX2Component):
+        SINT8_LISTX2MACRO(height, 1)
+        exportattrs = copyattrs = ['height']
+
+    class Color(ListX2Component):
+        UINT8_LISTX2MACRO(red, 1)
+        UINT8_LISTX2MACRO(green, 2)
+        UINT8_LISTX2MACRO(blue, 3)
+        exportattrs = copyattrs = ['red', 'green', 'blue']
+
+    class BaseTexture(ListComponent):
+        FORMID_LISTMACRO(texture, 1)
+        SINT8_LISTMACRO(quadrant, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 3, 1)
+        SINT16_LISTMACRO(layer, 4)
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer']
+
+    class AlphaLayer(ListComponent):
+        class Opacity(ListX2Component):
+            UINT16_LISTX2MACRO(position, 1)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 2, 2)
+            FLOAT32_LISTX2MACRO(opacity, 3)
+            exportattrs = copyattrs = ['position', 'opacity']
+        FORMID_LISTMACRO(texture, 1)
+        SINT8_LISTMACRO(quadrant, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 3, 1)
+        SINT16_LISTMACRO(layer, 4)
+
+        LIST_LISTMACRO(opacities, 5, self.Opacity)
+        exportattrs = copyattrs = ['texture', 'quadrant', 'layer', 'opacities_list']
+
+    class VertexTexture(ListComponent):
+        FORMID_LISTMACRO(texture, 1)
+        exportattrs = copyattrs = ['texture']
+
+    class Position(ListX2Component):
+        FLOAT32_LISTX2MACRO(height, 1)
+        UINT8_LISTX2MACRO(normalX, 2)
+        UINT8_LISTX2MACRO(normalY, 3)
+        UINT8_LISTX2MACRO(normalZ, 4)
+        UINT8_LISTX2MACRO(red, 5)
+        UINT8_LISTX2MACRO(green, 6)
+        UINT8_LISTX2MACRO(blue, 7)
+        FORMID_LISTX2MACRO(baseTexture, 8)
+        FORMID_LISTX2MACRO(alphaLayer1Texture, 9)
+        FLOAT32_LISTX2MACRO(alphaLayer1Opacity, 10)
+        FORMID_LISTX2MACRO(alphaLayer2Texture, 11)
+        FLOAT32_LISTX2MACRO(alphaLayer2Opacity, 12)
+        FORMID_LISTX2MACRO(alphaLayer3Texture, 13)
+        FLOAT32_LISTX2MACRO(alphaLayer3Opacity, 14)
+        FORMID_LISTX2MACRO(alphaLayer4Texture, 15)
+        FLOAT32_LISTX2MACRO(alphaLayer4Opacity, 16)
+        FORMID_LISTX2MACRO(alphaLayer5Texture, 17)
+        FLOAT32_LISTX2MACRO(alphaLayer5Opacity, 18)
+        FORMID_LISTX2MACRO(alphaLayer6Texture, 19)
+        FLOAT32_LISTX2MACRO(alphaLayer6Opacity, 20)
+        FORMID_LISTX2MACRO(alphaLayer7Texture, 21)
+        FLOAT32_LISTX2MACRO(alphaLayer7Opacity, 22)
+        FORMID_LISTX2MACRO(alphaLayer8Texture, 23)
+        FLOAT32_LISTX2MACRO(alphaLayer8Opacity, 24)
+        exportattrs = copyattrs = ['height', 'normalX', 'normalY', 'normalZ',
+                     'red', 'green', 'blue', 'baseTexture',
+                     'alphaLayer1Texture', 'alphaLayer1Opacity',
+                     'alphaLayer2Texture', 'alphaLayer2Opacity',
+                     'alphaLayer3Texture', 'alphaLayer3Opacity',
+                     'alphaLayer4Texture', 'alphaLayer4Opacity',
+                     'alphaLayer5Texture', 'alphaLayer5Opacity',
+                     'alphaLayer6Texture', 'alphaLayer6Opacity',
+                     'alphaLayer7Texture', 'alphaLayer7Opacity',
+                     'alphaLayer8Texture', 'alphaLayer8Opacity']
+
+    UINT8_ARRAY_MACRO(data_p, 7)
+
+    def get_normals(self):
+        return [[self.Normal(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_normals(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.normals
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    normals = property(get_normals, set_normals)
+    def get_normals_list(self):
+        return [ExtractCopyList([self.Normal(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+
+    normals_list = property(get_normals_list, set_normals)
+
+    FLOAT32_MACRO(heightOffset, 9)
+
+    def get_heights(self):
+        return [[self.Height(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_heights(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.heights
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    heights = property(get_heights, set_heights)
+    def get_heights_list(self):
+        return [ExtractCopyList([self.Height(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    heights_list = property(get_heights_list, set_heights)
+
+    UINT8_ARRAY_MACRO(unused1, 11, 3)
+
+    def get_colors(self):
+        return [[self.Color(self._CollectionID, self._ModID, self._RecordID, 12, x, 0, y) for y in range(0,33)] for x in range(0,33)]
+    def set_colors(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.colors
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    colors = property(get_colors, set_colors)
+    def get_colors_list(self):
+        return [ExtractCopyList([self.Color(self._CollectionID, self._ModID, self._RecordID, 12, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    colors_list = property(get_colors_list, set_colors)
+
+    LIST_MACRO(baseTextures, 13, self.BaseTexture)
+    LIST_MACRO(alphaLayers, 14, self.AlphaLayer)
+    LIST_MACRO(vertexTextures, 15, self.VertexTexture)
+    ##The Positions accessor is unique in that it duplicates the above accessors. It just presents the data in a more friendly format.
+    def get_Positions(self):
+        return [[self.Position(self._CollectionID, self._ModID, self._RecordID, 16, row, 0, column) for column in range(0,33)] for row in range(0,33)]
+    def set_Positions(self, nElements):
+        if nElements is None or len(nElements) != 33: return
+        if isinstance(nElements[0], tuple): nValues = nElements
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.Positions
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
+    Positions = property(get_Positions, set_Positions)
+    def get_Positions_list(self):
+        return [ExtractCopyList([self.Position(self._CollectionID, self._ModID, self._RecordID, 16, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+    Positions_list = property(get_Positions_list, set_Positions)
+    copyattrs = FnvBaseRecord.baseattrs + ['data_p', 'normals_list', 'heights_list', 'heightOffset',
+                                        'colors_list', 'baseTextures_list', 'alphaLayers_list',
+                                        'vertexTextures_list']
+    exportattrs = FnvBaseRecord.baseattrs + ['normals_list', 'heights_list', 'heightOffset',
+                                        'colors_list', 'baseTextures_list', 'alphaLayers_list',
+                                        'vertexTextures_list'] #'data_p',
+
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -4999,7 +5154,7 @@ class FnvTREERecord(FnvBaseRecord):
     FLOAT32_MACRO(rockSpeed, 27)
     FLOAT32_MACRO(rustleSpeed, 28)
     FLOAT32_MACRO(widthBill, 29)
-    FLOAT32_MACRO(heightBill, 30)     
+    FLOAT32_MACRO(heightBill, 30)
     copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
                                            'boundX2', 'boundY2', 'boundZ2',
                                            'modPath', 'modb', 'modt_p',
@@ -5126,7 +5281,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     ISTRING_MACRO(model3Path, 50)
     ISTRING_MACRO(model13Path, 51)
     ISTRING_MACRO(model23Path, 52)
-    ISTRING_MACRO(model123Path, 53)            
+    ISTRING_MACRO(model123Path, 53)
     FORMID_MACRO(impact, 54)
     FORMID_MACRO(model, 55)
     FORMID_MACRO(model1, 56)
@@ -5239,7 +5394,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicInvertedFlagMACRO(IsUse1stPersonISAnimations, IsDontUse1stPersonISAnimations)
     BasicFlagMACRO(IsNonPlayable, flags, 0x80)
     BasicInvertedFlagMACRO(IsPlayable, IsNonPlayable)
-    
+
     BasicFlagMACRO(IsPlayerOnly, extraFlags, 0x00000001)
     BasicFlagMACRO(IsNPCsUseAmmo, extraFlags, 0x00000002)
     BasicFlagMACRO(IsNoJamAfterReload, extraFlags, 0x00000004)
@@ -5280,7 +5435,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsStimpack, equipmentType, 11, IsNone)
     BasicTypeMACRO(IsEdible, equipmentType, 12, IsNone)
     BasicTypeMACRO(IsAlcohol, equipmentType, 13, IsNone)
-    
+
     BasicTypeMACRO(IsHand2Hand, animType, 0, IsMelee1Hand)
     BasicTypeMACRO(IsMelee1Hand, animType, 1, IsHand2Hand)
     BasicTypeMACRO(IsMelee2Hand, animType, 2, IsHand2Hand)
@@ -5295,7 +5450,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsLandMine1Hand, animType, 11, IsHand2Hand)
     BasicTypeMACRO(IsMineDrop1Hand, animType, 12, IsHand2Hand)
     BasicTypeMACRO(IsThrown1Hand, animType, 13, IsHand2Hand)
-    
+
     BasicTypeMACRO(IsHandGrip1, gripAnim, 230, IsHandGrip2)
     BasicTypeMACRO(IsHandGrip2, gripAnim, 231, IsHandGrip1)
     BasicTypeMACRO(IsHandGrip3, gripAnim, 232, IsHandGrip1)
@@ -5303,7 +5458,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsHandGrip5, gripAnim, 234, IsHandGrip1)
     BasicTypeMACRO(IsHandGrip6, gripAnim, 235, IsHandGrip1)
     BasicTypeMACRO(IsHandGripDefault, gripAnim, 236, IsHandGrip1)
-    
+
     BasicTypeMACRO(IsReloadA, reloadAnim, 0, IsReloadB)
     BasicTypeMACRO(IsReloadB, reloadAnim, 1, IsReloadA)
     BasicTypeMACRO(IsReloadC, reloadAnim, 2, IsReloadA)
@@ -5327,7 +5482,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsReloadX, reloadAnim, 20, IsReloadA)
     BasicTypeMACRO(IsReloadY, reloadAnim, 21, IsReloadA)
     BasicTypeMACRO(IsReloadZ, reloadAnim, 22, IsReloadA)
-    
+
     BasicTypeMACRO(IsAttackLeft, attackAnim, 26, IsAttackRight)
     BasicTypeMACRO(IsAttackRight, attackAnim, 32, IsAttackLeft)
     BasicTypeMACRO(IsAttack3, attackAnim, 38, IsAttackLeft)
@@ -5351,13 +5506,13 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsPlaceMine, attackAnim, 102, IsAttackLeft)
     BasicTypeMACRO(IsPlaceMine2, attackAnim, 108, IsAttackLeft)
     BasicTypeMACRO(IsAttackDefault, attackAnim, 255, IsAttackLeft)
-    
+
     BasicTypeMACRO(IsNormalFormulaBehavior, weaponAV, 0, IsDismemberOnly)
     BasicTypeMACRO(IsDismemberOnly, weaponAV, 1, IsNormalFormulaBehavior)
     BasicTypeMACRO(IsExplodeOnly, weaponAV, 2, IsNormalFormulaBehavior)
     BasicTypeMACRO(IsNoDismemberExplode, weaponAV, 3, IsNormalFormulaBehavior)
     BasicInvertedFlagMACRO(IsDismemberExplode, IsNoDismemberExplode)
-    
+
     BasicTypeMACRO(IsOnHitPerception, onHit, 0, IsEndurance)
     BasicTypeMACRO(IsOnHitEndurance, onHit, 1, IsPerception)
     BasicTypeMACRO(IsOnHitLeftAttack, onHit, 2, IsPerception)
@@ -5365,12 +5520,12 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsOnHitLeftMobility, onHit, 4, IsPerception)
     BasicTypeMACRO(IsOnHitRightMobilty, onHit, 5, IsPerception)
     BasicTypeMACRO(IsOnHitBrain, onHit, 6, IsPerception)
-    
+
     BasicTypeMACRO(IsRumbleConstant, rumbleType, 0, IsSquare)
     BasicTypeMACRO(IsRumbleSquare, rumbleType, 1, IsConstant)
     BasicTypeMACRO(IsRumbleTriangle, rumbleType, 2, IsConstant)
     BasicTypeMACRO(IsRumbleSawtooth, rumbleType, 3, IsConstant)
-    
+
     BasicTypeMACRO(IsUnknown0, overridePwrAtkAnim, 0, IsAttackCustom1Power)
     BasicTypeMACRO(IsAttackCustom1Power, overridePwrAtkAnim, 97, IsAttackCustom2Power)
     BasicTypeMACRO(IsAttackCustom2Power, overridePwrAtkAnim, 98, IsAttackCustom1Power)
@@ -5378,7 +5533,7 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsAttackCustom4Power, overridePwrAtkAnim, 100, IsAttackCustom1Power)
     BasicTypeMACRO(IsAttackCustom5Power, overridePwrAtkAnim, 101, IsAttackCustom1Power)
     BasicTypeMACRO(IsAttackCustomDefault, overridePwrAtkAnim, 255, IsAttackCustom1Power)
-    
+
     BasicTypeMACRO(IsModReloadA, reloadAnimMod, 0, IsModReloadB)
     BasicTypeMACRO(IsModReloadB, reloadAnimMod, 1, IsModReloadA)
     BasicTypeMACRO(IsModReloadC, reloadAnimMod, 2, IsModReloadA)
@@ -5402,13 +5557,13 @@ class FnvWEAPRecord(FnvBaseRecord):
     BasicTypeMACRO(IsModReloadX, reloadAnimMod, 20, IsModReloadA)
     BasicTypeMACRO(IsModReloadY, reloadAnimMod, 21, IsModReloadA)
     BasicTypeMACRO(IsModReloadZ, reloadAnimMod, 22, IsModReloadA)
-    
+
     BasicTypeMACRO(IsVATSNotSilent, silenceType, 0, IsVATSSilent)
     BasicTypeMACRO(IsVATSSilent, silenceType, 1, IsVATSNotSilent)
-    
+
     BasicTypeMACRO(IsVATSNotModRequired, modRequiredType, 0, IsVATSNotModRequired)
     BasicTypeMACRO(IsVATSModRequired, modRequiredType, 1, IsVATSModRequired)
-    
+
     BasicTypeMACRO(IsLoud, soundLevelType, 0, IsNormal)
     BasicTypeMACRO(IsNormal, soundLevelType, 1, IsLoud)
     BasicTypeMACRO(IsSilent, soundLevelType, 2, IsLoud)
@@ -5507,7 +5662,7 @@ class FnvWEAPRecord(FnvBaseRecord):
                                              'critMult', 'critFlags', 'critEffect',
                                              'vatsEffect', 'vatsSkill', 'vatsDamageMult', 'AP',
                                              'silenceType', 'modRequiredType',
-                                             'soundLevelType']#'modt_p', 
+                                             'soundLevelType']#'modt_p',
 
 class FnvAMMORecord(FnvBaseRecord):
     _Type = 'AMMO'
@@ -5577,7 +5732,7 @@ class FnvAMMORecord(FnvBaseRecord):
                                              'weight', 'consumedAmmo',
                                              'consumedPercentage', 'shortName',
                                              'abbreviation', 'effects']
-    
+
 class FnvNPC_Record(FnvBaseRecord):
     _Type = 'NPC_'
     def mergeFilter(self,modSet):
@@ -5619,7 +5774,7 @@ class FnvNPC_Record(FnvBaseRecord):
     UINT16_TYPE_MACRO(unarmedAnim, 36)
     GroupedValuesMACRO(destructable, 37, FNVDestructable)
     FORMID_MACRO(script, 42)
-    
+
     LIST_MACRO(items, 43, FNVItem)
     UINT8_MACRO(aggression, 44)
     UINT8_MACRO(confidence, 45)
@@ -5687,7 +5842,7 @@ class FnvNPC_Record(FnvBaseRecord):
     UINT16_MACRO(unknown, 107)
     FLOAT32_MACRO(height, 108)
     FLOAT32_MACRO(weight, 109)
-    
+
     BasicFlagMACRO(IsFemale, flags, 0x00000001)
     BasicFlagMACRO(IsEssential, flags, 0x00000002)
     BasicFlagMACRO(IsCharGenFacePreset, flags, 0x00000004)
@@ -5722,12 +5877,12 @@ class FnvNPC_Record(FnvBaseRecord):
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
     BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    
+
     BasicTypeMACRO(IsUnaggressive, aggression, 0, IsAggressive)
     BasicTypeMACRO(IsAggressive, aggression, 1, IsUnaggressive)
     BasicTypeMACRO(IsVeryAggressive, aggression, 2, IsUnaggressive)
     BasicTypeMACRO(IsFrenzied, aggression, 3, IsUnaggressive)
-    
+
     BasicTypeMACRO(IsCowardly, confidence, 0, IsCautious)
     BasicTypeMACRO(IsCautious, confidence, 1, IsCowardly)
     BasicTypeMACRO(IsAverage, confidence, 2, IsCowardly)
@@ -5845,7 +6000,7 @@ class FnvCREARecord(FnvBaseRecord):
 
         UINT32_TYPE_LISTMACRO(soundType, 1)
         LIST_LISTMACRO(sounds, 2, self.Sound)
-        
+
         BasicTypeMACRO(IsLeftFoot, soundType, 0, IsRightFoot)
         BasicTypeMACRO(IsRightFoot, soundType, 1, IsLeftFoot)
         BasicTypeMACRO(IsLeftBackFoot, soundType, 2, IsLeftFoot)
@@ -5943,7 +6098,7 @@ class FnvCREARecord(FnvBaseRecord):
     UINT32_TYPE_MACRO(impactType, 79)
     UINT32_MACRO(soundLevel, 80)
     FORMID_MACRO(inheritsSoundsFrom, 81)
-    
+
     LIST_MACRO(soundTypes, 82, SoundType)
     FORMID_MACRO(impactData, 83)
     FORMID_MACRO(meleeList, 84)
@@ -6001,7 +6156,7 @@ class FnvCREARecord(FnvBaseRecord):
     BasicFlagMACRO(IsUseBaseData, templateFlags, 0x00000080)
     BasicFlagMACRO(IsUseInventory, templateFlags, 0x00000100)
     BasicFlagMACRO(IsUseScript, templateFlags, 0x00000200)
-    
+
     BasicFlagMACRO(IsAggroRadiusBehavior, aggroFlags, 0x01)
 
     BasicFlagMACRO(IsServicesWeapons, services, 0x00000001)
@@ -6023,7 +6178,7 @@ class FnvCREARecord(FnvBaseRecord):
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
     BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    
+
     BasicTypeMACRO(IsAnimal, creatureType, 0, IsMutatedAnimal)
     BasicTypeMACRO(IsMutatedAnimal, creatureType, 1, IsAnimal)
     BasicTypeMACRO(IsMutatedInsect, creatureType, 2, IsAnimal)
@@ -6032,16 +6187,16 @@ class FnvCREARecord(FnvBaseRecord):
     BasicTypeMACRO(IsFeralGhoul, creatureType, 5, IsAnimal)
     BasicTypeMACRO(IsRobot, creatureType, 6, IsAnimal)
     BasicTypeMACRO(IsGiant, creatureType, 7, IsAnimal)
-    
+
     BasicTypeMACRO(IsLoud, soundLevel, 0, IsNormal)
     BasicTypeMACRO(IsNormal, soundLevel, 1, IsLoud)
     BasicTypeMACRO(IsSilent, soundLevel, 2, IsLoud)
-    
+
     BasicTypeMACRO(IsUnaggressive, aggression, 0, IsAggressive)
     BasicTypeMACRO(IsAggressive, aggression, 1, IsUnaggressive)
     BasicTypeMACRO(IsVeryAggressive, aggression, 2, IsUnaggressive)
     BasicTypeMACRO(IsFrenzied, aggression, 3, IsUnaggressive)
-    
+
     BasicTypeMACRO(IsCowardly, confidence, 0, IsCautious)
     BasicTypeMACRO(IsCautious, confidence, 1, IsCowardly)
     BasicTypeMACRO(IsAverage, confidence, 2, IsCowardly)
@@ -6258,7 +6413,7 @@ class FnvLVLCRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
-        
+
     class Entry(ListComponent):
         SINT16_LISTMACRO(level, 1)
         UINT8_ARRAY_LISTMACRO(unused1, 2, 2)
@@ -6286,7 +6441,7 @@ class FnvLVLCRecord(FnvBaseRecord):
 
     LIST_MACRO(altTextures, 19, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 20)
-    
+
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAll, flags, 0x00000004)
@@ -6305,7 +6460,7 @@ class FnvLVLCRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'chanceNone', 'flags',
                                              'entries_list', 'modPath',
-                                             'modb', 
+                                             'modb',
                                              'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvLVLNRecord(FnvBaseRecord):
@@ -6341,7 +6496,7 @@ class FnvLVLNRecord(FnvBaseRecord):
 
     LIST_MACRO(altTextures, 19, FNVAltTexture)
     UINT8_FLAG_MACRO(modelFlags, 20)
-    
+
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAll, flags, 0x00000004)
@@ -6360,7 +6515,7 @@ class FnvLVLNRecord(FnvBaseRecord):
                                              'boundX2', 'boundY2', 'boundZ2',
                                              'chanceNone', 'flags',
                                              'entries_list', 'modPath',
-                                             'modb', 
+                                             'modb',
                                              'altTextures_list', 'modelFlags']#'modt_p',
 
 class FnvKEYMRecord(FnvBaseRecord):
@@ -6432,7 +6587,7 @@ class FnvALCHRecord(FnvBaseRecord):
     SINT32_MACRO(value, 24)
     UINT8_FLAG_MACRO(flags, 25)
     UINT8_ARRAY_MACRO(unused1, 26, 3)
-    
+
     FORMID_MACRO(withdrawalEffect, 27)
     SINT32_MACRO(addictionChance, 28)
     FORMID_MACRO(consumeSound, 29)
@@ -6500,7 +6655,7 @@ class FnvIDLMRecord(FnvBaseRecord):
     UINT8_MACRO(count, 14)
     FLOAT32_MACRO(timer, 15)
     FORMID_ARRAY_MACRO(animations, 16)
-    
+
     BasicFlagMACRO(IsRunInSequence, flags, 0x00000001)
     BasicFlagMACRO(IsDoOnce, flags, 0x00000004)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
@@ -6581,7 +6736,7 @@ class FnvCOBJRecord(FnvBaseRecord):
     FORMID_MACRO(dropSound, 23)
     SINT32_MACRO(value, 24)
     FLOAT32_MACRO(weight, 25)
-    
+
     BasicFlagMACRO(IsHead, modelFlags, 0x01)
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
@@ -6659,7 +6814,7 @@ class FnvPROJRecord(FnvBaseRecord):
     BasicFlagMACRO(IsTorso, modelFlags, 0x02)
     BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
     BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    
+
     BasicTypeMACRO(IsMissile, projType, 1, IsLobber)
     BasicTypeMACRO(IsLobber, projType, 2, IsMissile)
     BasicTypeMACRO(IsBeam, projType, 4, )
@@ -6711,7 +6866,7 @@ class FnvLVLIRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
-        
+
     class Entry(ListComponent):
         SINT16_LISTMACRO(level, 1)
         UINT8_ARRAY_LISTMACRO(unused1, 2, 2)
@@ -6731,35 +6886,17 @@ class FnvLVLIRecord(FnvBaseRecord):
     SINT16_MACRO(boundZ2, 12)
     UINT8_MACRO(chanceNone, 13)
     UINT8_FLAG_MACRO(flags, 14)
+    FORMID_MACRO(globalId, 15)
 
-    LIST_MACRO(entries, 15, self.Entry)
-    ISTRING_MACRO(modPath, 16)
-    FLOAT32_MACRO(modb, 17)
-    UINT8_ARRAY_MACRO(modt_p, 18)
+    LIST_MACRO(entries, 16, self.Entry)
 
-    LIST_MACRO(altTextures, 19, FNVAltTexture)
-    UINT8_FLAG_MACRO(modelFlags, 20)
-    
     BasicFlagMACRO(IsCalcFromAllLevels, flags, 0x00000001)
     BasicFlagMACRO(IsCalcForEachItem, flags, 0x00000002)
     BasicFlagMACRO(IsUseAll, flags, 0x00000004)
-
-    BasicFlagMACRO(IsHead, modelFlags, 0x01)
-    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
-    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
-    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
-    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                           'boundX2', 'boundY2', 'boundZ2',
-                                           'chanceNone', 'flags',
-                                           'entries_list', 'modPath',
-                                           'modb', 'modt_p',
-                                           'altTextures_list', 'modelFlags']
-    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
-                                             'boundX2', 'boundY2', 'boundZ2',
-                                             'chanceNone', 'flags',
-                                             'entries_list', 'modPath',
-                                             'modb', 
-                                             'altTextures_list', 'modelFlags']#'modt_p',
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                                         'boundX2', 'boundY2', 'boundZ2',
+                                                         'chanceNone', 'flags',
+                                                         'globalId', 'entries_list']
 
 class FnvWTHRRecord(FnvBaseRecord):
     _Type = 'WTHR'
@@ -6780,12 +6917,12 @@ class FnvWTHRRecord(FnvBaseRecord):
         UINT8_GROUPEDMACRO(nightGreen, 13)
         UINT8_GROUPEDMACRO(nightBlue, 14)
         UINT8_ARRAY_GROUPEDMACRO(unused4, 15, 1)
-        
+
         UINT8_GROUPEDMACRO(noonRed, 16)
         UINT8_GROUPEDMACRO(noonGreen, 17)
         UINT8_GROUPEDMACRO(noonBlue, 18)
         UINT8_ARRAY_GROUPEDMACRO(unused5, 19, 1)
-        
+
         UINT8_GROUPEDMACRO(midnightRed, 20)
         UINT8_GROUPEDMACRO(midnightGreen, 21)
         UINT8_GROUPEDMACRO(midnightBlue, 22)
@@ -6861,7 +6998,7 @@ class FnvWTHRRecord(FnvBaseRecord):
     UINT8_MACRO(boltRed, 287)
     UINT8_MACRO(boltGreen, 288)
     UINT8_MACRO(boltBlue, 289)
-    
+
     LIST_MACRO(sounds, 290, self.Sound)
     ##actually flags, but all are exclusive(except unknowns)...so like a Type
     ##Manual hackery will make the CS think it is multiple types. It isn't known how the game would react.
@@ -6919,7 +7056,7 @@ class FnvWTHRRecord(FnvBaseRecord):
                                              'boltFadeIn', 'boltFadeOut',
                                              'boltFrequency', 'weatherType',
                                              'boltRed', 'boltGreen', 'boltBlue',
-                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p', 
+                                             'sounds_list']# 'modt_p', 'pnam_p', 'inam_p',
 
 class FnvCLMTRecord(FnvBaseRecord):
     _Type = 'CLMT'
@@ -7052,12 +7189,12 @@ class FnvREGNRecord(FnvBaseRecord):
         FORMID_ARRAY_LISTMACRO(battleMedias, 12)
 
         LIST_LISTMACRO(sounds, 13, self.Sound)
-        
+
         LIST_LISTMACRO(weathers, 14, self.Weather)
         FORMID_ARRAY_LISTMACRO(imposters, 15)
-        
+
         BasicFlagMACRO(IsOverride, flags, 0x00000001)
-        
+
         BasicTypeMACRO(IsObject, entryType, 2, IsWeather)
         BasicTypeMACRO(IsWeather, entryType, 3, IsObject)
         BasicTypeMACRO(IsMap, entryType, 4, IsObject)
@@ -7067,7 +7204,7 @@ class FnvREGNRecord(FnvBaseRecord):
         BasicTypeMACRO(IsImposter, entryType, 8, IsObject)
         BasicTypeMACRO(IsDefault, musicType, 0, IsPublic)
         BasicTypeMACRO(IsPublic, musicType, 1, IsDefault)
-        BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)        
+        BasicTypeMACRO(IsDungeon, musicType, 2, IsDefault)
         exportattrs = copyattrs = ['entryType', 'flags', 'priority', 'objects_list',
                                    'mapName', 'iconPath', 'grasses_list', 'musicType',
                                    'music', 'incidentalMedia', 'battleMedias',
@@ -7101,7 +7238,7 @@ class FnvNAVIRecord(FnvBaseRecord):
                      'xGrid', 'yGrid', 'unknown2_p']
         exportattrs = ['mesh', 'location',
                        'xGrid', 'yGrid']#'unknown1', 'unknown2_p'
-        
+
     class _NVCI(ListComponent):
         FORMID_LISTMACRO(unknown1, 1)
         FORMID_ARRAY_LISTMACRO(unknown2, 2)
@@ -7109,11 +7246,11 @@ class FnvNAVIRecord(FnvBaseRecord):
         FORMID_ARRAY_LISTMACRO(doors, 4)
         exportattrs = copyattrs = ['unknown1', 'unknown2',
                                    'unknown3', 'doors']
-        
+
     UINT32_MACRO(version, 7)
 
     LIST_MACRO(NVMI, 8, self._NVMI)
-    
+
     LIST_MACRO(NVCI, 9, self._NVCI)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['version', 'NVMI_list', 'NVCI_list']
 
@@ -7129,9 +7266,28 @@ class FnvCELLRecord(FnvBaseRecord):
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
-        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 65, 0, 0, 0, 0, 0, 0, 0)
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 67, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
+
+    class SwappedImpact(ListComponent):
+        UINT32_TYPE_LISTMACRO(material, 1)
+        FORMID_LISTMACRO(oldImpact, 2)
+        FORMID_LISTMACRO(newImpact, 3)
+
+        BasicTypeMACRO(IsStone, material, 0, IsDirt)
+        BasicTypeMACRO(IsDirt, material, 1, IsStone)
+        BasicTypeMACRO(IsGrass, material, 2, IsStone)
+        BasicTypeMACRO(IsGlass, material, 3, IsStone)
+        BasicTypeMACRO(IsMetal, material, 4, IsStone)
+        BasicTypeMACRO(IsWood, material, 5, IsStone)
+        BasicTypeMACRO(IsOrganic, material, 6, IsStone)
+        BasicTypeMACRO(IsCloth, material, 7, IsStone)
+        BasicTypeMACRO(IsWater, material, 8, IsStone)
+        BasicTypeMACRO(IsHollowMetal, material, 9, IsStone)
+        BasicTypeMACRO(IsOrganicBug, material, 10, IsStone)
+        BasicTypeMACRO(IsOrganicGlow, material, 11, IsStone)
+        exportattrs = copyattrs = ['material', 'oldImpact', 'newImpact']
 
     STRING_MACRO(full, 7)
     UINT8_MACRO(flags, 8)
@@ -7157,41 +7313,44 @@ class FnvCELLRecord(FnvBaseRecord):
     FLOAT32_MACRO(directionalFade, 28)
     FLOAT32_MACRO(fogClip, 29)
     FLOAT32_MACRO(fogPower, 30)
-    STRING_MACRO(concSolid, 31)
-    STRING_MACRO(concBroken, 32)
-    STRING_MACRO(metalSolid, 33)
-    STRING_MACRO(metalHollow, 34)
-    STRING_MACRO(metalSheet, 35)
-    STRING_MACRO(wood, 36)
-    STRING_MACRO(sand, 37)
-    STRING_MACRO(dirt, 38)
-    STRING_MACRO(grass, 39)
-    STRING_MACRO(water, 40)
-    FORMID_MACRO(lightTemplate, 41)
-    UINT32_FLAG_MACRO(lightFlags, 42)
-    FLOAT32_MACRO(waterHeight, 43)
-    ISTRING_MACRO(waterNoisePath, 44)
-    FORMID_ARRAY_MACRO(regions, 45)
-    FORMID_MACRO(imageSpace, 46)
-    UINT8_ARRAY_MACRO(xcet_p, 47)
-    FORMID_MACRO(encounterZone, 48)
-    FORMID_MACRO(climate, 49)
-    FORMID_MACRO(water, 50)
-    FORMID_MACRO(owner, 51)
-    SINT32_MACRO(rank, 52)
-    FORMID_MACRO(acousticSpace, 53)
-    UINT8_ARRAY_MACRO(xcmt_p, 54)
-    FORMID_MACRO(music, 55)
-    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 56, FnvACHRRecord, 0)
-    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 57, FnvACRERecord, 0)
-    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 58, FnvREFRRecord, 0)
-    SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 59, FnvPGRERecord, 0)
-    SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 60, FnvPMISRecord, 0)
-    SUBRECORD_ARRAY_MACRO(PBEA, "PBEA", 61, FnvPBEARecord, 0)
-    SUBRECORD_ARRAY_MACRO(PFLA, "PFLA", 62, FnvPFLARecord, 0)
-    SUBRECORD_ARRAY_MACRO(PCBE, "PCBE", 63, FnvPCBERecord, 0)
-    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 64, FnvNAVMRecord, 0)
-    
+
+    LIST_MACRO(swappedImpacts, 31, self.SwappedImpact)
+    STRING_MACRO(concSolid, 32)
+    STRING_MACRO(concBroken, 33)
+    STRING_MACRO(metalSolid, 34)
+    STRING_MACRO(metalHollow, 35)
+    STRING_MACRO(metalSheet, 36)
+    STRING_MACRO(wood, 37)
+    STRING_MACRO(sand, 38)
+    STRING_MACRO(dirt, 39)
+    STRING_MACRO(grass, 40)
+    STRING_MACRO(water, 41)
+    FORMID_MACRO(lightTemplate, 42)
+    UINT32_FLAG_MACRO(lightFlags, 43)
+    FLOAT32_MACRO(waterHeight, 44)
+    ISTRING_MACRO(waterNoisePath, 45)
+    FORMID_ARRAY_MACRO(regions, 46)
+    FORMID_MACRO(imageSpace, 47)
+    UINT8_ARRAY_MACRO(xcet_p, 48)
+    FORMID_MACRO(encounterZone, 49)
+    FORMID_MACRO(climate, 50)
+    FORMID_MACRO(water, 51)
+    FORMID_MACRO(owner, 52)
+    SINT32_MACRO(rank, 53)
+    FORMID_MACRO(acousticSpace, 54)
+    UINT8_ARRAY_MACRO(xcmt_p, 55)
+    FORMID_MACRO(music, 56)
+    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 57, FnvACHRRecord, 0)
+    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 58, FnvACRERecord, 0)
+    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 59, FnvREFRRecord, 0)
+    SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 60, FnvPGRERecord, 0)
+    SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 61, FnvPMISRecord, 0)
+    SUBRECORD_ARRAY_MACRO(PBEA, "PBEA", 62, FnvPBEARecord, 0)
+    SUBRECORD_ARRAY_MACRO(PFLA, "PFLA", 63, FnvPFLARecord, 0)
+    SUBRECORD_ARRAY_MACRO(PCBE, "PCBE", 64, FnvPCBERecord, 0)
+    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 65, FnvNAVMRecord, 0)
+    SUBRECORD_MACRO(LAND, "LAND", 66, FnvLANDRecord, 0)
+
     BasicFlagMACRO(IsInterior, flags, 0x00000001)
     BasicFlagMACRO(IsHasWater, flags, 0x00000002)
     BasicFlagMACRO(IsInvertFastTravel, flags, 0x00000004)
@@ -7200,12 +7359,12 @@ class FnvCELLRecord(FnvBaseRecord):
     BasicFlagMACRO(IsPublicPlace, flags, 0x00000020)
     BasicFlagMACRO(IsHandChanged, flags, 0x00000040)
     BasicFlagMACRO(IsBehaveLikeExterior, flags, 0x00000080)
-    
+
     BasicFlagMACRO(IsQuad1ForceHidden, quadFlags, 0x00000001)
     BasicFlagMACRO(IsQuad2ForceHidden, quadFlags, 0x00000002)
     BasicFlagMACRO(IsQuad3ForceHidden, quadFlags, 0x00000004)
     BasicFlagMACRO(IsQuad4ForceHidden, quadFlags, 0x00000008)
-        
+
     BasicFlagMACRO(IsLightAmbientInherited, lightFlags, 0x00000001)
     BasicFlagMACRO(IsLightDirectionalColorInherited, lightFlags, 0x00000002)
     BasicFlagMACRO(IsLightFogColorInherited, lightFlags, 0x00000004)
@@ -7238,12 +7397,127 @@ class FnvCELLRecord(FnvBaseRecord):
                                              'lightTemplate', 'lightFlags', 'waterHeight',
                                              'waterNoisePath', 'regions', 'imageSpace',
                                              'encounterZone', 'climate', 'water', 'owner',
-                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p', 
+                                             'rank', 'acousticSpace', 'music']# 'xcet_p', 'xcmt_p',
 
 class FnvWRLDRecord(FnvBaseRecord):
     _Type = 'WRLD'
+    class SwappedImpact(ListComponent):
+        UINT32_TYPE_LISTMACRO(material, 1)
+        FORMID_LISTMACRO(oldImpact, 2)
+        FORMID_LISTMACRO(newImpact, 3)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        BasicTypeMACRO(IsStone, material, 0, IsDirt)
+        BasicTypeMACRO(IsDirt, material, 1, IsStone)
+        BasicTypeMACRO(IsGrass, material, 2, IsStone)
+        BasicTypeMACRO(IsGlass, material, 3, IsStone)
+        BasicTypeMACRO(IsMetal, material, 4, IsStone)
+        BasicTypeMACRO(IsWood, material, 5, IsStone)
+        BasicTypeMACRO(IsOrganic, material, 6, IsStone)
+        BasicTypeMACRO(IsCloth, material, 7, IsStone)
+        BasicTypeMACRO(IsWater, material, 8, IsStone)
+        BasicTypeMACRO(IsHollowMetal, material, 9, IsStone)
+        BasicTypeMACRO(IsOrganicBug, material, 10, IsStone)
+        BasicTypeMACRO(IsOrganicGlow, material, 11, IsStone)
+        exportattrs = copyattrs = ['material', 'oldImpact', 'newImpact']
+
+    STRING_MACRO(full, 7)
+    FORMID_MACRO(encounterZone, 8)
+    FORMID_MACRO(parent, 9)
+    UINT16_FLAG_MACRO(parentFlags, 10)
+    FORMID_MACRO(climate, 11)
+    FORMID_MACRO(water, 12)
+    FORMID_MACRO(lodWater, 13)
+    FLOAT32_MACRO(lodWaterHeight, 14)
+    FLOAT32_MACRO(defaultLandHeight, 15)
+    FLOAT32_MACRO(defaultWaterHeight, 16)
+    ISTRING_MACRO(iconPath, 17)
+    ISTRING_MACRO(smallIconPath, 18)
+    SINT32_MACRO(dimX, 19)
+    SINT32_MACRO(dimY, 20)
+    SINT16_MACRO(NWCellX, 21)
+    SINT16_MACRO(NWCellY, 22)
+    SINT16_MACRO(SECellX, 23)
+    SINT16_MACRO(SECellY, 24)
+    FLOAT32_MACRO(mapScale, 25)
+    FLOAT32_MACRO(xCellOffset, 26)
+    FLOAT32_MACRO(yCellOffset, 27)
+    FORMID_MACRO(imageSpace, 28)
+    UINT8_FLAG_MACRO(flags, 29)
+    FLOAT32_MACRO(xMinObjBounds, 30)
+    FLOAT32_MACRO(yMinObjBounds, 31)
+    FLOAT32_MACRO(xMaxObjBounds, 32)
+    FLOAT32_MACRO(yMaxObjBounds, 33)
+    FORMID_MACRO(music, 34)
+    ISTRING_MACRO(canopyShadowPath, 35)
+    ISTRING_MACRO(waterNoisePath, 36)
+
+    LIST_MACRO(swappedImpacts, 37, self.SwappedImpact)
+    STRING_MACRO(concSolid, 38)
+    STRING_MACRO(concBroken, 39)
+    STRING_MACRO(metalSolid, 40)
+    STRING_MACRO(metalHollow, 41)
+    STRING_MACRO(metalSheet, 42)
+    STRING_MACRO(wood, 43)
+    STRING_MACRO(sand, 44)
+    STRING_MACRO(dirt, 45)
+    STRING_MACRO(grass, 46)
+    STRING_MACRO(water, 47)
+    UINT8_ARRAY_MACRO(ofst_p, 48)
+
+    SUBRECORD_MACRO(WorldCELL, "CELL", 49, FnvCELLRecord, 2)
+    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 50, FnvCELLRecord, 0)
+
+    BasicFlagMACRO(IsSmallWorld, flags, 0x01)
+    BasicFlagMACRO(IsNoFastTravel, flags, 0x02)
+    BasicFlagMACRO(IsUnknown2, flags, 0x04)
+    BasicFlagMACRO(IsNoLODWater, flags, 0x10)
+    BasicFlagMACRO(IsNoLODNoise, flags, 0x20)
+    BasicFlagMACRO(IsNoNPCFallDmg, flags, 0x40)
+
+    BasicFlagMACRO(IsUseLandData, parentFlags, 0x0001)
+    BasicFlagMACRO(IsUseLODData, parentFlags, 0x0002)
+    BasicFlagMACRO(IsUseMapData, parentFlags, 0x0004)
+    BasicFlagMACRO(IsUseWaterData, parentFlags, 0x0008)
+    BasicFlagMACRO(IsUseClimateData, parentFlags, 0x0010)
+    BasicFlagMACRO(IsUseImageSpaceData, parentFlags, 0x0020)
+    BasicFlagMACRO(IsUnknown1, parentFlags, 0x0040)
+    BasicFlagMACRO(IsNeedsWaterAdjustment, parentFlags, 0x0080)
+    copyattrs = FnvBaseRecord.baseattrs + ['full', 'encounterZone', 'parent',
+                                           'parentFlags', 'climate', 'water',
+                                           'lodWater', 'lodWaterHeight',
+                                           'defaultLandHeight',
+                                           'defaultWaterHeight', 'iconPath',
+                                           'smallIconPath', 'dimX', 'dimY',
+                                           'NWCellX', 'NWCellY', 'SECellX',
+                                           'SECellY', 'mapScale', 'xCellOffset',
+                                           'yCellOffset', 'imageSpace', 'flags',
+                                           'xMinObjBounds', 'yMinObjBounds',
+                                           'xMaxObjBounds', 'yMaxObjBounds',
+                                           'music', 'canopyShadowPath',
+                                           'waterNoisePath',
+                                           'swappedImpacts_list', 'concSolid',
+                                           'concBroken', 'metalSolid',
+                                           'metalHollow', 'metalSheet', 'wood',
+                                           'sand', 'dirt', 'grass', 'water',
+                                           'ofst_p']
+
+    exportattrs = FnvBaseRecord.baseattrs + ['full', 'encounterZone', 'parent',
+                                             'parentFlags', 'climate', 'water',
+                                             'lodWater', 'lodWaterHeight',
+                                             'defaultLandHeight',
+                                             'defaultWaterHeight', 'iconPath',
+                                             'smallIconPath', 'dimX', 'dimY',
+                                             'NWCellX', 'NWCellY', 'SECellX',
+                                             'SECellY', 'mapScale', 'xCellOffset',
+                                             'yCellOffset', 'imageSpace', 'flags',
+                                             'xMinObjBounds', 'yMinObjBounds',
+                                             'xMaxObjBounds', 'yMaxObjBounds',
+                                             'music', 'canopyShadowPath',
+                                             'waterNoisePath',
+                                             'swappedImpacts_list', 'concSolid',
+                                             'concBroken', 'metalSolid',
+                                             'metalHollow', 'metalSheet', 'wood',
+                                             'sand', 'dirt', 'grass', 'water']#,'ofst_p'
 
 class FnvDIALRecord(FnvBaseRecord):
     _Type = 'DIAL'
@@ -8059,18 +8333,21 @@ class ObLANDRecord(ObBaseRecord):
                      'alphaLayer7Texture', 'alphaLayer7Opacity',
                      'alphaLayer8Texture', 'alphaLayer8Opacity']
 
-    UINT8_ARRAY_MACRO(data, 5)
+    UINT8_ARRAY_MACRO(data_p, 5)
 
     def get_normals(self):
         return [[self.Normal(self._CollectionID, self._ModID, self._RecordID, 6, x, 0, y) for y in range(0,33)] for x in range(0,33)]
     def set_normals(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.normals, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.normals
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     normals = property(get_normals, set_normals)
     def get_normals_list(self):
-        return ExtractCopyList(self.normals)
+        return [ExtractCopyList([self.Normal(self._CollectionID, self._ModID, self._RecordID, 6, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
+
     normals_list = property(get_normals_list, set_normals)
 
     FLOAT32_MACRO(heightOffset, 7)
@@ -8080,11 +8357,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_heights(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.heights, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.heights
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     heights = property(get_heights, set_heights)
     def get_heights_list(self):
-        return ExtractCopyList(self.heights)
+        return [ExtractCopyList([self.Height(self._CollectionID, self._ModID, self._RecordID, 8, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     heights_list = property(get_heights_list, set_heights)
 
     UINT8_ARRAY_MACRO(unused1, 9, 3)
@@ -8094,11 +8373,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_colors(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.colors, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.colors
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     colors = property(get_colors, set_colors)
     def get_colors_list(self):
-        return ExtractCopyList(self.colors)
+        return [ExtractCopyList([self.Color(self._CollectionID, self._ModID, self._RecordID, 10, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     colors_list = property(get_colors_list, set_colors)
 
     LIST_MACRO(baseTextures, 11, self.BaseTexture)
@@ -8110,11 +8391,13 @@ class ObLANDRecord(ObBaseRecord):
     def set_Positions(self, nElements):
         if nElements is None or len(nElements) != 33: return
         if isinstance(nElements[0], tuple): nValues = nElements
-        else: nValues = ExtractCopyList(nElements)
-        SetCopyList(self.Positions, nValues)
+        else: nValues = [ExtractCopyList(nElements[x]) for x in range(0,33)]
+        oElements = self.Positions
+        for x in range(0,33):
+            SetCopyList(oElements[x], nValues[x])
     Positions = property(get_Positions, set_Positions)
     def get_Positions_list(self):
-        return ExtractCopyList(self.Positions)
+        return [ExtractCopyList([self.Position(self._CollectionID, self._ModID, self._RecordID, 14, x, 0, y) for y in range(0,33)]) for x in range(0,33)]
     Positions_list = property(get_Positions_list, set_Positions)
     copyattrs = ObBaseRecord.baseattrs + ['data_p', 'normals_list', 'heights_list', 'heightOffset',
                                         'colors_list', 'baseTextures_list', 'alphaLayers_list',
@@ -10654,7 +10937,7 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
-                        ('PBEA',FnvPBEARecord),
+                        ('PBEA',FnvPBEARecord),('LAND',FnvLANDRecord),
                         ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
@@ -11222,6 +11505,22 @@ class FnvModFile(object):
         return navms
 
     @property
+    def LANDS(self):
+        lands = []
+        for cell in self.CELL:
+            land = cell.LAND
+            if(land): lands += [land]
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell):
+                land = cell.LAND
+                if(land): lands += [land]
+            for cell in world.CELLS:
+                land = cell.LAND
+                if(land): lands += [land]
+        return lands
+
+    @property
     def tops(self):
         return dict((("GMST", self.GMST),("TXST", self.TXST),("MICN", self.MICN),
                      ("GLOB", self.GLOB),("CLAS", self.CLAS),("FACT", self.FACT),
@@ -11280,6 +11579,7 @@ class FnvModFile(object):
                      ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
                      ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
+                     ("LAND", self.LANDS),
                      ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),

@@ -43,6 +43,8 @@ GPL License and Copyright Notice ============================================
 #include "FalloutNewVegas/Records/PFLARecord.h"
 #include "FalloutNewVegas/Records/PCBERecord.h"
 #include "FalloutNewVegas/Records/NAVMRecord.h"
+#include "FalloutNewVegas/Records/WRLDRecord.h"
+#include "FalloutNewVegas/Records/LANDRecord.h"
 #include "Visitors.h"
 #include <vector>
 #include <math.h>
@@ -778,7 +780,7 @@ class GRUPRecords<WRLDRecord>
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
-        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer, RecordOp &fullReader)
             {
             if(SkimmedGRUP || gSize == 0)
                 {
@@ -798,7 +800,7 @@ class GRUPRecords<WRLDRecord>
             Record *curREFRRecord = NULL;
             Record *curPGRDRecord = NULL;
             std::map<SINT32, std::map<SINT32, LANDRecord *> > GridXY_LAND;
-            std::vector<std::pair<UINT32, UINT32>> GRUPs;
+            std::vector<std::pair<UINT32, UINT32> > GRUPs;
             std::pair<UINT32, UINT32> GRUP_Size;
             UINT32 recordType = 0;
             UINT32 gEnd = reader.tell() + gSize - 20;
@@ -917,7 +919,7 @@ class GRUPRecords<WRLDRecord>
                                     ((CELLRecord *)curCELLRecord)->LAND = curLANDRecord;
                                     if(processor.Flags.IsIndexLANDs)
                                         {
-                                        processor.parser.Accept(curCELLRecord); //may already be loaded, but just to be sure.
+                                        fullReader.Accept(curCELLRecord); //may already be loaded, but just to be sure.
                                         //CELL will be unloaded if needed after a second round of indexing when all records are loaded
                                         ((CELLRecord *)curCELLRecord)->XCLC.Load();
                                         GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curLANDRecord;
@@ -1067,7 +1069,7 @@ class GRUPRecords<WRLDRecord>
                                 {
                                 //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
                                 curACHRRecord = curWRLDCELL->ACHR[x];
-                                processor.parser.Accept(curACHRRecord);
+                                fullReader.Accept(curACHRRecord);
 
                                 gridX = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACHRRecord *)curACHRRecord)->DATA.value.posY / 4096.0);
@@ -1088,7 +1090,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
                                 {
                                 curACRERecord = curWRLDCELL->ACRE[x];
-                                processor.parser.Accept(curACRERecord);
+                                fullReader.Accept(curACRERecord);
 
                                 gridX = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((ACRERecord *)curACRERecord)->DATA.value.posY / 4096.0);
@@ -1107,7 +1109,7 @@ class GRUPRecords<WRLDRecord>
                             for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
                                 {
                                 curREFRRecord = curWRLDCELL->REFR[x];
-                                processor.parser.Accept(curREFRRecord);
+                                fullReader.Accept(curREFRRecord);
 
                                 gridX = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((REFRRecord *)curREFRRecord)->DATA.value.posY / 4096.0);
@@ -1743,7 +1745,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
             {
             if(gSize == 0)
                 {
-                printf("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
+                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif
@@ -1781,7 +1783,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1800,7 +1802,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1819,7 +1821,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1838,7 +1840,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1857,7 +1859,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1876,7 +1878,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1895,7 +1897,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1914,7 +1916,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1933,7 +1935,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                                 }
                             else
                                 {
-                                printf("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
                                 #ifdef CBASH_DEBUG_CHUNK
                                     reader.peek_around(PEEK_SIZE);
                                 #endif
@@ -1942,7 +1944,7 @@ class FNVGRUPRecords<FNV::CELLRecord>
                             }
                         break;
                     default:
-                        printf("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         #ifdef CBASH_DEBUG_CHUNK
                             reader.peek_around(PEEK_SIZE);
                         #endif
@@ -1960,8 +1962,18 @@ class FNVGRUPRecords<FNV::CELLRecord>
             Record * curRecord = NULL;
             bool stop = false;
 
-            //if(RecordType != NULL && RecordType != REV32(CELL) && RecordType != REV32(PGRD) && RecordType != REV32(LAND) && RecordType != REV32(REFR) && RecordType != REV32(ACHR) && RecordType != REV32(ACRE))
-            //    return false;
+            if(RecordType != NULL &&
+                RecordType != REV32(CELL) &&
+                RecordType != REV32(ACHR) &&
+                RecordType != REV32(ACRE) &&
+                RecordType != REV32(REFR) &&
+                RecordType != REV32(PGRE) &&
+                RecordType != REV32(PMIS) &&
+                RecordType != REV32(PBEA) &&
+                RecordType != REV32(PFLA) &&
+                RecordType != REV32(PCBE) &&
+                RecordType != REV32(NAVM))
+                return false;
 
             for(UINT32 p = 0; p < Records.size(); p++)
                 {
@@ -1989,8 +2001,8 @@ class FNVGRUPRecords<FNV::CELLRecord>
             }
         UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
-            UINT32 numCELLRecords = (UINT32)Records.size();
-            if(numCELLRecords == 0)
+            UINT32 numRecords = (UINT32)Records.size();
+            if(numRecords == 0)
                 return 0;
             UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
@@ -2017,11 +2029,11 @@ class FNVGRUPRecords<FNV::CELLRecord>
             int ObjectID, BlockIndex, SubBlockIndex;
 
             std::vector< std::vector< std::vector<FNV::CELLRecord *> > > BlockedRecords(10, std::vector< std::vector<FNV::CELLRecord *> > (10, std::vector<FNV::CELLRecord *>()));
-            //std::vector<Record *> Persistent;
-            //std::vector<Record *> Temporary;
-            //std::vector<Record *> VWD;
-            BlockedRecords.reserve(numCELLRecords);
-            for(UINT32 p = 0; p < numCELLRecords; ++p)
+            std::vector<Record *> Persistent;
+            std::vector<Record *> Temporary;
+            std::vector<Record *> VWD;
+            BlockedRecords.reserve(numRecords);
+            for(UINT32 p = 0; p < numRecords; ++p)
                 {
                 curRecord = (FNV::CELLRecord *)Records[p];
 
@@ -2039,10 +2051,12 @@ class FNVGRUPRecords<FNV::CELLRecord>
             writer.file_write(&gLabel, 4);
             writer.file_write(&gType, 4);
             writer.file_write(&stamp, 4);
-            ++formCount;
-            TopSize = 20;
+            writer.file_write(&unknown, 4);
 
-            formCount += numCELLRecords;
+            ++formCount;
+            TopSize = 24;
+
+            formCount += numRecords;
             for(UINT32 curBlock = 0; curBlock < 10; ++curBlock)
                 {
                 gType = eInteriorBlock;
@@ -2059,8 +2073,9 @@ class FNVGRUPRecords<FNV::CELLRecord>
                             writer.file_write(&curBlock, 4);
                             writer.file_write(&gType, 4);
                             writer.file_write(&stamp, 4);
+                            writer.file_write(&unknown, 4);
                             ++formCount;
-                            blockSize = 20;
+                            blockSize = 24;
                             }
                         gType = eInteriorSubBlock;
                         writer.file_write(&type, 4);
@@ -2069,144 +2084,211 @@ class FNVGRUPRecords<FNV::CELLRecord>
                         writer.file_write(&curSubBlock, 4);
                         writer.file_write(&gType, 4);
                         writer.file_write(&stamp, 4);
+                        writer.file_write(&unknown, 4);
                         ++formCount;
-                        subBlockSize = 20;
+                        subBlockSize = 24;
                         for(UINT32 p = 0; p < numSubBlocks; ++p)
                             {
                             curRecord = BlockedRecords[curBlock][curSubBlock][p];
                             parentFormID = curRecord->formID;
                             collapser.Accept(parentFormID);
                             subBlockSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                            //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
-                            //if(curRecord->PGRD != NULL)
-                            //    Temporary.push_back(curRecord->PGRD);
-                            //if(CloseMod)
-                            //    curRecord->PGRD = NULL;
+                            //Place the ACHR, ACRE, REFR, PGRE, PMIS, PBEA, PFLA, PCBE, NAVM records into their proper GRUP
 
-                            //for(UINT32 y = 0; y < curRecord->ACHR.size(); ++y)
-                            //    {
-                            //    if(curRecord->ACHR[y]->IsPersistent())
-                            //        Persistent.push_back(curRecord->ACHR[y]);
-                            //    else if(curRecord->ACHR[y]->IsVWD())
-                            //        VWD.push_back(curRecord->ACHR[y]);
-                            //    else
-                            //        Temporary.push_back(curRecord->ACHR[y]);
-                            //    }
-                            //if(CloseMod)
-                            //    curRecord->ACHR.clear();
+                            for(UINT32 y = 0; y < curRecord->ACHR.size(); ++y)
+                                {
+                                if(curRecord->ACHR[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->ACHR[y]);
+                                else if(curRecord->ACHR[y]->IsVWD())
+                                    VWD.push_back(curRecord->ACHR[y]);
+                                else
+                                    Temporary.push_back(curRecord->ACHR[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->ACHR.clear();
 
-                            //for(UINT32 y = 0; y < curRecord->ACRE.size(); ++y)
-                            //    {
-                            //    if(curRecord->ACRE[y]->IsPersistent())
-                            //        Persistent.push_back(curRecord->ACRE[y]);
-                            //    else if(curRecord->ACRE[y]->IsVWD())
-                            //        VWD.push_back(curRecord->ACRE[y]);
-                            //    else
-                            //        Temporary.push_back(curRecord->ACRE[y]);
-                            //    }
-                            //if(CloseMod)
-                            //    curRecord->ACRE.clear();
+                            for(UINT32 y = 0; y < curRecord->ACRE.size(); ++y)
+                                {
+                                if(curRecord->ACRE[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->ACRE[y]);
+                                else if(curRecord->ACRE[y]->IsVWD())
+                                    VWD.push_back(curRecord->ACRE[y]);
+                                else
+                                    Temporary.push_back(curRecord->ACRE[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->ACRE.clear();
 
-                            //for(UINT32 y = 0; y < curRecord->REFR.size(); ++y)
-                            //    {
-                            //    if(curRecord->REFR[y]->IsPersistent())
-                            //        Persistent.push_back(curRecord->REFR[y]);
-                            //    else if(curRecord->REFR[y]->IsVWD())
-                            //        VWD.push_back(curRecord->REFR[y]);
-                            //    else
-                            //        Temporary.push_back(curRecord->REFR[y]);
-                            //    }
-                            //if(CloseMod)
-                            //    curRecord->REFR.clear();
+                            for(UINT32 y = 0; y < curRecord->REFR.size(); ++y)
+                                {
+                                if(curRecord->REFR[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->REFR[y]);
+                                else if(curRecord->REFR[y]->IsVWD())
+                                    VWD.push_back(curRecord->REFR[y]);
+                                else
+                                    Temporary.push_back(curRecord->REFR[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->REFR.clear();
 
-                            //numChildren = (UINT32)Persistent.size() + (UINT32)VWD.size() + (UINT32)Temporary.size();
-                            //if(numChildren)
-                            //    {
-                            //    formCount += numChildren;
-                            //    gType = eCellChildren;
-                            //    writer.file_write(&type, 4);
-                            //    childrenSizePos = writer.file_tell();
-                            //    writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
-                            //    writer.file_write(&parentFormID, 4);
-                            //    writer.file_write(&gType, 4);
-                            //    writer.file_write(&stamp, 4);
-                            //    ++formCount;
-                            //    childrenSize = 20;
 
-                            //    numChild = (UINT32)Persistent.size();
-                            //    if(numChild)
-                            //        {
-                            //        gType = eCellPersistent;
-                            //        writer.file_write(&type, 4);
-                            //        childSizePos = writer.file_tell();
-                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
-                            //        writer.file_write(&parentFormID, 4);
-                            //        writer.file_write(&gType, 4);
-                            //        writer.file_write(&stamp, 4);
-                            //        ++formCount;
-                            //        childSize = 20;
+                            for(UINT32 y = 0; y < curRecord->PGRE.size(); ++y)
+                                {
+                                if(curRecord->PGRE[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->PGRE[y]);
+                                else if(curRecord->PGRE[y]->IsVWD())
+                                    VWD.push_back(curRecord->PGRE[y]);
+                                else
+                                    Temporary.push_back(curRecord->PGRE[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->PGRE.clear();
 
-                            //        for(UINT32 x = 0; x < numChild; ++x)
-                            //            {
-                            //            childSize += Persistent[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                            //            if(CloseMod)
-                            //                delete Persistent[x];
-                            //            }
-                            //        childrenSize += childSize;
-                            //        writer.file_write(childSizePos, &childSize, 4);
-                            //        Persistent.clear();
-                            //        }
+                            for(UINT32 y = 0; y < curRecord->PMIS.size(); ++y)
+                                {
+                                if(curRecord->PMIS[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->PMIS[y]);
+                                else if(curRecord->PMIS[y]->IsVWD())
+                                    VWD.push_back(curRecord->PMIS[y]);
+                                else
+                                    Temporary.push_back(curRecord->PMIS[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->PMIS.clear();
 
-                            //    numChild = (UINT32)VWD.size();
-                            //    if(numChild)
-                            //        {
-                            //        gType = eCellVWD;
-                            //        writer.file_write(&type, 4);
-                            //        childSizePos = writer.file_tell();
-                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
-                            //        writer.file_write(&parentFormID, 4);
-                            //        writer.file_write(&gType, 4);
-                            //        writer.file_write(&stamp, 4);
-                            //        ++formCount;
-                            //        childSize = 20;
+                            for(UINT32 y = 0; y < curRecord->PBEA.size(); ++y)
+                                {
+                                if(curRecord->PBEA[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->PBEA[y]);
+                                else if(curRecord->PBEA[y]->IsVWD())
+                                    VWD.push_back(curRecord->PBEA[y]);
+                                else
+                                    Temporary.push_back(curRecord->PBEA[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->PBEA.clear();
 
-                            //        for(UINT32 x = 0; x < numChild; ++x)
-                            //            {
-                            //            childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                            //            if(CloseMod)
-                            //                delete VWD[x];
-                            //            }
-                            //        childrenSize += childSize;
-                            //        writer.file_write(childSizePos, &childSize, 4);
-                            //        VWD.clear();
-                            //        }
+                            for(UINT32 y = 0; y < curRecord->PFLA.size(); ++y)
+                                {
+                                if(curRecord->PFLA[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->PFLA[y]);
+                                else if(curRecord->PFLA[y]->IsVWD())
+                                    VWD.push_back(curRecord->PFLA[y]);
+                                else
+                                    Temporary.push_back(curRecord->PFLA[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->PFLA.clear();
 
-                            //    numChild = (UINT32)Temporary.size();
-                            //    if(numChild)
-                            //        {
-                            //        gType = eCellTemporary;
-                            //        writer.file_write(&type, 4);
-                            //        childSizePos = writer.file_tell();
-                            //        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
-                            //        writer.file_write(&parentFormID, 4);
-                            //        writer.file_write(&gType, 4);
-                            //        writer.file_write(&stamp, 4);
-                            //        ++formCount;
-                            //        childSize = 20;
+                            for(UINT32 y = 0; y < curRecord->PCBE.size(); ++y)
+                                {
+                                if(curRecord->PCBE[y]->IsPersistent())
+                                    Persistent.push_back(curRecord->PCBE[y]);
+                                else if(curRecord->PCBE[y]->IsVWD())
+                                    VWD.push_back(curRecord->PCBE[y]);
+                                else
+                                    Temporary.push_back(curRecord->PCBE[y]);
+                                }
+                            if(CloseMod)
+                                curRecord->PCBE.clear();
 
-                            //        for(UINT32 x = 0; x < numChild; ++x)
-                            //            {
-                            //            childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                            //            if(CloseMod)
-                            //                delete Temporary[x];
-                            //            }
-                            //        childrenSize += childSize;
-                            //        writer.file_write(childSizePos, &childSize, 4);
-                            //        Temporary.clear();
-                            //        }
-                            //    subBlockSize += childrenSize;
-                            //    writer.file_write(childrenSizePos, &childrenSize, 4);
-                            //    }
+                            for(UINT32 y = 0; y < curRecord->NAVM.size(); ++y)
+                                 Temporary.push_back(curRecord->NAVM[y]);
+                            if(CloseMod)
+                                curRecord->NAVM.clear();
+
+                            numChildren = (UINT32)Persistent.size() + (UINT32)VWD.size() + (UINT32)Temporary.size();
+                            if(numChildren)
+                                {
+                                formCount += numChildren;
+                                gType = eCellChildren;
+                                writer.file_write(&type, 4);
+                                childrenSizePos = writer.file_tell();
+                                writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                                writer.file_write(&parentFormID, 4);
+                                writer.file_write(&gType, 4);
+                                writer.file_write(&stamp, 4);
+                                writer.file_write(&unknown, 4);
+                                ++formCount;
+                                childrenSize = 24;
+
+                                numChild = (UINT32)Persistent.size();
+                                if(numChild)
+                                    {
+                                    gType = eCellPersistent;
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
+                                    writer.file_write(&unknown, 4);
+                                    ++formCount;
+                                    childSize = 24;
+
+                                    for(UINT32 x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += Persistent[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                        if(CloseMod)
+                                            delete Persistent[x];
+                                        }
+                                    childrenSize += childSize;
+                                    writer.file_write(childSizePos, &childSize, 4);
+                                    Persistent.clear();
+                                    }
+
+                                numChild = (UINT32)VWD.size();
+                                if(numChild)
+                                    {
+                                    gType = eCellVWD;
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
+                                    writer.file_write(&unknown, 4);
+                                    ++formCount;
+                                    childSize = 24;
+
+                                    for(UINT32 x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                        if(CloseMod)
+                                            delete VWD[x];
+                                        }
+                                    childrenSize += childSize;
+                                    writer.file_write(childSizePos, &childSize, 4);
+                                    VWD.clear();
+                                    }
+
+                                numChild = (UINT32)Temporary.size();
+                                if(numChild)
+                                    {
+                                    gType = eCellTemporary;
+                                    writer.file_write(&type, 4);
+                                    childSizePos = writer.file_tell();
+                                    writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&parentFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
+                                    writer.file_write(&unknown, 4);
+                                    ++formCount;
+                                    childSize = 24;
+
+                                    for(UINT32 x = 0; x < numChild; ++x)
+                                        {
+                                        childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                        if(CloseMod)
+                                            delete Temporary[x];
+                                        }
+                                    childrenSize += childSize;
+                                    writer.file_write(childSizePos, &childSize, 4);
+                                    Temporary.clear();
+                                    }
+                                subBlockSize += childrenSize;
+                                writer.file_write(childrenSizePos, &childrenSize, 4);
+                                }
                             if(CloseMod)
                                 delete curRecord;
                             }
@@ -2228,5 +2310,1216 @@ class FNVGRUPRecords<FNV::CELLRecord>
             BlockedRecords.clear();
             return formCount;
             }
+    };
 
+template<>
+class FNVGRUPRecords<FNV::WRLDRecord>
+    {
+    public:
+        UINT32 stamp, unknown;
+        std::vector<Record *> Records;
+        FNVGRUPRecords():stamp(134671), unknown(0) {}
+        ~FNVGRUPRecords()
+            {
+            for(UINT32 p = 0;p < Records.size(); p++)
+                delete Records[p];
+            }
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer, RecordOp &fullReader)
+            {
+            if(gSize == 0)
+                {
+                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
+                return false;
+                }
+            std::map<SINT32, std::map<SINT32, FNV::LANDRecord *> > GridXY_LAND;
+            std::vector<std::pair<UINT32, UINT32> > GRUPs;
+            std::pair<UINT32, UINT32> GRUP_Size;
+            UINT32 recordType = 0;
+            UINT32 gEnd = reader.tell() + gSize - 24;
+            GRUP_Size.first = eTop;
+            GRUP_Size.second = gEnd;
+            GRUPs.push_back(GRUP_Size);
+            UINT32 recordSize = 0;
+            Record *curRecord = NULL;
+            FNV::CELLRecord *curCELLRecord = NULL;
+
+            while(reader.tell() < gEnd){
+                while(reader.tell() >= GRUP_Size.second)
+                    {
+                    //Better tracking of the last GRUP
+                    //Mainly fixes cases where the world cell isn't located before the cell blocks
+                    //One example of this is Windfall.esp
+                    GRUPs.pop_back();
+                    GRUP_Size = GRUPs.back();
+                    };
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
+                switch(recordType)
+                    {
+                    case REV32(WRLD):
+                        curRecord = new FNV::WRLDRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            indexer.Accept(curRecord);
+                            Records.push_back(curRecord);
+                            }
+                        break;
+                    case REV32(CELL):
+                        curRecord = new FNV::CELLRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                ((FNV::CELLRecord *)curRecord)->Parent = Records.back();
+                                switch(GRUP_Size.first)
+                                    {
+                                    case eWorld:
+                                        if(((FNV::WRLDRecord *)Records.back())->CELL == NULL)
+                                            {
+                                            indexer.Accept(curRecord);
+                                            ((FNV::WRLDRecord *)Records.back())->CELL = curRecord;
+                                            curCELLRecord = (FNV::CELLRecord *)curRecord;
+                                            }
+                                        else
+                                            {
+                                            printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curRecord->formID, reader.tell(), reader.getFileName(), Records.back()->formID, ((FNV::WRLDRecord *)Records.back())->CELL->formID);
+                                            delete curRecord;
+                                            #ifdef CBASH_DEBUG_CHUNK
+                                                reader.peek_around(PEEK_SIZE);
+                                            #endif
+                                            }
+                                        break;
+                                    default:
+                                        indexer.Accept(curRecord);
+                                        ((FNV::WRLDRecord *)Records.back())->CELLS.push_back(curRecord);
+                                        curCELLRecord = (FNV::CELLRecord *)curRecord;
+                                        break;
+                                    }
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan CELL (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
+                        reader.skip(4);
+                        reader.read(&GRUP_Size.first, 4);
+                        reader.skip(8);
+                        GRUP_Size.second = reader.tell() + recordSize - 24;
+                        GRUPs.push_back(GRUP_Size);
+                        continue;
+                    case REV32(LAND):
+                        curRecord = new FNV::LANDRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                if(curCELLRecord->LAND == NULL)
+                                    {
+                                    indexer.Accept(curRecord);
+                                    curCELLRecord->LAND = curRecord;
+                                    if(processor.Flags.IsIndexLANDs)
+                                        {
+                                        Record *temp = curCELLRecord;
+                                        fullReader.Accept(temp); //may already be loaded, but just to be sure.
+                                        //CELL will be unloaded if needed after a second round of indexing when all records are loaded
+                                        curCELLRecord->XCLC.Load();
+                                        GridXY_LAND[curCELLRecord->XCLC->posX][curCELLRecord->XCLC->posY] = (FNV::LANDRecord *)curRecord;
+                                        }
+                                    }
+                                else
+                                    {
+                                    printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curRecord->formID, reader.tell(), reader.getFileName(), curCELLRecord->formID, curCELLRecord->LAND->formID);
+                                    delete curRecord;
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
+                                    }
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    case REV32(ACHR):
+                        curRecord = new FNV::ACHRRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->ACHR.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    case REV32(ACRE):
+                        curRecord = new FNV::ACRERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->ACRE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    case REV32(REFR):
+                        curRecord = new FNV::REFRRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->REFR.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    case REV32(PGRE):
+                        curRecord = new FNV::PGRERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->PGRE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PMIS):
+                        curRecord = new FNV::PMISRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->PMIS.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PBEA):
+                        curRecord = new FNV::PBEARecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->PBEA.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PFLA):
+                        curRecord = new FNV::PFLARecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->PFLA.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(PCBE):
+                        curRecord = new FNV::PCBERecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->PCBE.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    case REV32(NAVM):
+                        curRecord = new FNV::NAVMRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(curCELLRecord != NULL)
+                                {
+                                indexer.Accept(curRecord);
+                                curCELLRecord->NAVM.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                delete curRecord;
+                                }
+                            }
+                        break;
+                    default:
+                        printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
+                        reader.skip(16); //skip the rest of the header since it isn't implemented
+                        break;
+                    }
+                reader.skip(recordSize);
+                };
+
+            //Index LAND records by grid
+            //There might be ACHR, ACRE, or REFR records in the World CELL
+            if(processor.Flags.IsIndexLANDs || processor.Flags.IsFixupPlaceables)
+                {
+                SINT32 posX = 0, posY = 0;
+                SINT32 gridX = 0, gridY = 0;
+                FNV::WRLDRecord *curWRLD = NULL;
+                FNV::CELLRecord *curCELL = NULL;
+                FNV::CELLRecord *curWRLDCELL = NULL;
+                FNV::LANDRecord *curLAND = NULL;
+                for(UINT32 x = 0; x < Records.size(); ++x)
+                    {
+                    curWRLD = (FNV::WRLDRecord *)Records[x];
+                    for(UINT32 y = 0; y < curWRLD->CELLS.size(); ++y)
+                        {
+                        curCELL = (FNV::CELLRecord *)curWRLD->CELLS[y];
+                        //reader.Accept((Record **)&curCELL); //already read when loaded
+                        //curCELLRecord->XCLC.Load();  //already loaded when CELL loaded
+                        posX = curCELL->XCLC->posX;
+                        posY = curCELL->XCLC->posY;
+
+                        curWRLDCELL = (FNV::CELLRecord *)curWRLD->CELL;
+                        if(processor.Flags.IsFixupPlaceables && curWRLDCELL != NULL)
+                            {
+                            for(UINT32 x = 0; x < curWRLDCELL->ACHR.size();)
+                                {
+                                //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
+                                curRecord = curWRLDCELL->ACHR[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::ACHRRecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::ACHRRecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    //For easier use later on, go ahead and move it to the parent cell.
+                                    //It will get moved back later during the save process if need be.
+                                    curCELL->ACHR.push_back(curRecord);
+                                    curWRLDCELL->ACHR.erase(curWRLDCELL->ACHR.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
+                                {
+                                curRecord = curWRLDCELL->ACRE[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::ACRERecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::ACRERecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->ACRE.push_back(curRecord);
+                                    curWRLDCELL->ACRE.erase(curWRLDCELL->ACRE.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
+                                {
+                                curRecord = curWRLDCELL->REFR[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::REFRRecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::REFRRecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->REFR.push_back(curRecord);
+                                    curWRLDCELL->REFR.erase(curWRLDCELL->REFR.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->PGRE.size();)
+                                {
+                                curRecord = curWRLDCELL->PGRE[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::PGRERecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::PGRERecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->PGRE.push_back(curRecord);
+                                    curWRLDCELL->PGRE.erase(curWRLDCELL->PGRE.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->PMIS.size();)
+                                {
+                                curRecord = curWRLDCELL->PMIS[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::PMISRecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::PMISRecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->PMIS.push_back(curRecord);
+                                    curWRLDCELL->PMIS.erase(curWRLDCELL->PMIS.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->PBEA.size();)
+                                {
+                                curRecord = curWRLDCELL->PBEA[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::PBEARecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::PBEARecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->PBEA.push_back(curRecord);
+                                    curWRLDCELL->PBEA.erase(curWRLDCELL->PBEA.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->PFLA.size();)
+                                {
+                                curRecord = curWRLDCELL->PFLA[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::PFLARecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::PFLARecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->PFLA.push_back(curRecord);
+                                    curWRLDCELL->PFLA.erase(curWRLDCELL->PFLA.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            for(UINT32 x = 0; x < curWRLDCELL->PCBE.size();)
+                                {
+                                curRecord = curWRLDCELL->PCBE[x];
+                                fullReader.Accept(curRecord);
+
+                                gridX = (SINT32)floor(((FNV::PCBERecord *)curRecord)->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((FNV::PCBERecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                                if(processor.Flags.IsMinLoad)
+                                    curRecord->Unload();
+
+                                if(gridX == posX && gridY == posY)
+                                    {
+                                    curCELL->PCBE.push_back(curRecord);
+                                    curWRLDCELL->PCBE.erase(curWRLDCELL->PCBE.begin() + x);
+                                    }
+                                else ++x;
+                                }
+
+                            //NAVM's probably shouldn't ever show up in the world cell since they aren't persistent
+                            //for(UINT32 x = 0; x < curWRLDCELL->NAVM.size();)
+                            //    {
+                            //    curRecord = curWRLDCELL->NAVM[x];
+                            //    fullReader.Accept(curRecord);
+
+                            //    gridX = (SINT32)floor(((FNV::NAVMRecord *)curRecord)->DATA.value.posX / 4096.0);
+                            //    gridY = (SINT32)floor(((FNV::NAVMRecord *)curRecord)->DATA.value.posY / 4096.0);
+
+                            //    if(processor.Flags.IsMinLoad)
+                            //        curRecord->Unload();
+
+                            //    if(gridX == posX && gridY == posY)
+                            //        {
+                            //        curCELL->NAVM.push_back(curRecord);
+                            //        curWRLDCELL->NAVM.erase(curWRLDCELL->NAVM.begin() + x);
+                            //        }
+                            //    else ++x;
+                            //    }
+                            }
+
+                        if(processor.Flags.IsIndexLANDs)
+                            {
+                            curLAND = (FNV::LANDRecord *)curCELL->LAND;
+                            if(curLAND != NULL)
+                                {
+                                curLAND->NorthLand = GridXY_LAND[posX][posY + 1];
+                                curLAND->SouthLand = GridXY_LAND[posX][posY - 1];
+                                curLAND->EastLand = GridXY_LAND[posX + 1][posY];
+                                curLAND->WestLand = GridXY_LAND[posX - 1][posY];
+                                }
+                            }
+
+                        if(processor.Flags.IsMinLoad)
+                            curCELL->Unload();
+                        }
+                    }
+                }
+
+            if(Records.size())
+                processor.IsEmpty(false);
+            return true;
+            }
+        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+            {
+            Record *curRecord = NULL;
+            bool stop = false;
+
+            if(RecordType != NULL &&
+                RecordType != REV32(WRLD) &&
+                RecordType != REV32(CELL) &&
+                RecordType != REV32(LAND) &&
+                RecordType != REV32(ACHR) &&
+                RecordType != REV32(ACRE) &&
+                RecordType != REV32(REFR) &&
+                RecordType != REV32(PGRE) &&
+                RecordType != REV32(PMIS) &&
+                RecordType != REV32(PBEA) &&
+                RecordType != REV32(PFLA) &&
+                RecordType != REV32(PCBE) &&
+                RecordType != REV32(NAVM))
+                return false;
+
+            for(UINT32 p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(RecordType == NULL || RecordType == curRecord->GetType())
+                    {
+                    stop = op.Accept(curRecord);
+                    if(curRecord == NULL)
+                        {
+                        Records.erase(Records.begin() + p);
+                        --p;
+                        }
+                    if(stop)
+                        return stop;
+                    }
+
+                if(DeepVisit)
+                    {
+                    stop = curRecord->VisitSubRecords(RecordType, op);
+                    if(stop)
+                        return stop;
+                    }
+                }
+            return stop;
+            }
+        UINT32 WriteGRUP(FileWriter &writer, FormIDHandlerClass &FormIDHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+            {
+            UINT32 numWrldRecords = (UINT32)Records.size();
+            if(numWrldRecords == 0)
+                return 0;
+            UINT32 type = REV32(GRUP);
+            UINT32 gType = eTop;
+            UINT32 gLabel = REV32(WRLD);
+            UINT32 TopSize = 0;
+            UINT32 TopSizePos = 0;
+            UINT32 worldSize = 0;
+            UINT32 worldSizePos = 0;
+            UINT32 blockSize = 0;
+            UINT32 blockSizePos = 0;
+            UINT32 subBlockSize = 0;
+            UINT32 subBlockSizePos = 0;
+            UINT32 childrenSize = 0;
+            UINT32 childrenSizePos = 0;
+            UINT32 childSize = 0;
+            UINT32 childSizePos = 0;
+
+            UINT32 formCount = 0;
+
+            UINT32 numCellRecords = 0;
+            UINT32 numSubBlocks = 0;
+            UINT32 numChildren = 0;
+            UINT32 numChild = 0;
+
+            FNV::WRLDRecord *curWorld = NULL;
+            FNV::CELLRecord *curCell = NULL;
+            FNV::CELLRecord *curWorldCell = NULL;
+            UINT32 worldFormID = 0;
+            UINT32 cellFormID = 0;
+            int gridX, gridY;
+            UINT32 BlockIndex, SubBlockIndex;
+
+            std::map<UINT32, std::map<UINT32, std::vector<FNV::CELLRecord *> > > BlockedRecords;
+            std::vector<Record *> Persistent;
+            std::vector<Record *> FixedPersistent;
+            std::vector<Record *> Temporary;
+            std::vector<Record *> VWD;
+
+            //Top GRUP Header
+            writer.file_write(&type, 4);
+            TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&gLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
+            writer.file_write(&unknown, 4);
+            ++formCount;
+            TopSize = 24;
+
+            formCount += numWrldRecords;
+            for(UINT32 x = 0; x < numWrldRecords; ++x)
+                {
+                curWorld = (FNV::WRLDRecord *)Records[x];
+                worldFormID = curWorld->formID;
+                collapser.Accept(worldFormID);
+                TopSize += curWorld->Write(writer, bMastersChanged, expander, collapser, Expanders);
+
+                curWorldCell = (FNV::CELLRecord *)curWorld->CELL;
+
+                numCellRecords = (UINT32)curWorld->CELLS.size();
+                for(UINT32 p = 0; p < numCellRecords; ++p)
+                    {
+                    curCell = (FNV::CELLRecord *)curWorld->CELLS[p];
+
+                    //All persistent references must be moved to the world cell
+                    for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
+                        if(curCell->ACRE[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->ACRE[y]);
+
+                    for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
+                        if(curCell->ACHR[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->ACHR[y]);
+
+                    for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
+                        if(curCell->REFR[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->REFR[y]);
+
+                    for(UINT32 y = 0; y < curCell->PGRE.size(); ++y)
+                        if(curCell->PGRE[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->PGRE[y]);
+
+                    for(UINT32 y = 0; y < curCell->PMIS.size(); ++y)
+                        if(curCell->PMIS[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->PMIS[y]);
+
+                    for(UINT32 y = 0; y < curCell->PBEA.size(); ++y)
+                        if(curCell->PBEA[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->PBEA[y]);
+
+                    for(UINT32 y = 0; y < curCell->PFLA.size(); ++y)
+                        if(curCell->PFLA[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->PFLA[y]);
+
+                    for(UINT32 y = 0; y < curCell->PCBE.size(); ++y)
+                        if(curCell->PCBE[y]->IsPersistent())
+                            FixedPersistent.push_back(curCell->PCBE[y]);
+
+                    //for(UINT32 y = 0; y < curCell->NAVM.size(); ++y)
+                    //    if(curCell->NAVM[y]->IsPersistent())
+                    //        FixedPersistent.push_back(curCell->NAVM[y]);
+
+                    if(curCell->Read())
+                        curCell->VisitFormIDs(expander);
+                    curCell->XCLC.Load();
+                    gridX = (int)floor(curCell->XCLC->posX / 8.0);
+                    gridY = (int)floor(curCell->XCLC->posY / 8.0);
+                    if(!curCell->IsChanged())
+                        curCell->Unload();
+                    SubBlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
+                    gridX = (int)floor(gridX / 4.0);
+                    gridY = (int)floor(gridY / 4.0);
+                    BlockIndex = (gridX << 16 & 0xFFFF0000) | (gridY & 0x0000FFFF);
+
+                    BlockedRecords[BlockIndex][SubBlockIndex].push_back(curCell);
+                    }
+
+                if(curWorldCell == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
+                    {
+                    curWorldCell = new FNV::CELLRecord();
+                    curWorldCell->formID = FormIDHandler.NextExpandedFormID();
+                    curWorldCell->Parent = curWorld;
+                    curWorldCell->IsHasWater(true);
+                    curWorldCell->IsPersistent(true);
+                    curWorldCell->XCLC.Load();
+                    }
+
+                if(curWorldCell != NULL || curWorld->CELLS.size() > 0)
+                    {
+                    gType = eWorld;
+                    writer.file_write(&type, 4);
+                    worldSizePos = writer.file_tell();
+                    writer.file_write(&worldSize, 4); //Placeholder: will be overwritten with correct value later.
+                    writer.file_write(&worldFormID, 4);
+                    writer.file_write(&gType, 4);
+                    writer.file_write(&stamp, 4);
+                    writer.file_write(&unknown, 4);
+                    ++formCount;
+                    worldSize = 24;
+
+                    if(curWorldCell != NULL)
+                        {
+                        curCell = curWorldCell;
+                        cellFormID = curCell->formID;
+                        collapser.Accept(cellFormID);
+                        worldSize += curCell->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                        ++formCount;
+
+                        if(curCell->LAND != NULL)
+                            Temporary.push_back(curCell->LAND);
+                        if(CloseMod)
+                            curCell->LAND = NULL;
+
+                        for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
+                            {
+                            if(curCell->ACHR[y]->IsPersistent())
+                                Persistent.push_back(curCell->ACHR[y]);
+                            else if(curCell->ACHR[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->ACHR[y]);
+                                delete curCell->ACHR[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->ACHR[y]);
+                                delete curCell->ACHR[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->ACHR.clear();
+
+                        for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
+                            {
+                            if(curCell->ACRE[y]->IsPersistent())
+                                Persistent.push_back(curCell->ACRE[y]);
+                            else if(curCell->ACRE[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->ACRE[y]);
+                                delete curCell->ACRE[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->ACRE[y]);
+                                delete curCell->ACRE[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->ACRE.clear();
+
+                        for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
+                            {
+                            if(curCell->REFR[y]->IsPersistent())
+                                Persistent.push_back(curCell->REFR[y]);
+                            else if(curCell->REFR[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->REFR[y]);
+                                delete curCell->REFR[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->REFR[y]);
+                                delete curCell->REFR[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->REFR.clear();
+
+                        for(UINT32 y = 0; y < curCell->PGRE.size(); ++y)
+                            {
+                            if(curCell->PGRE[y]->IsPersistent())
+                                Persistent.push_back(curCell->PGRE[y]);
+                            else if(curCell->PGRE[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->PGRE[y]);
+                                delete curCell->PGRE[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->PGRE[y]);
+                                delete curCell->PGRE[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->PGRE.clear();
+
+                        for(UINT32 y = 0; y < curCell->PMIS.size(); ++y)
+                            {
+                            if(curCell->PMIS[y]->IsPersistent())
+                                Persistent.push_back(curCell->PMIS[y]);
+                            else if(curCell->PMIS[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->PMIS[y]);
+                                delete curCell->PMIS[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->PMIS[y]);
+                                delete curCell->PMIS[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->PMIS.clear();
+
+                        for(UINT32 y = 0; y < curCell->PBEA.size(); ++y)
+                            {
+                            if(curCell->PBEA[y]->IsPersistent())
+                                Persistent.push_back(curCell->PBEA[y]);
+                            else if(curCell->PBEA[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->PBEA[y]);
+                                delete curCell->PBEA[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->PBEA[y]);
+                                delete curCell->PBEA[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->PBEA.clear();
+
+                        for(UINT32 y = 0; y < curCell->PFLA.size(); ++y)
+                            {
+                            if(curCell->PFLA[y]->IsPersistent())
+                                Persistent.push_back(curCell->PFLA[y]);
+                            else if(curCell->PFLA[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->PFLA[y]);
+                                delete curCell->PFLA[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->PFLA[y]);
+                                delete curCell->PFLA[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->PFLA.clear();
+
+                        for(UINT32 y = 0; y < curCell->PCBE.size(); ++y)
+                            {
+                            if(curCell->PCBE[y]->IsPersistent())
+                                Persistent.push_back(curCell->PCBE[y]);
+                            else if(curCell->PCBE[y]->IsVWD())
+                                {
+                                VWD.push_back(curCell->PCBE[y]);
+                                delete curCell->PCBE[y];
+                                }
+                            else
+                                {
+                                Temporary.push_back(curCell->PCBE[y]);
+                                delete curCell->PCBE[y];
+                                }
+                            }
+                        if(CloseMod)
+                            curCell->PCBE.clear();
+
+                        for(UINT32 y = 0; y < curCell->NAVM.size(); ++y)
+                            {
+                            Temporary.push_back(curCell->NAVM[y]);
+                            delete curCell->NAVM[y];
+                            }
+                        if(CloseMod)
+                            curCell->NAVM.clear();
+
+                        if(VWD.size() || Temporary.size())
+                            printf("FNVGRUPRecords<FNV::WRLDRecord>::WriteGRUP: Warning - Information lost. Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
+
+                        VWD.clear();
+                        Temporary.clear();
+
+                        numChildren = (UINT32)Persistent.size() + (UINT32)FixedPersistent.size();
+                        if(numChildren)
+                            {
+                            formCount += numChildren;
+                            gType = eCellChildren;
+                            writer.file_write(&type, 4);
+                            childrenSizePos = writer.file_tell();
+                            writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&cellFormID, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
+                            writer.file_write(&unknown, 4);
+                            ++formCount;
+                            childrenSize = 24;
+
+                            //World CELL should only have persistent objects in it
+                            gType = eCellPersistent;
+                            writer.file_write(&type, 4);
+                            childSizePos = writer.file_tell();
+                            writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&cellFormID, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
+                            writer.file_write(&unknown, 4);
+                            ++formCount;
+                            childSize = 24;
+
+                            numChild = (UINT32)Persistent.size();
+                            for(UINT32 y = 0; y < numChild; ++y)
+                                {
+                                childSize += Persistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                if(CloseMod)
+                                    delete Persistent[y];
+                                }
+
+                            //The moved persistents will be deleted by their owning cell when its indexed
+                            numChild = (UINT32)FixedPersistent.size();
+                            for(UINT32 y = 0; y < numChild; ++y)
+                                childSize += FixedPersistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+
+                            childrenSize += childSize;
+                            writer.file_write(childSizePos, &childSize, 4);
+                            Persistent.clear();
+                            FixedPersistent.clear();
+                            worldSize += childrenSize;
+                            writer.file_write(childrenSizePos, &childrenSize, 4);
+                            }
+                        if(CloseMod)
+                            delete curCell;
+                        }
+
+                    formCount += (UINT32)curWorld->CELLS.size();
+                    for(std::map<UINT32, std::map<UINT32, std::vector<FNV::CELLRecord *> > >::iterator curBlock = BlockedRecords.begin(); curBlock != BlockedRecords.end(); ++curBlock)
+                        {
+                        gType = eExteriorBlock;
+                        writer.file_write(&type, 4);
+                        blockSizePos = writer.file_tell();
+                        writer.file_write(&blockSize, 4); //Placeholder: will be overwritten with correct value later.
+                        writer.file_write(&curBlock->first, 4);
+                        writer.file_write(&gType, 4);
+                        writer.file_write(&stamp, 4);
+                        writer.file_write(&unknown, 4);
+                        ++formCount;
+                        blockSize = 24;
+
+                        for(std::map<UINT32, std::vector<FNV::CELLRecord *> >::iterator curSubBlock = curBlock->second.begin(); curSubBlock != curBlock->second.end(); ++curSubBlock)
+                            {
+                            gType = eExteriorSubBlock;
+                            writer.file_write(&type, 4);
+                            subBlockSizePos = writer.file_tell();
+                            writer.file_write(&subBlockSize, 4); //Placeholder: will be overwritten with correct value later.
+                            writer.file_write(&curSubBlock->first, 4);
+                            writer.file_write(&gType, 4);
+                            writer.file_write(&stamp, 4);
+                            writer.file_write(&unknown, 4);
+                            ++formCount;
+                            subBlockSize = 24;
+
+                            numSubBlocks = (UINT32)curSubBlock->second.size();
+                            for(UINT32 p = 0; p < numSubBlocks; ++p)
+                                {
+                                curCell = curSubBlock->second[p];
+                                cellFormID = curCell->formID;
+                                collapser.Accept(cellFormID);
+                                subBlockSize += curCell->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
+
+                                if(curCell->LAND != NULL)
+                                    Temporary.push_back(curCell->LAND);
+                                if(CloseMod)
+                                    curCell->LAND = NULL;
+
+                                for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
+                                    {
+                                    if(curCell->ACHR[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->ACHR[y];
+                                        }
+                                    else if(curCell->ACHR[y]->IsVWD())
+                                        VWD.push_back(curCell->ACHR[y]);
+                                    else
+                                        Temporary.push_back(curCell->ACHR[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->ACHR.clear();
+
+                                for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
+                                    {
+                                    if(curCell->ACRE[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->ACRE[y];
+                                        }
+                                    else if(curCell->ACRE[y]->IsVWD())
+                                        VWD.push_back(curCell->ACRE[y]);
+                                    else
+                                        Temporary.push_back(curCell->ACRE[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->ACRE.clear();
+
+                                for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
+                                    {
+                                    if(curCell->REFR[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->REFR[y];
+                                        }
+                                    else if(curCell->REFR[y]->IsVWD())
+                                        VWD.push_back(curCell->REFR[y]);
+                                    else
+                                        Temporary.push_back(curCell->REFR[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->REFR.clear();
+
+                                for(UINT32 y = 0; y < curCell->PGRE.size(); ++y)
+                                    {
+                                    if(curCell->PGRE[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->PGRE[y];
+                                        }
+                                    else if(curCell->PGRE[y]->IsVWD())
+                                        VWD.push_back(curCell->PGRE[y]);
+                                    else
+                                        Temporary.push_back(curCell->PGRE[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->PGRE.clear();
+
+                                for(UINT32 y = 0; y < curCell->PMIS.size(); ++y)
+                                    {
+                                    if(curCell->PMIS[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->PMIS[y];
+                                        }
+                                    else if(curCell->PMIS[y]->IsVWD())
+                                        VWD.push_back(curCell->PMIS[y]);
+                                    else
+                                        Temporary.push_back(curCell->PMIS[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->PMIS.clear();
+
+                                for(UINT32 y = 0; y < curCell->PBEA.size(); ++y)
+                                    {
+                                    if(curCell->PBEA[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->PBEA[y];
+                                        }
+                                    else if(curCell->PBEA[y]->IsVWD())
+                                        VWD.push_back(curCell->PBEA[y]);
+                                    else
+                                        Temporary.push_back(curCell->PBEA[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->PBEA.clear();
+
+                                for(UINT32 y = 0; y < curCell->PFLA.size(); ++y)
+                                    {
+                                    if(curCell->PFLA[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->PFLA[y];
+                                        }
+                                    else if(curCell->PFLA[y]->IsVWD())
+                                        VWD.push_back(curCell->PFLA[y]);
+                                    else
+                                        Temporary.push_back(curCell->PFLA[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->PFLA.clear();
+
+                                for(UINT32 y = 0; y < curCell->PCBE.size(); ++y)
+                                    {
+                                    if(curCell->PCBE[y]->IsPersistent())
+                                        {
+                                        if(CloseMod)
+                                            delete curCell->PCBE[y];
+                                        }
+                                    else if(curCell->PCBE[y]->IsVWD())
+                                        VWD.push_back(curCell->PCBE[y]);
+                                    else
+                                        Temporary.push_back(curCell->PCBE[y]);
+                                    }
+                                if(CloseMod)
+                                    curCell->PCBE.clear();
+
+                                for(UINT32 y = 0; y < curCell->NAVM.size(); ++y)
+                                    Temporary.push_back(curCell->NAVM[y]);
+                                if(CloseMod)
+                                    curCell->NAVM.clear();
+                                
+                                numChildren = (UINT32)VWD.size() + (UINT32)Temporary.size();
+                                if(numChildren)
+                                    {
+                                    formCount += numChildren;
+                                    gType = eCellChildren;
+                                    writer.file_write(&type, 4);
+                                    childrenSizePos = writer.file_tell();
+                                    writer.file_write(&childrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                                    writer.file_write(&cellFormID, 4);
+                                    writer.file_write(&gType, 4);
+                                    writer.file_write(&stamp, 4);
+                                    writer.file_write(&unknown, 4);
+                                    ++formCount;
+                                    childrenSize = 24;
+
+                                    numChild = (UINT32)VWD.size();
+                                    if(numChild)
+                                        {
+                                        gType = eCellVWD;
+                                        writer.file_write(&type, 4);
+                                        childSizePos = writer.file_tell();
+                                        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                        writer.file_write(&cellFormID, 4);
+                                        writer.file_write(&gType, 4);
+                                        writer.file_write(&stamp, 4);
+                                        writer.file_write(&unknown, 4);
+                                        ++formCount;
+                                        childSize = 24;
+
+                                        for(UINT32 x = 0; x < numChild; ++x)
+                                            {
+                                            childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                            if(CloseMod)
+                                                delete VWD[x];
+                                            }
+                                        childrenSize += childSize;
+                                        writer.file_write(childSizePos, &childSize, 4);
+                                        VWD.clear();
+                                        }
+
+                                    numChild = (UINT32)Temporary.size();
+                                    if(numChild)
+                                        {
+                                        gType = eCellTemporary;
+                                        writer.file_write(&type, 4);
+                                        childSizePos = writer.file_tell();
+                                        writer.file_write(&childSize, 4); //Placeholder: will be overwritten with correct value later.
+                                        writer.file_write(&cellFormID, 4);
+                                        writer.file_write(&gType, 4);
+                                        writer.file_write(&stamp, 4);
+                                        writer.file_write(&unknown, 4);
+                                        ++formCount;
+                                        childSize = 24;
+
+                                        for(UINT32 x = 0; x < numChild; ++x)
+                                            {
+                                            childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                                            if(CloseMod)
+                                                delete Temporary[x];
+                                            }
+                                        childrenSize += childSize;
+                                        writer.file_write(childSizePos, &childSize, 4);
+                                        Temporary.clear();
+                                        }
+                                    subBlockSize += childrenSize;
+                                    writer.file_write(childrenSizePos, &childrenSize, 4);
+                                    }
+                                if(CloseMod)
+                                    delete curCell;
+                                }
+                            blockSize += subBlockSize;
+                            writer.file_write(subBlockSizePos, &subBlockSize, 4);
+                            curSubBlock->second.clear();
+                            }
+                        worldSize += blockSize;
+                        writer.file_write(blockSizePos, &blockSize, 4);
+                        curBlock->second.clear();
+                        }
+                    TopSize += worldSize;
+                    writer.file_write(worldSizePos, &worldSize, 4);
+                    }
+                BlockedRecords.clear();
+                }
+            if(CloseMod)
+                Records.clear();
+            writer.file_write(TopSizePos, &TopSize, 4);
+
+            return formCount;
+            }
     };

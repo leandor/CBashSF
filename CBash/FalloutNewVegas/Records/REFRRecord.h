@@ -167,7 +167,7 @@ class REFRRecord : public FNVRecord //Placed Object
 
         OptSubRecord<GENXPRM> XPRM; //Primitive
         OptSimpleSubRecord<UINT32> XTRI; //Collision Layer
-        //OptSubRecord<GENXMBP> XMBP; //MultiBound Primitive Marker (Empty) ?
+        SemiOptSimpleSubRecord<UINT8> XMBP; //MultiBound Primitive Marker (Empty) ?
         OptSubRecord<GENXMBO> XMBO; //BoundHalfExtents
         OptSubRecord<GENXTEL> XTEL; //Teleport Destination
         OptSubRecord<GENMAPDATA> MapData; //Map Data

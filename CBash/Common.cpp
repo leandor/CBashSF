@@ -651,7 +651,8 @@ bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
 CreateRecordOptions::CreateRecordOptions():
     SetAsOverride(false),
     SetAsWorldCell(false),
-    CopyWorldCellStatus(false)
+    CopyWorldCellStatus(false),
+    ExistingReturned(false)
     {
     //
     }
@@ -659,7 +660,8 @@ CreateRecordOptions::CreateRecordOptions():
 CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     SetAsOverride((nFlags & fSetAsOverride) != 0),
     SetAsWorldCell((nFlags & fSetAsWorldCell) != 0),
-    CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0)
+    CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0),
+    ExistingReturned(false)
     {
     //
     }

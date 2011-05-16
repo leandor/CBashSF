@@ -402,7 +402,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
             //case eIgWRLD: //Same as normal
             case REV32(WRLD):
                 reader.read(&WRLD.stamp, 4);
-                WRLD.Skim(reader, GRUPSize, processor, indexer);
+                WRLD.Skim(reader, GRUPSize, processor, indexer, fullReader);
                 break;
             case eIgDIAL:
             case REV32(DIAL):
@@ -864,7 +864,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                     {
                     //If a world cell already exists, return it instead of making a new one
                     if(((WRLDRecord *)ParentRecord)->CELL != NULL)
+                        {
+                        options.ExistingReturned = true;
                         return ((WRLDRecord *)ParentRecord)->CELL;
+                        }
 
                     ((WRLDRecord *)ParentRecord)->CELL = new CELLRecord((CELLRecord *)SourceRecord);
                     newRecord = ((WRLDRecord *)ParentRecord)->CELL;
@@ -896,7 +899,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 
             //If a cell pathgrid already exists, return it instead of making a new one
             if(((CELLRecord *)ParentRecord)->PGRD != NULL)
+                {
+                options.ExistingReturned = true;
                 return ((CELLRecord *)ParentRecord)->PGRD;
+                }
 
             ((CELLRecord *)ParentRecord)->PGRD = new PGRDRecord((PGRDRecord *)SourceRecord);
             newRecord = ((CELLRecord *)ParentRecord)->PGRD;
@@ -910,7 +916,10 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 
             //If a cell land already exists, return it instead of making a new one
             if(((CELLRecord *)ParentRecord)->LAND != NULL)
+                {
+                options.ExistingReturned = true;
                 return ((CELLRecord *)ParentRecord)->LAND;
+                }
 
             ((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
             newRecord = ((CELLRecord *)ParentRecord)->LAND;

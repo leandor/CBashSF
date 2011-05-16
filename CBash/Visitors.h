@@ -157,3 +157,15 @@ class RecordIndexer : public RecordOp
 
         void SetModFile(ModFile *_curModFile);
     };
+
+class RecordChanger : public RecordOp
+    {
+    private:
+        RecordReader reader;
+
+    public:
+        RecordChanger(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
+        ~RecordChanger();
+
+        bool Accept(Record *&curRecord);
+    };
