@@ -60,27 +60,272 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 8: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 9: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 10: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 11: //qsti Quest
+        case 7: //dialType
+            return UINT8_TYPE_FIELD;
+        case 8: //nextSpeaker
+            return UINT8_TYPE_FIELD;
+        case 9: //flags
+            return UINT16_FLAG_FIELD;
+        case 10: //quest
             return FORMID_FIELD;
-        case 12: //tpic Topic
+        case 11: //topic
             return FORMID_FIELD;
-        case 13: //pnam Previous INFO
+        case 12: //prevInfo
             return FORMID_FIELD;
-        case 14: //name Topic
-            return FORMID_FIELD;
-        case 15: //trdt TRDT ,, Struct
-            return UINT32_FIELD;
-        case 16: //trdt TRDT ,, Struct
-            return SINT32_FIELD;
-        case 17: //trdt_p TRDT ,, Struct
+        case 13: //addTopics
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)NAME.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 14: //responses
+            if(ListFieldID == 0) //responses
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Responses.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Responses.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //emotionType
+                    return UINT32_TYPE_FIELD;
+                case 2: //emotionValue
+                    return SINT32_FIELD;
+                case 3: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 4;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 4: //responseNum
+                    return UINT8_FIELD;
+                case 5: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 6: //sound
+                    return FORMID_FIELD;
+                case 7: //flags
+                    return UINT8_FLAG_FIELD;
+                case 8: //unused3
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 9: //responseText
+                    return STRING_FIELD;
+                case 10: //actorNotes
+                    return ISTRING_FIELD;
+                case 11: //editNotes
+                    return ISTRING_FIELD;
+                case 12: //speakerAnim
+                    return FORMID_FIELD;
+                case 13: //listenerAnim
+                    return FORMID_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 15: //conditions
+            if(ListFieldID == 0) //conditions
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)CTDA.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return UINT8_FLAG_TYPE_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //compValue
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_FLOAT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 4: //ifunc
+                    return UINT32_TYPE_FIELD;
+                case 5: //param1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.first)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 6: //param2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.second)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    case eVATSPARAM:
+                                        if(CTDA.value[ListIndex]->param1 < VATSFUNCTIONSIZE)
+                                            {
+                                            switch(VATSFunction_Argument[CTDA.value[ListIndex]->param1])
+                                                {
+                                                case eFORMID:
+                                                    return FORMID_FIELD;
+                                                case eUINT32:
+                                                    return UINT32_FIELD;
+                                                default:
+                                                    return UNKNOWN_FIELD;
+                                                }
+
+                                            }
+                                        return UNKNOWN_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 7: //runOnType
+                    return UINT32_TYPE_FIELD;
+                case 8: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 16: //choices
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)TCLT.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 17: //linksFrom
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)TCLF.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 18: //unknown
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return FORMID_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)TCFU.value.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 19: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -91,62 +336,117 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 18: //trdt TRDT ,, Struct
-            return UINT8_FIELD;
-        case 19: //trdt_p TRDT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 20: //trdt TRDT ,, Struct
-            return FORMID_FIELD;
-        case 21: //trdt TRDT ,, Struct
-            return UINT8_FIELD;
-        case 22: //trdt_p TRDT ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 23: //nam1 Response Text
-            return ISTRING_FIELD;
-        case 24: //nam2 Script Notes
-            return ISTRING_FIELD;
-        case 25: //nam3 Edits
-            return ISTRING_FIELD;
-        case 26: //snam Speaker Animation
-            return FORMID_FIELD;
-        case 27: //lnam Listener Animation
-            return FORMID_FIELD;
-        case 28: //ctda Conditions
-            return UINT8_FIELD;
-        case 29: //ctda_p Conditions
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 30: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 31: //ctda Conditions
+        case 20: //numRefs
             return UINT32_FIELD;
-        case 32: //ctda_p Conditions
+        case 21: //compiledSize
+            return UINT32_FIELD;
+        case 22: //lastIndex
+            return UINT32_FIELD;
+        case 23: //scriptType
+            return UINT16_TYPE_FIELD;
+        case 24: //scriptFlags
+            return UINT16_FLAG_FIELD;
+        case 25: //compiled_p
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return UINT8_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return BeginSCDA.GetSize();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 26: //scriptText
+            return ISTRING_FIELD;
+        case 27: //vars
+            if(ListFieldID == 0) //vars
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)BeginVARS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= BeginVARS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return UINT32_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 12;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 7;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 5: //name
+                    return ISTRING_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 28: //references
+            if(ListFieldID == 0) //references
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return FORMID_OR_UINT32_ARRAY_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)BeginSCR_.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= BeginSCR_.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return (BeginSCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 29: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -157,103 +457,126 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 33: //ctda_p Conditions
+        case 30: //endNumRefs
+            return UINT32_FIELD;
+        case 31: //endCompiledSize
+            return UINT32_FIELD;
+        case 32: //endLastIndex
+            return UINT32_FIELD;
+        case 33: //endScriptType
+            return UINT16_TYPE_FIELD;
+        case 34: //endScriptFlags
+            return UINT16_FLAG_FIELD;
+        case 35: //endCompiled_p
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 4;
+                    return EndSCDA.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 34: //ctda Conditions
-            return UINT32_FIELD;
-        case 35: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 36: //tclt Choice
-            return FORMID_FIELD;
-        case 37: //tclf Topic
-            return FORMID_FIELD;
-        case 38: //tcfu Info
-            return FORMID_FIELD;
-        case 39: //schr_p Basic Script Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 40: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 41: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 42: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 43: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 44: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 45: //scda_p Compiled Embedded Script
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return SCDA.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 46: //sctx Embedded Script Source
+        case 36: //endScriptText
             return ISTRING_FIELD;
-        case 47: //slsd Local Variable Data
-            return UINT32_FIELD;
-        case 48: //slsd_p Local Variable Data
-            switch(WhichAttribute)
+        case 37: //endVars
+            if(ListFieldID == 0) //endVars
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 12;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)EndVARS.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= EndVARS.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return UINT32_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 12;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //unused2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 7;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 5: //name
+                    return ISTRING_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 49: //slsd Local Variable Data
-            return UINT8_FIELD;
-        case 50: //slsd_p Local Variable Data
-            switch(WhichAttribute)
+        case 38: //endReferences
+            if(ListFieldID == 0) //endReferences
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 7;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return FORMID_OR_UINT32_ARRAY_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)EndSCR_.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= EndSCR_.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return (EndSCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 51: //scvr Name
-            return ISTRING_FIELD;
-        case 52: //scro Global Reference
+        case 39: //unusedSound
             return FORMID_FIELD;
-        case 53: //scrv Local Variable
-            return UINT32_FIELD;
-        case 54: //sndd Unused
+        case 40: //prompt
+            return STRING_FIELD;
+        case 41: //speaker
             return FORMID_FIELD;
-        case 55: //rnam Prompt
-            return ISTRING_FIELD;
-        case 56: //anam Speaker
+        case 42: //actorValueOrPerk
             return FORMID_FIELD;
-        case 57: //knam ActorValue/Perk
-            return FORMID_FIELD;
-        case 58: //dnam Speech Challenge
-            return UINT32_FIELD;
+        case 43: //challengeType
+            return UINT32_TYPE_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -274,122 +597,196 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 5: //formVersion
             return &formVersion;
         case 6: //versionControl2
-           *FieldValues = &versionControl2[0];
+            *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value6 : NULL;
-        case 8: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value7 : NULL;
-        case 9: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value8 : NULL;
-        case 10: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value9 : NULL;
-        case 11: //qsti Quest
-            return QSTI.IsLoaded() ? &QSTI->value10 : NULL;
-        case 12: //tpic Topic
-            return TPIC.IsLoaded() ? &TPIC->value11 : NULL;
-        case 13: //pnam Previous INFO
-            return PNAM.IsLoaded() ? &PNAM->value12 : NULL;
-        case 14: //name Topic
-            return NAME.IsLoaded() ? &NAME->value13 : NULL;
-        case 15: //trdt TRDT ,, Struct
-            return TRDT.IsLoaded() ? &TRDT->value14 : NULL;
-        case 16: //trdt TRDT ,, Struct
-            return TRDT.IsLoaded() ? &TRDT->value15 : NULL;
-        case 17: //trdt_p TRDT ,, Struct
-            *FieldValues = TRDT.IsLoaded() ? &TRDT->value16[0] : NULL;
+        case 7: //dialType
+            return &DATA.value.dialType;
+        case 8: //nextSpeaker
+            return &DATA.value.nextSpeaker;
+        case 9: //flags
+            return &DATA.value.flags;
+        case 10: //quest
+            return &QSTI.value;
+        case 11: //topic
+            return &TPIC.value;
+        case 12: //prevInfo
+            return &PNAM.value;
+        case 13: //addTopics
+            *FieldValues = NAME.value.size() ? &NAME.value[0] : NULL;
             return NULL;
-        case 18: //trdt TRDT ,, Struct
-            return TRDT.IsLoaded() ? &TRDT->value17 : NULL;
-        case 19: //trdt_p TRDT ,, Struct
-            *FieldValues = TRDT.IsLoaded() ? &TRDT->value18[0] : NULL;
+        case 14: //responses
+            if(ListIndex >= Responses.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //emotionType
+                    return &Responses.value[ListIndex]->TRDT.value.emotionType;
+                case 2: //emotionValue
+                    return &Responses.value[ListIndex]->TRDT.value.emotionValue;
+                case 3: //unused1
+                    *FieldValues = &Responses.value[ListIndex]->TRDT.value.unused1[0];
+                    return NULL;
+                case 4: //responseNum
+                    return &Responses.value[ListIndex]->TRDT.value.responseNum;
+                case 5: //unused2
+                    *FieldValues = &Responses.value[ListIndex]->TRDT.value.unused2[0];
+                    return NULL;
+                case 6: //sound
+                    return &Responses.value[ListIndex]->TRDT.value.sound;
+                case 7: //flags
+                    return &Responses.value[ListIndex]->TRDT.value.flags;
+                case 8: //unused3
+                    *FieldValues = &Responses.value[ListIndex]->TRDT.value.unused3[0];
+                    return NULL;
+                case 9: //responseText
+                    return Responses.value[ListIndex]->NAM1.value;
+                case 10: //actorNotes
+                    return Responses.value[ListIndex]->NAM2.value;
+                case 11: //editNotes
+                    return Responses.value[ListIndex]->NAM3.value;
+                case 12: //speakerAnim
+                    return &Responses.value[ListIndex]->SNAM.value;
+                case 13: //listenerAnim
+                    return &Responses.value[ListIndex]->LNAM.value;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 20: //trdt TRDT ,, Struct
-            return TRDT.IsLoaded() ? &TRDT->value19 : NULL;
-        case 21: //trdt TRDT ,, Struct
-            return TRDT.IsLoaded() ? &TRDT->value20 : NULL;
-        case 22: //trdt_p TRDT ,, Struct
-            *FieldValues = TRDT.IsLoaded() ? &TRDT->value21[0] : NULL;
+        case 15: //conditions
+            if(ListIndex >= CTDA.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return &CTDA.value[ListIndex]->operType;
+                case 2: //unused1
+                    *FieldValues = &CTDA.value[ListIndex]->unused1[0];
+                    return NULL;
+                case 3: //compValue
+                    return &CTDA.value[ListIndex]->compValue;
+                case 4: //ifunc
+                    return &CTDA.value[ListIndex]->ifunc;
+                case 5: //param1
+                    return &CTDA.value[ListIndex]->param1;
+                case 6: //param2
+                    return &CTDA.value[ListIndex]->param2;
+                case 7: //runOnType
+                    return &CTDA.value[ListIndex]->runOnType;
+                case 8: //reference
+                    return &CTDA.value[ListIndex]->reference;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 23: //nam1 Response Text
-            return NAM1.value;
-        case 24: //nam2 Script Notes
-            return NAM2.value;
-        case 25: //nam3 Edits
-            return NAM3.value;
-        case 26: //snam Speaker Animation
-            return SNAM.IsLoaded() ? &SNAM->value25 : NULL;
-        case 27: //lnam Listener Animation
-            return LNAM.IsLoaded() ? &LNAM->value26 : NULL;
-        case 28: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value27 : NULL;
-        case 29: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value28[0] : NULL;
+        case 16: //choices
+            *FieldValues = TCLT.value.size() ? &TCLT.value[0] : NULL;
             return NULL;
-        case 30: //ctda Conditions
-            return UNPARSEDGET_FIELD29;
-        case 31: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value30 : NULL;
-        case 32: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value31[0] : NULL;
+        case 17: //linksFrom
+            *FieldValues = TCLF.value.size() ? &TCLF.value[0] : NULL;
             return NULL;
-        case 33: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value32[0] : NULL;
+        case 18: //unknown
+            *FieldValues = TCFU.value.size() ? &TCFU.value[0] : NULL;
             return NULL;
-        case 34: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value33 : NULL;
-        case 35: //ctda Conditions
-            return UNPARSEDGET_FIELD34;
-        case 36: //tclt Choice
-            return TCLT.IsLoaded() ? &TCLT->value35 : NULL;
-        case 37: //tclf Topic
-            return TCLF.IsLoaded() ? &TCLF->value36 : NULL;
-        case 38: //tcfu Info
-            return TCFU.IsLoaded() ? &TCFU->value37 : NULL;
-        case 39: //schr_p Basic Script Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SCHR->value38[0] : NULL;
+        case 19: //unused1
+            *FieldValues = &BeginSCHR.value.unused1[0];
             return NULL;
-        case 40: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value39 : NULL;
-        case 41: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value40 : NULL;
-        case 42: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value41 : NULL;
-        case 43: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value42 : NULL;
-        case 44: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value43 : NULL;
-        case 45: //scda_p Compiled Embedded Script
-            *FieldValues = (SCHR.IsLoaded()) ? SCHR->SCDA.value : NULL;
+        case 20: //numRefs
+            return &BeginSCHR.value.numRefs;
+        case 21: //compiledSize
+            return &BeginSCHR.value.compiledSize;
+        case 22: //lastIndex
+            return &BeginSCHR.value.lastIndex;
+        case 23: //scriptType
+            return &BeginSCHR.value.scriptType;
+        case 24: //scriptFlags
+            return &BeginSCHR.value.flags;
+        case 25: //compiled_p
+            *FieldValues = BeginSCDA.value;
             return NULL;
-        case 46: //sctx Embedded Script Source
-            return SCHR.IsLoaded() ? SCHR->SCTX.value : NULL;
-        case 47: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value46 : NULL;
-        case 48: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value47[0] : NULL;
+        case 26: //scriptText
+            return BeginSCTX.value;
+        case 27: //vars
+            if(ListIndex >= BeginVARS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return &BeginVARS.value[ListIndex]->SLSD.value.index;
+                case 2: //unused1
+                    *FieldValues = &BeginVARS.value[ListIndex]->SLSD.value.unused1[0];
+                    return NULL;
+                case 3: //flags
+                    return &BeginVARS.value[ListIndex]->SLSD.value.flags;
+                case 4: //unused2
+                    *FieldValues = &BeginVARS.value[ListIndex]->SLSD.value.unused2[0];
+                    return NULL;
+                case 5: //name
+                    return BeginVARS.value[ListIndex]->SCVR.value;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 49: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value48 : NULL;
-        case 50: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value49[0] : NULL;
+        case 28: //references
+            for(UINT32 x = 0; x < BeginSCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = BeginSCR_.value[x]->reference;
             return NULL;
-        case 51: //scvr Name
-            return SCHR.IsLoaded() ? SCHR->SCVR.value : NULL;
-        case 52: //scro Global Reference
-            return SCHR.IsLoaded() ? &SCHR->SCRO->value51 : NULL;
-        case 53: //scrv Local Variable
-            return SCHR.IsLoaded() ? &SCHR->SCRV->value52 : NULL;
-        case 54: //sndd Unused
-            return SNDD.IsLoaded() ? &SNDD->value53 : NULL;
-        case 55: //rnam Prompt
+        case 29: //unused2
+            *FieldValues = &EndSCHR.value.unused1[0];
+            return NULL;
+        case 30: //endNumRefs
+            return &EndSCHR.value.numRefs;
+        case 31: //endCompiledSize
+            return &EndSCHR.value.compiledSize;
+        case 32: //endLastIndex
+            return &EndSCHR.value.lastIndex;
+        case 33: //endScriptType
+            return &EndSCHR.value.scriptType;
+        case 34: //endScriptFlags
+            return &EndSCHR.value.flags;
+        case 35: //endCompiled_p
+            *FieldValues = EndSCDA.value;
+            return NULL;
+        case 36: //endScriptText
+            return EndSCTX.value;
+        case 37: //endVars
+            if(ListIndex >= EndVARS.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    return &EndVARS.value[ListIndex]->SLSD.value.index;
+                case 2: //unused1
+                    *FieldValues = &EndVARS.value[ListIndex]->SLSD.value.unused1[0];
+                    return NULL;
+                case 3: //flags
+                    return &EndVARS.value[ListIndex]->SLSD.value.flags;
+                case 4: //unused2
+                    *FieldValues = &EndVARS.value[ListIndex]->SLSD.value.unused2[0];
+                    return NULL;
+                case 5: //name
+                    return EndVARS.value[ListIndex]->SCVR.value;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 38: //endReferences
+            for(UINT32 x = 0; x < EndSCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = EndSCR_.value[x]->reference;
+            return NULL;
+        case 39: //unusedSound
+            return &SNDD.value;
+        case 40: //prompt
             return RNAM.value;
-        case 56: //anam Speaker
-            return ANAM.IsLoaded() ? &ANAM->value55 : NULL;
-        case 57: //knam ActorValue/Perk
-            return KNAM.IsLoaded() ? &KNAM->value56 : NULL;
-        case 58: //dnam Speech Challenge
-            return DNAM.IsLoaded() ? &DNAM->value57 : NULL;
+        case 41: //speaker
+            return &ANAM.value;
+        case 42: //actorValueOrPerk
+            return &KNAM.value;
+        case 43: //challengeType
+            return &DNAM.value;
         default:
             return NULL;
         }
@@ -420,270 +817,376 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value6 = *(UINT8 *)FieldValue;
+        case 7: //dialType
+            SetDialogType(*(UINT8 *)FieldValue);
             break;
-        case 8: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value7 = *(UINT8 *)FieldValue;
+        case 8: //nextSpeaker
+            SetSpeakerType(*(UINT8 *)FieldValue);
             break;
-        case 9: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value8 = *(UINT8 *)FieldValue;
+        case 9: //flags
+            SetFlagMask(*(UINT16 *)FieldValue);
             break;
-        case 10: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value9 = *(UINT8 *)FieldValue;
-            break;
-        case 11: //qsti Quest
-            QSTI.Load();
-            QSTI->value10 = *(FORMID *)FieldValue;
+        case 10: //quest
+            QSTI.value = *(FORMID *)FieldValue;
             return true;
-        case 12: //tpic Topic
-            TPIC.Load();
-            TPIC->value11 = *(FORMID *)FieldValue;
+        case 11: //topic
+            TPIC.value = *(FORMID *)FieldValue;
             return true;
-        case 13: //pnam Previous INFO
-            PNAM.Load();
-            PNAM->value12 = *(FORMID *)FieldValue;
+        case 12: //prevInfo
+            PNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 14: //name Topic
-            NAME.Load();
-            NAME->value13 = *(FORMID *)FieldValue;
+        case 13: //addTopics
+            NAME.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                NAME.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 15: //trdt TRDT ,, Struct
-            TRDT.Load();
-            TRDT->value14 = *(UINT32 *)FieldValue;
+        case 14: //responses
+            if(ListFieldID == 0) //responsesSize
+                {
+                Responses.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Responses.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //emotionType
+                    Responses.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    break;
+                case 2: //emotionValue
+                    Responses.value[ListIndex]->TRDT.value.emotionValue = *(SINT32 *)FieldValue;
+                    break;
+                case 3: //unused1
+                    if(ArraySize != 4)
+                        break;
+                    Responses.value[ListIndex]->TRDT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Responses.value[ListIndex]->TRDT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Responses.value[ListIndex]->TRDT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Responses.value[ListIndex]->TRDT.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    break;
+                case 4: //responseNum
+                    Responses.value[ListIndex]->TRDT.value.responseNum = *(UINT8 *)FieldValue;
+                    break;
+                case 5: //unused2
+                    if(ArraySize != 3)
+                        break;
+                    Responses.value[ListIndex]->TRDT.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Responses.value[ListIndex]->TRDT.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Responses.value[ListIndex]->TRDT.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                case 6: //sound
+                    Responses.value[ListIndex]->TRDT.value.sound = *(FORMID *)FieldValue;
+                    return true;
+                case 7: //flags
+                    Responses.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 8: //unused3
+                    if(ArraySize != 3)
+                        break;
+                    Responses.value[ListIndex]->TRDT.value.unused3[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Responses.value[ListIndex]->TRDT.value.unused3[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Responses.value[ListIndex]->TRDT.value.unused3[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                case 9: //responseText
+                    Responses.value[ListIndex]->NAM1.Copy((STRING)FieldValue);
+                    break;
+                case 10: //actorNotes
+                    Responses.value[ListIndex]->NAM2.Copy((STRING)FieldValue);
+                    break;
+                case 11: //editNotes
+                    Responses.value[ListIndex]->NAM3.Copy((STRING)FieldValue);
+                    break;
+                case 12: //speakerAnim
+                    Responses.value[ListIndex]->SNAM.value = *(FORMID *)FieldValue;
+                    return true;
+                case 13: //listenerAnim
+                    Responses.value[ListIndex]->LNAM.value = *(FORMID *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
             break;
-        case 16: //trdt TRDT ,, Struct
-            TRDT.Load();
-            TRDT->value15 = *(SINT32 *)FieldValue;
+        case 15: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 3)
+                        break;
+                    CTDA.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = *(FORMID *)FieldValue;
+                    return true;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
+                    return true;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = *(UINT32 *)FieldValue;
+                    return true;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = *(UINT32 *)FieldValue;
+                    return true;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = *(UINT32 *)FieldValue;
+                    return true;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
             break;
-        case 17: //trdt_p TRDT ,, Struct
+        case 16: //choices
+            TCLT.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                TCLT.value[x] = ((FORMIDARRAY)FieldValue)[x];
+            return true;
+        case 17: //linksFrom
+            TCLF.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                TCLF.value[x] = ((FORMIDARRAY)FieldValue)[x];
+            return true;
+        case 18: //unknown
+            TCFU.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                TCFU.value[x] = ((FORMIDARRAY)FieldValue)[x];
+            return true;
+        case 19: //unused1
             if(ArraySize != 4)
                 break;
-            TRDT.Load();
-            TRDT->value16[0] = ((UINT8ARRAY)FieldValue)[0];
-            TRDT->value16[1] = ((UINT8ARRAY)FieldValue)[1];
-            TRDT->value16[2] = ((UINT8ARRAY)FieldValue)[2];
-            TRDT->value16[3] = ((UINT8ARRAY)FieldValue)[3];
+            BeginSCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            BeginSCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            BeginSCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            BeginSCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 18: //trdt TRDT ,, Struct
-            TRDT.Load();
-            TRDT->value17 = *(UINT8 *)FieldValue;
+        case 20: //numRefs
+            BeginSCHR.value.numRefs = *(UINT32 *)FieldValue;
             break;
-        case 19: //trdt_p TRDT ,, Struct
-            if(ArraySize != 3)
+        case 21: //compiledSize
+            BeginSCHR.value.compiledSize = *(UINT32 *)FieldValue;
+            break;
+        case 22: //lastIndex
+            BeginSCHR.value.lastIndex = *(UINT32 *)FieldValue;
+            break;
+        case 23: //scriptType
+            SetBeginType(*(UINT16 *)FieldValue);
+            break;
+        case 24: //scriptFlags
+            SetBeginScriptFlagMask(*(UINT16 *)FieldValue);
+            break;
+        case 25: //compiled_p
+            BeginSCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            BeginSCHR.value.compiledSize = ArraySize;
+            break;
+        case 26: //scriptText
+            BeginSCTX.Copy((STRING)FieldValue);
+            break;
+        case 27: //vars
+            if(ListFieldID == 0) //varsSize
+                {
+                BeginVARS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= BeginVARS.value.size())
                 break;
-            TRDT.Load();
-            TRDT->value18[0] = ((UINT8ARRAY)FieldValue)[0];
-            TRDT->value18[1] = ((UINT8ARRAY)FieldValue)[1];
-            TRDT->value18[2] = ((UINT8ARRAY)FieldValue)[2];
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    BeginVARS.value[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 12)
+                        break;
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    break;
+                case 3: //flags
+                    BeginVARS.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 4: //unused2
+                    if(ArraySize != 7)
+                        break;
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                    break;
+                case 5: //name
+                    BeginVARS.value[ListIndex]->SCVR.Copy((STRING)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 20: //trdt TRDT ,, Struct
-            TRDT.Load();
-            TRDT->value19 = *(FORMID *)FieldValue;
-            return true;
-        case 21: //trdt TRDT ,, Struct
-            TRDT.Load();
-            TRDT->value20 = *(UINT8 *)FieldValue;
-            break;
-        case 22: //trdt_p TRDT ,, Struct
-            if(ArraySize != 3)
+        case 28: //references
+            if(ListFieldID == 0) //referencesSize
+                {
+                BeginSCR_.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= BeginSCR_.value.size())
                 break;
-            TRDT.Load();
-            TRDT->value21[0] = ((UINT8ARRAY)FieldValue)[0];
-            TRDT->value21[1] = ((UINT8ARRAY)FieldValue)[1];
-            TRDT->value21[2] = ((UINT8ARRAY)FieldValue)[2];
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    //Borrowing ArraySize to flag if the new value is a formID
+                    BeginSCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    BeginSCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
+                    return ArraySize != 0;
+                default:
+                    break;
+                }
             break;
-        case 23: //nam1 Response Text
-            NAM1.Copy((STRING)FieldValue);
-            break;
-        case 24: //nam2 Script Notes
-            NAM2.Copy((STRING)FieldValue);
-            break;
-        case 25: //nam3 Edits
-            NAM3.Copy((STRING)FieldValue);
-            break;
-        case 26: //snam Speaker Animation
-            SNAM.Load();
-            SNAM->value25 = *(FORMID *)FieldValue;
-            return true;
-        case 27: //lnam Listener Animation
-            LNAM.Load();
-            LNAM->value26 = *(FORMID *)FieldValue;
-            return true;
-        case 28: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value27 = *(UINT8 *)FieldValue;
-            break;
-        case 29: //ctda_p Conditions
-            if(ArraySize != 3)
-                break;
-            CTDAs.Load();
-            CTDAs->value28[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value28[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value28[2] = ((UINT8ARRAY)FieldValue)[2];
-            break;
-        case 30: //ctda Conditions
-            return UNPARSEDGET_FIELD29;
-        case 31: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value30 = *(UINT32 *)FieldValue;
-            break;
-        case 32: //ctda_p Conditions
+        case 29: //unused2
             if(ArraySize != 4)
                 break;
-            CTDAs.Load();
-            CTDAs->value31[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value31[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value31[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value31[3] = ((UINT8ARRAY)FieldValue)[3];
+            EndSCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            EndSCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            EndSCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            EndSCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 33: //ctda_p Conditions
-            if(ArraySize != 4)
+        case 30: //endNumRefs
+            EndSCHR.value.numRefs = *(UINT32 *)FieldValue;
+            break;
+        case 31: //endCompiledSize
+            EndSCHR.value.compiledSize = *(UINT32 *)FieldValue;
+            break;
+        case 32: //endLastIndex
+            EndSCHR.value.lastIndex = *(UINT32 *)FieldValue;
+            break;
+        case 33: //endScriptType
+            SetEndType(*(UINT16 *)FieldValue);
+            break;
+        case 34: //endScriptFlags
+            SetEndScriptFlagMask(*(UINT16 *)FieldValue);
+            break;
+        case 35: //endCompiled_p
+            EndSCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+            BeginSCHR.value.compiledSize = ArraySize;
+            break;
+        case 36: //endScriptText
+            EndSCTX.Copy((STRING)FieldValue);
+            break;
+        case 37: //endVars
+            if(ListFieldID == 0) //endVarsSize
+                {
+                EndVARS.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= EndVARS.value.size())
                 break;
-            CTDAs.Load();
-            CTDAs->value32[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value32[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value32[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value32[3] = ((UINT8ARRAY)FieldValue)[3];
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    EndVARS.value[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 12)
+                        break;
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    break;
+                case 3: //flags
+                    EndVARS.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 4: //unused2
+                    if(ArraySize != 7)
+                        break;
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                    break;
+                case 5: //name
+                    EndVARS.value[ListIndex]->SCVR.Copy((STRING)FieldValue);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 34: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value33 = *(UINT32 *)FieldValue;
-            break;
-        case 35: //ctda Conditions
-            return UNPARSEDGET_FIELD34;
-        case 36: //tclt Choice
-            TCLT.Load();
-            TCLT->value35 = *(FORMID *)FieldValue;
-            return true;
-        case 37: //tclf Topic
-            TCLF.Load();
-            TCLF->value36 = *(FORMID *)FieldValue;
-            return true;
-        case 38: //tcfu Info
-            TCFU.Load();
-            TCFU->value37 = *(FORMID *)FieldValue;
-            return true;
-        case 39: //schr_p Basic Script Data
-            if(ArraySize != 4)
+        case 38: //endReferences
+            if(ListFieldID == 0) //endReferencesSize
+                {
+                EndSCR_.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= EndSCR_.value.size())
                 break;
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value38[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SCHR->value38[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SCHR->value38[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SCHR->value38[3] = ((UINT8ARRAY)FieldValue)[3];
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    //Borrowing ArraySize to flag if the new value is a formID
+                    EndSCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    EndSCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
+                    return ArraySize != 0;
+                default:
+                    break;
+                }
             break;
-        case 40: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value39 = *(UINT32 *)FieldValue;
-            break;
-        case 41: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value40 = *(UINT32 *)FieldValue;
-            break;
-        case 42: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value41 = *(UINT32 *)FieldValue;
-            break;
-        case 43: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value42 = *(UINT16 *)FieldValue;
-            break;
-        case 44: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value43 = *(UINT16 *)FieldValue;
-            break;
-        case 45: //scda_p Compiled Embedded Script
-            SCHR.Load();
-            SCHR->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 46: //sctx Embedded Script Source
-            SCHR.Load();
-            SCHR->SCTX.Copy((STRING)FieldValue);
-            break;
-        case 47: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value46 = *(UINT32 *)FieldValue;
-            break;
-        case 48: //slsd_p Local Variable Data
-            if(ArraySize != 12)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value47[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SLSD->value47[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SLSD->value47[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SLSD->value47[3] = ((UINT8ARRAY)FieldValue)[3];
-            SCHR->SLSD->value47[4] = ((UINT8ARRAY)FieldValue)[4];
-            SCHR->SLSD->value47[5] = ((UINT8ARRAY)FieldValue)[5];
-            SCHR->SLSD->value47[6] = ((UINT8ARRAY)FieldValue)[6];
-            SCHR->SLSD->value47[7] = ((UINT8ARRAY)FieldValue)[7];
-            SCHR->SLSD->value47[8] = ((UINT8ARRAY)FieldValue)[8];
-            SCHR->SLSD->value47[9] = ((UINT8ARRAY)FieldValue)[9];
-            SCHR->SLSD->value47[10] = ((UINT8ARRAY)FieldValue)[10];
-            SCHR->SLSD->value47[11] = ((UINT8ARRAY)FieldValue)[11];
-            break;
-        case 49: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value48 = *(UINT8 *)FieldValue;
-            break;
-        case 50: //slsd_p Local Variable Data
-            if(ArraySize != 7)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value49[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SLSD->value49[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SLSD->value49[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SLSD->value49[3] = ((UINT8ARRAY)FieldValue)[3];
-            SCHR->SLSD->value49[4] = ((UINT8ARRAY)FieldValue)[4];
-            SCHR->SLSD->value49[5] = ((UINT8ARRAY)FieldValue)[5];
-            SCHR->SLSD->value49[6] = ((UINT8ARRAY)FieldValue)[6];
-            break;
-        case 51: //scvr Name
-            SCHR.Load();
-            SCHR->SCVR.Copy((STRING)FieldValue);
-            break;
-        case 52: //scro Global Reference
-            SCHR.Load();
-            SCHR->SCRO.Load();
-            SCHR->SCRO->value51 = *(FORMID *)FieldValue;
+        case 39: //unusedSound
+            SNDD.value = *(FORMID *)FieldValue;
             return true;
-        case 53: //scrv Local Variable
-            SCHR.Load();
-            SCHR->SCRV.Load();
-            SCHR->SCRV->value52 = *(UINT32 *)FieldValue;
-            break;
-        case 54: //sndd Unused
-            SNDD.Load();
-            SNDD->value53 = *(FORMID *)FieldValue;
-            return true;
-        case 55: //rnam Prompt
+        case 40: //prompt
             RNAM.Copy((STRING)FieldValue);
             break;
-        case 56: //anam Speaker
-            ANAM.Load();
-            ANAM->value55 = *(FORMID *)FieldValue;
+        case 41: //speaker
+            ANAM.value = *(FORMID *)FieldValue;
             return true;
-        case 57: //knam ActorValue/Perk
-            KNAM.Load();
-            KNAM->value56 = *(FORMID *)FieldValue;
+        case 42: //actorValueOrPerk
+            KNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 58: //dnam Speech Challenge
-            DNAM.Load();
-            DNAM->value57 = *(UINT32 *)FieldValue;
+        case 43: //challengeType
+            DNAM.value = *(UINT32 *)FieldValue;
             break;
         default:
             break;
@@ -693,6 +1196,13 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void INFORecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    INFODATA defaultDATA;
+    FNVSCHR defaultSCHR;
+
+    INFOTRDT defaultTRDT;
+    FNVCTDA defaultCTDA;
+    GENSCR_ defaultSCR_;
+    GENVARS defaultVARS;
     switch(FieldID)
         {
         case 1: //flags1
@@ -708,173 +1218,343 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //data DATA ,, Struct
-            DATA.Unload();
+        case 7: //dialType
+            SetDialogType(defaultDATA.dialType);
             return;
-        case 8: //data DATA ,, Struct
-            DATA.Unload();
+        case 8: //nextSpeaker
+            SetSpeakerType(defaultDATA.nextSpeaker);
             return;
-        case 9: //data DATA ,, Struct
-            DATA.Unload();
+        case 9: //flags
+            SetFlagMask(defaultDATA.flags);
             return;
-        case 10: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 11: //qsti Quest
+        case 10: //quest
             QSTI.Unload();
             return;
-        case 12: //tpic Topic
+        case 11: //topic
             TPIC.Unload();
             return;
-        case 13: //pnam Previous INFO
+        case 12: //prevInfo
             PNAM.Unload();
             return;
-        case 14: //name Topic
+        case 13: //addTopics
             NAME.Unload();
             return;
-        case 15: //trdt TRDT ,, Struct
-            TRDT.Unload();
+        case 14: //responses
+            if(ListFieldID == 0) //responsesSize
+                {
+                Responses.Unload();
+                return;
+                }
+
+            if(ListIndex >= Responses.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //emotionType
+                    Responses.value[ListIndex]->SetType(defaultTRDT.emotionType);
+                    return;
+                case 2: //emotionValue
+                    Responses.value[ListIndex]->TRDT.value.emotionValue = defaultTRDT.emotionValue;
+                    return;
+                case 3: //unused1
+                    Responses.value[ListIndex]->TRDT.value.unused1[0] = defaultTRDT.unused1[0];
+                    Responses.value[ListIndex]->TRDT.value.unused1[1] = defaultTRDT.unused1[1];
+                    Responses.value[ListIndex]->TRDT.value.unused1[2] = defaultTRDT.unused1[2];
+                    Responses.value[ListIndex]->TRDT.value.unused1[3] = defaultTRDT.unused1[3];
+                    return;
+                case 4: //responseNum
+                    Responses.value[ListIndex]->TRDT.value.responseNum = defaultTRDT.responseNum;
+                    return;
+                case 5: //unused2
+                    Responses.value[ListIndex]->TRDT.value.unused2[0] = defaultTRDT.unused2[0];
+                    Responses.value[ListIndex]->TRDT.value.unused2[1] = defaultTRDT.unused2[1];
+                    Responses.value[ListIndex]->TRDT.value.unused2[2] = defaultTRDT.unused2[2];
+                    return;
+                case 6: //sound
+                    Responses.value[ListIndex]->TRDT.value.sound = defaultTRDT.sound;
+                    return;
+                case 7: //flags
+                    Responses.value[ListIndex]->SetFlagMask(defaultTRDT.flags);
+                    return;
+                case 8: //unused3
+                    Responses.value[ListIndex]->TRDT.value.unused3[0] = defaultTRDT.unused3[0];
+                    Responses.value[ListIndex]->TRDT.value.unused3[1] = defaultTRDT.unused3[1];
+                    Responses.value[ListIndex]->TRDT.value.unused3[2] = defaultTRDT.unused3[2];
+                    return;
+                case 9: //responseText
+                    Responses.value[ListIndex]->NAM1.Unload();
+                    return;
+                case 10: //actorNotes
+                    Responses.value[ListIndex]->NAM2.Unload();
+                    return;
+                case 11: //editNotes
+                    Responses.value[ListIndex]->NAM3.Unload();
+                    return;
+                case 12: //speakerAnim
+                    Responses.value[ListIndex]->SNAM.Unload();
+                    return;
+                case 13: //listenerAnim
+                    Responses.value[ListIndex]->LNAM.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 16: //trdt TRDT ,, Struct
-            TRDT.Unload();
+        case 15: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.Unload();
+                return;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = defaultCTDA.operType;
+                    return;
+                case 2: //unused1
+                    CTDA.value[ListIndex]->unused1[0] = defaultCTDA.unused1[0];
+                    CTDA.value[ListIndex]->unused1[1] = defaultCTDA.unused1[1];
+                    CTDA.value[ListIndex]->unused1[2] = defaultCTDA.unused1[2];
+                    return;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = defaultCTDA.compValue;
+                    return;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = defaultCTDA.ifunc;
+                    return;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = defaultCTDA.param1;
+                    return;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = defaultCTDA.param2;
+                    return;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = defaultCTDA.runOnType;
+                    return;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = defaultCTDA.reference;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 17: //trdt_p TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 18: //trdt TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 19: //trdt_p TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 20: //trdt TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 21: //trdt TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 22: //trdt_p TRDT ,, Struct
-            TRDT.Unload();
-            return;
-        case 23: //nam1 Response Text
-            NAM1.Unload();
-            return;
-        case 24: //nam2 Script Notes
-            NAM2.Unload();
-            return;
-        case 25: //nam3 Edits
-            NAM3.Unload();
-            return;
-        case 26: //snam Speaker Animation
-            SNAM.Unload();
-            return;
-        case 27: //lnam Listener Animation
-            LNAM.Unload();
-            return;
-        case 28: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 29: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 30: //ctda Conditions
-            return UNPARSEDDEL_FIELD29;
-        case 31: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 32: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 33: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 34: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 35: //ctda Conditions
-            return UNPARSEDDEL_FIELD34;
-        case 36: //tclt Choice
+        case 16: //choices
             TCLT.Unload();
             return;
-        case 37: //tclf Topic
+        case 17: //linksFrom
             TCLF.Unload();
             return;
-        case 38: //tcfu Info
+        case 18: //unknown
             TCFU.Unload();
             return;
-        case 39: //schr_p Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 19: //unused1
+            BeginSCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            BeginSCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            BeginSCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            BeginSCHR.value.unused1[3] = defaultSCHR.unused1[3];
             return;
-        case 40: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 20: //numRefs
+            BeginSCHR.value.numRefs = defaultSCHR.numRefs;
             return;
-        case 41: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 21: //compiledSize
+            BeginSCHR.value.compiledSize = defaultSCHR.compiledSize;
             return;
-        case 42: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 22: //lastIndex
+            BeginSCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
-        case 43: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 23: //scriptType
+            SetBeginType(defaultSCHR.scriptType);
             return;
-        case 44: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
+        case 24: //scriptFlags
+            SetBeginScriptFlagMask(defaultSCHR.flags);
             return;
-        case 45: //scda_p Compiled Embedded Script
-            if(SCHR.IsLoaded())
-                SCHR->SCDA.Unload();
+        case 25: //compiled_p
+            BeginSCDA.Unload();
             return;
-        case 46: //sctx Embedded Script Source
-            if(SCHR.IsLoaded())
-                SCHR->SCTX.Unload();
+        case 26: //scriptText
+            BeginSCTX.Unload();
             return;
-        case 47: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
+        case 27: //vars
+            if(ListFieldID == 0) //varsSize
+                {
+                BeginVARS.Unload();
+                return;
+                }
+
+            if(ListIndex >= BeginVARS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    BeginVARS.value[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    return;
+                case 2: //unused1
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    return;
+                case 3: //flags
+                    BeginVARS.value[ListIndex]->SetFlagMask(defaultVARS.SLSD.value.flags);
+                    return;
+                case 4: //unused2
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    BeginVARS.value[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    return;
+                case 5: //name
+                    BeginVARS.value[ListIndex]->SCVR.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 48: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
+        case 28: //references
+            if(ListFieldID == 0) //referencesSize
+                {
+                BeginSCR_.Unload();
+                return;
+                }
+
+            if(ListIndex >= BeginSCR_.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    BeginSCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    BeginSCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 49: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
+        case 29: //unused2
+            EndSCHR.value.unused1[0] = defaultSCHR.unused1[0];
+            EndSCHR.value.unused1[1] = defaultSCHR.unused1[1];
+            EndSCHR.value.unused1[2] = defaultSCHR.unused1[2];
+            EndSCHR.value.unused1[3] = defaultSCHR.unused1[3];
             return;
-        case 50: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
+        case 30: //endNumRefs
+            EndSCHR.value.numRefs = defaultSCHR.numRefs;
             return;
-        case 51: //scvr Name
-            if(SCHR.IsLoaded())
-                SCHR->SCVR.Unload();
+        case 31: //endCompiledSize
+            EndSCHR.value.compiledSize = defaultSCHR.compiledSize;
             return;
-        case 52: //scro Global Reference
-            if(SCHR.IsLoaded())
-                SCHR->SCRO.Unload();
+        case 32: //endLastIndex
+            EndSCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
-        case 53: //scrv Local Variable
-            if(SCHR.IsLoaded())
-                SCHR->SCRV.Unload();
+        case 33: //endScriptType
+            SetEndType(defaultSCHR.scriptType);
             return;
-        case 54: //sndd Unused
+        case 34: //endScriptFlags
+            SetEndScriptFlagMask(defaultSCHR.flags);
+            return;
+        case 35: //endCompiled_p
+            EndSCDA.Unload();
+            return;
+        case 36: //endScriptText
+            EndSCTX.Unload();
+            return;
+        case 37: //endVars
+            if(ListFieldID == 0) //endVarsSize
+                {
+                EndVARS.Unload();
+                return;
+                }
+
+            if(ListIndex >= EndVARS.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //index
+                    EndVARS.value[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    return;
+                case 2: //unused1
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    EndVARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    return;
+                case 3: //flags
+                    EndVARS.value[ListIndex]->SetFlagMask(defaultVARS.SLSD.value.flags);
+                    return;
+                case 4: //unused2
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    EndVARS.value[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    return;
+                case 5: //name
+                    EndVARS.value[ListIndex]->SCVR.Unload();
+                    return;
+                default:
+                    return;
+                }
+            return;
+        case 38: //endReferences
+            if(ListFieldID == 0) //endReferencesSize
+                {
+                EndSCR_.Unload();
+                return;
+                }
+
+            if(ListIndex >= EndSCR_.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //reference
+                    EndSCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    EndSCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
+                    return;
+                default:
+                    return;
+                }
+            return;
+        case 39: //unusedSound
             SNDD.Unload();
             return;
-        case 55: //rnam Prompt
+        case 40: //prompt
             RNAM.Unload();
             return;
-        case 56: //anam Speaker
+        case 41: //speaker
             ANAM.Unload();
             return;
-        case 57: //knam ActorValue/Perk
+        case 42: //actorValueOrPerk
             KNAM.Unload();
             return;
-        case 58: //dnam Speech Challenge
+        case 43: //challengeType
             DNAM.Unload();
             return;
         default:

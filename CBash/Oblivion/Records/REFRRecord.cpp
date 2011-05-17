@@ -659,7 +659,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
-    UINT32 lastRecord = 0;
+    UINT32 lastChunk = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -756,10 +756,10 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XPCI):
                 XPCI.Load();
                 XPCI->XPCI.Read(buffer, subSize, curPos);
-                lastRecord = REV32(XPCI);
+                lastChunk = REV32(XPCI);
                 break;
             case REV32(FULL):
-                switch(lastRecord)
+                switch(lastChunk)
                     {
                     case REV32(XPCI):
                         XPCI.Load();
@@ -769,7 +769,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         Marker->FULL.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
+                        printf("  REFR: %08X - Unexpected FULL chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
@@ -791,7 +791,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             case REV32(XMRK):
                 Marker.Load();
                 curPos += subSize;
-                lastRecord = REV32(XMRK);
+                lastChunk = REV32(XMRK);
                 break;
             case REV32(FNAM):
                 Marker.Load();

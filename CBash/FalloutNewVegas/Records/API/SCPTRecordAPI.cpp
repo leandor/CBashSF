@@ -172,6 +172,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -466,7 +467,7 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
                     VARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
                     return;
                 case 3: //flags
-                    VARS.value[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    VARS.value[ListIndex]->SetFlagMask(defaultVARS.SLSD.value.flags);
                     return;
                 case 4: //unused2
                     VARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];

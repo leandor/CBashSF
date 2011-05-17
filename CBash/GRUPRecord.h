@@ -33,6 +33,8 @@ GPL License and Copyright Notice ============================================
 #include "Oblivion/Records/WRLDRecord.h"
 #include "Oblivion/Records/ROADRecord.h"
 #include "Oblivion/Records/LANDRecord.h"
+#include "FalloutNewVegas/Records/DIALRecord.h"
+#include "FalloutNewVegas/Records/INFORecord.h"
 #include "FalloutNewVegas/Records/CELLRecord.h"
 #include "FalloutNewVegas/Records/ACHRRecord.h"
 #include "FalloutNewVegas/Records/ACRERecord.h"
@@ -1729,6 +1731,186 @@ class FNVGRUPRecords
             }
     };
 
+
+template<>
+class FNVGRUPRecords<FNV::DIALRecord>
+    {
+    public:
+        UINT32 stamp, unknown;
+        std::vector<Record *> Records;
+        FNVGRUPRecords():stamp(134671), unknown(0) {}
+        ~FNVGRUPRecords()
+            {
+            for(UINT32 p = 0;p < Records.size(); p++)
+                delete Records[p];
+            }
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
+            {
+            if(gSize == 0)
+                {
+                printf("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
+                #ifdef CBASH_DEBUG_CHUNK
+                    reader.peek_around(PEEK_SIZE);
+                #endif
+                return false;
+                }
+            Record * curRecord = NULL;
+            UINT32 recordType = 0;
+            UINT32 gEnd = reader.tell() + gSize - 24;
+            UINT32 recordSize = 0;
+
+            while(reader.tell() < gEnd){
+                reader.read(&recordType, 4);
+                reader.read(&recordSize, 4);
+                switch(recordType)
+                    {
+                    case REV32(DIAL):
+                        curRecord = new FNV::DIALRecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            indexer.Accept(curRecord);
+                            Records.push_back(curRecord);
+                            }
+                        break;
+                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
+                        reader.skip(16); //Skip label and type fields
+                        //reader.read(&stamp, 4);
+                        continue;
+                    case REV32(INFO):
+                        curRecord = new FNV::INFORecord(reader.getBuffer(reader.tell()) + 16);
+                        if(processor(curRecord))
+                            {
+                            if(Records.size() != 0)
+                                {
+                                indexer.Accept(curRecord);
+                                ((FNV::DIALRecord *)Records.back())->INFO.push_back(curRecord);
+                                }
+                            else
+                                {
+                                printf("FNVGRUPRecords<FNV::DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell(), reader.getFileName());
+                                delete curRecord;
+                                #ifdef CBASH_DEBUG_CHUNK
+                                    reader.peek_around(PEEK_SIZE);
+                                #endif
+                                }
+                            }
+                        break;
+                    default:
+                        printf("FNVGRUPRecords<FNV::DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
+                        #ifdef CBASH_DEBUG_CHUNK
+                            reader.peek_around(PEEK_SIZE);
+                        #endif
+                        break;
+                    }
+                reader.skip(recordSize);
+                };
+            if(Records.size())
+                processor.IsEmpty(false);
+            return true;
+            }
+        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+            {
+            Record * curRecord = NULL;
+            bool stop = false;
+
+            if(RecordType != NULL && RecordType != REV32(DIAL) && RecordType != REV32(INFO))
+                return false;
+
+            for(UINT32 p = 0; p < Records.size(); p++)
+                {
+                curRecord = Records[p];
+                if(RecordType == NULL || RecordType == curRecord->GetType())
+                    {
+                    stop = op.Accept(curRecord);
+                    if(curRecord == NULL)
+                        {
+                        Records.erase(Records.begin() + p);
+                        --p;
+                        }
+                    if(stop)
+                        return stop;
+                    }
+
+                if(DeepVisit)
+                    {
+                    stop = curRecord->VisitSubRecords(RecordType, op);
+                    if(stop)
+                        return stop;
+                    }
+                }
+            return stop;
+            }
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
+            {
+            UINT32 numDIALRecords = (UINT32)Records.size(); //Parent Records
+            if(numDIALRecords == 0)
+                return 0;
+            UINT32 type = REV32(GRUP);
+            UINT32 gType = eTop;
+            UINT32 TopSize =0;
+            UINT32 ChildrenSize =0;
+            UINT32 formCount = 0;
+            UINT32 TopLabel = REV32(DIAL);
+            UINT32 numINFORecords = 0;
+            UINT32 parentFormID = 0;
+            FNV::DIALRecord *curRecord = NULL;
+
+            //Top GRUP Header
+            writer.file_write(&type, 4);
+            UINT32 TopSizePos = writer.file_tell();
+            writer.file_write(&TopSize, 4); //Placeholder: will be overwritten with correct value later.
+            writer.file_write(&TopLabel, 4);
+            writer.file_write(&gType, 4);
+            writer.file_write(&stamp, 4);
+            writer.file_write(&unknown, 4);
+            ++formCount;
+            TopSize = 24;
+
+            gType = eTopicChildren;
+            formCount += numDIALRecords;
+            for(UINT32 p = 0; p < numDIALRecords; ++p)
+                {
+                curRecord = (FNV::DIALRecord *)Records[p];
+                parentFormID = curRecord->formID;
+                collapser.Accept(parentFormID);
+                TopSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
+
+                numINFORecords = (UINT32)curRecord->INFO.size();
+                if(numINFORecords)
+                    {
+                    writer.file_write(&type, 4);
+                    UINT32 ChildrenSizePos = writer.file_tell();
+                    writer.file_write(&ChildrenSize, 4); //Placeholder: will be overwritten with correct value later.
+                    writer.file_write(&parentFormID, 4);
+                    writer.file_write(&gType, 4);
+                    writer.file_write(&stamp, 4);
+                    writer.file_write(&unknown, 4);
+                    ++formCount;
+                    ChildrenSize = 24;
+
+                    formCount += numINFORecords;
+                    for(UINT32 y = 0; y < curRecord->INFO.size(); ++y)
+                        {
+                        ChildrenSize += curRecord->INFO[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
+                        if(CloseMod)
+                            delete curRecord->INFO[y];
+                        }
+                    writer.file_write(ChildrenSizePos, &ChildrenSize, 4);
+                    TopSize += ChildrenSize;
+                    if(CloseMod)
+                        curRecord->INFO.clear();
+                    }
+                if(CloseMod)
+                    delete curRecord;
+                }
+            writer.file_write(TopSizePos, &TopSize, 4);
+            if(CloseMod)
+                Records.clear();
+            return formCount;
+            }
+
+    };
+
 template<>
 class FNVGRUPRecords<FNV::CELLRecord>
     {
@@ -2328,7 +2510,7 @@ class FNVGRUPRecords<FNV::WRLDRecord>
             {
             if(gSize == 0)
                 {
-                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printf("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif

@@ -171,8 +171,8 @@ struct FNVMINSCRIPT
     bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
     void SetScriptFlagMask(UINT16 Mask);
 
-    bool   IsType(UINT32 Type);
-    void   SetType(UINT32 Type);
+    bool IsType(UINT32 Type);
+    void SetType(UINT32 Type);
 
     bool operator ==(const FNVMINSCRIPT &other) const;
     bool operator !=(const FNVMINSCRIPT &other) const;

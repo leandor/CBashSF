@@ -536,10 +536,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgDIAL:
             case REV32(DIAL):
-                //reader.read(&DIAL.stamp, 4);
-                //reader.read(&DIAL.unknown, 4);
-                //DIAL.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&DIAL.stamp, 4);
+                reader.read(&DIAL.unknown, 4);
+                DIAL.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgQUST: //Same as normal
             case REV32(QUST):
                 //reader.read(&QUST.stamp, 4);
@@ -984,7 +984,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(WRLD):
             return (UINT32)WRLD.Records.size();
         case REV32(DIAL):
-            //return (UINT32)DIAL.Records.size();
+            return (UINT32)DIAL.Records.size();
         case REV32(QUST):
             //return (UINT32)QUST.Records.size();
         case REV32(IDLE):
@@ -1365,19 +1365,19 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = WRLD.Records.back();
             break;
         case REV32(DIAL):
-            //DIAL.Records.push_back(new FNV::DIALRecord((FNV::DIALRecord *)SourceRecord));
-            //newRecord = DIAL.Records.back();
-            //break;
+            DIAL.Records.push_back(new FNV::DIALRecord((FNV::DIALRecord *)SourceRecord));
+            newRecord = DIAL.Records.back();
+            break;
         case REV32(INFO):
-            //if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
-            //    {
-            //    printf("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
-            //    return NULL;
-            //    }
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
+                {
+                printf("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                return NULL;
+                }
 
-            //((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
-            //newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
-            //break;
+            ((FNV::DIALRecord *)ParentRecord)->INFO.push_back(new FNV::INFORecord((FNV::INFORecord *)SourceRecord));
+            newRecord = ((FNV::DIALRecord *)ParentRecord)->INFO.back();
+            break;
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -1757,7 +1757,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(NAVI.VisitRecords(NULL, checker, false)) continue;
         if(CELL.VisitRecords(NULL, checker, true)) continue;
         if(WRLD.VisitRecords(NULL, checker, true)) continue;
-        //if(DIAL.VisitRecords(NULL, checker, true)) continue;
+        if(DIAL.VisitRecords(NULL, checker, true)) continue;
         //if(QUST.VisitRecords(NULL, checker, false)) continue;
         //if(IDLE.VisitRecords(NULL, checker, false)) continue;
         //if(PACK.VisitRecords(NULL, checker, false)) continue;
@@ -1895,7 +1895,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += NAVI.WriteGRUP(REV32(NAVI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DIAL.WriteGRUP(REV32(DIAL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DIAL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -2018,7 +2018,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     NAVI.VisitRecords(NULL, op, true);
     CELL.VisitRecords(NULL, op, true);
     WRLD.VisitRecords(NULL, op, true);
-    //DIAL.VisitRecords(NULL, op, true);
+    DIAL.VisitRecords(NULL, op, true);
     //QUST.VisitRecords(NULL, op, true);
     //IDLE.VisitRecords(NULL, op, true);
     //PACK.VisitRecords(NULL, op, true);
@@ -2247,8 +2247,8 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             WRLD.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(DIAL):
-            //DIAL.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            DIAL.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(QUST):
             //QUST.VisitRecords(RecordType, op, DeepVisit);
             //break;

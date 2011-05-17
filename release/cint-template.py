@@ -3554,6 +3554,167 @@ class FnvLANDRecord(FnvBaseRecord):
                                         'colors_list', 'baseTextures_list', 'alphaLayers_list',
                                         'vertexTextures_list'] #'data_p',
 
+class FnvINFORecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
+        self._ParentID = ParentID
+
+    _Type = 'INFO'
+    class Response(ListComponent):
+        UINT32_TYPE_LISTMACRO(emotionType, 1)
+        SINT32_LISTMACRO(emotionValue, 2)
+        UINT8_ARRAY_LISTMACRO(unused1, 3, 4)
+        UINT8_LISTMACRO(responseNum, 4)
+        UINT8_ARRAY_LISTMACRO(unused2, 5, 3)
+        FORMID_LISTMACRO(sound, 6)
+        UINT8_FLAG_LISTMACRO(flags, 7)
+        UINT8_ARRAY_LISTMACRO(unused3, 8, 3)
+        STRING_LISTMACRO(responseText, 9)
+        ISTRING_LISTMACRO(actorNotes, 10)
+        ISTRING_LISTMACRO(editNotes, 11)
+        FORMID_LISTMACRO(speakerAnim, 12)
+        FORMID_LISTMACRO(listenerAnim, 13)
+
+        BasicFlagMACRO(IsUseEmotionAnim, flags, 0x01)
+
+        BasicTypeMACRO(IsNeutral, emotionType, 0, IsAnger)
+        BasicTypeMACRO(IsAnger, emotionType, 1, IsNeutral)
+        BasicTypeMACRO(IsDisgust, emotionType, 2, IsNeutral)
+        BasicTypeMACRO(IsFear, emotionType, 3, IsNeutral)
+        BasicTypeMACRO(IsSad, emotionType, 4, IsNeutral)
+        BasicTypeMACRO(IsHappy, emotionType, 5, IsNeutral)
+        BasicTypeMACRO(IsSurprise, emotionType, 6, IsNeutral)
+        BasicTypeMACRO(IsPained, emotionType, 7, IsNeutral)
+        exportattrs = copyattrs = ['emotionType', 'emotionValue', 'responseNum',
+                                   'sound', 'flags', 'responseText', 'actorNotes',
+                                   'editNotes', 'speakerAnim', 'listenerAnim']
+
+    class Var(ListComponent):
+        UINT32_LISTMACRO(index, 1)
+        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+        ISTRING_LISTMACRO(name, 5)
+
+        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+
+    UINT8_TYPE_MACRO(dialType, 7)
+    UINT8_TYPE_MACRO(nextSpeaker, 8)
+    UINT16_FLAG_MACRO(flags, 9)
+    FORMID_MACRO(quest, 10)
+    FORMID_MACRO(topic, 11)
+    FORMID_MACRO(prevInfo, 12)
+    FORMID_ARRAY_MACRO(addTopics, 13)
+
+    LIST_MACRO(responses, 14, self.Response)
+    LIST_MACRO(conditions, 15, FNVCondition)
+    FORMID_ARRAY_MACRO(choices, 16)
+    FORMID_ARRAY_MACRO(linksFrom, 17)
+    FORMID_ARRAY_MACRO(unknown, 18)
+    UINT8_ARRAY_MACRO(unused1, 19, 4)
+    UINT32_MACRO(numRefs, 20)
+    UINT32_MACRO(compiledSize, 21)
+    UINT32_MACRO(lastIndex, 22)
+    UINT16_TYPE_MACRO(scriptType, 23)
+    UINT16_FLAG_MACRO(scriptFlags, 24)
+    UINT8_ARRAY_MACRO(compiled_p, 25)
+    ISTRING_MACRO(scriptText, 26)
+
+    LIST_MACRO(vars, 27, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(references, 28)
+    UINT8_ARRAY_MACRO(unused2, 29, 4)
+    UINT32_MACRO(endNumRefs, 30)
+    UINT32_MACRO(endCompiledSize, 31)
+    UINT32_MACRO(endLastIndex, 32)
+    UINT16_TYPE_MACRO(endScriptType, 33)
+    UINT16_FLAG_MACRO(endScriptFlags, 34)
+    UINT8_ARRAY_MACRO(endCompiled_p, 35)
+    ISTRING_MACRO(endScriptText, 36)
+
+    LIST_MACRO(endVars, 37, self.Var)
+    FORMID_OR_UINT32_ARRAY_MACRO(endReferences, 38)
+    FORMID_MACRO(unusedSound, 39)
+    STRING_MACRO(prompt, 40)
+    FORMID_MACRO(speaker, 41)
+    FORMID_MACRO(actorValueOrPerk, 42)
+    UINT32_TYPE_MACRO(challengeType, 43)
+
+    BasicFlagMACRO(IsGoodbye, flags, 0x0001)
+    BasicFlagMACRO(IsRandom, flags, 0x0002)
+    BasicFlagMACRO(IsSayOnce, flags, 0x0004)
+    BasicFlagMACRO(IsRunImmediately, flags, 0x0008)
+    BasicFlagMACRO(IsInfoRefusal, flags, 0x0010)
+    BasicFlagMACRO(IsRandomEnd, flags, 0x0020)
+    BasicFlagMACRO(IsRunForRumors, flags, 0x0040)
+    BasicFlagMACRO(IsSpeechChallenge, flags, 0x0080)
+    BasicFlagMACRO(IsSayOnceADay, flags, 0x0100)
+    BasicFlagMACRO(IsAlwaysDarken, flags, 0x0200)
+
+    BasicFlagMACRO(IsBeginEnabled, scriptFlags, 0x0001)
+
+    BasicFlagMACRO(IsEndEnabled, endScriptFlags, 0x0001)
+
+    BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
+    BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
+    BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
+    BasicTypeMACRO(IsPersuasion, dialType, 3, IsTopic)
+    BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
+    BasicTypeMACRO(IsService, dialType, 5, IsTopic)
+    BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
+    BasicTypeMACRO(IsRadio, dialType, 7, IsTopic)
+
+    BasicTypeMACRO(IsTarget, nextSpeaker, 0, IsSelf)
+    BasicTypeMACRO(IsSelf, nextSpeaker, 1, IsTarget)
+    BasicTypeMACRO(IsEither, nextSpeaker, 2, IsTarget)
+
+    BasicTypeMACRO(IsNone, challengeType, 0, IsVeryEasy)
+    BasicTypeMACRO(IsVeryEasy, challengeType, 1, IsNone)
+    BasicTypeMACRO(IsEasy, challengeType, 2, IsNone)
+    BasicTypeMACRO(IsAverage, challengeType, 3, IsNone)
+    BasicTypeMACRO(IsHard, challengeType, 4, IsNone)
+    BasicTypeMACRO(IsVeryHard, challengeType, 5, IsNone)
+
+    BasicTypeMACRO(IsBeginObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsBeginQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsBeginEffect, scriptType, 0x0100, IsObject)
+
+    BasicTypeMACRO(IsEndObject, endScriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsEndQuest, endScriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEndEffect, endScriptType, 0x0100, IsObject)
+    copyattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
+                                           'quest', 'topic', 'prevInfo',
+                                           'addTopics', 'responses_list',
+                                           'conditions_list', 'choices',
+                                           'linksFrom', 'unknown',
+                                           'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType',
+                                           'scriptFlags', 'compiled_p',
+                                           'scriptText', 'vars_list',
+                                           'references', 'endNumRefs',
+                                           'endCompiledSize', 'endLastIndex',
+                                           'endScriptType', 'endScriptFlags',
+                                           'endCompiled_p', 'endScriptText',
+                                           'endVars_list', 'endReferences',
+                                           'prompt', 'speaker',
+                                           'actorValueOrPerk', 'challengeType']
+    exportattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
+                                             'quest', 'topic', 'prevInfo',
+                                             'addTopics', 'responses_list',
+                                             'conditions_list', 'choices',
+                                             'linksFrom', 'unknown',
+                                             'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType',
+                                             'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'endNumRefs',
+                                             'endCompiledSize', 'endLastIndex',
+                                             'endScriptType', 'endScriptFlags',
+                                             'endScriptText',
+                                             'endVars_list', 'endReferences',
+                                             'prompt', 'speaker',
+                                             'actorValueOrPerk', 'challengeType']# 'compiled_p','endCompiled_p',
+
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -7521,8 +7682,41 @@ class FnvWRLDRecord(FnvBaseRecord):
 
 class FnvDIALRecord(FnvBaseRecord):
     _Type = 'DIAL'
+    class Quest(ListComponent):
+        class QuestUnknown(ListX2Component):
+            FORMID_LISTX2MACRO(unknownId, 1)
+            SINT32_LISTX2MACRO(unknown, 2)
+            exportattrs = copyattrs = ['unknownId', 'unknown']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        FORMID_LISTMACRO(quest, 1)
+
+        LIST_LISTMACRO(unknowns, 2, self.QuestUnknown)
+        exportattrs = copyattrs = ['quest', 'unknowns_list']
+
+    LIST_MACRO(quests, 7, self.Quest)
+    LIST_MACRO(removedQuests, 8, self.Quest)
+
+    STRING_MACRO(full, 9)
+    FLOAT32_MACRO(priority, 10)
+    STRING_MACRO(unknown, 11)
+    UINT8_TYPE_MACRO(dialType, 12)
+    UINT8_FLAG_MACRO(flags, 13)
+    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 14, FnvINFORecord, 0)
+
+    BasicFlagMACRO(IsRumors, flags, 0x01)
+    BasicFlagMACRO(IsTopLevel, flags, 0x02)
+
+    BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
+    BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
+    BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
+    BasicTypeMACRO(IsPersuasion, dialType, 3, IsTopic)
+    BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
+    BasicTypeMACRO(IsService, dialType, 5, IsTopic)
+    BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
+    BasicTypeMACRO(IsRadio, dialType, 7, IsTopic)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['quests_list', 'removedQuests_list',
+                                                         'full', 'priority', 'unknown',
+                                                         'dialType', 'flags']
 
 class FnvQUSTRecord(FnvBaseRecord):
     _Type = 'QUST'
@@ -8187,7 +8381,7 @@ class ObINFORecord(ObBaseRecord):
 
     _Type = 'INFO'
     class Response(ListComponent):
-        UINT32_LISTMACRO(emotionType, 1)
+        UINT32_TYPE_LISTMACRO(emotionType, 1)
         SINT32_LISTMACRO(emotionValue, 2)
         UINT8_ARRAY_LISTMACRO(unused1, 3, 4)
         UINT8_LISTMACRO(responseNum, 4)
@@ -10937,8 +11131,8 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
-                        ('PBEA',FnvPBEARecord),('LAND',FnvLANDRecord),
-                        ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
+                        ('PBEA',FnvPBEARecord),('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),
+                        ('LAND',FnvLANDRecord),('DIAL',FnvDIALRecord),('INFO',FnvINFORecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
                         ('WATR',FnvWATRRecord),('EFSH',FnvEFSHRecord),('EXPL',FnvEXPLRecord),
@@ -11397,6 +11591,22 @@ class FnvModFile(object):
     FnvModRecordsMACRO(SLPD)
 
     @property
+    def INFOS(self):
+        infos = []
+        for dial in self.DIAL:
+            infos += dial.INFO
+        return infos
+
+    @property
+    def CELLS(self):
+        cells = self.CELL
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): cells += [cell]
+            cells += world.CELLS
+        return cells
+
+    @property
     def ACHRS(self):
         achrs = []
         for cell in self.CELL:
@@ -11576,11 +11786,11 @@ class FnvModFile(object):
                      ("IDLM", self.IDLM),("NOTE", self.NOTE),("COBJ", self.COBJ),
                      ("PROJ", self.PROJ),("LVLI", self.LVLI),("WTHR", self.WTHR),
                      ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
-                     ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
+                     ("CELL", self.CELLS),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
                      ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
-                     ("LAND", self.LANDS),
-                     ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
+                     ("NAVM", self.NAVMS),("WRLD", self.WRLD),("LAND", self.LANDS),
+                     ("DIAL", self.DIAL),("INFO", self.INFOS),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),
                      ("WATR", self.WATR),("EFSH", self.EFSH),("EXPL", self.EXPL),

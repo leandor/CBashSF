@@ -21,7 +21,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("^        case (.*?)\\: //(.*?)\n            switch\\(WhichAttribute\\)\n                \\{\n                case 0\\: .*?\n                    return SUBRECORD_ARRAY_FIELD;(?s).*?                \\}");
-SearchAndReplace.setReplaceString("    SUBRECORD_ARRAY_MACRO($2, $1, Ob$2Record)");
+SearchAndReplace.setReplaceString("    SUBRECORD_ARRAY_MACRO($2, \"$2\"$1, Ob$2Record, 0)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);

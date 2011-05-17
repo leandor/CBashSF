@@ -60,24 +60,135 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //qsti Quest
-            return FORMID_FIELD;
-        case 8: //infc Unknown
-            return FORMID_FIELD;
-        case 9: //infx Unknown
-            return SINT32_FIELD;
-        case 10: //qstr Quest
-            return FORMID_FIELD;
-        case 11: //full
+        case 7: //quests
+            if(ListFieldID == 0) //quests
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)QSTI.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= QSTI.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    return FORMID_FIELD;
+                case 2: //unknowns
+                    if(ListX2FieldID == 0) //quests
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)QSTI.value[ListIndex]->Unknown.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        return UNKNOWN_FIELD;
+                        }
+
+                    if(ListX2Index >= QSTI.value[ListIndex]->Unknown.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            return FORMID_FIELD;
+                        case 2: //unknown
+                            return SINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 8: //removedQuests
+            if(ListFieldID == 0) //removedQuests
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)QSTR.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= QSTR.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    return FORMID_FIELD;
+                case 2: //unknowns
+                    if(ListX2FieldID == 0) //unknowns
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)QSTR.value[ListIndex]->Unknown.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        return UNKNOWN_FIELD;
+                        }
+
+                    if(ListX2Index >= QSTR.value[ListIndex]->Unknown.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            return FORMID_FIELD;
+                        case 2: //unknown
+                            return SINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 9: //full
             return STRING_FIELD;
-        case 12: //pnam Priority
+        case 10: //priority
             return FLOAT32_FIELD;
-        case 13: //tdum
-            return ISTRING_FIELD;
-        case 14: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 15: //data DATA ,, Struct
-            return UINT8_FIELD;
+        case 11: //unknown
+            return STRING_FIELD;
+        case 12: //dialType
+            return UINT8_TYPE_FIELD;
+        case 13: //flags
+            return UINT8_FLAG_FIELD;
+        case 14: //INFO
+            switch(WhichAttribute)
+                {
+                case 0: //fieldType
+                    return SUBRECORD_ARRAY_FIELD;
+                case 1: //fieldSize
+                    return (UINT32)INFO.size();
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -102,24 +213,72 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //qsti Quest
-            return QSTI.IsLoaded() ? &QSTI->value7 : NULL;
-        case 8: //infc Unknown
-            return INFC.IsLoaded() ? &INFC->value8 : NULL;
-        case 9: //infx Unknown
-            return INFX.IsLoaded() ? &INFX->value9 : NULL;
-        case 10: //qstr Quest
-            return QSTR.IsLoaded() ? &QSTR->value10 : NULL;
-        case 11: //full
+        case 7: //quests
+            if(ListIndex >= QSTI.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    return &QSTI.value[ListIndex]->QSTI.value;
+                case 2: //unknown
+                    if(ListX2Index >= QSTI.value[ListIndex]->Unknown.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value;
+                        case 2: //unknown
+                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 8: //removedQuests
+            if(ListIndex >= QSTR.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    return &QSTR.value[ListIndex]->QSTR.value;
+                case 2: //unknown
+                    if(ListX2Index >= QSTI.value[ListIndex]->Unknown.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value;
+                        case 2: //unknown
+                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 9: //full
             return FULL.value;
-        case 12: //pnam Priority
-            return PNAM.IsLoaded() ? &PNAM->value12 : NULL;
-        case 13: //tdum
+        case 10: //priority
+            return &PNAM.value;
+        case 11: //unknown
             return TDUM.value;
-        case 14: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
-        case 15: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value15 : NULL;
+        case 12: //dialType
+            return &DATA.value.dialType;
+        case 13: //flags
+            return &DATA.value.flags;
+        case 14: //INFO
+            for(UINT32 p = 0;p < (UINT32)INFO.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = INFO[p];
+            return NULL;
         default:
             return NULL;
         }
@@ -153,39 +312,102 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //qsti Quest
-            QSTI.Load();
-            QSTI->value7 = *(FORMID *)FieldValue;
-            return true;
-        case 8: //infc Unknown
-            INFC.Load();
-            INFC->value8 = *(FORMID *)FieldValue;
-            return true;
-        case 9: //infx Unknown
-            INFX.Load();
-            INFX->value9 = *(SINT32 *)FieldValue;
+        case 7: //quests
+            if(ListFieldID == 0) //questsSize
+                {
+                QSTI.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= QSTI.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    QSTI.value[ListIndex]->QSTI.value = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //unknown
+                    if(ListX2FieldID == 0) //unknownsSize
+                        {
+                        QSTI.value[ListIndex]->Unknown.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= QSTI.value[ListIndex]->Unknown.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //unknown
+                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 10: //qstr Quest
-            QSTR.Load();
-            QSTR->value10 = *(FORMID *)FieldValue;
-            return true;
-        case 11: //full
+        case 8: //removedQuests
+            if(ListFieldID == 0) //removedQuestsSize
+                {
+                QSTR.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= QSTR.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    QSTR.value[ListIndex]->QSTR.value = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //unknown
+                    if(ListX2FieldID == 0) //unknownsSize
+                        {
+                        QSTR.value[ListIndex]->Unknown.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= QSTR.value[ListIndex]->Unknown.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //unknown
+                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
+            break;
+        case 9: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 12: //pnam Priority
-            PNAM.Load();
-            PNAM->value12 = *(FLOAT32 *)FieldValue;
+        case 10: //priority
+            PNAM.value = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //tdum
+        case 11: //unknown
             TDUM.Copy((STRING)FieldValue);
             break;
-        case 14: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value14 = *(UINT8 *)FieldValue;
+        case 12: //dialType
+            SetType(*(UINT8 *)FieldValue);
             break;
-        case 15: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value15 = *(UINT8 *)FieldValue;
+        case 13: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
         default:
             break;
@@ -195,6 +417,7 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    DIALDATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -213,32 +436,102 @@ void DIALRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //qsti Quest
-            QSTI.Unload();
+        case 7: //quests
+            if(ListFieldID == 0) //questsSize
+                {
+                QSTI.Unload();
+                return;
+                }
+
+            if(ListIndex >= QSTI.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    QSTI.value[ListIndex]->QSTI.Unload();
+                    return;
+                case 2: //unknowns
+                    if(ListX2FieldID == 0) //unknownsSize
+                        {
+                        QSTI.value[ListIndex]->Unknown.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= QSTI.value[ListIndex]->Unknown.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.Unload();
+                            return;
+                        case 2: //unknown
+                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.Unload();
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 8: //infc Unknown
-            INFC.Unload();
+        case 8: //removedQuests
+            if(ListFieldID == 0) //removedQuestsSize
+                {
+                QSTR.Unload();
+                return;
+                }
+
+            if(ListIndex >= QSTR.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //quest
+                    QSTR.value[ListIndex]->QSTR.Unload();
+                    return;
+                case 2: //unknowns
+                    if(ListX2FieldID == 0) //unknownsSize
+                        {
+                        QSTR.value[ListIndex]->Unknown.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= QSTR.value[ListIndex]->Unknown.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //unknownId
+                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFC.Unload();
+                            return;
+                        case 2: //unknown
+                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFX.Unload();
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 9: //infx Unknown
-            INFX.Unload();
-            return;
-        case 10: //qstr Quest
-            QSTR.Unload();
-            return;
-        case 11: //full
+        case 9: //full
             FULL.Unload();
             return;
-        case 12: //pnam Priority
+        case 10: //priority
             PNAM.Unload();
             return;
-        case 13: //tdum
+        case 11: //unknown
             TDUM.Unload();
             return;
-        case 14: //data DATA ,, Struct
-            DATA.Unload();
+        case 12: //dialType
+            SetType(defaultDATA.dialType);
             return;
-        case 15: //data DATA ,, Struct
-            DATA.Unload();
+        case 13: //flags
+            SetType(defaultDATA.flags);
             return;
         default:
             return;

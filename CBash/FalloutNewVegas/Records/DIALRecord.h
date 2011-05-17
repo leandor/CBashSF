@@ -30,8 +30,10 @@ class DIALRecord : public FNVRecord //Dialog Topic
     private:
         struct DIALUNK
             {
-            OptSimpleSubRecord<FORMID> INFC; //Unknown
-            OptSimpleSubRecord<SINT32> INFX; //Unknown
+            ReqSimpleSubRecord<FORMID> INFC; //Unknown
+            OptSimpleSubRecord<SINT32> INFX; //Unknown (index? increases by one for each INFC)
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const DIALUNK &other) const;
             bool operator !=(const DIALUNK &other) const;
@@ -39,8 +41,10 @@ class DIALRecord : public FNVRecord //Dialog Topic
 
         struct DIALQSTI
             {
-            OptSimpleSubRecord<FORMID> QSTI; //Quest
-            std::vector<DIALUNK *> Unknown; //Unknown
+            ReqSimpleSubRecord<FORMID> QSTI; //Quest
+            UnorderedSparseArray<DIALUNK *> Unknown; //Unknown
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const DIALQSTI &other) const;
             bool operator !=(const DIALQSTI &other) const;
@@ -48,8 +52,10 @@ class DIALRecord : public FNVRecord //Dialog Topic
 
         struct DIALQSTR
             {
-            OptSimpleSubRecord<FORMID> QSTR; //Quest
-            std::vector<DIALUNK *> Unknown; //Unknown
+            ReqSimpleSubRecord<FORMID> QSTR; //Quest
+            UnorderedSparseArray<DIALUNK *> Unknown; //Unknown
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const DIALQSTR &other) const;
             bool operator !=(const DIALQSTR &other) const;
@@ -81,17 +87,17 @@ class DIALRecord : public FNVRecord //Dialog Topic
 
         enum flagsFlags
             {
-            fIsRumors   = 0x00000001,
-            fIsTopLevel = 0x00000002
+            fIsRumors   = 0x01,
+            fIsTopLevel = 0x02
             };
     public:
         StringRecord EDID; //Editor ID
-        std::vector<ReqSubRecord<DIALQSTI> *> QSTI; //Added Quests
-        std::vector<ReqSubRecord<DIALQSTR> *> QSTR; //Removed Quests
+        UnorderedSparseArray<DIALQSTI *> QSTI; //Added Quests
+        UnorderedSparseArray<DIALQSTR *> QSTR; //Removed Quests
         StringRecord FULL; //Name
         OptSimpleFloatSubRecord<flt_0> PNAM; //Priority
         StringRecord TDUM; //Unknown
-        OptSubRecord<DIALDATA> DATA; //Dialog Data
+        ReqSubRecord<DIALDATA> DATA; //Dialog Data
         std::vector<Record *> INFO;
 
         DIALRecord(unsigned char *_recData=NULL);

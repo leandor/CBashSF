@@ -3827,6 +3827,191 @@ class FnvLANDRecord(FnvBaseRecord):
                                         'colors_list', 'baseTextures_list', 'alphaLayers_list',
                                         'vertexTextures_list'] #'data_p',
 
+class FnvINFORecord(FnvBaseRecord):
+    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
+        self._ParentID = ParentID
+
+    _Type = 'INFO'
+    class Response(ListComponent):
+        emotionType = CBashGeneric_LIST(1, c_ulong)
+        emotionValue = CBashGeneric_LIST(2, c_long)
+        unused1 = CBashUINT8ARRAY_LIST(3, 4)
+        responseNum = CBashGeneric_LIST(4, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(5, 3)
+        sound = CBashFORMID_LIST(6)
+        flags = CBashGeneric_LIST(7, c_ubyte)
+        unused3 = CBashUINT8ARRAY_LIST(8, 3)
+        responseText = CBashSTRING_LIST(9)
+        actorNotes = CBashISTRING_LIST(10)
+        editNotes = CBashISTRING_LIST(11)
+        speakerAnim = CBashFORMID_LIST(12)
+        listenerAnim = CBashFORMID_LIST(13)
+
+        IsUseEmotionAnim = CBashBasicFlag('flags', 0x01)
+
+        IsNeutral = CBashBasicType('emotionType', 0, 'IsAnger')
+        IsAnger = CBashBasicType('emotionType', 1, 'IsNeutral')
+        IsDisgust = CBashBasicType('emotionType', 2, 'IsNeutral')
+        IsFear = CBashBasicType('emotionType', 3, 'IsNeutral')
+        IsSad = CBashBasicType('emotionType', 4, 'IsNeutral')
+        IsHappy = CBashBasicType('emotionType', 5, 'IsNeutral')
+        IsSurprise = CBashBasicType('emotionType', 6, 'IsNeutral')
+        IsPained = CBashBasicType('emotionType', 7, 'IsNeutral')
+        exportattrs = copyattrs = ['emotionType', 'emotionValue', 'responseNum',
+                                   'sound', 'flags', 'responseText', 'actorNotes',
+                                   'editNotes', 'speakerAnim', 'listenerAnim']
+
+    class Var(ListComponent):
+        index = CBashGeneric_LIST(1, c_ulong)
+        unused1 = CBashUINT8ARRAY_LIST(2, 12)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        unused2 = CBashUINT8ARRAY_LIST(4, 7)
+        name = CBashISTRING_LIST(5)
+
+        IsLongOrShort = CBashBasicFlag('flags', 0x00000001)
+        exportattrs = copyattrs = ['index', 'flags', 'name']
+
+    dialType = CBashGeneric(7, c_ubyte)
+    nextSpeaker = CBashGeneric(8, c_ubyte)
+    flags = CBashGeneric(9, c_ushort)
+    quest = CBashFORMID(10)
+    topic = CBashFORMID(11)
+    prevInfo = CBashFORMID(12)
+    addTopics = CBashFORMIDARRAY(13)
+
+    def create_response(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 14, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Response(self._CollectionID, self._ModID, self._RecordID, 14, length)
+    responses = CBashLIST(14, Response)
+    responses_list = CBashLIST(14, Response, True)
+
+    def create_condition(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVCondition(self._CollectionID, self._ModID, self._RecordID, 15, length)
+    conditions = CBashLIST(15, FNVCondition)
+    conditions_list = CBashLIST(15, FNVCondition, True)
+
+    choices = CBashFORMIDARRAY(16)
+    linksFrom = CBashFORMIDARRAY(17)
+    unknown = CBashFORMIDARRAY(18)
+    unused1 = CBashUINT8ARRAY(19, 4)
+    numRefs = CBashGeneric(20, c_ulong)
+    compiledSize = CBashGeneric(21, c_ulong)
+    lastIndex = CBashGeneric(22, c_ulong)
+    scriptType = CBashGeneric(23, c_ushort)
+    scriptFlags = CBashGeneric(24, c_ushort)
+    compiled_p = CBashUINT8ARRAY(25)
+    scriptText = CBashISTRING(26)
+
+    def create_var(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 27, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 27, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 27, length)
+    vars = CBashLIST(27, Var)
+    vars_list = CBashLIST(27, Var, True)
+
+    references = CBashFORMID_OR_UINT32_ARRAY(28)
+    unused2 = CBashUINT8ARRAY(29, 4)
+    endNumRefs = CBashGeneric(30, c_ulong)
+    endCompiledSize = CBashGeneric(31, c_ulong)
+    endLastIndex = CBashGeneric(32, c_ulong)
+    endScriptType = CBashGeneric(33, c_ushort)
+    endScriptFlags = CBashGeneric(34, c_ushort)
+    endCompiled_p = CBashUINT8ARRAY(35)
+    endScriptText = CBashISTRING(36)
+
+    def create_endVar(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 37, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 37, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Var(self._CollectionID, self._ModID, self._RecordID, 37, length)
+    endVars = CBashLIST(37, Var)
+    endVars_list = CBashLIST(37, Var, True)
+
+    endReferences = CBashFORMID_OR_UINT32_ARRAY(38)
+    unusedSound = CBashFORMID(39)
+    prompt = CBashSTRING(40)
+    speaker = CBashFORMID(41)
+    actorValueOrPerk = CBashFORMID(42)
+    challengeType = CBashGeneric(43, c_ulong)
+
+    IsGoodbye = CBashBasicFlag('flags', 0x0001)
+    IsRandom = CBashBasicFlag('flags', 0x0002)
+    IsSayOnce = CBashBasicFlag('flags', 0x0004)
+    IsRunImmediately = CBashBasicFlag('flags', 0x0008)
+    IsInfoRefusal = CBashBasicFlag('flags', 0x0010)
+    IsRandomEnd = CBashBasicFlag('flags', 0x0020)
+    IsRunForRumors = CBashBasicFlag('flags', 0x0040)
+    IsSpeechChallenge = CBashBasicFlag('flags', 0x0080)
+    IsSayOnceADay = CBashBasicFlag('flags', 0x0100)
+    IsAlwaysDarken = CBashBasicFlag('flags', 0x0200)
+
+    IsBeginEnabled = CBashBasicFlag('scriptFlags', 0x0001)
+
+    IsEndEnabled = CBashBasicFlag('endScriptFlags', 0x0001)
+
+    IsTopic = CBashBasicType('dialType', 0, 'IsConversation')
+    IsConversation = CBashBasicType('dialType', 1, 'IsTopic')
+    IsCombat = CBashBasicType('dialType', 2, 'IsTopic')
+    IsPersuasion = CBashBasicType('dialType', 3, 'IsTopic')
+    IsDetection = CBashBasicType('dialType', 4, 'IsTopic')
+    IsService = CBashBasicType('dialType', 5, 'IsTopic')
+    IsMisc = CBashBasicType('dialType', 6, 'IsTopic')
+    IsRadio = CBashBasicType('dialType', 7, 'IsTopic')
+
+    IsTarget = CBashBasicType('nextSpeaker', 0, 'IsSelf')
+    IsSelf = CBashBasicType('nextSpeaker', 1, 'IsTarget')
+    IsEither = CBashBasicType('nextSpeaker', 2, 'IsTarget')
+
+    IsNone = CBashBasicType('challengeType', 0, 'IsVeryEasy')
+    IsVeryEasy = CBashBasicType('challengeType', 1, 'IsNone')
+    IsEasy = CBashBasicType('challengeType', 2, 'IsNone')
+    IsAverage = CBashBasicType('challengeType', 3, 'IsNone')
+    IsHard = CBashBasicType('challengeType', 4, 'IsNone')
+    IsVeryHard = CBashBasicType('challengeType', 5, 'IsNone')
+
+    IsBeginObject = CBashBasicType('scriptType', 0x0000, 'IsQuest')
+    IsBeginQuest = CBashBasicType('scriptType', 0x0001, 'IsObject')
+    IsBeginEffect = CBashBasicType('scriptType', 0x0100, 'IsObject')
+
+    IsEndObject = CBashBasicType('endScriptType', 0x0000, 'IsQuest')
+    IsEndQuest = CBashBasicType('endScriptType', 0x0001, 'IsObject')
+    IsEndEffect = CBashBasicType('endScriptType', 0x0100, 'IsObject')
+    copyattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
+                                           'quest', 'topic', 'prevInfo',
+                                           'addTopics', 'responses_list',
+                                           'conditions_list', 'choices',
+                                           'linksFrom', 'unknown',
+                                           'numRefs', 'compiledSize',
+                                           'lastIndex', 'scriptType',
+                                           'scriptFlags', 'compiled_p',
+                                           'scriptText', 'vars_list',
+                                           'references', 'endNumRefs',
+                                           'endCompiledSize', 'endLastIndex',
+                                           'endScriptType', 'endScriptFlags',
+                                           'endCompiled_p', 'endScriptText',
+                                           'endVars_list', 'endReferences',
+                                           'prompt', 'speaker',
+                                           'actorValueOrPerk', 'challengeType']
+    exportattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
+                                             'quest', 'topic', 'prevInfo',
+                                             'addTopics', 'responses_list',
+                                             'conditions_list', 'choices',
+                                             'linksFrom', 'unknown',
+                                             'numRefs', 'compiledSize',
+                                             'lastIndex', 'scriptType',
+                                             'scriptFlags',
+                                             'scriptText', 'vars_list',
+                                             'references', 'endNumRefs',
+                                             'endCompiledSize', 'endLastIndex',
+                                             'endScriptType', 'endScriptFlags',
+                                             'endScriptText',
+                                             'endVars_list', 'endReferences',
+                                             'prompt', 'speaker',
+                                             'actorValueOrPerk', 'challengeType']# 'compiled_p','endCompiled_p',
+
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
     def get_value(self):
@@ -8397,8 +8582,64 @@ class FnvWRLDRecord(FnvBaseRecord):
 
 class FnvDIALRecord(FnvBaseRecord):
     _Type = 'DIAL'
+    class Quest(ListComponent):
+        class QuestUnknown(ListX2Component):
+            unknownId = CBashFORMID_LISTX2(1)
+            unknown = CBashGeneric_LISTX2(2, c_long)
+            exportattrs = copyattrs = ['unknownId', 'unknown']
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        quest = CBashFORMID_LIST(1)
+
+        def create_unknown(self):
+            length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 1)
+            CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, 0, 0, 0, 0, 0, c_ulong(length + 1))
+            return self.QuestUnknown(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, 2, length)
+        unknowns = CBashLIST_LIST(2, QuestUnknown)
+        unknowns_list = CBashLIST_LIST(2, QuestUnknown, True)
+
+        exportattrs = copyattrs = ['quest', 'unknowns_list']
+
+    def create_quest(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Quest(self._CollectionID, self._ModID, self._RecordID, 7, length)
+    quests = CBashLIST(7, Quest)
+    quests_list = CBashLIST(7, Quest, True)
+
+    def create_removedQuest(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 8, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.Quest(self._CollectionID, self._ModID, self._RecordID, 8, length)
+    removedQuests = CBashLIST(8, Quest)
+    removedQuests_list = CBashLIST(8, Quest, True)
+
+
+    full = CBashSTRING(9)
+    priority = CBashFLOAT32(10)
+    unknown = CBashSTRING(11)
+    dialType = CBashGeneric(12, c_ubyte)
+    flags = CBashGeneric(13, c_ubyte)
+    def create_INFO(self, EditorID=0, FormID=0):
+        RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast("INFO", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, 0)
+        if(RecordID): return FnvINFORecord(self._CollectionID, self._ModID, RecordID, self._RecordID, 0)
+        return None
+    INFO = CBashSUBRECORDARRAY(14, FnvINFORecord, "INFO", 0)
+
+
+    IsRumors = CBashBasicFlag('flags', 0x01)
+    IsTopLevel = CBashBasicFlag('flags', 0x02)
+
+    IsTopic = CBashBasicType('dialType', 0, 'IsConversation')
+    IsConversation = CBashBasicType('dialType', 1, 'IsTopic')
+    IsCombat = CBashBasicType('dialType', 2, 'IsTopic')
+    IsPersuasion = CBashBasicType('dialType', 3, 'IsTopic')
+    IsDetection = CBashBasicType('dialType', 4, 'IsTopic')
+    IsService = CBashBasicType('dialType', 5, 'IsTopic')
+    IsMisc = CBashBasicType('dialType', 6, 'IsTopic')
+    IsRadio = CBashBasicType('dialType', 7, 'IsTopic')
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['quests_list', 'removedQuests_list',
+                                                         'full', 'priority', 'unknown',
+                                                         'dialType', 'flags']
 
 class FnvQUSTRecord(FnvBaseRecord):
     _Type = 'QUST'
@@ -12211,8 +12452,8 @@ fnv_type_record = dict([('BASE',FnvBaseRecord),(None,None),('',None),
                         ('CLMT',FnvCLMTRecord),('REGN',FnvREGNRecord),('NAVI',FnvNAVIRecord),
                         ('CELL',FnvCELLRecord),('ACHR',FnvACHRRecord),('ACRE',FnvACRERecord),
                         ('REFR',FnvREFRRecord),('PGRE',FnvPGRERecord),('PMIS',FnvPMISRecord),
-                        ('PBEA',FnvPBEARecord),('LAND',FnvLANDRecord),
-                        ('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),('DIAL',FnvDIALRecord),
+                        ('PBEA',FnvPBEARecord),('NAVM',FnvNAVMRecord),('WRLD',FnvWRLDRecord),
+                        ('LAND',FnvLANDRecord),('DIAL',FnvDIALRecord),('INFO',FnvINFORecord),
                         ('QUST',FnvQUSTRecord),('IDLE',FnvIDLERecord),('PACK',FnvPACKRecord),
                         ('CSTY',FnvCSTYRecord),('LSCR',FnvLSCRRecord),('ANIO',FnvANIORecord),
                         ('WATR',FnvWATRRecord),('EFSH',FnvEFSHRecord),('EXPL',FnvEXPLRecord),
@@ -13456,6 +13697,22 @@ class FnvModFile(object):
 
 
     @property
+    def INFOS(self):
+        infos = []
+        for dial in self.DIAL:
+            infos += dial.INFO
+        return infos
+
+    @property
+    def CELLS(self):
+        cells = self.CELL
+        for world in self.WRLD:
+            cell = world.WorldCELL
+            if(cell): cells += [cell]
+            cells += world.CELLS
+        return cells
+
+    @property
     def ACHRS(self):
         achrs = []
         for cell in self.CELL:
@@ -13635,11 +13892,11 @@ class FnvModFile(object):
                      ("IDLM", self.IDLM),("NOTE", self.NOTE),("COBJ", self.COBJ),
                      ("PROJ", self.PROJ),("LVLI", self.LVLI),("WTHR", self.WTHR),
                      ("CLMT", self.CLMT),("REGN", self.REGN),("NAVI", self.NAVI),
-                     ("CELL", self.CELL),("ACHR", self.ACHRS),("ACRE", self.ACRES),
+                     ("CELL", self.CELLS),("ACHR", self.ACHRS),("ACRE", self.ACRES),
                      ("REFR", self.REFRS),("PGRE", self.PGRES),("PMIS", self.PMISS),
                      ("PBEA", self.PBEAS),("PFLA", self.PFLAS),("PCBE", self.PCBES),
-                     ("LAND", self.LANDS),
-                     ("NAVM", self.NAVMS),("WRLD", self.WRLD),("DIAL", self.DIAL),
+                     ("NAVM", self.NAVMS),("WRLD", self.WRLD),("LAND", self.LANDS),
+                     ("DIAL", self.DIAL),("INFO", self.INFOS),
                      ("QUST", self.QUST),("IDLE", self.IDLE),("PACK", self.PACK),
                      ("CSTY", self.CSTY),("LSCR", self.LSCR),("ANIO", self.ANIO),
                      ("WATR", self.WATR),("EFSH", self.EFSH),("EXPL", self.EXPL),

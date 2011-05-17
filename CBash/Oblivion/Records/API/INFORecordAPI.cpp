@@ -79,7 +79,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             switch(ListFieldID)
                 {
                 case 1: //emotionType
-                    return UINT32_FIELD;
+                    return UINT32_TYPE_FIELD;
                 case 2: //emotionValue
                     return SINT32_FIELD;
                 case 3: //unused1
@@ -530,7 +530,7 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     break;
                 case 3: //compValue
                     CTDA[ListIndex]->value.compValue = *(FLOAT32 *)FieldValue;
-                    break;
+                    return true;
                 case 4: //ifunc
                     CTDA[ListIndex]->value.ifunc = *(UINT32 *)FieldValue;
                     return true;
@@ -647,10 +647,10 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             EDID.Unload();
             return;
         case 5: //dialType
-            DATA.value.dialType = defaultDATA.dialType;
+            SetDialogType(defaultDATA.dialType);
             return;
         case 6: //flags
-            DATA.value.flags = defaultDATA.flags;
+            SetFlagMask(defaultDATA.flags);
             return;
         case 7: //quest
             QSTI.Unload();
@@ -679,7 +679,7 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             switch(ListFieldID)
                 {
                 case 1: //emotionType
-                    Responses[ListIndex]->TRDT.value.emotionType = defaultTRDT.emotionType;
+                    Responses[ListIndex]->SetType(defaultTRDT.emotionType);
                     return;
                 case 2: //emotionValue
                     Responses[ListIndex]->TRDT.value.emotionValue = defaultTRDT.emotionValue;

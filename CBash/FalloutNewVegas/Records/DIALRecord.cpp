@@ -24,6 +24,80 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+void DIALRecord::DIALUNK::Write(FileWriter &writer)
+    {
+    WRITE(INFC);
+    WRITE(INFX);
+    }
+
+bool DIALRecord::DIALUNK::operator ==(const DIALUNK &other) const
+    {
+    return (INFC == other.INFC &&
+            INFX == other.INFX);
+    }
+
+bool DIALRecord::DIALUNK::operator !=(const DIALUNK &other) const
+    {
+    return !(*this == other);
+    }
+
+void DIALRecord::DIALQSTI::Write(FileWriter &writer)
+    {
+    WRITE(QSTI);
+    Unknown.Write(writer);
+    }
+
+bool DIALRecord::DIALQSTI::operator ==(const DIALQSTI &other) const
+    {
+    return (QSTI == other.QSTI &&
+            Unknown == other.Unknown);
+    }
+
+bool DIALRecord::DIALQSTI::operator !=(const DIALQSTI &other) const
+    {
+    return !(*this == other);
+    }
+
+void DIALRecord::DIALQSTR::Write(FileWriter &writer)
+    {
+    WRITE(QSTR);
+    Unknown.Write(writer);
+    }
+
+bool DIALRecord::DIALQSTR::operator ==(const DIALQSTR &other) const
+    {
+    return (QSTR == other.QSTR &&
+            Unknown == other.Unknown);
+    }
+
+bool DIALRecord::DIALQSTR::operator !=(const DIALQSTR &other) const
+    {
+    return !(*this == other);
+    }
+
+DIALRecord::DIALDATA::DIALDATA():
+    dialType(0),
+    flags(0)
+    {
+    //
+    }
+
+DIALRecord::DIALDATA::~DIALDATA()
+    {
+    //
+    }
+
+bool DIALRecord::DIALDATA::operator ==(const DIALDATA &other) const
+    {
+    return (dialType == other.dialType &&
+            flags == other.flags);
+    }
+
+bool DIALRecord::DIALDATA::operator !=(const DIALDATA &other) const
+    {
+    return !(*this == other);
+    }
+
 DIALRecord::DIALRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -52,8 +126,6 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
 
     EDID = srcRecord->EDID;
     QSTI = srcRecord->QSTI;
-    INFC = srcRecord->INFC;
-    INFX = srcRecord->INFX;
     QSTR = srcRecord->QSTR;
     FULL = srcRecord->FULL;
     PNAM = srcRecord->PNAM;
@@ -64,7 +136,33 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
 
 DIALRecord::~DIALRecord()
     {
-    //
+    for(UINT32 x = 0; x < INFO.size(); x++)
+        delete INFO[x];
+    }
+
+bool DIALRecord::HasSubRecords()
+    {
+    return true;
+    }
+
+bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
+    {
+    bool stop;
+
+    if(RecordType == NULL || RecordType == REV32(INFO))
+        for(UINT32 x = 0; x < INFO.size();++x)
+            {
+            stop = op.Accept(INFO[x]);
+            if(INFO[x] == NULL)
+                {
+                INFO.erase(INFO.begin() + x);
+                --x;
+                }
+            if(stop)
+                return stop;
+            }
+
+    return op.Stop();
     }
 
 bool DIALRecord::VisitFormIDs(FormIDOp &op)
@@ -72,158 +170,140 @@ bool DIALRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    if(QSTI.IsLoaded())
-        op.Accept(QSTI->value);
-    if(INFC.IsLoaded())
-        op.Accept(INFC->value);
-    if(QSTR.IsLoaded())
-        op.Accept(QSTR->value);
+    for(UINT32 ListIndex = 0; ListIndex < QSTI.value.size(); ListIndex++)
+        {
+        op.Accept(QSTI.value[ListIndex]->QSTI.value);
+        for(UINT32 ListX2Index = 0; ListX2Index < QSTI.value[ListIndex]->Unknown.value.size(); ListX2Index++)
+            op.Accept(QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value);
+        }
+    for(UINT32 ListIndex = 0; ListIndex < QSTR.value.size(); ListIndex++)
+        {
+        op.Accept(QSTR.value[ListIndex]->QSTR.value);
+        for(UINT32 ListX2Index = 0; ListX2Index < QSTR.value[ListIndex]->Unknown.value.size(); ListX2Index++)
+            op.Accept(QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value);
+        }
 
     return op.Stop();
     }
 
 bool DIALRecord::IsTopic()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eTopic);
+    return (DATA.value.dialType == eTopic);
     }
 
 void DIALRecord::IsTopic(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eTopic : eDummyDefault;
+    DATA.value.dialType = value ? eTopic : eConversation;
     }
 
 bool DIALRecord::IsConversation()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eConversation);
+    return (DATA.value.dialType == eConversation);
     }
 
 void DIALRecord::IsConversation(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eConversation : eDummyDefault;
+    DATA.value.dialType = value ? eConversation : eTopic;
     }
 
 bool DIALRecord::IsCombat()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eCombat);
+    return (DATA.value.dialType == eCombat);
     }
 
 void DIALRecord::IsCombat(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eCombat : eDummyDefault;
+    DATA.value.dialType = value ? eCombat : eTopic;
     }
 
 bool DIALRecord::IsPersuasion()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == ePersuasion);
+    return (DATA.value.dialType == ePersuasion);
     }
 
 void DIALRecord::IsPersuasion(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? ePersuasion : eDummyDefault;
+    DATA.value.dialType = value ? ePersuasion : eTopic;
     }
 
 bool DIALRecord::IsDetection()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eDetection);
+    return (DATA.value.dialType == eDetection);
     }
 
 void DIALRecord::IsDetection(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eDetection : eDummyDefault;
+    DATA.value.dialType = value ? eDetection : eTopic;
     }
 
 bool DIALRecord::IsService()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eService);
+    return (DATA.value.dialType == eService);
     }
 
 void DIALRecord::IsService(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eService : eDummyDefault;
+    DATA.value.dialType = value ? eService : eTopic;
     }
 
 bool DIALRecord::IsMisc()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMisc);
+    return (DATA.value.dialType == eMisc);
     }
 
 void DIALRecord::IsMisc(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMisc : eDummyDefault;
+    DATA.value.dialType = value ? eMisc : eTopic;
     }
 
 bool DIALRecord::IsRadio()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRadio);
+    return (DATA.value.dialType == eRadio);
     }
 
 void DIALRecord::IsRadio(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRadio : eDummyDefault;
+    DATA.value.dialType = value ? eRadio : eTopic;
     }
 
 bool DIALRecord::IsType(UINT8 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return DATA.value.dialType == Type;
     }
 
 void DIALRecord::SetType(UINT8 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value.dialType = Type;
     }
 
 bool DIALRecord::IsRumors()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsRumors) != 0;
+    return (DATA.value.flags & fIsRumors) != 0;
     }
 
 void DIALRecord::IsRumors(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsRumors) : (Dummy->flags & ~fIsRumors);
+    DATA.value.flags = value ? (DATA.value.flags | fIsRumors) : (DATA.value.flags & ~fIsRumors);
     }
 
 bool DIALRecord::IsTopLevel()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsTopLevel) != 0;
+    return (DATA.value.flags & fIsTopLevel) != 0;
     }
 
 void DIALRecord::IsTopLevel(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsTopLevel) : (Dummy->flags & ~fIsTopLevel);
+    DATA.value.flags = value ? (DATA.value.flags | fIsTopLevel) : (DATA.value.flags & ~fIsTopLevel);
     }
 
 bool DIALRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((DATA.value.flags & Mask) == Mask) : ((DATA.value.flags & Mask) != 0);
     }
 
 void DIALRecord::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    DATA.value.flags = Mask;
     }
 
 UINT32 DIALRecord::GetType()
@@ -241,6 +321,7 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
+    UINT32 lastChunk = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -262,16 +343,74 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case REV32(QSTI):
-                QSTI.Read(buffer, subSize, curPos);
+                QSTI.value.push_back(new DIALQSTI);
+                QSTI.value.back()->QSTI.Read(buffer, subSize, curPos);
+                lastChunk = REV32(QSTI);
                 break;
             case REV32(INFC):
-                INFC.Read(buffer, subSize, curPos);
+                switch(lastChunk)
+                    {
+                    case REV32(QSTI):
+                        if(QSTI.value.size() == 0)
+                            QSTI.value.push_back(new DIALQSTI);
+                        QSTI.value.back()->Unknown.value.push_back(new DIALUNK);
+                        QSTI.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize, curPos);
+                        break;
+                    case REV32(QSTR):
+                        if(QSTR.value.size() == 0)
+                            QSTR.value.push_back(new DIALQSTR);
+                        QSTR.value.back()->Unknown.value.push_back(new DIALUNK);
+                        QSTR.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize, curPos);
+                        break;
+                    default:
+                        //Occurs a limited number of times in FalloutNV.esm
+                        //Presumably the CS was broken when writing these records at some point
+                        //May not be ideal to junk them, but not much else can be done while their use is unknown
+                        curPos += subSize;
+                        break;
+                        //printf("  DIAL: %08X - Unexpected INFC chunk\n", formID);
+                        //CBASH_CHUNK_DEBUG
+                        //printf("  Size = %i\n", subSize);
+                        //printf("  CurPos = %04x\n\n", curPos - 6);
+                        //curPos += subSize;
+                        //break;
+                    }
                 break;
             case REV32(INFX):
-                INFX.Read(buffer, subSize, curPos);
+                switch(lastChunk)
+                    {
+                    case REV32(QSTI):
+                        if(QSTI.value.size() == 0)
+                            QSTI.value.push_back(new DIALQSTI);
+                        if(QSTI.value.back()->Unknown.value.size() == 0)
+                            QSTI.value.back()->Unknown.value.push_back(new DIALUNK);
+                        QSTI.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize, curPos);
+                        break;
+                    case REV32(QSTR):
+                        if(QSTR.value.size() == 0)
+                            QSTR.value.push_back(new DIALQSTR);
+                        if(QSTR.value.back()->Unknown.value.size() == 0)
+                            QSTR.value.back()->Unknown.value.push_back(new DIALUNK);
+                        QSTR.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize, curPos);
+                        break;
+                    default:
+                        //Occurs a limited number of times in FalloutNV.esm
+                        //Presumably the CS was broken when writing these records at some point
+                        //May not be ideal to junk them, but not much else can be done while their use is unknown
+                        curPos += subSize;
+                        break;
+                        //printf("  DIAL: %08X - Unexpected INFX chunk\n", formID);
+                        //CBASH_CHUNK_DEBUG
+                        //printf("  Size = %i\n", subSize);
+                        //printf("  CurPos = %04x\n\n", curPos - 6);
+                        //curPos += subSize;
+                        //break;
+                    }
                 break;
             case REV32(QSTR):
-                QSTR.Read(buffer, subSize, curPos);
+                QSTR.value.push_back(new DIALQSTR);
+                QSTR.value.back()->QSTR.Read(buffer, subSize, curPos);
+                lastChunk = REV32(QSTR);
                 break;
             case REV32(FULL):
                 FULL.Read(buffer, subSize, curPos);
@@ -288,6 +427,7 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  DIAL: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
                 printf("  Size = %i\n", subSize);
                 printf("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
@@ -301,10 +441,9 @@ SINT32 DIALRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+    
     EDID.Unload();
     QSTI.Unload();
-    INFC.Unload();
-    INFX.Unload();
     QSTR.Unload();
     FULL.Unload();
     PNAM.Unload();
@@ -316,15 +455,12 @@ SINT32 DIALRecord::Unload()
 SINT32 DIALRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-    WRITE(QSTI);
-    WRITE(INFC);
-    WRITE(INFX);
-    WRITE(QSTR);
+    QSTI.Write(writer);
+    QSTR.Write(writer);
     WRITE(FULL);
     WRITE(PNAM);
     WRITE(TDUM);
     WRITE(DATA);
-
     return -1;
     }
 
@@ -332,12 +468,10 @@ bool DIALRecord::operator ==(const DIALRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
             QSTI == other.QSTI &&
-            INFC == other.INFC &&
-            INFX == other.INFX &&
             QSTR == other.QSTR &&
             FULL.equals(other.FULL) &&
             PNAM == other.PNAM &&
-            TDUM.equalsi(other.TDUM) &&
+            TDUM.equals(other.TDUM) &&
             DATA == other.DATA);
     }
 

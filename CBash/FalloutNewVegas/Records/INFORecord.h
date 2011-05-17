@@ -32,8 +32,7 @@ class INFORecord : public FNVRecord //Dialog response
             {
             UINT8   dialType; //Type
             UINT8   nextSpeaker; //Next Speaker
-            UINT8   flags1;
-            UINT8   flags2;
+            UINT16  flags;
 
             INFODATA();
             ~INFODATA();
@@ -60,9 +59,9 @@ class INFORecord : public FNVRecord //Dialog response
         struct INFOResponse
             {
             ReqSubRecord<INFOTRDT> TRDT; //Response Data
-            StringRecord NAM1; //Response Text
-            StringRecord NAM2; //Script Notes
-            StringRecord NAM3; //Edits
+            StringRecord NAM1; //Response Text (REQ)
+            StringRecord NAM2; //Script Notes (REQ)
+            StringRecord NAM3; //Edits (REQ)
             OptSimpleSubRecord<FORMID> SNAM; //Speaker Animation
             OptSimpleSubRecord<FORMID> LNAM; //Listener Animation
 
@@ -80,7 +79,7 @@ class INFORecord : public FNVRecord //Dialog response
 
             enum flagsFlags
                 {
-                fIsUseEmotionAnim = 0x00000001
+                fIsUseEmotionAnim = 0x01
                 };
 
             bool   IsNeutral();
@@ -107,6 +106,8 @@ class INFORecord : public FNVRecord //Dialog response
             bool   IsFlagMask(UINT8 Mask, bool Exact=false);
             void   SetFlagMask(UINT8 Mask);
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const INFOResponse &other) const;
             bool operator !=(const INFOResponse &other) const;
             };
@@ -130,22 +131,18 @@ class INFORecord : public FNVRecord //Dialog response
             eEither = 2
             };
 
-        enum flags1Flags
+        enum flagsFlags
             {
-            fIsGoodbye         = 0x00000001,
-            fIsRandom          = 0x00000002,
-            fIsSayOnce         = 0x00000004,
-            fIsRunImmediately  = 0x00000008,
-            fIsInfoRefusal     = 0x00000010,
-            fIsRandomEnd       = 0x00000020,
-            fIsRunForRumors    = 0x00000040,
-            fIsSpeechChallenge = 0x00000080
-            };
-
-        enum flags2Flags
-            {
-            fIsSayOnceADay  = 0x00000001,
-            fIsAlwaysDarken = 0x00000002
+            fIsGoodbye         = 0x0001,
+            fIsRandom          = 0x0002,
+            fIsSayOnce         = 0x0004,
+            fIsRunImmediately  = 0x0008,
+            fIsInfoRefusal     = 0x0010,
+            fIsRandomEnd       = 0x0020,
+            fIsRunForRumors    = 0x0040,
+            fIsSpeechChallenge = 0x0080,
+            fIsSayOnceADay     = 0x0100,
+            fIsAlwaysDarken    = 0x0200
             };
 
         enum eChallengeLevelType
@@ -157,20 +154,42 @@ class INFORecord : public FNVRecord //Dialog response
             eHard,
             eVeryHard
             };
+
+        enum schrFlags
+            {
+            fIsEnabled = 0x0001
+            };
+
+        enum scriptTypeTypes
+            {
+            eObject = 0x0000,
+            eQuest  = 0x0001,
+            eEffect = 0x0100
+            };
+
     public:
-        OptSubRecord<INFODATA> DATA; //INFO Data
-        OptSimpleSubRecord<FORMID> QSTI; //Quest
+        ReqSubRecord<INFODATA> DATA; //INFO Data
+        ReqSimpleSubRecord<FORMID> QSTI; //Quest
         OptSimpleSubRecord<FORMID> TPIC; //Topic
         OptSimpleSubRecord<FORMID> PNAM; //Previous INFO
-        std::vector<FORMID> NAME; //Topics
-        std::vector<INFOResponse *> Responses; //Responses
-        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+        UnorderedSparseArray<FORMID> NAME; //Topics
+        UnorderedSparseArray<INFOResponse *> Responses; //Responses
+        OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
 
-        std::vector<FORMID> TCLT; //Choices
-        std::vector<FORMID> TCLF; //Link From
-        std::vector<FORMID> TCFU; //Unknown
-        OptSubRecord<FNVMINSCRIPT> Script;
-        OptSubRecord<FNVMINSCRIPT> NextScript;
+        UnorderedSparseArray<FORMID> TCLT; //Choices
+        UnorderedSparseArray<FORMID> TCLF; //Link From
+        UnorderedSparseArray<FORMID> TCFU; //Unknown
+        ReqSubRecord<FNVSCHR> BeginSCHR;
+        RawRecord BeginSCDA;
+        NonNullStringRecord BeginSCTX;
+        OrderedSparseArray<GENVARS *, sortVARS> BeginVARS;
+        OrderedSparseArray<GENSCR_ *> BeginSCR_;
+        //NEXT empty marker (REQ)
+        ReqSubRecord<FNVSCHR> EndSCHR;
+        RawRecord EndSCDA;
+        NonNullStringRecord EndSCTX;
+        OrderedSparseArray<GENVARS *, sortVARS> EndVARS;
+        OrderedSparseArray<GENSCR_ *> EndSCR_;
 
         OptSimpleSubRecord<FORMID> SNDD; //Unused
         StringRecord RNAM; //Prompt
@@ -200,15 +219,22 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsRunForRumors(bool value);
         bool   IsSpeechChallenge();
         void   IsSpeechChallenge(bool value);
-        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagMask(UINT8 Mask);
-
         bool   IsSayOnceADay();
         void   IsSayOnceADay(bool value);
         bool   IsAlwaysDarken();
         void   IsAlwaysDarken(bool value);
-        bool   IsExtraFlagMask(UINT8 Mask, bool Exact=false);
-        void   SetExtraFlagMask(UINT8 Mask);
+        bool   IsFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetFlagMask(UINT16 Mask);
+
+        bool   IsBeginScriptEnabled();
+        void   IsBeginScriptEnabled(bool value);
+        bool   IsBeginScriptFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetBeginScriptFlagMask(UINT16 Mask);
+
+        bool   IsEndScriptEnabled();
+        void   IsEndScriptEnabled(bool value);
+        bool   IsEndScriptFlagMask(UINT16 Mask, bool Exact=false);
+        void   SetEndScriptFlagMask(UINT16 Mask);
 
         bool   IsTopic();
         void   IsTopic(bool value);
@@ -226,8 +252,8 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsMisc(bool value);
         bool   IsRadio();
         void   IsRadio(bool value);
-        bool   IsDialogType(UINT16 Type);
-        void   SetDialogType(UINT16 Type);
+        bool   IsDialogType(UINT8 Type);
+        void   SetDialogType(UINT8 Type);
 
         bool   IsTarget();
         void   IsTarget(bool value);
@@ -252,6 +278,24 @@ class INFORecord : public FNVRecord //Dialog response
         void   IsVeryHard(bool value);
         bool   IsDifficultyType(UINT8 Type);
         void   SetDifficultyType(UINT8 Type);
+
+        bool   IsBeginObject();
+        void   IsBeginObject(bool value);
+        bool   IsBeginQuest();
+        void   IsBeginQuest(bool value);
+        bool   IsBeginEffect();
+        void   IsBeginEffect(bool value);
+        bool   IsBeginType(UINT16 Type);
+        void   SetBeginType(UINT16 Type);
+
+        bool   IsEndObject();
+        void   IsEndObject(bool value);
+        bool   IsEndQuest();
+        void   IsEndQuest(bool value);
+        bool   IsEndEffect();
+        void   IsEndEffect(bool value);
+        bool   IsEndType(UINT16 Type);
+        void   SetEndType(UINT16 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

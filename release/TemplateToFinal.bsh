@@ -165,6 +165,14 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
+SearchAndReplace.setSearchString(" SINT32_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_long)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 SearchAndReplace.setSearchString(" ISTRING_LISTX2MACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LISTX2($2)");
 SearchAndReplace.setBeanShellReplace(false);

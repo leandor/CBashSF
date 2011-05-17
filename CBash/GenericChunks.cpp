@@ -233,8 +233,8 @@ FNVSCHR::FNVSCHR():
     numRefs(0),
     compiledSize(0),
     lastIndex(0),
-    scriptType(0),
-    flags(0)
+    scriptType(0), //Object
+    flags(0x0001) //Enabled
     {
     memset(&unused1[0], 0x00, sizeof(unused1));
     }
@@ -2064,23 +2064,6 @@ bool GENDODT::operator !=(const GENDODT &other) const
     return !(*this == other);
     }
 
-void GENPATROL::Write(FileWriter &writer)
-    {
-    WRITE(XPRD);
-    WRITEEMPTY(XPPA);
-    WRITE(INAM);
-    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
-    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
-    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
-    WRITE(SCHR);
-    WRITE(SCDA);
-    WRITE(SCTX);
-    VARS.Write(writer);
-    SCR_.Write(writer, true);
-    WRITE(TNAM);
-    }
-
 bool GENPATROL::IsScriptEnabled()
     {
     return (SCHR.value.flags & fIsEnabled) != 0;
@@ -2139,6 +2122,23 @@ bool GENPATROL::IsType(UINT16 Type)
 void GENPATROL::SetType(UINT16 Type)
     {
     SCHR.value.scriptType = Type;
+    }
+
+void GENPATROL::Write(FileWriter &writer)
+    {
+    WRITE(XPRD);
+    WRITEEMPTY(XPPA);
+    WRITE(INAM);
+    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    VARS.Write(writer);
+    SCR_.Write(writer, true);
+    WRITE(TNAM);
     }
 
 bool GENPATROL::operator ==(const GENPATROL &other) const

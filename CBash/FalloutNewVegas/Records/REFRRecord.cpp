@@ -1142,7 +1142,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
-    UINT32 lastRecord = 0;
+    UINT32 lastChunk = 0;
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -1181,7 +1181,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case REV32(XPPA):
                 //XPPA, Patrol Script Marker (Empty)
-                lastRecord = REV32(XPPA);
+                lastChunk = REV32(XPPA);
                 break;
             case REV32(INAM):
                 Patrol.Load();
@@ -1221,7 +1221,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 Patrol->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(TNAM):
-                switch(lastRecord)
+                switch(lastChunk)
                     {
                     case REV32(XPPA):
                         Patrol.Load();
@@ -1232,7 +1232,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         MapData->TNAM.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
+                        printf("  REFR: %08X - Unexpected FULL chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
@@ -1318,13 +1318,13 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 MapData->WMI1.Read(buffer, subSize, curPos);
                 break;
             case REV32(XMRK):
-                lastRecord = REV32(XMRK);
+                lastChunk = REV32(XMRK);
                 break;
             case REV32(MMRK):
-                lastRecord = REV32(MMRK);
+                lastChunk = REV32(MMRK);
                 break;
             case REV32(FULL):
-                switch(lastRecord)
+                switch(lastChunk)
                     {
                     case REV32(XMRK):
                         MapData.Load();
@@ -1335,7 +1335,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         AudioData->FULL.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  REFR: %08X - Unexpected FULL record\n", formID);
+                        printf("  REFR: %08X - Unexpected FULL chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
