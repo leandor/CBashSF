@@ -28,27 +28,20 @@ namespace FNV
 class DEBRRecord : public FNVRecord //Debris
     {
     private:
-        struct DEBRDATA
+        struct DEBRModel
             {
             UINT8   percentage;
-            STRING  MODL;
+            STRING  modPath;
             UINT8   flags;
 
-            DEBRDATA();
-            ~DEBRDATA();
+            RawRecord MODT;
 
-            bool operator ==(const DEBRDATA &other) const;
-            bool operator !=(const DEBRDATA &other) const;
-            };
-
-        struct DEBRModel // Model
-            {
-            ReqSubRecord<DEBRDATA> DATA; // Data
-            RawRecord MODT; //Texture Files Hashes
+            DEBRModel();
+            ~DEBRModel();
 
             enum flagsFlags
                 {
-                fIsHasCollisionData = 0x00000001
+                fIsHasCollisionData = 0x01
                 };
 
             bool   IsHasCollisionData();
@@ -56,19 +49,40 @@ class DEBRRecord : public FNVRecord //Debris
             bool   IsFlagMask(UINT8 Mask, bool Exact=false);
             void   SetFlagMask(UINT8 Mask);
 
+            bool   Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+            void   Write(FileWriter &writer);
+
             bool   operator ==(const DEBRModel &other) const;
             bool   operator !=(const DEBRModel &other) const;
             };
 
+        struct DEBRModels
+            {
+            std::vector<DEBRModel *> MODS;
+
+            DEBRModels();
+            ~DEBRModels();
+
+            bool IsLoaded() const;
+            void Load();
+            void Unload();
+
+            void resize(UINT32 newSize);
+
+            void Write(FileWriter &writer);
+
+            DEBRModels& operator = (const DEBRModels &rhs);
+            bool operator ==(const DEBRModels &other) const;
+            bool operator !=(const DEBRModels &other) const;
+            };
+
     public:
         StringRecord EDID; //Editor ID
-        std::vector<DEBRModel *> Models; //Models
+        DEBRModels Models; //Models
 
         DEBRRecord(unsigned char *_recData=NULL);
         DEBRRecord(DEBRRecord *srcRecord);
         ~DEBRRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

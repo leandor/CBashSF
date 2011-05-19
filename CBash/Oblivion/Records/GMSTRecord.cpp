@@ -64,7 +64,7 @@ bool GMSTRecord::GMSTDATA::operator ==(const GMSTDATA &other) const
     switch(format)
         {
         case 's':
-            return strcmp(s, other.s) == 0;
+            return cmps(s, other.s) == 0;
         case 'i':
             return i == other.i;
         case 'f':
@@ -114,9 +114,12 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
             DATA.i = srcRecord->DATA.i;
             break;
         case 's':
-            vSize = (UINT32)strlen(srcRecord->DATA.s) + 1;
-            DATA.s = new char [vSize];
-            strcpy_s(DATA.s, vSize, srcRecord->DATA.s);
+            if(srcRecord->DATA.s != NULL)
+                {
+                vSize = (UINT32)strlen(srcRecord->DATA.s) + 1;
+                DATA.s = new char [vSize];
+                strcpy_s(DATA.s, vSize, srcRecord->DATA.s);
+                }
             break;
         default:
             break;

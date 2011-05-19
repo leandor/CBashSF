@@ -60,15 +60,15 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //icon Fill Texture
+        case 7: //fillPath
             return ISTRING_FIELD;
-        case 8: //ico2 Particle Shader Texture
+        case 8: //particlePath
             return ISTRING_FIELD;
-        case 9: //nam7 Holes Texture
+        case 9: //holesPath
             return ISTRING_FIELD;
-        case 10: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 11: //data_p DATA ,, Struct
+        case 10: //flags
+            return UINT8_FLAG_FIELD;
+        case 11: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -79,19 +79,19 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 12: //data DATA ,, Struct
+        case 12: //memSBlend
             return UINT32_FIELD;
-        case 13: //data DATA ,, Struct
+        case 13: //memBlendOp
             return UINT32_FIELD;
-        case 14: //data DATA ,, Struct
+        case 14: //memZFunc
             return UINT32_FIELD;
-        case 15: //data DATA ,, Struct
+        case 15: //fill.red
             return UINT8_FIELD;
-        case 16: //data DATA ,, Struct
+        case 16: //fill.green
             return UINT8_FIELD;
-        case 17: //data DATA ,, Struct
+        case 17: //fill.blue
             return UINT8_FIELD;
-        case 18: //data_p DATA ,, Struct
+        case 18: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -102,31 +102,31 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 19: //data DATA ,, Struct
+        case 19: //fillAIn
             return FLOAT32_FIELD;
-        case 20: //data DATA ,, Struct
+        case 20: //fillAFull
             return FLOAT32_FIELD;
-        case 21: //data DATA ,, Struct
+        case 21: //fillAOut
             return FLOAT32_FIELD;
-        case 22: //data DATA ,, Struct
+        case 22: //fillAPRatio
             return FLOAT32_FIELD;
-        case 23: //data DATA ,, Struct
+        case 23: //fillAAmp
             return FLOAT32_FIELD;
-        case 24: //data DATA ,, Struct
+        case 24: //fillAFreq
             return FLOAT32_FIELD;
-        case 25: //data DATA ,, Struct
+        case 25: //fillAnimSpdU
             return FLOAT32_FIELD;
-        case 26: //data DATA ,, Struct
+        case 26: //fillAnimSpdV
             return FLOAT32_FIELD;
-        case 27: //data DATA ,, Struct
+        case 27: //edgeEffOff
             return FLOAT32_FIELD;
-        case 28: //data DATA ,, Struct
+        case 28: //edgeEff.red
             return UINT8_FIELD;
-        case 29: //data DATA ,, Struct
+        case 29: //edgeEff.green
             return UINT8_FIELD;
-        case 30: //data DATA ,, Struct
+        case 30: //edgeEff.blue
             return UINT8_FIELD;
-        case 31: //data_p DATA ,, Struct
+        case 31: //unused3
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -137,77 +137,77 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 32: //data DATA ,, Struct
+        case 32: //edgeEffAIn
             return FLOAT32_FIELD;
-        case 33: //data DATA ,, Struct
+        case 33: //edgeEffAFull
             return FLOAT32_FIELD;
-        case 34: //data DATA ,, Struct
+        case 34: //edgeEffAOut
             return FLOAT32_FIELD;
-        case 35: //data DATA ,, Struct
+        case 35: //edgeEffAPRatio
             return FLOAT32_FIELD;
-        case 36: //data DATA ,, Struct
+        case 36: //edgeEffAAmp
             return FLOAT32_FIELD;
-        case 37: //data DATA ,, Struct
+        case 37: //edgeEffAFreq
             return FLOAT32_FIELD;
-        case 38: //data DATA ,, Struct
+        case 38: //fillAFRatio
             return FLOAT32_FIELD;
-        case 39: //data DATA ,, Struct
+        case 39: //edgeEffAFRatio
             return FLOAT32_FIELD;
-        case 40: //data DATA ,, Struct
+        case 40: //memDBlend
             return UINT32_FIELD;
-        case 41: //data DATA ,, Struct
+        case 41: //partSBlend
             return UINT32_FIELD;
-        case 42: //data DATA ,, Struct
+        case 42: //partBlendOp
             return UINT32_FIELD;
-        case 43: //data DATA ,, Struct
+        case 43: //partZFunc
             return UINT32_FIELD;
-        case 44: //data DATA ,, Struct
+        case 44: //partDBlend
             return UINT32_FIELD;
-        case 45: //data DATA ,, Struct
+        case 45: //partBUp
             return FLOAT32_FIELD;
-        case 46: //data DATA ,, Struct
+        case 46: //partBFull
             return FLOAT32_FIELD;
-        case 47: //data DATA ,, Struct
+        case 47: //partBDown
             return FLOAT32_FIELD;
-        case 48: //data DATA ,, Struct
+        case 48: //partBFRatio
             return FLOAT32_FIELD;
-        case 49: //data DATA ,, Struct
+        case 49: //partBPRatio
             return FLOAT32_FIELD;
-        case 50: //data DATA ,, Struct
+        case 50: //partLTime
             return FLOAT32_FIELD;
-        case 51: //data DATA ,, Struct
+        case 51: //partLDelta
             return FLOAT32_FIELD;
-        case 52: //data DATA ,, Struct
+        case 52: //partNSpd
             return FLOAT32_FIELD;
-        case 53: //data DATA ,, Struct
+        case 53: //partNAcc
             return FLOAT32_FIELD;
-        case 54: //data DATA ,, Struct
+        case 54: //partVel1
             return FLOAT32_FIELD;
-        case 55: //data DATA ,, Struct
+        case 55: //partVel2
             return FLOAT32_FIELD;
-        case 56: //data DATA ,, Struct
+        case 56: //partVel3
             return FLOAT32_FIELD;
-        case 57: //data DATA ,, Struct
+        case 57: //partAcc1
             return FLOAT32_FIELD;
-        case 58: //data DATA ,, Struct
+        case 58: //partAcc2
             return FLOAT32_FIELD;
-        case 59: //data DATA ,, Struct
+        case 59: //partAcc3
             return FLOAT32_FIELD;
-        case 60: //data DATA ,, Struct
+        case 60: //partKey1
             return FLOAT32_FIELD;
-        case 61: //data DATA ,, Struct
+        case 61: //partKey2
             return FLOAT32_FIELD;
-        case 62: //data DATA ,, Struct
+        case 62: //partKey1Time
             return FLOAT32_FIELD;
-        case 63: //data DATA ,, Struct
+        case 63: //partKey2Time
             return FLOAT32_FIELD;
-        case 64: //data DATA ,, Struct
+        case 64: //key1.red
             return UINT8_FIELD;
-        case 65: //data DATA ,, Struct
+        case 65: //key1.green
             return UINT8_FIELD;
-        case 66: //data DATA ,, Struct
+        case 66: //key1.blue
             return UINT8_FIELD;
-        case 67: //data_p DATA ,, Struct
+        case 67: //unused4
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -218,13 +218,13 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 68: //data DATA ,, Struct
+        case 68: //key2.red
             return UINT8_FIELD;
-        case 69: //data DATA ,, Struct
+        case 69: //key2.green
             return UINT8_FIELD;
-        case 70: //data DATA ,, Struct
+        case 70: //key2.blue
             return UINT8_FIELD;
-        case 71: //data_p DATA ,, Struct
+        case 71: //unused5
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -235,13 +235,13 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 72: //data DATA ,, Struct
+        case 72: //key3.red
             return UINT8_FIELD;
-        case 73: //data DATA ,, Struct
+        case 73: //key3.green
             return UINT8_FIELD;
-        case 74: //data DATA ,, Struct
+        case 74: //key3.blue
             return UINT8_FIELD;
-        case 75: //data_p DATA ,, Struct
+        case 75: //unused6
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -252,47 +252,47 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 76: //data DATA ,, Struct
+        case 76: //key1A
             return FLOAT32_FIELD;
-        case 77: //data DATA ,, Struct
+        case 77: //key2A
             return FLOAT32_FIELD;
-        case 78: //data DATA ,, Struct
+        case 78: //key3A
             return FLOAT32_FIELD;
-        case 79: //data DATA ,, Struct
+        case 79: //key1Time
             return FLOAT32_FIELD;
-        case 80: //data DATA ,, Struct
+        case 80: //key2Time
             return FLOAT32_FIELD;
-        case 81: //data DATA ,, Struct
+        case 81: //key3Time
             return FLOAT32_FIELD;
-        case 82: //data DATA ,, Struct
+        case 82: //partInitSpd
             return FLOAT32_FIELD;
-        case 83: //data DATA ,, Struct
+        case 83: //partInitRot
             return FLOAT32_FIELD;
-        case 84: //data DATA ,, Struct
+        case 84: //partInitRotDelta
             return FLOAT32_FIELD;
-        case 85: //data DATA ,, Struct
+        case 85: //partRotSpd
             return FLOAT32_FIELD;
-        case 86: //data DATA ,, Struct
+        case 86: //partRotDelta
             return FLOAT32_FIELD;
-        case 87: //data DATA ,, Struct
+        case 87: //addon
             return FORMID_FIELD;
-        case 88: //data DATA ,, Struct
+        case 88: //holesSTime
             return FLOAT32_FIELD;
-        case 89: //data DATA ,, Struct
+        case 89: //holesETime
             return FLOAT32_FIELD;
-        case 90: //data DATA ,, Struct
+        case 90: //holesSValue
             return FLOAT32_FIELD;
-        case 91: //data DATA ,, Struct
+        case 91: //holesEValue
             return FLOAT32_FIELD;
-        case 92: //data DATA ,, Struct
+        case 92: //edgeWidth
             return FLOAT32_FIELD;
-        case 93: //data DATA ,, Struct
+        case 93: //edge.red
             return UINT8_FIELD;
-        case 94: //data DATA ,, Struct
+        case 94: //edge.green
             return UINT8_FIELD;
-        case 95: //data DATA ,, Struct
+        case 95: //edge.blue
             return UINT8_FIELD;
-        case 96: //data_p DATA ,, Struct
+        case 96: //unused7
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -303,23 +303,23 @@ UINT32 EFSHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 97: //data DATA ,, Struct
+        case 97: //explWindSpd
             return FLOAT32_FIELD;
-        case 98: //data DATA ,, Struct
+        case 98: //textCountU
             return UINT32_FIELD;
-        case 99: //data DATA ,, Struct
+        case 99: //textCountV
             return UINT32_FIELD;
-        case 100: //data DATA ,, Struct
+        case 100: //addonFITime
             return FLOAT32_FIELD;
-        case 101: //data DATA ,, Struct
+        case 101: //addonFOTime
             return FLOAT32_FIELD;
-        case 102: //data DATA ,, Struct
+        case 102: //addonScaleStart
             return FLOAT32_FIELD;
-        case 103: //data DATA ,, Struct
+        case 103: //addonScaleEnd
             return FLOAT32_FIELD;
-        case 104: //data DATA ,, Struct
+        case 104: //addonScaleInTime
             return FLOAT32_FIELD;
-        case 105: //data DATA ,, Struct
+        case 105: //addonScaleOutTime
             return FLOAT32_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -345,211 +345,211 @@ void * EFSHRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //icon Fill Texture
+        case 7: //fillPath
             return ICON.value;
-        case 8: //ico2 Particle Shader Texture
+        case 8: //particlePath
             return ICO2.value;
-        case 9: //nam7 Holes Texture
+        case 9: //holesPath
             return NAM7.value;
-        case 10: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value10 : NULL;
-        case 11: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value11[0] : NULL;
+        case 10: //flags
+            return &DATA.value.flags;
+        case 11: //unused1
+            *FieldValues = &DATA.value.unused1[0];
             return NULL;
-        case 12: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value12 : NULL;
-        case 13: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value13 : NULL;
-        case 14: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
-        case 15: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value15 : NULL;
-        case 16: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value16 : NULL;
-        case 17: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value17 : NULL;
-        case 18: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value18[0] : NULL;
+        case 12: //memSBlend
+            return &DATA.value.memSBlend;
+        case 13: //memBlendOp
+            return &DATA.value.memBlendOp;
+        case 14: //memZFunc
+            return &DATA.value.memZFunc;
+        case 15: //fill.red
+            return &DATA.value.fill.red;
+        case 16: //fill.green
+            return &DATA.value.fill.green;
+        case 17: //fill.blue
+            return &DATA.value.fill.blue;
+        case 18: //unused2
+            *FieldValues = &DATA.value.fill.unused1;
             return NULL;
-        case 19: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value19 : NULL;
-        case 20: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value20 : NULL;
-        case 21: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value21 : NULL;
-        case 22: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value22 : NULL;
-        case 23: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value23 : NULL;
-        case 24: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value24 : NULL;
-        case 25: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value25 : NULL;
-        case 26: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value26 : NULL;
-        case 27: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value27 : NULL;
-        case 28: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value28 : NULL;
-        case 29: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value29 : NULL;
-        case 30: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value30 : NULL;
-        case 31: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value31[0] : NULL;
+        case 19: //fillAIn
+            return &DATA.value.fillAIn;
+        case 20: //fillAFull
+            return &DATA.value.fillAFull;
+        case 21: //fillAOut
+            return &DATA.value.fillAOut;
+        case 22: //fillAPRatio
+            return &DATA.value.fillAPRatio;
+        case 23: //fillAAmp
+            return &DATA.value.fillAAmp;
+        case 24: //fillAFreq
+            return &DATA.value.fillAFreq;
+        case 25: //fillAnimSpdU
+            return &DATA.value.fillAnimSpdU;
+        case 26: //fillAnimSpdV
+            return &DATA.value.fillAnimSpdV;
+        case 27: //edgeEffOff
+            return &DATA.value.edgeEffOff;
+        case 28: //edgeEff.red
+            return &DATA.value.edgeEff.red;
+        case 29: //edgeEff.green
+            return &DATA.value.edgeEff.green;
+        case 30: //edgeEff.blue
+            return &DATA.value.edgeEff.blue;
+        case 31: //unused3
+            *FieldValues = &DATA.value.edgeEff.unused1;
             return NULL;
-        case 32: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value32 : NULL;
-        case 33: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value33 : NULL;
-        case 34: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value34 : NULL;
-        case 35: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value35 : NULL;
-        case 36: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value36 : NULL;
-        case 37: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value37 : NULL;
-        case 38: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value38 : NULL;
-        case 39: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value39 : NULL;
-        case 40: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value40 : NULL;
-        case 41: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value41 : NULL;
-        case 42: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value42 : NULL;
-        case 43: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value43 : NULL;
-        case 44: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value44 : NULL;
-        case 45: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value45 : NULL;
-        case 46: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value46 : NULL;
-        case 47: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value47 : NULL;
-        case 48: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value48 : NULL;
-        case 49: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value49 : NULL;
-        case 50: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value50 : NULL;
-        case 51: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value51 : NULL;
-        case 52: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value52 : NULL;
-        case 53: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value53 : NULL;
-        case 54: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value54 : NULL;
-        case 55: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value55 : NULL;
-        case 56: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value56 : NULL;
-        case 57: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value57 : NULL;
-        case 58: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value58 : NULL;
-        case 59: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value59 : NULL;
-        case 60: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value60 : NULL;
-        case 61: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value61 : NULL;
-        case 62: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value62 : NULL;
-        case 63: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value63 : NULL;
-        case 64: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value64 : NULL;
-        case 65: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value65 : NULL;
-        case 66: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value66 : NULL;
-        case 67: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value67[0] : NULL;
+        case 32: //edgeEffAIn
+            return &DATA.value.edgeEffAIn;
+        case 33: //edgeEffAFull
+            return &DATA.value.edgeEffAFull;
+        case 34: //edgeEffAOut
+            return &DATA.value.edgeEffAOut;
+        case 35: //edgeEffAPRatio
+            return &DATA.value.edgeEffAPRatio;
+        case 36: //edgeEffAAmp
+            return &DATA.value.edgeEffAAmp;
+        case 37: //edgeEffAFreq
+            return &DATA.value.edgeEffAFreq;
+        case 38: //fillAFRatio
+            return &DATA.value.fillAFRatio;
+        case 39: //edgeEffAFRatio
+            return &DATA.value.edgeEffAFRatio;
+        case 40: //memDBlend
+            return &DATA.value.memDBlend;
+        case 41: //partSBlend
+            return &DATA.value.partSBlend;
+        case 42: //partBlendOp
+            return &DATA.value.partBlendOp;
+        case 43: //partZFunc
+            return &DATA.value.partZFunc;
+        case 44: //partDBlend
+            return &DATA.value.partDBlend;
+        case 45: //partBUp
+            return &DATA.value.partBUp;
+        case 46: //partBFull
+            return &DATA.value.partBFull;
+        case 47: //partBDown
+            return &DATA.value.partBDown;
+        case 48: //partBFRatio
+            return &DATA.value.partBFRatio;
+        case 49: //partBPRatio
+            return &DATA.value.partBPRatio;
+        case 50: //partLTime
+            return &DATA.value.partLTime;
+        case 51: //partLDelta
+            return &DATA.value.partLDelta;
+        case 52: //partNSpd
+            return &DATA.value.partNSpd;
+        case 53: //partNAcc
+            return &DATA.value.partNAcc;
+        case 54: //partVel1
+            return &DATA.value.partVel1;
+        case 55: //partVel2
+            return &DATA.value.partVel2;
+        case 56: //partVel3
+            return &DATA.value.partVel3;
+        case 57: //partAcc1
+            return &DATA.value.partAcc1;
+        case 58: //partAcc2
+            return &DATA.value.partAcc2;
+        case 59: //partAcc3
+            return &DATA.value.partAcc3;
+        case 60: //partKey1
+            return &DATA.value.partKey1;
+        case 61: //partKey2
+            return &DATA.value.partKey2;
+        case 62: //partKey1Time
+            return &DATA.value.partKey1Time;
+        case 63: //partKey2Time
+            return &DATA.value.partKey2Time;
+        case 64: //key1.red
+            return &DATA.value.key1.red;
+        case 65: //key1.green
+            return &DATA.value.key1.green;
+        case 66: //key1.blue
+            return &DATA.value.key1.blue;
+        case 67: //unused4
+            *FieldValues = &DATA.value.key1.unused1;
             return NULL;
-        case 68: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value68 : NULL;
-        case 69: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value69 : NULL;
-        case 70: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value70 : NULL;
-        case 71: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value71[0] : NULL;
+        case 68: //key2.red
+            return &DATA.value.key2.red;
+        case 69: //key2.green
+            return &DATA.value.key2.green;
+        case 70: //key2.blue
+            return &DATA.value.key2.blue;
+        case 71: //unused5
+            *FieldValues = &DATA.value.key2.unused1;
             return NULL;
-        case 72: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value72 : NULL;
-        case 73: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value73 : NULL;
-        case 74: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value74 : NULL;
-        case 75: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value75[0] : NULL;
+        case 72: //key3.red
+            return &DATA.value.key3.red;
+        case 73: //key3.green
+            return &DATA.value.key3.green;
+        case 74: //key3.blue
+            return &DATA.value.key3.blue;
+        case 75: //unused6
+            *FieldValues = &DATA.value.key3.unused1;
             return NULL;
-        case 76: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value76 : NULL;
-        case 77: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value77 : NULL;
-        case 78: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value78 : NULL;
-        case 79: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value79 : NULL;
-        case 80: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value80 : NULL;
-        case 81: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value81 : NULL;
-        case 82: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value82 : NULL;
-        case 83: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value83 : NULL;
-        case 84: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value84 : NULL;
-        case 85: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value85 : NULL;
-        case 86: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value86 : NULL;
-        case 87: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value87 : NULL;
-        case 88: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value88 : NULL;
-        case 89: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value89 : NULL;
-        case 90: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value90 : NULL;
-        case 91: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value91 : NULL;
-        case 92: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value92 : NULL;
-        case 93: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value93 : NULL;
-        case 94: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value94 : NULL;
-        case 95: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value95 : NULL;
-        case 96: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value96[0] : NULL;
+        case 76: //key1A
+            return &DATA.value.key1A;
+        case 77: //key2A
+            return &DATA.value.key2A;
+        case 78: //key3A
+            return &DATA.value.key3A;
+        case 79: //key1Time
+            return &DATA.value.key1Time;
+        case 80: //key2Time
+            return &DATA.value.key2Time;
+        case 81: //key3Time
+            return &DATA.value.key3Time;
+        case 82: //partInitSpd
+            return &DATA.value.partInitSpd;
+        case 83: //partInitRot
+            return &DATA.value.partInitRot;
+        case 84: //partInitRotDelta
+            return &DATA.value.partInitRotDelta;
+        case 85: //partRotSpd
+            return &DATA.value.partRotSpd;
+        case 86: //partRotDelta
+            return &DATA.value.partRotDelta;
+        case 87: //addon
+            return &DATA.value.addon;
+        case 88: //holesSTime
+            return &DATA.value.holesSTime;
+        case 89: //holesETime
+            return &DATA.value.holesETime;
+        case 90: //holesSValue
+            return &DATA.value.holesSValue;
+        case 91: //holesEValue
+            return &DATA.value.holesEValue;
+        case 92: //edgeWidth
+            return &DATA.value.edgeWidth;
+        case 93: //edge.red
+            return &DATA.value.edge.red;
+        case 94: //edge.green
+            return &DATA.value.edge.green;
+        case 95: //edge.blue
+            return &DATA.value.edge.blue;
+        case 96: //unused7
+            *FieldValues = &DATA.value.edge.unused1;
             return NULL;
-        case 97: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value97 : NULL;
-        case 98: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value98 : NULL;
-        case 99: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value99 : NULL;
-        case 100: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value100 : NULL;
-        case 101: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value101 : NULL;
-        case 102: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value102 : NULL;
-        case 103: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value103 : NULL;
-        case 104: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value104 : NULL;
-        case 105: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value105 : NULL;
+        case 97: //explWindSpd
+            return &DATA.value.explWindSpd;
+        case 98: //textCountU
+            return &DATA.value.textCountU;
+        case 99: //textCountV
+            return &DATA.value.textCountV;
+        case 100: //addonFITime
+            return &DATA.value.addonFITime;
+        case 101: //addonFOTime
+            return &DATA.value.addonFOTime;
+        case 102: //addonScaleStart
+            return &DATA.value.addonScaleStart;
+        case 103: //addonScaleEnd
+            return &DATA.value.addonScaleEnd;
+        case 104: //addonScaleInTime
+            return &DATA.value.addonScaleInTime;
+        case 105: //addonScaleOutTime
+            return &DATA.value.addonScaleOutTime;
         default:
             return NULL;
         }
@@ -583,414 +583,318 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //icon Fill Texture
+        case 7: //fillPath
             ICON.Copy((STRING)FieldValue);
             break;
-        case 8: //ico2 Particle Shader Texture
+        case 8: //particlePath
             ICO2.Copy((STRING)FieldValue);
             break;
-        case 9: //nam7 Holes Texture
+        case 9: //holesPath
             NAM7.Copy((STRING)FieldValue);
             break;
-        case 10: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value10 = *(UINT8 *)FieldValue;
+        case 10: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 11: //data_p DATA ,, Struct
+        case 11: //unused1
             if(ArraySize != 3)
                 break;
-            DATA.Load();
-            DATA->value11[0] = ((UINT8ARRAY)FieldValue)[0];
-            DATA->value11[1] = ((UINT8ARRAY)FieldValue)[1];
-            DATA->value11[2] = ((UINT8ARRAY)FieldValue)[2];
+            DATA.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 12: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value12 = *(UINT32 *)FieldValue;
+        case 12: //memSBlend
+            DATA.value.memSBlend = *(UINT32 *)FieldValue;
             break;
-        case 13: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value13 = *(UINT32 *)FieldValue;
+        case 13: //memBlendOp
+            DATA.value.memBlendOp = *(UINT32 *)FieldValue;
             break;
-        case 14: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value14 = *(UINT32 *)FieldValue;
+        case 14: //memZFunc
+            DATA.value.memZFunc = *(UINT32 *)FieldValue;
             break;
-        case 15: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value15 = *(UINT8 *)FieldValue;
+        case 15: //fill.red
+            DATA.value.fill.red = *(UINT8 *)FieldValue;
             break;
-        case 16: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value16 = *(UINT8 *)FieldValue;
+        case 16: //fill.green
+            DATA.value.fill.green = *(UINT8 *)FieldValue;
             break;
-        case 17: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value17 = *(UINT8 *)FieldValue;
+        case 17: //fill.blue
+            DATA.value.fill.blue = *(UINT8 *)FieldValue;
             break;
-        case 18: //data_p DATA ,, Struct
+        case 18: //unused2
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value18[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.fill.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 19: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value19 = *(FLOAT32 *)FieldValue;
+        case 19: //fillAIn
+            DATA.value.fillAIn = *(FLOAT32 *)FieldValue;
             break;
-        case 20: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value20 = *(FLOAT32 *)FieldValue;
+        case 20: //fillAFull
+            DATA.value.fillAFull = *(FLOAT32 *)FieldValue;
             break;
-        case 21: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value21 = *(FLOAT32 *)FieldValue;
+        case 21: //fillAOut
+            DATA.value.fillAOut = *(FLOAT32 *)FieldValue;
             break;
-        case 22: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value22 = *(FLOAT32 *)FieldValue;
+        case 22: //fillAPRatio
+            DATA.value.fillAPRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 23: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value23 = *(FLOAT32 *)FieldValue;
+        case 23: //fillAAmp
+            DATA.value.fillAAmp = *(FLOAT32 *)FieldValue;
             break;
-        case 24: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value24 = *(FLOAT32 *)FieldValue;
+        case 24: //fillAFreq
+            DATA.value.fillAFreq = *(FLOAT32 *)FieldValue;
             break;
-        case 25: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value25 = *(FLOAT32 *)FieldValue;
+        case 25: //fillAnimSpdU
+            DATA.value.fillAnimSpdU = *(FLOAT32 *)FieldValue;
             break;
-        case 26: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value26 = *(FLOAT32 *)FieldValue;
+        case 26: //fillAnimSpdV
+            DATA.value.fillAnimSpdV = *(FLOAT32 *)FieldValue;
             break;
-        case 27: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value27 = *(FLOAT32 *)FieldValue;
+        case 27: //edgeEffOff
+            DATA.value.edgeEffOff = *(FLOAT32 *)FieldValue;
             break;
-        case 28: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value28 = *(UINT8 *)FieldValue;
+        case 28: //edgeEff.red
+            DATA.value.edgeEff.red = *(UINT8 *)FieldValue;
             break;
-        case 29: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value29 = *(UINT8 *)FieldValue;
+        case 29: //edgeEff.green
+            DATA.value.edgeEff.green = *(UINT8 *)FieldValue;
             break;
-        case 30: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value30 = *(UINT8 *)FieldValue;
+        case 30: //edgeEff.blue
+            DATA.value.edgeEff.blue = *(UINT8 *)FieldValue;
             break;
-        case 31: //data_p DATA ,, Struct
+        case 31: //unused3
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value31[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.edgeEff.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 32: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value32 = *(FLOAT32 *)FieldValue;
+        case 32: //edgeEffAIn
+            DATA.value.edgeEffAIn = *(FLOAT32 *)FieldValue;
             break;
-        case 33: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value33 = *(FLOAT32 *)FieldValue;
+        case 33: //edgeEffAFull
+            DATA.value.edgeEffAFull = *(FLOAT32 *)FieldValue;
             break;
-        case 34: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value34 = *(FLOAT32 *)FieldValue;
+        case 34: //edgeEffAOut
+            DATA.value.edgeEffAOut = *(FLOAT32 *)FieldValue;
             break;
-        case 35: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value35 = *(FLOAT32 *)FieldValue;
+        case 35: //edgeEffAPRatio
+            DATA.value.edgeEffAPRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 36: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value36 = *(FLOAT32 *)FieldValue;
+        case 36: //edgeEffAAmp
+            DATA.value.edgeEffAAmp = *(FLOAT32 *)FieldValue;
             break;
-        case 37: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value37 = *(FLOAT32 *)FieldValue;
+        case 37: //edgeEffAFreq
+            DATA.value.edgeEffAFreq = *(FLOAT32 *)FieldValue;
             break;
-        case 38: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value38 = *(FLOAT32 *)FieldValue;
+        case 38: //fillAFRatio
+            DATA.value.fillAFRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 39: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value39 = *(FLOAT32 *)FieldValue;
+        case 39: //edgeEffAFRatio
+            DATA.value.edgeEffAFRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 40: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value40 = *(UINT32 *)FieldValue;
+        case 40: //memDBlend
+            DATA.value.memDBlend = *(UINT32 *)FieldValue;
             break;
-        case 41: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value41 = *(UINT32 *)FieldValue;
+        case 41: //partSBlend
+            DATA.value.partSBlend = *(UINT32 *)FieldValue;
             break;
-        case 42: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value42 = *(UINT32 *)FieldValue;
+        case 42: //partBlendOp
+            DATA.value.partBlendOp = *(UINT32 *)FieldValue;
             break;
-        case 43: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value43 = *(UINT32 *)FieldValue;
+        case 43: //partZFunc
+            DATA.value.partZFunc = *(UINT32 *)FieldValue;
             break;
-        case 44: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value44 = *(UINT32 *)FieldValue;
+        case 44: //partDBlend
+            DATA.value.partDBlend = *(UINT32 *)FieldValue;
             break;
-        case 45: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value45 = *(FLOAT32 *)FieldValue;
+        case 45: //partBUp
+            DATA.value.partBUp = *(FLOAT32 *)FieldValue;
             break;
-        case 46: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value46 = *(FLOAT32 *)FieldValue;
+        case 46: //partBFull
+            DATA.value.partBFull = *(FLOAT32 *)FieldValue;
             break;
-        case 47: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value47 = *(FLOAT32 *)FieldValue;
+        case 47: //partBDown
+            DATA.value.partBDown = *(FLOAT32 *)FieldValue;
             break;
-        case 48: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value48 = *(FLOAT32 *)FieldValue;
+        case 48: //partBFRatio
+            DATA.value.partBFRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 49: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value49 = *(FLOAT32 *)FieldValue;
+        case 49: //partBPRatio
+            DATA.value.partBPRatio = *(FLOAT32 *)FieldValue;
             break;
-        case 50: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value50 = *(FLOAT32 *)FieldValue;
+        case 50: //partLTime
+            DATA.value.partLTime = *(FLOAT32 *)FieldValue;
             break;
-        case 51: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value51 = *(FLOAT32 *)FieldValue;
+        case 51: //partLDelta
+            DATA.value.partLDelta = *(FLOAT32 *)FieldValue;
             break;
-        case 52: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value52 = *(FLOAT32 *)FieldValue;
+        case 52: //partNSpd
+            DATA.value.partNSpd = *(FLOAT32 *)FieldValue;
             break;
-        case 53: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value53 = *(FLOAT32 *)FieldValue;
+        case 53: //partNAcc
+            DATA.value.partNAcc = *(FLOAT32 *)FieldValue;
             break;
-        case 54: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value54 = *(FLOAT32 *)FieldValue;
+        case 54: //partVel1
+            DATA.value.partVel1 = *(FLOAT32 *)FieldValue;
             break;
-        case 55: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value55 = *(FLOAT32 *)FieldValue;
+        case 55: //partVel2
+            DATA.value.partVel2 = *(FLOAT32 *)FieldValue;
             break;
-        case 56: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value56 = *(FLOAT32 *)FieldValue;
+        case 56: //partVel3
+            DATA.value.partVel3 = *(FLOAT32 *)FieldValue;
             break;
-        case 57: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value57 = *(FLOAT32 *)FieldValue;
+        case 57: //partAcc1
+            DATA.value.partAcc1 = *(FLOAT32 *)FieldValue;
             break;
-        case 58: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value58 = *(FLOAT32 *)FieldValue;
+        case 58: //partAcc2
+            DATA.value.partAcc2 = *(FLOAT32 *)FieldValue;
             break;
-        case 59: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value59 = *(FLOAT32 *)FieldValue;
+        case 59: //partAcc3
+            DATA.value.partAcc3 = *(FLOAT32 *)FieldValue;
             break;
-        case 60: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value60 = *(FLOAT32 *)FieldValue;
+        case 60: //partKey1
+            DATA.value.partKey1 = *(FLOAT32 *)FieldValue;
             break;
-        case 61: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value61 = *(FLOAT32 *)FieldValue;
+        case 61: //partKey2
+            DATA.value.partKey2 = *(FLOAT32 *)FieldValue;
             break;
-        case 62: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value62 = *(FLOAT32 *)FieldValue;
+        case 62: //partKey1Time
+            DATA.value.partKey1Time = *(FLOAT32 *)FieldValue;
             break;
-        case 63: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value63 = *(FLOAT32 *)FieldValue;
+        case 63: //partKey2Time
+            DATA.value.partKey2Time = *(FLOAT32 *)FieldValue;
             break;
-        case 64: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value64 = *(UINT8 *)FieldValue;
+        case 64: //key1.red
+            DATA.value.key1.red = *(UINT8 *)FieldValue;
             break;
-        case 65: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value65 = *(UINT8 *)FieldValue;
+        case 65: //key1.green
+            DATA.value.key1.green = *(UINT8 *)FieldValue;
             break;
-        case 66: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value66 = *(UINT8 *)FieldValue;
+        case 66: //key1.blue
+            DATA.value.key1.blue = *(UINT8 *)FieldValue;
             break;
-        case 67: //data_p DATA ,, Struct
+        case 67: //unused4
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value67[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.key1.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 68: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value68 = *(UINT8 *)FieldValue;
+        case 68: //key2.red
+            DATA.value.key2.red = *(UINT8 *)FieldValue;
             break;
-        case 69: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value69 = *(UINT8 *)FieldValue;
+        case 69: //key2.green
+            DATA.value.key2.green = *(UINT8 *)FieldValue;
             break;
-        case 70: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value70 = *(UINT8 *)FieldValue;
+        case 70: //key2.blue
+            DATA.value.key2.blue = *(UINT8 *)FieldValue;
             break;
-        case 71: //data_p DATA ,, Struct
+        case 71: //unused5
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value71[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.key2.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 72: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value72 = *(UINT8 *)FieldValue;
+        case 72: //key3.red
+            DATA.value.key3.red = *(UINT8 *)FieldValue;
             break;
-        case 73: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value73 = *(UINT8 *)FieldValue;
+        case 73: //key3.green
+            DATA.value.key3.green = *(UINT8 *)FieldValue;
             break;
-        case 74: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value74 = *(UINT8 *)FieldValue;
+        case 74: //key3.blue
+            DATA.value.key3.blue = *(UINT8 *)FieldValue;
             break;
-        case 75: //data_p DATA ,, Struct
+        case 75: //unused6
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value75[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.key3.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 76: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value76 = *(FLOAT32 *)FieldValue;
+        case 76: //key1A
+            DATA.value.key1A = *(FLOAT32 *)FieldValue;
             break;
-        case 77: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value77 = *(FLOAT32 *)FieldValue;
+        case 77: //key2A
+            DATA.value.key2A = *(FLOAT32 *)FieldValue;
             break;
-        case 78: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value78 = *(FLOAT32 *)FieldValue;
+        case 78: //key3A
+            DATA.value.key3A = *(FLOAT32 *)FieldValue;
             break;
-        case 79: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value79 = *(FLOAT32 *)FieldValue;
+        case 79: //key1Time
+            DATA.value.key1Time = *(FLOAT32 *)FieldValue;
             break;
-        case 80: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value80 = *(FLOAT32 *)FieldValue;
+        case 80: //key2Time
+            DATA.value.key2Time = *(FLOAT32 *)FieldValue;
             break;
-        case 81: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value81 = *(FLOAT32 *)FieldValue;
+        case 81: //key3Time
+            DATA.value.key3Time = *(FLOAT32 *)FieldValue;
             break;
-        case 82: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value82 = *(FLOAT32 *)FieldValue;
+        case 82: //partInitSpd
+            DATA.value.partInitSpd = *(FLOAT32 *)FieldValue;
             break;
-        case 83: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value83 = *(FLOAT32 *)FieldValue;
+        case 83: //partInitRot
+            DATA.value.partInitRot = *(FLOAT32 *)FieldValue;
             break;
-        case 84: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value84 = *(FLOAT32 *)FieldValue;
+        case 84: //partInitRotDelta
+            DATA.value.partInitRotDelta = *(FLOAT32 *)FieldValue;
             break;
-        case 85: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value85 = *(FLOAT32 *)FieldValue;
+        case 85: //partRotSpd
+            DATA.value.partRotSpd = *(FLOAT32 *)FieldValue;
             break;
-        case 86: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value86 = *(FLOAT32 *)FieldValue;
+        case 86: //partRotDelta
+            DATA.value.partRotDelta = *(FLOAT32 *)FieldValue;
             break;
-        case 87: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value87 = *(FORMID *)FieldValue;
+        case 87: //addon
+            DATA.value.addon = *(FORMID *)FieldValue;
             return true;
-        case 88: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value88 = *(FLOAT32 *)FieldValue;
+        case 88: //holesSTime
+            DATA.value.holesSTime = *(FLOAT32 *)FieldValue;
             break;
-        case 89: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value89 = *(FLOAT32 *)FieldValue;
+        case 89: //holesETime
+            DATA.value.holesETime = *(FLOAT32 *)FieldValue;
             break;
-        case 90: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value90 = *(FLOAT32 *)FieldValue;
+        case 90: //holesSValue
+            DATA.value.holesSValue = *(FLOAT32 *)FieldValue;
             break;
-        case 91: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value91 = *(FLOAT32 *)FieldValue;
+        case 91: //holesEValue
+            DATA.value.holesEValue = *(FLOAT32 *)FieldValue;
             break;
-        case 92: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value92 = *(FLOAT32 *)FieldValue;
+        case 92: //edgeWidth
+            DATA.value.edgeWidth = *(FLOAT32 *)FieldValue;
             break;
-        case 93: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value93 = *(UINT8 *)FieldValue;
+        case 93: //edge.red
+            DATA.value.edge.red = *(UINT8 *)FieldValue;
             break;
-        case 94: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value94 = *(UINT8 *)FieldValue;
+        case 94: //edge.green
+            DATA.value.edge.green = *(UINT8 *)FieldValue;
             break;
-        case 95: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value95 = *(UINT8 *)FieldValue;
+        case 95: //edge.blue
+            DATA.value.edge.blue = *(UINT8 *)FieldValue;
             break;
-        case 96: //data_p DATA ,, Struct
+        case 96: //unused7
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value96[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.edge.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 97: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value97 = *(FLOAT32 *)FieldValue;
+        case 97: //explWindSpd
+            DATA.value.explWindSpd = *(FLOAT32 *)FieldValue;
             break;
-        case 98: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value98 = *(UINT32 *)FieldValue;
+        case 98: //textCountU
+            DATA.value.textCountU = *(UINT32 *)FieldValue;
             break;
-        case 99: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value99 = *(UINT32 *)FieldValue;
+        case 99: //textCountV
+            DATA.value.textCountV = *(UINT32 *)FieldValue;
             break;
-        case 100: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value100 = *(FLOAT32 *)FieldValue;
+        case 100: //addonFITime
+            DATA.value.addonFITime = *(FLOAT32 *)FieldValue;
             break;
-        case 101: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value101 = *(FLOAT32 *)FieldValue;
+        case 101: //addonFOTime
+            DATA.value.addonFOTime = *(FLOAT32 *)FieldValue;
             break;
-        case 102: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value102 = *(FLOAT32 *)FieldValue;
+        case 102: //addonScaleStart
+            DATA.value.addonScaleStart = *(FLOAT32 *)FieldValue;
             break;
-        case 103: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value103 = *(FLOAT32 *)FieldValue;
+        case 103: //addonScaleEnd
+            DATA.value.addonScaleEnd = *(FLOAT32 *)FieldValue;
             break;
-        case 104: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value104 = *(FLOAT32 *)FieldValue;
+        case 104: //addonScaleInTime
+            DATA.value.addonScaleInTime = *(FLOAT32 *)FieldValue;
             break;
-        case 105: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value105 = *(FLOAT32 *)FieldValue;
+        case 105: //addonScaleOutTime
+            DATA.value.addonScaleOutTime = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;
@@ -1000,6 +904,7 @@ bool EFSHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void EFSHRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    EFSHDATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -1018,302 +923,304 @@ void EFSHRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //icon Fill Texture
+        case 7: //fillPath
             ICON.Unload();
             return;
-        case 8: //ico2 Particle Shader Texture
+        case 8: //particlePath
             ICO2.Unload();
             return;
-        case 9: //nam7 Holes Texture
+        case 9: //holesPath
             NAM7.Unload();
             return;
-        case 10: //data DATA ,, Struct
-            DATA.Unload();
+        case 10: //flags
+            SetFlagMask(defaultDATA.flags);
             return;
-        case 11: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 11: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
+            DATA.value.unused1[2] = defaultDATA.unused1[2];
             return;
-        case 12: //data DATA ,, Struct
-            DATA.Unload();
+        case 12: //memSBlend
+            DATA.value.memSBlend = defaultDATA.memSBlend;
             return;
-        case 13: //data DATA ,, Struct
-            DATA.Unload();
+        case 13: //memBlendOp
+            DATA.value.memBlendOp = defaultDATA.memBlendOp;
             return;
-        case 14: //data DATA ,, Struct
-            DATA.Unload();
+        case 14: //memZFunc
+            DATA.value.memZFunc = defaultDATA.memZFunc;
             return;
-        case 15: //data DATA ,, Struct
-            DATA.Unload();
+        case 15: //fill.red
+            DATA.value.fill.red = defaultDATA.fill.red;
             return;
-        case 16: //data DATA ,, Struct
-            DATA.Unload();
+        case 16: //fill.green
+            DATA.value.fill.green = defaultDATA.fill.green;
             return;
-        case 17: //data DATA ,, Struct
-            DATA.Unload();
+        case 17: //fill.blue
+            DATA.value.fill.blue = defaultDATA.fill.blue;
             return;
-        case 18: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 18: //unused2
+            DATA.value.fill.unused1 = defaultDATA.fill.unused1;
             return;
-        case 19: //data DATA ,, Struct
-            DATA.Unload();
+        case 19: //fillAIn
+            DATA.value.fillAIn = defaultDATA.fillAIn;
             return;
-        case 20: //data DATA ,, Struct
-            DATA.Unload();
+        case 20: //fillAFull
+            DATA.value.fillAFull = defaultDATA.fillAFull;
             return;
-        case 21: //data DATA ,, Struct
-            DATA.Unload();
+        case 21: //fillAOut
+            DATA.value.fillAOut = defaultDATA.fillAOut;
             return;
-        case 22: //data DATA ,, Struct
-            DATA.Unload();
+        case 22: //fillAPRatio
+            DATA.value.fillAPRatio = defaultDATA.fillAPRatio;
             return;
-        case 23: //data DATA ,, Struct
-            DATA.Unload();
+        case 23: //fillAAmp
+            DATA.value.fillAAmp = defaultDATA.fillAAmp;
             return;
-        case 24: //data DATA ,, Struct
-            DATA.Unload();
+        case 24: //fillAFreq
+            DATA.value.fillAFreq = defaultDATA.fillAFreq;
             return;
-        case 25: //data DATA ,, Struct
-            DATA.Unload();
+        case 25: //fillAnimSpdU
+            DATA.value.fillAnimSpdU = defaultDATA.fillAnimSpdU;
             return;
-        case 26: //data DATA ,, Struct
-            DATA.Unload();
+        case 26: //fillAnimSpdV
+            DATA.value.fillAnimSpdV = defaultDATA.fillAnimSpdV;
             return;
-        case 27: //data DATA ,, Struct
-            DATA.Unload();
+        case 27: //edgeEffOff
+            DATA.value.edgeEffOff = defaultDATA.edgeEffOff;
             return;
-        case 28: //data DATA ,, Struct
-            DATA.Unload();
+        case 28: //edgeEff.red
+            DATA.value.edgeEff.red = defaultDATA.edgeEff.red;
             return;
-        case 29: //data DATA ,, Struct
-            DATA.Unload();
+        case 29: //edgeEff.green
+            DATA.value.edgeEff.green = defaultDATA.edgeEff.green;
             return;
-        case 30: //data DATA ,, Struct
-            DATA.Unload();
+        case 30: //edgeEff.blue
+            DATA.value.edgeEff.blue = defaultDATA.edgeEff.blue;
             return;
-        case 31: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 31: //unused3
+            DATA.value.edgeEff.unused1 = defaultDATA.edgeEff.unused1;
             return;
-        case 32: //data DATA ,, Struct
-            DATA.Unload();
+        case 32: //edgeEffAIn
+            DATA.value.edgeEffAIn = defaultDATA.edgeEffAIn;
             return;
-        case 33: //data DATA ,, Struct
-            DATA.Unload();
+        case 33: //edgeEffAFull
+            DATA.value.edgeEffAFull = defaultDATA.edgeEffAFull;
             return;
-        case 34: //data DATA ,, Struct
-            DATA.Unload();
+        case 34: //edgeEffAOut
+            DATA.value.edgeEffAOut = defaultDATA.edgeEffAOut;
             return;
-        case 35: //data DATA ,, Struct
-            DATA.Unload();
+        case 35: //edgeEffAPRatio
+            DATA.value.edgeEffAPRatio = defaultDATA.edgeEffAPRatio;
             return;
-        case 36: //data DATA ,, Struct
-            DATA.Unload();
+        case 36: //edgeEffAAmp
+            DATA.value.edgeEffAAmp = defaultDATA.edgeEffAAmp;
             return;
-        case 37: //data DATA ,, Struct
-            DATA.Unload();
+        case 37: //edgeEffAFreq
+            DATA.value.edgeEffAFreq = defaultDATA.edgeEffAFreq;
             return;
-        case 38: //data DATA ,, Struct
-            DATA.Unload();
+        case 38: //fillAFRatio
+            DATA.value.fillAFRatio = defaultDATA.fillAFRatio;
             return;
-        case 39: //data DATA ,, Struct
-            DATA.Unload();
+        case 39: //edgeEffAFRatio
+            DATA.value.edgeEffAFRatio = defaultDATA.edgeEffAFRatio;
             return;
-        case 40: //data DATA ,, Struct
-            DATA.Unload();
+        case 40: //memDBlend
+            DATA.value.memDBlend = defaultDATA.memDBlend;
             return;
-        case 41: //data DATA ,, Struct
-            DATA.Unload();
+        case 41: //partSBlend
+            DATA.value.partSBlend = defaultDATA.partSBlend;
             return;
-        case 42: //data DATA ,, Struct
-            DATA.Unload();
+        case 42: //partBlendOp
+            DATA.value.partBlendOp = defaultDATA.partBlendOp;
             return;
-        case 43: //data DATA ,, Struct
-            DATA.Unload();
+        case 43: //partZFunc
+            DATA.value.partZFunc = defaultDATA.partZFunc;
             return;
-        case 44: //data DATA ,, Struct
-            DATA.Unload();
+        case 44: //partDBlend
+            DATA.value.partDBlend = defaultDATA.partDBlend;
             return;
-        case 45: //data DATA ,, Struct
-            DATA.Unload();
+        case 45: //partBUp
+            DATA.value.partBUp = defaultDATA.partBUp;
             return;
-        case 46: //data DATA ,, Struct
-            DATA.Unload();
+        case 46: //partBFull
+            DATA.value.partBFull = defaultDATA.partBFull;
             return;
-        case 47: //data DATA ,, Struct
-            DATA.Unload();
+        case 47: //partBDown
+            DATA.value.partBDown = defaultDATA.partBDown;
             return;
-        case 48: //data DATA ,, Struct
-            DATA.Unload();
+        case 48: //partBFRatio
+            DATA.value.partBFRatio = defaultDATA.partBFRatio;
             return;
-        case 49: //data DATA ,, Struct
-            DATA.Unload();
+        case 49: //partBPRatio
+            DATA.value.partBPRatio = defaultDATA.partBPRatio;
             return;
-        case 50: //data DATA ,, Struct
-            DATA.Unload();
+        case 50: //partLTime
+            DATA.value.partLTime = defaultDATA.partLTime;
             return;
-        case 51: //data DATA ,, Struct
-            DATA.Unload();
+        case 51: //partLDelta
+            DATA.value.partLDelta = defaultDATA.partLDelta;
             return;
-        case 52: //data DATA ,, Struct
-            DATA.Unload();
+        case 52: //partNSpd
+            DATA.value.partNSpd = defaultDATA.partNSpd;
             return;
-        case 53: //data DATA ,, Struct
-            DATA.Unload();
+        case 53: //partNAcc
+            DATA.value.partNAcc = defaultDATA.partNAcc;
             return;
-        case 54: //data DATA ,, Struct
-            DATA.Unload();
+        case 54: //partVel1
+            DATA.value.partVel1 = defaultDATA.partVel1;
             return;
-        case 55: //data DATA ,, Struct
-            DATA.Unload();
+        case 55: //partVel2
+            DATA.value.partVel2 = defaultDATA.partVel2;
             return;
-        case 56: //data DATA ,, Struct
-            DATA.Unload();
+        case 56: //partVel3
+            DATA.value.partVel3 = defaultDATA.partVel3;
             return;
-        case 57: //data DATA ,, Struct
-            DATA.Unload();
+        case 57: //partAcc1
+            DATA.value.partAcc1 = defaultDATA.partAcc1;
             return;
-        case 58: //data DATA ,, Struct
-            DATA.Unload();
+        case 58: //partAcc2
+            DATA.value.partAcc2 = defaultDATA.partAcc2;
             return;
-        case 59: //data DATA ,, Struct
-            DATA.Unload();
+        case 59: //partAcc3
+            DATA.value.partAcc3 = defaultDATA.partAcc3;
             return;
-        case 60: //data DATA ,, Struct
-            DATA.Unload();
+        case 60: //partKey1
+            DATA.value.partKey1 = defaultDATA.partKey1;
             return;
-        case 61: //data DATA ,, Struct
-            DATA.Unload();
+        case 61: //partKey2
+            DATA.value.partKey2 = defaultDATA.partKey2;
             return;
-        case 62: //data DATA ,, Struct
-            DATA.Unload();
+        case 62: //partKey1Time
+            DATA.value.partKey1Time = defaultDATA.partKey1Time;
             return;
-        case 63: //data DATA ,, Struct
-            DATA.Unload();
+        case 63: //partKey2Time
+            DATA.value.partKey2Time = defaultDATA.partKey2Time;
             return;
-        case 64: //data DATA ,, Struct
-            DATA.Unload();
+        case 64: //key1.red
+            DATA.value.key1.red = defaultDATA.key1.red;
             return;
-        case 65: //data DATA ,, Struct
-            DATA.Unload();
+        case 65: //key1.green
+            DATA.value.key1.green = defaultDATA.key1.green;
             return;
-        case 66: //data DATA ,, Struct
-            DATA.Unload();
+        case 66: //key1.blue
+            DATA.value.key1.blue = defaultDATA.key1.blue;
             return;
-        case 67: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 67: //unused4
+            DATA.value.key1.unused1 = defaultDATA.key1.unused1;
             return;
-        case 68: //data DATA ,, Struct
-            DATA.Unload();
+        case 68: //key2.red
+            DATA.value.key2.red = defaultDATA.key2.red;
             return;
-        case 69: //data DATA ,, Struct
-            DATA.Unload();
+        case 69: //key2.green
+            DATA.value.key2.green = defaultDATA.key2.green;
             return;
-        case 70: //data DATA ,, Struct
-            DATA.Unload();
+        case 70: //key2.blue
+            DATA.value.key2.blue = defaultDATA.key2.blue;
             return;
-        case 71: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 71: //unused5
+            DATA.value.key2.unused1 = defaultDATA.key2.unused1;
             return;
-        case 72: //data DATA ,, Struct
-            DATA.Unload();
+        case 72: //key3.red
+            DATA.value.key3.red = defaultDATA.key3.red;
             return;
-        case 73: //data DATA ,, Struct
-            DATA.Unload();
+        case 73: //key3.green
+            DATA.value.key3.green = defaultDATA.key3.green;
             return;
-        case 74: //data DATA ,, Struct
-            DATA.Unload();
+        case 74: //key3.blue
+            DATA.value.key3.blue = defaultDATA.key3.blue;
             return;
-        case 75: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 75: //unused6
+            DATA.value.key3.unused1 = defaultDATA.key3.unused1;
             return;
-        case 76: //data DATA ,, Struct
-            DATA.Unload();
+        case 76: //key1A
+            DATA.value.key1A = defaultDATA.key1A;
             return;
-        case 77: //data DATA ,, Struct
-            DATA.Unload();
+        case 77: //key2A
+            DATA.value.key2A = defaultDATA.key2A;
             return;
-        case 78: //data DATA ,, Struct
-            DATA.Unload();
+        case 78: //key3A
+            DATA.value.key3A = defaultDATA.key3A;
             return;
-        case 79: //data DATA ,, Struct
-            DATA.Unload();
+        case 79: //key1Time
+            DATA.value.key1Time = defaultDATA.key1Time;
             return;
-        case 80: //data DATA ,, Struct
-            DATA.Unload();
+        case 80: //key2Time
+            DATA.value.key2Time = defaultDATA.key2Time;
             return;
-        case 81: //data DATA ,, Struct
-            DATA.Unload();
+        case 81: //key3Time
+            DATA.value.key3Time = defaultDATA.key3Time;
             return;
-        case 82: //data DATA ,, Struct
-            DATA.Unload();
+        case 82: //partInitSpd
+            DATA.value.partInitSpd = defaultDATA.partInitSpd;
             return;
-        case 83: //data DATA ,, Struct
-            DATA.Unload();
+        case 83: //partInitRot
+            DATA.value.partInitRot = defaultDATA.partInitRot;
             return;
-        case 84: //data DATA ,, Struct
-            DATA.Unload();
+        case 84: //partInitRotDelta
+            DATA.value.partInitRotDelta = defaultDATA.partInitRotDelta;
             return;
-        case 85: //data DATA ,, Struct
-            DATA.Unload();
+        case 85: //partRotSpd
+            DATA.value.partRotSpd = defaultDATA.partRotSpd;
             return;
-        case 86: //data DATA ,, Struct
-            DATA.Unload();
+        case 86: //partRotDelta
+            DATA.value.partRotDelta = defaultDATA.partRotDelta;
             return;
-        case 87: //data DATA ,, Struct
-            DATA.Unload();
+        case 87: //addon
+            DATA.value.addon = defaultDATA.addon;
             return;
-        case 88: //data DATA ,, Struct
-            DATA.Unload();
+        case 88: //holesSTime
+            DATA.value.holesSTime = defaultDATA.holesSTime;
             return;
-        case 89: //data DATA ,, Struct
-            DATA.Unload();
+        case 89: //holesETime
+            DATA.value.holesETime = defaultDATA.holesETime;
             return;
-        case 90: //data DATA ,, Struct
-            DATA.Unload();
+        case 90: //holesSValue
+            DATA.value.holesSValue = defaultDATA.holesSValue;
             return;
-        case 91: //data DATA ,, Struct
-            DATA.Unload();
+        case 91: //holesEValue
+            DATA.value.holesEValue = defaultDATA.holesEValue;
             return;
-        case 92: //data DATA ,, Struct
-            DATA.Unload();
+        case 92: //edgeWidth
+            DATA.value.edgeWidth = defaultDATA.edgeWidth;
             return;
-        case 93: //data DATA ,, Struct
-            DATA.Unload();
+        case 93: //edge.red
+            DATA.value.edge.red = defaultDATA.edge.red;
             return;
-        case 94: //data DATA ,, Struct
-            DATA.Unload();
+        case 94: //edge.green
+            DATA.value.edge.green = defaultDATA.edge.green;
             return;
-        case 95: //data DATA ,, Struct
-            DATA.Unload();
+        case 95: //edge.blue
+            DATA.value.edge.blue = defaultDATA.edge.blue;
             return;
-        case 96: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 96: //unused7
+            DATA.value.edge.unused1 = defaultDATA.edge.unused1;
             return;
-        case 97: //data DATA ,, Struct
-            DATA.Unload();
+        case 97: //explWindSpd
+            DATA.value.explWindSpd = defaultDATA.explWindSpd;
             return;
-        case 98: //data DATA ,, Struct
-            DATA.Unload();
+        case 98: //textCountU
+            DATA.value.textCountU = defaultDATA.textCountU;
             return;
-        case 99: //data DATA ,, Struct
-            DATA.Unload();
+        case 99: //textCountV
+            DATA.value.textCountV = defaultDATA.textCountV;
             return;
-        case 100: //data DATA ,, Struct
-            DATA.Unload();
+        case 100: //addonFITime
+            DATA.value.addonFITime = defaultDATA.addonFITime;
             return;
-        case 101: //data DATA ,, Struct
-            DATA.Unload();
+        case 101: //addonFOTime
+            DATA.value.addonFOTime = defaultDATA.addonFOTime;
             return;
-        case 102: //data DATA ,, Struct
-            DATA.Unload();
+        case 102: //addonScaleStart
+            DATA.value.addonScaleStart = defaultDATA.addonScaleStart;
             return;
-        case 103: //data DATA ,, Struct
-            DATA.Unload();
+        case 103: //addonScaleEnd
+            DATA.value.addonScaleEnd = defaultDATA.addonScaleEnd;
             return;
-        case 104: //data DATA ,, Struct
-            DATA.Unload();
+        case 104: //addonScaleInTime
+            DATA.value.addonScaleInTime = defaultDATA.addonScaleInTime;
             return;
-        case 105: //data DATA ,, Struct
-            DATA.Unload();
+        case 105: //addonScaleOutTime
+            DATA.value.addonScaleOutTime = defaultDATA.addonScaleOutTime;
             return;
         default:
             return;

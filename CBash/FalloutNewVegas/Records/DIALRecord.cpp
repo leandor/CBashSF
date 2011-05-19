@@ -441,7 +441,7 @@ SINT32 DIALRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
-    
+
     EDID.Unload();
     QSTI.Unload();
     QSTR.Unload();

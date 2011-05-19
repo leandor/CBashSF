@@ -2249,7 +2249,7 @@ bool FNVMODS::operator ==(const FNVMODS &other) const
     {
     return (texture == other.texture &&
             index == other.index &&
-            _stricmp(name, other.name) == 0);
+            icmps(name, other.name) == 0);
     }
 
 bool FNVMODS::operator !=(const FNVMODS &other) const
@@ -4144,16 +4144,16 @@ GENIMPF::~GENIMPF()
 
 bool GENIMPF::operator ==(const GENIMPF &other) const
     {
-    return (strcmp(&concSolid[0], &other.concSolid[0]) == 0 &&
-            strcmp(&concBroken[0], &other.concBroken[0]) == 0 &&
-            strcmp(&metalSolid[0], &other.metalSolid[0]) == 0 &&
-            strcmp(&metalHollow[0], &other.metalHollow[0]) == 0 &&
-            strcmp(&metalSheet[0], &other.metalSheet[0]) == 0 &&
-            strcmp(&wood[0], &other.wood[0]) == 0 &&
-            strcmp(&sand[0], &other.sand[0]) == 0 &&
-            strcmp(&dirt[0], &other.dirt[0]) == 0 &&
-            strcmp(&grass[0], &other.grass[0]) == 0 &&
-            strcmp(&water[0], &other.water[0]) == 0);
+    return (cmps(&concSolid[0], &other.concSolid[0]) == 0 &&
+            cmps(&concBroken[0], &other.concBroken[0]) == 0 &&
+            cmps(&metalSolid[0], &other.metalSolid[0]) == 0 &&
+            cmps(&metalHollow[0], &other.metalHollow[0]) == 0 &&
+            cmps(&metalSheet[0], &other.metalSheet[0]) == 0 &&
+            cmps(&wood[0], &other.wood[0]) == 0 &&
+            cmps(&sand[0], &other.sand[0]) == 0 &&
+            cmps(&dirt[0], &other.dirt[0]) == 0 &&
+            cmps(&grass[0], &other.grass[0]) == 0 &&
+            cmps(&water[0], &other.water[0]) == 0);
     }
 
 bool GENIMPF::operator !=(const GENIMPF &other) const

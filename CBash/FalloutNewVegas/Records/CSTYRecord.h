@@ -68,7 +68,7 @@ class CSTYRecord : public FNVRecord //Combat Style
         struct CSTYCSSD // Simple
             {
             FLOAT32 coverRadius, coverChance, waitTimerMin, waitTimerMax,
-                    waitFireTimerMin, waitFireTimerMax, fireTimerMin, 
+                    waitFireTimerMin, waitFireTimerMax, fireTimerMin,
                     fireTimerMax, rangedRangeMultMin;
             UINT8   unused1[4];
             UINT32  weaponRestrictions;
@@ -96,8 +96,8 @@ class CSTYRecord : public FNVRecord //Combat Style
 
         enum restrictionTypes
             {
-            eNone = 0,
-            eMeleeOnly = 1,
+            eNone       = 0,
+            eMeleeOnly  = 1,
             eRangedOnly = 2
             };
 

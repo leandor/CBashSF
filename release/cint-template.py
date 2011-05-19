@@ -8236,28 +8236,341 @@ class FnvLSCRRecord(FnvBaseRecord):
 
 class FnvANIORecord(FnvBaseRecord):
     _Type = 'ANIO'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    ISTRING_MACRO(modPath, 7)
+    FLOAT32_MACRO(modb, 8)
+    UINT8_ARRAY_MACRO(modt_p, 9)
+    
+    LIST_MACRO(altTextures, 10, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 11)
+    FORMID_MACRO(animation, 12)
+    copyattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'animation']
+    exportattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'animation']# 'modt_p',
 
 class FnvWATRRecord(FnvBaseRecord):
     _Type = 'WATR'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    STRING_MACRO(full, 7)
+    ISTRING_MACRO(noisePath, 8)
+    UINT8_MACRO(opacity, 9)
+    UINT8_MACRO(flags, 10)
+    ISTRING_MACRO(material, 11)
+    FORMID_MACRO(sound, 12)
+    FORMID_MACRO(effect, 13)
+    UINT16_MACRO(damage, 14)
+    FLOAT32_MACRO(unknown1, 15)
+    FLOAT32_MACRO(unknown2, 16)
+    FLOAT32_MACRO(unknown3, 17)
+    FLOAT32_MACRO(unknown4, 18)
+    FLOAT32_MACRO(sunPower, 19)
+    FLOAT32_MACRO(reflectAmt, 20)
+    FLOAT32_MACRO(fresnelAmt, 21)
+    UINT8_ARRAY_MACRO(unused1, 22, 4)
+    FLOAT32_MACRO(fogNear, 23)
+    FLOAT32_MACRO(fogFar, 24)
+    UINT8_MACRO(shallowRed, 25)
+    UINT8_MACRO(shallowGreen, 26)
+    UINT8_MACRO(shallowBlue, 27)
+    UINT8_ARRAY_MACRO(unused2, 28, 1)
+    UINT8_MACRO(deepRed, 29)
+    UINT8_MACRO(deepGreen, 30)
+    UINT8_MACRO(deepBlue, 31)
+    UINT8_ARRAY_MACRO(unused3, 32, 1)
+    UINT8_MACRO(reflRed, 33)
+    UINT8_MACRO(reflGreen, 34)
+    UINT8_MACRO(reflBlue, 35)
+    UINT8_ARRAY_MACRO(unused4, 36, 1)
+    UINT8_ARRAY_MACRO(unused5, 37, 4)
+    FLOAT32_MACRO(rainForce, 38)
+    FLOAT32_MACRO(rainVelocity, 39)
+    FLOAT32_MACRO(rainFalloff, 40)
+    FLOAT32_MACRO(rainDampner, 41)
+    FLOAT32_MACRO(dispSize, 42)
+    FLOAT32_MACRO(dispForce, 43)
+    FLOAT32_MACRO(dispVelocity, 44)
+    FLOAT32_MACRO(dispFalloff, 45)
+    FLOAT32_MACRO(dispDampner, 46)
+    FLOAT32_MACRO(rainSize, 47)
+    FLOAT32_MACRO(normalsNoiseScale, 48)
+    FLOAT32_MACRO(noise1Direction, 49)
+    FLOAT32_MACRO(noise2Direction, 50)
+    FLOAT32_MACRO(noise3Direction, 51)
+    FLOAT32_MACRO(noise1Speed, 52)
+    FLOAT32_MACRO(noise2Speed, 53)
+    FLOAT32_MACRO(noise3Speed, 54)
+    FLOAT32_MACRO(normalsFalloffStart, 55)
+    FLOAT32_MACRO(normalsFalloffEnd, 56)
+    FLOAT32_MACRO(fogAmt, 57)
+    FLOAT32_MACRO(normalsUVScale, 58)
+    FLOAT32_MACRO(underFogAmt, 59)
+    FLOAT32_MACRO(underFogNear, 60)
+    FLOAT32_MACRO(underFogFar, 61)
+    FLOAT32_MACRO(distAmt, 62)
+    FLOAT32_MACRO(shininess, 63)
+    FLOAT32_MACRO(hdrMult, 64)
+    FLOAT32_MACRO(lightRadius, 65)
+    FLOAT32_MACRO(lightBright, 66)
+    FLOAT32_MACRO(noise1UVScale, 67)
+    FLOAT32_MACRO(noise2UVScale, 68)
+    FLOAT32_MACRO(noise3UVScale, 69)
+    FLOAT32_MACRO(noise1AmpScale, 70)
+    FLOAT32_MACRO(noise2AmpScale, 71)
+    FLOAT32_MACRO(noise3AmpScale, 72)
+    FORMID_MACRO(dayWater, 73)
+    FORMID_MACRO(nightWater, 74)
+    FORMID_MACRO(underWater, 75)
+    BasicFlagMACRO(IsCausesDamage, flags, 0x01)
+    BasicFlagMACRO(IsReflective, flags, 0x02)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'noisePath', 'opacity', 'flags',
+                                                         'material', 'sound', 'effect', 'damage',
+                                                         'unknown1', 'unknown2', 'unknown3', 'unknown4',
+                                                         'sunPower', 'reflectAmt', 'fresnelAmt',
+                                                         'fogNear', 'fogFar',
+                                                         'shallowRed', 'shallowGreen', 'shallowBlue',
+                                                         'deepRed', 'deepGreen', 'deepBlue',
+                                                         'reflRed', 'reflGreen', 'reflBlue',
+                                                         'rainForce', 'rainVelocity', 'rainFalloff',
+                                                         'rainDampner', 'dispSize', 'dispForce',
+                                                         'dispVelocity', 'dispFalloff', 'dispDampner',
+                                                         'rainSize', 'normalsNoiseScale',
+                                                         'noise1Direction', 'noise2Direction', 'noise3Direction',
+                                                         'noise1Speed', 'noise2Speed', 'noise3Speed',
+                                                         'normalsFalloffStart', 'normalsFalloffEnd',
+                                                         'fogAmt', 'normalsUVScale', 'underFogAmt', 'underFogNear',
+                                                         'underFogFar', 'distAmt', 'shininess', 'hdrMult',
+                                                         'lightRadius', 'lightBright',
+                                                         'noise1UVScale', 'noise2UVScale', 'noise3UVScale',
+                                                         'noise1AmpScale', 'noise2AmpScale', 'noise3AmpScale',
+                                                         'dayWater', 'nightWater', 'underWater']
 
 class FnvEFSHRecord(FnvBaseRecord):
     _Type = 'EFSH'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    ISTRING_MACRO(fillPath, 7)
+    ISTRING_MACRO(particlePath, 8)
+    ISTRING_MACRO(holesPath, 9)
+    UINT8_FLAG_MACRO(flags, 10)
+    UINT8_ARRAY_MACRO(unused1, 11, 3)
+    UINT32_MACRO(memSBlend, 12)
+    UINT32_MACRO(memBlendOp, 13)
+    UINT32_MACRO(memZFunc, 14)
+    UINT8_MACRO(fillRed, 15)
+    UINT8_MACRO(fillGreen, 16)
+    UINT8_MACRO(fillBlue, 17)
+    UINT8_ARRAY_MACRO(unused2, 18, 1)
+    FLOAT32_MACRO(fillAIn, 19)
+    FLOAT32_MACRO(fillAFull, 20)
+    FLOAT32_MACRO(fillAOut, 21)
+    FLOAT32_MACRO(fillAPRatio, 22)
+    FLOAT32_MACRO(fillAAmp, 23)
+    FLOAT32_MACRO(fillAFreq, 24)
+    FLOAT32_MACRO(fillAnimSpdU, 25)
+    FLOAT32_MACRO(fillAnimSpdV, 26)
+    FLOAT32_MACRO(edgeEffOff, 27)
+    UINT8_MACRO(edgeEffRed, 28)
+    UINT8_MACRO(edgeEffGreen, 29)
+    UINT8_MACRO(edgeEffBlue, 30)
+    UINT8_ARRAY_MACRO(unused3, 31, 1)
+    FLOAT32_MACRO(edgeEffAIn, 32)
+    FLOAT32_MACRO(edgeEffAFull, 33)
+    FLOAT32_MACRO(edgeEffAOut, 34)
+    FLOAT32_MACRO(edgeEffAPRatio, 35)
+    FLOAT32_MACRO(edgeEffAAmp, 36)
+    FLOAT32_MACRO(edgeEffAFreq, 37)
+    FLOAT32_MACRO(fillAFRatio, 38)
+    FLOAT32_MACRO(edgeEffAFRatio, 39)
+    UINT32_MACRO(memDBlend, 40)
+    UINT32_MACRO(partSBlend, 41)
+    UINT32_MACRO(partBlendOp, 42)
+    UINT32_MACRO(partZFunc, 43)
+    UINT32_MACRO(partDBlend, 44)
+    FLOAT32_MACRO(partBUp, 45)
+    FLOAT32_MACRO(partBFull, 46)
+    FLOAT32_MACRO(partBDown, 47)
+    FLOAT32_MACRO(partBFRatio, 48)
+    FLOAT32_MACRO(partBPRatio, 49)
+    FLOAT32_MACRO(partLTime, 50)
+    FLOAT32_MACRO(partLDelta, 51)
+    FLOAT32_MACRO(partNSpd, 52)
+    FLOAT32_MACRO(partNAcc, 53)
+    FLOAT32_MACRO(partVel1, 54)
+    FLOAT32_MACRO(partVel2, 55)
+    FLOAT32_MACRO(partVel3, 56)
+    FLOAT32_MACRO(partAcc1, 57)
+    FLOAT32_MACRO(partAcc2, 58)
+    FLOAT32_MACRO(partAcc3, 59)
+    FLOAT32_MACRO(partKey1, 60)
+    FLOAT32_MACRO(partKey2, 61)
+    FLOAT32_MACRO(partKey1Time, 62)
+    FLOAT32_MACRO(partKey2Time, 63)
+    UINT8_MACRO(key1Red, 64)
+    UINT8_MACRO(key1Green, 65)
+    UINT8_MACRO(key1Blue, 66)
+    UINT8_ARRAY_MACRO(unused4, 67, 1)
+    UINT8_MACRO(key2Red, 68)
+    UINT8_MACRO(key2Green, 69)
+    UINT8_MACRO(key2Blue, 70)
+    UINT8_ARRAY_MACRO(unused5, 71, 1)
+    UINT8_MACRO(key3Red, 72)
+    UINT8_MACRO(key3Green, 73)
+    UINT8_MACRO(key3Blue, 74)
+    UINT8_ARRAY_MACRO(unused6, 75, 1)
+    FLOAT32_MACRO(key1A, 76)
+    FLOAT32_MACRO(key2A, 77)
+    FLOAT32_MACRO(key3A, 78)
+    FLOAT32_MACRO(key1Time, 79)
+    FLOAT32_MACRO(key2Time, 80)
+    FLOAT32_MACRO(key3Time, 81)
+    FLOAT32_MACRO(partInitSpd, 82)
+    FLOAT32_MACRO(partInitRot, 83)
+    FLOAT32_MACRO(partInitRotDelta, 84)
+    FLOAT32_MACRO(partRotSpd, 85)
+    FLOAT32_MACRO(partRotDelta, 86)
+    FORMID_MACRO(addon, 87)
+    FLOAT32_MACRO(holesSTime, 88)
+    FLOAT32_MACRO(holesETime, 89)
+    FLOAT32_MACRO(holesSValue, 90)
+    FLOAT32_MACRO(holesEValue, 91)
+    FLOAT32_MACRO(edgeWidth, 92)
+    UINT8_MACRO(edgeRed, 93)
+    UINT8_MACRO(edgeGreen, 94)
+    UINT8_MACRO(edgeBlue, 95)
+    UINT8_ARRAY_MACRO(unused7, 96, 1)
+    FLOAT32_MACRO(explWindSpd, 97)
+    UINT32_MACRO(textCountU, 98)
+    UINT32_MACRO(textCountV, 99)
+    FLOAT32_MACRO(addonFITime, 100)
+    FLOAT32_MACRO(addonFOTime, 101)
+    FLOAT32_MACRO(addonScaleStart, 102)
+    FLOAT32_MACRO(addonScaleEnd, 103)
+    FLOAT32_MACRO(addonScaleInTime, 104)
+    FLOAT32_MACRO(addonScaleOutTime, 105)
+    
+    BasicFlagMACRO(IsNoMemShader, flags, 0x00000001)
+    BasicFlagMACRO(IsNoPartShader, flags, 0x00000008)
+    BasicFlagMACRO(IsEdgeInverse, flags, 0x00000010)
+    BasicFlagMACRO(IsMemSkinOnly, flags, 0x00000020)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['fillPath', 'particlePath', 'holesPath',
+                                                         'flags', 'memSBlend', 'memBlendOp',
+                                                         'memZFunc',
+                                                         'fillRed', 'fillGreen', 'fillBlue',
+                                                         'fillAIn', 'fillAFull', 'fillAOut',
+                                                         'fillAPRatio', 'fillAAmp', 'fillAFreq',
+                                                         'fillAnimSpdU', 'fillAnimSpdV',
+                                                         'edgeEffOff',
+                                                         'edgeEffRed', 'edgeEffGreen', 'edgeEffBlue',
+                                                         'edgeEffAIn', 'edgeEffAFull', 'edgeEffAOut',
+                                                         'edgeEffAPRatio', 'edgeEffAAmp',
+                                                         'edgeEffAFreq', 'fillAFRatio',
+                                                         'edgeEffAFRatio', 'memDBlend', 'partSBlend',
+                                                         'partBlendOp', 'partZFunc', 'partDBlend',
+                                                         'partBUp', 'partBFull', 'partBDown',
+                                                         'partBFRatio', 'partBPRatio', 'partLTime',
+                                                         'partLDelta', 'partNSpd', 'partNAcc',
+                                                         'partVel1', 'partVel2', 'partVel3',
+                                                         'partAcc1', 'partAcc2', 'partAcc3',
+                                                         'partKey1', 'partKey2',
+                                                         'partKey1Time', 'partKey2Time',
+                                                         'key1Red', 'key1Green', 'key1Blue',
+                                                         'key2Red', 'key2Green', 'key2Blue',
+                                                         'key3Red', 'key3Green', 'key3Blue',
+                                                         'key1A', 'key2A', 'key3A',
+                                                         'key1Time', 'key2Time', 'key3Time',
+                                                         'partInitSpd', 'partInitRot',
+                                                         'partInitRotDelta', 'partRotSpd',
+                                                         'partRotDelta', 'addon', 'holesSTime',
+                                                         'holesETime', 'holesSValue', 'holesEValue',
+                                                         'edgeWidth',
+                                                         'edgeRed', 'edgeGreen', 'edgeBlue',
+                                                         'explWindSpd', 'textCountU', 'textCountV',
+                                                         'addonFITime', 'addonFOTime',
+                                                         'addonScaleStart', 'addonScaleEnd',
+                                                         'addonScaleInTime', 'addonScaleOutTime']
 
 class FnvEXPLRecord(FnvBaseRecord):
     _Type = 'EXPL'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    SINT16_MACRO(boundX1, 7)
+    SINT16_MACRO(boundY1, 8)
+    SINT16_MACRO(boundZ1, 9)
+    SINT16_MACRO(boundX2, 10)
+    SINT16_MACRO(boundY2, 11)
+    SINT16_MACRO(boundZ2, 12)
+    STRING_MACRO(full, 13)
+    ISTRING_MACRO(modPath, 14)
+    FLOAT32_MACRO(modb, 15)
+    UINT8_ARRAY_MACRO(modt_p, 16)
+    
+    LIST_MACRO(altTextures, 17, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 18)
+    FORMID_MACRO(effect, 19)
+    FORMID_MACRO(imageSpace, 20)
+    FLOAT32_MACRO(force, 21)
+    FLOAT32_MACRO(damage, 22)
+    FLOAT32_MACRO(radius, 23)
+    FORMID_MACRO(light, 24)
+    FORMID_MACRO(sound1, 25)
+    UINT32_FLAG_MACRO(flags, 26)
+    FLOAT32_MACRO(ISRadius, 27)
+    FORMID_MACRO(impactDataSet, 28)
+    FORMID_MACRO(sound2, 29)
+    FLOAT32_MACRO(radLevel, 30)
+    FLOAT32_MACRO(radTime, 31)
+    FLOAT32_MACRO(radRadius, 32)
+    UINT32_MACRO(soundLevel, 33)
+    FORMID_MACRO(impact, 34)
+    
+    BasicFlagMACRO(IsUnknown1, flags, 0x00000001)
+    BasicFlagMACRO(IsAlwaysUsesWorldOrientation, flags, 0x00000002)
+    BasicFlagMACRO(IsAlwaysKnockDown, flags, 0x00000004)
+    BasicFlagMACRO(IsFormulaKnockDown, flags, 0x00000008)
+    BasicFlagMACRO(IsIgnoreLOS, flags, 0x00000010)
+    BasicFlagMACRO(IsPushExplosionSourceRefOnly, flags, 0x00000020)
+    BasicFlagMACRO(IsIgnoreImageSpaceSwap, flags, 0x00000040)
+    
+    BasicFlagMACRO(IsHead, modelFlags, 0x01)
+    BasicFlagMACRO(IsTorso, modelFlags, 0x02)
+    BasicFlagMACRO(IsRightHand, modelFlags, 0x04)
+    BasicFlagMACRO(IsLeftHand, modelFlags, 0x08)
+    
+    BasicTypeMACRO(IsLoud, soundLevel, 0, IsNormal)
+    BasicTypeMACRO(IsNormal, soundLevel, 1, IsLoud)
+    BasicTypeMACRO(IsSilent, soundLevel, 2, IsLoud)
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'effect', 'imageSpace', 'force',
+                                           'damage', 'radius', 'light',
+                                           'sound1', 'flags', 'ISRadius',
+                                           'impactDataSet', 'sound2',
+                                           'radLevel', 'radTime',
+                                           'radRadius', 'soundLevel', 'impact']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'effect', 'imageSpace', 'force',
+                                             'damage', 'radius', 'light',
+                                             'sound1', 'flags', 'ISRadius',
+                                             'impactDataSet', 'sound2',
+                                             'radLevel', 'radTime',
+                                             'radRadius', 'soundLevel', 'impact']# 'modt_p',
 
 class FnvDEBRRecord(FnvBaseRecord):
     _Type = 'DEBR'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class DebrisModel(ListComponent):
+        UINT8_LISTMACRO(percentage, 1)
+        ISTRING_LISTMACRO(modPath, 2)
+        UINT8_FLAG_LISTMACRO(flags, 3)
+        UINT8_ARRAY_LISTMACRO(modt_p, 4)
+        
+        BasicFlagMACRO(IsHasCollisionData, flags, 0x01)
+        copyattrs = ['percentage', 'modPath', 'flags', 'modt_p']
+        exportattrs = ['percentage', 'modPath', 'flags']#, 'modt_p'
+        
+    LIST_MACRO(models, 7, self.DebrisModel)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['models_list']
 
 class FnvIMGSRecord(FnvBaseRecord):
     _Type = 'IMGS'

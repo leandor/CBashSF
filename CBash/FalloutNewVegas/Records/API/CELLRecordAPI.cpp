@@ -728,6 +728,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 32: //concSolid
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -736,6 +738,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->concSolid[0], FieldValue, ArraySize);
             break;
         case 33: //concBroken
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -744,6 +748,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->concBroken[0], FieldValue, ArraySize);
             break;
         case 34: //metalSolid
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -752,6 +758,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalSolid[0], FieldValue, ArraySize);
             break;
         case 35: //metalHollow
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -760,6 +768,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalHollow[0], FieldValue, ArraySize);
             break;
         case 36: //metalSheet
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -768,6 +778,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalSheet[0], FieldValue, ArraySize);
             break;
         case 37: //wood
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -776,6 +788,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->wood[0], FieldValue, ArraySize);
             break;
         case 38: //sand
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -784,6 +798,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->sand[0], FieldValue, ArraySize);
             break;
         case 39: //dirt
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -792,6 +808,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->dirt[0], FieldValue, ArraySize);
             break;
         case 40: //grass
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -800,6 +818,8 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->grass[0], FieldValue, ArraySize);
             break;
         case 41: //water
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;

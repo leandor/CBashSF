@@ -154,10 +154,13 @@ bool GMSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             switch(DATA.format)
                 {
                 case 's':
-                    delete []DATA.s;
-                    ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
-                    DATA.s = new char[ArraySize];
-                    strcpy_s(DATA.s, ArraySize, (STRING)FieldValue);
+                    if(FieldValue != NULL)
+                        {
+                        delete []DATA.s;
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        DATA.s = new char[ArraySize];
+                        strcpy_s(DATA.s, ArraySize, (STRING)FieldValue);
+                        }
                     break;
                 case 'i':
                     DATA.i = *(SINT32 *)FieldValue;
@@ -203,14 +206,13 @@ void GMSTRecord::DeleteField(FIELD_IDENTIFIERS)
                 {
                 case 's':
                     delete []DATA.s;
+                    DATA.s = defaultDATA.s;
                     if(defaultDATA.s != NULL)
                         {
                         ArraySize = (UINT32)strlen(defaultDATA.s) + 1;
                         DATA.s = new char[ArraySize];
                         strcpy_s(DATA.s, ArraySize, defaultDATA.s);
                         }
-                    else
-                        DATA.s = defaultDATA.s;
                     return;
                 case 'i':
                     DATA.i = defaultDATA.i;

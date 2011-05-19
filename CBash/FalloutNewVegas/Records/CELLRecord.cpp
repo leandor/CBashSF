@@ -702,7 +702,7 @@ SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     WRITE(DATA);
     WRITE(XCLC);
     WRITE(XCLL);
-    WRITE(IMPS);    
+    WRITE(IMPS);
     WRITE(IMPF);
     if(LNAM.value != 0 || LTMP.value != 0)
         {

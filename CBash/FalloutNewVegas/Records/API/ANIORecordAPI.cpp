@@ -75,12 +75,41 @@ UINT32 ANIORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 10: //mods Alternate Textures
-            return ISTRING_FIELD;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 13: //modelFlags
-            return UINT8_FIELD;
-        case 14: //data Animation
+            if(ListFieldID == 0) //altTextures
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 11: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 12: //animation
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -113,16 +142,29 @@ void * ANIORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 10: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 11: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value11 : NULL;
-        case 12: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value12 : NULL;
-        case 13: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value13 : NULL;
-        case 14: //data Animation
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 11: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 12: //animation
+            return &DATA.value;
         default:
             return NULL;
         }
@@ -168,28 +210,45 @@ bool ANIORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 11: //mods Alternate Textures
+        case 11: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value11 = *(FORMID *)FieldValue;
-            return true;
-        case 12: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value12 = *(SINT32 *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 13: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value13 = *(UINT8 *)FieldValue;
-            break;
-        case 14: //data Animation
-            DATA.Load();
-            DATA->value14 = *(FORMID *)FieldValue;
+        case 12: //animation
+            DATA.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -199,6 +258,7 @@ bool ANIORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void ANIORecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVMODS defaultMODS;
     switch(FieldID)
         {
         case 1: //flags1
@@ -229,23 +289,40 @@ void ANIORecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 11: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 12: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 13: //modelFlags
+        case 11: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 14: //data Animation
+        case 12: //animation
             DATA.Unload();
             return;
         default:

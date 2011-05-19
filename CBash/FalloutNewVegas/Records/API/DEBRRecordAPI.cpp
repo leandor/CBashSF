@@ -60,22 +60,47 @@ UINT32 DEBRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 8: //data DATA ,, Struct
-            return STRING_FIELD;
-        case 9: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 10: //modt_p
-            switch(WhichAttribute)
+        case 7: //models
+            if(ListFieldID == 0) //models
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Models.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Models.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //percentage
+                    return UINT8_FIELD;
+                case 2: //modPath
+                    return ISTRING_FIELD;
+                case 3: //flags
+                    return UINT8_FLAG_FIELD;
+                case 4: //modt_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return Models.MODS[ListIndex]->MODT.GetSize();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -100,14 +125,24 @@ void * DEBRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value7 : NULL;
-        case 8: //data DATA ,, Struct
-            return DATA.value;
-        case 9: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value9 : NULL;
-        case 10: //modt_p
-            *FieldValues = MODT.value;
+        case 7: //models
+            if(ListIndex >= Models.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //percentage
+                    return &Models.MODS[ListIndex]->percentage;
+                case 2: //modPath
+                    return Models.MODS[ListIndex]->modPath;
+                case 3: //flags
+                    return &Models.MODS[ListIndex]->flags;
+                case 4: //modt_p
+                    *FieldValues = Models.MODS[ListIndex]->MODT.value;
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
         default:
             return NULL;
@@ -142,19 +177,40 @@ bool DEBRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value7 = *(UINT8 *)FieldValue;
-            break;
-        case 8: //data DATA ,, Struct
-            DATA.Copy((STRING)FieldValue);
-            break;
-        case 9: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value9 = *(UINT8 *)FieldValue;
-            break;
-        case 10: //modt_p
-            MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+        case 7: //models
+            if(ListFieldID == 0) //modelsSize
+                {
+                Models.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Models.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //percentage
+                    Models.MODS[ListIndex]->percentage = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //modPath
+                    delete []Models.MODS[ListIndex]->modPath;
+                    Models.MODS[ListIndex]->modPath = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        Models.MODS[ListIndex]->modPath = new char[ArraySize];
+                        strcpy_s(Models.MODS[ListIndex]->modPath, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 3: //flags
+                    Models.MODS[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 4: //modt_p
+                    Models.MODS[ListIndex]->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -164,6 +220,7 @@ bool DEBRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void DEBRRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    DEBRModel defaultModel;
     switch(FieldID)
         {
         case 1: //flags1
@@ -182,17 +239,34 @@ void DEBRRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 8: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 9: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 10: //modt_p
-            MODT.Unload();
+        case 7: //models
+            if(ListFieldID == 0) //modelsSize
+                {
+                Models.Unload();
+                return;
+                }
+
+            if(ListIndex >= Models.MODS.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //percentage
+                    Models.MODS[ListIndex]->percentage = defaultModel.percentage;
+                    return;
+                case 2: //modPath
+                    delete []Models.MODS[ListIndex]->modPath;
+                    Models.MODS[ListIndex]->modPath = NULL;
+                    return;
+                case 3: //flags
+                    Models.MODS[ListIndex]->SetFlagMask(defaultModel.flags);
+                    return;
+                case 4: //modt_p
+                    Models.MODS[ListIndex]->MODT.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
         default:
             return;

@@ -615,8 +615,8 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 PKID.push_back(curFormID);
                 break;
             case REV32(KFFZ):
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((char*)&buffer[curPos]) + 1)
-                    KFFZ.push_back(StringRecord((char*)&buffer[curPos]));
+                for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
+                    KFFZ.push_back(StringRecord((STRING)&buffer[curPos]));
                 curPos++;
                 break;
             case REV32(CNAM):

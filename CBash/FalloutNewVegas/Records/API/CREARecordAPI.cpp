@@ -923,9 +923,12 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             NIFZ.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 {
-                UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
-                NIFZ.value[x] = new char[size];
-                strcpy_s(NIFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                if(((STRINGARRAY)FieldValue)[x] != NULL)
+                    {
+                    UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+                    NIFZ.value[x] = new char[size];
+                    strcpy_s(NIFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                    }
                 }
             break;
         case 23: //nift_p
@@ -1151,9 +1154,12 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             KFFZ.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 {
-                UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
-                KFFZ.value[x] = new char[size];
-                strcpy_s(KFFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                if(((STRINGARRAY)FieldValue)[x] != NULL)
+                    {
+                    UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+                    KFFZ.value[x] = new char[size];
+                    strcpy_s(KFFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
+                    }
                 }
             break;
         case 59: //creatureType

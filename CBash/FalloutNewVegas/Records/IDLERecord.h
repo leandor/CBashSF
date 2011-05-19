@@ -44,13 +44,13 @@ class IDLERecord : public FNVRecord //Idle Animation
 
         enum groupType
             {
-            eIdle   = 0,
-            eMovement   = 1,
+            eIdle        = 0,
+            eMovement    = 1,
             eLeftArm     = 2,
             eLeftHand    = 3,
-            eWeapon = 4,
-            eWeaponUp = 5,
-            eWeaponDown = 6,
+            eWeapon      = 4,
+            eWeaponUp    = 5,
+            eWeaponDown  = 6,
             eSpecialIdle = 7,
             eWholeBody   = 20,
             eUpperBody   = 21
@@ -58,7 +58,7 @@ class IDLERecord : public FNVRecord //Idle Animation
 
         enum groupFlag
             {
-            fIsUnknown1 = 0x40,
+            fIsUnknown1      = 0x40,
             fIsNotReturnFile = 0x80
             };
 

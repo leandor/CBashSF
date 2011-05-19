@@ -9241,28 +9241,359 @@ class FnvLSCRRecord(FnvBaseRecord):
 
 class FnvANIORecord(FnvBaseRecord):
     _Type = 'ANIO'
+    modPath = CBashISTRING(7)
+    modb = CBashFLOAT32(8)
+    modt_p = CBashUINT8ARRAY(9)
+    
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 10, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 10, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 10, length)
+    altTextures = CBashLIST(10, FNVAltTexture)
+    altTextures_list = CBashLIST(10, FNVAltTexture, True)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    modelFlags = CBashGeneric(11, c_ubyte)
+    animation = CBashFORMID(12)
+    copyattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb', 'modt_p',
+                                           'altTextures_list',
+                                           'modelFlags', 'animation']
+    exportattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb',
+                                             'altTextures_list',
+                                             'modelFlags', 'animation']# 'modt_p',
 
 class FnvWATRRecord(FnvBaseRecord):
     _Type = 'WATR'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    full = CBashSTRING(7)
+    noisePath = CBashISTRING(8)
+    opacity = CBashGeneric(9, c_ubyte)
+    flags = CBashGeneric(10, c_ubyte)
+    material = CBashISTRING(11)
+    sound = CBashFORMID(12)
+    effect = CBashFORMID(13)
+    damage = CBashGeneric(14, c_ushort)
+    unknown1 = CBashFLOAT32(15)
+    unknown2 = CBashFLOAT32(16)
+    unknown3 = CBashFLOAT32(17)
+    unknown4 = CBashFLOAT32(18)
+    sunPower = CBashFLOAT32(19)
+    reflectAmt = CBashFLOAT32(20)
+    fresnelAmt = CBashFLOAT32(21)
+    unused1 = CBashUINT8ARRAY(22, 4)
+    fogNear = CBashFLOAT32(23)
+    fogFar = CBashFLOAT32(24)
+    shallowRed = CBashGeneric(25, c_ubyte)
+    shallowGreen = CBashGeneric(26, c_ubyte)
+    shallowBlue = CBashGeneric(27, c_ubyte)
+    unused2 = CBashUINT8ARRAY(28, 1)
+    deepRed = CBashGeneric(29, c_ubyte)
+    deepGreen = CBashGeneric(30, c_ubyte)
+    deepBlue = CBashGeneric(31, c_ubyte)
+    unused3 = CBashUINT8ARRAY(32, 1)
+    reflRed = CBashGeneric(33, c_ubyte)
+    reflGreen = CBashGeneric(34, c_ubyte)
+    reflBlue = CBashGeneric(35, c_ubyte)
+    unused4 = CBashUINT8ARRAY(36, 1)
+    unused5 = CBashUINT8ARRAY(37, 4)
+    rainForce = CBashFLOAT32(38)
+    rainVelocity = CBashFLOAT32(39)
+    rainFalloff = CBashFLOAT32(40)
+    rainDampner = CBashFLOAT32(41)
+    dispSize = CBashFLOAT32(42)
+    dispForce = CBashFLOAT32(43)
+    dispVelocity = CBashFLOAT32(44)
+    dispFalloff = CBashFLOAT32(45)
+    dispDampner = CBashFLOAT32(46)
+    rainSize = CBashFLOAT32(47)
+    normalsNoiseScale = CBashFLOAT32(48)
+    noise1Direction = CBashFLOAT32(49)
+    noise2Direction = CBashFLOAT32(50)
+    noise3Direction = CBashFLOAT32(51)
+    noise1Speed = CBashFLOAT32(52)
+    noise2Speed = CBashFLOAT32(53)
+    noise3Speed = CBashFLOAT32(54)
+    normalsFalloffStart = CBashFLOAT32(55)
+    normalsFalloffEnd = CBashFLOAT32(56)
+    fogAmt = CBashFLOAT32(57)
+    normalsUVScale = CBashFLOAT32(58)
+    underFogAmt = CBashFLOAT32(59)
+    underFogNear = CBashFLOAT32(60)
+    underFogFar = CBashFLOAT32(61)
+    distAmt = CBashFLOAT32(62)
+    shininess = CBashFLOAT32(63)
+    hdrMult = CBashFLOAT32(64)
+    lightRadius = CBashFLOAT32(65)
+    lightBright = CBashFLOAT32(66)
+    noise1UVScale = CBashFLOAT32(67)
+    noise2UVScale = CBashFLOAT32(68)
+    noise3UVScale = CBashFLOAT32(69)
+    noise1AmpScale = CBashFLOAT32(70)
+    noise2AmpScale = CBashFLOAT32(71)
+    noise3AmpScale = CBashFLOAT32(72)
+    dayWater = CBashFORMID(73)
+    nightWater = CBashFORMID(74)
+    underWater = CBashFORMID(75)
+    IsCausesDamage = CBashBasicFlag('flags', 0x01)
+    IsReflective = CBashBasicFlag('flags', 0x02)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['full', 'noisePath', 'opacity', 'flags',
+                                                         'material', 'sound', 'effect', 'damage',
+                                                         'unknown1', 'unknown2', 'unknown3', 'unknown4',
+                                                         'sunPower', 'reflectAmt', 'fresnelAmt',
+                                                         'fogNear', 'fogFar',
+                                                         'shallowRed', 'shallowGreen', 'shallowBlue',
+                                                         'deepRed', 'deepGreen', 'deepBlue',
+                                                         'reflRed', 'reflGreen', 'reflBlue',
+                                                         'rainForce', 'rainVelocity', 'rainFalloff',
+                                                         'rainDampner', 'dispSize', 'dispForce',
+                                                         'dispVelocity', 'dispFalloff', 'dispDampner',
+                                                         'rainSize', 'normalsNoiseScale',
+                                                         'noise1Direction', 'noise2Direction', 'noise3Direction',
+                                                         'noise1Speed', 'noise2Speed', 'noise3Speed',
+                                                         'normalsFalloffStart', 'normalsFalloffEnd',
+                                                         'fogAmt', 'normalsUVScale', 'underFogAmt', 'underFogNear',
+                                                         'underFogFar', 'distAmt', 'shininess', 'hdrMult',
+                                                         'lightRadius', 'lightBright',
+                                                         'noise1UVScale', 'noise2UVScale', 'noise3UVScale',
+                                                         'noise1AmpScale', 'noise2AmpScale', 'noise3AmpScale',
+                                                         'dayWater', 'nightWater', 'underWater']
 
 class FnvEFSHRecord(FnvBaseRecord):
     _Type = 'EFSH'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    fillPath = CBashISTRING(7)
+    particlePath = CBashISTRING(8)
+    holesPath = CBashISTRING(9)
+    flags = CBashGeneric(10, c_ubyte)
+    unused1 = CBashUINT8ARRAY(11, 3)
+    memSBlend = CBashGeneric(12, c_ulong)
+    memBlendOp = CBashGeneric(13, c_ulong)
+    memZFunc = CBashGeneric(14, c_ulong)
+    fillRed = CBashGeneric(15, c_ubyte)
+    fillGreen = CBashGeneric(16, c_ubyte)
+    fillBlue = CBashGeneric(17, c_ubyte)
+    unused2 = CBashUINT8ARRAY(18, 1)
+    fillAIn = CBashFLOAT32(19)
+    fillAFull = CBashFLOAT32(20)
+    fillAOut = CBashFLOAT32(21)
+    fillAPRatio = CBashFLOAT32(22)
+    fillAAmp = CBashFLOAT32(23)
+    fillAFreq = CBashFLOAT32(24)
+    fillAnimSpdU = CBashFLOAT32(25)
+    fillAnimSpdV = CBashFLOAT32(26)
+    edgeEffOff = CBashFLOAT32(27)
+    edgeEffRed = CBashGeneric(28, c_ubyte)
+    edgeEffGreen = CBashGeneric(29, c_ubyte)
+    edgeEffBlue = CBashGeneric(30, c_ubyte)
+    unused3 = CBashUINT8ARRAY(31, 1)
+    edgeEffAIn = CBashFLOAT32(32)
+    edgeEffAFull = CBashFLOAT32(33)
+    edgeEffAOut = CBashFLOAT32(34)
+    edgeEffAPRatio = CBashFLOAT32(35)
+    edgeEffAAmp = CBashFLOAT32(36)
+    edgeEffAFreq = CBashFLOAT32(37)
+    fillAFRatio = CBashFLOAT32(38)
+    edgeEffAFRatio = CBashFLOAT32(39)
+    memDBlend = CBashGeneric(40, c_ulong)
+    partSBlend = CBashGeneric(41, c_ulong)
+    partBlendOp = CBashGeneric(42, c_ulong)
+    partZFunc = CBashGeneric(43, c_ulong)
+    partDBlend = CBashGeneric(44, c_ulong)
+    partBUp = CBashFLOAT32(45)
+    partBFull = CBashFLOAT32(46)
+    partBDown = CBashFLOAT32(47)
+    partBFRatio = CBashFLOAT32(48)
+    partBPRatio = CBashFLOAT32(49)
+    partLTime = CBashFLOAT32(50)
+    partLDelta = CBashFLOAT32(51)
+    partNSpd = CBashFLOAT32(52)
+    partNAcc = CBashFLOAT32(53)
+    partVel1 = CBashFLOAT32(54)
+    partVel2 = CBashFLOAT32(55)
+    partVel3 = CBashFLOAT32(56)
+    partAcc1 = CBashFLOAT32(57)
+    partAcc2 = CBashFLOAT32(58)
+    partAcc3 = CBashFLOAT32(59)
+    partKey1 = CBashFLOAT32(60)
+    partKey2 = CBashFLOAT32(61)
+    partKey1Time = CBashFLOAT32(62)
+    partKey2Time = CBashFLOAT32(63)
+    key1Red = CBashGeneric(64, c_ubyte)
+    key1Green = CBashGeneric(65, c_ubyte)
+    key1Blue = CBashGeneric(66, c_ubyte)
+    unused4 = CBashUINT8ARRAY(67, 1)
+    key2Red = CBashGeneric(68, c_ubyte)
+    key2Green = CBashGeneric(69, c_ubyte)
+    key2Blue = CBashGeneric(70, c_ubyte)
+    unused5 = CBashUINT8ARRAY(71, 1)
+    key3Red = CBashGeneric(72, c_ubyte)
+    key3Green = CBashGeneric(73, c_ubyte)
+    key3Blue = CBashGeneric(74, c_ubyte)
+    unused6 = CBashUINT8ARRAY(75, 1)
+    key1A = CBashFLOAT32(76)
+    key2A = CBashFLOAT32(77)
+    key3A = CBashFLOAT32(78)
+    key1Time = CBashFLOAT32(79)
+    key2Time = CBashFLOAT32(80)
+    key3Time = CBashFLOAT32(81)
+    partInitSpd = CBashFLOAT32(82)
+    partInitRot = CBashFLOAT32(83)
+    partInitRotDelta = CBashFLOAT32(84)
+    partRotSpd = CBashFLOAT32(85)
+    partRotDelta = CBashFLOAT32(86)
+    addon = CBashFORMID(87)
+    holesSTime = CBashFLOAT32(88)
+    holesETime = CBashFLOAT32(89)
+    holesSValue = CBashFLOAT32(90)
+    holesEValue = CBashFLOAT32(91)
+    edgeWidth = CBashFLOAT32(92)
+    edgeRed = CBashGeneric(93, c_ubyte)
+    edgeGreen = CBashGeneric(94, c_ubyte)
+    edgeBlue = CBashGeneric(95, c_ubyte)
+    unused7 = CBashUINT8ARRAY(96, 1)
+    explWindSpd = CBashFLOAT32(97)
+    textCountU = CBashGeneric(98, c_ulong)
+    textCountV = CBashGeneric(99, c_ulong)
+    addonFITime = CBashFLOAT32(100)
+    addonFOTime = CBashFLOAT32(101)
+    addonScaleStart = CBashFLOAT32(102)
+    addonScaleEnd = CBashFLOAT32(103)
+    addonScaleInTime = CBashFLOAT32(104)
+    addonScaleOutTime = CBashFLOAT32(105)
+    
+    IsNoMemShader = CBashBasicFlag('flags', 0x00000001)
+    IsNoPartShader = CBashBasicFlag('flags', 0x00000008)
+    IsEdgeInverse = CBashBasicFlag('flags', 0x00000010)
+    IsMemSkinOnly = CBashBasicFlag('flags', 0x00000020)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['fillPath', 'particlePath', 'holesPath',
+                                                         'flags', 'memSBlend', 'memBlendOp',
+                                                         'memZFunc',
+                                                         'fillRed', 'fillGreen', 'fillBlue',
+                                                         'fillAIn', 'fillAFull', 'fillAOut',
+                                                         'fillAPRatio', 'fillAAmp', 'fillAFreq',
+                                                         'fillAnimSpdU', 'fillAnimSpdV',
+                                                         'edgeEffOff',
+                                                         'edgeEffRed', 'edgeEffGreen', 'edgeEffBlue',
+                                                         'edgeEffAIn', 'edgeEffAFull', 'edgeEffAOut',
+                                                         'edgeEffAPRatio', 'edgeEffAAmp',
+                                                         'edgeEffAFreq', 'fillAFRatio',
+                                                         'edgeEffAFRatio', 'memDBlend', 'partSBlend',
+                                                         'partBlendOp', 'partZFunc', 'partDBlend',
+                                                         'partBUp', 'partBFull', 'partBDown',
+                                                         'partBFRatio', 'partBPRatio', 'partLTime',
+                                                         'partLDelta', 'partNSpd', 'partNAcc',
+                                                         'partVel1', 'partVel2', 'partVel3',
+                                                         'partAcc1', 'partAcc2', 'partAcc3',
+                                                         'partKey1', 'partKey2',
+                                                         'partKey1Time', 'partKey2Time',
+                                                         'key1Red', 'key1Green', 'key1Blue',
+                                                         'key2Red', 'key2Green', 'key2Blue',
+                                                         'key3Red', 'key3Green', 'key3Blue',
+                                                         'key1A', 'key2A', 'key3A',
+                                                         'key1Time', 'key2Time', 'key3Time',
+                                                         'partInitSpd', 'partInitRot',
+                                                         'partInitRotDelta', 'partRotSpd',
+                                                         'partRotDelta', 'addon', 'holesSTime',
+                                                         'holesETime', 'holesSValue', 'holesEValue',
+                                                         'edgeWidth',
+                                                         'edgeRed', 'edgeGreen', 'edgeBlue',
+                                                         'explWindSpd', 'textCountU', 'textCountV',
+                                                         'addonFITime', 'addonFOTime',
+                                                         'addonScaleStart', 'addonScaleEnd',
+                                                         'addonScaleInTime', 'addonScaleOutTime']
 
 class FnvEXPLRecord(FnvBaseRecord):
     _Type = 'EXPL'
+    boundX1 = CBashGeneric(7, c_short)
+    boundY1 = CBashGeneric(8, c_short)
+    boundZ1 = CBashGeneric(9, c_short)
+    boundX2 = CBashGeneric(10, c_short)
+    boundY2 = CBashGeneric(11, c_short)
+    boundZ2 = CBashGeneric(12, c_short)
+    full = CBashSTRING(13)
+    modPath = CBashISTRING(14)
+    modb = CBashFLOAT32(15)
+    modt_p = CBashUINT8ARRAY(16)
+    
+    def create_altTexture(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return FNVAltTexture(self._CollectionID, self._ModID, self._RecordID, 17, length)
+    altTextures = CBashLIST(17, FNVAltTexture)
+    altTextures_list = CBashLIST(17, FNVAltTexture, True)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    modelFlags = CBashGeneric(18, c_ubyte)
+    effect = CBashFORMID(19)
+    imageSpace = CBashFORMID(20)
+    force = CBashFLOAT32(21)
+    damage = CBashFLOAT32(22)
+    radius = CBashFLOAT32(23)
+    light = CBashFORMID(24)
+    sound1 = CBashFORMID(25)
+    flags = CBashGeneric(26, c_ulong)
+    ISRadius = CBashFLOAT32(27)
+    impactDataSet = CBashFORMID(28)
+    sound2 = CBashFORMID(29)
+    radLevel = CBashFLOAT32(30)
+    radTime = CBashFLOAT32(31)
+    radRadius = CBashFLOAT32(32)
+    soundLevel = CBashGeneric(33, c_ulong)
+    impact = CBashFORMID(34)
+    
+    IsUnknown1 = CBashBasicFlag('flags', 0x00000001)
+    IsAlwaysUsesWorldOrientation = CBashBasicFlag('flags', 0x00000002)
+    IsAlwaysKnockDown = CBashBasicFlag('flags', 0x00000004)
+    IsFormulaKnockDown = CBashBasicFlag('flags', 0x00000008)
+    IsIgnoreLOS = CBashBasicFlag('flags', 0x00000010)
+    IsPushExplosionSourceRefOnly = CBashBasicFlag('flags', 0x00000020)
+    IsIgnoreImageSpaceSwap = CBashBasicFlag('flags', 0x00000040)
+    
+    IsHead = CBashBasicFlag('modelFlags', 0x01)
+    IsTorso = CBashBasicFlag('modelFlags', 0x02)
+    IsRightHand = CBashBasicFlag('modelFlags', 0x04)
+    IsLeftHand = CBashBasicFlag('modelFlags', 0x08)
+    
+    IsLoud = CBashBasicType('soundLevel', 0, 'IsNormal')
+    IsNormal = CBashBasicType('soundLevel', 1, 'IsLoud')
+    IsSilent = CBashBasicType('soundLevel', 2, 'IsLoud')
+    copyattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                           'boundX2', 'boundY2', 'boundZ2',
+                                           'full', 'modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'effect', 'imageSpace', 'force',
+                                           'damage', 'radius', 'light',
+                                           'sound1', 'flags', 'ISRadius',
+                                           'impactDataSet', 'sound2',
+                                           'radLevel', 'radTime',
+                                           'radRadius', 'soundLevel', 'impact']
+    exportattrs = FnvBaseRecord.baseattrs + ['boundX1', 'boundY1', 'boundZ1',
+                                             'boundX2', 'boundY2', 'boundZ2',
+                                             'full', 'modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'effect', 'imageSpace', 'force',
+                                             'damage', 'radius', 'light',
+                                             'sound1', 'flags', 'ISRadius',
+                                             'impactDataSet', 'sound2',
+                                             'radLevel', 'radTime',
+                                             'radRadius', 'soundLevel', 'impact']# 'modt_p',
 
 class FnvDEBRRecord(FnvBaseRecord):
     _Type = 'DEBR'
+    class DebrisModel(ListComponent):
+        percentage = CBashGeneric_LIST(1, c_ubyte)
+        modPath = CBashISTRING_LIST(2)
+        flags = CBashGeneric_LIST(3, c_ubyte)
+        modt_p = CBashUINT8ARRAY_LIST(4)
+        
+        IsHasCollisionData = CBashBasicFlag('flags', 0x01)
+        copyattrs = ['percentage', 'modPath', 'flags', 'modt_p']
+        exportattrs = ['percentage', 'modPath', 'flags']#, 'modt_p'
+        
+    def create_model(self):
+        length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 1)
+        CBash.SetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))
+        return self.DebrisModel(self._CollectionID, self._ModID, self._RecordID, 7, length)
+    models = CBashLIST(7, DebrisModel)
+    models_list = CBashLIST(7, DebrisModel, True)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['models_list']
 
 class FnvIMGSRecord(FnvBaseRecord):
     _Type = 'IMGS'

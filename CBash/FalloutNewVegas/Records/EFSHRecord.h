@@ -76,7 +76,7 @@ class EFSHRecord : public FNVRecord //Effect Shader
         StringRecord ICON; //Fill Texture
         StringRecord ICO2; //Particle Shader Texture
         StringRecord NAM7; //Holes Texture
-        OptSubRecord<GENDATA> DATA; //DATA ,, Struct
+        ReqSubRecord<EFSHDATA> DATA; //Data
 
         EFSHRecord(unsigned char *_recData=NULL);
         EFSHRecord(EFSHRecord *srcRecord);

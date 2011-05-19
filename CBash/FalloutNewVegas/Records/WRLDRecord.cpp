@@ -104,9 +104,9 @@ bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     //        }
     //    }
 
-    if(RecordType == NULL || 
+    if(RecordType == NULL ||
         RecordType != REV32(CELL) ||
-        RecordType != REV32(ACHR) || 
+        RecordType != REV32(ACHR) ||
         RecordType != REV32(ACRE) ||
         RecordType != REV32(REFR) ||
         RecordType != REV32(PGRE) ||

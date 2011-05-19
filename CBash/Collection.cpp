@@ -137,7 +137,7 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
 bool Collection::IsModAdded(STRING const &ModName)
     {
     for(UINT32 p = 0;p < ModFiles.size();p++)
-        if(_stricmp(ModName, ModFiles[p]->reader.getModName()) == 0)
+        if(icmps(ModName, ModFiles[p]->reader.getModName()) == 0)
             return true;
     return false;
     }
@@ -932,7 +932,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
         {
         if(EditorID == NULL)
             bChangingEditorID = true;
-        else if(strcmp(RecordEditorID, EditorID) != 0)
+        else if(cmps(RecordEditorID, EditorID) != 0)
             bChangingEditorID = true;
         }
 

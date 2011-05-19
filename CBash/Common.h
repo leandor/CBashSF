@@ -190,6 +190,10 @@ class Ex_INVALIDRECORDINDEX : public std::exception
         const char * __CLR_OR_THIS_CALL what() const;
     };
 
+//wrappers for _stricmp and strcmp that handle NULL args
+int icmps(const STRING lhs, const STRING rhs);
+int cmps(const STRING lhs, const STRING rhs);
+
 class ModFile;
 class Record;
 class StringRecord;
@@ -1560,7 +1564,10 @@ struct ReqSubRecord
                 !(test == REV32(DATA) && (test2 == REV32(NAM1) || test2 == REV32(NAM2) || test2 == REV32(VNAM) || test2 == REV32(PROJ)) && subSize == 68 && sizeof(T) == 84) &&
                 !(test == REV32(DATA) && (test2 == REV32(CTDA) || test2 == REV32(INDX) || test2 == REV32(QOBJ)) && subSize == 2 && sizeof(T) == 8) &&
                 !(test == REV32(DATA) && (test2 == REV32(IDLE) || test2 == REV32(GRUP)) && subSize == 6 && sizeof(T) == 8) &&
-                !(test == REV32(PKDT) && subSize == 8 && sizeof(T) == 12)
+                !(test == REV32(PKDT) && subSize == 8 && sizeof(T) == 12) &&
+                !(test == REV32(DATA) && subSize == 184 && sizeof(T) == 196) &&
+                !(test == REV32(DNAM) && subSize == 184 && sizeof(T) == 196) &&
+				!(test == REV32(DATA) && (test2 == REV32(EFSH) || test2 == REV32(GRUP)) && sizeof(T) == 308) //multiple possible subSizes
                 )
                 {
                 printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "

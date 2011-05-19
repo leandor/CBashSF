@@ -3614,7 +3614,7 @@ class FNVGRUPRecords<FNV::WRLDRecord>
                                     Temporary.push_back(curCell->NAVM[y]);
                                 if(CloseMod)
                                     curCell->NAVM.clear();
-                                
+
                                 numChildren = (UINT32)VWD.size() + (UINT32)Temporary.size();
                                 if(numChildren)
                                     {

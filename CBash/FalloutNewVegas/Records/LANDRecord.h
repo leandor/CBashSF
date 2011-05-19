@@ -113,7 +113,7 @@ class LANDRecord : public FNVRecord //Landscape
         struct LANDLAYERS
             {
             ReqSubRecord<LANDGENTXT> ATXT;
-            UnorderedPackedArray<LANDVTXT> VTXT; //Actually ordered...            
+            UnorderedPackedArray<LANDVTXT> VTXT; //Actually ordered...
             //Record order doesn't matter on opacities, so equality testing isn't easy
             //Instead, they're keyed by position (VTXT.value.position)
             //The proper solution would be to see if the opacity at each position matches

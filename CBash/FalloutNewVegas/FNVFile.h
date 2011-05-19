@@ -84,11 +84,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/PACKRecord.h"
 #include "Records/CSTYRecord.h"
 #include "Records/LSCRRecord.h"
-//#include "Records/ANIORecord.h"
-//#include "Records/WATRRecord.h"
-//#include "Records/EFSHRecord.h"
-//#include "Records/EXPLRecord.h"
-//#include "Records/DEBRRecord.h"
+#include "Records/ANIORecord.h"
+#include "Records/WATRRecord.h"
+#include "Records/EFSHRecord.h"
+#include "Records/EXPLRecord.h"
+#include "Records/DEBRRecord.h"
 //#include "Records/IMGSRecord.h"
 //#include "Records/IMADRecord.h"
 //#include "Records/FLSTRecord.h"
@@ -189,11 +189,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::PACKRecord> PACK;
         FNVGRUPRecords<FNV::CSTYRecord> CSTY;
         FNVGRUPRecords<FNV::LSCRRecord> LSCR;
-        //FNVGRUPRecords<FNV::ANIORecord> ANIO;
-        //FNVGRUPRecords<FNV::WATRRecord> WATR;
-        //FNVGRUPRecords<FNV::EFSHRecord> EFSH;
-        //FNVGRUPRecords<FNV::EXPLRecord> EXPL;
-        //FNVGRUPRecords<FNV::DEBRRecord> DEBR;
+        FNVGRUPRecords<FNV::ANIORecord> ANIO;
+        FNVGRUPRecords<FNV::WATRRecord> WATR;
+        FNVGRUPRecords<FNV::EFSHRecord> EFSH;
+        FNVGRUPRecords<FNV::EXPLRecord> EXPL;
+        FNVGRUPRecords<FNV::DEBRRecord> DEBR;
         //FNVGRUPRecords<FNV::IMGSRecord> IMGS;
         //FNVGRUPRecords<FNV::IMADRecord> IMAD;
         //FNVGRUPRecords<FNV::FLSTRecord> FLST;

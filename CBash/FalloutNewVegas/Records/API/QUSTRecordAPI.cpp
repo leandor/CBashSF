@@ -275,10 +275,10 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     }
                                 return UNKNOWN_FIELD;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
                                 return UNKNOWN_FIELD;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -363,7 +363,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                                                 default:
                                                                     return UNKNOWN_FIELD;
                                                                 }
-                
+
                                                             }
                                                         return UNKNOWN_FIELD;
                                                     default:
@@ -442,10 +442,10 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                         return UNKNOWN_FIELD;
                                     }
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
                                 return UNKNOWN_FIELD;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //index
@@ -492,10 +492,10 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     }
                                 return UNKNOWN_FIELD;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
                                 return UNKNOWN_FIELD;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //reference
@@ -596,10 +596,10 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     }
                                 return UNKNOWN_FIELD;
                                 }
-                
+
                             if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
                                 return UNKNOWN_FIELD;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -684,7 +684,7 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                                                 default:
                                                                     return UNKNOWN_FIELD;
                                                                 }
-                
+
                                                             }
                                                         return UNKNOWN_FIELD;
                                                     default:
@@ -809,7 +809,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 2: //conditions
                             if(ListX2Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
                                 return NULL;
-                
+
                             switch(ListFieldID)
                                 {
                                 case 1: //operType
@@ -856,7 +856,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 12: //vars
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
                                 return NULL;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //index
@@ -915,7 +915,7 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 4: //conditions
                             if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
                                 return NULL;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -1087,10 +1087,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.resize(ArraySize);
                                 return false;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
                                 break;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -1163,10 +1163,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.resize(ArraySize);
                                 return false;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
                                 break;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //index
@@ -1215,10 +1215,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.resize(ArraySize);
                                 return false;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
                                 break;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //reference
@@ -1287,10 +1287,10 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                 Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.resize(ArraySize);
                                 return false;
                                 }
-                
+
                             if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
                                 break;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -1468,10 +1468,10 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.Unload();
                                 return;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
                                 return;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType
@@ -1540,10 +1540,10 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.Unload();
                                 return;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
                                 return;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //index
@@ -1588,10 +1588,10 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.Unload();
                                 return;
                                 }
-                
+
                             if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
                                 return;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //reference
@@ -1660,10 +1660,10 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
                                 Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.Unload();
                                 return;
                                 }
-                
+
                             if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
                                 return;
-                
+
                             switch(ListX3FieldID)
                                 {
                                 case 1: //operType

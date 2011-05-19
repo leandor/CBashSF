@@ -66,7 +66,7 @@ bool GMSTRecord::GMSTDATA::operator ==(const GMSTDATA &other) const
     switch(format)
         {
         case 's':
-            return strcmp(s, other.s) == 0;
+            return cmps(s, other.s) == 0;
         case 'i':
             return i == other.i;
         case 'f':

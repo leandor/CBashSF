@@ -56,16 +56,38 @@ const STRING Ex_INVALIDRECORDINDEX::__CLR_OR_THIS_CALL what() const
     return "Invalid RecordID or RecordEditorID. Record not found.";
     }
 
+int icmps(const STRING lhs, const STRING rhs)
+    {
+    if(lhs == rhs)
+        return 0;
+    if(lhs == NULL)
+        return -1;
+    if(rhs == NULL)
+        return 1;
+    return _stricmp(lhs, rhs);
+    }
+
+int cmps(const STRING lhs, const STRING rhs)
+    {
+    if(lhs == rhs)
+        return 0;
+    if(lhs == NULL)
+        return -1;
+    if(rhs == NULL)
+        return 1;
+    return strcmp(lhs, rhs);
+    }
+
 bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     {
-    return _stricmp( s1, s2 ) < 0;
+    return icmps(s1, s2) < 0;
     }
 
 STRING DeGhostModName(STRING const ModName)
     {
     STRING NonGhostName = NULL;
     UINT32 NameLength = strlen(ModName) + 1;
-    if(_stricmp(".ghost",ModName + NameLength - 7) == 0)
+    if(icmps(".ghost",ModName + NameLength - 7) == 0)
         {
         NonGhostName = new char[NameLength];
         strcpy_s(NonGhostName, NameLength, ModName);
@@ -543,7 +565,7 @@ void FormIDHandlerClass::UpdateFormIDLookup()
         {
         for(UINT16 y = 0; y < CollapsedIndex; ++y)
             {
-            if(_stricmp(LoadOrder255[(UINT8)x], MAST[(UINT8)y].value) == 0)
+            if(icmps(LoadOrder255[(UINT8)x], MAST[(UINT8)y].value) == 0)
                 {
                 sortedMAST.push_back(MAST[(UINT8)y]);
                 break;
@@ -561,7 +583,7 @@ void FormIDHandlerClass::UpdateFormIDLookup()
         curMaster = MAST[(UINT8)p].value;
         //printf("master %s\n", curMaster);
         for(UINT32 y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder255[(UINT8)y], curMaster) == 0)
+            if(icmps(LoadOrder255[(UINT8)y], curMaster) == 0)
                 {
                 CollapseTable[(UINT8)y] = (UINT8)p;
                 //printf("%02X == %02X\n", (UINT8)y, (UINT8)p);
@@ -605,7 +627,7 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
         {
         curMaster = MAST[(UINT8)p].value;
         for(UINT32 y = 0; y < numMods; ++y)
-            if(_stricmp(LoadOrder255[(UINT8)y], curMaster) == 0)
+            if(icmps(LoadOrder255[(UINT8)y], curMaster) == 0)
                 {
                 ExpandTable[(UINT8)p] = (UINT8)y;
                 CollapseTable[(UINT8)y] = (UINT8)p;
@@ -869,26 +891,12 @@ void StringRecord::Copy(STRING FieldValue)
 
 bool StringRecord::equals(const StringRecord &other) const
     {
-    if(!IsLoaded())
-        {
-        if(!other.IsLoaded())
-            return true;
-        }
-    else if(other.IsLoaded() && (strcmp(value, other.value) == 0))
-        return true;
-    return false;
+    return cmps(value, other.value) == 0;
     }
 
 bool StringRecord::equalsi(const StringRecord &other) const
     {
-    if(!IsLoaded())
-        {
-        if(!other.IsLoaded())
-            return true;
-        }
-    else if(other.IsLoaded() && (_stricmp(value, other.value) == 0))
-        return true;
-    return false;
+    return icmps(value, other.value) == 0;
     }
 
 StringRecord& StringRecord::operator = (const StringRecord &rhs)
@@ -1055,7 +1063,7 @@ bool UnorderedPackedStrings::equals(const UnorderedPackedStrings &other) const
     if(value.size() == other.value.size())
         {
         for(UINT32 x = 0; x < value.size(); ++x)
-            if(strcmp(value[x], other.value[x]) != 0)
+            if(cmps(value[x], other.value[x]) != 0)
                 return false;
         return true;
         }
@@ -1069,7 +1077,7 @@ bool UnorderedPackedStrings::equalsi(const UnorderedPackedStrings &other) const
     if(value.size() == other.value.size())
         {
         for(UINT32 x = 0; x < value.size(); ++x)
-            if(_stricmp(value[x], other.value[x]) != 0)
+            if(icmps(value[x], other.value[x]) != 0)
                 return false;
         return true;
         }

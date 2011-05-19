@@ -70,7 +70,7 @@ class EXPLRecord : public FNVRecord //Explosion
         OptSubRecord<FNVMODEL> MODL; //Model
         OptSimpleSubRecord<FORMID> EITM; //Object Effect
         OptSimpleSubRecord<FORMID> MNAM; //Image Space Modifier
-        OptSubRecord<EXPLDATA> DATA; //Data
+        ReqSubRecord<EXPLDATA> DATA; //Data
         OptSimpleSubRecord<FORMID> INAM; //Placed Impact Object
 
         EXPLRecord(unsigned char *_recData=NULL);

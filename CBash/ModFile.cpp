@@ -38,7 +38,7 @@ ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
         Flags.IsIgnoreExisting = true;
         TES4.IsLoaded(true);
         STRING const _Name = reader.getModName();
-        TES4.IsESM(_stricmp(".esm",_Name + strlen(_Name) - 4) == 0);
+        TES4.IsESM(icmps(".esm",_Name + strlen(_Name) - 4) == 0);
         }
     }
 

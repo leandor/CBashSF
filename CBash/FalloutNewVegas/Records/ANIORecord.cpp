@@ -51,9 +51,7 @@ ANIORecord::ANIORecord(ANIORecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-
     MODL = srcRecord->MODL;
-
     DATA = srcRecord->DATA;
     return;
     }
@@ -73,8 +71,7 @@ bool ANIORecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)
             op.Accept(MODL->Textures.MODS[x]->texture);
         }
-    if(DATA.IsLoaded())
-        op.Accept(DATA->value);
+    op.Accept(DATA.value);
 
     return op.Stop();
     }
@@ -153,6 +150,7 @@ SINT32 ANIORecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     MODL.Unload();
     DATA.Unload();
@@ -162,19 +160,16 @@ SINT32 ANIORecord::Unload()
 SINT32 ANIORecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-
     MODL.Write(writer);
-
     WRITE(DATA);
-
     return -1;
     }
 
 bool ANIORecord::operator ==(const ANIORecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            MODL == other.MODL &&
-            DATA == other.DATA);
+    return (DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            MODL == other.MODL);
     }
 
 bool ANIORecord::operator !=(const ANIORecord &other) const

@@ -1262,6 +1262,37 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\ANIORecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\ARMORecord.cpp"
 							>
 							<FileConfiguration
@@ -1487,7 +1518,42 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\DEBRRecord.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\DOORRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\EFSHRecord.cpp"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -1547,6 +1613,10 @@
 									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 								/>
 							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\EXPLRecord.cpp"
+							>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\EYESRecord.cpp"
@@ -2438,6 +2508,37 @@
 							>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\WATRRecord.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\WEAPRecord.cpp"
 							>
 							<FileConfiguration
@@ -2629,6 +2730,37 @@
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\AMMORecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\ANIORecordAPI.cpp"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -2915,6 +3047,10 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\DEBRRecordAPI.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\DIALRecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -2977,6 +3113,37 @@
 							</FileConfiguration>
 						</File>
 						<File
+							RelativePath=".\FalloutNewVegas\Records\API\EFSHRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
 							RelativePath=".\FalloutNewVegas\Records\API\ENCHRecordAPI.cpp"
 							>
 							<FileConfiguration
@@ -3006,6 +3173,10 @@
 									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 								/>
 							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\EXPLRecordAPI.cpp"
+							>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\EYESRecordAPI.cpp"
@@ -4004,6 +4175,37 @@
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\TXSTRecordAPI.cpp"
 							>
+						</File>
+						<File
+							RelativePath=".\FalloutNewVegas\Records\API\WATRRecordAPI.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="FullDebug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)\$(InputName)1.obj"
+									XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								/>
+							</FileConfiguration>
 						</File>
 						<File
 							RelativePath=".\FalloutNewVegas\Records\API\WEAPRecordAPI.cpp"

@@ -101,83 +101,83 @@ def TestRegressions():
     Current.load()
     newMod = Current.LookupModFile("TestRegressions.esp")
 
-    assertTES4(Current, newMod)
-    assertGMST(Current, newMod)
-    assertTXST(Current, newMod)
-    assertMICN(Current, newMod)
-    assertGLOB(Current, newMod)
-    assertCLAS(Current, newMod)
-    assertFACT(Current, newMod)
-    assertHDPT(Current, newMod)
-    assertHAIR(Current, newMod)
-    assertEYES(Current, newMod)
-    assertRACE(Current, newMod)
-    assertSOUN(Current, newMod)
-    assertASPC(Current, newMod)
-    assertMGEF(Current, newMod)
-    assertSCPT(Current, newMod)
-    assertLTEX(Current, newMod)
-    assertENCH(Current, newMod)
-    assertSPEL(Current, newMod)
-    assertACTI(Current, newMod)
-    assertTACT(Current, newMod)
-    assertTERM(Current, newMod)
-    assertARMO(Current, newMod)
-    assertBOOK(Current, newMod)
-    assertCONT(Current, newMod)
-    assertDOOR(Current, newMod)
-    assertINGR(Current, newMod)
-    assertLIGH(Current, newMod)
-    assertMISC(Current, newMod)
-    assertSTAT(Current, newMod)
-    assertSCOL(Current, newMod)
-    assertMSTT(Current, newMod)
-    assertPWAT(Current, newMod)
-    assertGRAS(Current, newMod)
-##    newMod.save()
-    assertTREE(Current, newMod)
-    assertFURN(Current, newMod)
-    assertWEAP(Current, newMod)
-    assertAMMO(Current, newMod)
-    assertNPC_(Current, newMod)
-    assertCREA(Current, newMod)
-    assertLVLC(Current, newMod)
-    assertLVLN(Current, newMod)
-    assertKEYM(Current, newMod)
-    assertALCH(Current, newMod)
-    assertIDLM(Current, newMod)
-    assertNOTE(Current, newMod)
-    assertCOBJ(Current, newMod)
-    assertPROJ(Current, newMod)
-    assertLVLI(Current, newMod)
-    assertWTHR(Current, newMod)
-    assertCLMT(Current, newMod)
-    assertREGN(Current, newMod)
-    assertNAVI(Current, newMod)
-    assertCELL(Current, newMod)
-    assertACHR(Current, newMod)
-    assertACRE(Current, newMod)
-    assertREFR(Current, newMod)
-    assertPGRE(Current, newMod)
-    assertPMIS(Current, newMod)
-    assertPBEA(Current, newMod)
-    assertPFLA(Current, newMod)
-    assertPCBE(Current, newMod)
-    assertNAVM(Current, newMod)
-    assertWRLD(Current, newMod)
-    assertLAND(Current, newMod)
-    assertDIAL(Current, newMod)
-    assertINFO(Current, newMod)
-    assertQUST(Current, newMod)
-    assertIDLE(Current, newMod)
-    assertPACK(Current, newMod)
-    assertCSTY(Current, newMod)
-    assertLSCR(Current, newMod)
-    ##    assertANIO(Current, newMod)
-    ##    assertWATR(Current, newMod)
-    ##    assertEFSH(Current, newMod)
-    ##    assertEXPL(Current, newMod)
-    ##    assertDEBR(Current, newMod)
+    ##    assertTES4(Current, newMod)
+    ##    assertGMST(Current, newMod)
+    ##    assertTXST(Current, newMod)
+    ##    assertMICN(Current, newMod)
+    ##    assertGLOB(Current, newMod)
+    ##    assertCLAS(Current, newMod)
+    ##    assertFACT(Current, newMod)
+    ##    assertHDPT(Current, newMod)
+    ##    assertHAIR(Current, newMod)
+    ##    assertEYES(Current, newMod)
+    ##    assertRACE(Current, newMod)
+    ##    assertSOUN(Current, newMod)
+    ##    assertASPC(Current, newMod)
+    ##    assertMGEF(Current, newMod)
+    ##    assertSCPT(Current, newMod)
+    ##    assertLTEX(Current, newMod)
+    ##    assertENCH(Current, newMod)
+    ##    assertSPEL(Current, newMod)
+    ##    assertACTI(Current, newMod)
+    ##    assertTACT(Current, newMod)
+    ##    assertTERM(Current, newMod)
+    ##    assertARMO(Current, newMod)
+    ##    assertBOOK(Current, newMod)
+    ##    assertCONT(Current, newMod)
+    ##    assertDOOR(Current, newMod)
+    ##    assertINGR(Current, newMod)
+    ##    assertLIGH(Current, newMod)
+    ##    assertMISC(Current, newMod)
+    ##    assertSTAT(Current, newMod)
+    ##    assertSCOL(Current, newMod)
+    ##    assertMSTT(Current, newMod)
+    ##    assertPWAT(Current, newMod)
+    ##    assertGRAS(Current, newMod)
+    ####    newMod.save()
+    ####    assertTREE(Current, newMod)
+    ####    assertFURN(Current, newMod)
+    ####    assertWEAP(Current, newMod)
+    ####    assertAMMO(Current, newMod)
+    ####    assertNPC_(Current, newMod)
+    ####    assertCREA(Current, newMod)
+    ####    assertLVLC(Current, newMod)
+    ####    assertLVLN(Current, newMod)
+    ####    assertKEYM(Current, newMod)
+    ####    assertALCH(Current, newMod)
+    ####    assertIDLM(Current, newMod)
+    ####    assertNOTE(Current, newMod)
+    ####    assertCOBJ(Current, newMod)
+    ####    assertPROJ(Current, newMod)
+    ####    assertLVLI(Current, newMod)
+    ####    assertWTHR(Current, newMod)
+    ####    assertCLMT(Current, newMod)
+    ####    assertREGN(Current, newMod)
+    ####    assertNAVI(Current, newMod)
+    ####    assertCELL(Current, newMod)
+    ####    assertACHR(Current, newMod)
+    ####    assertACRE(Current, newMod)
+    ####    assertREFR(Current, newMod)
+    ####    assertPGRE(Current, newMod)
+    ####    assertPMIS(Current, newMod)
+    ####    assertPBEA(Current, newMod)
+    ####    assertPFLA(Current, newMod)
+    ####    assertPCBE(Current, newMod)
+    ####    assertNAVM(Current, newMod)
+    ####    assertWRLD(Current, newMod)
+    ####    assertLAND(Current, newMod)
+    ####    assertDIAL(Current, newMod)
+    ####    assertINFO(Current, newMod)
+    ####    assertQUST(Current, newMod)
+    ####    assertIDLE(Current, newMod)
+    ####    assertPACK(Current, newMod)
+    ####    assertCSTY(Current, newMod)
+    ####    assertLSCR(Current, newMod)
+    assertANIO(Current, newMod)
+    assertWATR(Current, newMod)
+    assertEFSH(Current, newMod)
+    assertEXPL(Current, newMod)
+    assertDEBR(Current, newMod)
     ##    assertIMGS(Current, newMod)
     ##    assertIMAD(Current, newMod)
     ##    assertFLST(Current, newMod)
@@ -12319,39 +12319,249 @@ def TestReadWrite():
 ##            wrldCell.DeleteRecord()
 ##        record.DeleteRecord()
 ##
-    for record in Current.LoadOrderMods[0].DIAL:
+##    for record in Current.LoadOrderMods[0].DIAL:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        for objRef in record.INFO:
+##            objRef.CopyAsOverride(trgRecOver)
+##            objRef.CopyAsNew(trgRecNew)
+##            objRef.DeleteRecord()
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].QUST:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IDLE:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].PACK:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CSTY:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LSCR:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+
+    for record in Current.LoadOrderMods[0].ANIO:
         trgRecOver = record.CopyAsOverride(newMod)
         trgRecNew = record.CopyAsNew(newMod)
-        for objRef in record.INFO:
-            objRef.CopyAsOverride(trgRecOver)
-            objRef.CopyAsNew(trgRecNew)
-            objRef.DeleteRecord()
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].QUST:
+    for record in Current.LoadOrderMods[0].WATR:
         trgRecOver = record.CopyAsOverride(newMod)
         trgRecNew = record.CopyAsNew(newMod)
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].IDLE:
+    for record in Current.LoadOrderMods[0].EFSH:
         trgRecOver = record.CopyAsOverride(newMod)
         trgRecNew = record.CopyAsNew(newMod)
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].PACK:
+    for record in Current.LoadOrderMods[0].EXPL:
         trgRecOver = record.CopyAsOverride(newMod)
         trgRecNew = record.CopyAsNew(newMod)
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].CSTY:
+    for record in Current.LoadOrderMods[0].DEBR:
         trgRecOver = record.CopyAsOverride(newMod)
         trgRecNew = record.CopyAsNew(newMod)
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].LSCR:
-        trgRecOver = record.CopyAsOverride(newMod)
-        trgRecNew = record.CopyAsNew(newMod)
-        record.DeleteRecord()
+##    for record in Current.LoadOrderMods[0].IMGS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IMAD:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].FLST:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].PERK:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].BPTD:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ADDN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].AVIF:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].RADS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CAMS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CPTH:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].VTYP:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IPCT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IPDS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ARMA:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ECZN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MESG:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].RGDL:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].DOBJ:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LGTM:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MUSC:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IMOD:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].REPU:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].RCPE:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].RCCT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CHIP:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CSNO:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LSCT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MSET:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ALOC:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CHAL:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].AMEF:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CCRD:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CMNY:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CDCK:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].DEHY:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].HUNG:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].SLPD:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
 
     print "TestReadWrite:Save Test - TestRW.esp"
 
@@ -12411,5 +12621,5 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-##TestRegressions()
-TestReadWrite()
+TestRegressions()
+##TestReadWrite()

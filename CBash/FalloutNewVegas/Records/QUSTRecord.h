@@ -158,7 +158,7 @@ class QUSTRecord : public FNVRecord //Quest
             fIsStartEnabled   = 0x00000001,
             fIsRepeatedTopics = 0x00000004,
             fIsRepeatedStages = 0x00000008,
-            fIsUnknown = 0x00000010
+            fIsUnknown        = 0x00000010
             };
 
     public:

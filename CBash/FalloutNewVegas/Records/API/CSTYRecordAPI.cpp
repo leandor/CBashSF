@@ -678,7 +678,7 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 67: //waitFireTimerMin
             CSSD.value.waitFireTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 68: //waitFireTimerMax      
+        case 68: //waitFireTimerMax
             CSSD.value.waitFireTimerMax = *(FLOAT32 *)FieldValue;
             break;
         case 69: //fireTimerMin
@@ -936,7 +936,7 @@ void CSTYRecord::DeleteField(FIELD_IDENTIFIERS)
         case 67: //waitFireTimerMin
             CSSD.value.waitFireTimerMin =defaultCSSD.waitFireTimerMin;
             break;
-        case 68: //waitFireTimerMax      
+        case 68: //waitFireTimerMax
             CSSD.value.waitFireTimerMax = defaultCSSD.waitFireTimerMax;
             break;
         case 69: //fireTimerMin

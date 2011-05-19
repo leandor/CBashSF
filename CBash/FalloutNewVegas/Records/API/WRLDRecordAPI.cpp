@@ -478,6 +478,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 38: //concSolid
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -486,6 +488,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->concSolid[0], FieldValue, ArraySize);
             break;
         case 39: //concBroken
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -494,6 +498,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->concBroken[0], FieldValue, ArraySize);
             break;
         case 40: //metalSolid
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -502,6 +508,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalSolid[0], FieldValue, ArraySize);
             break;
         case 41: //metalHollow
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -510,6 +518,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalHollow[0], FieldValue, ArraySize);
             break;
         case 42: //metalSheet
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -518,6 +528,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->metalSheet[0], FieldValue, ArraySize);
             break;
         case 43: //wood
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -526,6 +538,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->wood[0], FieldValue, ArraySize);
             break;
         case 44: //sand
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -534,6 +548,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->sand[0], FieldValue, ArraySize);
             break;
         case 45: //dirt
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -542,6 +558,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->dirt[0], FieldValue, ArraySize);
             break;
         case 46: //grass
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
@@ -550,6 +568,8 @@ bool WRLDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             memcpy(&IMPF->grass[0], FieldValue, ArraySize);
             break;
         case 47: //water
+            if(FieldValue == NULL)
+                break;
             ArraySize = strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;

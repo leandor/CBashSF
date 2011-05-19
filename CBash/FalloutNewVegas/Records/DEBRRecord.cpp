@@ -24,28 +24,198 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+DEBRRecord::DEBRModel::DEBRModel():
+    percentage(0),
+    modPath(NULL),
+    flags(0)
+    {
+    //
+    }
+
+DEBRRecord::DEBRModel::~DEBRModel()
+    {
+    delete []modPath;
+    }
+
 bool DEBRRecord::DEBRModel::IsHasCollisionData()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsHasCollisionData) != 0;
+    return (flags & fIsHasCollisionData) != 0;
     }
 
 void DEBRRecord::DEBRModel::IsHasCollisionData(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsHasCollisionData) : (Dummy->flags & ~fIsHasCollisionData);
+    flags = value ? (flags | fIsHasCollisionData) : (flags & ~fIsHasCollisionData);
     }
 
 bool DEBRRecord::DEBRModel::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((flags & Mask) == Mask) : ((flags & Mask) != 0);
     }
 
 void DEBRRecord::DEBRModel::SetFlagMask(UINT8 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    flags = Mask;
+    }
+
+bool DEBRRecord::DEBRModel::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    {
+    if(subSize < 3)
+        {
+        printf("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
+               "of chunk (%u) is less than the minimum size of the subrecord (%u). "
+               "The chunk has been skipped.\n",
+               (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+               subSize, 3);
+        curPos += subSize;
+        return false;
+        }
+    memcpy(&percentage, buffer + curPos, 1);
+    curPos += 1;
+
+    UINT32 size = (UINT32)strlen((STRING)(buffer + curPos)) + 1;
+    modPath = new char[size];
+    strcpy_s(modPath, size, (STRING)(buffer + curPos));
+    curPos += size;
+
+    memcpy(&flags, buffer + curPos, 1);
+    curPos += 1;
+
+    size += 2;
+    if(size != subSize)
+        {
+        printf("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
+               "of chunk (%u) is not equal to the parsed size (%u). "
+               "The loaded fields are likely corrupt.\n",
+               (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+               subSize, size);
+        }
+    return true;
+    }
+
+void DEBRRecord::DEBRModel::Write(FileWriter &writer)
+    {
+    UINT32 size = 3; //null terminator, percentage, and flags
+    if(modPath != NULL)
+        {
+        size += (UINT32)strlen(modPath);
+        writer.record_write_subheader(REV32(DATA), size);
+        writer.record_write(&percentage, 1);
+        writer.record_write(modPath, size - 2);
+        writer.record_write(&flags, 1);
+        }
+    else
+        {
+        writer.record_write_subheader(REV32(DATA), size);
+        writer.record_write(&percentage, 1);
+        size = 0;
+        writer.record_write(&size, 1); //single null terminator
+        writer.record_write(&flags, 1);
+        }
+    WRITE(MODT);
+    }
+
+bool DEBRRecord::DEBRModel::operator ==(const DEBRModel &other) const
+    {
+    return (flags == other.flags &&
+            percentage == other.percentage &&
+            (icmps(modPath, other.modPath) == 0) &&
+            MODT == other.MODT);
+    }
+
+bool DEBRRecord::DEBRModel::operator !=(const DEBRModel &other) const
+    {
+    return !(*this == other);
+    }
+
+DEBRRecord::DEBRModels::DEBRModels()
+    {
+    //
+    }
+
+DEBRRecord::DEBRModels::~DEBRModels()
+    {
+    Unload();
+    }
+
+bool DEBRRecord::DEBRModels::IsLoaded() const
+    {
+    return (MODS.size() != 0);
+    }
+
+void DEBRRecord::DEBRModels::Load()
+    {
+    //
+    }
+
+void DEBRRecord::DEBRModels::Unload()
+    {
+    for(UINT32 x = 0; x < MODS.size(); ++x)
+        delete MODS[x];
+    MODS.clear();
+    }
+
+void DEBRRecord::DEBRModels::resize(UINT32 newSize)
+    {
+    //Shrink
+    UINT32 size = MODS.size();
+    for(; size > newSize;)
+        delete MODS[--size];
+    MODS.resize(newSize);
+    //Grow
+    for(; size < newSize;)
+        MODS[size++] = new DEBRModel;
+    }
+
+void DEBRRecord::DEBRModels::Write(FileWriter &writer)
+    {
+    for(UINT32 p = 0; p < MODS.size(); p++)
+        MODS[p]->Write(writer);
+    }
+
+DEBRRecord::DEBRModels& DEBRRecord::DEBRModels::operator = (const DEBRModels &rhs)
+    {
+    if(this != &rhs)
+        {
+        Unload();
+        if(rhs.MODS.size() != 0)
+            {
+            MODS.resize(rhs.MODS.size());
+            UINT32 pathSize = 0;
+            for(UINT32 p = 0; p < rhs.MODS.size(); p++)
+                {
+                MODS[p] = new DEBRModel;
+                MODS[p]->percentage = rhs.MODS[p]->percentage;
+
+                if(rhs.MODS[p]->modPath != NULL)
+                    {
+                    pathSize = (UINT32)strlen(rhs.MODS[p]->modPath) + 1;
+                    MODS[p]->modPath = new char[pathSize];
+                    strcpy_s(MODS[p]->modPath, pathSize, rhs.MODS[p]->modPath);
+                    }
+                MODS[p]->flags = rhs.MODS[p]->flags;
+                }
+            }
+        }
+    return *this;
+    }
+
+bool DEBRRecord::DEBRModels::operator ==(const DEBRModels &other) const
+    {
+    if(MODS.size() == other.MODS.size())
+        {
+        //Not sure if record order matters on debris models, so equality testing is a guess
+        //Fix-up later
+        for(UINT32 x = 0; x < MODS.size(); ++x)
+            if(*MODS[x] != *other.MODS[x])
+                return false;
+        return true;
+        }
+    return false;
+    }
+
+bool DEBRRecord::DEBRModels::operator !=(const DEBRModels &other) const
+    {
+    return !(*this == other);
     }
 
 DEBRRecord::DEBRRecord(unsigned char *_recData):
@@ -75,23 +245,13 @@ DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
         }
 
     EDID = srcRecord->EDID;
-    DATA = srcRecord->DATA;
-    MODT = srcRecord->MODT;
+    Models = srcRecord->Models;
     return;
     }
 
 DEBRRecord::~DEBRRecord()
     {
     //
-    }
-
-bool DEBRRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
     }
 
 UINT32 DEBRRecord::GetType()
@@ -130,10 +290,13 @@ SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 EDID.Read(buffer, subSize, curPos);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                Models.MODS.push_back(new DEBRModel);
+                Models.MODS.back()->Read(buffer, subSize, curPos);
                 break;
             case REV32(MODT):
-                MODT.Read(buffer, subSize, curPos);
+                if(Models.MODS.size() == 0)
+                    Models.MODS.push_back(new DEBRModel);
+                Models.MODS.back()->MODT.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
@@ -152,25 +315,21 @@ SINT32 DEBRRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
-    DATA.Unload();
-    MODT.Unload();
+    Models.Unload();
     return 1;
     }
 
 SINT32 DEBRRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
-    WRITE(DATA);
-    WRITE(MODT);
-
+    Models.Write(writer);
     return -1;
     }
 
 bool DEBRRecord::operator ==(const DEBRRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-            DATA == other.DATA &&
-            MODT == other.MODT);
+            Models == other.Models);
     }
 
 bool DEBRRecord::operator !=(const DEBRRecord &other) const

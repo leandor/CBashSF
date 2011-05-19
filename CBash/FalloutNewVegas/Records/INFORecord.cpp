@@ -476,7 +476,7 @@ bool INFORecord::IsTopic()
     }
 
 void INFORecord::IsTopic(bool value)
-    {       
+    {
     DATA.value.dialType = value ? eTopic : eConversation;
     }
 
@@ -895,7 +895,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     }
                 break;
-            case REV32(SLSD):      
+            case REV32(SLSD):
                 switch(lastChunk)
                     {
                     case REV32(NONE):

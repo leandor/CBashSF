@@ -97,7 +97,7 @@ ModFile *ValidateModName(Collection *curCollection, STRING const ModName)
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-        if(_stricmp(CompName, curCollection->ModFiles[x]->reader.getModName()) == 0)
+        if(icmps(CompName, curCollection->ModFiles[x]->reader.getModName()) == 0)
             {
             delete []NonGhostName;
             return curCollection->ModFiles[x];
@@ -122,7 +122,7 @@ ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
     for(UINT32 x = 0; x < curCollection->LoadOrder255.size();++x)
-        if(_stricmp(CompName, curCollection->LoadOrder255[x]->reader.getModName()) == 0)
+        if(icmps(CompName, curCollection->LoadOrder255[x]->reader.getModName()) == 0)
             {
             delete []NonGhostName;
             return curCollection->LoadOrder255[x];
@@ -314,7 +314,7 @@ Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType
 
     try
         {
-        //ValidatePointer(ModsPath);
+        ValidatePointer(ModsPath);
         for(UINT32 p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] == NULL)
@@ -513,7 +513,7 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
     try
         {
         //ValidatePointer(CollectionID);
-        //ValidatePointer(ModName);
+        ValidatePointer(ModName);
         return CollectionID->AddMod(ModName, flags);
         }
     catch(std::exception &ex)
@@ -967,7 +967,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
 //        {
 //        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
 //        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
-//            if(_stricmp(curModFile->TES4.MAST[x].value, ModName) == 0)
+//            if(icmps(curModFile->TES4.MAST[x].value, ModName) == 0)
 //                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
 //        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->reader.getModName());
 //        return -1;

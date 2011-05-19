@@ -155,7 +155,7 @@ void QUSTRecord::QUSTEntry::Write(FileWriter &writer)
     SCR_.Write(writer, true);
     WRITE(NAM0);
     }
-    
+
 bool QUSTRecord::QUSTEntry::operator ==(const QUSTEntry &other) const
     {
     return (QSDT == other.QSDT &&
@@ -173,7 +173,7 @@ bool QUSTRecord::QUSTEntry::operator !=(const QUSTEntry &other) const
     {
     return !(*this == other);
     }
-    
+
 void QUSTRecord::QUSTStage::Write(FileWriter &writer)
     {
     WRITE(INDX);
@@ -233,13 +233,13 @@ void QUSTRecord::QUSTTarget::SetFlagMask(UINT8 Mask)
     {
     QSTA.value.flags = Mask;
     }
-    
+
 void QUSTRecord::QUSTTarget::Write(FileWriter &writer)
     {
     WRITE(QSTA);
     CTDA.Write(REV32(CTDA), writer, true);
     }
-    
+
 bool QUSTRecord::QUSTTarget::operator ==(const QUSTTarget &other) const
     {
     return (QSTA == other.QSTA &&
@@ -250,7 +250,7 @@ bool QUSTRecord::QUSTTarget::operator !=(const QUSTTarget &other) const
     {
     return !(*this == other);
     }
-    
+
 void QUSTRecord::QUSTObjective::Write(FileWriter &writer)
     {
     WRITE(QOBJ);

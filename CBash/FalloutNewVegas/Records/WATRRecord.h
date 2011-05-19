@@ -28,17 +28,6 @@ namespace FNV
 class WATRRecord : public FNVRecord //Water
     {
     private:
-        struct WATRANAM
-            {
-            UINT8   opacity;
-
-            WATRANAM();
-            ~WATRANAM();
-
-            bool operator ==(const WATRANAM &other) const;
-            bool operator !=(const WATRANAM &other) const;
-            };
-
         struct WATRDNAM
             {
             FLOAT32 unknown1, unknown2, unknown3, unknown4,
@@ -51,23 +40,22 @@ class WATRRecord : public FNVRecord //Water
             UINT8   unused2[4];
             FLOAT32 rainForce, rainVelocity, rainFalloff, rainDampner,
                     dispSize, dispForce, dispVelocity, dispFalloff,
-                    dispDampner, rainSize, noiseScale, noise1Direction,
+                    dispDampner, rainSize, normalsNoiseScale, noise1Direction,
                     noise2Direction, noise3Direction, noise1Speed,
-                    noise2Speed, noise3Speed, noiseFalloffStart,
-                    noiseFalloffEnd, underFogAmt, uvScale, underFogAmt,
+                    noise2Speed, noise3Speed, normalsFalloffStart,
+                    normalsFalloffEnd, fogAmt, normalsUVScale, underFogAmt,
                     underFogNear, underFogFar, distAmt, shininess,
                     hdrMult, lightRadius, lightBright, noise1UVScale,
                     noise2UVScale, noise3UVScale;
 
-            //Missing in old format (DATA, not DNAM)
+            //Below aren't on older DATA, and also a few DNAM
             FLOAT32 noise1AmpScale, noise2AmpScale, noise3AmpScale;
-            UINT16  damage;
 
-            WATRDATA();
-            ~WATRDATA();
+            WATRDNAM();
+            ~WATRDNAM();
 
-            bool operator ==(const WATRDATA &other) const;
-            bool operator !=(const WATRDATA &other) const;
+            bool operator ==(const WATRDNAM &other) const;
+            bool operator !=(const WATRDNAM &other) const;
             };
 
         struct WATRGNAM
@@ -83,21 +71,21 @@ class WATRRecord : public FNVRecord //Water
 
         enum flagsFlags
             {
-            fIsCausesDamage = 0x00000001,
-            fIsReflective   = 0x00000002
+            fIsCausesDamage = 0x01,
+            fIsReflective   = 0x02
             };
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         StringRecord NNAM; //Noise Map
-        OptSubRecord<WATRANAM> ANAM; //Opacity
-        OptSimpleSubRecord<UINT8> FNAM; //Flags
+        ReqSimpleSubRecord<UINT8, 75> ANAM; // opacity
+        ReqSimpleSubRecord<UINT8> FNAM; //Flags
         StringRecord MNAM; //Material ID
         OptSimpleSubRecord<FORMID> SNAM; //Sound
         OptSimpleSubRecord<FORMID> XNAM; //Actor Effect
-        OptSimpleSubRecord<UINT16> DATA; //Damage
-        OptSubRecord<WATRDNAM> DNAM; //Visual Data (May be listed as DATA in old format, auto upgrade to DNAM on read)
-        OptSubRecord<WATRGNAM> GNAM; //Related Waters (Unused)
+        ReqSimpleSubRecord<UINT16> DATA; //Damage (May be 186 size struct (older format))
+        ReqSubRecord<WATRDNAM> DNAM; //Visual Data (May be listed as DATA an old format, auto upgrade to DNAM on read)
+        ReqSubRecord<WATRGNAM> GNAM; //Related Waters (Unused)
 
         WATRRecord(unsigned char *_recData=NULL);
         WATRRecord(WATRRecord *srcRecord);

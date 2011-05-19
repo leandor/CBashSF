@@ -572,34 +572,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             case eIgANIO:
             case REV32(ANIO):
-                //reader.read(&ANIO.stamp, 4);
-                //reader.read(&ANIO.unknown, 4);
-                //ANIO.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&ANIO.stamp, 4);
+                reader.read(&ANIO.unknown, 4);
+                ANIO.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgWATR:
             case REV32(WATR):
-                //reader.read(&WATR.stamp, 4);
-                //reader.read(&WATR.unknown, 4);
-                //WATR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&WATR.stamp, 4);
+                reader.read(&WATR.unknown, 4);
+                WATR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgEFSH:
             case REV32(EFSH):
-                //reader.read(&EFSH.stamp, 4);
-                //reader.read(&EFSH.unknown, 4);
-                //EFSH.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&EFSH.stamp, 4);
+                reader.read(&EFSH.unknown, 4);
+                EFSH.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgEXPL: //Same as normal
             case REV32(EXPL):
-                //reader.read(&EXPL.stamp, 4);
-                //reader.read(&EXPL.unknown, 4);
-                //EXPL.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&EXPL.stamp, 4);
+                reader.read(&EXPL.unknown, 4);
+                EXPL.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgDEBR:
             case REV32(DEBR):
-                //reader.read(&DEBR.stamp, 4);
-                //reader.read(&DEBR.unknown, 4);
-                //DEBR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&DEBR.stamp, 4);
+                reader.read(&DEBR.unknown, 4);
+                DEBR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgIMGS:
             case REV32(IMGS):
                 //reader.read(&IMGS.stamp, 4);
@@ -996,15 +996,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(LSCR):
             return (UINT32)LSCR.Records.size();
         case REV32(ANIO):
-            //return (UINT32)ANIO.Records.size();
+            return (UINT32)ANIO.Records.size();
         case REV32(WATR):
-            //return (UINT32)WATR.Records.size();
+            return (UINT32)WATR.Records.size();
         case REV32(EFSH):
-            //return (UINT32)EFSH.Records.size();
+            return (UINT32)EFSH.Records.size();
         case REV32(EXPL):
-            //return (UINT32)EXPL.Records.size();
+            return (UINT32)EXPL.Records.size();
         case REV32(DEBR):
-            //return (UINT32)DEBR.Records.size();
+            return (UINT32)DEBR.Records.size();
         case REV32(IMGS):
             //return (UINT32)IMGS.Records.size();
         case REV32(IMAD):
@@ -1506,25 +1506,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = LSCR.Records.back();
             break;
         case REV32(ANIO):
-            //ANIO.Records.push_back(new FNV::ANIORecord((FNV::ANIORecord *)SourceRecord));
-            //newRecord = ANIO.Records.back();
-            //break;
+            ANIO.Records.push_back(new FNV::ANIORecord((FNV::ANIORecord *)SourceRecord));
+            newRecord = ANIO.Records.back();
+            break;
         case REV32(WATR):
-            //WATR.Records.push_back(new FNV::WATRRecord((FNV::WATRRecord *)SourceRecord));
-            //newRecord = WATR.Records.back();
-            //break;
+            WATR.Records.push_back(new FNV::WATRRecord((FNV::WATRRecord *)SourceRecord));
+            newRecord = WATR.Records.back();
+            break;
         case REV32(EFSH):
-            //EFSH.Records.push_back(new FNV::EFSHRecord((FNV::EFSHRecord *)SourceRecord));
-            //newRecord = EFSH.Records.back();
-            //break;
+            EFSH.Records.push_back(new FNV::EFSHRecord((FNV::EFSHRecord *)SourceRecord));
+            newRecord = EFSH.Records.back();
+            break;
         case REV32(EXPL):
-            //EXPL.Records.push_back(new FNV::EXPLRecord((FNV::EXPLRecord *)SourceRecord));
-            //newRecord = EXPL.Records.back();
-            //break;
+            EXPL.Records.push_back(new FNV::EXPLRecord((FNV::EXPLRecord *)SourceRecord));
+            newRecord = EXPL.Records.back();
+            break;
         case REV32(DEBR):
-            //DEBR.Records.push_back(new FNV::DEBRRecord((FNV::DEBRRecord *)SourceRecord));
-            //newRecord = DEBR.Records.back();
-            //break;
+            DEBR.Records.push_back(new FNV::DEBRRecord((FNV::DEBRRecord *)SourceRecord));
+            newRecord = DEBR.Records.back();
+            break;
         case REV32(IMGS):
             //IMGS.Records.push_back(new FNV::IMGSRecord((FNV::IMGSRecord *)SourceRecord));
             //newRecord = IMGS.Records.back();
@@ -1763,11 +1763,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(PACK.VisitRecords(NULL, checker, false)) continue;
         if(CSTY.VisitRecords(NULL, checker, false)) continue;
         if(LSCR.VisitRecords(NULL, checker, false)) continue;
-        //if(ANIO.VisitRecords(NULL, checker, false)) continue;
-        //if(WATR.VisitRecords(NULL, checker, false)) continue;
-        //if(EFSH.VisitRecords(NULL, checker, false)) continue;
-        //if(EXPL.VisitRecords(NULL, checker, false)) continue;
-        //if(DEBR.VisitRecords(NULL, checker, false)) continue;
+        if(ANIO.VisitRecords(NULL, checker, false)) continue;
+        if(WATR.VisitRecords(NULL, checker, false)) continue;
+        if(EFSH.VisitRecords(NULL, checker, false)) continue;
+        if(EXPL.VisitRecords(NULL, checker, false)) continue;
+        if(DEBR.VisitRecords(NULL, checker, false)) continue;
         //if(IMGS.VisitRecords(NULL, checker, false)) continue;
         //if(IMAD.VisitRecords(NULL, checker, false)) continue;
         //if(FLST.VisitRecords(NULL, checker, false)) continue;
@@ -1901,11 +1901,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += EXPL.WriteGRUP(REV32(EXPL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DEBR.WriteGRUP(REV32(DEBR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EXPL.WriteGRUP(REV32(EXPL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DEBR.WriteGRUP(REV32(DEBR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += IMGS.WriteGRUP(REV32(IMGS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += IMAD.WriteGRUP(REV32(IMAD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += FLST.WriteGRUP(REV32(FLST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -2024,11 +2024,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     PACK.VisitRecords(NULL, op, true);
     CSTY.VisitRecords(NULL, op, true);
     LSCR.VisitRecords(NULL, op, true);
-    //ANIO.VisitRecords(NULL, op, true);
-    //WATR.VisitRecords(NULL, op, true);
-    //EFSH.VisitRecords(NULL, op, true);
-    //EXPL.VisitRecords(NULL, op, true);
-    //DEBR.VisitRecords(NULL, op, true);
+    ANIO.VisitRecords(NULL, op, true);
+    WATR.VisitRecords(NULL, op, true);
+    EFSH.VisitRecords(NULL, op, true);
+    EXPL.VisitRecords(NULL, op, true);
+    DEBR.VisitRecords(NULL, op, true);
     //IMGS.VisitRecords(NULL, op, true);
     //IMAD.VisitRecords(NULL, op, true);
     //FLST.VisitRecords(NULL, op, true);
@@ -2265,20 +2265,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             LSCR.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ANIO):
-            //ANIO.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            ANIO.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(WATR):
-            //WATR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            WATR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(EFSH):
-            //EFSH.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            EFSH.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(EXPL):
-            //EXPL.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            EXPL.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(DEBR):
-            //DEBR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            DEBR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(IMGS):
             //IMGS.VisitRecords(RecordType, op, DeepVisit);
             //break;

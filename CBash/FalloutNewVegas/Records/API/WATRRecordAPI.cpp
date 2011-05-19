@@ -62,35 +62,35 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return UNKNOWN_FIELD;
         case 7: //full
             return STRING_FIELD;
-        case 8: //nnam Noise Map
+        case 8: //noisePath
             return ISTRING_FIELD;
-        case 9: //anam Opacity
+        case 9: //opacity
             return UINT8_FIELD;
-        case 10: //fnam Flags
+        case 10: //flags
             return UINT8_FIELD;
-        case 11: //mnam Material ID
+        case 11: //material
             return ISTRING_FIELD;
-        case 12: //snam Sound
+        case 12: //sound
             return FORMID_FIELD;
-        case 13: //xnam Actor Effect
+        case 13: //effect
             return FORMID_FIELD;
-        case 14: //data Damage
+        case 14: //damage
             return UINT16_FIELD;
-        case 15: //dnam DNAM ,, Struct
+        case 15: //unknown1
             return FLOAT32_FIELD;
-        case 16: //dnam DNAM ,, Struct
+        case 16: //unknown2
             return FLOAT32_FIELD;
-        case 17: //dnam DNAM ,, Struct
+        case 17: //unknown3
             return FLOAT32_FIELD;
-        case 18: //dnam DNAM ,, Struct
+        case 18: //unknown4
             return FLOAT32_FIELD;
-        case 19: //dnam DNAM ,, Struct
+        case 19: //sunPower
             return FLOAT32_FIELD;
-        case 20: //dnam DNAM ,, Struct
+        case 20: //reflectAmt
             return FLOAT32_FIELD;
-        case 21: //dnam DNAM ,, Struct
+        case 21: //fresnelAmt
             return FLOAT32_FIELD;
-        case 22: //dnam_p DNAM ,, Struct
+        case 22: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -101,17 +101,17 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 23: //dnam DNAM ,, Struct
+        case 23: //fogNear
             return FLOAT32_FIELD;
-        case 24: //dnam DNAM ,, Struct
+        case 24: //fogFar
             return FLOAT32_FIELD;
-        case 25: //dnam DNAM ,, Struct
+        case 25: //shallow.red
             return UINT8_FIELD;
-        case 26: //dnam DNAM ,, Struct
+        case 26: //shallow.green
             return UINT8_FIELD;
-        case 27: //dnam DNAM ,, Struct
+        case 27: //shallow.blue
             return UINT8_FIELD;
-        case 28: //dnam_p DNAM ,, Struct
+        case 28: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -122,13 +122,13 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 29: //dnam DNAM ,, Struct
+        case 29: //deep.red
             return UINT8_FIELD;
-        case 30: //dnam DNAM ,, Struct
+        case 30: //deep.green
             return UINT8_FIELD;
-        case 31: //dnam DNAM ,, Struct
+        case 31: //deep.blue
             return UINT8_FIELD;
-        case 32: //dnam_p DNAM ,, Struct
+        case 32: //unused3
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -139,13 +139,13 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 33: //dnam DNAM ,, Struct
+        case 33: //refl.red
             return UINT8_FIELD;
-        case 34: //dnam DNAM ,, Struct
+        case 34: //refl.green
             return UINT8_FIELD;
-        case 35: //dnam DNAM ,, Struct
+        case 35: //refl.blue
             return UINT8_FIELD;
-        case 36: //dnam_p DNAM ,, Struct
+        case 36: //unused4
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -156,7 +156,7 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 37: //dnam_p DNAM ,, Struct
+        case 37: //unused5
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -167,81 +167,81 @@ UINT32 WATRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 38: //dnam DNAM ,, Struct
+        case 38: //rainForce
             return FLOAT32_FIELD;
-        case 39: //dnam DNAM ,, Struct
+        case 39: //rainVelocity
             return FLOAT32_FIELD;
-        case 40: //dnam DNAM ,, Struct
+        case 40: //rainFalloff
             return FLOAT32_FIELD;
-        case 41: //dnam DNAM ,, Struct
+        case 41: //rainDampner
             return FLOAT32_FIELD;
-        case 42: //dnam DNAM ,, Struct
+        case 42: //dispSize
             return FLOAT32_FIELD;
-        case 43: //dnam DNAM ,, Struct
+        case 43: //dispForce
             return FLOAT32_FIELD;
-        case 44: //dnam DNAM ,, Struct
+        case 44: //dispVelocity
             return FLOAT32_FIELD;
-        case 45: //dnam DNAM ,, Struct
+        case 45: //dispFalloff
             return FLOAT32_FIELD;
-        case 46: //dnam DNAM ,, Struct
+        case 46: //dispDampner
             return FLOAT32_FIELD;
-        case 47: //dnam DNAM ,, Struct
+        case 47: //rainSize
             return FLOAT32_FIELD;
-        case 48: //dnam DNAM ,, Struct
+        case 48: //normalsNoiseScale
             return FLOAT32_FIELD;
-        case 49: //dnam DNAM ,, Struct
+        case 49: //noise1Direction
             return FLOAT32_FIELD;
-        case 50: //dnam DNAM ,, Struct
+        case 50: //noise2Direction
             return FLOAT32_FIELD;
-        case 51: //dnam DNAM ,, Struct
+        case 51: //noise3Direction
             return FLOAT32_FIELD;
-        case 52: //dnam DNAM ,, Struct
+        case 52: //noise1Speed
             return FLOAT32_FIELD;
-        case 53: //dnam DNAM ,, Struct
+        case 53: //noise2Speed
             return FLOAT32_FIELD;
-        case 54: //dnam DNAM ,, Struct
+        case 54: //noise3Speed
             return FLOAT32_FIELD;
-        case 55: //dnam DNAM ,, Struct
+        case 55: //normalsFalloffStart
             return FLOAT32_FIELD;
-        case 56: //dnam DNAM ,, Struct
+        case 56: //normalsFalloffEnd
             return FLOAT32_FIELD;
-        case 57: //dnam DNAM ,, Struct
+        case 57: //fogAmt
             return FLOAT32_FIELD;
-        case 58: //dnam DNAM ,, Struct
+        case 58: //normalsUVScale
             return FLOAT32_FIELD;
-        case 59: //dnam DNAM ,, Struct
+        case 59: //underFogAmt
             return FLOAT32_FIELD;
-        case 60: //dnam DNAM ,, Struct
+        case 60: //underFogNear
             return FLOAT32_FIELD;
-        case 61: //dnam DNAM ,, Struct
+        case 61: //underFogFar
             return FLOAT32_FIELD;
-        case 62: //dnam DNAM ,, Struct
+        case 62: //distAmt
             return FLOAT32_FIELD;
-        case 63: //dnam DNAM ,, Struct
+        case 63: //shininess
             return FLOAT32_FIELD;
-        case 64: //dnam DNAM ,, Struct
+        case 64: //hdrMult
             return FLOAT32_FIELD;
-        case 65: //dnam DNAM ,, Struct
+        case 65: //lightRadius
             return FLOAT32_FIELD;
-        case 66: //dnam DNAM ,, Struct
+        case 66: //lightBright
             return FLOAT32_FIELD;
-        case 67: //dnam DNAM ,, Struct
+        case 67: //noise1UVScale
             return FLOAT32_FIELD;
-        case 68: //dnam DNAM ,, Struct
+        case 68: //noise2UVScale
             return FLOAT32_FIELD;
-        case 69: //dnam DNAM ,, Struct
+        case 69: //noise3UVScale
             return FLOAT32_FIELD;
-        case 70: //dnam DNAM ,, Struct
+        case 70: //noise1AmpScale
             return FLOAT32_FIELD;
-        case 71: //dnam DNAM ,, Struct
+        case 71: //noise2AmpScale
             return FLOAT32_FIELD;
-        case 72: //dnam DNAM ,, Struct
+        case 72: //noise3AmpScale
             return FLOAT32_FIELD;
-        case 73: //gnam GNAM ,, Struct
+        case 73: //dayWater
             return FORMID_FIELD;
-        case 74: //gnam GNAM ,, Struct
+        case 74: //nightWater
             return FORMID_FIELD;
-        case 75: //gnam GNAM ,, Struct
+        case 75: //underWater
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -269,147 +269,147 @@ void * WATRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return NULL;
         case 7: //full
             return FULL.value;
-        case 8: //nnam Noise Map
+        case 8: //noisePath
             return NNAM.value;
-        case 9: //anam Opacity
-            return ANAM.IsLoaded() ? &ANAM->value9 : NULL;
-        case 10: //fnam Flags
-            return FNAM.IsLoaded() ? &FNAM->value10 : NULL;
-        case 11: //mnam Material ID
+        case 9: //opacity
+            return &ANAM.value;
+        case 10: //flags
+            return &FNAM.value;
+        case 11: //material
             return MNAM.value;
-        case 12: //snam Sound
-            return SNAM.IsLoaded() ? &SNAM->value12 : NULL;
-        case 13: //xnam Actor Effect
-            return XNAM.IsLoaded() ? &XNAM->value13 : NULL;
-        case 14: //data Damage
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
-        case 15: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value15 : NULL;
-        case 16: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value16 : NULL;
-        case 17: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value17 : NULL;
-        case 18: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value18 : NULL;
-        case 19: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value19 : NULL;
-        case 20: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value20 : NULL;
-        case 21: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value21 : NULL;
-        case 22: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value22[0] : NULL;
+        case 12: //sound
+            return &SNAM.value;
+        case 13: //effect
+            return &XNAM.value;
+        case 14: //damage
+            return &DATA.value;
+        case 15: //unknown1
+            return &DNAM.value.unknown1;
+        case 16: //unknown2
+            return &DNAM.value.unknown2;
+        case 17: //unknown3
+            return &DNAM.value.unknown3;
+        case 18: //unknown4
+            return &DNAM.value.unknown4;
+        case 19: //sunPower
+            return &DNAM.value.sunPower;
+        case 20: //reflectAmt
+            return &DNAM.value.reflectAmt;
+        case 21: //fresnelAmt
+            return &DNAM.value.fresnelAmt;
+        case 22: //unused1
+            *FieldValues = &DNAM.value.unused1[0];
             return NULL;
-        case 23: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value23 : NULL;
-        case 24: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value24 : NULL;
-        case 25: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value25 : NULL;
-        case 26: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value26 : NULL;
-        case 27: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value27 : NULL;
-        case 28: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value28[0] : NULL;
+        case 23: //fogNear
+            return &DNAM.value.fogNear;
+        case 24: //fogFar
+            return &DNAM.value.fogFar;
+        case 25: //shallow.red
+            return &DNAM.value.shallow.red;
+        case 26: //shallow.green
+            return &DNAM.value.shallow.green;
+        case 27: //shallow.blue
+            return &DNAM.value.shallow.blue;
+        case 28: //unused2
+            *FieldValues = &DNAM.value.shallow.unused1;
             return NULL;
-        case 29: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value29 : NULL;
-        case 30: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value30 : NULL;
-        case 31: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value31 : NULL;
-        case 32: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value32[0] : NULL;
+        case 29: //deep.red
+            return &DNAM.value.deep.red;
+        case 30: //deep.green
+            return &DNAM.value.deep.green;
+        case 31: //deep.blue
+            return &DNAM.value.deep.blue;
+        case 32: //unused3
+            *FieldValues = &DNAM.value.deep.unused1;
             return NULL;
-        case 33: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value33 : NULL;
-        case 34: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value34 : NULL;
-        case 35: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value35 : NULL;
-        case 36: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value36[0] : NULL;
+        case 33: //refl.red
+            return &DNAM.value.refl.red;
+        case 34: //refl.green
+            return &DNAM.value.refl.green;
+        case 35: //refl.blue
+            return &DNAM.value.refl.blue;
+        case 36: //unused4
+            *FieldValues = &DNAM.value.refl.unused1;
             return NULL;
-        case 37: //dnam_p DNAM ,, Struct
-            *FieldValues = DNAM.IsLoaded() ? &DNAM->value37[0] : NULL;
+        case 37: //unused5
+            *FieldValues = &DNAM.value.unused2[0];
             return NULL;
-        case 38: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value38 : NULL;
-        case 39: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value39 : NULL;
-        case 40: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value40 : NULL;
-        case 41: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value41 : NULL;
-        case 42: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value42 : NULL;
-        case 43: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value43 : NULL;
-        case 44: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value44 : NULL;
-        case 45: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value45 : NULL;
-        case 46: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value46 : NULL;
-        case 47: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value47 : NULL;
-        case 48: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value48 : NULL;
-        case 49: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value49 : NULL;
-        case 50: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value50 : NULL;
-        case 51: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value51 : NULL;
-        case 52: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value52 : NULL;
-        case 53: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value53 : NULL;
-        case 54: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value54 : NULL;
-        case 55: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value55 : NULL;
-        case 56: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value56 : NULL;
-        case 57: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value57 : NULL;
-        case 58: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value58 : NULL;
-        case 59: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value59 : NULL;
-        case 60: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value60 : NULL;
-        case 61: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value61 : NULL;
-        case 62: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value62 : NULL;
-        case 63: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value63 : NULL;
-        case 64: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value64 : NULL;
-        case 65: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value65 : NULL;
-        case 66: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value66 : NULL;
-        case 67: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value67 : NULL;
-        case 68: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value68 : NULL;
-        case 69: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value69 : NULL;
-        case 70: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value70 : NULL;
-        case 71: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value71 : NULL;
-        case 72: //dnam DNAM ,, Struct
-            return DNAM.IsLoaded() ? &DNAM->value72 : NULL;
-        case 73: //gnam GNAM ,, Struct
-            return GNAM.IsLoaded() ? &GNAM->value73 : NULL;
-        case 74: //gnam GNAM ,, Struct
-            return GNAM.IsLoaded() ? &GNAM->value74 : NULL;
-        case 75: //gnam GNAM ,, Struct
-            return GNAM.IsLoaded() ? &GNAM->value75 : NULL;
+        case 38: //rainForce
+            return &DNAM.value.rainForce;
+        case 39: //rainVelocity
+            return &DNAM.value.rainVelocity;
+        case 40: //rainFalloff
+            return &DNAM.value.rainFalloff;
+        case 41: //rainDampner
+            return &DNAM.value.rainDampner;
+        case 42: //dispSize
+            return &DNAM.value.dispSize;
+        case 43: //dispForce
+            return &DNAM.value.dispForce;
+        case 44: //dispVelocity
+            return &DNAM.value.dispVelocity;
+        case 45: //dispFalloff
+            return &DNAM.value.dispFalloff;
+        case 46: //dispDampner
+            return &DNAM.value.dispDampner;
+        case 47: //rainSize
+            return &DNAM.value.rainSize;
+        case 48: //normalsNoiseScale
+            return &DNAM.value.normalsNoiseScale;
+        case 49: //noise1Direction
+            return &DNAM.value.noise1Direction;
+        case 50: //noise2Direction
+            return &DNAM.value.noise2Direction;
+        case 51: //noise3Direction
+            return &DNAM.value.noise3Direction;
+        case 52: //noise1Speed
+            return &DNAM.value.noise1Speed;
+        case 53: //noise2Speed
+            return &DNAM.value.noise2Speed;
+        case 54: //noise3Speed
+            return &DNAM.value.noise3Speed;
+        case 55: //normalsFalloffStart
+            return &DNAM.value.normalsFalloffStart;
+        case 56: //normalsFalloffEnd
+            return &DNAM.value.normalsFalloffEnd;
+        case 57: //fogAmt
+            return &DNAM.value.fogAmt;
+        case 58: //normalsUVScale
+            return &DNAM.value.normalsUVScale;
+        case 59: //underFogAmt
+            return &DNAM.value.underFogAmt;
+        case 60: //underFogNear
+            return &DNAM.value.underFogNear;
+        case 61: //underFogFar
+            return &DNAM.value.underFogFar;
+        case 62: //distAmt
+            return &DNAM.value.distAmt;
+        case 63: //shininess
+            return &DNAM.value.shininess;
+        case 64: //hdrMult
+            return &DNAM.value.hdrMult;
+        case 65: //lightRadius
+            return &DNAM.value.lightRadius;
+        case 66: //lightBright
+            return &DNAM.value.lightBright;
+        case 67: //noise1UVScale
+            return &DNAM.value.noise1UVScale;
+        case 68: //noise2UVScale
+            return &DNAM.value.noise2UVScale;
+        case 69: //noise3UVScale
+            return &DNAM.value.noise3UVScale;
+        case 70: //noise1AmpScale
+            return &DNAM.value.noise1AmpScale;
+        case 71: //noise2AmpScale
+            return &DNAM.value.noise2AmpScale;
+        case 72: //noise3AmpScale
+            return &DNAM.value.noise3AmpScale;
+        case 73: //dayWater
+            return &GNAM.value.dayWater;
+        case 74: //nightWater
+            return &GNAM.value.nightWater;
+        case 75: //underWater
+            return &GNAM.value.underWater;
         default:
             return NULL;
         }
@@ -446,291 +446,225 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //full
             FULL.Copy((STRING)FieldValue);
             break;
-        case 8: //nnam Noise Map
+        case 8: //noisePath
             NNAM.Copy((STRING)FieldValue);
             break;
-        case 9: //anam Opacity
-            ANAM.Load();
-            ANAM->value9 = *(UINT8 *)FieldValue;
+        case 9: //opacity
+            ANAM.value = *(UINT8 *)FieldValue;
             break;
-        case 10: //fnam Flags
-            FNAM.Load();
-            FNAM->value10 = *(UINT8 *)FieldValue;
+        case 10: //flags
+            FNAM.value = *(UINT8 *)FieldValue;
             break;
-        case 11: //mnam Material ID
+        case 11: //material
             MNAM.Copy((STRING)FieldValue);
             break;
-        case 12: //snam Sound
-            SNAM.Load();
-            SNAM->value12 = *(FORMID *)FieldValue;
+        case 12: //sound
+            SNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 13: //xnam Actor Effect
-            XNAM.Load();
-            XNAM->value13 = *(FORMID *)FieldValue;
+        case 13: //effect
+            XNAM.value = *(FORMID *)FieldValue;
             return true;
-        case 14: //data Damage
-            DATA.Load();
-            DATA->value14 = *(UINT16 *)FieldValue;
+        case 14: //damage
+            DATA.value = *(UINT16 *)FieldValue;
             break;
-        case 15: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value15 = *(FLOAT32 *)FieldValue;
+        case 15: //unknown1
+            DNAM.value.unknown1 = *(FLOAT32 *)FieldValue;
             break;
-        case 16: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value16 = *(FLOAT32 *)FieldValue;
+        case 16: //unknown2
+            DNAM.value.unknown2 = *(FLOAT32 *)FieldValue;
             break;
-        case 17: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value17 = *(FLOAT32 *)FieldValue;
+        case 17: //unknown3
+            DNAM.value.unknown3 = *(FLOAT32 *)FieldValue;
             break;
-        case 18: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value18 = *(FLOAT32 *)FieldValue;
+        case 18: //unknown4
+            DNAM.value.unknown4 = *(FLOAT32 *)FieldValue;
             break;
-        case 19: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value19 = *(FLOAT32 *)FieldValue;
+        case 19: //sunPower
+            DNAM.value.sunPower = *(FLOAT32 *)FieldValue;
             break;
-        case 20: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value20 = *(FLOAT32 *)FieldValue;
+        case 20: //reflectAmt
+            DNAM.value.reflectAmt = *(FLOAT32 *)FieldValue;
             break;
-        case 21: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value21 = *(FLOAT32 *)FieldValue;
+        case 21: //fresnelAmt
+            DNAM.value.fresnelAmt = *(FLOAT32 *)FieldValue;
             break;
-        case 22: //dnam_p DNAM ,, Struct
+        case 22: //unused1
             if(ArraySize != 4)
                 break;
-            DNAM.Load();
-            DNAM->value22[0] = ((UINT8ARRAY)FieldValue)[0];
-            DNAM->value22[1] = ((UINT8ARRAY)FieldValue)[1];
-            DNAM->value22[2] = ((UINT8ARRAY)FieldValue)[2];
-            DNAM->value22[3] = ((UINT8ARRAY)FieldValue)[3];
+            DNAM.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 23: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value23 = *(FLOAT32 *)FieldValue;
+        case 23: //fogNear
+            DNAM.value.fogNear = *(FLOAT32 *)FieldValue;
             break;
-        case 24: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value24 = *(FLOAT32 *)FieldValue;
+        case 24: //fogFar
+            DNAM.value.fogFar = *(FLOAT32 *)FieldValue;
             break;
-        case 25: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value25 = *(UINT8 *)FieldValue;
+        case 25: //shallow.red
+            DNAM.value.shallow.red = *(UINT8 *)FieldValue;
             break;
-        case 26: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value26 = *(UINT8 *)FieldValue;
+        case 26: //shallow.green
+            DNAM.value.shallow.green = *(UINT8 *)FieldValue;
             break;
-        case 27: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value27 = *(UINT8 *)FieldValue;
+        case 27: //shallow.blue
+            DNAM.value.shallow.blue = *(UINT8 *)FieldValue;
             break;
-        case 28: //dnam_p DNAM ,, Struct
+        case 28: //unused2
             if(ArraySize != 1)
                 break;
-            DNAM.Load();
-            DNAM->value28[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.shallow.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 29: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value29 = *(UINT8 *)FieldValue;
+        case 29: //deep.red
+            DNAM.value.deep.red = *(UINT8 *)FieldValue;
             break;
-        case 30: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value30 = *(UINT8 *)FieldValue;
+        case 30: //deep.green
+            DNAM.value.deep.green = *(UINT8 *)FieldValue;
             break;
-        case 31: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value31 = *(UINT8 *)FieldValue;
+        case 31: //deep.blue
+            DNAM.value.deep.blue = *(UINT8 *)FieldValue;
             break;
-        case 32: //dnam_p DNAM ,, Struct
+        case 32: //unused3
             if(ArraySize != 1)
                 break;
-            DNAM.Load();
-            DNAM->value32[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.deep.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 33: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value33 = *(UINT8 *)FieldValue;
+        case 33: //refl.red
+            DNAM.value.refl.red = *(UINT8 *)FieldValue;
             break;
-        case 34: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value34 = *(UINT8 *)FieldValue;
+        case 34: //refl.green
+            DNAM.value.refl.green = *(UINT8 *)FieldValue;
             break;
-        case 35: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value35 = *(UINT8 *)FieldValue;
+        case 35: //refl.blue
+            DNAM.value.refl.blue = *(UINT8 *)FieldValue;
             break;
-        case 36: //dnam_p DNAM ,, Struct
+        case 36: //unused4
             if(ArraySize != 1)
                 break;
-            DNAM.Load();
-            DNAM->value36[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.refl.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 37: //dnam_p DNAM ,, Struct
+        case 37: //unused5
             if(ArraySize != 4)
                 break;
-            DNAM.Load();
-            DNAM->value37[0] = ((UINT8ARRAY)FieldValue)[0];
-            DNAM->value37[1] = ((UINT8ARRAY)FieldValue)[1];
-            DNAM->value37[2] = ((UINT8ARRAY)FieldValue)[2];
-            DNAM->value37[3] = ((UINT8ARRAY)FieldValue)[3];
+            DNAM.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+            DNAM.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+            DNAM.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+            DNAM.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 38: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value38 = *(FLOAT32 *)FieldValue;
+        case 38: //rainForce
+            DNAM.value.rainForce = *(FLOAT32 *)FieldValue;
             break;
-        case 39: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value39 = *(FLOAT32 *)FieldValue;
+        case 39: //rainVelocity
+            DNAM.value.rainVelocity = *(FLOAT32 *)FieldValue;
             break;
-        case 40: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value40 = *(FLOAT32 *)FieldValue;
+        case 40: //rainFalloff
+            DNAM.value.rainFalloff = *(FLOAT32 *)FieldValue;
             break;
-        case 41: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value41 = *(FLOAT32 *)FieldValue;
+        case 41: //rainDampner
+            DNAM.value.rainDampner = *(FLOAT32 *)FieldValue;
             break;
-        case 42: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value42 = *(FLOAT32 *)FieldValue;
+        case 42: //dispSize
+            DNAM.value.dispSize = *(FLOAT32 *)FieldValue;
             break;
-        case 43: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value43 = *(FLOAT32 *)FieldValue;
+        case 43: //dispForce
+            DNAM.value.dispForce = *(FLOAT32 *)FieldValue;
             break;
-        case 44: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value44 = *(FLOAT32 *)FieldValue;
+        case 44: //dispVelocity
+            DNAM.value.dispVelocity = *(FLOAT32 *)FieldValue;
             break;
-        case 45: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value45 = *(FLOAT32 *)FieldValue;
+        case 45: //dispFalloff
+            DNAM.value.dispFalloff = *(FLOAT32 *)FieldValue;
             break;
-        case 46: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value46 = *(FLOAT32 *)FieldValue;
+        case 46: //dispDampner
+            DNAM.value.dispDampner = *(FLOAT32 *)FieldValue;
             break;
-        case 47: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value47 = *(FLOAT32 *)FieldValue;
+        case 47: //rainSize
+            DNAM.value.rainSize = *(FLOAT32 *)FieldValue;
             break;
-        case 48: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value48 = *(FLOAT32 *)FieldValue;
+        case 48: //normalsNoiseScale
+            DNAM.value.normalsNoiseScale = *(FLOAT32 *)FieldValue;
             break;
-        case 49: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value49 = *(FLOAT32 *)FieldValue;
+        case 49: //noise1Direction
+            DNAM.value.noise1Direction = *(FLOAT32 *)FieldValue;
             break;
-        case 50: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value50 = *(FLOAT32 *)FieldValue;
+        case 50: //noise2Direction
+            DNAM.value.noise2Direction = *(FLOAT32 *)FieldValue;
             break;
-        case 51: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value51 = *(FLOAT32 *)FieldValue;
+        case 51: //noise3Direction
+            DNAM.value.noise3Direction = *(FLOAT32 *)FieldValue;
             break;
-        case 52: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value52 = *(FLOAT32 *)FieldValue;
+        case 52: //noise1Speed
+            DNAM.value.noise1Speed = *(FLOAT32 *)FieldValue;
             break;
-        case 53: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value53 = *(FLOAT32 *)FieldValue;
+        case 53: //noise2Speed
+            DNAM.value.noise2Speed = *(FLOAT32 *)FieldValue;
             break;
-        case 54: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value54 = *(FLOAT32 *)FieldValue;
+        case 54: //noise3Speed
+            DNAM.value.noise3Speed = *(FLOAT32 *)FieldValue;
             break;
-        case 55: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value55 = *(FLOAT32 *)FieldValue;
+        case 55: //normalsFalloffStart
+            DNAM.value.normalsFalloffStart = *(FLOAT32 *)FieldValue;
             break;
-        case 56: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value56 = *(FLOAT32 *)FieldValue;
+        case 56: //normalsFalloffEnd
+            DNAM.value.normalsFalloffEnd = *(FLOAT32 *)FieldValue;
             break;
-        case 57: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value57 = *(FLOAT32 *)FieldValue;
+        case 57: //fogAmt
+            DNAM.value.fogAmt = *(FLOAT32 *)FieldValue;
             break;
-        case 58: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value58 = *(FLOAT32 *)FieldValue;
+        case 58: //normalsUVScale
+            DNAM.value.normalsUVScale = *(FLOAT32 *)FieldValue;
             break;
-        case 59: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value59 = *(FLOAT32 *)FieldValue;
+        case 59: //underFogAmt
+            DNAM.value.underFogAmt = *(FLOAT32 *)FieldValue;
             break;
-        case 60: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value60 = *(FLOAT32 *)FieldValue;
+        case 60: //underFogNear
+            DNAM.value.underFogNear = *(FLOAT32 *)FieldValue;
             break;
-        case 61: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value61 = *(FLOAT32 *)FieldValue;
+        case 61: //underFogFar
+            DNAM.value.underFogFar = *(FLOAT32 *)FieldValue;
             break;
-        case 62: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value62 = *(FLOAT32 *)FieldValue;
+        case 62: //distAmt
+            DNAM.value.distAmt = *(FLOAT32 *)FieldValue;
             break;
-        case 63: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value63 = *(FLOAT32 *)FieldValue;
+        case 63: //shininess
+            DNAM.value.shininess = *(FLOAT32 *)FieldValue;
             break;
-        case 64: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value64 = *(FLOAT32 *)FieldValue;
+        case 64: //hdrMult
+            DNAM.value.hdrMult = *(FLOAT32 *)FieldValue;
             break;
-        case 65: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value65 = *(FLOAT32 *)FieldValue;
+        case 65: //lightRadius
+            DNAM.value.lightRadius = *(FLOAT32 *)FieldValue;
             break;
-        case 66: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value66 = *(FLOAT32 *)FieldValue;
+        case 66: //lightBright
+            DNAM.value.lightBright = *(FLOAT32 *)FieldValue;
             break;
-        case 67: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value67 = *(FLOAT32 *)FieldValue;
+        case 67: //noise1UVScale
+            DNAM.value.noise1UVScale = *(FLOAT32 *)FieldValue;
             break;
-        case 68: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value68 = *(FLOAT32 *)FieldValue;
+        case 68: //noise2UVScale
+            DNAM.value.noise2UVScale = *(FLOAT32 *)FieldValue;
             break;
-        case 69: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value69 = *(FLOAT32 *)FieldValue;
+        case 69: //noise3UVScale
+            DNAM.value.noise3UVScale = *(FLOAT32 *)FieldValue;
             break;
-        case 70: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value70 = *(FLOAT32 *)FieldValue;
+        case 70: //noise1AmpScale
+            DNAM.value.noise1AmpScale = *(FLOAT32 *)FieldValue;
             break;
-        case 71: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value71 = *(FLOAT32 *)FieldValue;
+        case 71: //noise2AmpScale
+            DNAM.value.noise2AmpScale = *(FLOAT32 *)FieldValue;
             break;
-        case 72: //dnam DNAM ,, Struct
-            DNAM.Load();
-            DNAM->value72 = *(FLOAT32 *)FieldValue;
+        case 72: //noise3AmpScale
+            DNAM.value.noise3AmpScale = *(FLOAT32 *)FieldValue;
             break;
-        case 73: //gnam GNAM ,, Struct
-            GNAM.Load();
-            GNAM->value73 = *(FORMID *)FieldValue;
+        case 73: //dayWater
+            GNAM.value.dayWater = *(FORMID *)FieldValue;
             return true;
-        case 74: //gnam GNAM ,, Struct
-            GNAM.Load();
-            GNAM->value74 = *(FORMID *)FieldValue;
+        case 74: //nightWater
+            GNAM.value.nightWater = *(FORMID *)FieldValue;
             return true;
-        case 75: //gnam GNAM ,, Struct
-            GNAM.Load();
-            GNAM->value75 = *(FORMID *)FieldValue;
+        case 75: //underWater
+            GNAM.value.underWater = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -740,6 +674,8 @@ bool WATRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void WATRRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    WATRDNAM defaultDNAM;
+    WATRGNAM defaultGNAM;
     switch(FieldID)
         {
         case 1: //flags1
@@ -761,209 +697,215 @@ void WATRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //full
             FULL.Unload();
             return;
-        case 8: //nnam Noise Map
+        case 8: //noisePath
             NNAM.Unload();
             return;
-        case 9: //anam Opacity
+        case 9: //opacity
             ANAM.Unload();
             return;
-        case 10: //fnam Flags
+        case 10: //flags
             FNAM.Unload();
             return;
-        case 11: //mnam Material ID
+        case 11: //material
             MNAM.Unload();
             return;
-        case 12: //snam Sound
+        case 12: //sound
             SNAM.Unload();
             return;
-        case 13: //xnam Actor Effect
+        case 13: //effect
             XNAM.Unload();
             return;
-        case 14: //data Damage
+        case 14: //damage
             DATA.Unload();
             return;
-        case 15: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 15: //unknown1
+            DNAM.value.unknown1 = defaultDNAM.unknown1;
             return;
-        case 16: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 16: //unknown2
+            DNAM.value.unknown2 = defaultDNAM.unknown2;
             return;
-        case 17: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 17: //unknown3
+            DNAM.value.unknown3 = defaultDNAM.unknown3;
             return;
-        case 18: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 18: //unknown4
+            DNAM.value.unknown4 = defaultDNAM.unknown4;
             return;
-        case 19: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 19: //sunPower
+            DNAM.value.sunPower = defaultDNAM.sunPower;
             return;
-        case 20: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 20: //reflectAmt
+            DNAM.value.reflectAmt = defaultDNAM.reflectAmt;
             return;
-        case 21: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 21: //fresnelAmt
+            DNAM.value.fresnelAmt = defaultDNAM.fresnelAmt;
             return;
-        case 22: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 22: //unused1
+            DNAM.value.unused1[0] = defaultDNAM.unused1[0];
+            DNAM.value.unused1[1] = defaultDNAM.unused1[1];
+            DNAM.value.unused1[2] = defaultDNAM.unused1[2];
+            DNAM.value.unused1[3] = defaultDNAM.unused1[3];
             return;
-        case 23: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 23: //fogNear
+            DNAM.value.fogNear = defaultDNAM.fogNear;
             return;
-        case 24: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 24: //fogFar
+            DNAM.value.fogFar = defaultDNAM.fogFar;
             return;
-        case 25: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 25: //shallow.red
+            DNAM.value.shallow.red = defaultDNAM.shallow.red;
             return;
-        case 26: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 26: //shallow.green
+            DNAM.value.shallow.green = defaultDNAM.shallow.green;
             return;
-        case 27: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 27: //shallow.blue
+            DNAM.value.shallow.blue = defaultDNAM.shallow.blue;
             return;
-        case 28: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 28: //unused2
+            DNAM.value.shallow.unused1 = defaultDNAM.shallow.unused1;
             return;
-        case 29: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 29: //deep.red
+            DNAM.value.deep.red = defaultDNAM.deep.red;
             return;
-        case 30: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 30: //deep.green
+            DNAM.value.deep.green = defaultDNAM.deep.green;
             return;
-        case 31: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 31: //deep.blue
+            DNAM.value.deep.blue = defaultDNAM.deep.blue;
             return;
-        case 32: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 32: //unused3
+            DNAM.value.deep.unused1 = defaultDNAM.deep.unused1;
             return;
-        case 33: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 33: //refl.red
+            DNAM.value.refl.red = defaultDNAM.refl.red;
             return;
-        case 34: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 34: //refl.green
+            DNAM.value.refl.green = defaultDNAM.refl.green;
             return;
-        case 35: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 35: //refl.blue
+            DNAM.value.refl.blue = defaultDNAM.refl.blue;
             return;
-        case 36: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 36: //unused4
+            DNAM.value.refl.unused1 = defaultDNAM.refl.unused1;
             return;
-        case 37: //dnam_p DNAM ,, Struct
-            DNAM.Unload();
+        case 37: //unused5
+            DNAM.value.unused2[0] = defaultDNAM.unused2[0];
+            DNAM.value.unused2[1] = defaultDNAM.unused2[1];
+            DNAM.value.unused2[2] = defaultDNAM.unused2[2];
+            DNAM.value.unused2[3] = defaultDNAM.unused2[3];
             return;
-        case 38: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 38: //rainForce
+            DNAM.value.rainForce = defaultDNAM.rainForce;
             return;
-        case 39: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 39: //rainVelocity
+            DNAM.value.rainVelocity = defaultDNAM.rainVelocity;
             return;
-        case 40: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 40: //rainFalloff
+            DNAM.value.rainFalloff = defaultDNAM.rainFalloff;
             return;
-        case 41: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 41: //rainDampner
+            DNAM.value.rainDampner = defaultDNAM.rainDampner;
             return;
-        case 42: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 42: //dispSize
+            DNAM.value.dispSize = defaultDNAM.dispSize;
             return;
-        case 43: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 43: //dispForce
+            DNAM.value.dispForce = defaultDNAM.dispForce;
             return;
-        case 44: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 44: //dispVelocity
+            DNAM.value.dispVelocity = defaultDNAM.dispVelocity;
             return;
-        case 45: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 45: //dispFalloff
+            DNAM.value.dispFalloff = defaultDNAM.dispFalloff;
             return;
-        case 46: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 46: //dispDampner
+            DNAM.value.dispDampner = defaultDNAM.dispDampner;
             return;
-        case 47: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 47: //rainSize
+            DNAM.value.rainSize = defaultDNAM.rainSize;
             return;
-        case 48: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 48: //normalsNoiseScale
+            DNAM.value.normalsNoiseScale = defaultDNAM.normalsNoiseScale;
             return;
-        case 49: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 49: //noise1Direction
+            DNAM.value.noise1Direction = defaultDNAM.noise1Direction;
             return;
-        case 50: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 50: //noise2Direction
+            DNAM.value.noise2Direction = defaultDNAM.noise2Direction;
             return;
-        case 51: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 51: //noise3Direction
+            DNAM.value.noise3Direction = defaultDNAM.noise3Direction;
             return;
-        case 52: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 52: //noise1Speed
+            DNAM.value.noise1Speed = defaultDNAM.noise1Speed;
             return;
-        case 53: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 53: //noise2Speed
+            DNAM.value.noise2Speed = defaultDNAM.noise2Speed;
             return;
-        case 54: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 54: //noise3Speed
+            DNAM.value.noise3Speed = defaultDNAM.noise3Speed;
             return;
-        case 55: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 55: //normalsFalloffStart
+            DNAM.value.normalsFalloffStart = defaultDNAM.normalsFalloffStart;
             return;
-        case 56: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 56: //normalsFalloffEnd
+            DNAM.value.normalsFalloffEnd = defaultDNAM.normalsFalloffEnd;
             return;
-        case 57: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 57: //fogAmt
+            DNAM.value.fogAmt = defaultDNAM.fogAmt;
             return;
-        case 58: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 58: //normalsUVScale
+            DNAM.value.normalsUVScale = defaultDNAM.normalsUVScale;
             return;
-        case 59: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 59: //underFogAmt
+            DNAM.value.underFogAmt = defaultDNAM.underFogAmt;
             return;
-        case 60: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 60: //underFogNear
+            DNAM.value.underFogNear = defaultDNAM.underFogNear;
             return;
-        case 61: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 61: //underFogFar
+            DNAM.value.underFogFar = defaultDNAM.underFogFar;
             return;
-        case 62: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 62: //distAmt
+            DNAM.value.distAmt = defaultDNAM.distAmt;
             return;
-        case 63: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 63: //shininess
+            DNAM.value.shininess = defaultDNAM.shininess;
             return;
-        case 64: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 64: //hdrMult
+            DNAM.value.hdrMult = defaultDNAM.hdrMult;
             return;
-        case 65: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 65: //lightRadius
+            DNAM.value.lightRadius = defaultDNAM.lightRadius;
             return;
-        case 66: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 66: //lightBright
+            DNAM.value.lightBright = defaultDNAM.lightBright;
             return;
-        case 67: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 67: //noise1UVScale
+            DNAM.value.noise1UVScale = defaultDNAM.noise1UVScale;
             return;
-        case 68: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 68: //noise2UVScale
+            DNAM.value.noise2UVScale = defaultDNAM.noise2UVScale;
             return;
-        case 69: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 69: //noise3UVScale
+            DNAM.value.noise3UVScale = defaultDNAM.noise3UVScale;
             return;
-        case 70: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 70: //noise1AmpScale
+            DNAM.value.noise1AmpScale = defaultDNAM.noise1AmpScale;
             return;
-        case 71: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 71: //noise2AmpScale
+            DNAM.value.noise2AmpScale = defaultDNAM.noise2AmpScale;
             return;
-        case 72: //dnam DNAM ,, Struct
-            DNAM.Unload();
+        case 72: //noise3AmpScale
+            DNAM.value.noise3AmpScale = defaultDNAM.noise3AmpScale;
             return;
-        case 73: //gnam GNAM ,, Struct
-            GNAM.Unload();
+        case 73: //dayWater
+            GNAM.value.dayWater = defaultGNAM.dayWater;
             return;
-        case 74: //gnam GNAM ,, Struct
-            GNAM.Unload();
+        case 74: //nightWater
+            GNAM.value.nightWater = defaultGNAM.nightWater;
             return;
-        case 75: //gnam GNAM ,, Struct
-            GNAM.Unload();
+        case 75: //underWater
+            GNAM.value.underWater = defaultGNAM.underWater;
             return;
         default:
             return;

@@ -118,60 +118,60 @@ class PACKRecord : public FNVRecord //Package
 
         enum flagsFlags
             {
-            fIsOffersServices    = 0x00000001,
-            fIsMustReachLocation = 0x00000002,
-            fIsMustComplete      = 0x00000004,
-            fIsLockAtStart       = 0x00000008,
-            fIsLockAtEnd         = 0x00000010,
-            fIsLockAtLocation    = 0x00000020,
-            fIsUnlockAtStart     = 0x00000040,
-            fIsUnlockAtEnd       = 0x00000080,
-            fIsUnlockAtLocation  = 0x00000100,
-            fIsContinueIfPcNear  = 0x00000200,
-            fIsOncePerDay        = 0x00000400,
-            fIsSkipFallout       = 0x00001000,
-            fIsAlwaysRun         = 0x00002000,
-            fIsAlwaysSneak       = 0x00020000,
-            fIsAllowSwimming     = 0x00040000,
-            fIsAllowFalls        = 0x00080000,
+            fIsOffersServices       = 0x00000001,
+            fIsMustReachLocation    = 0x00000002,
+            fIsMustComplete         = 0x00000004,
+            fIsLockAtStart          = 0x00000008,
+            fIsLockAtEnd            = 0x00000010,
+            fIsLockAtLocation       = 0x00000020,
+            fIsUnlockAtStart        = 0x00000040,
+            fIsUnlockAtEnd          = 0x00000080,
+            fIsUnlockAtLocation     = 0x00000100,
+            fIsContinueIfPcNear     = 0x00000200,
+            fIsOncePerDay           = 0x00000400,
+            fIsSkipFallout          = 0x00001000,
+            fIsAlwaysRun            = 0x00002000,
+            fIsAlwaysSneak          = 0x00020000,
+            fIsAllowSwimming        = 0x00040000,
+            fIsAllowFalls           = 0x00080000,
             fIsHeadTrackingOff      = 0x00100000,
-            fIsUnequipWeapons    = 0x00200000,
-            fIsDefensiveCombat   = 0x00400000,
+            fIsUnequipWeapons       = 0x00200000,
+            fIsDefensiveCombat      = 0x00400000,
             fIsWeaponDrawn          = 0x00800000,
-            fIsNoIdleAnims       = 0x01000000,
-            fIsPretendInCombat       = 0x02000000,
-            fIsContinueDuringCombat       = 0x04000000,
-            fIsNoCombatAlert       = 0x08000000,
-            fIsNoWarnAttackBehavior       = 0x10000000
+            fIsNoIdleAnims          = 0x01000000,
+            fIsPretendInCombat      = 0x02000000,
+            fIsContinueDuringCombat = 0x04000000,
+            fIsNoCombatAlert        = 0x08000000,
+            fIsNoWarnAttackBehavior = 0x10000000
             };
 
         enum behaviorFlags
             {
-            fIsHellosToPlayer = 0x00000001,
-            fIsRandomConversations = 0x00000002,
-            fIsObserveCombatBehavior = 0x00000004,
-            fIsUnknown4 = 0x00000008,
+            fIsHellosToPlayer          = 0x00000001,
+            fIsRandomConversations     = 0x00000002,
+            fIsObserveCombatBehavior   = 0x00000004,
+            fIsUnknown4                = 0x00000008,
             fIsReactionToPlayerActions = 0x00000010,
-            fIsFriendlyFireComments = 0x00000020,
-            fIsAggroRadiusBehavior = 0x00000040,
-            fIsAllowIdleChatter = 0x00000080,
-            fIsAvoidRadiation = 0x00000100
+            fIsFriendlyFireComments    = 0x00000020,
+            fIsAggroRadiusBehavior     = 0x00000040,
+            fIsAllowIdleChatter        = 0x00000080,
+            fIsAvoidRadiation          = 0x00000100
             };
 
         enum specificFlags
             {
-            fIsHide = 0x00000001, //Ambush only
-            fIsNoEating       = 0x00000001,
-            fIsNoSleeping     = 0x00000002,
-            fIsSitDown     = 0x00000002, //Use Item At only
-            fIsNoConversation = 0x00000004,
+            fIsHide                = 0x00000001, //Ambush only
+            fIsNoEating            = 0x00000001,
+            fIsNoSleeping          = 0x00000002,
+            fIsSitDown             = 0x00000002, //Use Item At only
+            fIsNoConversation      = 0x00000004,
             fIsRemainNearReference = 0x00000004, //Guard only
-            fIsNoIdleMarkers  = 0x00000008,
-            fIsNoFurniture    = 0x00000010,
-            fIsNoWandering    = 0x00000020,
-            fIsAllowBuying   = 0x00000100,
-            fIsAllowKilling  = 0x00000200,
-            fIsAllowStealing = 0x00000400
+            fIsNoIdleMarkers       = 0x00000008,
+            fIsNoFurniture         = 0x00000010,
+            fIsNoWandering         = 0x00000020,
+            fIsAllowBuying         = 0x00000100,
+            fIsAllowKilling        = 0x00000200,
+            fIsAllowStealing       = 0x00000400
             };
 
         enum aiTypeType
@@ -187,11 +187,11 @@ class PACKRecord : public FNVRecord //Package
             eAIUseItemAt     = 8,
             eAIAmbush        = 9,
             eAIFleeNotCombat = 10,
-            eAISandbox     = 12,
-            eAIPatrol      = 13,
-            eAIGuard       = 14,
-            eAIDialogue    = 15,
-            eAIUseWeapon   = 16
+            eAISandbox       = 12,
+            eAIPatrol        = 13,
+            eAIGuard         = 14,
+            eAIDialogue      = 15,
+            eAIUseWeapon     = 16
             };
 
         enum locTypeType
@@ -208,25 +208,25 @@ class PACKRecord : public FNVRecord //Package
 
         enum schedDayType
             {
-            eAnyDay = -1,
-            eSunday = 0,
-            eMonday = 1,
-            eTuesday = 2,
+            eAnyDay    = -1,
+            eSunday    = 0,
+            eMonday    = 1,
+            eTuesday   = 2,
             eWednesday = 3,
-            eThursday = 4,
-            eFriday = 5,
-            eSaturday = 6,
-            eWeekdays = 7,
-            eWeekends = 8,
-            eMWF = 9,
-            eTTh = 10
+            eThursday  = 4,
+            eFriday    = 5,
+            eSaturday  = 6,
+            eWeekdays  = 7,
+            eWeekends  = 8,
+            eMWF       = 9,
+            eTTh       = 10
             };
 
         enum targetTypeType
             {
-            eTargetReference  = 0,
-            eTargetObjectID   = 1,
-            eTargetObjectType = 2,
+            eTargetReference       = 0,
+            eTargetObjectID        = 1,
+            eTargetObjectType      = 2,
             eTargetLinkedReference = 3
             };
 
@@ -239,7 +239,7 @@ class PACKRecord : public FNVRecord //Package
         enum pkptTypes
             {
             eNotRepeatable = 0,
-            eRepeatable = 1
+            eRepeatable    = 1
             };
 
         enum weaponFlags
@@ -252,14 +252,14 @@ class PACKRecord : public FNVRecord //Package
 
         enum weaponRateTypes
             {
-            eAutoFire = 0,
+            eAutoFire   = 0,
             eVolleyFire = 1
             };
 
         enum weaponFireTypes
             {
             eNumberOfBursts = 0,
-            eRepeatFire = 1
+            eRepeatFire     = 1
             };
 
         enum dialogueFlags
@@ -271,7 +271,7 @@ class PACKRecord : public FNVRecord //Package
         enum dialogueTypes
             {
             eConversation = 0,
-            eSayTo = 1
+            eSayTo        = 1
             };
 
         enum schrFlags
