@@ -806,7 +806,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 95: //hair
             return &HNAM.value;
         case 96: //hairLength
-            return &LNAM.value;
+            return LNAM.value;
         case 97: //eyes
             return &ENAM.value;
         case 98: //hairRed
@@ -834,9 +834,9 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 107: //unknown
             return &NAM5.value;
         case 108: //height
-            return &NAM6.value;
+            return NAM6.value;
         case 109: //weight
-            return &NAM7.value;
+            return NAM7.value;
         default:
             return NULL;
         }
@@ -1338,7 +1338,8 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             HNAM.value = *(FORMID *)FieldValue;
             return true;
         case 96: //hairLength
-            LNAM.value = *(FLOAT32 *)FieldValue;
+            LNAM.Load();
+            *LNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 97: //eyes
             ENAM.value = *(FORMID *)FieldValue;
@@ -1380,10 +1381,12 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             NAM5.value = *(UINT16 *)FieldValue;
             break;
         case 108: //height
-            NAM6.value = *(FLOAT32 *)FieldValue;
+            NAM6.Load();
+            *NAM6.value = *(FLOAT32 *)FieldValue;
             break;
         case 109: //weight
-            NAM7.value = *(FLOAT32 *)FieldValue;
+            NAM7.Load();
+            *NAM7.value = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;

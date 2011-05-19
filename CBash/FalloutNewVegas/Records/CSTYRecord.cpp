@@ -24,6 +24,198 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+CSTYRecord::CSTYCSTD::CSTYCSTD():
+    dodgeChance(0),
+    lrChance(0),
+    lrTimerMin(0.0f),
+    lrTimerMax(0.0f),
+    forTimerMin(0.0f),
+    forTimerMax(0.0f),
+    backTimerMin(0.0f),
+    backTimerMax(0.0f),
+    idleTimerMin(0.0f),
+    idleTimerMax(0.0f),
+    blkChance(0),
+    atkChance(0),
+    atkBRecoil(0.0f),
+    atkBUnc(0.0f),
+    atkBh2h(0.0f),
+    pAtkChance(0),
+    pAtkBRecoil(0.0f),
+    pAtkBUnc(0.0f),
+    pAtkNormal(0),
+    pAtkFor(0),
+    pAtkBack(0),
+    pAtkL(0),
+    pAtkR(0),
+    holdTimerMin(0.0f),
+    holdTimerMax(0.0f),
+    flags(0),
+    acroDodge(0),
+    rushChance(0),
+    rushMult(0.0f)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
+    memset(&unused3[0], 0x00, sizeof(unused3));
+    memset(&unused4[0], 0x00, sizeof(unused4));
+    memset(&unused5[0], 0x00, sizeof(unused5));
+    memset(&unused6[0], 0x00, sizeof(unused6));
+    }
+
+CSTYRecord::CSTYCSTD::~CSTYCSTD()
+    {
+    //
+    }
+
+bool CSTYRecord::CSTYCSTD::operator ==(const CSTYCSTD &other) const
+    {
+    return (dodgeChance == other.dodgeChance &&
+            lrChance == other.lrChance &&
+            blkChance == other.blkChance &&
+            atkChance == other.atkChance &&
+            pAtkChance == other.pAtkChance &&
+            pAtkNormal == other.pAtkNormal &&
+            pAtkFor == other.pAtkFor &&
+            pAtkBack == other.pAtkBack &&
+            pAtkL == other.pAtkL &&
+            pAtkR == other.pAtkR &&
+            flags == other.flags &&
+            acroDodge == other.acroDodge &&
+            rushChance == other.rushChance &&
+            AlmostEqual(lrTimerMin,other.lrTimerMin,2) &&
+            AlmostEqual(lrTimerMax,other.lrTimerMax,2) &&
+            AlmostEqual(forTimerMin,other.forTimerMin,2) &&
+            AlmostEqual(forTimerMax,other.forTimerMax,2) &&
+            AlmostEqual(backTimerMin,other.backTimerMin,2) &&
+            AlmostEqual(backTimerMax,other.backTimerMax,2) &&
+            AlmostEqual(idleTimerMin,other.idleTimerMin,2) &&
+            AlmostEqual(idleTimerMax,other.idleTimerMax,2) &&
+            AlmostEqual(atkBRecoil,other.atkBRecoil,2) &&
+            AlmostEqual(atkBUnc,other.atkBUnc,2) &&
+            AlmostEqual(atkBh2h,other.atkBh2h,2) &&
+            AlmostEqual(pAtkBRecoil,other.pAtkBRecoil,2) &&
+            AlmostEqual(pAtkBUnc,other.pAtkBUnc,2) &&
+            AlmostEqual(holdTimerMin,other.holdTimerMin,2) &&
+            AlmostEqual(holdTimerMax,other.holdTimerMax,2) &&
+            AlmostEqual(rushMult,other.rushMult,2));
+    }
+
+bool CSTYRecord::CSTYCSTD::operator !=(const CSTYCSTD &other) const
+    {
+    return !(*this == other);
+    }
+
+CSTYRecord::CSTYCSAD::CSTYCSAD():
+    dodgeFMult(0.0f),
+    dodgeFBase(0.0f),
+    encSBase(0.0f),
+    encSMult(0.0f),
+    dodgeAtkMult(0.0f),
+    dodgeNAtkMult(0.0f),
+    dodgeBAtkMult(0.0f),
+    dodgeBNAtkMult(0.0f),
+    dodgeFAtkMult(0.0f),
+    dodgeFNAtkMult(0.0f),
+    blockMult(0.0f),
+    blockBase(0.0f),
+    blockAtkMult(0.0f),
+    blockNAtkMult(0.0f),
+    atkMult(0.0f),
+    atkBase(0.0f),
+    atkAtkMult(0.0f),
+    atkNAtkMult(0.0f),
+    atkBlockMult(0.0f),
+    pAtkFBase(0.0f),
+    pAtkFMult(0.0f)
+    {
+    //
+    }
+
+CSTYRecord::CSTYCSAD::~CSTYCSAD()
+    {
+    //
+    }
+
+bool CSTYRecord::CSTYCSAD::operator ==(const CSTYCSAD &other) const
+    {
+    return (AlmostEqual(dodgeFMult,other.dodgeFMult,2) &&
+            AlmostEqual(dodgeFBase,other.dodgeFBase,2) &&
+            AlmostEqual(encSBase,other.encSBase,2) &&
+            AlmostEqual(encSMult,other.encSMult,2) &&
+            AlmostEqual(dodgeAtkMult,other.dodgeAtkMult,2) &&
+            AlmostEqual(dodgeNAtkMult,other.dodgeNAtkMult,2) &&
+            AlmostEqual(dodgeBAtkMult,other.dodgeBAtkMult,2) &&
+            AlmostEqual(dodgeBNAtkMult,other.dodgeBNAtkMult,2) &&
+            AlmostEqual(dodgeFAtkMult,other.dodgeFAtkMult,2) &&
+            AlmostEqual(dodgeFNAtkMult,other.dodgeFNAtkMult,2) &&
+            AlmostEqual(blockMult,other.blockMult,2) &&
+            AlmostEqual(blockBase,other.blockBase,2) &&
+            AlmostEqual(blockAtkMult,other.blockAtkMult,2) &&
+            AlmostEqual(blockNAtkMult,other.blockNAtkMult,2) &&
+            AlmostEqual(atkMult,other.atkMult,2) &&
+            AlmostEqual(atkBase,other.atkBase,2) &&
+            AlmostEqual(atkAtkMult,other.atkAtkMult,2) &&
+            AlmostEqual(atkNAtkMult,other.atkNAtkMult,2) &&
+            AlmostEqual(atkBlockMult,other.atkBlockMult,2) &&
+            AlmostEqual(pAtkFBase,other.pAtkFBase,2) &&
+            AlmostEqual(pAtkFMult,other.pAtkFMult,2));
+    }
+
+bool CSTYRecord::CSTYCSAD::operator !=(const CSTYCSAD &other) const
+    {
+    return !(*this == other);
+    }
+
+CSTYRecord::CSTYCSSD::CSTYCSSD():
+    coverRadius(0.0f),
+    coverChance(0.0f),
+    waitTimerMin(0.0f),
+    waitTimerMax(0.0f),
+    waitFireTimerMin(0.0f),
+    waitFireTimerMax(0.0f),
+    fireTimerMin(0.0f),
+    fireTimerMax(0.0f),
+    rangedRangeMultMin(0.0f),
+    weaponRestrictions(0),
+    rangedRangeMultMax(0.0f),
+    targetMaxFOV(0.0f),
+    combatRadius(0.0f),
+    semiAutoFireDelayMultMin(0.0f),
+    semiAutoFireDelayMultMax(0.0f)
+    {
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    }
+
+CSTYRecord::CSTYCSSD::~CSTYCSSD()
+    {
+    //
+    }
+
+bool CSTYRecord::CSTYCSSD::operator ==(const CSTYCSSD &other) const
+    {
+    return (weaponRestrictions == other.weaponRestrictions &&
+            AlmostEqual(coverRadius,other.coverRadius,2) &&
+            AlmostEqual(coverChance,other.coverChance,2) &&
+            AlmostEqual(waitTimerMin,other.waitTimerMin,2) &&
+            AlmostEqual(waitTimerMax,other.waitTimerMax,2) &&
+            AlmostEqual(waitFireTimerMin,other.waitFireTimerMin,2) &&
+            AlmostEqual(waitFireTimerMax,other.waitFireTimerMax,2) &&
+            AlmostEqual(fireTimerMin,other.fireTimerMin,2) &&
+            AlmostEqual(fireTimerMax,other.fireTimerMax,2) &&
+            AlmostEqual(rangedRangeMultMin,other.rangedRangeMultMin,2) &&
+            AlmostEqual(rangedRangeMultMax,other.rangedRangeMultMax,2) &&
+            AlmostEqual(targetMaxFOV,other.targetMaxFOV,2) &&
+            AlmostEqual(combatRadius,other.combatRadius,2) &&
+            AlmostEqual(semiAutoFireDelayMultMin,other.semiAutoFireDelayMultMin,2) &&
+            AlmostEqual(semiAutoFireDelayMultMax,other.semiAutoFireDelayMultMax,2));
+    }
+
+bool CSTYRecord::CSTYCSSD::operator !=(const CSTYCSSD &other) const
+    {
+    return !(*this == other);
+    }
+
 CSTYRecord::CSTYRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -62,169 +254,134 @@ CSTYRecord::~CSTYRecord()
     //
     }
 
-bool CSTYRecord::VisitFormIDs(FormIDOp &op)
-    {
-    if(!IsLoaded())
-        return false;
-
-
-    return op.Stop();
-    }
-
 bool CSTYRecord::IsUseChanceForAttack()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsUseChanceForAttack) != 0;
+    return (CSTD.value.flags & fIsUseChanceForAttack) != 0;
     }
 
 void CSTYRecord::IsUseChanceForAttack(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsUseChanceForAttack) : (Dummy->flags & ~fIsUseChanceForAttack);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsUseChanceForAttack) : (CSTD.value.flags & ~fIsUseChanceForAttack);
     }
 
 bool CSTYRecord::IsMeleeAlertOK()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsMeleeAlertOK) != 0;
+    return (CSTD.value.flags & fIsMeleeAlertOK) != 0;
     }
 
 void CSTYRecord::IsMeleeAlertOK(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsMeleeAlertOK) : (Dummy->flags & ~fIsMeleeAlertOK);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsMeleeAlertOK) : (CSTD.value.flags & ~fIsMeleeAlertOK);
     }
 
 bool CSTYRecord::IsFleeForSurvival()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsFleeForSurvival) != 0;
+    return (CSTD.value.flags & fIsFleeForSurvival) != 0;
     }
 
 void CSTYRecord::IsFleeForSurvival(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsFleeForSurvival) : (Dummy->flags & ~fIsFleeForSurvival);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsFleeForSurvival) : (CSTD.value.flags & ~fIsFleeForSurvival);
     }
 
 bool CSTYRecord::IsIgnoreThreats()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsIgnoreThreats) != 0;
+    return (CSTD.value.flags & fIsIgnoreThreats) != 0;
     }
 
 void CSTYRecord::IsIgnoreThreats(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsIgnoreThreats) : (Dummy->flags & ~fIsIgnoreThreats);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsIgnoreThreats) : (CSTD.value.flags & ~fIsIgnoreThreats);
     }
 
-bool CSTYRecord::IsIgnoreDamagingSelf=()
+bool CSTYRecord::IsIgnoreDamagingSelf()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsIgnoreDamagingSelf=) != 0;
+    return (CSTD.value.flags & fIsIgnoreDamagingSelf) != 0;
     }
 
-void CSTYRecord::IsIgnoreDamagingSelf=(bool value)
+void CSTYRecord::IsIgnoreDamagingSelf(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingSelf=) : (Dummy->flags & ~fIsIgnoreDamagingSelf=);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsIgnoreDamagingSelf) : (CSTD.value.flags & ~fIsIgnoreDamagingSelf);
     }
 
-bool CSTYRecord::IsIgnoreDamagingGroup=()
+bool CSTYRecord::IsIgnoreDamagingGroup()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsIgnoreDamagingGroup=) != 0;
+    return (CSTD.value.flags & fIsIgnoreDamagingGroup) != 0;
     }
 
-void CSTYRecord::IsIgnoreDamagingGroup=(bool value)
+void CSTYRecord::IsIgnoreDamagingGroup(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingGroup=) : (Dummy->flags & ~fIsIgnoreDamagingGroup=);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsIgnoreDamagingGroup) : (CSTD.value.flags & ~fIsIgnoreDamagingGroup);
     }
 
 bool CSTYRecord::IsIgnoreDamagingSpectator()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsIgnoreDamagingSpectator) != 0;
+    return (CSTD.value.flags & fIsIgnoreDamagingSpectator) != 0;
     }
 
 void CSTYRecord::IsIgnoreDamagingSpectator(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsIgnoreDamagingSpectator) : (Dummy->flags & ~fIsIgnoreDamagingSpectator);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsIgnoreDamagingSpectator) : (CSTD.value.flags & ~fIsIgnoreDamagingSpectator);
     }
 
 bool CSTYRecord::IsNoUseStealthboy()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->flags & fIsNoUseStealthboy) != 0;
+    return (CSTD.value.flags & fIsNoUseStealthboy) != 0;
     }
 
 void CSTYRecord::IsNoUseStealthboy(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? (Dummy->flags | fIsNoUseStealthboy) : (Dummy->flags & ~fIsNoUseStealthboy);
+    CSTD.value.flags = value ? (CSTD.value.flags | fIsNoUseStealthboy) : (CSTD.value.flags & ~fIsNoUseStealthboy);
     }
 
 bool CSTYRecord::IsFlagMask(UINT16 Mask, bool Exact)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Exact ? ((Dummy->flags & Mask) == Mask) : ((Dummy->flags & Mask) != 0);
+    return Exact ? ((CSTD.value.flags & Mask) == Mask) : ((CSTD.value.flags & Mask) != 0);
     }
 
 void CSTYRecord::SetFlagMask(UINT16 Mask)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    CSTD.value.flags = Mask;
     }
 
 bool CSTYRecord::IsNone()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eNone);
+    return CSSD.value.weaponRestrictions == eNone;
     }
 
 void CSTYRecord::IsNone(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eNone : eDummyDefault;
+    CSSD.value.weaponRestrictions = value ? eNone : eMeleeOnly;
     }
 
 bool CSTYRecord::IsMeleeOnly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eMeleeOnly);
+    return CSSD.value.weaponRestrictions == eMeleeOnly;
     }
 
 void CSTYRecord::IsMeleeOnly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eMeleeOnly : eDummyDefault;
+    CSSD.value.weaponRestrictions = value ? eMeleeOnly : eNone;
     }
 
 bool CSTYRecord::IsRangedOnly()
     {
-    if(!Dummy.IsLoaded()) return false;
-    return (Dummy->type == eRangedOnly);
+    return CSSD.value.weaponRestrictions == eRangedOnly;
     }
 
 void CSTYRecord::IsRangedOnly(bool value)
     {
-    if(!Dummy.IsLoaded()) return;
-    Dummy->flags = value ? eRangedOnly : eDummyDefault;
+    CSSD.value.weaponRestrictions = value ? eRangedOnly : eNone;
     }
 
 bool CSTYRecord::IsType(UINT32 Type)
     {
-    if(!Dummy.IsLoaded()) return false;
-    return Dummy->type == Type;
+    return CSSD.value.weaponRestrictions == Type;
     }
 
 void CSTYRecord::SetType(UINT32 Type)
     {
-    Dummy.Load();
-    Dummy->flags = Mask;
+    CSSD.value.weaponRestrictions = Type;
     }
 
 UINT32 CSTYRecord::GetType()
@@ -287,6 +444,7 @@ SINT32 CSTYRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     CSTD.Unload();
     CSAD.Unload();
@@ -300,7 +458,6 @@ SINT32 CSTYRecord::WriteRecord(FileWriter &writer)
     WRITE(CSTD);
     WRITE(CSAD);
     WRITE(CSSD);
-
     return -1;
     }
 

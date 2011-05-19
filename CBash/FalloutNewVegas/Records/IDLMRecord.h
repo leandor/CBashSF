@@ -37,9 +37,9 @@ class IDLMRecord : public FNVRecord //Idle Marker
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
-        OptSimpleSubRecord<UINT8> IDLF; //Flags
+        ReqSimpleSubRecord<UINT8> IDLF; //Flags
         OptSimpleSubRecord<UINT8> IDLC; //Data (may be a UINT32 instead, but only the lower 8 bits are used, so check size on read)
-        OptSimpleFloatSubRecord<flt_0> IDLT; //Idle Timer Setting
+        ReqSimpleFloatSubRecord<flt_0> IDLT; //Idle Timer Setting
         UnorderedPackedArray<FORMID> IDLA; //Animations
 
         IDLMRecord(unsigned char *_recData=NULL);

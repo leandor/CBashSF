@@ -284,7 +284,7 @@ SINT32 FACTRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);
-    WRITE(XNAM);
+    XNAM.Write(REV32(XNAM), writer, true);
     WRITE(DATA);
     WRITE(CNAM);
     RNAM.Write(writer);

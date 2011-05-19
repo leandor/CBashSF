@@ -92,7 +92,7 @@ inline void ValidatePointer(const void *testPointer)
 
 ModFile *ValidateModName(Collection *curCollection, STRING const ModName)
     {
-    ValidatePointer(ModName);
+    //ValidatePointer(ModName);
     STRING NonGhostName = DeGhostModName(ModName);
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
@@ -117,7 +117,7 @@ ModFile *ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModIndex
 
 ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
     {
-    ValidatePointer(ModName);
+    //ValidatePointer(ModName);
     STRING NonGhostName = DeGhostModName(ModName);
     STRING const &CompName = NonGhostName ? NonGhostName : ModName;
     //ModFiles will never contain null pointers
@@ -247,7 +247,7 @@ UINT32 GetVersionRevision()
         {
         try
             {
-            ValidatePointer(_LoggingCallback);
+            //ValidatePointer(_LoggingCallback);
             if(LoggingFlags == 0)
                 {
                 init_logging(_LoggingCallback);
@@ -314,7 +314,7 @@ Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType
 
     try
         {
-        ValidatePointer(ModsPath);
+        //ValidatePointer(ModsPath);
         for(UINT32 p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] == NULL)
@@ -347,7 +347,7 @@ SINT32 DeleteCollection(Collection *CollectionID)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         for(UINT32 p = 0; p < Collections.size(); ++p)
             {
             if(Collections[p] == CollectionID)
@@ -430,7 +430,7 @@ SINT32 LoadCollection(Collection *CollectionID)
     #endif
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         CollectionID->Load();
         }
     catch(std::exception &ex)
@@ -454,7 +454,7 @@ SINT32 UnloadCollection(Collection *CollectionID)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         CollectionID->Unload();
         }
     catch(std::exception &ex)
@@ -512,8 +512,8 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModName);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModName);
         return CollectionID->AddMod(ModName, flags);
         }
     catch(std::exception &ex)
@@ -534,8 +534,8 @@ SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         ModID->VisitAllRecords(reader);
         }
@@ -560,7 +560,7 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         RecordUnloader unloader;
         ModID->VisitAllRecords(unloader);
         }
@@ -585,8 +585,8 @@ SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         return ModID->CleanMasters(CollectionID->Expanders);
         }
     catch(std::exception &ex)
@@ -611,8 +611,8 @@ SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollect
         {
         //Profiling is in try block so that the timer gets destructed before DeleteCollection is called
         PROFILE_FUNC
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         CollectionID->SaveMod(ModID, CloseCollection);
         }
     catch(std::exception &ex)
@@ -640,7 +640,7 @@ SINT32 GetAllNumMods(Collection *CollectionID)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return CollectionID->ModFiles.size();
         }
     catch(std::exception &ex)
@@ -664,7 +664,7 @@ SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         UINT32 numMods = CollectionID->ModFiles.size();
         for(UINT32 x = 0; x < numMods; ++x)
             ModIDs[x] = CollectionID->ModFiles[x];
@@ -691,7 +691,7 @@ SINT32 GetLoadOrderNumMods(Collection *CollectionID)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return CollectionID->LoadOrder255.size();
         }
     catch(std::exception &ex)
@@ -715,7 +715,7 @@ SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         UINT32 numMods = CollectionID->LoadOrder255.size();
         for(UINT32 x = 0; x < numMods; ++x)
             ModIDs[x] = CollectionID->LoadOrder255[x];
@@ -742,7 +742,7 @@ STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         return ModID->reader.getFileName();
         }
     catch(std::exception &ex)
@@ -766,7 +766,7 @@ STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return ValidateLoadOrderIndex(CollectionID, ModIndex)->reader.getFileName();
         }
     catch(std::exception &ex)
@@ -790,7 +790,7 @@ STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         return ModID->reader.getModName();
         }
     catch(std::exception &ex)
@@ -814,7 +814,7 @@ STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return ValidateLoadOrderIndex(CollectionID, ModIndex)->reader.getModName();
         }
     catch(std::exception &ex)
@@ -838,7 +838,7 @@ ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return ValidateModName(CollectionID, ModName);
         }
     catch(std::exception &ex)
@@ -862,7 +862,7 @@ ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return ValidateLoadOrderIndex(CollectionID, ModIndex);
         }
     catch(std::exception &ex)
@@ -886,7 +886,7 @@ SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return ValidateLoadOrderIndex(CollectionID, ModName)->FormIDHandler.ExpandedIndex;
         }
     catch(std::exception &ex)
@@ -910,7 +910,7 @@ SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         if(ModID->Flags.IsInLoadOrder)
             return ModID->FormIDHandler.ExpandedIndex;
         return -1;
@@ -938,7 +938,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
         return NULL;
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
         if(CollapsedIndex >= ModID->TES4.MAST.size())
             return ModID->reader.getModName();
@@ -993,7 +993,7 @@ UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         return ModID->FormIDHandler.IsEmpty;
         }
     catch(std::exception &ex)
@@ -1017,7 +1017,7 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
             printf("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
@@ -1047,7 +1047,7 @@ void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTyp
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
             printf("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
@@ -1079,8 +1079,8 @@ Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 Rec
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
 
         return CollectionID->CreateRecord(ModID, RecordType, RecordFormID, RecordEditorID, (ParentID != NULL ? ParentID->formID: NULL), CreateFlags);
         }
@@ -1105,8 +1105,8 @@ SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         return CollectionID->DeleteRecord(ModID, RecordID, ParentID);
         }
     catch(std::exception &ex)
@@ -1130,10 +1130,10 @@ Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
-        ValidatePointer(DestModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
+        //ValidatePointer(DestModID);
         return CollectionID->CopyRecord(ModID, RecordID, DestModID, (DestParentID != NULL) ? DestParentID->formID : NULL, DestRecordFormID, DestRecordEditorID, CreateFlags);
         }
     catch(std::exception &ex)
@@ -1159,7 +1159,7 @@ SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
 
     try
         {
-        ValidatePointer(RecordID);
+        //ValidatePointer(RecordID);
         return RecordID->IsChanged() ? 0 : RecordID->Unload();
         }
     catch(std::exception &ex)
@@ -1183,9 +1183,9 @@ SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *Re
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
         return CollectionID->SetRecordIDs(ModID, RecordID, FormID, EditorID);
         }
     catch(std::exception &ex)
@@ -1210,8 +1210,8 @@ Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID Reco
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         Record * curRecord = NULL;
         if(RecordFormID == 0 && RecordEditorID == 0)
             return &ModID->TES4;
@@ -1244,7 +1244,7 @@ SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 Reco
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         return ModID->GetNumRecords(RecordType);
         }
     catch(std::exception &ex)
@@ -1268,7 +1268,7 @@ SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 Recor
 
     try
         {
-        ValidatePointer(ModID);
+        //ValidatePointer(ModID);
         RecordIDRetriever retriever(RecordIDs);
         ModID->VisitRecords(RecordType, NULL, retriever, false);
         return retriever.GetCount();
@@ -1294,8 +1294,8 @@ SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordI
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         return CollectionID->IsRecordWinning(ModID, RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
@@ -1319,7 +1319,7 @@ SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const b
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return CollectionID->GetNumRecordConflicts(RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
@@ -1343,7 +1343,7 @@ SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY
 
     try
         {
-        ValidatePointer(CollectionID);
+        //ValidatePointer(CollectionID);
         return CollectionID->GetRecordConflicts(RecordID, ModIDs, RecordIDs, GetExtendedConflicts);
         }
     catch(std::exception &ex)
@@ -1367,8 +1367,8 @@ SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *Record
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         return CollectionID->GetRecordHistory(ModID, RecordID, ModIDs, RecordIDs);
         }
     catch(std::exception &ex)
@@ -1396,8 +1396,8 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
         return -1;
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
         RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, ModID->FormIDHandler, CollectionID->Expanders);
 
         if(RecordID != NULL) //Swap possible uses of FormIDToReplace in a specific record only
@@ -1441,9 +1441,9 @@ SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *Record
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
 
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
@@ -1476,9 +1476,9 @@ void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
 
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
@@ -1518,9 +1518,9 @@ void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIE
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
 
         //Ensure the record is fully loaded
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
@@ -1554,9 +1554,9 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
 
     try
         {
-        ValidatePointer(CollectionID);
-        ValidatePointer(ModID);
-        ValidatePointer(RecordID);
+        //ValidatePointer(CollectionID);
+        //ValidatePointer(ModID);
+        //ValidatePointer(RecordID);
 
         if(WhichAttribute > 0)
             {

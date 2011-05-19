@@ -64,17 +64,41 @@ UINT32 LSCRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 8: //smallIconPath
             return ISTRING_FIELD;
-        case 9: //description
+        case 9: //text
             return STRING_FIELD;
-        case 10: //lnam LNAM ,, Struct
-            return FORMID_FIELD;
-        case 11: //lnam LNAM ,, Struct
-            return FORMID_FIELD;
-        case 12: //lnam LNAM ,, Struct
-            return SINT16_FIELD;
-        case 13: //lnam LNAM ,, Struct
-            return SINT16_FIELD;
-        case 14: //wmi1 Load Screen Type
+        case 10: //locations
+            if(ListFieldID == 0) //locations
+                {
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)LNAM.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= LNAM.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //direct
+                    return FORMID_FIELD;
+                case 2: //indirect
+                    return FORMID_FIELD;
+                case 3: //gridY
+                    return SINT16_FIELD;
+                case 4: //gridX
+                    return SINT16_FIELD;
+                default:
+                    return UNKNOWN_FIELD;
+                }
+            return UNKNOWN_FIELD;
+        case 11: //screentype
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -104,18 +128,28 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return ICON.value;
         case 8: //smallIconPath
             return MICO.value;
-        case 9: //description
+        case 9: //text
             return DESC.value;
-        case 10: //lnam LNAM ,, Struct
-            return LNAM.IsLoaded() ? &LNAM->value10 : NULL;
-        case 11: //lnam LNAM ,, Struct
-            return LNAM.IsLoaded() ? &LNAM->value11 : NULL;
-        case 12: //lnam LNAM ,, Struct
-            return LNAM.IsLoaded() ? &LNAM->value12 : NULL;
-        case 13: //lnam LNAM ,, Struct
-            return LNAM.IsLoaded() ? &LNAM->value13 : NULL;
-        case 14: //wmi1 Load Screen Type
-            return WMI1.IsLoaded() ? &WMI1->value14 : NULL;
+        case 10: //locations
+            if(ListIndex >= LNAM.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //direct
+                    return &LNAM.value[ListIndex]->direct;
+                case 2: //indirect
+                    return &LNAM.value[ListIndex]->indirect;
+                case 3: //gridY
+                    return &LNAM.value[ListIndex]->gridY;
+                case 4: //gridX
+                    return &LNAM.value[ListIndex]->gridX;
+                default:
+                    return NULL;
+                }
+            return NULL;
+        case 11: //screentype
+            return &WMI1.value;
         default:
             return NULL;
         }
@@ -155,28 +189,39 @@ bool LSCRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 9: //description
+        case 9: //text
             DESC.Copy((STRING)FieldValue);
             break;
-        case 10: //lnam LNAM ,, Struct
-            LNAM.Load();
-            LNAM->value10 = *(FORMID *)FieldValue;
-            return true;
-        case 11: //lnam LNAM ,, Struct
-            LNAM.Load();
-            LNAM->value11 = *(FORMID *)FieldValue;
-            return true;
-        case 12: //lnam LNAM ,, Struct
-            LNAM.Load();
-            LNAM->value12 = *(SINT16 *)FieldValue;
+        case 10: //locations
+            if(ListFieldID == 0) //locationsSize
+                {
+                LNAM.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= LNAM.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //direct
+                    LNAM.value[ListIndex]->direct = *(FORMID *)FieldValue;
+                    return true;
+                case 2: //indirect
+                    LNAM.value[ListIndex]->indirect = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //gridY
+                    LNAM.value[ListIndex]->gridY = *(SINT16 *)FieldValue;
+                    break;
+                case 4: //gridX
+                    LNAM.value[ListIndex]->gridX = *(SINT16 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 13: //lnam LNAM ,, Struct
-            LNAM.Load();
-            LNAM->value13 = *(SINT16 *)FieldValue;
-            break;
-        case 14: //wmi1 Load Screen Type
-            WMI1.Load();
-            WMI1->value14 = *(FORMID *)FieldValue;
+        case 11: //screentype
+            WMI1.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -186,6 +231,7 @@ bool LSCRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    LSCRLNAM defaultLNAM;
     switch(FieldID)
         {
         case 1: //flags1
@@ -210,22 +256,38 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //smallIconPath
             MICO.Unload();
             return;
-        case 9: //description
+        case 9: //text
             DESC.Unload();
             return;
-        case 10: //lnam LNAM ,, Struct
-            LNAM.Unload();
+        case 10: //locations
+            if(ListFieldID == 0) //locationsSize
+                {
+                LNAM.Unload();
+                return;
+                }
+
+            if(ListIndex >= LNAM.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //direct
+                    LNAM.value[ListIndex]->direct = defaultLNAM.direct;
+                    return;
+                case 2: //indirect
+                    LNAM.value[ListIndex]->indirect = defaultLNAM.indirect;
+                    return;
+                case 3: //gridY
+                    LNAM.value[ListIndex]->gridY = defaultLNAM.gridY;
+                    return;
+                case 4: //gridX
+                    LNAM.value[ListIndex]->gridX = defaultLNAM.gridX;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 11: //lnam LNAM ,, Struct
-            LNAM.Unload();
-            return;
-        case 12: //lnam LNAM ,, Struct
-            LNAM.Unload();
-            return;
-        case 13: //lnam LNAM ,, Struct
-            LNAM.Unload();
-            return;
-        case 14: //wmi1 Load Screen Type
+        case 11: //screentype
             WMI1.Unload();
             return;
         default:

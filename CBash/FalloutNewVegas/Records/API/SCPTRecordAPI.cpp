@@ -155,6 +155,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     default:
                         return UNKNOWN_FIELD;
                     }
+                return UNKNOWN_FIELD;
                 }
 
             if(ListIndex >= SCR_.value.size())
@@ -176,6 +177,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }

@@ -343,7 +343,7 @@ bool LVLNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             LVLD.value = *(UINT8 *)FieldValue;
             break;
         case 14: //flags
-            LVLF.value = *(UINT8 *)FieldValue;
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 15: //entries
             if(ListFieldID == 0) //entriesSize

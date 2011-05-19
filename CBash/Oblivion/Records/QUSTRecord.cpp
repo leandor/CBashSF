@@ -475,6 +475,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             case REV32(CTDT):
+                //fallthrough is intentional
             case REV32(CTDA):
                 switch(whichCTDA)
                     {

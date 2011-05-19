@@ -130,34 +130,26 @@ LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
 #Helper functions
 class API_FIELDS(object):
     """These fields MUST be defined in the same order as in CBash's Common.h"""
-    __slots__ = ['UNKNOWN', 'MISSING', 'JUNK', 'BOOL',
-                 'SINT8', 'UINT8', 'SINT16', 'UINT16',
-                 'SINT32', 'UINT32', 'FLOAT32',
-                 'RADIAN', 'FORMID', 'MGEFCODE',
-                 'ACTORVALUE', 'FORMID_OR_UINT32',
-                 'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32',
-                 'FORMID_OR_STRING',
-                 'UNKNOWN_OR_FORMID_OR_UINT32',
-                 'UNKNOWN_OR_SINT32', 'UNKNOWN_OR_UINT32_FLAG'
-                 'MGEFCODE_OR_UINT32',
+    __slots__ = ['UNKNOWN', 'MISSING', 'JUNK', 'BOOL', 'SINT8', 'UINT8',
+                 'SINT16', 'UINT16', 'SINT32', 'UINT32', 'FLOAT32', 'RADIAN',
+                 'FORMID', 'MGEFCODE', 'ACTORVALUE', 'FORMID_OR_UINT32',
+                 'FORMID_OR_FLOAT32', 'UINT8_OR_UINT32', 'FORMID_OR_STRING',
+                 'UNKNOWN_OR_FORMID_OR_UINT32', 'UNKNOWN_OR_SINT32',
+                 'UNKNOWN_OR_UINT32_FLAG', 'MGEFCODE_OR_UINT32',
                  'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
-                 'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE',
-                 'RESOLVED_ACTORVALUE', 'STATIC_ACTORVALUE',
-                 'CHAR', 'CHAR4', 'STRING', 'ISTRING',
-                 'STRING_OR_FLOAT32_OR_SINT32', 'LIST',
-                 'PARENTRECORD', 'SUBRECORD', 'SINT8_FLAG',
-                 'SINT8_TYPE', 'SINT8_FLAG_TYPE', 'SINT8_ARRAY',
-                 'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
+                 'RESOLVED_MGEFCODE', 'STATIC_MGEFCODE', 'RESOLVED_ACTORVALUE',
+                 'STATIC_ACTORVALUE', 'CHAR', 'CHAR4', 'STRING', 'ISTRING',
+                 'STRING_OR_FLOAT32_OR_SINT32', 'LIST', 'PARENTRECORD',
+                 'SUBRECORD', 'SINT8_FLAG', 'SINT8_TYPE', 'SINT8_FLAG_TYPE',
+                 'SINT8_ARRAY', 'UINT8_FLAG', 'UINT8_TYPE', 'UINT8_FLAG_TYPE',
                  'UINT8_ARRAY', 'SINT16_FLAG', 'SINT16_TYPE',
-                 'SINT16_FLAG_TYPE', 'SINT16_ARRAY',
-                 'UINT16_FLAG', 'UINT16_TYPE', 'UINT16_FLAG_TYPE',
-                 'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
-                 'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG',
-                 'UINT32_TYPE', 'UINT32_FLAG_TYPE', 'UINT32_ARRAY',
-                 'FLOAT32_ARRAY', 'RADIAN_ARRAY', 'FORMID_ARRAY',
-                 'FORMID_OR_UINT32_ARRAY', 'MGEFCODE_OR_UINT32_ARRAY',
-                 'STRING_ARRAY', 'ISTRING_ARRAY', 'SUBRECORD_ARRAY',
-                 'UNDEFINED']
+                 'SINT16_FLAG_TYPE', 'SINT16_ARRAY', 'UINT16_FLAG', 'UINT16_TYPE',
+                 'UINT16_FLAG_TYPE', 'UINT16_ARRAY', 'SINT32_FLAG', 'SINT32_TYPE',
+                 'SINT32_FLAG_TYPE', 'SINT32_ARRAY', 'UINT32_FLAG', 'UINT32_TYPE',
+                 'UINT32_FLAG_TYPE', 'UINT32_ARRAY', 'FLOAT32_ARRAY',
+                 'RADIAN_ARRAY', 'FORMID_ARRAY', 'FORMID_OR_UINT32_ARRAY',
+                 'MGEFCODE_OR_UINT32_ARRAY', 'STRING_ARRAY', 'ISTRING_ARRAY',
+                 'SUBRECORD_ARRAY', 'UNDEFINED']
 
 for value, attr in enumerate(API_FIELDS.__slots__):
     setattr(API_FIELDS, attr, value)
@@ -452,6 +444,52 @@ class CBashGeneric_GROUP(object):
         FieldID = self._FieldID + instance._FieldID
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
         else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, byref(self._Type(nValue)), 0)
+
+class CBashFORMID_GROUP(object):
+    def __init__(self, FieldID):
+        self._FieldID = FieldID
+    def __get__(self, instance, owner):
+        FieldID = self._FieldID + instance._FieldID
+        _CGetField.restype = POINTER(c_ulong)
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
+        return None
+    def __set__(self, instance, nValue):
+        FieldID = self._FieldID + instance._FieldID
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, nValue))), 0)
+
+class CBashFORMID_OR_UINT32_ARRAY_GROUP(object):
+    def __init__(self, FieldID, Size=None):
+        self._FieldID = FieldID
+        self._Size = Size
+    def __get__(self, instance, owner):
+        FieldID = self._FieldID + instance._FieldID
+        values = []
+        numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)
+        if(numRecords > 0):
+            cRecords = (c_ulong * numRecords)()
+            _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
+            for x in range(numRecords):
+                type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x, 1, 0, 0, 0, 0, 2)
+                if type == API_FIELDS.UINT32:
+                    values.append(cRecords[x])
+                elif type == API_FIELDS.FORMID:
+                    values.append(MakeLongFid(instance._CollectionID, instance._ModID, cRecords[x]))
+        return values
+    def __set__(self, instance, nValue):
+        FieldID = self._FieldID + instance._FieldID
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
+        else:
+            length = len(nValue)
+            if self._Size and length != self._Size: return
+            #Each element can be either a formID or UINT32, so they have to be set separately
+            #Resize the list
+            _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
+            for x, value in enumerate(nValue):
+                #Borrowing ArraySize to flag if the new value is a formID
+                IsFormID = isinstance(value, tuple)
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, FieldID, x, 1, 0, 0, 0, 0, byref(c_ulong(MakeShortFid(instance._CollectionID, value))), IsFormID)
 
 class CBashUINT8ARRAY_GROUP(object):
     def __init__(self, FieldID, Size=None):
@@ -1460,6 +1498,37 @@ class CBashUINT8ARRAY_LISTX3(object):
             cRecords = (c_ubyte * length)(*nValue)
             _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(cRecords), length)
 
+class CBashFORMID_OR_FLOAT32_LISTX3(object):
+    def __init__(self, ListX3FieldID):
+        self._ListX3FieldID = ListX3FieldID
+    def __get__(self, instance, owner):
+        type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
+        if type == API_FIELDS.FLOAT32:
+            _CGetField.restype = POINTER(c_float)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+            if(retValue): return round(retValue.contents.value,6)
+        else:
+            _CGetField.restype = POINTER(c_ulong)
+            retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+            if(retValue): return MakeLongFid(instance._CollectionID, instance._ModID, retValue.contents.value)
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        else:
+            type = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 2)
+            if type == API_FIELDS.FLOAT32:
+                try:
+                    value = float(nValue)
+                except TypeError:
+                    return
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_float(round(value,6))), 0)
+            else:
+                try:
+                    value = MakeShortFid(instance._CollectionID, nValue)
+                except TypeError:
+                    return
+                _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_ulong(value)), 0)
+
 class CBashFLOAT32_LISTX3(object):
     def __init__(self, ListX3FieldID):
         self._ListX3FieldID = ListX3FieldID
@@ -1471,6 +1540,30 @@ class CBashFLOAT32_LISTX3(object):
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
         else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_float(round(nValue,6))), 0)
+
+class CBashSTRING_LISTX3(object):
+    def __init__(self, ListX3FieldID):
+        self._ListX3FieldID = ListX3FieldID
+    def __get__(self, instance, owner):
+        _CGetField.restype = c_char_p
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+        if(retValue): return retValue
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, str(nValue), 0)
+
+class CBashISTRING_LISTX3(object):
+    def __init__(self, ListX3FieldID):
+        self._ListX3FieldID = ListX3FieldID
+    def __get__(self, instance, owner):
+        _CGetField.restype = c_char_p
+        retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, 0)
+        if(retValue): return ISTRING(retValue)
+        return None
+    def __set__(self, instance, nValue):
+        if nValue is None: _CDeleteField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
+        else: _CSetField(instance._CollectionID, instance._ModID, instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, str(nValue), 0)
 
 class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(object):
     def __init__(self, ListX3FieldID):
@@ -1624,6 +1717,62 @@ class FNVConditionX2(ListX2Component):
     exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
                                'param2', 'runOn', 'reference']
 
+class FNVConditionX3(ListX3Component):
+    UINT8_FLAG_TYPE_LISTX3MACRO(operType, 1)
+    UINT8_ARRAY_LISTX3MACRO(unused1, 2, 3)
+    FORMID_OR_FLOAT32_LISTX3MACRO(compValue, 3)
+    UINT32_TYPE_LISTX3MACRO(ifunc, 4)
+    UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO(param1, 5)
+    UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO(param2, 6)
+    UINT32_TYPE_LISTX3MACRO(runOn, 7)
+    UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO(reference, 8)
+    MaskedTypeMACRO(IsEqual, operType, 0xF0, 0x00, IsNotEqual)
+    MaskedTypeMACRO(IsNotEqual, operType, 0xF0, 0x20, IsEqual)
+    MaskedTypeMACRO(IsGreater, operType, 0xF0, 0x40, IsEqual)
+    MaskedTypeMACRO(IsGreaterOrEqual, operType, 0xF0, 0x60, IsEqual)
+    MaskedTypeMACRO(IsLess, operType, 0xF0, 0x80, IsEqual)
+    MaskedTypeMACRO(IsLessOrEqual, operType, 0xF0, 0xA0, IsEqual)
+    BasicFlagMACRO(IsOr, operType, 0x01)
+    BasicFlagMACRO(IsRunOnTarget, operType, 0x02)
+    BasicFlagMACRO(IsUseGlobal, operType, 0x04)
+    BasicTypeMACRO(IsResultOnSubject, runOn, 0, IsResultOnTarget)
+    BasicTypeMACRO(IsResultOnTarget, runOn, 1, IsResultOnSubject)
+    BasicTypeMACRO(IsResultOnReference, runOn, 2, IsResultOnSubject)
+    BasicTypeMACRO(IsResultOnCombatTarget, runOn, 3, IsResultOnSubject)
+    BasicTypeMACRO(IsResultOnLinkedReference, runOn, 4, IsResultOnSubject)
+    exportattrs = copyattrs = ['operType', 'compValue', 'ifunc', 'param1',
+                               'param2', 'runOn', 'reference']
+
+class Var(ListComponent):
+    UINT32_LISTMACRO(index, 1)
+    UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
+    UINT8_FLAG_LISTMACRO(flags, 3)
+    UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
+    ISTRING_LISTMACRO(name, 5)
+
+    BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+    exportattrs = copyattrs = ['index', 'flags', 'name']
+
+class VarX2(ListX2Component):
+    UINT32_LISTX2MACRO(index, 1)
+    UINT8_ARRAY_LISTX2MACRO(unused1, 2, 12)
+    UINT8_FLAG_LISTX2MACRO(flags, 3)
+    UINT8_ARRAY_LISTX2MACRO(unused2, 4, 7)
+    ISTRING_LISTX2MACRO(name, 5)
+
+    BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+    exportattrs = copyattrs = ['index', 'flags', 'name']
+    
+class VarX3(ListX3Component):
+    UINT32_LISTX3MACRO(index, 1)
+    UINT8_ARRAY_LISTX3MACRO(unused1, 2, 12)
+    UINT8_FLAG_LISTX3MACRO(flags, 3)
+    UINT8_ARRAY_LISTX3MACRO(unused2, 4, 7)
+    ISTRING_LISTX3MACRO(name, 5)
+
+    BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
+    exportattrs = copyattrs = ['index', 'flags', 'name']
+    
 class Effect(ListComponent):
     ##name0 and name are both are always the same value, so setting one will set both. They're basically aliases
     MGEFCODE_OR_UINT32_LISTMACRO(name0, 1)
@@ -2070,16 +2219,6 @@ class FnvACHRRecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'ACHR'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2106,7 +2245,7 @@ class FnvACHRRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     SINT32_MACRO(levelMod, 24)
@@ -2190,16 +2329,6 @@ class FnvACRERecord(FnvBaseRecord):
         self._ParentID = ParentID
 
     _Type = 'ACRE'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2226,7 +2355,7 @@ class FnvACRERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     SINT32_MACRO(levelMod, 24)
@@ -2311,16 +2440,6 @@ class FnvREFRRecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'REFR'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2355,7 +2474,7 @@ class FnvREFRRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     SINT32_MACRO(levelMod, 24)
@@ -2650,16 +2769,6 @@ class FnvPGRERecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PGRE'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2694,7 +2803,7 @@ class FnvPGRERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     FORMID_MACRO(owner, 24)
@@ -2781,16 +2890,6 @@ class FnvPMISRecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PMIS'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2825,7 +2924,7 @@ class FnvPMISRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     FORMID_MACRO(owner, 24)
@@ -2912,16 +3011,6 @@ class FnvPBEARecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PBEA'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -2956,7 +3045,7 @@ class FnvPBEARecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     FORMID_MACRO(owner, 24)
@@ -3043,16 +3132,6 @@ class FnvPFLARecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PFLA'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -3087,7 +3166,7 @@ class FnvPFLARecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     FORMID_MACRO(owner, 24)
@@ -3174,16 +3253,6 @@ class FnvPCBERecord(FnvBaseRecord):
         FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
         self._ParentID = ParentID
     _Type = 'PCBE'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
         UINT8_ARRAY_LISTMACRO(unknown1, 2, 24)
@@ -3218,7 +3287,7 @@ class FnvPCBERecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 19)
     ISTRING_MACRO(scriptText, 20)
 
-    LIST_MACRO(vars, 21, self.Var)
+    LIST_MACRO(vars, 21, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 22)
     FORMID_MACRO(topic, 23)
     FORMID_MACRO(owner, 24)
@@ -3589,16 +3658,30 @@ class FnvINFORecord(FnvBaseRecord):
                                    'sound', 'flags', 'responseText', 'actorNotes',
                                    'editNotes', 'speakerAnim', 'listenerAnim']
 
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
+    class InfoScript(BaseComponent):
+        UINT8_ARRAY_GROUPEDMACRO(unused1, 0, 4)
+        UINT32_GROUPEDMACRO(numRefs, 1)
+        UINT32_GROUPEDMACRO(compiledSize, 2)
+        UINT32_GROUPEDMACRO(lastIndex, 3)
+        UINT16_TYPE_GROUPEDMACRO(scriptType, 4)
+        UINT16_FLAG_GROUPEDMACRO(scriptFlags, 5)
+        UINT8_ARRAY_GROUPEDMACRO(compiled_p, 6)
+        ISTRING_GROUPEDMACRO(scriptText, 7)
+        LIST_GROUPEDMACRO(vars, 8, Var)
+        FORMID_OR_UINT32_ARRAY_GROUPEDMACRO(references, 9)
+        
+        BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
 
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
+        BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+        BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+        BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+        copyattrs = ['numRefs', 'compiledSize', 'lastIndex',
+                     'scriptType', 'scriptFlags', 'compiled_p',
+                     'scriptText', 'vars_list', 'references']
+        exportattrs = ['numRefs', 'compiledSize', 'lastIndex',
+                       'scriptType', 'scriptFlags',
+                       'scriptText', 'vars_list', 'references']#'compiled_p',
+        
     UINT8_TYPE_MACRO(dialType, 7)
     UINT8_TYPE_MACRO(nextSpeaker, 8)
     UINT16_FLAG_MACRO(flags, 9)
@@ -3612,28 +3695,8 @@ class FnvINFORecord(FnvBaseRecord):
     FORMID_ARRAY_MACRO(choices, 16)
     FORMID_ARRAY_MACRO(linksFrom, 17)
     FORMID_ARRAY_MACRO(unknown, 18)
-    UINT8_ARRAY_MACRO(unused1, 19, 4)
-    UINT32_MACRO(numRefs, 20)
-    UINT32_MACRO(compiledSize, 21)
-    UINT32_MACRO(lastIndex, 22)
-    UINT16_TYPE_MACRO(scriptType, 23)
-    UINT16_FLAG_MACRO(scriptFlags, 24)
-    UINT8_ARRAY_MACRO(compiled_p, 25)
-    ISTRING_MACRO(scriptText, 26)
-
-    LIST_MACRO(vars, 27, self.Var)
-    FORMID_OR_UINT32_ARRAY_MACRO(references, 28)
-    UINT8_ARRAY_MACRO(unused2, 29, 4)
-    UINT32_MACRO(endNumRefs, 30)
-    UINT32_MACRO(endCompiledSize, 31)
-    UINT32_MACRO(endLastIndex, 32)
-    UINT16_TYPE_MACRO(endScriptType, 33)
-    UINT16_FLAG_MACRO(endScriptFlags, 34)
-    UINT8_ARRAY_MACRO(endCompiled_p, 35)
-    ISTRING_MACRO(endScriptText, 36)
-
-    LIST_MACRO(endVars, 37, self.Var)
-    FORMID_OR_UINT32_ARRAY_MACRO(endReferences, 38)
+    GroupedValuesMACRO(begin, 19, InfoScript)
+    GroupedValuesMACRO(end, 29, InfoScript)
     FORMID_MACRO(unusedSound, 39)
     STRING_MACRO(prompt, 40)
     FORMID_MACRO(speaker, 41)
@@ -3682,38 +3745,13 @@ class FnvINFORecord(FnvBaseRecord):
     BasicTypeMACRO(IsEndObject, endScriptType, 0x0000, IsQuest)
     BasicTypeMACRO(IsEndQuest, endScriptType, 0x0001, IsObject)
     BasicTypeMACRO(IsEndEffect, endScriptType, 0x0100, IsObject)
-    copyattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
-                                           'quest', 'topic', 'prevInfo',
-                                           'addTopics', 'responses_list',
-                                           'conditions_list', 'choices',
-                                           'linksFrom', 'unknown',
-                                           'numRefs', 'compiledSize',
-                                           'lastIndex', 'scriptType',
-                                           'scriptFlags', 'compiled_p',
-                                           'scriptText', 'vars_list',
-                                           'references', 'endNumRefs',
-                                           'endCompiledSize', 'endLastIndex',
-                                           'endScriptType', 'endScriptFlags',
-                                           'endCompiled_p', 'endScriptText',
-                                           'endVars_list', 'endReferences',
-                                           'prompt', 'speaker',
-                                           'actorValueOrPerk', 'challengeType']
-    exportattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
-                                             'quest', 'topic', 'prevInfo',
-                                             'addTopics', 'responses_list',
-                                             'conditions_list', 'choices',
-                                             'linksFrom', 'unknown',
-                                             'numRefs', 'compiledSize',
-                                             'lastIndex', 'scriptType',
-                                             'scriptFlags',
-                                             'scriptText', 'vars_list',
-                                             'references', 'endNumRefs',
-                                             'endCompiledSize', 'endLastIndex',
-                                             'endScriptType', 'endScriptFlags',
-                                             'endScriptText',
-                                             'endVars_list', 'endReferences',
-                                             'prompt', 'speaker',
-                                             'actorValueOrPerk', 'challengeType']# 'compiled_p','endCompiled_p',
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
+                                                         'quest', 'topic', 'prevInfo',
+                                                         'addTopics', 'responses_list',
+                                                         'conditions_list', 'choices',
+                                                         'linksFrom', 'unknown', 'begin_list',
+                                                         'end_list', 'prompt', 'speaker',
+                                                         'actorValueOrPerk', 'challengeType']
 
 class FnvGMSTRecord(FnvBaseRecord):
     _Type = 'GMST'
@@ -4283,16 +4321,6 @@ class FnvMGEFRecord(FnvBaseRecord):
 
 class FnvSCPTRecord(FnvBaseRecord):
     _Type = 'SCPT'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     UINT8_ARRAY_MACRO(unused1, 7, 4)
     UINT32_MACRO(numRefs, 8)
     UINT32_MACRO(compiledSize, 9)
@@ -4302,7 +4330,7 @@ class FnvSCPTRecord(FnvBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 13)
     ISTRING_MACRO(scriptText, 14)
 
-    LIST_MACRO(vars, 15, self.Var)
+    LIST_MACRO(vars, 15, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 16)
 
     BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
@@ -4490,16 +4518,6 @@ class FnvTACTRecord(FnvBaseRecord):
 class FnvTERMRecord(FnvBaseRecord):
     _Type = 'TERM'
     class Menu(ListComponent):
-        class Var(ListX2Component):
-            UINT32_LISTX2MACRO(index, 1)
-            UINT8_ARRAY_LISTX2MACRO(unused1, 2, 12)
-            UINT8_FLAG_LISTX2MACRO(flags, 3)
-            UINT8_ARRAY_LISTX2MACRO(unused2, 4, 7)
-            ISTRING_LISTX2MACRO(name, 5)
-
-            BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-            exportattrs = copyattrs = ['index', 'flags', 'name']
-
         STRING_LISTMACRO(text, 1)
         STRING_LISTMACRO(resultText, 2)
         UINT8_FLAG_LISTMACRO(flags, 3)
@@ -4514,7 +4532,7 @@ class FnvTERMRecord(FnvBaseRecord):
         UINT8_ARRAY_LISTMACRO(compiled_p, 12)
         ISTRING_LISTMACRO(scriptText, 13)
 
-        LIST_LISTMACRO(vars, 14, self.Var)
+        LIST_LISTMACRO(vars, 14, VarX2)
 
         FORMID_OR_UINT32_ARRAY_LISTMACRO(references, 15)
         LIST_LISTMACRO(conditions, 16, FNVConditionX2)
@@ -7720,28 +7738,501 @@ class FnvDIALRecord(FnvBaseRecord):
 
 class FnvQUSTRecord(FnvBaseRecord):
     _Type = 'QUST'
+    class Stage(ListComponent):
+        class Entry(ListX2Component):
+            UINT8_FLAG_LISTX2MACRO(flags, 1)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+            LIST_LISTX2MACRO(conditions, 2, FNVConditionX3)
+            STRING_LISTX2MACRO(text, 3)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 4, 4)
+            UINT32_LISTX2MACRO(numRefs, 5)
+            UINT32_LISTX2MACRO(compiledSize, 6)
+            UINT32_LISTX2MACRO(lastIndex, 7)
+            UINT32_LISTX2MACRO(scriptType, 8)
+            UINT16_FLAG_LISTX2MACRO(scriptFlags, 9)
+            UINT8_ARRAY_LISTX2MACRO(compiled_p, 10)
+            ISTRING_LISTX2MACRO(scriptText, 11)
+            
+            LIST_LISTX2MACRO(vars, 12, VarX3)
+            FORMID_OR_UINT32_ARRAY_LISTX2MACRO(references, 13)
+            FORMID_LISTX2MACRO(nextQuest, 14)
+            
+            BasicFlagMACRO(IsCompletes, flags, 0x00000001)
+            BasicFlagMACRO(IsFailed, flags, 0x00000002)
+            
+            BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+            
+            BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+            BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+            BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+            copyattrs = ['flags', 'conditions_list', 'text',
+                         'numRefs', 'compiledSize',
+                         'lastIndex', 'scriptType', 'flags',
+                         'compiled_p', 'scriptText',
+                         'vars_list', 'references',
+                         'nextQuest']
+            exportattrs = ['flags', 'conditions_list', 'text',
+                           'numRefs', 'compiledSize',
+                           'lastIndex', 'scriptType', 'flags',
+                           'scriptText',
+                           'vars_list', 'references',
+                           'nextQuest']#'compiled_p', 
+
+        SINT16_LISTMACRO(stage, 1)
+
+        LIST_LISTMACRO(entries, 2, self.Entry)
+        exportattrs = copyattrs = ['stage', 'entries_list']
+
+    class Objective(ListComponent):
+        class Target(ListX2Component):
+            FORMID_LISTX2MACRO(targetId, 1)
+            UINT8_FLAG_LISTX2MACRO(flags, 2)
+            UINT8_ARRAY_LISTX2MACRO(unused1, 3, 3)
+
+            LIST_LISTX2MACRO(conditions, 4, FNVConditionX3)
+            
+            BasicFlagMACRO(IsIgnoresLocks, flags, 0x00000001)
+            exportattrs = copyattrs = ['targetId', 'flags', 'conditions_list']
+            
+        SINT32_LISTMACRO(objective, 1)
+        STRING_LISTMACRO(text, 2)
+        
+        LIST_LISTMACRO(targets, 3, self.Target)
+        exportattrs = copyattrs = ['objective', 'text', 'targets_list']
+        
+    FORMID_MACRO(script, 7)
+    STRING_MACRO(full, 8)
+    ISTRING_MACRO(iconPath, 9)
+    ISTRING_MACRO(smallIconPath, 10)
+    UINT8_FLAG_MACRO(flags, 11)
+    UINT8_MACRO(priority, 12)
+    UINT8_ARRAY_MACRO(unused1, 13, 2)
+    FLOAT32_MACRO(delay, 14)
+
+    LIST_MACRO(conditions, 15, FNVCondition)
+    LIST_MACRO(stages, 16, self.Stage)
+    LIST_MACRO(objectives, 17, self.Objective)
+    
+    BasicFlagMACRO(IsStartEnabled, flags, 0x00000001)
+    BasicFlagMACRO(IsRepeatedTopics, flags, 0x00000004)
+    BasicFlagMACRO(IsRepeatedStages, flags, 0x00000008)
+    BasicFlagMACRO(IsUnknown, flags, 0x00000010)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['script', 'full', 'iconPath',
+                                                         'smallIconPath', 'flags',
+                                                         'priority', 'delay',
+                                                         'conditions_list',
+                                                         'stages_list', 'objectives_list']
 
 class FnvIDLERecord(FnvBaseRecord):
     _Type = 'IDLE'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    ISTRING_MACRO(modPath, 7)
+    FLOAT32_MACRO(modb, 8)
+    UINT8_ARRAY_MACRO(modt_p, 9)
+    
+    LIST_MACRO(altTextures, 10, FNVAltTexture)
+    UINT8_FLAG_MACRO(modelFlags, 11)
+    LIST_MACRO(conditions, 12, FNVCondition)
+    FORMID_ARRAY_MACRO(animations, 13)
+    UINT8_MACRO(group, 14)
+    UINT8_MACRO(minLooping, 15)
+    UINT8_MACRO(maxLooping, 16)
+    UINT8_ARRAY_MACRO(unused1, 17, 1)
+    SINT16_MACRO(replayDelay, 18)
+    UINT8_FLAG_MACRO(flags, 19)
+    UINT8_ARRAY_MACRO(unused2, 20, 1)
+    
+    BasicFlagMACRO(IsNoAttacking, flags, 0x00000001)
+    BasicInvertedFlagMACRO(IsAttacking, IsNoAttacking)
+    
+    MaskedTypeMACRO(IsIdle, group, ~0xC0, 0, IsIdle)
+    MaskedTypeMACRO(IsMovement, group, ~0xC0, 1, IsMovement)
+    MaskedTypeMACRO(IsLeftArm, group, ~0xC0, 2, IsMovement)
+    MaskedTypeMACRO(IsLeftHand, group, ~0xC0, 3, IsMovement)
+    MaskedTypeMACRO(IsWeapon, group, ~0xC0, 4, IsMovement)
+    MaskedTypeMACRO(IsWeaponUp, group, ~0xC0, 5, IsMovement)
+    MaskedTypeMACRO(IsWeaponDown, group, ~0xC0, 6, IsMovement)
+    MaskedTypeMACRO(IsSpecialIdle, group, ~0xC0, 7, IsMovement)
+    MaskedTypeMACRO(IsWholeBody, group, ~0xC0, 20, IsMovement)
+    MaskedTypeMACRO(IsUpperBody, group, ~0xC0, 21, IsMovement)
+    
+    BasicFlagMACRO(IsUnknown1, group, 0x40)
+    BasicFlagMACRO(IsNotReturnFile, group, 0x80)
+    BasicInvertedFlagMACRO(IsReturnFile, IsNotReturnFile)    
+    copyattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb', 'modt_p',
+                                           'altTextures_list', 'modelFlags',
+                                           'conditions_list', 'animations',
+                                           'group', 'minLooping',
+                                           'maxLooping', 'replayDelay',
+                                           'flags']
+    exportattrs = FnvBaseRecord.baseattrs + ['modPath', 'modb',
+                                             'altTextures_list', 'modelFlags',
+                                             'conditions_list', 'animations',
+                                             'group', 'minLooping',
+                                             'maxLooping', 'replayDelay',
+                                             'flags']# 'modt_p',
 
 class FnvPACKRecord(FnvBaseRecord):
     _Type = 'PACK'
+    class PackScript(BaseComponent):
+        FORMID_GROUPEDMACRO(idle, 0)
+        UINT8_ARRAY_GROUPEDMACRO(unused1, 1, 4)
+        UINT32_GROUPEDMACRO(numRefs, 2)
+        UINT32_GROUPEDMACRO(compiledSize, 3)
+        UINT32_GROUPEDMACRO(lastIndex, 4)
+        UINT16_TYPE_GROUPEDMACRO(scriptType, 5)
+        UINT16_FLAG_GROUPEDMACRO(scriptFlags, 6)
+        UINT8_ARRAY_GROUPEDMACRO(compiled_p, 7)
+        ISTRING_GROUPEDMACRO(scriptText, 8)
+        LIST_GROUPEDMACRO(vars, 9, Var)
+        FORMID_OR_UINT32_ARRAY_GROUPEDMACRO(references, 10)
+        FORMID_GROUPEDMACRO(topic, 11)
+        
+        BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+        BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+        BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+        BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
+        copyattrs = ['idle', 'numRefs', 'compiledSize',
+                     'lastIndex', 'scriptType', 'scriptFlags',
+                     'compiled_p', 'scriptText',
+                     'vars_list', 'references', 'topic']
+        exportattrs = ['idle', 'numRefs', 'compiledSize',
+                       'lastIndex', 'scriptType', 'scriptFlags',
+                       'scriptText',
+                       'vars_list', 'references', 'topic']#'compiled_p', 
+
+    UINT32_FLAG_MACRO(flags, 7)
+    UINT8_TYPE_MACRO(aiType, 8)
+    UINT8_ARRAY_MACRO(unused1, 9, 1)
+    UINT16_FLAG_MACRO(behaviorFlags, 10)
+    UINT16_FLAG_MACRO(specificFlags, 11)
+    UINT8_ARRAY_MACRO(unused2, 12, 2)
+    SINT32_TYPE_MACRO(loc1Type, 13)
+    FORMID_OR_UINT32_MACRO(loc1Id, 14)
+    SINT32_MACRO(loc1Radius, 15)
+    SINT32_TYPE_MACRO(loc2Type, 16)
+    FORMID_OR_UINT32_MACRO(loc2Id, 17)
+    SINT32_MACRO(loc2Radius, 18)
+    SINT8_MACRO(month, 19)
+    SINT8_MACRO(day, 20)
+    UINT8_MACRO(date, 21)
+    SINT8_MACRO(time, 22)
+    SINT32_MACRO(duration, 23)
+    SINT32_TYPE_MACRO(target1Type, 24)
+    FORMID_OR_UINT32_MACRO(target1Id, 25)
+    SINT32_MACRO(target1CountOrDistance, 26)
+    FLOAT32_MACRO(target1Unknown, 27)
+    
+    LIST_MACRO(conditions, 28, FNVCondition)
+    UINT8_FLAG_MACRO(idleAnimFlags, 29)
+    UINT8_MACRO(idleAnimCount, 30)
+    FLOAT32_MACRO(idleTimer, 31)
+    FORMID_ARRAY_MACRO(animations, 32)
+    UINT8_ARRAY_MACRO(unusedIDLB_p, 33)
+    UINT32_MACRO(escortDistance, 34)
+    FORMID_MACRO(combatStyle, 35)
+    FLOAT32_MACRO(followTriggerRadius, 36)
+    UINT16_TYPE_MACRO(patrolType, 37)
+    UINT32_FLAG_MACRO(weaponFlags, 38)
+    UINT8_TYPE_MACRO(fireRate, 39)
+    UINT8_TYPE_MACRO(fireType, 40)
+    UINT16_MACRO(burstNum, 41)
+    UINT16_MACRO(minShots, 42)
+    UINT16_MACRO(maxShots, 43)
+    FLOAT32_MACRO(minPause, 44)
+    FLOAT32_MACRO(maxPause, 45)
+    UINT8_ARRAY_MACRO(unused3, 46, 4)
+    SINT32_TYPE_MACRO(target2Type, 47)
+    FORMID_OR_UINT32_MACRO(target2Id, 48)
+    SINT32_MACRO(target2CountOrDistance, 49)
+    FLOAT32_MACRO(target2Unknown, 50)
+    FLOAT32_MACRO(FOV, 51)
+    FORMID_MACRO(topic, 52)
+    UINT32_FLAG_MACRO(dialFlags, 53)
+    UINT8_ARRAY_MACRO(unused4, 54, 4)
+    UINT32_TYPE_MACRO(dialType, 55)
+    UINT8_ARRAY_MACRO(dialUnknown, 56)
+    GroupedValuesMACRO(begin, 57, PackScript)
+    GroupedValuesMACRO(end, 69, PackScript)
+    GroupedValuesMACRO(change, 81, PackScript)
+    
+    BasicFlagMACRO(IsOffersServices, flags, 0x00000001)
+    BasicFlagMACRO(IsMustReachLocation, flags, 0x00000002)
+    BasicFlagMACRO(IsMustComplete, flags, 0x00000004)
+    BasicFlagMACRO(IsLockAtStart, flags, 0x00000008)
+    BasicFlagMACRO(IsLockAtEnd, flags, 0x00000010)
+    BasicFlagMACRO(IsLockAtLocation, flags, 0x00000020)
+    BasicFlagMACRO(IsUnlockAtStart, flags, 0x00000040)
+    BasicFlagMACRO(IsUnlockAtEnd, flags, 0x00000080)
+    BasicFlagMACRO(IsUnlockAtLocation, flags, 0x00000100)
+    BasicFlagMACRO(IsContinueIfPcNear, flags, 0x00000200)
+    BasicFlagMACRO(IsOncePerDay, flags, 0x00000400)
+    BasicFlagMACRO(IsSkipFallout, flags, 0x00001000)
+    BasicFlagMACRO(IsAlwaysRun, flags, 0x00002000)
+    BasicFlagMACRO(IsAlwaysSneak, flags, 0x00020000)
+    BasicFlagMACRO(IsAllowSwimming, flags, 0x00040000)
+    BasicFlagMACRO(IsAllowFalls, flags, 0x00080000)
+    BasicFlagMACRO(IsHeadTrackingOff, flags, 0x00100000)
+    BasicFlagMACRO(IsUnequipWeapons, flags, 0x00200000)
+    BasicFlagMACRO(IsDefensiveCombat, flags, 0x00400000)
+    BasicFlagMACRO(IsWeaponDrawn, flags, 0x00800000)
+    BasicFlagMACRO(IsNoIdleAnims, flags, 0x01000000)
+    BasicFlagMACRO(IsPretendInCombat, flags, 0x02000000)
+    BasicFlagMACRO(IsContinueDuringCombat, flags, 0x04000000)
+    BasicFlagMACRO(IsNoCombatAlert, flags, 0x08000000)
+    BasicFlagMACRO(IsNoWarnAttackBehavior, flags, 0x10000000)
+    
+    BasicFlagMACRO(IsHellosToPlayer, behaviorFlags, 0x00000001)
+    BasicFlagMACRO(IsRandomConversations, behaviorFlags, 0x00000002)
+    BasicFlagMACRO(IsObserveCombatBehavior, behaviorFlags, 0x00000004)
+    BasicFlagMACRO(IsUnknown4, behaviorFlags, 0x00000008)
+    BasicFlagMACRO(IsReactionToPlayerActions, behaviorFlags, 0x00000010)
+    BasicFlagMACRO(IsFriendlyFireComments, behaviorFlags, 0x00000020)
+    BasicFlagMACRO(IsAggroRadiusBehavior, behaviorFlags, 0x00000040)
+    BasicFlagMACRO(IsAllowIdleChatter, behaviorFlags, 0x00000080)
+    BasicFlagMACRO(IsAvoidRadiation, behaviorFlags, 0x00000100)
+    
+    BasicFlagMACRO(IsHide, specificFlags, 0x00000001) #Ambush only
+    BasicFlagMACRO(IsNoEating, specificFlags, 0x00000001)
+    BasicFlagMACRO(IsNoSleeping, specificFlags, 0x00000002)
+    BasicFlagMACRO(IsSitDown, specificFlags, 0x00000002) #Use Item At only
+    BasicFlagMACRO(IsNoConversation, specificFlags, 0x00000004)
+    BasicFlagMACRO(IsRemainNearReference, specificFlags, 0x00000004) #Guard only
+    BasicFlagMACRO(IsNoIdleMarkers, specificFlags, 0x00000008)
+    BasicFlagMACRO(IsNoFurniture, specificFlags, 0x00000010)
+    BasicFlagMACRO(IsNoWandering, specificFlags, 0x00000020)
+    BasicFlagMACRO(IsAllowBuying, specificFlags, 0x00000100)
+    BasicFlagMACRO(IsAllowKilling, specificFlags, 0x00000200)
+    BasicFlagMACRO(IsAllowStealing, specificFlags, 0x00000400)
+    
+    BasicFlagMACRO(IsRunInSequence, idleAnimFlags, 0x00000001)
+    BasicFlagMACRO(IsDoOnce, idleAnimFlags, 0x00000004)
+    
+    BasicFlagMACRO(IsAlwaysHit, weaponFlags, 0x00000001)
+    BasicFlagMACRO(IsDoNoDamage, weaponFlags, 0x00000100)
+    BasicFlagMACRO(IsCrouchToReload, weaponFlags, 0x00010000)
+    BasicFlagMACRO(IsHoldFireWhenBlocked, weaponFlags, 0x01000000)
+
+    BasicFlagMACRO(IsNoHeadtracking, dialFlags, 0x00000001)
+    BasicFlagMACRO(IsDontControlTargetMovement, dialFlags, 0x00000100)
+
+    BasicTypeMACRO(IsAIFind, aiType, 0, IsAIFollow)
+    BasicTypeMACRO(IsAIFollow, aiType, 1, IsAIFind)
+    BasicTypeMACRO(IsAIEscort, aiType, 2, IsAIFind)
+    BasicTypeMACRO(IsAIEat, aiType, 3, IsAIFind)
+    BasicTypeMACRO(IsAISleep, aiType, 4, IsAIFind)
+    BasicTypeMACRO(IsAIWander, aiType, 5, IsAIFind)
+    BasicTypeMACRO(IsAITravel, aiType, 6, IsAIFind)
+    BasicTypeMACRO(IsAIAccompany, aiType, 7, IsAIFind)
+    BasicTypeMACRO(IsAIUseItemAt, aiType, 8, IsAIFind)
+    BasicTypeMACRO(IsAIAmbush, aiType, 9, IsAIFind)
+    BasicTypeMACRO(IsAIFleeNotCombat, aiType, 10, IsAIFind)
+    BasicTypeMACRO(IsAISandbox, aiType, 12, IsAIFind)
+    BasicTypeMACRO(IsAIPatrol, aiType, 13, IsAIFind)
+    BasicTypeMACRO(IsAIGuard, aiType, 14, IsAIFind)
+    BasicTypeMACRO(IsAIDialogue, aiType, 15, IsAIFind)
+    BasicTypeMACRO(IsAIUseWeapon, aiType, 16, IsAIFind)
+    
+    BasicTypeMACRO(IsLoc1NearReference, loc1Type, 0, IsLoc1InCell)
+    BasicTypeMACRO(IsLoc1InCell, loc1Type, 1, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1NearCurrentLocation, loc1Type, 2, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1NearEditorLocation, loc1Type, 3, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1ObjectID, loc1Type, 4, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1ObjectType, loc1Type, 5, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1NearLinkedReference, loc1Type, 6, IsLoc1NearReference)
+    BasicTypeMACRO(IsLoc1AtPackageLocation, loc1Type, 7, IsLoc1NearReference)
+
+    BasicTypeMACRO(IsLoc2NearReference, loc2Type, 0, IsLoc2InCell)
+    BasicTypeMACRO(IsLoc2InCell, loc2Type, 1, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2NearCurrentLocation, loc2Type, 2, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2NearEditorLocation, loc2Type, 3, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2ObjectID, loc2Type, 4, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2ObjectType, loc2Type, 5, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2NearLinkedReference, loc2Type, 6, IsLoc2NearReference)
+    BasicTypeMACRO(IsLoc2AtPackageLocation, loc2Type, 7, IsLoc2NearReference)
+    
+    BasicTypeMACRO(IsAnyDay, day, -1, IsSunday)
+    BasicTypeMACRO(IsSunday, day, 0, IsAnyDay)
+    BasicTypeMACRO(IsMonday, day, 1, IsAnyDay)
+    BasicTypeMACRO(IsTuesday, day, 2, IsAnyDay)
+    BasicTypeMACRO(IsWednesday, day, 3, IsAnyDay)
+    BasicTypeMACRO(IsThursday, day, 4, IsAnyDay)
+    BasicTypeMACRO(IsFriday, day, 5, IsAnyDay)
+    BasicTypeMACRO(IsSaturday, day, 6, IsAnyDay)
+    BasicTypeMACRO(IsWeekdays, day, 7, IsAnyDay)
+    BasicTypeMACRO(IsWeekends, day, 8, IsAnyDay)
+    BasicTypeMACRO(IsMWF, day, 9, IsAnyDay)
+    BasicTypeMACRO(IsTTh, day, 10, IsAnyDay)
+    
+    BasicTypeMACRO(IsTarget1Reference, target1Type, 0, IsTarget1Reference)
+    BasicTypeMACRO(IsTarget1ObjectID, target1Type, 1, IsTarget1Reference)
+    BasicTypeMACRO(IsTarget1ObjectType, target1Type, 2, IsTarget1Reference)
+    BasicTypeMACRO(IsTarget1LinkedReference, target1Type, 3, IsTarget1Reference)
+
+    BasicTypeMACRO(IsTarget2Reference, target2Type, 0, IsTarget2Reference)
+    BasicTypeMACRO(IsTarget2ObjectID, target2Type, 1, IsTarget2Reference)
+    BasicTypeMACRO(IsTarget2ObjectType, target2Type, 2, IsTarget2Reference)
+    BasicTypeMACRO(IsTarget2LinkedReference, target2Type, 3, IsTarget2Reference)
+    
+    BasicTypeMACRO(IsNotRepeatable, patrolType, 0, IsRepeatable)
+    BasicTypeMACRO(IsRepeatable, patrolType, 1, IsNotRepeatable)
+    
+    BasicTypeMACRO(IsAutoFire, fireRate, 0, IsVolleyFire)
+    BasicTypeMACRO(IsVolleyFire, fireRate, 1, IsAutoFire)
+    
+    BasicTypeMACRO(IsNumberOfBursts, fireType, 0, IsRepeatFire)
+    BasicTypeMACRO(IsRepeatFire, fireType, 1, IsNumberOfBursts)
+    
+    BasicTypeMACRO(IsConversation, dialType, 0, IsSayTo)
+    BasicTypeMACRO(IsSayTo, dialType, 1, IsConversation)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['flags', 'aiType', 'behaviorFlags',
+                                                         'specificFlags', 'loc1Type', 'loc1Id',
+                                                         'loc1Radius', 'loc2Type', 'loc2Id',
+                                                         'loc2Radius', 'month', 'day', 'date',
+                                                         'time', 'duration', 'target1Type',
+                                                         'target1Id', 'target1CountOrDistance',
+                                                         'target1Unknown', 'conditions_list',
+                                                         'idleAnimFlags', 'idleAnimCount',
+                                                         'idleTimer', 'animations',
+                                                         'escortDistance', 'combatStyle',
+                                                         'followTriggerRadius', 'patrolType',
+                                                         'weaponFlags', 'fireRate', 'fireType',
+                                                         'burstNum', 'minShots', 'maxShots',
+                                                         'minPause', 'maxPause', 'target2Type',
+                                                         'target2Id', 'target2CountOrDistance',
+                                                         'target2Unknown', 'FOV', 'topic',
+                                                         'dialFlags', 'dialType', 'dialUnknown',
+                                                         'begin_list', 'end_list', 'change_list']
 
 class FnvCSTYRecord(FnvBaseRecord):
     _Type = 'CSTY'
+    UINT8_MACRO(dodgeChance, 7)
+    UINT8_MACRO(lrChance, 8)
+    UINT8_ARRAY_MACRO(unused1, 9, 2)
+    FLOAT32_MACRO(lrTimerMin, 10)
+    FLOAT32_MACRO(lrTimerMax, 11)
+    FLOAT32_MACRO(forTimerMin, 12)
+    FLOAT32_MACRO(forTimerMax, 13)
+    FLOAT32_MACRO(backTimerMin, 14)
+    FLOAT32_MACRO(backTimerMax, 15)
+    FLOAT32_MACRO(idleTimerMin, 16)
+    FLOAT32_MACRO(idleTimerMax, 17)
+    UINT8_MACRO(blkChance, 18)
+    UINT8_MACRO(atkChance, 19)
+    UINT8_ARRAY_MACRO(unused2, 20, 2)
+    FLOAT32_MACRO(atkBRecoil, 21)
+    FLOAT32_MACRO(atkBUnc, 22)
+    FLOAT32_MACRO(atkBh2h, 23)
+    UINT8_MACRO(pAtkChance, 24)
+    UINT8_ARRAY_MACRO(unused3, 25, 3)
+    FLOAT32_MACRO(pAtkBRecoil, 26)
+    FLOAT32_MACRO(pAtkBUnc, 27)
+    UINT8_MACRO(pAtkNormal, 28)
+    UINT8_MACRO(pAtkFor, 29)
+    UINT8_MACRO(pAtkBack, 30)
+    UINT8_MACRO(pAtkL, 31)
+    UINT8_MACRO(pAtkR, 32)
+    UINT8_ARRAY_MACRO(unused4, 33, 3)
+    FLOAT32_MACRO(holdTimerMin, 34)
+    FLOAT32_MACRO(holdTimerMax, 35)
+    UINT16_FLAG_MACRO(flags, 36)
+    UINT8_ARRAY_MACRO(unused5, 37, 2)
+    UINT8_MACRO(acroDodge, 38)
+    UINT8_MACRO(rushChance, 39)
+    UINT8_ARRAY_MACRO(unused6, 40, 2)
+    FLOAT32_MACRO(rushMult, 41)
+    FLOAT32_MACRO(dodgeFMult, 42)
+    FLOAT32_MACRO(dodgeFBase, 43)
+    FLOAT32_MACRO(encSBase, 44)
+    FLOAT32_MACRO(encSMult, 45)
+    FLOAT32_MACRO(dodgeAtkMult, 46)
+    FLOAT32_MACRO(dodgeNAtkMult, 47)
+    FLOAT32_MACRO(dodgeBAtkMult, 48)
+    FLOAT32_MACRO(dodgeBNAtkMult, 49)
+    FLOAT32_MACRO(dodgeFAtkMult, 50)
+    FLOAT32_MACRO(dodgeFNAtkMult, 51)
+    FLOAT32_MACRO(blockMult, 52)
+    FLOAT32_MACRO(blockBase, 53)
+    FLOAT32_MACRO(blockAtkMult, 54)
+    FLOAT32_MACRO(blockNAtkMult, 55)
+    FLOAT32_MACRO(atkMult, 56)
+    FLOAT32_MACRO(atkBase, 57)
+    FLOAT32_MACRO(atkAtkMult, 58)
+    FLOAT32_MACRO(atkNAtkMult, 59)
+    FLOAT32_MACRO(atkBlockMult, 60)
+    FLOAT32_MACRO(pAtkFBase, 61)
+    FLOAT32_MACRO(pAtkFMult, 62)
+    FLOAT32_MACRO(coverRadius, 63)
+    FLOAT32_MACRO(coverChance, 64)
+    FLOAT32_MACRO(waitTimerMin, 65)
+    FLOAT32_MACRO(waitTimerMax, 66)
+    FLOAT32_MACRO(waitFireTimerMin, 67)
+    FLOAT32_MACRO(waitFireTimerMax, 68)    
+    FLOAT32_MACRO(fireTimerMin, 69)
+    FLOAT32_MACRO(fireTimerMax, 70)
+    FLOAT32_MACRO(rangedRangeMultMin, 71)
+    UINT8_ARRAY_MACRO(unused7, 72, 4)
+    UINT32_TYPE_MACRO(weaponRestrictions, 73)
+    FLOAT32_MACRO(rangedRangeMultMax, 74)
+    FLOAT32_MACRO(targetMaxFOV, 75)
+    FLOAT32_MACRO(combatRadius, 76)
+    FLOAT32_MACRO(semiAutoFireDelayMultMin, 77)
+    FLOAT32_MACRO(semiAutoFireDelayMultMax, 78)
+    
+    BasicFlagMACRO(IsUseChanceForAttack, flags, 0x00000001)
+    BasicFlagMACRO(IsMeleeAlertOK, flags, 0x00000002)
+    BasicFlagMACRO(IsFleeForSurvival, flags, 0x00000004)
+    BasicFlagMACRO(IsIgnoreThreats, flags, 0x00000010)
+    BasicFlagMACRO(IsIgnoreDamagingSelf, flags, 0x00000020)
+    BasicFlagMACRO(IsIgnoreDamagingGroup, flags, 0x00000040)
+    BasicFlagMACRO(IsIgnoreDamagingSpectator, flags, 0x00000080)
+    BasicFlagMACRO(IsNoUseStealthboy, flags, 0x00000100)
 
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    BasicTypeMACRO(IsNone, weaponRestrictions, 0, IsMeleeOnly)
+    BasicTypeMACRO(IsMeleeOnly, weaponRestrictions, 1, IsNone)
+    BasicTypeMACRO(IsRangedOnly, weaponRestrictions, 2, IsNone)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['dodgeChance', 'lrChance', 'lrTimerMin',
+                                                         'lrTimerMax', 'forTimerMin', 'forTimerMax',
+                                                         'backTimerMin', 'backTimerMax', 'idleTimerMin',
+                                                         'idleTimerMax', 'blkChance', 'atkChance',
+                                                         'atkBRecoil', 'atkBUnc', 'atkBh2h', 'pAtkChance',
+                                                         'pAtkBRecoil', 'pAtkBUnc', 'pAtkNormal',
+                                                         'pAtkFor', 'pAtkBack', 'pAtkL', 'pAtkR',
+                                                         'holdTimerMin', 'holdTimerMax', 'flags',
+                                                         'acroDodge', 'rushChance', 'rushMult',
+                                                         'dodgeFMult', 'dodgeFBase', 'encSBase',
+                                                         'encSMult', 'dodgeAtkMult', 'dodgeNAtkMult',
+                                                         'dodgeBAtkMult', 'dodgeBNAtkMult',
+                                                         'dodgeFAtkMult', 'dodgeFNAtkMult', 'blockMult',
+                                                         'blockBase', 'blockAtkMult', 'blockNAtkMult',
+                                                         'atkMult', 'atkBase', 'atkAtkMult',
+                                                         'atkNAtkMult', 'atkBlockMult', 'pAtkFBase',
+                                                         'pAtkFMult', 'coverRadius', 'coverChance',
+                                                         'waitTimerMin', 'waitTimerMax',
+                                                         'waitFireTimerMin', 'waitFireTimerMax',
+                                                         'fireTimerMin', 'fireTimerMax',
+                                                         'rangedRangeMultMin', 'weaponRestrictions',
+                                                         'rangedRangeMultMax', 'targetMaxFOV',
+                                                         'combatRadius', 'semiAutoFireDelayMultMin',
+                                                         'semiAutoFireDelayMultMax']
 
 class FnvLSCRRecord(FnvBaseRecord):
     _Type = 'LSCR'
-
-    exportattrs = copyattrs = FnvBaseRecord.baseattrs + []
+    class Location(ListComponent):
+        FORMID_LISTMACRO(direct, 1)
+        FORMID_LISTMACRO(indirect, 2)
+        SINT16_LISTMACRO(gridY, 3)
+        SINT16_LISTMACRO(gridX, 4)
+        exportattrs = copyattrs = ['direct', 'indirect', 'gridY', 'gridX']
+        
+    ISTRING_MACRO(iconPath, 7)
+    ISTRING_MACRO(smallIconPath, 8)
+    STRING_MACRO(text, 9)
+    
+    LIST_MACRO(locations, 10, self.Location)
+    FORMID_MACRO(screentype, 11)
+    exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['iconPath', 'smallIconPath', 'text',
+                                                         'locations_list', 'screentype']
 
 class FnvANIORecord(FnvBaseRecord):
     _Type = 'ANIO'
@@ -9956,10 +10447,10 @@ class ObMGEFRecord(ObBaseRecord):
     OBMEBasicFlagMACRO(IsBeneficial, OBMEFlags, 0x00000008)
     OBMEBasicFlagMACRO(IsMagnitudeIsRange, OBMEFlags, 0x00020000)
     OBMEBasicFlagMACRO(IsAtomicResistance, OBMEFlags, 0x00040000)
-    OBMEBasicFlagMACRO(IsParamFlagA, OBMEFlags, 0x00000004) //Meaning varies with effect handler
-    OBMEBasicFlagMACRO(IsParamFlagB, OBMEFlags, 0x00010000) //Meaning varies with effect handler
-    OBMEBasicFlagMACRO(IsParamFlagC, OBMEFlags, 0x00080000) //Meaning varies with effect handler
-    OBMEBasicFlagMACRO(IsParamFlagD, OBMEFlags, 0x00100000) //Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagA, OBMEFlags, 0x00000004) #Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagB, OBMEFlags, 0x00010000) #Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagC, OBMEFlags, 0x00080000) #Meaning varies with effect handler
+    OBMEBasicFlagMACRO(IsParamFlagD, OBMEFlags, 0x00100000) #Meaning varies with effect handler
     OBMEBasicFlagMACRO(IsHidden, OBMEFlags, 0x40000000)
     copyattrs = ObBaseRecord.baseattrs + ['full', 'text', 'iconPath', 'modPath',
                                           'modb', 'modt_p', 'flags', 'baseCost',
@@ -10578,15 +11069,6 @@ class ObSBSPRecord(ObBaseRecord):
 
 class ObSCPTRecord(ObBaseRecord):
     _Type = 'SCPT'
-    class Var(ListComponent):
-        UINT32_LISTMACRO(index, 1)
-        UINT8_ARRAY_LISTMACRO(unused1, 2, 12)
-        UINT8_FLAG_LISTMACRO(flags, 3)
-        UINT8_ARRAY_LISTMACRO(unused2, 4, 7)
-        ISTRING_LISTMACRO(name, 5)
-        BasicFlagMACRO(IsLongOrShort, flags, 0x00000001)
-        exportattrs = copyattrs = ['index', 'flags', 'name']
-
     UINT8_ARRAY_MACRO(unused1, 5, 2)
     UINT32_MACRO(numRefs, 6)
     UINT32_MACRO(compiledSize, 7)
@@ -10595,7 +11077,7 @@ class ObSCPTRecord(ObBaseRecord):
     UINT8_ARRAY_MACRO(compiled_p, 10)
     ISTRING_MACRO(scriptText, 11)
 
-    LIST_MACRO(vars, 12, self.Var)
+    LIST_MACRO(vars, 12, Var)
     FORMID_OR_UINT32_ARRAY_MACRO(references, 13)
 
     BasicTypeMACRO(IsObject, scriptType, 0x00000000, IsQuest)

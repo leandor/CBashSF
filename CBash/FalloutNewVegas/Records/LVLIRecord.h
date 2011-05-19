@@ -38,8 +38,8 @@ class LVLIRecord : public FNVRecord //Leveled Item
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
-        OptSimpleSubRecord<UINT8> LVLD; //Chance none
-        OptSimpleSubRecord<UINT8> LVLF; //Flags
+        ReqSimpleSubRecord<UINT8> LVLD; //Chance none
+        ReqSimpleSubRecord<UINT8> LVLF; //Flags
         OptSimpleSubRecord<FORMID> LVLG; //Global
         UnorderedSparseArray<FNVLVLO *> Entries; //Leveled List Entries
         //OptSubRecord<FNVMODEL> MODL; //Model

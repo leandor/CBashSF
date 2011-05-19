@@ -4,7 +4,7 @@
 #undef CBASH_PROFILING
 #undef CBASH_USE_LOGGING
 #define CBASH_CHUNK_WARN
-#undef CBASH_CHUNK_LCHECK
+#define CBASH_CHUNK_LCHECK
 
 #define CBASH_DEBUG_CHUNK
 
@@ -291,8 +291,8 @@
     #define FIELD_IDENTIFIERS const UINT32 FieldID, const UINT32 ListIndex, const UINT32 ListFieldID, const UINT32 ListX2Index, const UINT32 ListX2FieldID, const UINT32 ListX3Index, const UINT32 ListX3FieldID
 #endif
 
-#define WHERESTR  "%d: [file %s, line %d]: "
-#define WHEREARG  __COUNTER__, __FILE__, __LINE__
+#define WHERESTR  "%d: [file %s, line %d, func %s]: "
+#define WHEREARG  __COUNTER__, __FILE__, __LINE__, __FUNCTION__
 #define DEBUGPRINT2(...)       fprintf(stderr, __VA_ARGS__)
 #define DPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
 

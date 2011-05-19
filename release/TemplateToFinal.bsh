@@ -44,8 +44,48 @@ SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
+SearchAndReplace.setSearchString(" UINT32_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, c_ulong)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT8_FLAG_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX3($2, c_ubyte)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 SearchAndReplace.setSearchString(" UNKNOWN_OR_FORMID_OR_UINT32_LISTX3MACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" FORMID_OR_FLOAT32_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_FLOAT32_LISTX3($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" ISTRING_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashISTRING_LISTX3($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" STRING_LISTX3MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashSTRING_LISTX3($2)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -76,6 +116,15 @@ SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT16_FLAG_LISTX2MACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_LISTX2($2, c_ushort)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
 
 SearchAndReplace.setSearchString(" FLOAT32_LISTX2MACRO\\((.*?), (.*?)\\)");
 SearchAndReplace.setReplaceString(" $1 = CBashFLOAT32_LISTX2($2)");
@@ -1277,6 +1326,54 @@ SearchAndReplace.setSearchString("(.*?) LIST_GROUPEDMACRO\\((.*?)(s|es|), (.*?),
 SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FieldID = self._FieldID + $4\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, FieldID, length)\n$1 $2$3 = CBashLIST_GROUP($4, $5)\n$1 $2$3_list = CBashLIST_GROUP($4, $5, True)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" FORMID_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_GROUP($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT32_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_ulong)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT16_TYPE_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_ushort)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" UINT16_FLAG_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashGeneric_GROUP($2, c_ushort)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_GROUPEDMACRO\\((.*?), (.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_GROUP($2, $3)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
+SearchAndReplace.setRegexp(true);
+SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
+SearchAndReplace.replaceAll(view);
+
+SearchAndReplace.setSearchString(" FORMID_OR_UINT32_ARRAY_GROUPEDMACRO\\((.*?), (.*?)\\)");
+SearchAndReplace.setReplaceString(" $1 = CBashFORMID_OR_UINT32_ARRAY_GROUP($2)");
+SearchAndReplace.setBeanShellReplace(false);
+SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);

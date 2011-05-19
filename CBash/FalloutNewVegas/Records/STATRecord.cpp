@@ -81,122 +81,146 @@ bool STATRecord::VisitFormIDs(FormIDOp &op)
 
 bool STATRecord::IsSoundNone()
     {
-    return (BRUS.value == eNone);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eNone);
     }
 
 void STATRecord::IsSoundNone(bool value)
     {
-    BRUS.value = value ? eNone : eBushA;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eNone : eBushA;
     }
 
 bool STATRecord::IsSoundBushA()
     {
-    return (BRUS.value == eBushA);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushA);
     }
 
 void STATRecord::IsSoundBushA(bool value)
     {
-    BRUS.value = value ? eBushA : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushA : eNone;
     }
 
 bool STATRecord::IsSoundBushB()
     {
-    return (BRUS.value == eBushB);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushB);
     }
 
 void STATRecord::IsSoundBushB(bool value)
     {
-    BRUS.value = value ? eBushB : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushB : eNone;
     }
 
 bool STATRecord::IsSoundBushC()
     {
-    return (BRUS.value == eBushC);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushC);
     }
 
 void STATRecord::IsSoundBushC(bool value)
     {
-    BRUS.value = value ? eBushC : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushC : eNone;
     }
 
 bool STATRecord::IsSoundBushD()
     {
-    return (BRUS.value == eBushD);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushD);
     }
 
 void STATRecord::IsSoundBushD(bool value)
     {
-    BRUS.value = value ? eBushD : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushD : eNone;
     }
 
 bool STATRecord::IsSoundBushE()
     {
-    return (BRUS.value == eBushE);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushE);
     }
 
 void STATRecord::IsSoundBushE(bool value)
     {
-    BRUS.value = value ? eBushE : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushE : eNone;
     }
 
 bool STATRecord::IsSoundBushF()
     {
-    return (BRUS.value == eBushF);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushF);
     }
 
 void STATRecord::IsSoundBushF(bool value)
     {
-    BRUS.value = value ? eBushF : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushF : eNone;
     }
 
 bool STATRecord::IsSoundBushG()
     {
-    return (BRUS.value == eBushG);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushG);
     }
 
 void STATRecord::IsSoundBushG(bool value)
     {
-    BRUS.value = value ? eBushG : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushG : eNone;
     }
 
 bool STATRecord::IsSoundBushH()
     {
-    return (BRUS.value == eBushH);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushH);
     }
 
 void STATRecord::IsSoundBushH(bool value)
     {
-    BRUS.value = value ? eBushH : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushH : eNone;
     }
 
 bool STATRecord::IsSoundBushI()
     {
-    return (BRUS.value == eBushI);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushI);
     }
 
 void STATRecord::IsSoundBushI(bool value)
     {
-    BRUS.value = value ? eBushI : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushI : eNone;
     }
 
 bool STATRecord::IsSoundBushJ()
     {
-    return (BRUS.value == eBushJ);
+    if(!BRUS.IsLoaded()) return false;
+    return (*BRUS.value == eBushJ);
     }
 
 void STATRecord::IsSoundBushJ(bool value)
     {
-    BRUS.value = value ? eBushJ : eNone;
+    if(!BRUS.IsLoaded()) return;
+    *BRUS.value = value ? eBushJ : eNone;
     }
 
 bool STATRecord::IsSoundType(SINT8 Type)
     {
-    return BRUS.value == Type;
+    if(!BRUS.IsLoaded()) return false;
+    return *BRUS.value == Type;
     }
 
 void STATRecord::SetSoundType(SINT8 Type)
     {
-    BRUS.value = Type;
+    BRUS.Load();
+    *BRUS.value = Type;
     }
 
 UINT32 STATRecord::GetType()

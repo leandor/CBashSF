@@ -68,11 +68,11 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return ISTRING_FIELD;
         case 10: //smallIconPath
             return ISTRING_FIELD;
-        case 11: //data DATA ,, Struct
+        case 11: //flags
+            return UINT8_FLAG_FIELD;
+        case 12: //priority
             return UINT8_FIELD;
-        case 12: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 13: //data_p DATA ,, Struct
+        case 13: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -83,143 +83,645 @@ UINT32 QUSTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 14: //data DATA ,, Struct
+        case 14: //delay
             return FLOAT32_FIELD;
-        case 15: //ctda Conditions
-            return UINT8_FIELD;
-        case 16: //ctda_p Conditions
-            switch(WhichAttribute)
+        case 15: //conditions
+            if(ListFieldID == 0) //conditions
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)CTDA.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return UINT8_FLAG_TYPE_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //compValue
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_FLOAT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 4: //ifunc
+                    return UINT32_TYPE_FIELD;
+                case 5: //param1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.first)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 6: //param2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.second)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    case eVATSPARAM:
+                                        if(CTDA.value[ListIndex]->param1 < VATSFUNCTIONSIZE)
+                                            {
+                                            switch(VATSFunction_Argument[CTDA.value[ListIndex]->param1])
+                                                {
+                                                case eFORMID:
+                                                    return FORMID_FIELD;
+                                                case eUINT32:
+                                                    return UINT32_FIELD;
+                                                default:
+                                                    return UNKNOWN_FIELD;
+                                                }
+
+                                            }
+                                        return UNKNOWN_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 7: //runOnType
+                    return UINT32_TYPE_FIELD;
+                case 8: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 17: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 18: //ctda Conditions
-            return UINT32_FIELD;
-        case 19: //ctda_p Conditions
-            switch(WhichAttribute)
+        case 16: //stages
+            if(ListFieldID == 0) //stages
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Stages.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Stages.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //stage
+                    return SINT16_FIELD;
+                case 2: //entries
+                    if(ListX2FieldID == 0) //entries
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Stages.value[ListIndex]->Entries.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        return UNKNOWN_FIELD;
+                        }
+
+                    if(ListIndex >= Stages.value[ListIndex]->Entries.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //flags
+                            return UINT8_FLAG_FIELD;
+                        case 2: //conditions
+                            if(ListX3FieldID == 0) //conditions
+                                {
+                                switch(WhichAttribute)
+                                    {
+                                    case 0: //fieldType
+                                        return LIST_FIELD;
+                                    case 1: //fieldSize
+                                        return (UINT32)Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size();
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                return UNKNOWN_FIELD;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
+                                return UNKNOWN_FIELD;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    return UINT8_FLAG_TYPE_FIELD;
+                                case 2: //unused1
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UINT8_ARRAY_FIELD;
+                                        case 1: //fieldSize
+                                            return 3;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 3: //compValue
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return FORMID_OR_FLOAT32_FIELD;
+                                        case 2: //WhichType
+                                            return Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 4: //ifunc
+                                    return UINT32_TYPE_FIELD;
+                                case 5: //param1
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            {
+                                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc);
+                                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                                {
+                                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                                switch(CTDAFunction.first)
+                                                    {
+                                                    case eFORMID:
+                                                        return FORMID_FIELD;
+                                                    case eUINT32:
+                                                        return UINT32_FIELD;
+                                                    default:
+                                                        return UNKNOWN_FIELD;
+                                                    }
+                                                }
+                                            }
+                                            return UNKNOWN_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 6: //param2
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            {
+                                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc);
+                                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                                {
+                                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                                switch(CTDAFunction.second)
+                                                    {
+                                                    case eFORMID:
+                                                        return FORMID_FIELD;
+                                                    case eUINT32:
+                                                        return UINT32_FIELD;
+                                                    case eVATSPARAM:
+                                                        if(Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param1 < VATSFUNCTIONSIZE)
+                                                            {
+                                                            switch(VATSFunction_Argument[Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param1])
+                                                                {
+                                                                case eFORMID:
+                                                                    return FORMID_FIELD;
+                                                                case eUINT32:
+                                                                    return UINT32_FIELD;
+                                                                default:
+                                                                    return UNKNOWN_FIELD;
+                                                                }
+                
+                                                            }
+                                                        return UNKNOWN_FIELD;
+                                                    default:
+                                                        return UNKNOWN_FIELD;
+                                                    }
+                                                }
+                                            }
+                                            return UNKNOWN_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 7: //runOnType
+                                    return UINT32_TYPE_FIELD;
+                                case 8: //reference
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            return Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 3: //text
+                            return STRING_FIELD;
+                        case 4: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 4;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 5: //numRefs
+                            return UINT32_FIELD;
+                        case 6: //compiledSize
+                            return UINT32_FIELD;
+                        case 7: //lastIndex
+                            return UINT32_FIELD;
+                        case 8: //scriptType
+                            return UINT16_FIELD;
+                        case 9: //scriptFlags
+                            return UINT16_FLAG_FIELD;
+                        case 10: //compiled_p
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return Stages.value[ListIndex]->Entries.value[ListX2Index]->SCDA.GetSize();
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 11: //scriptText
+                            return ISTRING_FIELD;
+                        case 12: //vars
+                            if(ListX3FieldID == 0) //vars
+                                {
+                                switch(WhichAttribute)
+                                    {
+                                    case 0: //fieldType
+                                        return LIST_FIELD;
+                                    case 1: //fieldSize
+                                        return (UINT32)Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size();
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
+                                return UNKNOWN_FIELD;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //index
+                                    return UINT32_FIELD;
+                                case 2: //unused1
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UINT8_ARRAY_FIELD;
+                                        case 1: //fieldSize
+                                            return 12;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                case 3: //flags
+                                    return UINT8_FLAG_FIELD;
+                                case 4: //unused2
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UINT8_ARRAY_FIELD;
+                                        case 1: //fieldSize
+                                            return 7;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                case 5: //name
+                                    return ISTRING_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 13: //references
+                            if(ListX3FieldID == 0) //references
+                                {
+                                switch(WhichAttribute)
+                                    {
+                                    case 0: //fieldType
+                                        return FORMID_OR_UINT32_ARRAY_FIELD;
+                                    case 1: //fieldSize
+                                        return (UINT32)Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size();
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                return UNKNOWN_FIELD;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
+                                return UNKNOWN_FIELD;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //reference
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            return (Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 14: //nextQuest
+                            return FORMID_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 20: //ctda_p Conditions
-            switch(WhichAttribute)
+        case 17: //objectives
+            if(ListFieldID == 0) //objectives
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Objectives.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Objectives.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //objective
+                    return SINT32_FIELD;
+                case 2: //text
+                    return STRING_FIELD;
+                case 3: //targets
+                    if(ListX2FieldID == 0) //targets
+                        {
+                        switch(WhichAttribute)
+                            {
+                            case 0: //fieldType
+                                return LIST_FIELD;
+                            case 1: //fieldSize
+                                return (UINT32)Objectives.value[ListIndex]->Targets.value.size();
+                            default:
+                                return UNKNOWN_FIELD;
+                            }
+                        return UNKNOWN_FIELD;
+                        }
+
+                    if(ListX2Index >= Objectives.value[ListIndex]->Targets.value.size())
+                        return UNKNOWN_FIELD;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //targetId
+                            return FORMID_FIELD;
+                        case 2: //flags
+                            return UINT8_FLAG_FIELD;
+                        case 3: //unused1
+                            switch(WhichAttribute)
+                                {
+                                case 0: //fieldType
+                                    return UINT8_ARRAY_FIELD;
+                                case 1: //fieldSize
+                                    return 3;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        case 4: //conditions
+                            if(ListX3FieldID == 0) //conditions
+                                {
+                                switch(WhichAttribute)
+                                    {
+                                    case 0: //fieldType
+                                        return LIST_FIELD;
+                                    case 1: //fieldSize
+                                        return (UINT32)Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size();
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                return UNKNOWN_FIELD;
+                                }
+                
+                            if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
+                                return UNKNOWN_FIELD;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    return UINT8_FLAG_TYPE_FIELD;
+                                case 2: //unused1
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UINT8_ARRAY_FIELD;
+                                        case 1: //fieldSize
+                                            return 3;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 3: //compValue
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return FORMID_OR_FLOAT32_FIELD;
+                                        case 2: //WhichType
+                                            return Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 4: //ifunc
+                                    return UINT32_TYPE_FIELD;
+                                case 5: //param1
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            {
+                                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc);
+                                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                                {
+                                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                                switch(CTDAFunction.first)
+                                                    {
+                                                    case eFORMID:
+                                                        return FORMID_FIELD;
+                                                    case eUINT32:
+                                                        return UINT32_FIELD;
+                                                    default:
+                                                        return UNKNOWN_FIELD;
+                                                    }
+                                                }
+                                            }
+                                            return UNKNOWN_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 6: //param2
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            {
+                                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc);
+                                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                                {
+                                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                                switch(CTDAFunction.second)
+                                                    {
+                                                    case eFORMID:
+                                                        return FORMID_FIELD;
+                                                    case eUINT32:
+                                                        return UINT32_FIELD;
+                                                    case eVATSPARAM:
+                                                        if(Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param1 < VATSFUNCTIONSIZE)
+                                                            {
+                                                            switch(VATSFunction_Argument[Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param1])
+                                                                {
+                                                                case eFORMID:
+                                                                    return FORMID_FIELD;
+                                                                case eUINT32:
+                                                                    return UINT32_FIELD;
+                                                                default:
+                                                                    return UNKNOWN_FIELD;
+                                                                }
+                
+                                                            }
+                                                        return UNKNOWN_FIELD;
+                                                    default:
+                                                        return UNKNOWN_FIELD;
+                                                    }
+                                                }
+                                            }
+                                            return UNKNOWN_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                case 7: //runOnType
+                                    return UINT32_TYPE_FIELD;
+                                case 8: //reference
+                                    switch(WhichAttribute)
+                                        {
+                                        case 0: //fieldType
+                                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                                        case 2: //WhichType
+                                            return Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                                        default:
+                                            return UNKNOWN_FIELD;
+                                        }
+                                    return UNKNOWN_FIELD;
+                                default:
+                                    return UNKNOWN_FIELD;
+                                }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 21: //ctda Conditions
-            return UINT32_FIELD;
-        case 22: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 23: //indx Stage Index
-            return SINT16_FIELD;
-        case 24: //qsdt Stage Flags
-            return UINT8_FIELD;
-        case 25: //cnam Log Entry
-            return ISTRING_FIELD;
-        case 26: //schr_p Basic Script Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 27: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 28: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 29: //schr Basic Script Data
-            return UINT32_FIELD;
-        case 30: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 31: //schr Basic Script Data
-            return UINT16_FIELD;
-        case 32: //scda_p Compiled Embedded Script
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return SCDA.GetSize();
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 33: //sctx Embedded Script Source
-            return ISTRING_FIELD;
-        case 34: //slsd Local Variable Data
-            return UINT32_FIELD;
-        case 35: //slsd_p Local Variable Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 12;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 36: //slsd Local Variable Data
-            return UINT8_FIELD;
-        case 37: //slsd_p Local Variable Data
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 7;
-                default:
-                    return UNKNOWN_FIELD;
-                }
-            return UNKNOWN_FIELD;
-        case 38: //scvr Name
-            return ISTRING_FIELD;
-        case 39: //scro Global Reference
-            return FORMID_FIELD;
-        case 40: //scrv Local Variable
-            return UINT32_FIELD;
-        case 41: //nam0 Next Quest
-            return FORMID_FIELD;
-        case 42: //qobj Objective Index
-            return SINT32_FIELD;
-        case 43: //nnam Description
-            return ISTRING_FIELD;
-        case 44: //qsta QSTA ,, Struct
-            return FORMID_FIELD;
-        case 45: //qsta QSTA ,, Struct
-            return UINT8_FIELD;
-        case 46: //qsta_p QSTA ,, Struct
-            switch(WhichAttribute)
-                {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
-                default:
-                    return UNKNOWN_FIELD;
-                }
         default:
             return UNKNOWN_FIELD;
         }
@@ -245,93 +747,205 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 7: //script
-            return SCRI.IsLoaded() ? &SCRI->value7 : NULL;
+            return &SCRI.value;
         case 8: //full
             return FULL.value;
         case 9: //iconPath
             return ICON.value;
         case 10: //smallIconPath
             return MICO.value;
-        case 11: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value11 : NULL;
-        case 12: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value12 : NULL;
-        case 13: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value13[0] : NULL;
+        case 11: //flags
+            return &DATA.value.flags;
+        case 12: //priority
+            return &DATA.value.priority;
+        case 13: //unused1
+            *FieldValues = &DATA.value.unused1[0];
             return NULL;
-        case 14: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value14 : NULL;
-        case 15: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value15 : NULL;
-        case 16: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value16[0] : NULL;
+        case 14: //delay
+            return &DATA.value.delay;
+        case 15: //conditions
+            if(ListIndex >= CTDA.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return &CTDA.value[ListIndex]->operType;
+                case 2: //unused1
+                    *FieldValues = &CTDA.value[ListIndex]->unused1[0];
+                    return NULL;
+                case 3: //compValue
+                    return &CTDA.value[ListIndex]->compValue;
+                case 4: //ifunc
+                    return &CTDA.value[ListIndex]->ifunc;
+                case 5: //param1
+                    return &CTDA.value[ListIndex]->param1;
+                case 6: //param2
+                    return &CTDA.value[ListIndex]->param2;
+                case 7: //runOnType
+                    return &CTDA.value[ListIndex]->runOnType;
+                case 8: //reference
+                    return &CTDA.value[ListIndex]->reference;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 17: //ctda Conditions
-            return UNPARSEDGET_FIELD17;
-        case 18: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value18 : NULL;
-        case 19: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value19[0] : NULL;
+        case 16: //stages
+            if(ListIndex >= Stages.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //stage
+                    return &Stages.value[ListIndex]->INDX.value;
+                case 2: //entries
+                    if(ListX2Index >= Stages.value[ListIndex]->Entries.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //flags
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->QSDT.value;
+                        case 2: //conditions
+                            if(ListX2Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
+                                return NULL;
+                
+                            switch(ListFieldID)
+                                {
+                                case 1: //operType
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->operType;
+                                case 2: //unused1
+                                    *FieldValues = &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0];
+                                    return NULL;
+                                case 3: //compValue
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->compValue;
+                                case 4: //ifunc
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc;
+                                case 5: //param1
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param1;
+                                case 6: //param2
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param2;
+                                case 7: //runOnType
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType;
+                                case 8: //reference
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->reference;
+                                default:
+                                    return NULL;
+                                }
+                            return NULL;
+                        case 3: //text
+                            return Stages.value[ListIndex]->Entries.value[ListX2Index]->CNAM.value;
+                        case 4: //unused1
+                            *FieldValues = &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[0];
+                            return NULL;
+                        case 5: //numRefs
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.numRefs;
+                        case 6: //compiledSize
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.compiledSize;
+                        case 7: //lastIndex
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.lastIndex;
+                        case 8: //scriptType
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.scriptType;
+                        case 9: //scriptFlags
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.flags;
+                        case 10: //compiled_p
+                            *FieldValues = Stages.value[ListIndex]->Entries.value[ListX2Index]->SCDA.value;
+                            return NULL;
+                        case 11: //scriptText
+                            return Stages.value[ListIndex]->Entries.value[ListX2Index]->SCTX.value;
+                        case 12: //vars
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
+                                return NULL;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //index
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.index;
+                                case 2: //unused1
+                                    *FieldValues = &Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[0];
+                                    return NULL;
+                                case 3: //flags
+                                    return &Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.flags;
+                                case 4: //unused2
+                                    *FieldValues = &Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[0];
+                                    return NULL;
+                                case 5: //name
+                                    return Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SCVR.value;
+                                default:
+                                    return NULL;
+                                }
+                            return NULL;
+                        case 13: //references
+                            for(UINT32 x = 0; x < Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size(); ++x)
+                                ((FORMIDARRAY)FieldValues)[x] = Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[x]->reference;
+                            return NULL;
+                        case 14: //nextQuest
+                            return &Stages.value[ListIndex]->Entries.value[ListX2Index]->NAM0.value;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 20: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value20[0] : NULL;
-            return NULL;
-        case 21: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value21 : NULL;
-        case 22: //ctda Conditions
-            return UNPARSEDGET_FIELD22;
-        case 23: //indx Stage Index
-            return INDX.IsLoaded() ? &INDX->value23 : NULL;
-        case 24: //qsdt Stage Flags
-            return QSDT.IsLoaded() ? &QSDT->value24 : NULL;
-        case 25: //cnam Log Entry
-            return CNAM.value;
-        case 26: //schr_p Basic Script Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SCHR->value26[0] : NULL;
-            return NULL;
-        case 27: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value27 : NULL;
-        case 28: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value28 : NULL;
-        case 29: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value29 : NULL;
-        case 30: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value30 : NULL;
-        case 31: //schr Basic Script Data
-            return SCHR.IsLoaded() ? &SCHR->SCHR->value31 : NULL;
-        case 32: //scda_p Compiled Embedded Script
-            *FieldValues = (SCHR.IsLoaded()) ? SCHR->SCDA.value : NULL;
-            return NULL;
-        case 33: //sctx Embedded Script Source
-            return SCHR.IsLoaded() ? SCHR->SCTX.value : NULL;
-        case 34: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value34 : NULL;
-        case 35: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value35[0] : NULL;
-            return NULL;
-        case 36: //slsd Local Variable Data
-            return SCHR.IsLoaded() ? &SCHR->SLSD->value36 : NULL;
-        case 37: //slsd_p Local Variable Data
-            *FieldValues = SCHR.IsLoaded() ? &SCHR->SLSD->value37[0] : NULL;
-            return NULL;
-        case 38: //scvr Name
-            return SCHR.IsLoaded() ? SCHR->SCVR.value : NULL;
-        case 39: //scro Global Reference
-            return SCHR.IsLoaded() ? &SCHR->SCRO->value39 : NULL;
-        case 40: //scrv Local Variable
-            return SCHR.IsLoaded() ? &SCHR->SCRV->value40 : NULL;
-        case 41: //nam0 Next Quest
-            return NAM0.IsLoaded() ? &NAM0->value41 : NULL;
-        case 42: //qobj Objective Index
-            return QOBJ.IsLoaded() ? &QOBJ->value42 : NULL;
-        case 43: //nnam Description
-            return NNAM.value;
-        case 44: //qsta QSTA ,, Struct
-            return QSTA.IsLoaded() ? &QSTA->value44 : NULL;
-        case 45: //qsta QSTA ,, Struct
-            return QSTA.IsLoaded() ? &QSTA->value45 : NULL;
-        case 46: //qsta_p QSTA ,, Struct
-            *FieldValues = QSTA.IsLoaded() ? &QSTA->value46[0] : NULL;
+        case 17: //objectives
+            if(ListIndex >= Objectives.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //objective
+                    return &Objectives.value[ListIndex]->QOBJ.value;
+                case 2: //text
+                    return Objectives.value[ListIndex]->NNAM.value;
+                case 3: //targets
+                    if(ListX2Index >= Objectives.value[ListIndex]->Targets.value.size())
+                        return NULL;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //targetId
+                            return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.targetId;
+                        case 2: //flags
+                            return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.flags;
+                        case 3: //unused1
+                            *FieldValues = &Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[0];
+                            return NULL;
+                        case 4: //conditions
+                            if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
+                                return NULL;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->operType;
+                                case 2: //unused1
+                                    *FieldValues = &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0];
+                                    return NULL;
+                                case 3: //compValue
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->compValue;
+                                case 4: //ifunc
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc;
+                                case 5: //param1
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param1;
+                                case 6: //param2
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param2;
+                                case 7: //runOnType
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType;
+                                case 8: //reference
+                                    return &Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->reference;
+                                default:
+                                    return NULL;
+                                }
+                            return NULL;
+                        default:
+                            return NULL;
+                        }
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
         default:
             return NULL;
@@ -367,8 +981,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
         case 7: //script
-            SCRI.Load();
-            SCRI->value7 = *(FORMID *)FieldValue;
+            SCRI.value = *(FORMID *)FieldValue;
             return true;
         case 8: //full
             FULL.Copy((STRING)FieldValue);
@@ -379,202 +992,346 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 10: //smallIconPath
             MICO.Copy((STRING)FieldValue);
             break;
-        case 11: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value11 = *(UINT8 *)FieldValue;
+        case 11: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 12: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value12 = *(UINT8 *)FieldValue;
+        case 12: //priority
+            DATA.value.priority = *(UINT8 *)FieldValue;
             break;
-        case 13: //data_p DATA ,, Struct
+        case 13: //unused1
             if(ArraySize != 2)
                 break;
-            DATA.Load();
-            DATA->value13[0] = ((UINT8ARRAY)FieldValue)[0];
-            DATA->value13[1] = ((UINT8ARRAY)FieldValue)[1];
+            DATA.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 14: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value14 = *(FLOAT32 *)FieldValue;
+        case 14: //delay
+            DATA.value.delay = *(FLOAT32 *)FieldValue;
             break;
-        case 15: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value15 = *(UINT8 *)FieldValue;
-            break;
-        case 16: //ctda_p Conditions
-            if(ArraySize != 3)
+        case 15: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= CTDA.value.size())
                 break;
-            CTDAs.Load();
-            CTDAs->value16[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value16[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value16[2] = ((UINT8ARRAY)FieldValue)[2];
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 3)
+                        break;
+                    CTDA.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = *(FORMID *)FieldValue;
+                    return true;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
+                    return true;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = *(UINT32 *)FieldValue;
+                    return true;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = *(UINT32 *)FieldValue;
+                    return true;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = *(UINT32 *)FieldValue;
+                    return true;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
             break;
-        case 17: //ctda Conditions
-            return UNPARSEDGET_FIELD17;
-        case 18: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value18 = *(UINT32 *)FieldValue;
-            break;
-        case 19: //ctda_p Conditions
-            if(ArraySize != 4)
+        case 16: //stages
+            if(ListFieldID == 0) //stagesSize
+                {
+                Stages.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Stages.value.size())
                 break;
-            CTDAs.Load();
-            CTDAs->value19[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value19[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value19[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value19[3] = ((UINT8ARRAY)FieldValue)[3];
+
+            switch(ListFieldID)
+                {
+                case 1: //stage
+                    Stages.value[ListIndex]->INDX.value = *(SINT16 *)FieldValue;
+                    break;
+                case 2: //entries
+                    if(ListX2FieldID == 0) //entriesSize
+                        {
+                        Stages.value[ListIndex]->Entries.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Stages.value[ListIndex]->Entries.value.size())
+                        break;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //flags
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->QSDT.value = *(UINT8 *)FieldValue;
+                            break;
+                        case 2: //conditions
+                            if(ListX3FieldID == 0) //conditionsSize
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.resize(ArraySize);
+                                return false;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
+                                break;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->operType = *(UINT8 *)FieldValue;
+                                    break;
+                                case 2: //unused1
+                                    if(ArraySize != 3)
+                                        break;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                                    break;
+                                case 3: //compValue
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID *)FieldValue;
+                                    return true;
+                                case 4: //ifunc
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 5: //param1
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param1 = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 6: //param2
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param2 = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 7: //runOnType
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 8: //reference
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->reference = *(UINT32 *)FieldValue;
+                                    return true;
+                                default:
+                                    break;
+                                }
+                            break;
+                        case 3: //text
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->CNAM.Copy((STRING)FieldValue);
+                            break;
+                        case 4: //unused1
+                            if(ArraySize != 4)
+                                break;
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                            break;
+                        case 5: //numRefs
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.numRefs = *(UINT32 *)FieldValue;
+                            break;
+                        case 6: //compiledSize
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.compiledSize = *(UINT32 *)FieldValue;
+                            break;
+                        case 7: //lastIndex
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.lastIndex = *(UINT32 *)FieldValue;
+                            break;
+                        case 8: //scriptType
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.scriptType = *(UINT16 *)FieldValue;
+                            break;
+                        case 9: //scriptFlags
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.flags = *(UINT16 *)FieldValue;
+                            break;
+                        case 10: //compiled_p
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                            break;
+                        case 11: //scriptText
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCTX.Copy((STRING)FieldValue);
+                            break;
+                        case 12: //vars
+                            if(ListX3FieldID == 0) //varsSize
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.resize(ArraySize);
+                                return false;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
+                                break;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //index
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.index = *(UINT32 *)FieldValue;
+                                    break;
+                                case 2: //unused1
+                                    if(ArraySize != 12)
+                                        break;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                                    break;
+                                case 3: //flags
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SetFlagMask(*(UINT8 *)FieldValue);
+                                    break;
+                                case 4: //unused2
+                                    if(ArraySize != 7)
+                                        break;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                                    break;
+                                case 5: //name
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SCVR.Copy((STRING)FieldValue);
+                                    break;
+                                default:
+                                    break;
+                                }
+                            break;
+                        case 13: //references
+                            if(ListX3FieldID == 0) //referencesSize
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.resize(ArraySize);
+                                return false;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
+                                break;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //reference
+                                    //Borrowing ArraySize to flag if the new value is a formID
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->reference = *(UINT32 *)FieldValue;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->isSCRO = ArraySize ? true : false;
+                                    return ArraySize != 0;
+                                default:
+                                    break;
+                                }
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 20: //ctda_p Conditions
-            if(ArraySize != 4)
+        case 17: //objectives
+            if(ListFieldID == 0) //objectivesSize
+                {
+                Objectives.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Objectives.value.size())
                 break;
-            CTDAs.Load();
-            CTDAs->value20[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value20[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value20[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value20[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 21: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value21 = *(UINT32 *)FieldValue;
-            break;
-        case 22: //ctda Conditions
-            return UNPARSEDGET_FIELD22;
-        case 23: //indx Stage Index
-            INDX.Load();
-            INDX->value23 = *(SINT16 *)FieldValue;
-            break;
-        case 24: //qsdt Stage Flags
-            QSDT.Load();
-            QSDT->value24 = *(UINT8 *)FieldValue;
-            break;
-        case 25: //cnam Log Entry
-            CNAM.Copy((STRING)FieldValue);
-            break;
-        case 26: //schr_p Basic Script Data
-            if(ArraySize != 4)
-                break;
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value26[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SCHR->value26[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SCHR->value26[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SCHR->value26[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 27: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value27 = *(UINT32 *)FieldValue;
-            break;
-        case 28: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value28 = *(UINT32 *)FieldValue;
-            break;
-        case 29: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value29 = *(UINT32 *)FieldValue;
-            break;
-        case 30: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value30 = *(UINT16 *)FieldValue;
-            break;
-        case 31: //schr Basic Script Data
-            SCHR.Load();
-            SCHR->SCHR.Load();
-            SCHR->SCHR->value31 = *(UINT16 *)FieldValue;
-            break;
-        case 32: //scda_p Compiled Embedded Script
-            SCHR.Load();
-            SCHR->SCDA.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 33: //sctx Embedded Script Source
-            SCHR.Load();
-            SCHR->SCTX.Copy((STRING)FieldValue);
-            break;
-        case 34: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value34 = *(UINT32 *)FieldValue;
-            break;
-        case 35: //slsd_p Local Variable Data
-            if(ArraySize != 12)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value35[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SLSD->value35[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SLSD->value35[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SLSD->value35[3] = ((UINT8ARRAY)FieldValue)[3];
-            SCHR->SLSD->value35[4] = ((UINT8ARRAY)FieldValue)[4];
-            SCHR->SLSD->value35[5] = ((UINT8ARRAY)FieldValue)[5];
-            SCHR->SLSD->value35[6] = ((UINT8ARRAY)FieldValue)[6];
-            SCHR->SLSD->value35[7] = ((UINT8ARRAY)FieldValue)[7];
-            SCHR->SLSD->value35[8] = ((UINT8ARRAY)FieldValue)[8];
-            SCHR->SLSD->value35[9] = ((UINT8ARRAY)FieldValue)[9];
-            SCHR->SLSD->value35[10] = ((UINT8ARRAY)FieldValue)[10];
-            SCHR->SLSD->value35[11] = ((UINT8ARRAY)FieldValue)[11];
-            break;
-        case 36: //slsd Local Variable Data
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value36 = *(UINT8 *)FieldValue;
-            break;
-        case 37: //slsd_p Local Variable Data
-            if(ArraySize != 7)
-                break;
-            SCHR.Load();
-            SCHR->SLSD.Load();
-            SCHR->SLSD->value37[0] = ((UINT8ARRAY)FieldValue)[0];
-            SCHR->SLSD->value37[1] = ((UINT8ARRAY)FieldValue)[1];
-            SCHR->SLSD->value37[2] = ((UINT8ARRAY)FieldValue)[2];
-            SCHR->SLSD->value37[3] = ((UINT8ARRAY)FieldValue)[3];
-            SCHR->SLSD->value37[4] = ((UINT8ARRAY)FieldValue)[4];
-            SCHR->SLSD->value37[5] = ((UINT8ARRAY)FieldValue)[5];
-            SCHR->SLSD->value37[6] = ((UINT8ARRAY)FieldValue)[6];
-            break;
-        case 38: //scvr Name
-            SCHR.Load();
-            SCHR->SCVR.Copy((STRING)FieldValue);
-            break;
-        case 39: //scro Global Reference
-            SCHR.Load();
-            SCHR->SCRO.Load();
-            SCHR->SCRO->value39 = *(FORMID *)FieldValue;
-            return true;
-        case 40: //scrv Local Variable
-            SCHR.Load();
-            SCHR->SCRV.Load();
-            SCHR->SCRV->value40 = *(UINT32 *)FieldValue;
-            break;
-        case 41: //nam0 Next Quest
-            NAM0.Load();
-            NAM0->value41 = *(FORMID *)FieldValue;
-            return true;
-        case 42: //qobj Objective Index
-            QOBJ.Load();
-            QOBJ->value42 = *(SINT32 *)FieldValue;
-            break;
-        case 43: //nnam Description
-            NNAM.Copy((STRING)FieldValue);
-            break;
-        case 44: //qsta QSTA ,, Struct
-            QSTA.Load();
-            QSTA->value44 = *(FORMID *)FieldValue;
-            return true;
-        case 45: //qsta QSTA ,, Struct
-            QSTA.Load();
-            QSTA->value45 = *(UINT8 *)FieldValue;
-            break;
-        case 46: //qsta_p QSTA ,, Struct
-            if(ArraySize != 3)
-                break;
-            QSTA.Load();
-            QSTA->value46[0] = ((UINT8ARRAY)FieldValue)[0];
-            QSTA->value46[1] = ((UINT8ARRAY)FieldValue)[1];
-            QSTA->value46[2] = ((UINT8ARRAY)FieldValue)[2];
+
+            switch(ListFieldID)
+                {
+                case 1: //objective
+                    Objectives.value[ListIndex]->QOBJ.value = *(SINT32 *)FieldValue;
+                    break;
+                case 2: //text
+                    Objectives.value[ListIndex]->NNAM.Copy((STRING)FieldValue);
+                    break;
+                case 3: //targets
+                    if(ListX2FieldID == 0) //targetsSize
+                        {
+                        Objectives.value[ListIndex]->Targets.resize(ArraySize);
+                        return false;
+                        }
+
+                    if(ListX2Index >= Objectives.value[ListIndex]->Targets.value.size())
+                        break;
+
+                    switch(ListFieldID)
+                        {
+                        case 1: //targetId
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.targetId = *(FORMID *)FieldValue;
+                            return true;
+                        case 2: //flags
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->SetFlagMask(*(UINT8 *)FieldValue);
+                            break;
+                        case 3: //unused1
+                            if(ArraySize != 3)
+                                break;
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                            break;
+                        case 4: //conditions
+                            if(ListX3FieldID == 0) //conditionsSize
+                                {
+                                Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.resize(ArraySize);
+                                return false;
+                                }
+                
+                            if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
+                                break;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->operType = *(UINT8 *)FieldValue;
+                                    break;
+                                case 2: //unused1
+                                    if(ArraySize != 3)
+                                        break;
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                                    break;
+                                case 3: //compValue
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID *)FieldValue;
+                                    return true;
+                                case 4: //ifunc
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 5: //param1
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param1 = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 6: //param2
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param2 = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 7: //runOnType
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType = *(UINT32 *)FieldValue;
+                                    return true;
+                                case 8: //reference
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->reference = *(UINT32 *)FieldValue;
+                                    return true;
+                                default:
+                                    break;
+                                }
+                            break;
+                        default:
+                            break;
+                        }
+                    break;
+                default:
+                    break;
+                }
             break;
         default:
             break;
@@ -584,6 +1341,12 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    QUSTDATA defaultDATA;
+    FNVCTDA defaultCTDA;
+    QUSTQSTA defaultQSTA;
+    FNVSCHR defaultSCHR;
+    GENVARS defaultVARS;
+    GENSCR_ defaultSCR_;
     switch(FieldID)
         {
         case 1: //flags1
@@ -614,126 +1377,332 @@ void QUSTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 10: //smallIconPath
             MICO.Unload();
             return;
-        case 11: //data DATA ,, Struct
-            DATA.Unload();
+        case 11: //flags
+            DATA.value.flags = defaultDATA.flags;
             return;
-        case 12: //data DATA ,, Struct
-            DATA.Unload();
+        case 12: //priority
+            DATA.value.priority = defaultDATA.priority;
             return;
-        case 13: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 13: //unused1
+            DATA.value.unused1[0] = defaultDATA.unused1[0];
+            DATA.value.unused1[1] = defaultDATA.unused1[1];
             return;
-        case 14: //data DATA ,, Struct
-            DATA.Unload();
+        case 14: //delay
+            DATA.value.delay = defaultDATA.delay;
             return;
-        case 15: //ctda Conditions
-            CTDAs.Unload();
+        case 15: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.Unload();
+                return;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = defaultCTDA.operType;
+                    return;
+                case 2: //unused1
+                    CTDA.value[ListIndex]->unused1[0] = defaultCTDA.unused1[0];
+                    CTDA.value[ListIndex]->unused1[1] = defaultCTDA.unused1[1];
+                    CTDA.value[ListIndex]->unused1[2] = defaultCTDA.unused1[2];
+                    return;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = defaultCTDA.compValue;
+                    return;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = defaultCTDA.ifunc;
+                    return;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = defaultCTDA.param1;
+                    return;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = defaultCTDA.param2;
+                    return;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = defaultCTDA.runOnType;
+                    return;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = defaultCTDA.reference;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 16: //ctda_p Conditions
-            CTDAs.Unload();
+        case 16: //stages
+            if(ListFieldID == 0) //stagesSize
+                {
+                Stages.Unload();
+                return;
+                }
+
+            if(ListIndex >= Stages.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //stage
+                    Stages.value[ListIndex]->INDX.Unload();
+                    return;
+                case 2: //entries
+                    if(ListX2FieldID == 0) //entries
+                        {
+                        Stages.value[ListIndex]->Entries.Unload();
+                        return;
+                        }
+
+                    if(ListIndex >= Stages.value[ListIndex]->Entries.value.size())
+                        return;
+
+                    switch(ListFieldID)
+                        {
+                        case 1: //flags
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->QSDT.Unload();
+                            return;
+                        case 2: //conditions
+                            if(ListX3FieldID == 0) //conditionsSize
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.Unload();
+                                return;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size())
+                                return;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->operType = defaultCTDA.operType;
+                                    return;
+                                case 2: //unused1
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0] = defaultCTDA.unused1[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[1] = defaultCTDA.unused1[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = defaultCTDA.unused1[2];
+                                    return;
+                                case 3: //compValue
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = defaultCTDA.compValue;
+                                    return;
+                                case 4: //ifunc
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = defaultCTDA.ifunc;
+                                    return;
+                                case 5: //param1
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param1 = defaultCTDA.param1;
+                                    return;
+                                case 6: //param2
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->param2 = defaultCTDA.param2;
+                                    return;
+                                case 7: //runOnType
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType = defaultCTDA.runOnType;
+                                    return;
+                                case 8: //reference
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->reference = defaultCTDA.reference;
+                                    return;
+                                default:
+                                    return;
+                                }
+                            return;
+                        case 3: //text
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->CNAM.Unload();
+                            return;
+                        case 4: //unused1
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[0] = defaultSCHR.unused1[0];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[1] = defaultSCHR.unused1[1];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[2] = defaultSCHR.unused1[2];
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.unused1[3] = defaultSCHR.unused1[3];
+                            return;
+                        case 5: //numRefs
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.numRefs = defaultSCHR.numRefs;
+                            return;
+                        case 6: //compiledSize
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.compiledSize = defaultSCHR.compiledSize;
+                            return;
+                        case 7: //lastIndex
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.lastIndex = defaultSCHR.lastIndex;
+                            return;
+                        case 8: //scriptType
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.scriptType = defaultSCHR.scriptType;
+                            return;
+                        case 9: //scriptFlags
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCHR.value.flags = defaultSCHR.flags;
+                            return;
+                        case 10: //compiled_p
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCDA.Unload();
+                            return;
+                        case 11: //scriptText
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->SCTX.Unload();
+                            return;
+                        case 12: //vars
+                            if(ListX3FieldID == 0) //vars
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.Unload();
+                                return;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value.size())
+                                return;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //index
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                                    return;
+                                case 2: //unused1
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                                    return;
+                                case 3: //flags
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SetFlagMask(defaultVARS.SLSD.value.flags);
+                                    return;
+                                case 4: //unused2
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                                    return;
+                                case 5: //name
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->VARS.value[ListX3Index]->SCVR.Unload();
+                                    return;
+                                default:
+                                    return;
+                                }
+                            return;
+                        case 13: //references
+                            if(ListX3FieldID == 0) //references
+                                {
+                                Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.Unload();
+                                return;
+                                }
+                
+                            if(ListX3Index >= Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size())
+                                return;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //reference
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->reference = defaultSCR_.reference;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->isSCRO = defaultSCR_.isSCRO;
+                                    return;
+                                default:
+                                    return;
+                                }
+                            return;
+                        case 14: //nextQuest
+                            Stages.value[ListIndex]->Entries.value[ListX2Index]->NAM0.Unload();
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 17: //ctda Conditions
-            return UNPARSEDDEL_FIELD17;
-        case 18: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 19: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 20: //ctda_p Conditions
-            CTDAs.Unload();
-            return;
-        case 21: //ctda Conditions
-            CTDAs.Unload();
-            return;
-        case 22: //ctda Conditions
-            return UNPARSEDDEL_FIELD22;
-        case 23: //indx Stage Index
-            INDX.Unload();
-            return;
-        case 24: //qsdt Stage Flags
-            QSDT.Unload();
-            return;
-        case 25: //cnam Log Entry
-            CNAM.Unload();
-            return;
-        case 26: //schr_p Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 27: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 28: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 29: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 30: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 31: //schr Basic Script Data
-            if(SCHR.IsLoaded())
-                SCHR->SCHR.Unload();
-            return;
-        case 32: //scda_p Compiled Embedded Script
-            if(SCHR.IsLoaded())
-                SCHR->SCDA.Unload();
-            return;
-        case 33: //sctx Embedded Script Source
-            if(SCHR.IsLoaded())
-                SCHR->SCTX.Unload();
-            return;
-        case 34: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 35: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 36: //slsd Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 37: //slsd_p Local Variable Data
-            if(SCHR.IsLoaded())
-                SCHR->SLSD.Unload();
-            return;
-        case 38: //scvr Name
-            if(SCHR.IsLoaded())
-                SCHR->SCVR.Unload();
-            return;
-        case 39: //scro Global Reference
-            if(SCHR.IsLoaded())
-                SCHR->SCRO.Unload();
-            return;
-        case 40: //scrv Local Variable
-            if(SCHR.IsLoaded())
-                SCHR->SCRV.Unload();
-            return;
-        case 41: //nam0 Next Quest
-            NAM0.Unload();
-            return;
-        case 42: //qobj Objective Index
-            QOBJ.Unload();
-            return;
-        case 43: //nnam Description
-            NNAM.Unload();
-            return;
-        case 44: //qsta QSTA ,, Struct
-            QSTA.Unload();
-            return;
-        case 45: //qsta QSTA ,, Struct
-            QSTA.Unload();
-            return;
-        case 46: //qsta_p QSTA ,, Struct
-            QSTA.Unload();
+        case 17: //objectives
+            if(ListFieldID == 0) //objectivesSize
+                {
+                Objectives.Unload();
+                return;
+                }
+
+            if(ListIndex >= Objectives.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //objective
+                    Objectives.value[ListIndex]->QOBJ.Unload();
+                    return;
+                case 2: //text
+                    Objectives.value[ListIndex]->NNAM.Unload();
+                    return;
+                case 3: //targets
+                    if(ListX2FieldID == 0) //stages
+                        {
+                        Objectives.value[ListIndex]->Targets.Unload();
+                        return;
+                        }
+
+                    if(ListX2Index >= Objectives.value[ListIndex]->Targets.value.size())
+                        return;
+
+                    switch(ListX2FieldID)
+                        {
+                        case 1: //targetId
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.targetId = defaultQSTA.targetId;
+                            return;
+                        case 2: //flags
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.flags = defaultQSTA.flags;
+                            return;
+                        case 3: //unused1
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[0] = defaultQSTA.unused1[0];
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[1] = defaultQSTA.unused1[1];
+                            Objectives.value[ListIndex]->Targets.value[ListX2Index]->QSTA.value.unused1[2] = defaultQSTA.unused1[2];
+                            return;
+                        case 4: //conditions
+                            if(ListX3FieldID == 0) //conditionsSize
+                                {
+                                Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.Unload();
+                                return;
+                                }
+                
+                            if(ListX3Index >= Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value.size())
+                                return;
+                
+                            switch(ListX3FieldID)
+                                {
+                                case 1: //operType
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->operType = defaultCTDA.operType;
+                                    return;
+                                case 2: //unused1
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[0] = defaultCTDA.unused1[0];
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[1] = defaultCTDA.unused1[1];
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = defaultCTDA.unused1[2];
+                                    return;
+                                case 3: //compValue
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = defaultCTDA.compValue;
+                                    return;
+                                case 4: //ifunc
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = defaultCTDA.ifunc;
+                                    return;
+                                case 5: //param1
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param1 = defaultCTDA.param1;
+                                    return;
+                                case 6: //param2
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->param2 = defaultCTDA.param2;
+                                    return;
+                                case 7: //runOnType
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->runOnType = defaultCTDA.runOnType;
+                                    return;
+                                case 8: //reference
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->reference = defaultCTDA.reference;
+                                    return;
+                                default:
+                                    return;
+                                }
+                            return;
+                        default:
+                            return;
+                        }
+                    return;
+                default:
+                    return;
+                }
             return;
         default:
             return;

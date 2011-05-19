@@ -68,7 +68,8 @@ class CSTYRecord : public FNVRecord //Combat Style
         struct CSTYCSSD // Simple
             {
             FLOAT32 coverRadius, coverChance, waitTimerMin, waitTimerMax,
-                    fireTimerMin, fireTimerMax, rangedRangeMultMin;
+                    waitFireTimerMin, waitFireTimerMax, fireTimerMin, 
+                    fireTimerMax, rangedRangeMultMin;
             UINT8   unused1[4];
             UINT32  weaponRestrictions;
             FLOAT32 rangedRangeMultMax, targetMaxFOV, combatRadius,
@@ -96,21 +97,19 @@ class CSTYRecord : public FNVRecord //Combat Style
         enum restrictionTypes
             {
             eNone = 0,
-            eMeleeOnly,
-            eRangedOnly
+            eMeleeOnly = 1,
+            eRangedOnly = 2
             };
 
     public:
         StringRecord EDID; //Editor ID
-        OptSubRecord<CSTYCSTD> CSTD; //Advanced Standard
-        OptSubRecord<CSTYCSAD> CSAD; //CSAD ,, Struct
-        OptSubRecord<CSTYCSSD> CSSD; //CSSD ,, Struct
+        ReqSubRecord<CSTYCSTD> CSTD; //Advanced Standard
+        ReqSubRecord<CSTYCSAD> CSAD; //Advanced - Advanced
+        ReqSubRecord<CSTYCSSD> CSSD; //Simple
 
         CSTYRecord(unsigned char *_recData=NULL);
         CSTYRecord(CSTYRecord *srcRecord);
         ~CSTYRecord();
-
-        bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsUseChanceForAttack();
         void   IsUseChanceForAttack(bool value);
@@ -120,10 +119,10 @@ class CSTYRecord : public FNVRecord //Combat Style
         void   IsFleeForSurvival(bool value);
         bool   IsIgnoreThreats();
         void   IsIgnoreThreats(bool value);
-        bool   IsIgnoreDamagingSelf=();
-        void   IsIgnoreDamagingSelf=(bool value);
-        bool   IsIgnoreDamagingGroup=();
-        void   IsIgnoreDamagingGroup=(bool value);
+        bool   IsIgnoreDamagingSelf();
+        void   IsIgnoreDamagingSelf(bool value);
+        bool   IsIgnoreDamagingGroup();
+        void   IsIgnoreDamagingGroup(bool value);
         bool   IsIgnoreDamagingSpectator();
         void   IsIgnoreDamagingSpectator(bool value);
         bool   IsNoUseStealthboy();

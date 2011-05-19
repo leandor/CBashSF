@@ -598,7 +598,35 @@ SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 PNAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                switch(subSize)
+                    {
+                    case 160:
+                        //old format is missing the noon and midnight colors
+                        memcpy(&NAM0.value.upperSky, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.fog, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.lowerClouds, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.ambient, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.sunlight, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.sun, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.stars, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.lowerSky, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.horizon, buffer + curPos, 16);
+                        curPos += 16;
+                        memcpy(&NAM0.value.upperClouds, buffer + curPos, 16);
+                        curPos += 16;
+                        break;
+                    default:
+                        NAM0.Read(buffer, subSize, curPos);
+                        break;
+                    }
                 break;
             case REV32(FNAM):
                 FNAM.Read(buffer, subSize, curPos);

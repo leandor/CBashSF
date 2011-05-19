@@ -1014,12 +1014,16 @@ struct OptSimpleSubRecord
         else if(subSize < sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                   "remaining fields have their default value.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                   subSize, sizeof(T));
-            CBASH_CHUNK_DEBUG
+            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            if (!(test == REV32(PKPT) && subSize == 1 && sizeof(T) == 2))
+                {
+                printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                       "remaining fields have their default value.\n",
+                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       subSize, sizeof(T));
+                CBASH_CHUNK_DEBUG
+                }
         #endif
             memcpy(&value, buffer + curPos, subSize);
             }
@@ -1035,6 +1039,11 @@ struct OptSimpleSubRecord
         {
         if(value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(T));
+        }
+
+    void ReqWrite(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(T));
         }
 
     OptSimpleSubRecord<T, defaultValue>& operator = (const OptSimpleSubRecord<T, defaultValue> &rhs)
@@ -1128,6 +1137,10 @@ struct OptSimpleFloatSubRecord
         {
         if(IsLoaded())
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
+        }
+    void ReqWrite(UINT32 _Type, FileWriter &writer)
+        {
+        writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
 
     OptSimpleFloatSubRecord<defaultValue>& operator = (const OptSimpleFloatSubRecord<defaultValue> &rhs)
@@ -1521,30 +1534,46 @@ struct ReqSubRecord
         {
         if(subSize > sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
-                printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                       "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                       subSize, sizeof(T));
-                CBASH_CHUNK_DEBUG
-            #endif
+        #ifdef CBASH_CHUNK_WARN
+            printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            CBASH_CHUNK_DEBUG
+        #endif
             memcpy(&value, buffer + curPos, sizeof(T));
             }
-        #ifdef CBASH_CHUNK_LCHECK
-            else if(subSize < sizeof(T))
+    #ifdef CBASH_CHUNK_LCHECK
+        else if(subSize < sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
+        #ifdef CBASH_CHUNK_WARN
+            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            UINT32 test2 = *((UINT32 *)(buffer + curPos + subSize));
+            if (!(test == REV32(DATA) && (test2 == REV32(DIAL) || test2 == REV32(GRUP)) && subSize == 1 && sizeof(T) == 2) &&
+                !(test == REV32(DATA) && (test2 == REV32(CNAM) || test2 == REV32(RNAM) || test2 == REV32(WMI1)) && sizeof(T) == 4 && subSize == 1) &&
+                !(test == REV32(SNDX) && subSize == 12) &&
+                !(test == REV32(DNAM) && test2 == REV32(ITXT) && subSize == 3) &&
+                !(test == REV32(DNAM) && (test2 == REV32(ARMO) || test2 == REV32(BNAM)) && subSize == 4 && sizeof(T) == 12) &&
+                !(test == REV32(DNAM) && (test2 == REV32(CRDT) || test2 == REV32(VATS)) && sizeof(T) == 204) && //multiple possible subSizes
+                !(test == REV32(VATS) && (test2 == REV32(VNAM) || test2 == REV32(WEAP)) && subSize == 16 && sizeof(T) == 20) &&
+                !(test == REV32(DATA) && (test2 == REV32(NAM1) || test2 == REV32(NAM2) || test2 == REV32(VNAM) || test2 == REV32(PROJ)) && subSize == 68 && sizeof(T) == 84) &&
+                !(test == REV32(DATA) && (test2 == REV32(CTDA) || test2 == REV32(INDX) || test2 == REV32(QOBJ)) && subSize == 2 && sizeof(T) == 8) &&
+                !(test == REV32(DATA) && (test2 == REV32(IDLE) || test2 == REV32(GRUP)) && subSize == 6 && sizeof(T) == 8) &&
+                !(test == REV32(PKDT) && subSize == 8 && sizeof(T) == 12)
+                )
+                {
                 printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
-            #endif
+                }
+        #endif
             memcpy(&value, buffer + curPos, subSize);
             }
-        #endif
+    #endif
         else
             memcpy(&value, buffer + curPos, subSize);
         //size = subSize;
@@ -1631,14 +1660,21 @@ struct OptSubRecord
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
+        #ifdef CBASH_CHUNK_WARN
+            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            UINT32 test2 = *((UINT32 *)(buffer + curPos + subSize));
+            if (!(test == REV32(XCLC) && subSize == 8) &&
+                !(test == REV32(DAT2) && (test2 == REV32(ONAM) || test2 == REV32(QNAM) || test2 == REV32(RCIL) || test2 == REV32(AMMO)) && subSize == 12 && sizeof(T) == 20)
+                )
+                {
                 printf("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
-            #endif
+                }
+        #endif
             memcpy(value, buffer + curPos, subSize);
             }
         #endif
@@ -1746,30 +1782,34 @@ struct SemiOptSubRecord
         value = new T();
         if(subSize > sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
-                printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
-                       "Size of chunk (%u) is larger than the size of the subrecord (%u) "
-                       "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                       subSize, sizeof(T));
-                CBASH_CHUNK_DEBUG
-            #endif
+        #ifdef CBASH_CHUNK_WARN
+            printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   subSize, sizeof(T));
+            CBASH_CHUNK_DEBUG
+        #endif
             memcpy(value, buffer + curPos, sizeof(T));
             }
-        #ifdef CBASH_CHUNK_LCHECK
-            else if(subSize < sizeof(T))
+    #ifdef CBASH_CHUNK_LCHECK
+        else if(subSize < sizeof(T))
             {
-            #ifdef CBASH_CHUNK_WARN
+        #ifdef CBASH_CHUNK_WARN
+            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            if(!(test == REV32(XLOC) && subSize == 12 && sizeof(T) == 20))
+                {
                 printf("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
-            #endif
+                }
+        #endif
             memcpy(value, buffer + curPos, subSize);
             }
-        #endif
+    #endif
         else
             memcpy(value, buffer + curPos, subSize);
         curPos += subSize;
@@ -2328,12 +2368,18 @@ struct OrderedSparseArray<T *, _Pr>
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
-                       "of chunk (%u) is less than the size of the subrecord (%u) and any "
-                       "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-                       subSize, sizeof(T));
-                CBASH_CHUNK_DEBUG
+                UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+                if (!((test == REV32(SCRO) || test == REV32(SCRV)) && subSize == 4) &&
+                    !(test == REV32(CTDA) && (subSize == 20 || subSize == 24)&& sizeof(T) == 28)
+                    )
+                    {
+                    printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                           "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                           "remaining fields have their default value.\n",
+                           (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                           subSize, sizeof(T));
+                    CBASH_CHUNK_DEBUG
+                    }
             #endif
             memcpy(&(*value.back()), buffer + curPos, subSize);
             }
@@ -2555,7 +2601,7 @@ struct UnorderedSparseArray<T *>
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printf("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2568,7 +2614,7 @@ struct UnorderedSparseArray<T *>
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printf("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],

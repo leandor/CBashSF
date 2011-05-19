@@ -30,7 +30,7 @@ class TERMRecord : public FNVRecord //Terminal
     private:
         struct TERMDNAM
             {
-            UINT8   difficultyType, flags, serverType, unused1;
+            UINT8   difficultyType, flags, serverType, unused1; //unused1 not always present
 
             TERMDNAM();
             ~TERMDNAM();

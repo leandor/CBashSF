@@ -738,6 +738,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
         LookupRecord(curModFile, RecordFormID, DummyRecord);
     else if(RecordEditorID != NULL)
         LookupRecord(curModFile, RecordEditorID, DummyRecord);
+
     if(DummyRecord != NULL)
         return DummyRecord;
 
@@ -793,20 +794,35 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     Record *ParentRecord = NULL;
     Record *RecordCopy = NULL;
 
-    if((DestRecordFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
-        DestRecordFormID &= 0x00FFFFFF;
-
     if(options.SetAsOverride)
         {
         //See if its trying to copy a record that already exists in the destination mod
         if(curRecord->IsKeyedByEditorID())
-            LookupRecord(DestModFile, curRecord->GetEditorIDKey(), RecordCopy);
+            LookupRecord(DestModFile, DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), RecordCopy);
         else
             LookupRecord(DestModFile, DestRecordFormID ? DestRecordFormID : curRecord->formID, RecordCopy);
-
-        if(RecordCopy != NULL)
-            return RecordCopy;
         }
+    else if(DestRecordFormID != 0)
+        {
+        //If the objectID of a formID is less than END_HARDCODED_IDS, then it doesn't use the modIndex portion
+        //instead, it "belongs" to the engine, and they all override each other
+        if((DestRecordFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
+            DestRecordFormID &= 0x00FFFFFF;
+
+        //See if its trying to copy a record that already exists in the destination mod
+        if(curRecord->IsKeyedByEditorID())
+            LookupRecord(DestModFile, DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), RecordCopy);
+        else
+            LookupRecord(DestModFile, DestRecordFormID, RecordCopy);
+        }
+    else if(curRecord->IsKeyedByEditorID())
+        {
+        //See if its trying to copy a record that already exists in the destination mod
+        LookupRecord(DestModFile, DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), RecordCopy);
+        }
+
+    if(RecordCopy != NULL)
+        return RecordCopy;
 
     if(DestParentFormID)
         {

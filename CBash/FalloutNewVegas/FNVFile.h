@@ -79,11 +79,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/CELLRecord.h"
 #include "Records/WRLDRecord.h"
 #include "Records/DIALRecord.h"
-//#include "Records/QUSTRecord.h"
-//#include "Records/IDLERecord.h"
-//#include "Records/PACKRecord.h"
-//#include "Records/CSTYRecord.h"
-//#include "Records/LSCRRecord.h"
+#include "Records/QUSTRecord.h"
+#include "Records/IDLERecord.h"
+#include "Records/PACKRecord.h"
+#include "Records/CSTYRecord.h"
+#include "Records/LSCRRecord.h"
 //#include "Records/ANIORecord.h"
 //#include "Records/WATRRecord.h"
 //#include "Records/EFSHRecord.h"
@@ -184,11 +184,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::CELLRecord> CELL;
         FNVGRUPRecords<FNV::WRLDRecord> WRLD;
         FNVGRUPRecords<FNV::DIALRecord> DIAL;
-        //FNVGRUPRecords<FNV::QUSTRecord> QUST;
-        //FNVGRUPRecords<FNV::IDLERecord> IDLE;
-        //FNVGRUPRecords<FNV::PACKRecord> PACK;
-        //FNVGRUPRecords<FNV::CSTYRecord> CSTY;
-        //FNVGRUPRecords<FNV::LSCRRecord> LSCR;
+        FNVGRUPRecords<FNV::QUSTRecord> QUST;
+        FNVGRUPRecords<FNV::IDLERecord> IDLE;
+        FNVGRUPRecords<FNV::PACKRecord> PACK;
+        FNVGRUPRecords<FNV::CSTYRecord> CSTY;
+        FNVGRUPRecords<FNV::LSCRRecord> LSCR;
         //FNVGRUPRecords<FNV::ANIORecord> ANIO;
         //FNVGRUPRecords<FNV::WATRRecord> WATR;
         //FNVGRUPRecords<FNV::EFSHRecord> EFSH;

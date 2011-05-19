@@ -60,11 +60,11 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 7: //cstd CSTD ,, Struct
+        case 7: //dodgeChance
             return UINT8_FIELD;
-        case 8: //cstd CSTD ,, Struct
+        case 8: //lrChance
             return UINT8_FIELD;
-        case 9: //cstd_p CSTD ,, Struct
+        case 9: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -75,27 +75,27 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 10: //cstd CSTD ,, Struct
+        case 10: //lrTimerMin
             return FLOAT32_FIELD;
-        case 11: //cstd CSTD ,, Struct
+        case 11: //lrTimerMax
             return FLOAT32_FIELD;
-        case 12: //cstd CSTD ,, Struct
+        case 12: //forTimerMin
             return FLOAT32_FIELD;
-        case 13: //cstd CSTD ,, Struct
+        case 13: //forTimerMax
             return FLOAT32_FIELD;
-        case 14: //cstd CSTD ,, Struct
+        case 14: //backTimerMin
             return FLOAT32_FIELD;
-        case 15: //cstd CSTD ,, Struct
+        case 15: //backTimerMax
             return FLOAT32_FIELD;
-        case 16: //cstd CSTD ,, Struct
+        case 16: //idleTimerMin
             return FLOAT32_FIELD;
-        case 17: //cstd CSTD ,, Struct
+        case 17: //idleTimerMax
             return FLOAT32_FIELD;
-        case 18: //cstd CSTD ,, Struct
+        case 18: //blkChance
             return UINT8_FIELD;
-        case 19: //cstd CSTD ,, Struct
+        case 19: //atkChance
             return UINT8_FIELD;
-        case 20: //cstd_p CSTD ,, Struct
+        case 20: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -106,15 +106,15 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 21: //cstd CSTD ,, Struct
+        case 21: //atkBRecoil
             return FLOAT32_FIELD;
-        case 22: //cstd CSTD ,, Struct
+        case 22: //atkBUnc
             return FLOAT32_FIELD;
-        case 23: //cstd CSTD ,, Struct
+        case 23: //atkBh2h
             return FLOAT32_FIELD;
-        case 24: //cstd CSTD ,, Struct
+        case 24: //pAtkChance
             return UINT8_FIELD;
-        case 25: //cstd_p CSTD ,, Struct
+        case 25: //unused3
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -125,21 +125,21 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 26: //cstd CSTD ,, Struct
+        case 26: //pAtkBRecoil
             return FLOAT32_FIELD;
-        case 27: //cstd CSTD ,, Struct
+        case 27: //pAtkBUnc
             return FLOAT32_FIELD;
-        case 28: //cstd CSTD ,, Struct
+        case 28: //pAtkNormal
             return UINT8_FIELD;
-        case 29: //cstd CSTD ,, Struct
+        case 29: //pAtkFor
             return UINT8_FIELD;
-        case 30: //cstd CSTD ,, Struct
+        case 30: //pAtkBack
             return UINT8_FIELD;
-        case 31: //cstd CSTD ,, Struct
+        case 31: //pAtkL
             return UINT8_FIELD;
-        case 32: //cstd CSTD ,, Struct
+        case 32: //pAtkR
             return UINT8_FIELD;
-        case 33: //cstd_p CSTD ,, Struct
+        case 33: //unused4
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -150,13 +150,13 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 34: //cstd CSTD ,, Struct
+        case 34: //holdTimerMin
             return FLOAT32_FIELD;
-        case 35: //cstd CSTD ,, Struct
+        case 35: //holdTimerMax
             return FLOAT32_FIELD;
-        case 36: //cstd CSTD ,, Struct
-            return UINT16_FIELD;
-        case 37: //cstd_p CSTD ,, Struct
+        case 36: //flags
+            return UINT16_FLAG_FIELD;
+        case 37: //unused5
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -167,11 +167,11 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 38: //cstd CSTD ,, Struct
+        case 38: //acroDodge
             return UINT8_FIELD;
-        case 39: //cstd CSTD ,, Struct
+        case 39: //rushChance
             return UINT8_FIELD;
-        case 40: //cstd_p CSTD ,, Struct
+        case 40: //unused6
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -182,69 +182,69 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 41: //cstd CSTD ,, Struct
+        case 41: //rushMult
             return FLOAT32_FIELD;
-        case 42: //csad CSAD ,, Struct
+        case 42: //dodgeFMult
             return FLOAT32_FIELD;
-        case 43: //csad CSAD ,, Struct
+        case 43: //dodgeFBase
             return FLOAT32_FIELD;
-        case 44: //csad CSAD ,, Struct
+        case 44: //encSBase
             return FLOAT32_FIELD;
-        case 45: //csad CSAD ,, Struct
+        case 45: //encSMult
             return FLOAT32_FIELD;
-        case 46: //csad CSAD ,, Struct
+        case 46: //dodgeAtkMult
             return FLOAT32_FIELD;
-        case 47: //csad CSAD ,, Struct
+        case 47: //dodgeNAtkMult
             return FLOAT32_FIELD;
-        case 48: //csad CSAD ,, Struct
+        case 48: //dodgeBAtkMult
             return FLOAT32_FIELD;
-        case 49: //csad CSAD ,, Struct
+        case 49: //dodgeBNAtkMult
             return FLOAT32_FIELD;
-        case 50: //csad CSAD ,, Struct
+        case 50: //dodgeFAtkMult
             return FLOAT32_FIELD;
-        case 51: //csad CSAD ,, Struct
+        case 51: //dodgeFNAtkMult
             return FLOAT32_FIELD;
-        case 52: //csad CSAD ,, Struct
+        case 52: //blockMult
             return FLOAT32_FIELD;
-        case 53: //csad CSAD ,, Struct
+        case 53: //blockBase
             return FLOAT32_FIELD;
-        case 54: //csad CSAD ,, Struct
+        case 54: //blockAtkMult
             return FLOAT32_FIELD;
-        case 55: //csad CSAD ,, Struct
+        case 55: //blockNAtkMult
             return FLOAT32_FIELD;
-        case 56: //csad CSAD ,, Struct
+        case 56: //atkMult
             return FLOAT32_FIELD;
-        case 57: //csad CSAD ,, Struct
+        case 57: //atkBase
             return FLOAT32_FIELD;
-        case 58: //csad CSAD ,, Struct
+        case 58: //atkAtkMult
             return FLOAT32_FIELD;
-        case 59: //csad CSAD ,, Struct
+        case 59: //atkNAtkMult
             return FLOAT32_FIELD;
-        case 60: //csad CSAD ,, Struct
+        case 60: //atkBlockMult
             return FLOAT32_FIELD;
-        case 61: //csad CSAD ,, Struct
+        case 61: //pAtkFBase
             return FLOAT32_FIELD;
-        case 62: //csad CSAD ,, Struct
+        case 62: //pAtkFMult
             return FLOAT32_FIELD;
-        case 63: //cssd CSSD ,, Struct
+        case 63: //coverRadius
             return FLOAT32_FIELD;
-        case 64: //cssd CSSD ,, Struct
+        case 64: //coverChance
             return FLOAT32_FIELD;
-        case 65: //cssd CSSD ,, Struct
+        case 65: //waitTimerMin
             return FLOAT32_FIELD;
-        case 66: //cssd CSSD ,, Struct
+        case 66: //waitFireTimerMin
             return FLOAT32_FIELD;
-        case 67: //cssd CSSD ,, Struct
+        case 67: //waitFireTimerMax
             return FLOAT32_FIELD;
-        case 68: //cssd CSSD ,, Struct
+        case 68: //waitTimerMax
             return FLOAT32_FIELD;
-        case 69: //cssd CSSD ,, Struct
+        case 69: //fireTimerMin
             return FLOAT32_FIELD;
-        case 70: //cssd CSSD ,, Struct
+        case 70: //fireTimerMax
             return FLOAT32_FIELD;
-        case 71: //cssd CSSD ,, Struct
+        case 71: //rangedRangeMultMin
             return FLOAT32_FIELD;
-        case 72: //cssd_p CSSD ,, Struct
+        case 72: //unused7
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -255,17 +255,17 @@ UINT32 CSTYRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 73: //cssd CSSD ,, Struct
-            return UINT32_FIELD;
-        case 74: //cssd CSSD ,, Struct
+        case 73: //weaponRestrictions
+            return UINT32_TYPE_FIELD;
+        case 74: //rangedRangeMultMax
             return FLOAT32_FIELD;
-        case 75: //cssd CSSD ,, Struct
+        case 75: //targetMaxFOV
             return FLOAT32_FIELD;
-        case 76: //cssd CSSD ,, Struct
+        case 76: //combatRadius
             return FLOAT32_FIELD;
-        case 77: //cssd CSSD ,, Struct
+        case 77: //semiAutoFireDelayMultMin
             return FLOAT32_FIELD;
-        case 78: //cssd CSSD ,, Struct
+        case 78: //semiAutoFireDelayMultMax
             return FLOAT32_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -291,157 +291,157 @@ void * CSTYRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //versionControl2
             *FieldValues = &versionControl2[0];
             return NULL;
-        case 7: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value7 : NULL;
-        case 8: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value8 : NULL;
-        case 9: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value9[0] : NULL;
+        case 7: //dodgeChance
+            return &CSTD.value.dodgeChance;
+        case 8: //lrChance
+            return &CSTD.value.lrChance;
+        case 9: //unused1
+            *FieldValues = &CSTD.value.unused1[0];
             return NULL;
-        case 10: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value10 : NULL;
-        case 11: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value11 : NULL;
-        case 12: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value12 : NULL;
-        case 13: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value13 : NULL;
-        case 14: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value14 : NULL;
-        case 15: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value15 : NULL;
-        case 16: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value16 : NULL;
-        case 17: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value17 : NULL;
-        case 18: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value18 : NULL;
-        case 19: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value19 : NULL;
-        case 20: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value20[0] : NULL;
+        case 10: //lrTimerMin
+            return &CSTD.value.lrTimerMin;
+        case 11: //lrTimerMax
+            return &CSTD.value.lrTimerMax;
+        case 12: //forTimerMin
+            return &CSTD.value.forTimerMin;
+        case 13: //forTimerMax
+            return &CSTD.value.forTimerMax;
+        case 14: //backTimerMin
+            return &CSTD.value.backTimerMin;
+        case 15: //backTimerMax
+            return &CSTD.value.backTimerMax;
+        case 16: //idleTimerMin
+            return &CSTD.value.idleTimerMin;
+        case 17: //idleTimerMax
+            return &CSTD.value.idleTimerMax;
+        case 18: //blkChance
+            return &CSTD.value.blkChance;
+        case 19: //atkChance
+            return &CSTD.value.atkChance;
+        case 20: //unused2
+            *FieldValues = &CSTD.value.unused2[0];
             return NULL;
-        case 21: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value21 : NULL;
-        case 22: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value22 : NULL;
-        case 23: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value23 : NULL;
-        case 24: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value24 : NULL;
-        case 25: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value25[0] : NULL;
+        case 21: //atkBRecoil
+            return &CSTD.value.atkBRecoil;
+        case 22: //atkBUnc
+            return &CSTD.value.atkBUnc;
+        case 23: //atkBh2h
+            return &CSTD.value.atkBh2h;
+        case 24: //pAtkChance
+            return &CSTD.value.pAtkChance;
+        case 25: //unused3
+            *FieldValues = &CSTD.value.unused3[0];
             return NULL;
-        case 26: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value26 : NULL;
-        case 27: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value27 : NULL;
-        case 28: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value28 : NULL;
-        case 29: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value29 : NULL;
-        case 30: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value30 : NULL;
-        case 31: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value31 : NULL;
-        case 32: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value32 : NULL;
-        case 33: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value33[0] : NULL;
+        case 26: //pAtkBRecoil
+            return &CSTD.value.pAtkBRecoil;
+        case 27: //pAtkBUnc
+            return &CSTD.value.pAtkBUnc;
+        case 28: //pAtkNormal
+            return &CSTD.value.pAtkNormal;
+        case 29: //pAtkFor
+            return &CSTD.value.pAtkFor;
+        case 30: //pAtkBack
+            return &CSTD.value.pAtkBack;
+        case 31: //pAtkL
+            return &CSTD.value.pAtkL;
+        case 32: //pAtkR
+            return &CSTD.value.pAtkR;
+        case 33: //unused4
+            *FieldValues = &CSTD.value.unused4[0];
             return NULL;
-        case 34: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value34 : NULL;
-        case 35: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value35 : NULL;
-        case 36: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value36 : NULL;
-        case 37: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value37[0] : NULL;
+        case 34: //holdTimerMin
+            return &CSTD.value.holdTimerMin;
+        case 35: //holdTimerMax
+            return &CSTD.value.holdTimerMax;
+        case 36: //flags
+            return &CSTD.value.flags;
+        case 37: //unused5
+            *FieldValues = &CSTD.value.unused5[0];
             return NULL;
-        case 38: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value38 : NULL;
-        case 39: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value39 : NULL;
-        case 40: //cstd_p CSTD ,, Struct
-            *FieldValues = CSTD.IsLoaded() ? &CSTD->value40[0] : NULL;
+        case 38: //acroDodge
+            return &CSTD.value.acroDodge;
+        case 39: //rushChance
+            return &CSTD.value.rushChance;
+        case 40: //unused6
+            *FieldValues = &CSTD.value.unused6[0];
             return NULL;
-        case 41: //cstd CSTD ,, Struct
-            return CSTD.IsLoaded() ? &CSTD->value41 : NULL;
-        case 42: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value42 : NULL;
-        case 43: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value43 : NULL;
-        case 44: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value44 : NULL;
-        case 45: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value45 : NULL;
-        case 46: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value46 : NULL;
-        case 47: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value47 : NULL;
-        case 48: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value48 : NULL;
-        case 49: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value49 : NULL;
-        case 50: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value50 : NULL;
-        case 51: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value51 : NULL;
-        case 52: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value52 : NULL;
-        case 53: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value53 : NULL;
-        case 54: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value54 : NULL;
-        case 55: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value55 : NULL;
-        case 56: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value56 : NULL;
-        case 57: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value57 : NULL;
-        case 58: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value58 : NULL;
-        case 59: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value59 : NULL;
-        case 60: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value60 : NULL;
-        case 61: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value61 : NULL;
-        case 62: //csad CSAD ,, Struct
-            return CSAD.IsLoaded() ? &CSAD->value62 : NULL;
-        case 63: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value63 : NULL;
-        case 64: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value64 : NULL;
-        case 65: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value65 : NULL;
-        case 66: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value66 : NULL;
-        case 67: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value67 : NULL;
-        case 68: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value68 : NULL;
-        case 69: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value69 : NULL;
-        case 70: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value70 : NULL;
-        case 71: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value71 : NULL;
-        case 72: //cssd_p CSSD ,, Struct
-            *FieldValues = CSSD.IsLoaded() ? &CSSD->value72[0] : NULL;
+        case 41: //rushMult
+            return &CSTD.value.rushMult;
+        case 42: //dodgeFMult
+            return &CSAD.value.dodgeFMult;
+        case 43: //dodgeFBase
+            return &CSAD.value.dodgeFBase;
+        case 44: //encSBase
+            return &CSAD.value.encSBase;
+        case 45: //encSMult
+            return &CSAD.value.encSMult;
+        case 46: //dodgeAtkMult
+            return &CSAD.value.dodgeAtkMult;
+        case 47: //dodgeNAtkMult
+            return &CSAD.value.dodgeNAtkMult;
+        case 48: //dodgeBAtkMult
+            return &CSAD.value.dodgeBAtkMult;
+        case 49: //dodgeBNAtkMult
+            return &CSAD.value.dodgeBNAtkMult;
+        case 50: //dodgeFAtkMult
+            return &CSAD.value.dodgeFAtkMult;
+        case 51: //dodgeFNAtkMult
+            return &CSAD.value.dodgeFNAtkMult;
+        case 52: //blockMult
+            return &CSAD.value.blockMult;
+        case 53: //blockBase
+            return &CSAD.value.blockBase;
+        case 54: //blockAtkMult
+            return &CSAD.value.blockAtkMult;
+        case 55: //blockNAtkMult
+            return &CSAD.value.blockNAtkMult;
+        case 56: //atkMult
+            return &CSAD.value.atkMult;
+        case 57: //atkBase
+            return &CSAD.value.atkBase;
+        case 58: //atkAtkMult
+            return &CSAD.value.atkAtkMult;
+        case 59: //atkNAtkMult
+            return &CSAD.value.atkNAtkMult;
+        case 60: //atkBlockMult
+            return &CSAD.value.atkBlockMult;
+        case 61: //pAtkFBase
+            return &CSAD.value.pAtkFBase;
+        case 62: //pAtkFMult
+            return &CSAD.value.pAtkFMult;
+        case 63: //coverRadius
+            return &CSSD.value.coverRadius;
+        case 64: //coverChance
+            return &CSSD.value.coverChance;
+        case 65: //waitTimerMin
+            return &CSSD.value.waitTimerMin;
+        case 66: //waitTimerMax
+            return &CSSD.value.waitTimerMax;
+        case 67: //waitFireTimerMin
+            return &CSSD.value.waitFireTimerMin;
+        case 68: //waitFireTimerMax
+            return &CSSD.value.waitFireTimerMax;
+        case 69: //fireTimerMin
+            return &CSSD.value.fireTimerMin;
+        case 70: //fireTimerMax
+            return &CSSD.value.fireTimerMax;
+        case 71: //rangedRangeMultMin
+            return &CSSD.value.rangedRangeMultMin;
+        case 72: //unused7
+            *FieldValues = &CSSD.value.unused1[0];
             return NULL;
-        case 73: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value73 : NULL;
-        case 74: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value74 : NULL;
-        case 75: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value75 : NULL;
-        case 76: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value76 : NULL;
-        case 77: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value77 : NULL;
-        case 78: //cssd CSSD ,, Struct
-            return CSSD.IsLoaded() ? &CSSD->value78 : NULL;
+        case 73: //weaponRestrictions
+            return &CSSD.value.weaponRestrictions;
+        case 74: //rangedRangeMultMax
+            return &CSSD.value.rangedRangeMultMax;
+        case 75: //targetMaxFOV
+            return &CSSD.value.targetMaxFOV;
+        case 76: //combatRadius
+            return &CSSD.value.combatRadius;
+        case 77: //semiAutoFireDelayMultMin
+            return &CSSD.value.semiAutoFireDelayMultMin;
+        case 78: //semiAutoFireDelayMultMax
+            return &CSSD.value.semiAutoFireDelayMultMax;
         default:
             return NULL;
         }
@@ -475,318 +475,246 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             versionControl2[0] = ((UINT8ARRAY)FieldValue)[0];
             versionControl2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 7: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value7 = *(UINT8 *)FieldValue;
+        case 7: //dodgeChance
+            CSTD.value.dodgeChance = *(UINT8 *)FieldValue;
             break;
-        case 8: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value8 = *(UINT8 *)FieldValue;
+        case 8: //lrChance
+            CSTD.value.lrChance = *(UINT8 *)FieldValue;
             break;
-        case 9: //cstd_p CSTD ,, Struct
+        case 9: //unused1
             if(ArraySize != 2)
                 break;
-            CSTD.Load();
-            CSTD->value9[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value9[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 10: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value10 = *(FLOAT32 *)FieldValue;
+        case 10: //lrTimerMin
+            CSTD.value.lrTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 11: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value11 = *(FLOAT32 *)FieldValue;
+        case 11: //lrTimerMax
+            CSTD.value.lrTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 12: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value12 = *(FLOAT32 *)FieldValue;
+        case 12: //forTimerMin
+            CSTD.value.forTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 13: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value13 = *(FLOAT32 *)FieldValue;
+        case 13: //forTimerMax
+            CSTD.value.forTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 14: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value14 = *(FLOAT32 *)FieldValue;
+        case 14: //backTimerMin
+            CSTD.value.backTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 15: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value15 = *(FLOAT32 *)FieldValue;
+        case 15: //backTimerMax
+            CSTD.value.backTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 16: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value16 = *(FLOAT32 *)FieldValue;
+        case 16: //idleTimerMin
+            CSTD.value.idleTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 17: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value17 = *(FLOAT32 *)FieldValue;
+        case 17: //idleTimerMax
+            CSTD.value.idleTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 18: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value18 = *(UINT8 *)FieldValue;
+        case 18: //blkChance
+            CSTD.value.blkChance = *(UINT8 *)FieldValue;
             break;
-        case 19: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value19 = *(UINT8 *)FieldValue;
+        case 19: //atkChance
+            CSTD.value.atkChance = *(UINT8 *)FieldValue;
             break;
-        case 20: //cstd_p CSTD ,, Struct
+        case 20: //unused2
             if(ArraySize != 2)
                 break;
-            CSTD.Load();
-            CSTD->value20[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value20[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 21: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value21 = *(FLOAT32 *)FieldValue;
+        case 21: //atkBRecoil
+            CSTD.value.atkBRecoil = *(FLOAT32 *)FieldValue;
             break;
-        case 22: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value22 = *(FLOAT32 *)FieldValue;
+        case 22: //atkBUnc
+            CSTD.value.atkBUnc = *(FLOAT32 *)FieldValue;
             break;
-        case 23: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value23 = *(FLOAT32 *)FieldValue;
+        case 23: //atkBh2h
+            CSTD.value.atkBh2h = *(FLOAT32 *)FieldValue;
             break;
-        case 24: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value24 = *(UINT8 *)FieldValue;
+        case 24: //pAtkChance
+            CSTD.value.pAtkChance = *(UINT8 *)FieldValue;
             break;
-        case 25: //cstd_p CSTD ,, Struct
+        case 25: //unused3
             if(ArraySize != 3)
                 break;
-            CSTD.Load();
-            CSTD->value25[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value25[1] = ((UINT8ARRAY)FieldValue)[1];
-            CSTD->value25[2] = ((UINT8ARRAY)FieldValue)[2];
+            CSTD.value.unused3[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused3[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused3[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 26: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value26 = *(FLOAT32 *)FieldValue;
+        case 26: //pAtkBRecoil
+            CSTD.value.pAtkBRecoil = *(FLOAT32 *)FieldValue;
             break;
-        case 27: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value27 = *(FLOAT32 *)FieldValue;
+        case 27: //pAtkBUnc
+            CSTD.value.pAtkBUnc = *(FLOAT32 *)FieldValue;
             break;
-        case 28: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value28 = *(UINT8 *)FieldValue;
+        case 28: //pAtkNormal
+            CSTD.value.pAtkNormal = *(UINT8 *)FieldValue;
             break;
-        case 29: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value29 = *(UINT8 *)FieldValue;
+        case 29: //pAtkFor
+            CSTD.value.pAtkFor = *(UINT8 *)FieldValue;
             break;
-        case 30: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value30 = *(UINT8 *)FieldValue;
+        case 30: //pAtkBack
+            CSTD.value.pAtkBack = *(UINT8 *)FieldValue;
             break;
-        case 31: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value31 = *(UINT8 *)FieldValue;
+        case 31: //pAtkL
+            CSTD.value.pAtkL = *(UINT8 *)FieldValue;
             break;
-        case 32: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value32 = *(UINT8 *)FieldValue;
+        case 32: //pAtkR
+            CSTD.value.pAtkR = *(UINT8 *)FieldValue;
             break;
-        case 33: //cstd_p CSTD ,, Struct
+        case 33: //unused4
             if(ArraySize != 3)
                 break;
-            CSTD.Load();
-            CSTD->value33[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value33[1] = ((UINT8ARRAY)FieldValue)[1];
-            CSTD->value33[2] = ((UINT8ARRAY)FieldValue)[2];
+            CSTD.value.unused4[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused4[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused4[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
-        case 34: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value34 = *(FLOAT32 *)FieldValue;
+        case 34: //holdTimerMin
+            CSTD.value.holdTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 35: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value35 = *(FLOAT32 *)FieldValue;
+        case 35: //holdTimerMax
+            CSTD.value.holdTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 36: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value36 = *(UINT16 *)FieldValue;
+        case 36: //flags
+            SetFlagMask(*(UINT16 *)FieldValue);
             break;
-        case 37: //cstd_p CSTD ,, Struct
+        case 37: //unused5
             if(ArraySize != 2)
                 break;
-            CSTD.Load();
-            CSTD->value37[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value37[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused5[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused5[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 38: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value38 = *(UINT8 *)FieldValue;
+        case 38: //acroDodge
+            CSTD.value.acroDodge = *(UINT8 *)FieldValue;
             break;
-        case 39: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value39 = *(UINT8 *)FieldValue;
+        case 39: //rushChance
+            CSTD.value.rushChance = *(UINT8 *)FieldValue;
             break;
-        case 40: //cstd_p CSTD ,, Struct
+        case 40: //unused6
             if(ArraySize != 2)
                 break;
-            CSTD.Load();
-            CSTD->value40[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSTD->value40[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSTD.value.unused6[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSTD.value.unused6[1] = ((UINT8ARRAY)FieldValue)[1];
             break;
-        case 41: //cstd CSTD ,, Struct
-            CSTD.Load();
-            CSTD->value41 = *(FLOAT32 *)FieldValue;
+        case 41: //rushMult
+            CSTD.value.rushMult = *(FLOAT32 *)FieldValue;
             break;
-        case 42: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value42 = *(FLOAT32 *)FieldValue;
+        case 42: //dodgeFMult
+            CSAD.value.dodgeFMult = *(FLOAT32 *)FieldValue;
             break;
-        case 43: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value43 = *(FLOAT32 *)FieldValue;
+        case 43: //dodgeFBase
+            CSAD.value.dodgeFBase = *(FLOAT32 *)FieldValue;
             break;
-        case 44: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value44 = *(FLOAT32 *)FieldValue;
+        case 44: //encSBase
+            CSAD.value.encSBase = *(FLOAT32 *)FieldValue;
             break;
-        case 45: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value45 = *(FLOAT32 *)FieldValue;
+        case 45: //encSMult
+            CSAD.value.encSMult = *(FLOAT32 *)FieldValue;
             break;
-        case 46: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value46 = *(FLOAT32 *)FieldValue;
+        case 46: //dodgeAtkMult
+            CSAD.value.dodgeAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 47: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value47 = *(FLOAT32 *)FieldValue;
+        case 47: //dodgeNAtkMult
+            CSAD.value.dodgeNAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 48: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value48 = *(FLOAT32 *)FieldValue;
+        case 48: //dodgeBAtkMult
+            CSAD.value.dodgeBAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 49: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value49 = *(FLOAT32 *)FieldValue;
+        case 49: //dodgeBNAtkMult
+            CSAD.value.dodgeBNAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 50: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value50 = *(FLOAT32 *)FieldValue;
+        case 50: //dodgeFAtkMult
+            CSAD.value.dodgeFAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 51: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value51 = *(FLOAT32 *)FieldValue;
+        case 51: //dodgeFNAtkMult
+            CSAD.value.dodgeFNAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 52: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value52 = *(FLOAT32 *)FieldValue;
+        case 52: //blockMult
+            CSAD.value.blockMult = *(FLOAT32 *)FieldValue;
             break;
-        case 53: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value53 = *(FLOAT32 *)FieldValue;
+        case 53: //blockBase
+            CSAD.value.blockBase = *(FLOAT32 *)FieldValue;
             break;
-        case 54: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value54 = *(FLOAT32 *)FieldValue;
+        case 54: //blockAtkMult
+            CSAD.value.blockAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 55: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value55 = *(FLOAT32 *)FieldValue;
+        case 55: //blockNAtkMult
+            CSAD.value.blockNAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 56: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value56 = *(FLOAT32 *)FieldValue;
+        case 56: //atkMult
+            CSAD.value.atkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 57: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value57 = *(FLOAT32 *)FieldValue;
+        case 57: //atkBase
+            CSAD.value.atkBase = *(FLOAT32 *)FieldValue;
             break;
-        case 58: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value58 = *(FLOAT32 *)FieldValue;
+        case 58: //atkAtkMult
+            CSAD.value.atkAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 59: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value59 = *(FLOAT32 *)FieldValue;
+        case 59: //atkNAtkMult
+            CSAD.value.atkNAtkMult = *(FLOAT32 *)FieldValue;
             break;
-        case 60: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value60 = *(FLOAT32 *)FieldValue;
+        case 60: //atkBlockMult
+            CSAD.value.atkBlockMult = *(FLOAT32 *)FieldValue;
             break;
-        case 61: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value61 = *(FLOAT32 *)FieldValue;
+        case 61: //pAtkFBase
+            CSAD.value.pAtkFBase = *(FLOAT32 *)FieldValue;
             break;
-        case 62: //csad CSAD ,, Struct
-            CSAD.Load();
-            CSAD->value62 = *(FLOAT32 *)FieldValue;
+        case 62: //pAtkFMult
+            CSAD.value.pAtkFMult = *(FLOAT32 *)FieldValue;
             break;
-        case 63: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value63 = *(FLOAT32 *)FieldValue;
+        case 63: //coverRadius
+            CSSD.value.coverRadius = *(FLOAT32 *)FieldValue;
             break;
-        case 64: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value64 = *(FLOAT32 *)FieldValue;
+        case 64: //coverChance
+            CSSD.value.coverChance = *(FLOAT32 *)FieldValue;
             break;
-        case 65: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value65 = *(FLOAT32 *)FieldValue;
+        case 65: //waitTimerMin
+            CSSD.value.waitTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 66: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value66 = *(FLOAT32 *)FieldValue;
+        case 66: //waitTimerMax
+            CSSD.value.waitTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 67: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value67 = *(FLOAT32 *)FieldValue;
+        case 67: //waitFireTimerMin
+            CSSD.value.waitFireTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 68: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value68 = *(FLOAT32 *)FieldValue;
+        case 68: //waitFireTimerMax      
+            CSSD.value.waitFireTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 69: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value69 = *(FLOAT32 *)FieldValue;
+        case 69: //fireTimerMin
+            CSSD.value.fireTimerMin = *(FLOAT32 *)FieldValue;
             break;
-        case 70: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value70 = *(FLOAT32 *)FieldValue;
+        case 70: //fireTimerMax
+            CSSD.value.fireTimerMax = *(FLOAT32 *)FieldValue;
             break;
-        case 71: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value71 = *(FLOAT32 *)FieldValue;
+        case 71: //rangedRangeMultMin
+            CSSD.value.rangedRangeMultMin = *(FLOAT32 *)FieldValue;
             break;
-        case 72: //cssd_p CSSD ,, Struct
+        case 72: //unused7
             if(ArraySize != 4)
                 break;
-            CSSD.Load();
-            CSSD->value72[0] = ((UINT8ARRAY)FieldValue)[0];
-            CSSD->value72[1] = ((UINT8ARRAY)FieldValue)[1];
-            CSSD->value72[2] = ((UINT8ARRAY)FieldValue)[2];
-            CSSD->value72[3] = ((UINT8ARRAY)FieldValue)[3];
+            CSSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            CSSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            CSSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            CSSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
-        case 73: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value73 = *(UINT32 *)FieldValue;
+        case 73: //weaponRestrictions
+            SetType(*(UINT32 *)FieldValue);
             break;
-        case 74: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value74 = *(FLOAT32 *)FieldValue;
+        case 74: //rangedRangeMultMax
+            CSSD.value.rangedRangeMultMax = *(FLOAT32 *)FieldValue;
             break;
-        case 75: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value75 = *(FLOAT32 *)FieldValue;
+        case 75: //targetMaxFOV
+            CSSD.value.targetMaxFOV = *(FLOAT32 *)FieldValue;
             break;
-        case 76: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value76 = *(FLOAT32 *)FieldValue;
+        case 76: //combatRadius
+            CSSD.value.combatRadius = *(FLOAT32 *)FieldValue;
             break;
-        case 77: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value77 = *(FLOAT32 *)FieldValue;
+        case 77: //semiAutoFireDelayMultMin
+            CSSD.value.semiAutoFireDelayMultMin = *(FLOAT32 *)FieldValue;
             break;
-        case 78: //cssd CSSD ,, Struct
-            CSSD.Load();
-            CSSD->value78 = *(FLOAT32 *)FieldValue;
+        case 78: //semiAutoFireDelayMultMax
+            CSSD.value.semiAutoFireDelayMultMax = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;
@@ -796,6 +724,9 @@ bool CSTYRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void CSTYRecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    CSTYCSTD defaultCSTD;
+    CSTYCSAD defaultCSAD;
+    CSTYCSSD defaultCSSD;
     switch(FieldID)
         {
         case 1: //flags1
@@ -814,221 +745,232 @@ void CSTYRecord::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[0] = 0;
             versionControl2[1] = 0;
             return;
-        case 7: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 7: //dodgeChance
+            CSTD.value.dodgeChance = defaultCSTD.dodgeChance;
             return;
-        case 8: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 8: //lrChance
+            CSTD.value.lrChance = defaultCSTD.lrChance;
             return;
-        case 9: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 9: //unused1
+            CSTD.value.unused1[0] = defaultCSTD.unused1[0];
+            CSTD.value.unused1[1] = defaultCSTD.unused1[1];
             return;
-        case 10: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 10: //lrTimerMin
+            CSTD.value.lrTimerMin = defaultCSTD.lrTimerMin;
             return;
-        case 11: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 11: //lrTimerMax
+            CSTD.value.lrTimerMax = defaultCSTD.lrTimerMax;
             return;
-        case 12: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 12: //forTimerMin
+            CSTD.value.forTimerMin = defaultCSTD.forTimerMin;
             return;
-        case 13: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 13: //forTimerMax
+            CSTD.value.forTimerMax = defaultCSTD.forTimerMax;
             return;
-        case 14: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 14: //backTimerMin
+            CSTD.value.backTimerMin = defaultCSTD.backTimerMin;
             return;
-        case 15: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 15: //backTimerMax
+            CSTD.value.backTimerMax = defaultCSTD.backTimerMax;
             return;
-        case 16: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 16: //idleTimerMin
+            CSTD.value.idleTimerMin = defaultCSTD.idleTimerMin;
             return;
-        case 17: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 17: //idleTimerMax
+            CSTD.value.idleTimerMax = defaultCSTD.idleTimerMax;
             return;
-        case 18: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 18: //blkChance
+            CSTD.value.blkChance = defaultCSTD.blkChance;
             return;
-        case 19: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 19: //atkChance
+            CSTD.value.atkChance = defaultCSTD.atkChance;
             return;
-        case 20: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 20: //unused2
+            CSTD.value.unused2[0] = defaultCSTD.unused2[0];
+            CSTD.value.unused2[1] = defaultCSTD.unused2[1];
             return;
-        case 21: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 21: //atkBRecoil
+            CSTD.value.atkBRecoil = defaultCSTD.atkBRecoil;
             return;
-        case 22: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 22: //atkBUnc
+            CSTD.value.atkBUnc = defaultCSTD.atkBUnc;
             return;
-        case 23: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 23: //atkBh2h
+            CSTD.value.atkBh2h = defaultCSTD.atkBh2h;
             return;
-        case 24: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 24: //pAtkChance
+            CSTD.value.pAtkChance = defaultCSTD.pAtkChance;
             return;
-        case 25: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 25: //unused3
+            CSTD.value.unused3[0] = defaultCSTD.unused3[0];
+            CSTD.value.unused3[1] = defaultCSTD.unused3[1];
+            CSTD.value.unused3[2] = defaultCSTD.unused3[2];
             return;
-        case 26: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 26: //pAtkBRecoil
+            CSTD.value.pAtkBRecoil = defaultCSTD.pAtkBRecoil;
             return;
-        case 27: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 27: //pAtkBUnc
+            CSTD.value.pAtkBUnc = defaultCSTD.pAtkBUnc;
             return;
-        case 28: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 28: //pAtkNormal
+            CSTD.value.pAtkNormal = defaultCSTD.pAtkNormal;
             return;
-        case 29: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 29: //pAtkFor
+            CSTD.value.pAtkFor = defaultCSTD.pAtkFor;
             return;
-        case 30: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 30: //pAtkBack
+            CSTD.value.pAtkBack = defaultCSTD.pAtkBack;
             return;
-        case 31: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 31: //pAtkL
+            CSTD.value.pAtkL = defaultCSTD.pAtkL;
             return;
-        case 32: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 32: //pAtkR
+            CSTD.value.pAtkR = defaultCSTD.pAtkR;
             return;
-        case 33: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 33: //unused4
+            CSTD.value.unused4[0] = defaultCSTD.unused4[0];
+            CSTD.value.unused4[1] = defaultCSTD.unused4[1];
+            CSTD.value.unused4[2] = defaultCSTD.unused4[2];
             return;
-        case 34: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 34: //holdTimerMin
+            CSTD.value.holdTimerMin = defaultCSTD.holdTimerMin;
             return;
-        case 35: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 35: //holdTimerMax
+            CSTD.value.holdTimerMax = defaultCSTD.holdTimerMax;
             return;
-        case 36: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 36: //flags
+            SetFlagMask(defaultCSTD.flags);
             return;
-        case 37: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 37: //unused5
+            CSTD.value.unused5[0] = defaultCSTD.unused5[0];
+            CSTD.value.unused5[1] = defaultCSTD.unused5[1];
             return;
-        case 38: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 38: //acroDodge
+            CSTD.value.acroDodge = defaultCSTD.acroDodge;
             return;
-        case 39: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 39: //rushChance
+            CSTD.value.rushChance = defaultCSTD.rushChance;
             return;
-        case 40: //cstd_p CSTD ,, Struct
-            CSTD.Unload();
+        case 40: //unused6
+            CSTD.value.unused6[0] = defaultCSTD.unused6[0];
+            CSTD.value.unused6[1] = defaultCSTD.unused6[1];
             return;
-        case 41: //cstd CSTD ,, Struct
-            CSTD.Unload();
+        case 41: //rushMult
+            CSTD.value.rushMult = defaultCSTD.rushMult;
             return;
-        case 42: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 42: //dodgeFMult
+            CSAD.value.dodgeFMult = defaultCSAD.dodgeFMult;
             return;
-        case 43: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 43: //dodgeFBase
+            CSAD.value.dodgeFBase = defaultCSAD.dodgeFBase;
             return;
-        case 44: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 44: //encSBase
+            CSAD.value.encSBase = defaultCSAD.encSBase;
             return;
-        case 45: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 45: //encSMult
+            CSAD.value.encSMult = defaultCSAD.encSMult;
             return;
-        case 46: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 46: //dodgeAtkMult
+            CSAD.value.dodgeAtkMult = defaultCSAD.dodgeAtkMult;
             return;
-        case 47: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 47: //dodgeNAtkMult
+            CSAD.value.dodgeNAtkMult = defaultCSAD.dodgeNAtkMult;
             return;
-        case 48: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 48: //dodgeBAtkMult
+            CSAD.value.dodgeBAtkMult = defaultCSAD.dodgeBAtkMult;
             return;
-        case 49: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 49: //dodgeBNAtkMult
+            CSAD.value.dodgeBNAtkMult = defaultCSAD.dodgeBNAtkMult;
             return;
-        case 50: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 50: //dodgeFAtkMult
+            CSAD.value.dodgeFAtkMult = defaultCSAD.dodgeFAtkMult;
             return;
-        case 51: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 51: //dodgeFNAtkMult
+            CSAD.value.dodgeFNAtkMult = defaultCSAD.dodgeFNAtkMult;
             return;
-        case 52: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 52: //blockMult
+            CSAD.value.blockMult = defaultCSAD.blockMult;
             return;
-        case 53: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 53: //blockBase
+            CSAD.value.blockBase = defaultCSAD.blockBase;
             return;
-        case 54: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 54: //blockAtkMult
+            CSAD.value.blockAtkMult = defaultCSAD.blockAtkMult;
             return;
-        case 55: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 55: //blockNAtkMult
+            CSAD.value.blockNAtkMult = defaultCSAD.blockNAtkMult;
             return;
-        case 56: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 56: //atkMult
+            CSAD.value.atkMult = defaultCSAD.atkMult;
             return;
-        case 57: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 57: //atkBase
+            CSAD.value.atkBase = defaultCSAD.atkBase;
             return;
-        case 58: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 58: //atkAtkMult
+            CSAD.value.atkAtkMult = defaultCSAD.atkAtkMult;
             return;
-        case 59: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 59: //atkNAtkMult
+            CSAD.value.atkNAtkMult = defaultCSAD.atkNAtkMult;
             return;
-        case 60: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 60: //atkBlockMult
+            CSAD.value.atkBlockMult = defaultCSAD.atkBlockMult;
             return;
-        case 61: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 61: //pAtkFBase
+            CSAD.value.pAtkFBase = defaultCSAD.pAtkFBase;
             return;
-        case 62: //csad CSAD ,, Struct
-            CSAD.Unload();
+        case 62: //pAtkFMult
+            CSAD.value.pAtkFMult = defaultCSAD.pAtkFMult;
             return;
-        case 63: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 63: //coverRadius
+            CSSD.value.coverRadius = defaultCSSD.coverRadius;
             return;
-        case 64: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 64: //coverChance
+            CSSD.value.coverChance = defaultCSSD.coverChance;
             return;
-        case 65: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 65: //waitTimerMin
+            CSSD.value.waitTimerMin = defaultCSSD.waitTimerMin;
             return;
-        case 66: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 66: //waitTimerMax
+            CSSD.value.waitTimerMax = defaultCSSD.waitTimerMax;
             return;
-        case 67: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 67: //waitFireTimerMin
+            CSSD.value.waitFireTimerMin =defaultCSSD.waitFireTimerMin;
+            break;
+        case 68: //waitFireTimerMax      
+            CSSD.value.waitFireTimerMax = defaultCSSD.waitFireTimerMax;
+            break;
+        case 69: //fireTimerMin
+            CSSD.value.fireTimerMin = defaultCSSD.fireTimerMin;
             return;
-        case 68: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 70: //fireTimerMax
+            CSSD.value.fireTimerMax = defaultCSSD.fireTimerMax;
             return;
-        case 69: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 71: //rangedRangeMultMin
+            CSSD.value.rangedRangeMultMin = defaultCSSD.rangedRangeMultMin;
             return;
-        case 70: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 72: //unused7
+            CSSD.value.unused1[0] = defaultCSSD.unused1[0];
+            CSSD.value.unused1[1] = defaultCSSD.unused1[1];
+            CSSD.value.unused1[2] = defaultCSSD.unused1[2];
+            CSSD.value.unused1[3] = defaultCSSD.unused1[3];
             return;
-        case 71: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 73: //weaponRestrictions
+            SetType(defaultCSSD.weaponRestrictions);
             return;
-        case 72: //cssd_p CSSD ,, Struct
-            CSSD.Unload();
+        case 74: //rangedRangeMultMax
+            CSSD.value.rangedRangeMultMax = defaultCSSD.rangedRangeMultMax;
             return;
-        case 73: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 75: //targetMaxFOV
+            CSSD.value.targetMaxFOV = defaultCSSD.targetMaxFOV;
             return;
-        case 74: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 76: //combatRadius
+            CSSD.value.combatRadius = defaultCSSD.combatRadius;
             return;
-        case 75: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 77: //semiAutoFireDelayMultMin
+            CSSD.value.semiAutoFireDelayMultMin = defaultCSSD.semiAutoFireDelayMultMin;
             return;
-        case 76: //cssd CSSD ,, Struct
-            CSSD.Unload();
-            return;
-        case 77: //cssd CSSD ,, Struct
-            CSSD.Unload();
-            return;
-        case 78: //cssd CSSD ,, Struct
-            CSSD.Unload();
+        case 78: //semiAutoFireDelayMultMax
+            CSSD.value.semiAutoFireDelayMultMax = defaultCSSD.semiAutoFireDelayMultMax;
             return;
         default:
             return;

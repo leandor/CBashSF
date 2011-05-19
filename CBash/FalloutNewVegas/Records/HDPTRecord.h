@@ -37,7 +37,7 @@ class HDPTRecord : public FNVRecord //Head Part
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSimpleSubRecord<UINT8> DATA; //Flags
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
         UnorderedSparseArray<FORMID> HNAM; //Parts
 
         HDPTRecord(unsigned char *_recData=NULL);

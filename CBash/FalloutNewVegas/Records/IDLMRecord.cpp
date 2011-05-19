@@ -147,8 +147,37 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 IDLF.Read(buffer, subSize, curPos);
                 break;
             case REV32(IDLC):
-                IDLC.Read(buffer, 1, curPos);
-                curPos += subSize - 1; //in case it was one of the UINT32 varieties
+                //may be a UINT32 instead, but only the lower 8 bits are used, so skip extra
+                //IDLC.Read(buffer, 1, curPos);
+                //curPos += subSize - 1;
+                //Testing snippet. Verified that the extra bits aren't in use in FalloutNV.esm
+                switch(subSize)
+                    {
+                    case 1:
+                        IDLC.Read(buffer, subSize, curPos);
+                        break;
+                    case 4:
+                        {
+                        IDLC.Read(buffer, 1, curPos);
+                        UINT32 test = 0;
+                        _readBuffer(&test, buffer, 3, curPos);
+                        if(test != 0)
+                            {
+                            printf("  IDLM: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
+                            CBASH_CHUNK_DEBUG
+                            printf("  Size = %i\n", subSize);
+                            printf("  CurPos = %04x\n\n", curPos - 6);
+                            }
+                        }
+                        break;
+                    default:
+                        printf("  IDLM: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
+                        CBASH_CHUNK_DEBUG
+                        printf("  Size = %i\n", subSize);
+                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        curPos += subSize;
+                        break;
+                    }
                 break;
             case REV32(IDLT):
                 IDLT.Read(buffer, subSize, curPos);

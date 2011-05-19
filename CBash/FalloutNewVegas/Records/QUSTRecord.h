@@ -30,7 +30,7 @@ class QUSTRecord : public FNVRecord //Quest
     private:
         struct QUSTDATA
             {
-            UINT8   flags, priority, unused1[2];
+            UINT8   flags, priority, unused1[2]; //unused1 and delay not always present in chunk...
             FLOAT32 delay;
 
             QUSTDATA();
@@ -43,11 +43,14 @@ class QUSTRecord : public FNVRecord //Quest
         struct QUSTEntry //Log Entry
             {
             ReqSimpleSubRecord<UINT8> QSDT; //Stage Flags
-            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+            OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
             StringRecord CNAM; //Log Entry
-            OptSubRecord<FNVMINSCRIPT> Script; //Embedded Script
-            OptSimpleSubRecord<FORMID> NAM0; //Next Quest
-
+            ReqSubRecord<FNVSCHR> SCHR;
+            RawRecord SCDA;
+            NonNullStringRecord SCTX;
+            OrderedSparseArray<GENVARS *, sortVARS> VARS;
+            OrderedSparseArray<GENSCR_ *> SCR_;
+            OptSimpleSubRecord<FORMID> NAM0; //Next Quest (only used if IsCompletes or IsFailed...)
 
             enum entriesFlags
                 {
@@ -55,8 +58,17 @@ class QUSTRecord : public FNVRecord //Quest
                 fIsFailed    = 0x00000002
                 };
 
-            QUSTEntry();
-            ~QUSTEntry();
+            enum schrFlags
+                {
+                fIsEnabled = 0x0001
+                };
+
+            enum scriptTypeTypes
+                {
+                eObject = 0x0000,
+                eQuest  = 0x0001,
+                eEffect = 0x0100
+                };
 
             bool IsCompletes();
             void IsCompletes(bool value);
@@ -65,6 +77,22 @@ class QUSTRecord : public FNVRecord //Quest
             bool IsFlagMask(UINT8 Mask, bool Exact=false);
             void SetFlagMask(UINT8 Mask);
 
+            bool IsScriptEnabled();
+            void IsScriptEnabled(bool value);
+            bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
+            void SetScriptFlagMask(UINT16 Mask);
+
+            bool IsObject();
+            void IsObject(bool value);
+            bool IsQuest();
+            void IsQuest(bool value);
+            bool IsEffect();
+            void IsEffect(bool value);
+            bool IsType(UINT16 Type);
+            void SetType(UINT16 Type);
+
+            void Write(FileWriter &writer);
+
             bool operator ==(const QUSTEntry &other) const;
             bool operator !=(const QUSTEntry &other) const;
             };
@@ -72,10 +100,9 @@ class QUSTRecord : public FNVRecord //Quest
         struct QUSTStage //Stage
             {
             ReqSimpleSubRecord<SINT16> INDX; //Stage Index
-            std::vector<QUSTEntry *> Entries; //Log Entries
+            UnorderedSparseArray<QUSTEntry *> Entries; //Log Entries
 
-            QUSTStage();
-            ~QUSTStage();
+            void Write(FileWriter &writer);
 
             bool operator ==(const QUSTStage &other) const;
             bool operator !=(const QUSTStage &other) const;
@@ -96,20 +123,19 @@ class QUSTRecord : public FNVRecord //Quest
         struct QUSTTarget //Target
             {
             ReqSubRecord<QUSTQSTA> QSTA; //Target
-            std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
+            OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
 
             enum targetsFlags
                 {
                 fIsIgnoresLocks = 0x00000001
                 };
 
-            QUSTTarget();
-            ~QUSTTarget();
-
             bool IsIgnoresLocks();
             void IsIgnoresLocks(bool value);
             bool IsFlagMask(UINT8 Mask, bool Exact=false);
             void SetFlagMask(UINT8 Mask);
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const QUSTTarget &other) const;
             bool operator !=(const QUSTTarget &other) const;
@@ -119,29 +145,32 @@ class QUSTRecord : public FNVRecord //Quest
             {
             ReqSimpleSubRecord<SINT32> QOBJ; //Objective Index
             StringRecord NNAM; //Description
-            std::vector<QUSTTarget *> Targets;
+            UnorderedSparseArray<QUSTTarget *> Targets;
 
-            QUSTObjective();
-            ~QUSTObjective();
+            void Write(FileWriter &writer);
 
             bool operator ==(const QUSTObjective &other) const;
             bool operator !=(const QUSTObjective &other) const;
             };
 
-        enum schrFlags
+        enum flagsFlags
             {
-            fIsEnabled = 0x0001
+            fIsStartEnabled   = 0x00000001,
+            fIsRepeatedTopics = 0x00000004,
+            fIsRepeatedStages = 0x00000008,
+            fIsUnknown = 0x00000010
             };
+
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<FORMID> SCRI; //Script
         StringRecord FULL; //Name
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
-        OptSubRecord<QUSTDATA> DATA; //General
-        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
-        std::vector<QUSTStage *> Stages;
-        std::vector<QUSTObjective *> Objectives;
+        ReqSubRecord<QUSTDATA> DATA; //General
+        OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
+        UnorderedSparseArray<QUSTStage *> Stages;
+        UnorderedSparseArray<QUSTObjective *> Objectives;
 
         QUSTRecord(unsigned char *_recData=NULL);
         QUSTRecord(QUSTRecord *srcRecord);
@@ -149,10 +178,16 @@ class QUSTRecord : public FNVRecord //Quest
 
         bool   VisitFormIDs(FormIDOp &op);
 
-        bool IsScriptEnabled();
-        void IsScriptEnabled(bool value);
-        bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
-        void SetScriptFlagMask(UINT16 Mask);
+        bool   IsStartEnabled();
+        void   IsStartEnabled(bool value);
+        bool   IsRepeatedTopics();
+        void   IsRepeatedTopics(bool value);
+        bool   IsRepeatedStages();
+        void   IsRepeatedStages(bool value);
+        bool   IsUnknown();
+        void   IsUnknown(bool value);
+        bool   IsFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -38,8 +38,8 @@ class LVLCRecord : public FNVRecord //Leveled Creature
     public:
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
-        OptSimpleSubRecord<UINT8> LVLD; //Chance none
-        OptSimpleSubRecord<UINT8> LVLF; //Flags
+        ReqSimpleSubRecord<UINT8> LVLD; //Chance none
+        ReqSimpleSubRecord<UINT8> LVLF; //Flags
         UnorderedSparseArray<FNVLVLO *> Entries; //Leveled List Entries
         OptSubRecord<FNVMODEL> MODL; //Model
 

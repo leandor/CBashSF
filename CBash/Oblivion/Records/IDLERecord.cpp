@@ -129,147 +129,103 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
 
 bool IDLERecord::IsLowerBody()
     {
-    return ((ANAM.value & 0x0F) == eLowerBody);
+    return ((ANAM.value & ~0x80) == eLowerBody);
     }
 
 void IDLERecord::IsLowerBody(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     else if(IsLowerBody())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLeftArm;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLeftArm;
     }
 
 bool IDLERecord::IsLeftArm()
     {
-    return ((ANAM.value & 0x0F) == eLeftArm);
+    return ((ANAM.value & ~0x80) == eLeftArm);
     }
 
 void IDLERecord::IsLeftArm(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLeftArm;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLeftArm;
     else if(IsLeftArm())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsLeftHand()
     {
-    return ((ANAM.value & 0x0F) == eLeftHand);
+    return ((ANAM.value & ~0x80) == eLeftHand);
     }
 
 void IDLERecord::IsLeftHand(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLeftHand;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLeftHand;
     else if(IsLeftHand())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsRightArm()
     {
-    return ((ANAM.value & 0x0F) == eRightArm);
+    return ((ANAM.value & ~0x80) == eRightArm);
     }
 
 void IDLERecord::IsRightArm(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eRightArm;
-        }
+        ANAM.value = ANAM.value & 0x80 | eRightArm;
     else if(IsRightArm())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsSpecialIdle()
     {
-    return ((ANAM.value & 0x0F) == eSpecialIdle);
+    return ((ANAM.value & ~0x80) == eSpecialIdle);
     }
 
 void IDLERecord::IsSpecialIdle(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eSpecialIdle;
-        }
+        ANAM.value = ANAM.value & 0x80 | eSpecialIdle;
     else if(IsLeftArm())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsWholeBody()
     {
-    return ((ANAM.value & 0x0F) == eWholeBody);
+    return ((ANAM.value & ~0x80) == eWholeBody);
     }
 
 void IDLERecord::IsWholeBody(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eWholeBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eWholeBody;
     else if(IsWholeBody())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsUpperBody()
     {
-    return ((ANAM.value & 0x0F) == eUpperBody);
+    return ((ANAM.value & ~0x80) == eUpperBody);
     }
 
 void IDLERecord::IsUpperBody(bool value)
     {
     if(value)
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eUpperBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eUpperBody;
     else if(IsUpperBody())
-        {
-        ANAM.value &= 0xF0;
-        ANAM.value |= eLowerBody;
-        }
+        ANAM.value = ANAM.value & 0x80 | eLowerBody;
     }
 
 bool IDLERecord::IsType(UINT8 Type)
     {
-    return ((ANAM.value & 0x0F) == (Type & 0x0F));
+    return ((ANAM.value & ~0x80) == (Type & ~0x80));
     }
 
 void IDLERecord::SetType(UINT8 Type)
     {
-    Type &= 0x0F;
-    ANAM.value &= 0xF0;
-    ANAM.value |= Type;
+    ANAM.value = ANAM.value & 0x80 | (Type & ~0x80);
     }
 
 bool IDLERecord::IsNotReturnFile()
@@ -289,22 +245,17 @@ bool IDLERecord::IsReturnFile()
 
 void IDLERecord::IsReturnFile(bool value)
     {
-    if(value)
-        IsNotReturnFile(false);
-    else
-        IsNotReturnFile(true);
+    IsNotReturnFile(!value);
     }
 
 bool IDLERecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    return Exact ? (((ANAM.value & 0xF0) & (Mask & 0xF0)) == Mask) : (((ANAM.value & 0xF0) & (Mask & 0xF0)) != 0);
+    return Exact ? (((ANAM.value & 0x80) & (Mask & 0x80)) == Mask) : (((ANAM.value & 0x80) & (Mask & 0x80)) != 0);
     }
 
 void IDLERecord::SetFlagMask(UINT8 Mask)
     {
-    Mask &= 0xF0;
-    ANAM.value &= 0x0F;
-    ANAM.value |= Mask;
+    ANAM.value = ANAM.value & ~0x80 | (Mask & 0x80);
     }
 
 UINT32 IDLERecord::GetType()

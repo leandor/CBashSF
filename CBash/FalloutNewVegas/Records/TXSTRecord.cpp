@@ -72,22 +72,26 @@ TXSTRecord::~TXSTRecord()
 
 bool TXSTRecord::IsNoSpecularMap()
     {
-    return (DNAM.value & fIsNoSpecularMap) != 0;
+    if(!DNAM.IsLoaded()) return false;
+    return (*DNAM.value & fIsNoSpecularMap) != 0;
     }
 
 void TXSTRecord::IsNoSpecularMap(bool value)
     {
-    DNAM.value = value ? (DNAM.value | fIsNoSpecularMap) : (DNAM.value & ~fIsNoSpecularMap);
+    if(!DNAM.IsLoaded()) return;
+    *DNAM.value = value ? (*DNAM.value | fIsNoSpecularMap) : (*DNAM.value & ~fIsNoSpecularMap);
     }
 
 bool TXSTRecord::IsFlagMask(UINT16 Mask, bool Exact)
     {
-    return Exact ? ((DNAM.value & Mask) == Mask) : ((DNAM.value & Mask) != 0);
+    if(!DNAM.IsLoaded()) return false;
+    return Exact ? ((*DNAM.value & Mask) == Mask) : ((*DNAM.value & Mask) != 0);
     }
 
 void TXSTRecord::SetFlagMask(UINT16 Mask)
     {
-    DNAM.value = Mask;
+    DNAM.Load();
+    *DNAM.value = Mask;
     }
 
 bool TXSTRecord::IsObjectParallax()

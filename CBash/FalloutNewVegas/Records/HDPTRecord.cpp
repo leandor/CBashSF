@@ -82,25 +82,21 @@ bool HDPTRecord::VisitFormIDs(FormIDOp &op)
 
 bool HDPTRecord::IsPlayable()
     {
-    if(!DATA.IsLoaded()) return false;
     return (DATA.value & fIsPlayable) != 0;
     }
 
 void HDPTRecord::IsPlayable(bool value)
     {
-    if(!DATA.IsLoaded()) return;
     DATA.value = value ? (DATA.value | fIsPlayable) : (DATA.value & ~fIsPlayable);
     }
 
 bool HDPTRecord::IsFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!DATA.IsLoaded()) return false;
     return Exact ? ((DATA.value & Mask) == Mask) : ((DATA.value & Mask) != 0);
     }
 
 void HDPTRecord::SetFlagMask(UINT8 Mask)
     {
-    DATA.Load();
     DATA.value = Mask;
     }
 

@@ -51,7 +51,7 @@ class TXSTRecord : public FNVRecord //Texture Set
         StringRecord TX04; //Parallax Map / Unused
         StringRecord TX05; //Environment Map / Unused
         OptSubRecord<GENDODT> DODT; //Decal Data
-        ReqSimpleSubRecord<UINT16> DNAM; //Flags
+        SemiOptSimpleSubRecord<UINT16> DNAM; //Flags
 
         TXSTRecord(unsigned char *_recData=NULL);
         TXSTRecord(TXSTRecord *srcRecord);

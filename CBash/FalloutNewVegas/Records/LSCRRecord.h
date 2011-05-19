@@ -45,7 +45,7 @@ class LSCRRecord : public FNVRecord //Load Screen
         StringRecord ICON; //Large Icon Filename
         StringRecord MICO; //Small Icon Filename
         StringRecord DESC; //Description
-        std::vector<ReqSubRecord<LSCRLNAM> *> LNAM; // Locations
+        UnorderedSparseArray<LSCRLNAM *> LNAM; // Locations
         OptSimpleSubRecord<FORMID> WMI1; //Load Screen Type
 
         LSCRRecord(unsigned char *_recData=NULL);

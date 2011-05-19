@@ -18,7 +18,7 @@ for curFile in glob.glob('*.h'):
     f = open(curFile)
     contents = f.readlines()
     f.close()
-    ISTRINGS = ('EDID','ICON', 'MICO', 'SCTX', 'SCVR')
+    ISTRINGS = ('EDID','ICON', 'MICO', 'SCTX', 'SCVR', 'MODL')
     types = ['UINT8', 'UINT16', 'UINT32', 'FORMID',
              'SINT8', 'SINT16', 'SINT32',
              'FLOAT32',
@@ -33,6 +33,7 @@ for curFile in glob.glob('*.h'):
             'UnorderedSparseArray', 'OrderedSparseArray',
             'SimpleSubRecord', 'SubRecord', 'std::vector']
 
+    modelSig = [('MODL', 'StringRecord', 0, False, []), ('MODB', 'SimpleFloatSubRecord', 0, False, [('', 'FLOAT32', 0, False, [])]), ('MODT', 'RawRecord', 0, False, []), ('MODS', 'std::vector', 0, True, [('texture', 'FORMID', 0, False, []), ('index', 'SINT32', 0, False, [])]), ('MODD', 'OptSimpleSubRecord', 0, False, [('', 'UINT8', 0, False, [])])]
     str_vars = OrderedDict()
     str_funcs = OrderedDict()
     vars = []
@@ -350,7 +351,7 @@ for curFile in glob.glob('*.h'):
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
-            if 'unused' in name.lower() and size == 0:
+            if 'unused' in name.lower() and (size is None or size == 0):
                 size = 1
             if s == 1 and vars[0][0] == '':
                 s = 0
@@ -478,6 +479,12 @@ for curFile in glob.glob('*.h'):
                                     attrs.append('    op.Accept(%s%s[%d]);\n' % (pres, name, z))
                             else:
                                 attrs.append('    op.Accept(%s%s);\n' % (pres, name))
+                    elif 'MODL->MODS.value.texture' == '%s%s' % (pres, name):
+                        attrs.append('    if(MODL.IsLoaded())\n')
+                        attrs.append('        {\n')
+                        attrs.append('        for(UINT32 x = 0; x < MODL->Textures.MODS.size(); x++)\n')
+                        attrs.append('            op.Accept(MODL->Textures.MODS[x]->texture);\n')
+                        attrs.append('        }\n')
                     elif 'Array' in type:
                         if loads:
                             attrs.append('    if(%s)\n' % (loads,))
@@ -487,7 +494,7 @@ for curFile in glob.glob('*.h'):
                                 attrs.append('            op.Accept(%s%s.value[ListIndex]->%s%s);\n' % (pres,name, pres,name))
                             else:
                                 attrs.append('        for(UINT32 ListIndex = 0; ListIndex < %s%s.value.size(); ListIndex++)\n' % (pres,name,))
-                                attrs.append('            op.Accept(%s%s.value[x]);\n' % (pres,name,))
+                                attrs.append('            op.Accept(%s%s.value[ListIndex]);\n' % (pres,name,))
                             attrs.append('        }\n')
                         else:
                             if ip:
@@ -495,7 +502,7 @@ for curFile in glob.glob('*.h'):
                                 attrs.append('        op.Accept(%s%s.value[ListIndex]->%s%s);\n' % (pres,name, pres,name))
                             else:
                                 attrs.append('    for(UINT32 ListIndex = 0; ListIndex < %s%s.value.size(); ListIndex++)\n' % (pres,name,))
-                                attrs.append('        op.Accept(%s%s.value[x]);\n' % (pres,name,))
+                                attrs.append('        op.Accept(%s%s.value[ListIndex]);\n' % (pres,name,))
                     else:
                         if loads:
                             attrs.append('    if(%s)\n' % (loads,))
@@ -637,7 +644,35 @@ for curFile in glob.glob('*.h'):
             s = len(vars)
             if s == 1 and vars[0][0] == '':
                 s = 0
-            if s > 0:
+            if vars == modelSig:
+                print 'in'
+                inte = name[3]
+                if inte == '2':
+                    MODL = 'MOD2'
+                    MODB = 'MO2B'
+                    MODT = 'MO2T'
+                    MODS = 'MO2S'
+                    MODD = 'MO2D'
+                elif inte == '3':
+                    MODL = 'MOD3'
+                    MODB = 'MO3B'
+                    MODT = 'MO3T'
+                    MODS = 'MO3S'
+                    MODD = 'MO3D'
+                elif inte == '4':
+                    MODL = 'MOD4'
+                    MODB = 'MO4B'
+                    MODT = 'MO4T'
+                    MODS = 'MO4S'
+                    MODD = 'MO4D'
+                else:                    
+                    MODL = 'MODL'
+                    MODB = 'MODB'
+                    MODT = 'MODT'
+                    MODS = 'MODS'
+                    MODD = 'MODD'
+                v.append('            case REV32(%s):\n                %s.Load();\n                %s->MODL.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODB.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODT.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->Textures.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODD.Read(buffer, subSize, curPos);\n                break;\n' % (MODL,n, n, MODB, n, n, MODT, n, n, MODS, n, n, MODD, n, n))
+            elif s > 0:
                 vk = makeReads(vars, history + [(name, type, ip)])
                 if len(vk):
                     v += vk
@@ -671,33 +706,6 @@ for curFile in glob.glob('*.h'):
                     x = '            case REV32(%s):\n                %s\n                %s%s.Read(buffer, subSize, curPos);\n                %s%s.value.back()->isSCRO = true;\n                break;\n' % (vname, loads, ''.join(pre), name, ''.join(pre), name)
                     vname = 'SCRV'
                     x += '            case REV32(%s):\n                %s\n                %s%s.Read(buffer, subSize, curPos);\n                %s%s.value.back()->isSCRO = false;\n                break;\n' % (vname, loads, ''.join(pre), name, ''.join(pre), name)
-                elif t == 'FNVMODEL':
-                    inte = name[3]
-                    if inte == '2':
-                        MODL = 'MOD2'
-                        MODB = 'MO2B'
-                        MODT = 'MO2T'
-                        MODS = 'MO2S'
-                        MODD = 'MO2D'
-                    elif inte == '3':
-                        MODL = 'MOD3'
-                        MODB = 'MO3B'
-                        MODT = 'MO3T'
-                        MODS = 'MO3S'
-                        MODD = 'MO3D'
-                    elif inte == '4':
-                        MODL = 'MOD4'
-                        MODB = 'MO4B'
-                        MODT = 'MO4T'
-                        MODS = 'MO4S'
-                        MODD = 'MO4D'
-                    else:                    
-                        MODL = 'MODL'
-                        MODB = 'MODB'
-                        MODT = 'MODT'
-                        MODS = 'MODS'
-                        MODD = 'MODD'
-                    f.write('            case REV32(%s):\n                %s.Load();\n                %s->MODL.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODB.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODT.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->Textures.Read(buffer, subSize, curPos);\n                break;\n            case REV32(%s):\n                %s.Load();\n                %s->MODD.Read(buffer, subSize, curPos);\n                break;\n' % (MODL,n, n, MODB, n, n, MODT, n, n, MODS, n, n, MODD, n, n))
                 elif loads:
                     x = '            case REV32(%s):\n                %s\n                %s%s.Read(buffer, subSize, curPos);\n                break;\n' % (name, loads, ''.join(pre), vname)
                 else:
@@ -811,10 +819,11 @@ for curFile in glob.glob('*.h'):
                         hadVars = False
                         for n, type, s, ip, ssvars in svars:
                             if ssvars:
-                                raise "test"
+                                pass #unimplemented
+##                                raise "test"
                             if ip:
                                 struct += '    %s(NULL),\n' % (n,)
-                            elif s == 0:
+                            elif s is None or s == 0:
                                 hadVars = True
                                 if type == 'FLOAT32':
                                     struct += '    %s(0.0f),\n' % (n,)
@@ -840,7 +849,7 @@ for curFile in glob.glob('*.h'):
 ##                                raise "test"
                             if 'unused' in n.lower():
                                 continue
-                            if s == 0:
+                            if s is None or s == 0:
                                 if ip:
                                     v += ['(%s != NULL && other.%s != NULL && *%s == *other.%s)' % (n, n, n, n)]
                                 elif type == 'FLOAT32':
@@ -935,7 +944,7 @@ for curFile in glob.glob('*.h'):
 
         f.write('    return 1;\n    }\n\nSINT32 %s::WriteRecord(FileWriter &writer)\n    {\n' % cltag)
         for name, type, size, ip, vars in cl_vars:
-            if type == 'FNVMODEL':
+            if vars == modelSig:
                 f.write('    %s.Write(writer);\n' % name)
             elif type == 'GENDESTRUCT':
                 f.write('    %s.Write(writer);\n' % name)
@@ -964,12 +973,90 @@ for curFile in glob.glob('*.h'):
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
-            if 'unused' in name.lower() and size == 0:
+            if 'unused' in name.lower() and (size is None or size == 0):
                 size = 1
             if s == 1 and vars[0][0] == '':
                 s = 0
                 t = vars[0][1]
-            if s > 0:
+
+            if vars == modelSig:
+                inte = name[3]
+                if inte == '2':
+                    MODL = 'MOD2'
+                    MODB = 'MO2B'
+                    MODT = 'MO2T'
+                    MODS = 'MO2S'
+                    MODD = 'MO2D'
+                elif inte == '3':
+                    MODL = 'MOD3'
+                    MODB = 'MO3B'
+                    MODT = 'MO3T'
+                    MODS = 'MO3S'
+                    MODD = 'MO3D'
+                elif inte == '4':
+                    MODL = 'MOD4'
+                    MODB = 'MO4B'
+                    MODT = 'MO4T'
+                    MODS = 'MO4S'
+                    MODD = 'MO4D'
+                else:                    
+                    MODL = 'MODL'
+                    MODB = 'MODB'
+                    MODT = 'MODT'
+                    MODS = 'MODS'
+                    MODD = 'MODD'
+
+
+                attrs.append(' //modPath\n')
+                attrs.append('            return ISTRING_FIELD;\n')
+                attrs.append(' //modb\n')
+                attrs.append('            return FLOAT32_FIELD;\n')
+                attrs.append(' //modt_p\n')
+                attrs.append('            switch(WhichAttribute)\n')
+                attrs.append('                {\n')
+                attrs.append('                case 0: //fieldType\n')
+                attrs.append('                    return UINT8_ARRAY_FIELD;\n')
+                attrs.append('                case 1: //fieldSize\n')
+                attrs.append('                    return MODL.IsLoaded() ? MODL->MODT.GetSize() : 0;\n')
+                attrs.append('                default:\n')
+                attrs.append('                    return UNKNOWN_FIELD;\n')
+                attrs.append('                }\n')
+                attrs.append('            return UNKNOWN_FIELD;\n')
+                attrs.append(' //altTextures\n')
+                attrs.append('            if(!MODL.IsLoaded())\n')
+                attrs.append('                return UNKNOWN_FIELD;\n')
+                attrs.append('\n')
+                attrs.append('            if(ListFieldID == 0) //altTextures\n')
+                attrs.append('                {\n')
+                attrs.append('                switch(WhichAttribute)\n')
+                attrs.append('                    {\n')
+                attrs.append('                    case 0: //fieldType\n')
+                attrs.append('                        return LIST_FIELD;\n')
+                attrs.append('                    case 1: //fieldSize\n')
+                attrs.append('                        return MODL->Textures.MODS.size();\n')
+                attrs.append('                    default:\n')
+                attrs.append('                        return UNKNOWN_FIELD;\n')
+                attrs.append('                    }\n')
+                attrs.append('                }\n')
+                attrs.append('\n')
+                attrs.append('            if(ListIndex >= MODL->Textures.MODS.size())\n')
+                attrs.append('                return UNKNOWN_FIELD;\n')
+                attrs.append('\n')
+                attrs.append('            switch(ListFieldID)\n')
+                attrs.append('                {\n')
+                attrs.append('                case 1: //name\n')
+                attrs.append('                    return STRING_FIELD;\n')
+                attrs.append('                case 2: //texture\n')
+                attrs.append('                    return FORMID_FIELD;\n')
+                attrs.append('                case 3: //index\n')
+                attrs.append('                    return SINT32_FIELD;\n')
+                attrs.append('                default:\n')
+                attrs.append('                    return UNKNOWN_FIELD;\n')
+                attrs.append('                }\n')
+                attrs.append('            return UNKNOWN_FIELD;\n')
+                attrs.append(' //modelFlags\n')
+                attrs.append('            return UINT8_FLAG_FIELD;\n')
+            elif s > 0:
                 vk = makeAttrApi(vars, history + [(name, type, ip)])
                 if 'Array' in type:
                     topname, toptype, topip = name, type, ip
@@ -1154,12 +1241,68 @@ for curFile in glob.glob('*.h'):
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
-            if 'unused' in name.lower() and size == 0:
+            if 'unused' in name.lower() and (size is None or size == 0):
                 size = 1
             if s == 1 and vars[0][0] == '':
                 s = 0
                 t = vars[0][1]
-            if s > 0:
+            if vars == modelSig:
+                inte = name[3]
+                if inte == '2':
+                    MODL = 'MOD2'
+                    MODB = 'MO2B'
+                    MODT = 'MO2T'
+                    MODS = 'MO2S'
+                    MODD = 'MO2D'
+                elif inte == '3':
+                    MODL = 'MOD3'
+                    MODB = 'MO3B'
+                    MODT = 'MO3T'
+                    MODS = 'MO3S'
+                    MODD = 'MO3D'
+                elif inte == '4':
+                    MODL = 'MOD4'
+                    MODB = 'MO4B'
+                    MODT = 'MO4T'
+                    MODS = 'MO4S'
+                    MODD = 'MO4D'
+                else:                    
+                    MODL = 'MODL'
+                    MODB = 'MODB'
+                    MODT = 'MODT'
+                    MODS = 'MODS'
+                    MODD = 'MODD'
+
+
+                attrs.append(' //modPath\n')
+                attrs.append('            return %s.IsLoaded() ? %s->MODL.value : NULL;\n' % (MODL,MODL))
+                attrs.append(' //modb\n')
+                attrs.append('            return %s.IsLoaded() ? &%s->MODB.value : NULL;\n' % (MODL,MODL))
+                attrs.append(' //modt_p\n')
+                attrs.append('            *FieldValues = %s.IsLoaded() ? %s->MODT.value : NULL;\n' % (MODL,MODL))
+                attrs.append('            return NULL;\n')
+                attrs.append(' //altTextures\n')
+                attrs.append('            if(!%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                return NULL;\n')
+                attrs.append('\n')
+                attrs.append('            if(ListIndex >= %s->Textures.MODS.size())\n' % (MODL,))
+                attrs.append('                return NULL;\n')
+                attrs.append('\n')
+                attrs.append('            switch(ListFieldID)\n')
+                attrs.append('                {\n')
+                attrs.append('                case 1: //name\n')
+                attrs.append('                    return %s->Textures.MODS[ListIndex]->name;\n' % (MODL,))
+                attrs.append('                case 2: //texture\n')
+                attrs.append('                    return &%s->Textures.MODS[ListIndex]->texture;\n' % (MODL,))
+                attrs.append('                case 3: //index\n')
+                attrs.append('                    return &%s->Textures.MODS[ListIndex]->index;\n' % (MODL,))
+                attrs.append('                default:\n')
+                attrs.append('                    return NULL;\n')
+                attrs.append('                }\n')
+                attrs.append('            return NULL;\n')
+                attrs.append(' //modelFlags\n')
+                attrs.append('            return %s.IsLoaded() ? &%s->MODD.value : NULL;\n' % (MODL,MODL))
+            elif s > 0:
                 vk = makeGetApi(vars, history + [(name, type, ip)])
                 if 'Array' in type:
                     topname, toptype, topip = name, type, ip
@@ -1336,12 +1479,89 @@ for curFile in glob.glob('*.h'):
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
-            if 'unused' in name.lower() and size == 0:
+            if 'unused' in name.lower() and (size is None or size == 0):
                 size = 1
             if s == 1 and vars[0][0] == '':
                 s = 0
                 t = vars[0][1]
-            if s > 0:
+            if vars == modelSig:
+                inte = name[3]
+                if inte == '2':
+                    MODL = 'MOD2'
+                    MODB = 'MO2B'
+                    MODT = 'MO2T'
+                    MODS = 'MO2S'
+                    MODD = 'MO2D'
+                elif inte == '3':
+                    MODL = 'MOD3'
+                    MODB = 'MO3B'
+                    MODT = 'MO3T'
+                    MODS = 'MO3S'
+                    MODD = 'MO3D'
+                elif inte == '4':
+                    MODL = 'MOD4'
+                    MODB = 'MO4B'
+                    MODT = 'MO4T'
+                    MODS = 'MO4S'
+                    MODD = 'MO4D'
+                else:                    
+                    MODL = 'MODL'
+                    MODB = 'MODB'
+                    MODT = 'MODT'
+                    MODS = 'MODS'
+                    MODD = 'MODD'
+
+                attrs.append(' //modPath\n')
+                attrs.append('            %s.Load();\n' % (MODL,))
+                attrs.append('            %s->MODL.Copy((STRING)FieldValue);\n' % (MODL,))
+                attrs.append('            break;\n')
+                attrs.append(' //modb\n')
+                attrs.append('            %s.Load();\n' % (MODL,))
+                attrs.append('            %s->MODB.value = *(FLOAT32 *)FieldValue;\n' % (MODL,))
+                attrs.append('            break;\n')
+                attrs.append(' //modt_p\n')
+                attrs.append('            %s.Load();\n' % (MODL,))
+                attrs.append('            %s->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);\n' % (MODL,))
+                attrs.append('            break;\n')
+                attrs.append(' //altTextures\n')
+                attrs.append('            %s.Load();\n' % (MODL,))
+                attrs.append('            if(ListFieldID == 0) //altTexturesSize\n')
+                attrs.append('                {\n')
+                attrs.append('                %s->Textures.resize(ArraySize);\n' % (MODL,))
+                attrs.append('                return false;\n')
+                attrs.append('                }\n')
+                attrs.append('\n')
+                attrs.append('            if(ListIndex >= %s->Textures.MODS.size())\n' % (MODL,))
+                attrs.append('                break;\n')
+                attrs.append('\n')
+                attrs.append('            switch(ListFieldID)\n')
+                attrs.append('                {\n')
+                attrs.append('                case 1: //name\n')
+                attrs.append('                    delete []%s->Textures.MODS[ListIndex]->name;\n' % (MODL,))
+                attrs.append('                    %s->Textures.MODS[ListIndex]->name = NULL;\n' % (MODL,))
+                attrs.append('                    if(FieldValue != NULL)\n')
+                attrs.append('                        {\n')
+                attrs.append('                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;\n')
+                attrs.append('                        %s->Textures.MODS[ListIndex]->name = new char[ArraySize];\n' % (MODL,))
+                attrs.append('                        strcpy_s(%s->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);\n' % (MODL,))
+                attrs.append('                        }\n')
+                attrs.append('                    break;\n')
+                attrs.append('                case 2: //texture\n')
+                attrs.append('                    %s->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;\n' % (MODL,))
+                attrs.append('                    return true;\n')
+                attrs.append('                case 3: //index\n')
+                attrs.append('                    %s->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;\n' % (MODL,))
+                attrs.append('                    break;\n')
+                attrs.append('                default:\n')
+                attrs.append('                    break;\n')
+                attrs.append('                }\n')
+                attrs.append('            break;\n')
+                attrs.append(' //modelFlags\n')
+                attrs.append('            %s.Load();\n' % (MODL,))
+                attrs.append('            %s->SetFlagMask(*(UINT8 *)FieldValue);\n' % (MODL,))
+                attrs.append('            break;\n')
+                    
+            elif s > 0:
                 vk = makeSetApi(vars, history + [(name, type, ip)])
                 if 'Array' in type:
                     topname, toptype, topip = name, type, ip
@@ -1510,12 +1730,84 @@ for curFile in glob.glob('*.h'):
         for name, type, size, ip, vars in vs:
             t = type.strip(' *')
             s = len(vars)
-            if 'unused' in name.lower() and size == 0:
+            if 'unused' in name.lower() and (size is None or size == 0):
                 size = 1
             if s == 1 and vars[0][0] == '':
                 s = 0
                 t = vars[0][1]
-            if s > 0:
+            if vars == modelSig:
+                inte = name[3]
+                if inte == '2':
+                    MODL = 'MOD2'
+                    MODB = 'MO2B'
+                    MODT = 'MO2T'
+                    MODS = 'MO2S'
+                    MODD = 'MO2D'
+                elif inte == '3':
+                    MODL = 'MOD3'
+                    MODB = 'MO3B'
+                    MODT = 'MO3T'
+                    MODS = 'MO3S'
+                    MODD = 'MO3D'
+                elif inte == '4':
+                    MODL = 'MOD4'
+                    MODB = 'MO4B'
+                    MODT = 'MO4T'
+                    MODS = 'MO4S'
+                    MODD = 'MO4D'
+                else:                    
+                    MODL = 'MODL'
+                    MODB = 'MODB'
+                    MODT = 'MODT'
+                    MODS = 'MODS'
+                    MODD = 'MODD'
+
+                attrs.append(' //modPath\n')
+                attrs.append('            if(%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                %s->MODL.Unload();\n' % (MODL,))
+                attrs.append('            return;\n')
+                attrs.append(' //modb\n')
+                attrs.append('            if(%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                %s->MODB.Unload();\n' % (MODL,))
+                attrs.append('            return;\n')
+                attrs.append(' //modt_p\n')
+                attrs.append('            if(%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                %s->MODT.Unload();\n' % (MODL,))
+                attrs.append('            return;\n')
+                attrs.append(' //altTextures\n')
+                attrs.append('            if(%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                {\n')
+                attrs.append('                if(ListFieldID == 0) //altTextures\n')
+                attrs.append('                    {\n')
+                attrs.append('                    %s->Textures.Unload();\n' % (MODL,))
+                attrs.append('                    return;\n')
+                attrs.append('                    }\n')
+                attrs.append('\n')
+                attrs.append('                if(ListIndex >= %s->Textures.MODS.size())\n' % (MODL,))
+                attrs.append('                    return;\n')
+                attrs.append('\n')
+                attrs.append('                switch(ListFieldID)\n')
+                attrs.append('                    {\n')
+                attrs.append('                    case 1: //name\n')
+                attrs.append('                        delete []%s->Textures.MODS[ListIndex]->name;\n' % (MODL,))
+                attrs.append('                        %s->Textures.MODS[ListIndex]->name = NULL;\n' % (MODL,))
+                attrs.append('                        return;\n')
+                attrs.append('                    case 2: //texture\n')
+                attrs.append('                        %s->Textures.MODS[ListIndex]->texture = defaultMODS.texture;\n' % (MODL,))
+                attrs.append('                        return;\n')
+                attrs.append('                    case 3: //index\n')
+                attrs.append('                        %s->Textures.MODS[ListIndex]->index = defaultMODS.index;\n' % (MODL,))
+                attrs.append('                        return;\n')
+                attrs.append('                    default:\n')
+                attrs.append('                        return;\n')
+                attrs.append('                    }\n')
+                attrs.append('                }\n')
+                attrs.append('            return;\n')
+                attrs.append(' //modelFlags\n')
+                attrs.append('            if(%s.IsLoaded())\n' % (MODL,))
+                attrs.append('                %s->MODD.Unload();\n' % (MODL,))
+                attrs.append('            return;\n')
+            elif s > 0:
                 vk = makeDelApi(vars, history + [(name, type, ip)])
                 if 'Array' in type:
                     topname, toptype, topip = name, type, ip
@@ -1687,7 +1979,7 @@ for curFile in glob.glob('*.h'):
                                 attrs.append('            if(%s)\n' % (loads,))
                                 attrs.append('                %s%s = %s.%s;\n' % (pres, name, default, name))
                             else:
-                                attrs.append('            %s%s = %s;\n' % (pres, name, default, name))
+                                attrs.append('            %s%s = %s.%s;\n' % (pres, name, default, name))
                         attrs.append('            return;\n')
                     elif 'Array' in t:
                         attrs.append(' //%s\n' % (name,))

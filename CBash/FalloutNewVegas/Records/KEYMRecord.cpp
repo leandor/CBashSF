@@ -102,7 +102,7 @@ bool KEYMRecord::VisitFormIDs(FormIDOp &op)
 
 UINT32 KEYMRecord::GetType()
     {
-    return REV32(MISC);
+    return REV32(KEYM);
     }
 
 STRING KEYMRecord::GetStrType()

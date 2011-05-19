@@ -61,7 +61,7 @@ UINT32 PACKRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_OR_UINT32_FIELD;
                 case 2: //WhichType
-                    return (PLDT.IsLoaded() && PLDT->locType != 5) ? FORMID_FIELD : UINT32_FIELD;
+                    return (PLDT.IsLoaded() && (PLDT->locType < 2 || PLDT->locType == 4)) ? FORMID_FIELD : UINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -409,10 +409,10 @@ void PACKRecord::DeleteField(FIELD_IDENTIFIERS)
             EDID.Unload();
             return;
         case 5: //flags
-            PKDT.value.flags = defaultPKDT.flags;
+            SetFlagMask(defaultPKDT.flags);
             return;
         case 6: //aiType
-            PKDT.value.aiType = defaultPKDT.aiType;
+            SetAIType(defaultPKDT.aiType);
             return;
         case 7: //unused1
             PKDT.value.unused1[0] = defaultPKDT.unused1[0];
@@ -421,7 +421,7 @@ void PACKRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 8: //locType
             if(PLDT.IsLoaded())
-                PLDT->locType = defaultPLDT.locType;
+                SetLocType(defaultPLDT.locType);
             return;
         case 9: //locId
             if(PLDT.IsLoaded())
@@ -448,7 +448,7 @@ void PACKRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 16: //targetType
             if(PTDT.IsLoaded())
-                PTDT->targetType = defaultPTDT.targetType;
+                SetTargetType(defaultPTDT.targetType);
             return;
         case 17: //targetId
             if(PTDT.IsLoaded())

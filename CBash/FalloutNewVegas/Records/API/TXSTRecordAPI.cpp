@@ -211,7 +211,7 @@ void * TXSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = DODT.IsLoaded() ? &DODT->unused2 : NULL;
             return NULL;
         case 33: //flags
-            return &DNAM.value;
+            return DNAM.value;
         default:
             return NULL;
         }
@@ -343,7 +343,7 @@ bool TXSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DODT->unused2 = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 33: //flags
-            DNAM.value = *(UINT16 *)FieldValue;
+            SetFlagMask(*(UINT16 *)FieldValue);
             break;
         default:
             break;

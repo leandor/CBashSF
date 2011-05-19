@@ -31,7 +31,7 @@ class DIALRecord : public FNVRecord //Dialog Topic
         struct DIALUNK
             {
             ReqSimpleSubRecord<FORMID> INFC; //Unknown
-            OptSimpleSubRecord<SINT32> INFX; //Unknown (index? increases by one for each INFC)
+            SemiOptSimpleSubRecord<SINT32> INFX; //Unknown (index? increases by one for each INFC)
 
             void Write(FileWriter &writer);
 
@@ -64,7 +64,7 @@ class DIALRecord : public FNVRecord //Dialog Topic
         struct DIALDATA
             {
             UINT8   dialType; //Type
-            UINT8   flags; //Flags
+            UINT8   flags; //Flags, not always present in chunk
 
             DIALDATA();
             ~DIALDATA();

@@ -24,6 +24,33 @@ GPL License and Copyright Notice ============================================
 
 namespace FNV
 {
+LSCRRecord::LSCRLNAM::LSCRLNAM():
+    direct(0),
+    indirect(0),
+    gridY(0),
+    gridX(0)
+    {
+    //
+    }
+
+LSCRRecord::LSCRLNAM::~LSCRLNAM()
+    {
+    //
+    }
+
+bool LSCRRecord::LSCRLNAM::operator ==(const LSCRLNAM &other) const
+    {
+    return (direct == other.direct &&
+            indirect == other.indirect &&
+            gridY == other.gridY &&
+            gridX == other.gridX);
+    }
+
+bool LSCRRecord::LSCRLNAM::operator !=(const LSCRLNAM &other) const
+    {
+    return !(*this == other);
+    }
+
 LSCRRecord::LSCRRecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
@@ -69,10 +96,13 @@ bool LSCRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    //if(LNAM.IsLoaded()) //FILL IN MANUALLY
-    //    op.Accept(LNAM->value);
+    for(UINT32 ListIndex = 0; ListIndex < LNAM.value.size(); ListIndex++)
+        {
+        op.Accept(LNAM.value[ListIndex]->direct);
+        op.Accept(LNAM.value[ListIndex]->indirect);
+        }
     if(WMI1.IsLoaded())
-        op.Accept(WMI1->value);
+        op.Accept(WMI1.value);
 
     return op.Stop();
     }
@@ -143,6 +173,7 @@ SINT32 LSCRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     ICON.Unload();
     MICO.Unload();
@@ -160,7 +191,6 @@ SINT32 LSCRRecord::WriteRecord(FileWriter &writer)
     WRITE(DESC);
     WRITE(LNAM);
     WRITE(WMI1);
-
     return -1;
     }
 

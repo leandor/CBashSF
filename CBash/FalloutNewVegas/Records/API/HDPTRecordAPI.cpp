@@ -178,7 +178,7 @@ void * HDPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 12: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         case 13: //flags
-            return DATA.IsLoaded() ? &DATA.value : NULL;
+            return &DATA.value;
         case 14: //parts
             *FieldValues = HNAM.IsLoaded() ? &HNAM.value[0] : NULL;
             return NULL;

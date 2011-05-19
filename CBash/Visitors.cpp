@@ -152,8 +152,7 @@ RecordIDRetriever::~RecordIDRetriever()
 
 bool RecordIDRetriever::Accept(Record *&curRecord)
     {
-    RecordIDs[count] = curRecord;
-    ++count;
+    RecordIDs[count++] = curRecord;
     return stop;
     }
 

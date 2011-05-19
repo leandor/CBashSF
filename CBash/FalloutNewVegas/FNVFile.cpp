@@ -542,34 +542,34 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 break;
             //case eIgQUST: //Same as normal
             case REV32(QUST):
-                //reader.read(&QUST.stamp, 4);
-                //reader.read(&QUST.unknown, 4);
-                //QUST.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&QUST.stamp, 4);
+                reader.read(&QUST.unknown, 4);
+                QUST.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgIDLE:
             case REV32(IDLE):
-                //reader.read(&IDLE.stamp, 4);
-                //reader.read(&IDLE.unknown, 4);
-                //IDLE.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&IDLE.stamp, 4);
+                reader.read(&IDLE.unknown, 4);
+                IDLE.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgPACK:
             case REV32(PACK):
-                //reader.read(&PACK.stamp, 4);
-                //reader.read(&PACK.unknown, 4);
-                //PACK.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&PACK.stamp, 4);
+                reader.read(&PACK.unknown, 4);
+                PACK.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgCSTY: //Same as normal
             case REV32(CSTY):
-                //reader.read(&CSTY.stamp, 4);
-                //reader.read(&CSTY.unknown, 4);
-                //CSTY.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&CSTY.stamp, 4);
+                reader.read(&CSTY.unknown, 4);
+                CSTY.Skim(reader, GRUPSize, processor, indexer);
+                break;
             //case eIgLSCR: //Same as normal
             case REV32(LSCR):
-                //reader.read(&LSCR.stamp, 4);
-                //reader.read(&LSCR.unknown, 4);
-                //LSCR.Skim(reader, GRUPSize, processor, indexer);
-                //break;
+                reader.read(&LSCR.stamp, 4);
+                reader.read(&LSCR.unknown, 4);
+                LSCR.Skim(reader, GRUPSize, processor, indexer);
+                break;
             case eIgANIO:
             case REV32(ANIO):
                 //reader.read(&ANIO.stamp, 4);
@@ -986,15 +986,15 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(DIAL):
             return (UINT32)DIAL.Records.size();
         case REV32(QUST):
-            //return (UINT32)QUST.Records.size();
+            return (UINT32)QUST.Records.size();
         case REV32(IDLE):
-            //return (UINT32)IDLE.Records.size();
+            return (UINT32)IDLE.Records.size();
         case REV32(PACK):
-            //return (UINT32)PACK.Records.size();
+            return (UINT32)PACK.Records.size();
         case REV32(CSTY):
-            //return (UINT32)CSTY.Records.size();
+            return (UINT32)CSTY.Records.size();
         case REV32(LSCR):
-            //return (UINT32)LSCR.Records.size();
+            return (UINT32)LSCR.Records.size();
         case REV32(ANIO):
             //return (UINT32)ANIO.Records.size();
         case REV32(WATR):
@@ -1486,25 +1486,25 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             newRecord = ((FNV::CELLRecord *)ParentRecord)->LAND;
             break;
         case REV32(QUST):
-            //QUST.Records.push_back(new FNV::QUSTRecord((FNV::QUSTRecord *)SourceRecord));
-            //newRecord = QUST.Records.back();
-            //break;
+            QUST.Records.push_back(new FNV::QUSTRecord((FNV::QUSTRecord *)SourceRecord));
+            newRecord = QUST.Records.back();
+            break;
         case REV32(IDLE):
-            //IDLE.Records.push_back(new FNV::IDLERecord((FNV::IDLERecord *)SourceRecord));
-            //newRecord = IDLE.Records.back();
-            //break;
+            IDLE.Records.push_back(new FNV::IDLERecord((FNV::IDLERecord *)SourceRecord));
+            newRecord = IDLE.Records.back();
+            break;
         case REV32(PACK):
-            //PACK.Records.push_back(new FNV::PACKRecord((FNV::PACKRecord *)SourceRecord));
-            //newRecord = PACK.Records.back();
-            //break;
+            PACK.Records.push_back(new FNV::PACKRecord((FNV::PACKRecord *)SourceRecord));
+            newRecord = PACK.Records.back();
+            break;
         case REV32(CSTY):
-            //CSTY.Records.push_back(new FNV::CSTYRecord((FNV::CSTYRecord *)SourceRecord));
-            //newRecord = CSTY.Records.back();
-            //break;
+            CSTY.Records.push_back(new FNV::CSTYRecord((FNV::CSTYRecord *)SourceRecord));
+            newRecord = CSTY.Records.back();
+            break;
         case REV32(LSCR):
-            //LSCR.Records.push_back(new FNV::LSCRRecord((FNV::LSCRRecord *)SourceRecord));
-            //newRecord = LSCR.Records.back();
-            //break;
+            LSCR.Records.push_back(new FNV::LSCRRecord((FNV::LSCRRecord *)SourceRecord));
+            newRecord = LSCR.Records.back();
+            break;
         case REV32(ANIO):
             //ANIO.Records.push_back(new FNV::ANIORecord((FNV::ANIORecord *)SourceRecord));
             //newRecord = ANIO.Records.back();
@@ -1758,11 +1758,11 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         if(CELL.VisitRecords(NULL, checker, true)) continue;
         if(WRLD.VisitRecords(NULL, checker, true)) continue;
         if(DIAL.VisitRecords(NULL, checker, true)) continue;
-        //if(QUST.VisitRecords(NULL, checker, false)) continue;
-        //if(IDLE.VisitRecords(NULL, checker, false)) continue;
-        //if(PACK.VisitRecords(NULL, checker, false)) continue;
-        //if(CSTY.VisitRecords(NULL, checker, false)) continue;
-        //if(LSCR.VisitRecords(NULL, checker, false)) continue;
+        if(QUST.VisitRecords(NULL, checker, false)) continue;
+        if(IDLE.VisitRecords(NULL, checker, false)) continue;
+        if(PACK.VisitRecords(NULL, checker, false)) continue;
+        if(CSTY.VisitRecords(NULL, checker, false)) continue;
+        if(LSCR.VisitRecords(NULL, checker, false)) continue;
         //if(ANIO.VisitRecords(NULL, checker, false)) continue;
         //if(WATR.VisitRecords(NULL, checker, false)) continue;
         //if(EFSH.VisitRecords(NULL, checker, false)) continue;
@@ -1896,11 +1896,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += DIAL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     //formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
@@ -2019,11 +2019,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     CELL.VisitRecords(NULL, op, true);
     WRLD.VisitRecords(NULL, op, true);
     DIAL.VisitRecords(NULL, op, true);
-    //QUST.VisitRecords(NULL, op, true);
-    //IDLE.VisitRecords(NULL, op, true);
-    //PACK.VisitRecords(NULL, op, true);
-    //CSTY.VisitRecords(NULL, op, true);
-    //LSCR.VisitRecords(NULL, op, true);
+    QUST.VisitRecords(NULL, op, true);
+    IDLE.VisitRecords(NULL, op, true);
+    PACK.VisitRecords(NULL, op, true);
+    CSTY.VisitRecords(NULL, op, true);
+    LSCR.VisitRecords(NULL, op, true);
     //ANIO.VisitRecords(NULL, op, true);
     //WATR.VisitRecords(NULL, op, true);
     //EFSH.VisitRecords(NULL, op, true);
@@ -2250,20 +2250,20 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             DIAL.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(QUST):
-            //QUST.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            QUST.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(IDLE):
-            //IDLE.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            IDLE.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(PACK):
-            //PACK.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            PACK.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(CSTY):
-            //CSTY.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            CSTY.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(LSCR):
-            //LSCR.VisitRecords(RecordType, op, DeepVisit);
-            //break;
+            LSCR.VisitRecords(RecordType, op, DeepVisit);
+            break;
         case REV32(ANIO):
             //ANIO.VisitRecords(RecordType, op, DeepVisit);
             //break;

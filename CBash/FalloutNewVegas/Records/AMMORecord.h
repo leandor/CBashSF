@@ -28,6 +28,8 @@ namespace FNV
 class AMMORecord : public FNVRecord //Ammunition
     {
     private:
+        #pragma pack(push)
+        #pragma pack(1)
         struct AMMODATA
             {
             FLOAT32 speed; //Speed
@@ -42,12 +44,14 @@ class AMMORecord : public FNVRecord //Ammunition
             bool operator ==(const AMMODATA &other) const;
             bool operator !=(const AMMODATA &other) const;
             };
+        #pragma pack(pop)
 
         struct AMMODAT2
             {
             UINT32  projectilesPerShot; //Proj. per Shot
             FORMID  projectile; //Projectile
             FLOAT32 weight; //Weight
+            //Below are not always present on chunk...
             FORMID  consumedAmmo; //Consumed Ammo
             FLOAT32 consumedPercentage; //Consumed Percentage
 

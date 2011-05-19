@@ -28,6 +28,8 @@ namespace FNV
 class WEAPRecord : public FNVRecord //Weapon
     {
     private:
+        #pragma pack(push)
+        #pragma pack(1)
         struct WEAPDATA
             {
             SINT32  value, health;
@@ -41,6 +43,7 @@ class WEAPRecord : public FNVRecord //Weapon
             bool operator ==(const WEAPDATA &other) const;
             bool operator !=(const WEAPDATA &other) const;
             };
+        #pragma pack(pop)
 
         struct WEAPDNAM
             {
@@ -94,6 +97,7 @@ class WEAPRecord : public FNVRecord //Weapon
             {
             FORMID  effect;
             FLOAT32 skill, damageMult, AP;
+            //Below are not present on all chunks...
             UINT8   silenceType, modRequiredType, unused1[2];
 
             WEAPVATS();

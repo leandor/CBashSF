@@ -138,7 +138,7 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
     FunctionArguments CTDAFunction;
     Function_Arguments_Iterator curCTDAFunction;
 
-    if(PLDT.IsLoaded() && PLDT->locType != 5)
+    if(PLDT.IsLoaded() && (PLDT->locType < 2 || PLDT->locType == 4))
         op.Accept(PLDT->locId);
 
     if(PTDT.IsLoaded() && PTDT->targetType != 2)
@@ -162,172 +162,6 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
         }
 
     return op.Stop();
-    }
-
-bool PACKRecord::IsAIFind()
-    {
-    return (PKDT.value.aiType == eAIFind);
-    }
-
-void PACKRecord::IsAIFind(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIFind;
-    else if(IsAIFind())
-        PKDT.value.aiType = eAIFollow;
-    }
-
-bool PACKRecord::IsAIFollow()
-    {
-    return (PKDT.value.aiType == eAIFollow);
-    }
-
-void PACKRecord::IsAIFollow(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIFollow;
-    else if(IsAIFollow())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIEscort()
-    {
-    return (PKDT.value.aiType == eAIEscort);
-    }
-
-void PACKRecord::IsAIEscort(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIEscort;
-    else if(IsAIEscort())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIEat()
-    {
-    return (PKDT.value.aiType == eAIEat);
-    }
-
-void PACKRecord::IsAIEat(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIEat;
-    else if(IsAIEat())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAISleep()
-    {
-    return (PKDT.value.aiType == eAISleep);
-    }
-
-void PACKRecord::IsAISleep(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAISleep;
-    else if(IsAISleep())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIWander()
-    {
-    return (PKDT.value.aiType == eAIWander);
-    }
-
-void PACKRecord::IsAIWander(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIWander;
-    else if(IsAIWander())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAITravel()
-    {
-    return (PKDT.value.aiType == eAITravel);
-    }
-
-void PACKRecord::IsAITravel(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAITravel;
-    else if(IsAIFollow())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIAccompany()
-    {
-    return (PKDT.value.aiType == eAIAccompany);
-    }
-
-void PACKRecord::IsAIAccompany(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIAccompany;
-    else if(IsAIAccompany())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIUseItemAt()
-    {
-    return (PKDT.value.aiType == eAIUseItemAt);
-    }
-
-void PACKRecord::IsAIUseItemAt(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIUseItemAt;
-    else if(IsAIUseItemAt())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIAmbush()
-    {
-    return (PKDT.value.aiType == eAIAmbush);
-    }
-
-void PACKRecord::IsAIAmbush(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIAmbush;
-    else if(IsAIAmbush())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIFleeNotCombat()
-    {
-    return (PKDT.value.aiType == eAIFleeNotCombat);
-    }
-
-void PACKRecord::IsAIFleeNotCombat(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAIFleeNotCombat;
-    else if(IsAIFleeNotCombat())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAICastMagic()
-    {
-    return (PKDT.value.aiType == eAICastMagic);
-    }
-
-void PACKRecord::IsAICastMagic(bool value)
-    {
-    if(value)
-        PKDT.value.aiType = eAICastMagic;
-    else if(IsAICastMagic())
-        PKDT.value.aiType = eAIFind;
-    }
-
-bool PACKRecord::IsAIType(UINT8 Type)
-    {
-    return (PKDT.value.aiType == Type);
-    }
-
-void PACKRecord::SetAIType(UINT8 Type)
-    {
-    PKDT.value.aiType = Type;
     }
 
 bool PACKRecord::IsOffersServices()
@@ -549,6 +383,172 @@ bool PACKRecord::IsFlagMask(UINT32 Mask, bool Exact)
 void PACKRecord::SetFlagMask(UINT32 Mask)
     {
     PKDT.value.flags = Mask;
+    }
+
+bool PACKRecord::IsAIFind()
+    {
+    return (PKDT.value.aiType == eAIFind);
+    }
+
+void PACKRecord::IsAIFind(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIFind;
+    else if(IsAIFind())
+        PKDT.value.aiType = eAIFollow;
+    }
+
+bool PACKRecord::IsAIFollow()
+    {
+    return (PKDT.value.aiType == eAIFollow);
+    }
+
+void PACKRecord::IsAIFollow(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIFollow;
+    else if(IsAIFollow())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIEscort()
+    {
+    return (PKDT.value.aiType == eAIEscort);
+    }
+
+void PACKRecord::IsAIEscort(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIEscort;
+    else if(IsAIEscort())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIEat()
+    {
+    return (PKDT.value.aiType == eAIEat);
+    }
+
+void PACKRecord::IsAIEat(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIEat;
+    else if(IsAIEat())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAISleep()
+    {
+    return (PKDT.value.aiType == eAISleep);
+    }
+
+void PACKRecord::IsAISleep(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAISleep;
+    else if(IsAISleep())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIWander()
+    {
+    return (PKDT.value.aiType == eAIWander);
+    }
+
+void PACKRecord::IsAIWander(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIWander;
+    else if(IsAIWander())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAITravel()
+    {
+    return (PKDT.value.aiType == eAITravel);
+    }
+
+void PACKRecord::IsAITravel(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAITravel;
+    else if(IsAIFollow())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIAccompany()
+    {
+    return (PKDT.value.aiType == eAIAccompany);
+    }
+
+void PACKRecord::IsAIAccompany(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIAccompany;
+    else if(IsAIAccompany())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIUseItemAt()
+    {
+    return (PKDT.value.aiType == eAIUseItemAt);
+    }
+
+void PACKRecord::IsAIUseItemAt(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIUseItemAt;
+    else if(IsAIUseItemAt())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIAmbush()
+    {
+    return (PKDT.value.aiType == eAIAmbush);
+    }
+
+void PACKRecord::IsAIAmbush(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIAmbush;
+    else if(IsAIAmbush())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIFleeNotCombat()
+    {
+    return (PKDT.value.aiType == eAIFleeNotCombat);
+    }
+
+void PACKRecord::IsAIFleeNotCombat(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAIFleeNotCombat;
+    else if(IsAIFleeNotCombat())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAICastMagic()
+    {
+    return (PKDT.value.aiType == eAICastMagic);
+    }
+
+void PACKRecord::IsAICastMagic(bool value)
+    {
+    if(value)
+        PKDT.value.aiType = eAICastMagic;
+    else if(IsAICastMagic())
+        PKDT.value.aiType = eAIFind;
+    }
+
+bool PACKRecord::IsAIType(UINT8 Type)
+    {
+    return (PKDT.value.aiType == Type);
+    }
+
+void PACKRecord::SetAIType(UINT8 Type)
+    {
+    PKDT.value.aiType = Type;
     }
 
 bool PACKRecord::IsLocNearReference()

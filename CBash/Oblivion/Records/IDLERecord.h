@@ -51,7 +51,7 @@ class IDLERecord : public Record
 
         enum groupFlag
             {
-            fIsNotReturnFile = 0x080
+            fIsNotReturnFile = 0x80
             };
 
     public:

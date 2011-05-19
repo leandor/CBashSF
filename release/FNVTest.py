@@ -101,78 +101,78 @@ def TestRegressions():
     Current.load()
     newMod = Current.LookupModFile("TestRegressions.esp")
 
-##    assertTES4(Current, newMod)
-##    assertGMST(Current, newMod)
-##    assertTXST(Current, newMod)
-##    assertMICN(Current, newMod)
-##    assertGLOB(Current, newMod)
-##    assertCLAS(Current, newMod)
-##    assertFACT(Current, newMod)
-##    assertHDPT(Current, newMod)
-##    assertHAIR(Current, newMod)
-##    assertEYES(Current, newMod)
-##    assertRACE(Current, newMod)
-##    assertSOUN(Current, newMod)
-##    assertASPC(Current, newMod)
-##    assertMGEF(Current, newMod)
-##    assertSCPT(Current, newMod)
-##    assertLTEX(Current, newMod)
-##    assertENCH(Current, newMod)
-##    assertSPEL(Current, newMod)
-##    assertACTI(Current, newMod)
-##    assertTACT(Current, newMod)
-##    assertTERM(Current, newMod)
-##    assertARMO(Current, newMod)
-##    assertBOOK(Current, newMod)
-##    assertCONT(Current, newMod)
-##    assertDOOR(Current, newMod)
-##    assertINGR(Current, newMod)
-##    assertLIGH(Current, newMod)
-##    assertMISC(Current, newMod)
-##    assertSTAT(Current, newMod)
-##    assertSCOL(Current, newMod)
-##    assertMSTT(Current, newMod)
-##    assertPWAT(Current, newMod)
-##    assertGRAS(Current, newMod)
-####    assertTREE(Current, newMod)
-####    assertFURN(Current, newMod)
-####    assertWEAP(Current, newMod)
-####    assertAMMO(Current, newMod)
-####    assertNPC_(Current, newMod)
-####    assertCREA(Current, newMod)
-####    assertLVLC(Current, newMod)
-####    assertLVLN(Current, newMod)
-####    assertKEYM(Current, newMod)
-####    assertALCH(Current, newMod)
-####    newMod.save()
-####    assertIDLM(Current, newMod)
-####    assertNOTE(Current, newMod)
-####    assertCOBJ(Current, newMod)
-####    assertPROJ(Current, newMod)
-####    assertLVLI(Current, newMod)
-####    assertWTHR(Current, newMod)
-####    assertCLMT(Current, newMod)
-####    assertREGN(Current, newMod)
-####    assertNAVI(Current, newMod)
-####    assertCELL(Current, newMod)
-####    assertACHR(Current, newMod)
-####    assertACRE(Current, newMod)
-####    assertREFR(Current, newMod)
-####    assertPGRE(Current, newMod)
-####    assertPMIS(Current, newMod)
-####    assertPBEA(Current, newMod)
-####    assertPFLA(Current, newMod)
-####    assertPCBE(Current, newMod)
-####    assertNAVM(Current, newMod)
-####    assertWRLD(Current, newMod)
-####    assertLAND(Current, newMod)
+    assertTES4(Current, newMod)
+    assertGMST(Current, newMod)
+    assertTXST(Current, newMod)
+    assertMICN(Current, newMod)
+    assertGLOB(Current, newMod)
+    assertCLAS(Current, newMod)
+    assertFACT(Current, newMod)
+    assertHDPT(Current, newMod)
+    assertHAIR(Current, newMod)
+    assertEYES(Current, newMod)
+    assertRACE(Current, newMod)
+    assertSOUN(Current, newMod)
+    assertASPC(Current, newMod)
+    assertMGEF(Current, newMod)
+    assertSCPT(Current, newMod)
+    assertLTEX(Current, newMod)
+    assertENCH(Current, newMod)
+    assertSPEL(Current, newMod)
+    assertACTI(Current, newMod)
+    assertTACT(Current, newMod)
+    assertTERM(Current, newMod)
+    assertARMO(Current, newMod)
+    assertBOOK(Current, newMod)
+    assertCONT(Current, newMod)
+    assertDOOR(Current, newMod)
+    assertINGR(Current, newMod)
+    assertLIGH(Current, newMod)
+    assertMISC(Current, newMod)
+    assertSTAT(Current, newMod)
+    assertSCOL(Current, newMod)
+    assertMSTT(Current, newMod)
+    assertPWAT(Current, newMod)
+    assertGRAS(Current, newMod)
+##    newMod.save()
+    assertTREE(Current, newMod)
+    assertFURN(Current, newMod)
+    assertWEAP(Current, newMod)
+    assertAMMO(Current, newMod)
+    assertNPC_(Current, newMod)
+    assertCREA(Current, newMod)
+    assertLVLC(Current, newMod)
+    assertLVLN(Current, newMod)
+    assertKEYM(Current, newMod)
+    assertALCH(Current, newMod)
+    assertIDLM(Current, newMod)
+    assertNOTE(Current, newMod)
+    assertCOBJ(Current, newMod)
+    assertPROJ(Current, newMod)
+    assertLVLI(Current, newMod)
+    assertWTHR(Current, newMod)
+    assertCLMT(Current, newMod)
+    assertREGN(Current, newMod)
+    assertNAVI(Current, newMod)
+    assertCELL(Current, newMod)
+    assertACHR(Current, newMod)
+    assertACRE(Current, newMod)
+    assertREFR(Current, newMod)
+    assertPGRE(Current, newMod)
+    assertPMIS(Current, newMod)
+    assertPBEA(Current, newMod)
+    assertPFLA(Current, newMod)
+    assertPCBE(Current, newMod)
+    assertNAVM(Current, newMod)
+    assertWRLD(Current, newMod)
+    assertLAND(Current, newMod)
     assertDIAL(Current, newMod)
     assertINFO(Current, newMod)
-    ##    assertQUST(Current, newMod)
-    ##    assertIDLE(Current, newMod)
-    ##    assertPACK(Current, newMod)
-    ##    assertCSTY(Current, newMod)
-    ##    assertLSCR(Current, newMod)
+    assertQUST(Current, newMod)
+    assertIDLE(Current, newMod)
+    assertPACK(Current, newMod)
+    assertCSTY(Current, newMod)
+    assertLSCR(Current, newMod)
     ##    assertANIO(Current, newMod)
     ##    assertWATR(Current, newMod)
     ##    assertEFSH(Current, newMod)
@@ -11893,175 +11893,464 @@ def assertSLPD(Current, newMod):
 
 def TestReadWrite():
     Current = ObCollection(CollectionType=2)
-    Current.addMod("FalloutNV.esm", MinLoad=False)
+    Current.addMod("FalloutNV.esm")#, MinLoad=False)
     Current.addMod("TestRW.esp", IgnoreExisting=True)
     Current.load()
     newMod = Current.LookupModFile("TestRW.esp")
+    
+##    for record in Current.LoadOrderMods[0].GMST:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].TXST:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MICN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].GLOB:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CLAS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].FACT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].HDPT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].HAIR:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].EYES:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].RACE:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].SOUN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ASPC:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MGEF:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].SCPT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LTEX:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ENCH:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].SPEL:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ACTI:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].TACT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].TERM:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ARMO:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].BOOK:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CONT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].DOOR:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].INGR:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LIGH:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MISC:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].STAT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].SCOL:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].MSTT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].PWAT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].GRAS:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].TREE:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].FURN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].WEAP:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].AMMO:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].NPC_:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CREA:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LVLC:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LVLN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].KEYM:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].ALCH:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].IDLM:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].NOTE:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].COBJ:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].PROJ:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].LVLI:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].WTHR:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CLMT:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].REGN:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].CELL:
-        record.lightTemplate = record.lightTemplate #marks record as changed so it's fully copied
-        trgCellOver = record.CopyAsOverride(newMod)
-        trgCellNew = record.CopyAsNew(newMod)
-        for npcRef in record.ACHR:
-            npcRef.base = npcRef.base #marks record as changed so it's fully copied
-            npcRef.CopyAsOverride(trgCellOver)
-            npcRef.CopyAsNew(trgCellNew)
-            npcRef.DeleteRecord()
-        for creaRef in record.ACRE:
-            creaRef.base = creaRef.base #marks record as changed so it's fully copied
-            creaRef.CopyAsOverride(trgCellOver)
-            creaRef.CopyAsNew(trgCellNew)
-            creaRef.DeleteRecord()
-        for objRef in record.REFR:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-
-        for objRef in record.PGRE:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-        for objRef in record.PMIS:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-        for objRef in record.PBEA:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-        for objRef in record.PFLA:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-        for objRef in record.PCBE:
-            objRef.base = objRef.base #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
-            objRef.DeleteRecord()
-        for objRef in record.NAVM:
-            objRef.version = objRef.version #marks record as changed so it's fully copied
-            objRef.CopyAsOverride(trgCellOver)
-            objRef.CopyAsNew(trgCellNew)
+##    for record in Current.LoadOrderMods[0].NAVI:
+##        trgRecOver = record.CopyAsOverride(newMod)
+##        trgRecNew = record.CopyAsNew(newMod)
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].CELL:
+##        record.lightTemplate = record.lightTemplate #marks record as changed so it's fully copied
+##        trgCellOver = record.CopyAsOverride(newMod)
+##        trgCellNew = record.CopyAsNew(newMod)
+##        for npcRef in record.ACHR:
+##            npcRef.base = npcRef.base #marks record as changed so it's fully copied
+##            npcRef.CopyAsOverride(trgCellOver)
+##            npcRef.CopyAsNew(trgCellNew)
+##            npcRef.DeleteRecord()
+##        for creaRef in record.ACRE:
+##            creaRef.base = creaRef.base #marks record as changed so it's fully copied
+##            creaRef.CopyAsOverride(trgCellOver)
+##            creaRef.CopyAsNew(trgCellNew)
+##            creaRef.DeleteRecord()
+##        for objRef in record.REFR:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##
+##        for objRef in record.PGRE:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        for objRef in record.PMIS:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        for objRef in record.PBEA:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        for objRef in record.PFLA:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        for objRef in record.PCBE:
+##            objRef.base = objRef.base #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        for objRef in record.NAVM:
+##            objRef.version = objRef.version #marks record as changed so it's fully copied
+##            objRef.CopyAsOverride(trgCellOver)
+##            objRef.CopyAsNew(trgCellNew)
+##            objRef.DeleteRecord()
+##        record.DeleteRecord()
+##
+##    for record in Current.LoadOrderMods[0].WRLD:
+##        trgWrldOver = record.CopyAsOverride(newMod)
+##        trgWrldNew = record.CopyAsNew(newMod)
+##        cell = record.WorldCELL
+##        if(cell != None):
+##            cell.lightTemplate = cell.lightTemplate #marks record as changed so it's fully copied
+##            trgCellOver = cell.CopyAsOverride(trgWrldOver)
+##            trgCellNew = cell.CopyAsNew(trgWrldNew)
+##            for npcRef in cell.ACHR:
+##                npcRef.base = npcRef.base #marks record as changed so it's fully copied
+##                npcRef.CopyAsOverride(trgCellOver)
+##                npcRef.CopyAsNew(trgCellNew)
+##                npcRef.DeleteRecord()
+##            for creaRef in cell.ACRE:
+##                creaRef.base = creaRef.base #marks record as changed so it's fully copied
+##                creaRef.CopyAsOverride(trgCellOver)
+##                creaRef.CopyAsNew(trgCellNew)
+##                creaRef.DeleteRecord()
+##            for objRef in cell.REFR:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##
+##            for objRef in cell.PGRE:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in cell.PMIS:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in cell.PBEA:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in cell.PFLA:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in cell.PCBE:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in cell.NAVM:
+##                objRef.version = objRef.version #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            cell.DeleteRecord()
+##        for wrldCell in record.CELLS:
+##            wrldCell.lightTemplate = wrldCell.lightTemplate #marks record as changed so it's fully copied
+##            trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
+##            trgCellNew = wrldCell.CopyAsNew(trgWrldNew)
+##            cLand = wrldCell.LAND
+##            if(cLand != None):
+##                cLand.data_p = cLand.data_p #marks record as changed so it's fully copied
+##                cLand.CopyAsOverride(trgCellOver)
+##                cLand.CopyAsNew(trgCellNew)
+##                cLand.DeleteRecord()
+##            for npcRef in wrldCell.ACHR:
+##                npcRef.base = npcRef.base #marks record as changed so it's fully copied
+##                npcRef.CopyAsOverride(trgCellOver)
+##                npcRef.CopyAsNew(trgCellNew)
+##                npcRef.DeleteRecord()
+##            for creaRef in wrldCell.ACRE:
+##                creaRef.base = creaRef.base #marks record as changed so it's fully copied
+##                creaRef.CopyAsOverride(trgCellOver)
+##                creaRef.CopyAsNew(trgCellNew)
+##                creaRef.DeleteRecord()
+##            for objRef in wrldCell.REFR:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##
+##            for objRef in wrldCell.PGRE:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in wrldCell.PMIS:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in wrldCell.PBEA:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in wrldCell.PFLA:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in wrldCell.PCBE:
+##                objRef.base = objRef.base #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            for objRef in wrldCell.NAVM:
+##                objRef.version = objRef.version #marks record as changed so it's fully copied
+##                objRef.CopyAsOverride(trgCellOver)
+##                objRef.CopyAsNew(trgCellNew)
+##                objRef.DeleteRecord()
+##            wrldCell.DeleteRecord()
+##        record.DeleteRecord()
+##
+    for record in Current.LoadOrderMods[0].DIAL:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
+        for objRef in record.INFO:
+            objRef.CopyAsOverride(trgRecOver)
+            objRef.CopyAsNew(trgRecNew)
             objRef.DeleteRecord()
         record.DeleteRecord()
 
-    for record in Current.LoadOrderMods[0].WRLD:
-        trgWrldOver = record.CopyAsOverride(newMod)
-        trgWrldNew = record.CopyAsNew(newMod)
-        cell = record.WorldCELL
-        if(cell != None):
-            cell.lightTemplate = cell.lightTemplate #marks record as changed so it's fully copied
-            trgCellOver = cell.CopyAsOverride(trgWrldOver)
-            trgCellNew = cell.CopyAsNew(trgWrldNew)
-            for npcRef in cell.ACHR:
-                npcRef.base = npcRef.base #marks record as changed so it's fully copied
-                npcRef.CopyAsOverride(trgCellOver)
-                npcRef.CopyAsNew(trgCellNew)
-                npcRef.DeleteRecord()
-            for creaRef in cell.ACRE:
-                creaRef.base = creaRef.base #marks record as changed so it's fully copied
-                creaRef.CopyAsOverride(trgCellOver)
-                creaRef.CopyAsNew(trgCellNew)
-                creaRef.DeleteRecord()
-            for objRef in cell.REFR:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
+    for record in Current.LoadOrderMods[0].QUST:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
+        record.DeleteRecord()
 
-            for objRef in cell.PGRE:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in cell.PMIS:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in cell.PBEA:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in cell.PFLA:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in cell.PCBE:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in cell.NAVM:
-                objRef.version = objRef.version #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            cell.DeleteRecord()
-        for wrldCell in record.CELLS:
-            wrldCell.lightTemplate = wrldCell.lightTemplate #marks record as changed so it's fully copied
-            trgCellOver = wrldCell.CopyAsOverride(trgWrldOver)
-            trgCellNew = wrldCell.CopyAsNew(trgWrldNew)
-            cLand = wrldCell.LAND
-            if(cLand != None):
-                cLand.data_p = cLand.data_p #marks record as changed so it's fully copied
-                cLand.CopyAsOverride(trgCellOver)
-                cLand.CopyAsNew(trgCellNew)
-                cLand.DeleteRecord()
-            for npcRef in wrldCell.ACHR:
-                npcRef.base = npcRef.base #marks record as changed so it's fully copied
-                npcRef.CopyAsOverride(trgCellOver)
-                npcRef.CopyAsNew(trgCellNew)
-                npcRef.DeleteRecord()
-            for creaRef in wrldCell.ACRE:
-                creaRef.base = creaRef.base #marks record as changed so it's fully copied
-                creaRef.CopyAsOverride(trgCellOver)
-                creaRef.CopyAsNew(trgCellNew)
-                creaRef.DeleteRecord()
-            for objRef in wrldCell.REFR:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
+    for record in Current.LoadOrderMods[0].IDLE:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
+        record.DeleteRecord()
 
-            for objRef in wrldCell.PGRE:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in wrldCell.PMIS:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in wrldCell.PBEA:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in wrldCell.PFLA:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in wrldCell.PCBE:
-                objRef.base = objRef.base #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            for objRef in wrldCell.NAVM:
-                objRef.version = objRef.version #marks record as changed so it's fully copied
-                objRef.CopyAsOverride(trgCellOver)
-                objRef.CopyAsNew(trgCellNew)
-                objRef.DeleteRecord()
-            wrldCell.DeleteRecord()
+    for record in Current.LoadOrderMods[0].PACK:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
+        record.DeleteRecord()
+
+    for record in Current.LoadOrderMods[0].CSTY:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
+        record.DeleteRecord()
+
+    for record in Current.LoadOrderMods[0].LSCR:
+        trgRecOver = record.CopyAsOverride(newMod)
+        trgRecNew = record.CopyAsNew(newMod)
         record.DeleteRecord()
 
     print "TestReadWrite:Save Test - TestRW.esp"
@@ -12122,5 +12411,5 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-TestRegressions()
-##TestReadWrite()
+##TestRegressions()
+TestReadWrite()

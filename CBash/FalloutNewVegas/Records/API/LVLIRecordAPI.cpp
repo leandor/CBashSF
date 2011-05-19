@@ -270,7 +270,7 @@ bool LVLIRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             LVLD.value = *(UINT8 *)FieldValue;
             break;
         case 14: //flags
-            LVLF.value = *(UINT8 *)FieldValue;
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 15: //globalId
             LVLG.value = *(FORMID *)FieldValue;

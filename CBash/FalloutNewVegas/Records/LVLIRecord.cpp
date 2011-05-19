@@ -122,7 +122,7 @@ void LVLIRecord::SetFlagMask(UINT8 Mask)
 
 UINT32 LVLIRecord::GetType()
     {
-    return REV32(LVLC);
+    return REV32(LVLI);
     }
 
 STRING LVLIRecord::GetStrType()

@@ -230,7 +230,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 1: //unknownId
                             return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value;
                         case 2: //unknown
-                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
+                            return QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
                         default:
                             return NULL;
                         }
@@ -256,7 +256,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                         case 1: //unknownId
                             return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value;
                         case 2: //unknown
-                            return &QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
+                            return QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value;
                         default:
                             return NULL;
                         }
@@ -343,7 +343,8 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                             QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value = *(FORMID *)FieldValue;
                             return true;
                         case 2: //unknown
-                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
+                            QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.Load();
+                            *QSTI.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
                             break;
                         default:
                             break;
@@ -384,7 +385,8 @@ bool DIALRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                             QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFC.value = *(FORMID *)FieldValue;
                             return true;
                         case 2: //unknown
-                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
+                            QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFX.Load();
+                            *QSTR.value[ListIndex]->Unknown.value[ListX2Index]->INFX.value = *(SINT32 *)FieldValue;
                             break;
                         default:
                             break;

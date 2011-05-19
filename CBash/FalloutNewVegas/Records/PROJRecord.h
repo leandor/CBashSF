@@ -37,6 +37,7 @@ class PROJRecord : public FNVRecord //Projectile
             FORMID  explosion, sound;
             FLOAT32 flashDuration, fadeDuration, impactForce;
             FORMID  soundCountdown, soundDisable, defaultWeaponSource;
+            //Below are not always in chunk...
             FLOAT32 rotX, rotY, rotZ, bouncyMult;
 
             PROJDATA();

@@ -190,7 +190,7 @@ void * STATRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 17: //modelFlags
             return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
         case 18: //passSound
-            return BRUS.IsLoaded() ? &BRUS.value : NULL;
+            return BRUS.value;
         case 19: //loopSound
             return RNAM.IsLoaded() ? &RNAM.value : NULL;
         default:
@@ -294,7 +294,8 @@ bool STATRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
         case 18: //passSound
-            BRUS.value = *(SINT8 *)FieldValue;
+            BRUS.Load();
+            *BRUS.value = *(SINT8 *)FieldValue;
             break;
         case 19: //loopSound
             RNAM.value = *(FORMID *)FieldValue;

@@ -28,6 +28,8 @@ namespace FNV
 class CREARecord : public FNVRecord //Creature
     {
     private:
+        #pragma pack(push)
+        #pragma pack(1)
         struct CREADATA
             {
             UINT8   creatureType, combat, magic, stealth;
@@ -42,6 +44,7 @@ class CREARecord : public FNVRecord //Creature
             bool operator ==(const CREADATA &other) const;
             bool operator !=(const CREADATA &other) const;
             };
+        #pragma pack(pop)
 
         struct CREASound // Sound
             {
@@ -422,8 +425,8 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<UINT8> RNAM; //Attack reach
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
-        OptSimpleFloatSubRecord<flt_0> TNAM; //Turning Speed
-        OptSimpleFloatSubRecord<flt_1> BNAM; //Base Scale
+        SemiOptSimpleFloatSubRecord<flt_0> TNAM; //Turning Speed
+        SemiOptSimpleFloatSubRecord<flt_1> BNAM; //Base Scale
         OptSimpleFloatSubRecord<flt_0> WNAM; //Foot Weight
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level

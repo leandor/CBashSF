@@ -278,6 +278,7 @@ void NAVIRecord::NAVINVCI::Write(FileWriter &writer)
         cSize += unknown3.size() * sizeof(FORMID);
         cSize += doors.size() * sizeof(FORMID);
         writer.record_write_subheader(REV32(NVCI), cSize);
+        writer.record_write(&unknown1, sizeof(FORMID));
         cSize = unknown2.size();
         writer.record_write(&cSize, 4);
         if(cSize)

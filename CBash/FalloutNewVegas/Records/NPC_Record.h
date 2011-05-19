@@ -28,6 +28,8 @@ namespace FNV
 class NPC_Record : public FNVRecord //Non-Player Character
     {
     private:
+        #pragma pack(push)
+        #pragma pack(1)
         struct NPC_DATA // Data
             {
             SINT32  baseHealth; // Base Health
@@ -42,6 +44,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
             bool operator ==(const NPC_DATA &other) const;
             bool operator !=(const NPC_DATA &other) const;
             };
+        #pragma pack(pop)
 
         struct NPC_DNAM // Skill Data
             {
@@ -207,7 +210,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         OptSubRecord<NPC_DNAM> DNAM; //Skill Data
         UnorderedSparseArray<FORMID> PNAM; //Head Parts
         OptSimpleSubRecord<FORMID> HNAM; //Hair
-        OptSimpleFloatSubRecord<flt_0> LNAM; //Hair length
+        SemiOptSimpleFloatSubRecord<flt_0> LNAM; //Hair length
         OptSimpleSubRecord<FORMID> ENAM; //Eyes
         OptSubRecord<GENCLR> HCLR; //Hair Color
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
@@ -216,8 +219,8 @@ class NPC_Record : public FNVRecord //Non-Player Character
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
         ReqSimpleSubRecord<UINT16> NAM5; //Unknown
-        OptSimpleFloatSubRecord<flt_0> NAM6; //Height
-        OptSimpleFloatSubRecord<flt_0> NAM7; //Weight
+        SemiOptSimpleFloatSubRecord<flt_0> NAM6; //Height
+        SemiOptSimpleFloatSubRecord<flt_0> NAM7; //Weight
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);

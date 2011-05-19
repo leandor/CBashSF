@@ -31,7 +31,7 @@ class CELLRecord : public FNVRecord //Cell
         struct CELLXCLC
             {
             SINT32  posX, posY;
-            UINT32  flags;
+            UINT32  flags; //Not always present in chunk
 
             CELLXCLC();
             ~CELLXCLC();

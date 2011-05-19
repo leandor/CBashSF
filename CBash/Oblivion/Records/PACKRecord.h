@@ -151,33 +151,6 @@ class PACKRecord : public Record
 
         bool   VisitFormIDs(FormIDOp &op);
 
-        bool   IsAIFind();
-        void   IsAIFind(bool value);
-        bool   IsAIFollow();
-        void   IsAIFollow(bool value);
-        bool   IsAIEscort();
-        void   IsAIEscort(bool value);
-        bool   IsAIEat();
-        void   IsAIEat(bool value);
-        bool   IsAISleep();
-        void   IsAISleep(bool value);
-        bool   IsAIWander();
-        void   IsAIWander(bool value);
-        bool   IsAITravel();
-        void   IsAITravel(bool value);
-        bool   IsAIAccompany();
-        void   IsAIAccompany(bool value);
-        bool   IsAIUseItemAt();
-        void   IsAIUseItemAt(bool value);
-        bool   IsAIAmbush();
-        void   IsAIAmbush(bool value);
-        bool   IsAIFleeNotCombat();
-        void   IsAIFleeNotCombat(bool value);
-        bool   IsAICastMagic();
-        void   IsAICastMagic(bool value);
-        bool   IsAIType(UINT8 Type);
-        void   SetAIType(UINT8 Type);
-
         bool   IsOffersServices();
         void   IsOffersServices(bool value);
         bool   IsMustReachLocation();
@@ -222,6 +195,33 @@ class PACKRecord : public Record
         void   IsNoIdleAnims(bool value);
         bool   IsFlagMask(UINT32 Mask, bool Exact=false);
         void   SetFlagMask(UINT32 Mask);
+
+        bool   IsAIFind();
+        void   IsAIFind(bool value);
+        bool   IsAIFollow();
+        void   IsAIFollow(bool value);
+        bool   IsAIEscort();
+        void   IsAIEscort(bool value);
+        bool   IsAIEat();
+        void   IsAIEat(bool value);
+        bool   IsAISleep();
+        void   IsAISleep(bool value);
+        bool   IsAIWander();
+        void   IsAIWander(bool value);
+        bool   IsAITravel();
+        void   IsAITravel(bool value);
+        bool   IsAIAccompany();
+        void   IsAIAccompany(bool value);
+        bool   IsAIUseItemAt();
+        void   IsAIUseItemAt(bool value);
+        bool   IsAIAmbush();
+        void   IsAIAmbush(bool value);
+        bool   IsAIFleeNotCombat();
+        void   IsAIFleeNotCombat(bool value);
+        bool   IsAICastMagic();
+        void   IsAICastMagic(bool value);
+        bool   IsAIType(UINT8 Type);
+        void   SetAIType(UINT8 Type);
 
         bool   IsLocNearReference();
         void   IsLocNearReference(bool value);

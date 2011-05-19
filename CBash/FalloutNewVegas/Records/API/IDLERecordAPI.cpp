@@ -75,63 +75,190 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 10: //mods Alternate Textures
-            return ISTRING_FIELD;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 13: //modelFlags
-            return UINT8_FIELD;
-        case 14: //ctda Conditions
-            return UINT8_FIELD;
-        case 15: //ctda_p Conditions
-            switch(WhichAttribute)
+            if(ListFieldID == 0) //altTextures
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 3;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 16: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 17: //ctda Conditions
-            return UINT32_FIELD;
-        case 18: //ctda_p Conditions
-            switch(WhichAttribute)
+        case 11: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 12: //conditions
+            if(ListFieldID == 0) //conditions
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 4;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)CTDA.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return UINT8_FLAG_TYPE_FIELD;
+                case 2: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 3;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 3: //compValue
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_FLOAT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 4: //ifunc
+                    return UINT32_TYPE_FIELD;
+                case 5: //param1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.first)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 6: //param2
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(CTDA.value[ListIndex]->ifunc);
+                            if(curCTDAFunction != FNVFunction_Arguments.end())
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.second)
+                                    {
+                                    case eFORMID:
+                                        return FORMID_FIELD;
+                                    case eUINT32:
+                                        return UINT32_FIELD;
+                                    case eVATSPARAM:
+                                        if(CTDA.value[ListIndex]->param1 < VATSFUNCTIONSIZE)
+                                            {
+                                            switch(VATSFunction_Argument[CTDA.value[ListIndex]->param1])
+                                                {
+                                                case eFORMID:
+                                                    return FORMID_FIELD;
+                                                case eUINT32:
+                                                    return UINT32_FIELD;
+                                                default:
+                                                    return UNKNOWN_FIELD;
+                                                }
+
+                                            }
+                                        return UNKNOWN_FIELD;
+                                    default:
+                                        return UNKNOWN_FIELD;
+                                    }
+                                }
+                            }
+                            return UNKNOWN_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 7: //runOnType
+                    return UINT32_TYPE_FIELD;
+                case 8: //reference
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsResultOnReference() ? FORMID_FIELD : UINT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 19: //ctda_p Conditions
+        case 13: //animations
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
+                    return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return 4;
+                    return (UINT32)ANAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 20: //ctda Conditions
-            return UINT32_FIELD;
-        case 21: //ctda Conditions
-            return UNPARSED_FIELD;
-        case 22: //anam Related Idle Animations
-            return UNPARSED_FIELD;
-        case 23: //data DATA ,, Struct
+        case 14: //group
             return UINT8_FIELD;
-        case 24: //data DATA ,, Struct
+        case 15: //minLooping
             return UINT8_FIELD;
-        case 25: //data DATA ,, Struct
+        case 16: //maxLooping
             return UINT8_FIELD;
-        case 26: //data_p DATA ,, Struct
+        case 17: //unused1
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -142,11 +269,11 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 27: //data DATA ,, Struct
+        case 18: //replayDelay
             return SINT16_FIELD;
-        case 28: //data DATA ,, Struct
-            return UINT8_FIELD;
-        case 29: //data_p DATA ,, Struct
+        case 19: //flags
+            return UINT8_FLAG_FIELD;
+        case 20: //unused2
             switch(WhichAttribute)
                 {
                 case 0: //fieldType
@@ -156,6 +283,7 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+            return UNKNOWN_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -187,50 +315,72 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 10: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 11: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value11 : NULL;
-        case 12: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value12 : NULL;
-        case 13: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value13 : NULL;
-        case 14: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value14 : NULL;
-        case 15: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value15[0] : NULL;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 16: //ctda Conditions
-            return UNPARSEDGET_FIELD16;
-        case 17: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value17 : NULL;
-        case 18: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value18[0] : NULL;
+        case 11: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 12: //conditions
+            if(ListIndex >= CTDA.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    return &CTDA.value[ListIndex]->operType;
+                case 2: //unused1
+                    *FieldValues = &CTDA.value[ListIndex]->unused1[0];
+                    return NULL;
+                case 3: //compValue
+                    return &CTDA.value[ListIndex]->compValue;
+                case 4: //ifunc
+                    return &CTDA.value[ListIndex]->ifunc;
+                case 5: //param1
+                    return &CTDA.value[ListIndex]->param1;
+                case 6: //param2
+                    return &CTDA.value[ListIndex]->param2;
+                case 7: //runOnType
+                    return &CTDA.value[ListIndex]->runOnType;
+                case 8: //reference
+                    return &CTDA.value[ListIndex]->reference;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 19: //ctda_p Conditions
-            *FieldValues = CTDAs.IsLoaded() ? &CTDAs->value19[0] : NULL;
+        case 13: //animations
+            *FieldValues = ANAM.value.size() ? &ANAM.value[0] : NULL;
             return NULL;
-        case 20: //ctda Conditions
-            return CTDAs.IsLoaded() ? &CTDAs->value20 : NULL;
-        case 21: //ctda Conditions
-            return UNPARSEDGET_FIELD21;
-        case 22: //anam Related Idle Animations
-            return UNPARSEDGET_FIELD22;
-        case 23: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value23 : NULL;
-        case 24: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value24 : NULL;
-        case 25: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value25 : NULL;
-        case 26: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value26[0] : NULL;
+        case 14: //group
+            return &DATA.value.group;
+        case 15: //minLooping
+            return &DATA.value.minLooping;
+        case 16: //maxLooping
+            return &DATA.value.maxLooping;
+        case 17: //unused1
+            *FieldValues = &DATA.value.unused1;
             return NULL;
-        case 27: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value27 : NULL;
-        case 28: //data DATA ,, Struct
-            return DATA.IsLoaded() ? &DATA->value28 : NULL;
-        case 29: //data_p DATA ,, Struct
-            *FieldValues = DATA.IsLoaded() ? &DATA->value29[0] : NULL;
+        case 18: //replayDelay
+            return &DATA.value.replayDelay;
+        case 19: //flags
+            return &DATA.value.flags;
+        case 20: //unused2
+            *FieldValues = &DATA.value.unused2;
             return NULL;
         default:
             return NULL;
@@ -277,100 +427,116 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 11: //mods Alternate Textures
+        case 11: //modelFlags
             MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value11 = *(FORMID *)FieldValue;
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
+            break;
+        case 12: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = *(UINT8 *)FieldValue;
+                    break;
+                case 2: //unused1
+                    if(ArraySize != 3)
+                        break;
+                    CTDA.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    break;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = *(FORMID *)FieldValue;
+                    return true;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
+                    return true;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = *(UINT32 *)FieldValue;
+                    return true;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = *(UINT32 *)FieldValue;
+                    return true;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = *(UINT32 *)FieldValue;
+                    return true;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    return true;
+                default:
+                    break;
+                }
+            break;
+        case 13: //animations
+            ANAM.value.resize(ArraySize);
+            for(UINT32 x = 0; x < ArraySize; x++)
+                ANAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
-        case 12: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value12 = *(SINT32 *)FieldValue;
+        case 14: //group
+            DATA.value.group = *(UINT8 *)FieldValue;
             break;
-        case 13: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value13 = *(UINT8 *)FieldValue;
+        case 15: //minLooping
+            DATA.value.minLooping = *(UINT8 *)FieldValue;
             break;
-        case 14: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value14 = *(UINT8 *)FieldValue;
+        case 16: //maxLooping
+            DATA.value.maxLooping = *(UINT8 *)FieldValue;
             break;
-        case 15: //ctda_p Conditions
-            if(ArraySize != 3)
-                break;
-            CTDAs.Load();
-            CTDAs->value15[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value15[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value15[2] = ((UINT8ARRAY)FieldValue)[2];
-            break;
-        case 16: //ctda Conditions
-            return UNPARSEDGET_FIELD16;
-        case 17: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value17 = *(UINT32 *)FieldValue;
-            break;
-        case 18: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            CTDAs.Load();
-            CTDAs->value18[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value18[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value18[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value18[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 19: //ctda_p Conditions
-            if(ArraySize != 4)
-                break;
-            CTDAs.Load();
-            CTDAs->value19[0] = ((UINT8ARRAY)FieldValue)[0];
-            CTDAs->value19[1] = ((UINT8ARRAY)FieldValue)[1];
-            CTDAs->value19[2] = ((UINT8ARRAY)FieldValue)[2];
-            CTDAs->value19[3] = ((UINT8ARRAY)FieldValue)[3];
-            break;
-        case 20: //ctda Conditions
-            CTDAs.Load();
-            CTDAs->value20 = *(UINT32 *)FieldValue;
-            break;
-        case 21: //ctda Conditions
-            return UNPARSEDGET_FIELD21;
-        case 22: //anam Related Idle Animations
-            return UNPARSEDGET_FIELD22;
-        case 23: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value23 = *(UINT8 *)FieldValue;
-            break;
-        case 24: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value24 = *(UINT8 *)FieldValue;
-            break;
-        case 25: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value25 = *(UINT8 *)FieldValue;
-            break;
-        case 26: //data_p DATA ,, Struct
+        case 17: //unused1
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value26[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
-        case 27: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value27 = *(SINT16 *)FieldValue;
+        case 18: //replayDelay
+            DATA.value.replayDelay = *(SINT16 *)FieldValue;
             break;
-        case 28: //data DATA ,, Struct
-            DATA.Load();
-            DATA->value28 = *(UINT8 *)FieldValue;
+        case 19: //flags
+            SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 29: //data_p DATA ,, Struct
+        case 20: //unused2
             if(ArraySize != 1)
                 break;
-            DATA.Load();
-            DATA->value29[0] = ((UINT8ARRAY)FieldValue)[0];
+            DATA.value.unused2 = ((UINT8ARRAY)FieldValue)[0];
             break;
         default:
             break;
@@ -380,6 +546,9 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 
 void IDLERecord::DeleteField(FIELD_IDENTIFIERS)
     {
+    FNVMODS defaultMODS;
+    FNVCTDA defaultCTDA;
+    IDLEDATA defaultDATA;
     switch(FieldID)
         {
         case 1: //flags1
@@ -410,66 +579,104 @@ void IDLERecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 11: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 12: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 13: //modelFlags
+        case 11: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 14: //ctda Conditions
-            CTDAs.Unload();
+        case 12: //conditions
+            if(ListFieldID == 0) //conditionsSize
+                {
+                CTDA.Unload();
+                return;
+                }
+
+            if(ListIndex >= CTDA.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //operType
+                    CTDA.value[ListIndex]->operType = defaultCTDA.operType;
+                    return;
+                case 2: //unused1
+                    CTDA.value[ListIndex]->unused1[0] = defaultCTDA.unused1[0];
+                    CTDA.value[ListIndex]->unused1[1] = defaultCTDA.unused1[1];
+                    CTDA.value[ListIndex]->unused1[2] = defaultCTDA.unused1[2];
+                    return;
+                case 3: //compValue
+                    CTDA.value[ListIndex]->compValue = defaultCTDA.compValue;
+                    return;
+                case 4: //ifunc
+                    CTDA.value[ListIndex]->ifunc = defaultCTDA.ifunc;
+                    return;
+                case 5: //param1
+                    CTDA.value[ListIndex]->param1 = defaultCTDA.param1;
+                    return;
+                case 6: //param2
+                    CTDA.value[ListIndex]->param2 = defaultCTDA.param2;
+                    return;
+                case 7: //runOnType
+                    CTDA.value[ListIndex]->runOnType = defaultCTDA.runOnType;
+                    return;
+                case 8: //reference
+                    CTDA.value[ListIndex]->reference = defaultCTDA.reference;
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 15: //ctda_p Conditions
-            CTDAs.Unload();
+        case 13: //animations
+            ANAM.Unload();
             return;
-        case 16: //ctda Conditions
-            return UNPARSEDDEL_FIELD16;
-        case 17: //ctda Conditions
-            CTDAs.Unload();
+        case 14: //group
+            DATA.value.group = defaultDATA.group;
             return;
-        case 18: //ctda_p Conditions
-            CTDAs.Unload();
+        case 15: //minLooping
+            DATA.value.minLooping = defaultDATA.minLooping;
             return;
-        case 19: //ctda_p Conditions
-            CTDAs.Unload();
+        case 16: //maxLooping
+            DATA.value.maxLooping = defaultDATA.maxLooping;
             return;
-        case 20: //ctda Conditions
-            CTDAs.Unload();
+        case 17: //unused1
+            DATA.value.unused1 = defaultDATA.unused1;
             return;
-        case 21: //ctda Conditions
-            return UNPARSEDDEL_FIELD21;
-        case 22: //anam Related Idle Animations
-            return UNPARSEDDEL_FIELD22;
-        case 23: //data DATA ,, Struct
-            DATA.Unload();
+        case 18: //replayDelay
+            DATA.value.replayDelay = defaultDATA.replayDelay;
             return;
-        case 24: //data DATA ,, Struct
-            DATA.Unload();
+        case 19: //flags
+            SetFlagMask(defaultDATA.flags);
             return;
-        case 25: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 26: //data_p DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 27: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 28: //data DATA ,, Struct
-            DATA.Unload();
-            return;
-        case 29: //data_p DATA ,, Struct
-            DATA.Unload();
+        case 20: //unused2
+            DATA.value.unused2 = defaultDATA.unused2;
             return;
         default:
             return;

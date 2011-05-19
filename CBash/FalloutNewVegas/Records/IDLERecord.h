@@ -30,8 +30,9 @@ class IDLERecord : public FNVRecord //Idle Animation
     private:
         struct IDLEDATA
             {
-            UINT8   animGroupSection, minLooping, maxLooping, unused1;
+            UINT8   group, minLooping, maxLooping, unused1;
             SINT16  replayDelay;
+            //Below are not always present on chunk...
             UINT8   flags, unused2;
 
             IDLEDATA();
@@ -41,17 +42,37 @@ class IDLERecord : public FNVRecord //Idle Animation
             bool operator !=(const IDLEDATA &other) const;
             };
 
+        enum groupType
+            {
+            eIdle   = 0,
+            eMovement   = 1,
+            eLeftArm     = 2,
+            eLeftHand    = 3,
+            eWeapon = 4,
+            eWeaponUp = 5,
+            eWeaponDown = 6,
+            eSpecialIdle = 7,
+            eWholeBody   = 20,
+            eUpperBody   = 21
+            };
+
+        enum groupFlag
+            {
+            fIsUnknown1 = 0x40,
+            fIsNotReturnFile = 0x80
+            };
+
         enum flagsFlags
             {
-            fIsNoAttacking = 0x00000001
+            fIsNoAttacking = 0x01
             };
 
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
-        std::vector<ReqSubRecord<FNVCTDA> *> CTDA; //Conditions
-        std::vector<FORMID> ANAM; //Related Idle Animations
-        OptSubRecord<IDLEDATA> DATA; //Data
+        OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
+        UnorderedPackedArray<FORMID> ANAM; //Related Idle Animations
+        ReqSubRecord<IDLEDATA> DATA; //Data
 
         IDLERecord(unsigned char *_recData=NULL);
         IDLERecord(IDLERecord *srcRecord);
@@ -63,6 +84,38 @@ class IDLERecord : public FNVRecord //Idle Animation
         void   IsNoAttacking(bool value);
         bool   IsFlagMask(UINT8 Mask, bool Exact=false);
         void   SetFlagMask(UINT8 Mask);
+
+        bool   IsIdle();
+        void   IsIdle(bool value);
+        bool   IsMovement();
+        void   IsMovement(bool value);
+        bool   IsLeftArm();
+        void   IsLeftArm(bool value);
+        bool   IsLeftHand();
+        void   IsLeftHand(bool value);
+        bool   IsWeapon();
+        void   IsWeapon(bool value);
+        bool   IsWeaponUp();
+        void   IsWeaponUp(bool value);
+        bool   IsWeaponDown();
+        void   IsWeaponDown(bool value);
+        bool   IsSpecialIdle();
+        void   IsSpecialIdle(bool value);
+        bool   IsWholeBody();
+        void   IsWholeBody(bool value);
+        bool   IsUpperBody();
+        void   IsUpperBody(bool value);
+        bool   IsType(UINT8 Type);
+        void   SetType(UINT8 Type);
+
+        bool   IsUnknown1();
+        void   IsUnknown1(bool value);
+        bool   IsNotReturnFile();
+        void   IsNotReturnFile(bool value);
+        bool   IsReturnFile();
+        void   IsReturnFile(bool value);
+        bool   IsIdleFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetIdleFlagMask(UINT8 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

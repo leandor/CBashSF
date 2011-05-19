@@ -1032,6 +1032,7 @@ struct FNVCTDA //Condition
     FORMID_OR_FLOAT32 compValue; //Float or Global (if fIsUseGlobal is true)
     UINT32  ifunc;
     FORMID_OR_UINT32 param1, param2;
+    //Below are not always present on chunk...
     UINT32  runOnType; //Run On
     FORMID_OR_UINT32 reference; //Reference (if runOn == 2) or Unused
 
@@ -1261,6 +1262,7 @@ struct FNVEQUIPDNAM
     {
     SINT16  AR; //Armor Resistance
     UINT16  flags; //Flags
+    //Below are not always present in chunk
     FLOAT32 DT; //Damage Threshold
     UINT8   unknown[4]; //Unknown ?
 
@@ -1566,7 +1568,7 @@ struct FNVXLOC
     {
     UINT8   level, unused1[3];
     FORMID  key;
-    UINT8   flags, unused2[3], unknown[8];
+    UINT8   flags, unused2[3], unknown[8]; //unknown[8] not always present on chunk...
 
     FNVXLOC();
     ~FNVXLOC();

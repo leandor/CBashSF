@@ -928,7 +928,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCHR chunk\n", formID);
+                        printf("  INFO: %08X - Unexpected SCVR chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
@@ -947,7 +947,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCR_.value.back()->isSCRO = false;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCHR chunk\n", formID);
+                        printf("  INFO: %08X - Unexpected SCRV chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
@@ -966,7 +966,7 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCR_.value.back()->isSCRO = true;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCHR chunk\n", formID);
+                        printf("  INFO: %08X - Unexpected SCRO chunk\n", formID);
                         printf("  Size = %i\n", subSize);
                         printf("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
@@ -1060,7 +1060,7 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     WRITEEMPTY(NEXT);
     EndSCHR.value.numRefs = EndSCR_.value.size(); //Just to ensure that the value is correct
     EndSCHR.value.compiledSize = EndSCDA.GetSize(); //Just to ensure that the value is correct
-    //for(UINT32 x = 0; x < BeginVARS.value.size(); ++x) //Just to ensure that the value is correct
+    //for(UINT32 x = 0; x < EndVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    EndSCHR.value.lastIndex = (EndSCHR.value.lastIndex > EndVARS.value[x]->SLSD.value.index) ? EndSCHR.value.lastIndex : EndVARS.value[x]->SLSD.value.index;
     WRITEAS(EndSCHR, SCHR);
     WRITEAS(EndSCDA, SCDA);

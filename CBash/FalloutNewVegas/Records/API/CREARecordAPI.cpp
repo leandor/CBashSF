@@ -764,9 +764,9 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 75: //partData
             return &PNAM.value;
         case 76: //turningSpeed
-            return &TNAM.value;
+            return TNAM.value;
         case 77: //baseScale
-            return &BNAM.value;
+            return BNAM.value;
         case 78: //footWeight
             return &WNAM.value;
         case 79: //impactType
@@ -1211,10 +1211,12 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             PNAM.value = *(FORMID *)FieldValue;
             return true;
         case 76: //turningSpeed
-            TNAM.value = *(FLOAT32 *)FieldValue;
+            TNAM.Load();
+            *TNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 77: //baseScale
-            BNAM.value = *(FLOAT32 *)FieldValue;
+            BNAM.Load();
+            *BNAM.value = *(FLOAT32 *)FieldValue;
             break;
         case 78: //footWeight
             WNAM.value = *(FLOAT32 *)FieldValue;

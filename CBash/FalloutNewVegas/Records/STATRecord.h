@@ -47,7 +47,7 @@ class STATRecord : public FNVRecord //Static
         StringRecord EDID; //Editor ID
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         OptSubRecord<FNVMODEL> MODL; //Model
-        OptSimpleSubRecord<SINT8> BRUS; //Passthrough Sound
+        SemiOptSimpleSubRecord<SINT8> BRUS; //Passthrough Sound
         OptSimpleSubRecord<FORMID> RNAM; //Sound - Looping/Random
 
         STATRecord(unsigned char *_recData=NULL);

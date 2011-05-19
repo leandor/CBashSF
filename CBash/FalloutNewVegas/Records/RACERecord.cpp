@@ -2029,7 +2029,7 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
     WRITE(EDID);
     WRITE(FULL);
     WRITE(DESC);
-    WRITE(XNAM);
+    XNAM.Write(REV32(XNAM), writer, true);
     WRITE(DATA);
     WRITE(ONAM);
     WRITE(YNAM);
