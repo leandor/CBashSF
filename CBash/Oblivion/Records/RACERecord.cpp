@@ -437,9 +437,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -454,9 +454,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     default:
                         //ERROR
-                        //printf("FileName = %s\n", FileName);
-                        printf("  RACE: %08X - Unexpected NAM%01I: %i\n", formID, curNAM);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("FileName = %s\n", FileName);
+                        printer("  RACE: %08X - Unexpected NAM%01I: %i\n", formID, curNAM);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -505,9 +505,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -532,9 +532,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected ICON under NAM%01I: %i\n", formID, curNAM);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected ICON under NAM%01I: %i\n", formID, curNAM);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -559,18 +559,18 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected ICON under NAM%01i: indx = %i\n", formID, curNAM, curINDX);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected ICON under NAM%01i: indx = %i\n", formID, curNAM, curINDX);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
                         break;
                     default:
                         //ERROR
-                        //printf("FileName = %s\n", FileName);
-                        printf("  RACE: %08X - Unexpected ICON under NAM%01i\n", formID, curNAM);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("FileName = %s\n", FileName);
+                        printer("  RACE: %08X - Unexpected ICON under NAM%01i\n", formID, curNAM);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -619,9 +619,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -636,9 +636,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     default:
                         //ERROR
-                        //printf("FileName = %s\n", FileName);
-                        printf("  RACE: %08X - Unexpected MODB under NAM%01I: %i\n", formID, curNAM);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("FileName = %s\n", FileName);
+                        printer("  RACE: %08X - Unexpected MODB under NAM%01I: %i\n", formID, curNAM);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -687,9 +687,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                                 break;
                             default:
                                 //ERROR
-                                //printf("FileName = %s\n", FileName);
-                                printf("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printf("  CurPos = %04x\n\n", curPos - 6);
+                                //printer("FileName = %s\n", FileName);
+                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
+                                printer("  CurPos = %04x\n\n", curPos - 6);
                                 curPos = recSize;
                                 break;
                             }
@@ -704,9 +704,9 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         break;
                     default:
                         //ERROR
-                        //printf("FileName = %s\n", FileName);
-                        printf("  RACE: %08X - Unexpected MODT under NAM%01I: %i\n", formID, curNAM);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("FileName = %s\n", FileName);
+                        printer("  RACE: %08X - Unexpected MODT under NAM%01I: %i\n", formID, curNAM);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
@@ -721,7 +721,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized HNAM size: %i\n", subSize);
+                    printer("  Unrecognized HNAM size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -735,7 +735,7 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized ENAM size: %i\n", subSize);
+                    printer("  Unrecognized ENAM size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -752,10 +752,10 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SNAM.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  RACE: Unknown subType = %04X\n", subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  RACE: Unknown subType = %04X\n", subType);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

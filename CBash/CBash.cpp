@@ -29,50 +29,8 @@ GPL License and Copyright Notice ============================================
 
 #include "CBash.h"
 #include <vector>
+#include <stdarg.h>
 //#include "mmgr.h"
-
-#ifdef CBASH_USE_LOGGING
-    //#include <boost/log/utility/init/common_attributes.hpp>
-    //#include <boost/log/attributes/current_process_id.hpp>
-
-    namespace logging = boost::log;
-    namespace flt = boost::log::filters;
-    namespace fmt = boost::log::formatters;
-    namespace sinks = boost::log::sinks;
-    namespace attrs = boost::log::attributes;
-    namespace src = boost::log::sources;
-    namespace keywords = boost::log::keywords;
-
-    // The backend performs a callback to the specified function
-    // Primarily used to send messages back to python as they occur
-
-    class callback_backend : public sinks::basic_formatting_sink_backend< char, char > // Character type
-        {
-        public:
-            typedef SINT32 (*CallbackFunc)(const STRING);
-
-        private:
-            // The callback for every logged file
-            CallbackFunc const LoggingCallback;
-
-        public:
-            // The function consumes the log records that come from the frontend
-            void do_consume(record_type const& rec, target_string_type const& formatted_message);
-
-            // The constructor initializes the internal data
-            explicit callback_backend(CallbackFunc _LoggingCallback):LoggingCallback(_LoggingCallback)
-                {
-                //
-                }
-        };
-
-    // The method puts the formatted message to the callback
-    void callback_backend::do_consume(record_type const& rec, target_string_type const& formatted_message)
-        {
-        //printf("%s\n", formatted_message.c_str());
-        LoggingCallback(formatted_message.c_str());
-        }
-#endif
 
 static std::vector<Collection *> Collections;
 #ifdef CBASH_CALLTIMING
@@ -188,123 +146,37 @@ UINT32 GetVersionRevision()
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Logging action functions
-#ifdef CBASH_USE_LOGGING
-    // This function registers my_backend sink in the logging library
-    // Complete sink type
-    typedef sinks::synchronous_sink< callback_backend > sink_t;
-
-    void init_logging(SINT32 (*_LoggingCallback)(const STRING))
+int logback_printer(const char * _Format, ...)
     {
-        boost::shared_ptr< logging::core > core = logging::core::get();
-
-        attrs::named_scope Scope;
-        core->add_thread_attribute("Scope", Scope);
-
-        // Also let's add some commonly used attributes, like timestamp and record counter.
-        //logging::add_common_attributes();
-
-        attrs::counter< unsigned int > RecordID(1);
-
-        // Since we intend to count all logging records ever made by the application,
-        // this attribute should clearly be global.
-        core->add_global_attribute("RecordID", RecordID);
-
-        // One can construct backend separately and pass it to the frontend
-        boost::shared_ptr< callback_backend > backend(new callback_backend(_LoggingCallback));
-        boost::shared_ptr< sink_t > sink1(new sink_t(backend));
-        core->add_sink(sink1);
-
-        boost::shared_ptr< sink_t > sink2(new sink_t(backend));
-        core->add_sink(sink2);
-
-        sink2->set_filter
-            (
-                flt::attr< severity_level >("Severity", std::nothrow) >= warning
-            );
-
-        sink2->locked_backend()->set_formatter
-            (
-                fmt::stream
-                //<< "PID = " << fmt::attr< boost::log::aux::process::id >("ProcessID") // First an attribute "RecordID" is written to the log
-                << fmt::attr("RecordID") << ": " // First an attribute "RecordID" is written to the log
-                //<< fmt::if_(flt::has_attr("ThreadID"))
-                //    [
-                //        fmt::stream << "<" << fmt::attr< attrs::current_thread_id::value_type >("ThreadID") // First an attribute "RecordID" is written to the log
-                //    ]
-                 << fmt::attr< severity_level >("Severity", std::nothrow) << " - "
-                << fmt::date_time< boost::posix_time::ptime >("TimeStamp", "%m.%d.%Y %H:%M:%S.%f") << "]"
-                << "] [" // then this delimiter separates it from the rest of the line
-                << fmt::if_(flt::has_attr("Tag"))
-                   [
-                       fmt::stream << fmt::attr< std::string >("Tag") << "] [" // yet another delimiter
-                   ]
-                << fmt::named_scope("Scope", keywords::iteration = fmt::forward) << "] "
-                << fmt::message() // here goes the log record text
-            );
+    int nSize = 0;
+    char buff[1024];
+    va_list args;
+    va_start(args, _Format);
+    nSize = vsnprintf_s(buff, sizeof(buff), _TRUNCATE, _Format, args);
+    va_end(args);
+    LoggingCallback(buff);
+    return nSize;
     }
 
-    SINT32 SetLogging(Collection *CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags)
+void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING))
+    {
+    if(_LoggingCallback)
         {
-        try
-            {
-            //ValidatePointer(_LoggingCallback);
-            if(LoggingFlags == 0)
-                {
-                init_logging(_LoggingCallback);
-                }
-            else
-                {
-                BOOST_LOG_NAMED_SCOPE("SetLogging scope");
-                src::logger lg;
-                BOOST_LOG(lg) << "Hello World";
-
-                // Now, let's try logging with severity
-                src::severity_logger< severity_level > slg;
-
-                BOOST_LOG_SEV(slg, normal) << "A normal severity message, will not pass to the file";
-                BOOST_LOG_SEV(slg, warning) << "A warning severity message, will pass to the file";
-                BOOST_LOG_SEV(slg, error) << "An error severity message, will pass to the file";
-
-                // Ok, remember the "Tag" attribute we added in the formatter? It is absent in these
-                // two lines above, so it is empty in the output. Let's try to tag some log records with it.
-                {
-                    BOOST_LOG_NAMED_SCOPE("Tagging scope");
-
-                    // Here we add a temporary attribute to the logger lg.
-                    // Every log record being written in the current scope with logger lg
-                    // will have a string attribute "Tag" with value "Tagged line" attached.
-                    BOOST_LOG_SCOPED_LOGGER_TAG(lg, "Tag", std::string, "Tagged line");
-
-                    // The above line is roughly equivalent to the following:
-                    // attrs::constant< std::string > TagAttr("Tagged line");
-                    // logging::scoped_attribute _ =
-                    //     logging::add_scoped_logger_attribute(lg, "Tag", TagAttr);
-
-                    // Now these lines will be highlighted with the tag
-                    BOOST_LOG(lg) << "Some tagged log line";
-                    BOOST_LOG(lg) << "Another tagged log line";
-                }
-
-                // And this line is not highlighted anymore
-                BOOST_LOG(lg) << "Now the tag is removed";
-                }
-            //LOG("Level = %03i, Flags = %08X\n", LoggingLevel, LoggingFlags)
-            }
-        catch(std::exception &ex)
-            {
-            PRINT_EXCEPTION(ex);
-            printf("\n\n");
-            return -1;
-            }
-        catch(...)
-            {
-            PRINT_ERROR;
-            printf("\n\n");
-            return -1;
-            }
-        return 0;
+        LoggingCallback = _LoggingCallback;
+        printer = &logback_printer;
         }
-#endif
+    else
+        {
+        LoggingCallback = NULL;
+        printer = &printf;
+        }
+    }
+
+void AllowRaising(void (*_RaiseCallback)())
+    {
+    RaiseCallback = _RaiseCallback;
+    }
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
@@ -329,15 +201,14 @@ Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -364,29 +235,29 @@ SINT32 DeleteCollection(Collection *CollectionID)
         Collections.clear();
 
         #ifdef CBASH_CALLCOUNT
-            printf("counts = [");
+            printer("counts = [");
             for(std::map<char *, unsigned long>::iterator it = CallCount.begin(); it != CallCount.end(); ++it)
-                printf("(%d, '%s'),", it->second, it->first);
-            printf("]\n");
+                printer("(%d, '%s'),", it->second, it->first);
+            printer("]\n");
             #ifndef CBASH_CALLTIMING
                 CallCount.clear();
             #endif
         #endif
         #ifdef CBASH_CALLTIMING
             double TotTime = 0.0f;
-            printf("times = [");
+            printer("times = [");
             for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)
                 {
                 TotTime += it->second;
-                printf("(%.10f, '%s'),", it->second, it->first);
+                printer("(%.10f, '%s'),", it->second, it->first);
                 }
-            printf("]\n\n");
+            printer("]\n\n");
             #ifdef CBASH_CALLCOUNT
-                printf("Time in CBash = %.10f\n\n", TotTime);
-                printf("Time in CBash = sum(total time)\n");
-                printf("Total %% = Time in CBash / total time * 100%%\n");
-                printf("avg execution = total time / times called\n\n");
-                printf("Total %%,avg execution,total time,function,times called\n");
+                printer("Time in CBash = %.10f\n\n", TotTime);
+                printer("Time in CBash = sum(total time)\n");
+                printer("Total %% = Time in CBash / total time * 100%%\n");
+                printer("avg execution = total time / times called\n\n");
+                printer("Total %%,avg execution,total time,function,times called\n");
                 std::multimap<double, char *> CBashProfiling;
                 for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)
                     CBashProfiling.insert(std::make_pair((it->second / TotTime) * 100, it->first));
@@ -394,58 +265,53 @@ SINT32 DeleteCollection(Collection *CollectionID)
                     {
                     --it;
                     if(it->first < 10.0)
-                        printf("0");
-                    printf("%02.2f%%,%.10f,%.10f,%s,%d\n", it->first, CallTime[it->second] / CallCount[it->second], CallTime[it->second], it->second, CallCount[it->second]);
+                        printer("0");
+                    printer("%02.2f%%,%.10f,%.10f,%s,%d\n", it->first, CallTime[it->second] / CallCount[it->second], CallTime[it->second], it->second, CallCount[it->second]);
                     }
-                printf("\n\n");
+                printer("\n\n");
                 CBashProfiling.clear();
                 CallCount.clear();
             #endif
             CallTime.clear();
         #endif
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 LoadCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
 
-    #ifdef CBASH_USE_LOGGING
-        CLOGGER;
-        BOOST_LOG_FUNCTION();
-        BOOST_LOG_SEV(lg, trace) << "CollectionID = " << CollectionID;
-    #endif
     try
         {
         //ValidatePointer(CollectionID);
         CollectionID->Load();
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 UnloadCollection(Collection *CollectionID)
@@ -456,20 +322,20 @@ SINT32 UnloadCollection(Collection *CollectionID)
         {
         //ValidatePointer(CollectionID);
         CollectionID->Unload();
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 DeleteAllCollections()
@@ -481,20 +347,20 @@ SINT32 DeleteAllCollections()
         for(UINT32 p = 0; p < Collections.size(); ++p)
             delete Collections[p];
         Collections.clear();
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -503,11 +369,6 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
     {
     PROFILE_FUNC
 
-    #ifdef CBASH_USE_LOGGING
-        CLOGGER;
-        BOOST_LOG_FUNCTION();
-        BOOST_LOG_SEV(lg, trace) << "Adding " << ModName;
-    #endif
     ModFlags flags(ModFlagsField);
 
     try
@@ -523,8 +384,10 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -538,20 +401,20 @@ SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
         //ValidatePointer(ModID);
         RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
         ModID->VisitAllRecords(reader);
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
@@ -567,15 +430,14 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return 0;
     }
 
@@ -592,45 +454,46 @@ SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return 0;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return 0;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
     {
-
+    SINT32 err = 0;
     try
         {
         //Profiling is in try block so that the timer gets destructed before DeleteCollection is called
         PROFILE_FUNC
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        CollectionID->SaveMod(ModID, CloseCollection);
+        err = CollectionID->SaveMod(ModID, CloseCollection);
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
 
     if(CloseCollection)
-        DeleteCollection(CollectionID);
-    return 0;
+        err = DeleteCollection(CollectionID) != 0 ? -1 : err;
+    if(err == -1)
+        {
+        printer("\n\n");
+        if(RaiseCallback != NULL)
+            RaiseCallback();
+        }
+    return err;
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
@@ -646,16 +509,15 @@ SINT32 GetAllNumMods(Collection *CollectionID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
@@ -673,16 +535,15 @@ SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 GetLoadOrderNumMods(Collection *CollectionID)
@@ -697,16 +558,15 @@ SINT32 GetLoadOrderNumMods(Collection *CollectionID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
@@ -724,16 +584,15 @@ SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 
 STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
@@ -748,15 +607,14 @@ STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -772,15 +630,14 @@ STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -796,15 +653,14 @@ STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -820,15 +676,14 @@ STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -844,15 +699,14 @@ ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -868,15 +722,15 @@ ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
+        printer("\n\n");
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -892,15 +746,14 @@ SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -913,20 +766,21 @@ SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
         //ValidatePointer(ModID);
         if(ModID->Flags.IsInLoadOrder)
             return ModID->FormIDHandler.ExpandedIndex;
+        if(RaiseCallback != NULL)
+            RaiseCallback();
         return -1;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -947,15 +801,14 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -969,21 +822,20 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
 //        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
 //            if(icmps(curModFile->TES4.MAST[x].value, ModName) == 0)
 //                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
-//        printf("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->reader.getModName());
+//        printer("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->reader.getModName());
 //        return -1;
 //        }
 //    catch(std::exception &ex)
 //        {
 //        PRINT_EXCEPTION(ex);
-//        printf("\n\n");
-//        return -1;
 //        }
 //    catch(...)
 //        {
 //        PRINT_ERROR;
-//        printf("\n\n");
-//        return -1;
 //        }
+//    printer("\n\n");
+//    if(RaiseCallback != NULL)
+//        RaiseCallback();
 //    return -1;
 //    }
 
@@ -999,15 +851,14 @@ UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return 0;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return 0;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return 0;
     }
 
@@ -1020,7 +871,9 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
         //ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
-            printf("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
+            printer("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
+            if(RaiseCallback != NULL)
+                RaiseCallback();
             return -1;
             }
 
@@ -1029,19 +882,18 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
-void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes)
+SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes)
     {
     PROFILE_FUNC
 
@@ -1050,25 +902,29 @@ void GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTyp
         //ValidatePointer(ModID);
         if(!ModID->Flags.IsTrackNewTypes)
             {
-            printf("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
-            return;
+            printer("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->reader.getModName());
+            if(RaiseCallback != NULL)
+                RaiseCallback();
+            return -1;
             }
 
         UINT32 x = 0;
         for(boost::unordered_set<UINT32>::iterator it = ModID->FormIDHandler.NewTypes.begin(); it != ModID->FormIDHandler.NewTypes.end(); ++it, ++x)
             RecordTypes[x] = *it;
+        return 0;
         }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
         }
-    return;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
     }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -1087,15 +943,14 @@ Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 Rec
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return 0;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return 0;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return 0;
     }
 
@@ -1112,15 +967,14 @@ SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return 0;
     }
 
@@ -1139,18 +993,15 @@ Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        printf("\n\n");
-        return 0;
         }
     catch(...)
         {
         PRINT_ERROR;
-        //PRINT_RECORD_IDENTIFIERS;
-        printf("\n\n");
-        return 0;
         }
-    return 0;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return NULL;
     }
 
 SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
@@ -1165,15 +1016,14 @@ SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return 0;
     }
 
@@ -1191,15 +1041,14 @@ SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *Re
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1226,15 +1075,14 @@ Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID Reco
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return NULL;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 
@@ -1250,15 +1098,14 @@ SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 Reco
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -1276,15 +1123,14 @@ SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 Recor
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -1301,15 +1147,14 @@ SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordI
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -1325,15 +1170,14 @@ SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const b
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -1349,15 +1193,14 @@ SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 
@@ -1374,15 +1217,14 @@ SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *Record
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1422,15 +1264,14 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1456,15 +1297,14 @@ SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *Record
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        printf("\n\n");
-        return -1;
         }
     catch(...)
         {
         PRINT_ERROR;
-        printf("\n\n");
-        return -1;
         }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1499,17 +1339,17 @@ void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("ArraySize: %i\n\n", ArraySize);
         }
     catch(...)
         {
         PRINT_ERROR;
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("ArraySize: %i\n\n", ArraySize);
         }
+    //PRINT_RECORD_IDENTIFIERS;
+    PRINT_FIELD_IDENTIFIERS;
+    printer("ArraySize: %i\n\n", ArraySize);
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return;
     }
 
 void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS)
@@ -1534,17 +1374,17 @@ void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIE
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("\n\n");
         }
     catch(...)
         {
         PRINT_ERROR;
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("\n\n");
         }
+    //PRINT_RECORD_IDENTIFIERS;
+    PRINT_FIELD_IDENTIFIERS;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return;
     }
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
@@ -1568,30 +1408,19 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
 
         return RecordID->GetFieldAttribute(FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID, WhichAttribute);
         }
-    catch(Ex_INVALIDRECORDINDEX &ex)
-        {
-        PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("WhichAttribute: %i\n\n", WhichAttribute);
-        return UNKNOWN_FIELD;
-        }
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("WhichAttribute: %i\n\n", WhichAttribute);
-        return UNKNOWN_FIELD;
         }
     catch(...)
         {
         PRINT_ERROR;
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("WhichAttribute: %i\n\n", WhichAttribute);
-        return UNKNOWN_FIELD;
         }
+    //PRINT_RECORD_IDENTIFIERS;
+    PRINT_FIELD_IDENTIFIERS;
+    printer("WhichAttribute: %i\n\n", WhichAttribute);
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return UNKNOWN_FIELD;
     }
 
@@ -1614,19 +1443,16 @@ void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIEL
     catch(std::exception &ex)
         {
         PRINT_EXCEPTION(ex);
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("\n\n");
-        return NULL;
         }
     catch(...)
         {
         PRINT_ERROR;
-        //PRINT_RECORD_IDENTIFIERS;
-        PRINT_FIELD_IDENTIFIERS;
-        printf("\n\n");
-        return NULL;
         }
+    //PRINT_RECORD_IDENTIFIERS;
+    PRINT_FIELD_IDENTIFIERS;
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
     return NULL;
     }
 //////////////////////////////////////////////////////////////////////

@@ -1658,12 +1658,12 @@ void PACKRecord::IsRepeatable(bool value)
     PKPT.value = value ? eRepeatable : eNotRepeatable;
     }
 
-bool PACKRecord::IsRepeatType(UINT8 Type)
+bool PACKRecord::IsRepeatType(UINT16 Type)
     {
     return PKPT.value == Type;
     }
 
-void PACKRecord::SetRepeatType(UINT8 Type)
+void PACKRecord::SetRepeatType(UINT16 Type)
     {
     PKPT.value = Type;
     }
@@ -1947,7 +1947,7 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //    PLD2a.Read(buffer, subSize, curPos);
                 //    if(PLD2 != PLD2a)
                 //        {
-                //        printf("  INFO: %08X - Unexpected PLD2 chunk\n", formID);
+                //        printer("  INFO: %08X - Unexpected PLD2 chunk\n", formID);
                 //        CBASH_CHUNK_DEBUG
                 //        }
                 //    }
@@ -1983,18 +1983,18 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //        _readBuffer(&test, buffer, 3, curPos);
                 //        if(test != 0)
                 //            {
-                //            printf("  INFO: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
+                //            printer("  INFO: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
                 //            CBASH_CHUNK_DEBUG
-                //            printf("  Size = %i\n", subSize);
-                //            printf("  CurPos = %04x\n\n", curPos - 6);
+                //            printer("  Size = %i\n", subSize);
+                //            printer("  CurPos = %04x\n\n", curPos - 6);
                 //            }
                 //        }
                 //        break;
                 //    default:
-                //        printf("  INFO: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
+                //        printer("  INFO: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
                 //        CBASH_CHUNK_DEBUG
-                //        printf("  Size = %i\n", subSize);
-                //        printf("  CurPos = %04x\n\n", curPos - 6);
+                //        printer("  Size = %i\n", subSize);
+                //        printer("  CurPos = %04x\n\n", curPos - 6);
                 //        curPos += subSize;
                 //        break;
                 //    }
@@ -2042,10 +2042,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeINAM.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected INAM chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected INAM chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2063,10 +2063,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeSCHR.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCHR chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCHR chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2084,10 +2084,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeSCDA.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCDA chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCDA chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2105,10 +2105,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeSCTX.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCTX chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCTX chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2129,10 +2129,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SLSD chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SLSD chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2156,10 +2156,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCVR chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCVR chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2180,10 +2180,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeSCR_.value.back()->isSCRO = false;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCRV chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCRV chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2204,10 +2204,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeSCR_.value.back()->isSCRO = true;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCRO chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected SCRO chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2225,10 +2225,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         ChangeTNAM.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected TNAM chunk\n", formID);
+                        printer("  INFO: %08X - Unexpected TNAM chunk\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -2246,10 +2246,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //Testing snippet. TES4Edit isn't clear, but presumably this chunk only occurs when IsAIEat is true...
                 if(!IsAIEat())
                     {
-                    printf("  INFO: %08X - Unexpected PKED chunk\n", formID);
+                    printer("  INFO: %08X - Unexpected PKED chunk\n", formID);
                     CBASH_CHUNK_DEBUG
-                    printf("  Size = %i\n", subSize);
-                    printf("  CurPos = %04x\n\n", curPos - 6);
+                    printer("  Size = %i\n", subSize);
+                    printer("  CurPos = %04x\n\n", curPos - 6);
                     curPos += subSize;
                     }
                 break;
@@ -2257,10 +2257,10 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //Testing snippet. TES4Edit isn't clear, but presumably this chunk only occurs when IsAIUseItemAt is true...
                 if(!IsAIUseItemAt())
                     {
-                    printf("  INFO: %08X - Unexpected PUID chunk\n", formID);
+                    printer("  INFO: %08X - Unexpected PUID chunk\n", formID);
                     CBASH_CHUNK_DEBUG
-                    printf("  Size = %i\n", subSize);
-                    printf("  CurPos = %04x\n\n", curPos - 6);
+                    printer("  Size = %i\n", subSize);
+                    printer("  CurPos = %04x\n\n", curPos - 6);
                     curPos += subSize;
                     }
                 break;
@@ -2268,19 +2268,19 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //Testing snippet. TES4Edit isn't clear, but presumably this chunk only occurs when IsAIAmbush is true...
                 if(!IsAIAmbush())
                     {
-                    printf("  INFO: %08X - Unexpected PKAM chunk\n", formID);
+                    printer("  INFO: %08X - Unexpected PKAM chunk\n", formID);
                     CBASH_CHUNK_DEBUG
-                    printf("  Size = %i\n", subSize);
-                    printf("  CurPos = %04x\n\n", curPos - 6);
+                    printer("  Size = %i\n", subSize);
+                    printer("  CurPos = %04x\n\n", curPos - 6);
                     curPos += subSize;
                     }
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
+                //printer("FileName = %s\n", FileName);
+                printer("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

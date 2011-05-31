@@ -89,13 +89,13 @@ bool RecordReader::Accept(Record *&curRecord)
                 if(curRecord->IsValid(*Expanders[x]))
                     {
                     //if(index != -1)
-                    //    printf("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
+                    //    printer("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
                     index = x;
                     break;
                     }
             if(index == -1)
                 {
-                printf("Unable to find the correct expander!\n");
+                printer("Unable to find the correct expander!\n");
                 curRecord->VisitFormIDs(expander);
                 }
             else
@@ -106,13 +106,14 @@ bool RecordReader::Accept(Record *&curRecord)
     return stop;
     }
 
-RecordProcessor::RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
+RecordProcessor::RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords):
     reader(reader),
     FormIDHandler(_FormIDHandler),
     parser(parser),
     expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
     Flags(_Flags),
     UsedFormIDs(_UsedFormIDs),
+    DeletedRecords(DeletedRecords),
     IsSkipNewRecords(_Flags.IsSkipNewRecords),
     IsTrackNewTypes(_Flags.IsTrackNewTypes),
     IsAddMasters(_Flags.IsAddMasters)
@@ -131,13 +132,14 @@ bool RecordProcessor::operator()(Record *&curRecord)
     reader.read(&curRecord->formID, 4);
     reader.read(&curRecord->flagsUnk, 4);
     expander.Accept(curRecord->formID);
-    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
     //Testing Messages
     //if(curRecord->IsLoaded())
-    //    printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
     //if((curRecord->flags & 0x4000) != 0)
-    //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
+    //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
     if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
         {
@@ -149,6 +151,8 @@ bool RecordProcessor::operator()(Record *&curRecord)
     if(UsedFormIDs.insert(curRecord->formID).second == true)
         {
         parser.Accept(curRecord);
+        if(curRecord->IsDeleted())
+            DeletedRecords.push_back(curRecord);
         //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
         if(IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && FormIDHandler.IsNewRecord(curRecord->formID))
             FormIDHandler.NewTypes.insert(curRecord->GetType());
@@ -157,7 +161,7 @@ bool RecordProcessor::operator()(Record *&curRecord)
     else
         {
         if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
-            printf("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
+            printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
         delete curRecord;
         return false;
         }
@@ -169,8 +173,17 @@ void RecordProcessor::IsEmpty(bool value)
     FormIDHandler.IsEmpty = value;
     }
 
-FNVRecordProcessor::FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
-    RecordProcessor(reader,_FormIDHandler, parser, _Flags, _UsedFormIDs)
+FNVRecordProcessor::FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords):
+    reader(reader),
+    FormIDHandler(_FormIDHandler),
+    parser(parser),
+    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
+    Flags(_Flags),
+    UsedFormIDs(_UsedFormIDs),
+    DeletedRecords(DeletedRecords),
+    IsSkipNewRecords(_Flags.IsSkipNewRecords),
+    IsTrackNewTypes(_Flags.IsTrackNewTypes),
+    IsAddMasters(_Flags.IsAddMasters)
     {
     //
     }
@@ -188,15 +201,16 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
     reader.read(&((FNVRecord *)curRecord)->formVersion, 2);
     reader.read(&((FNVRecord *)curRecord)->versionControl2[0], 2);
     expander.Accept(curRecord->formID);
-    //printf("Read %08X\n", curRecord->formID);
+    //printer("Read %08X\n", curRecord->formID);
 
     //Testing Messages
     if(curRecord->IsLoaded())
-        printf("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+        printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
     //if((curRecord->flags & 0x4000) != 0)
-    //    printf("0x4000 used: %08X!!!!\n", curRecord->formID);
+    //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
 
     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
     if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
         {
         delete curRecord;
@@ -207,6 +221,8 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
     if(UsedFormIDs.insert(curRecord->formID).second == true)
         {
         parser.Accept(curRecord);
+        if(curRecord->IsDeleted())
+            DeletedRecords.push_back(curRecord);
         //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
         if(IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && FormIDHandler.IsNewRecord(curRecord->formID))
             FormIDHandler.NewTypes.insert(curRecord->GetType());
@@ -215,11 +231,16 @@ bool FNVRecordProcessor::operator()(Record *&curRecord)
     else
         {
         if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
-            printf("FNVRecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
+            printer("FNVRecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
         delete curRecord;
         return false;
         }
     return true;
+    }
+
+void FNVRecordProcessor::IsEmpty(bool value)
+    {
+    FormIDHandler.IsEmpty = value;
     }
 
 Record::Record(unsigned char *_recData):
@@ -274,6 +295,12 @@ STRING Record::GetEditorIDKey()
     return (STRING)GetField(4);
     }
 
+bool Record::SetEditorIDKey(STRING EditorID)
+    {
+    SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorID, 0);
+    return false;
+    }
+
 bool Record::HasSubRecords()
     {
     return false;
@@ -295,30 +322,8 @@ bool Record::Read()
         return false;
     UINT32 recSize = *(UINT32*)&recData[-16];
 
-    if (IsCompressed())
-        {
-        unsigned char localBuffer[BUFFERSIZE];
-        UINT32 expandedRecSize = *(UINT32*)recData;
-        unsigned char *buffer = (expandedRecSize >= BUFFERSIZE) ? new unsigned char[expandedRecSize] : &localBuffer[0];
-        uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
-        ParseRecord(buffer, expandedRecSize);
-        if(buffer != &localBuffer[0])
-            delete [] buffer;
-        }
-    else
-        ParseRecord(recData, recSize);
-
-    IsLoaded(true);
-    return true;
-    }
-
-bool FNVRecord::Read()
-    {
-    if(IsLoaded() || IsChanged())
-        return false;
-    UINT32 recSize = *(UINT32*)&recData[-20];
-
-    if (IsCompressed())
+    //Check against the original record flags to see if it is compressed since the current flags may have changed
+    if ((*(UINT32*)&recData[-12] & fIsCompressed) != 0)
         {
         unsigned char localBuffer[BUFFERSIZE];
         UINT32 expandedRecSize = *(UINT32*)recData;
@@ -340,57 +345,53 @@ bool Record::IsValid(FormIDResolver &expander)
     return (recData <= expander.FileEnd && recData >= expander.FileStart);
     }
 
-//FormIDResolver& Record::GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver)
-//    {
-//    //if(defaultResolver.IsValid(recData)) //optimization disabled for testing
-//    //    return defaultResolver;
-//    SINT32 index = -1;
-//    for(UINT32 x = 0; x < Expanders.size(); ++x)
-//        if(Expanders[x]->IsValid(recData))
-//            {
-//            if(index != -1)
-//                printf("Multiple 'Correct' expanders found! Returning last one found (likely incorrect unless lucky)\n");
-//            index = x;
-//            }
-//    return index == -1 ? defaultResolver : *Expanders[index];
-//    }
-
 UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
     {
     UINT32 recSize = 0;
     UINT32 recType = GetType();
     collapser.Accept(formID);
+    UINT32 cleanFlags = 0;
+    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
+    //So it has to be cleaned before being written.
+    if(IsLoaded())
+        {
+        IsLoaded(false);
+        cleanFlags = flags;
+        IsLoaded(true);
+        }
+    else
+        cleanFlags = flags;
 
     if(!IsChanged())
         {
-        if(bMastersChanged)
+        if(bMastersChanged || cleanFlags != *(UINT32*)&recData[-12])
             {
             //if masters have changed, all formIDs have to be updated...
-            //so the record can't just be written as is.
+            //or if the flags have changed internally (notably fIsDeleted or fIsCompressed, possibly others)
             if(Read())
                 {
                 //if(expander.IsValid(recData)) //optimization disabled for testing
                 //    VisitFormIDs(expander);
-                //printf("Looking for correct expander\n");
+                //printer("Looking for correct expander\n");
                 SINT32 index = -1;
                 for(UINT32 x = 0; x < Expanders.size(); ++x)
                     if(IsValid(*Expanders[x]))
                         {
                         //if(index != -1)
                         //    {
-                        //    printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
-                        //    printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
-                        //    printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
-                        //    printf("Expanders:\n");
+                        //    printer("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
+                        //    printer("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
+                        //    printer("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                        //    printer("Expanders:\n");
                         //    for(UINT32 z = 0; z < Expanders.size(); ++z)
-                        //        printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
+                        //        printer("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
                         //    }
                         index = x;
                         break;
                         }
                 if(index == -1)
                     {
-                    printf("Unable to find the correct expander!\n");
+                    printer("Unable to find the correct expander!\n");
                     VisitFormIDs(expander);
                     }
                 else
@@ -402,13 +403,11 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
             //if masters have not changed, the record can just be written from the read buffer
             recSize = *(UINT32*)&recData[-16];
 
-            IsLoaded(false);
             writer.file_write(&recType, 4);
             writer.file_write(&recSize, 4);
-            writer.file_write(&flags, 4);
+            writer.file_write(&cleanFlags, 4);
             writer.file_write(&formID, 4);
             writer.file_write(&flagsUnk, 4);
-            IsLoaded(true);
             writer.file_write(recData, recSize);
             Unload();
             return recSize + 20;
@@ -421,29 +420,25 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
         {
         //IsCompressed(true); //Test code
         WriteRecord(writer);
-        IsLoaded(false);
         recSize = IsCompressed() ? writer.record_compress() : writer.record_size();
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&flags, 4);
+        writer.file_write(&cleanFlags, 4);
         writer.file_write(&formID, 4);
         writer.file_write(&flagsUnk, 4);
-        IsLoaded(true);
         //if(IsCompressed())
         //    {
-        //    printf("Compressed: %08X\n", formID);
+        //    printer("Compressed: %08X\n", formID);
         //    }
         writer.record_flush();
         }
     else
         {
-        IsLoaded(false);
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&flags, 4);
+        writer.file_write(&cleanFlags, 4);
         writer.file_write(&formID, 4);
         writer.file_write(&flagsUnk, 4);
-        IsLoaded(true);
         }
 
     expander.Accept(formID);
@@ -461,22 +456,7 @@ bool Record::IsDeleted() const
 
 void Record::IsDeleted(bool value)
     {
-    if(value == IsDeleted())
-        return;
-    if(IsDeleted())
-        {
-        printf("Undeleting a record is not supported at this time.\n");
-        //Was deleted, and now isn't
-        throw 1;
-        flags &= ~fIsDeleted;
-        }
-    else
-        {
-        //Wasn't deleted, and now is
-        Read();
-        IsChanged(true);
-        flags |= fIsDeleted;
-        }
+    flags = value ? (flags | fIsDeleted) : (flags & ~fIsDeleted);
     }
 
 bool Record::IsBorderRegion()
@@ -626,10 +606,6 @@ bool Record::IsCompressed()
 
 void Record::IsCompressed(bool value)
     {
-    if(value == IsCompressed())
-        return;
-    Read();
-    IsChanged(true);
     flags = value ? (flags | fIsCompressed) : (flags & ~fIsCompressed);
     }
 
@@ -679,6 +655,13 @@ void Record::IsLoaded(bool value)
 
 bool Record::IsChanged(bool value)
     {
+    //IsChanged(false) currently doesn't do anything. For now, once changed, always changed.
+    //However, IsChanged(false) is consistently used where appropriate.
+    // So if this function is updated, it should just work.
+    //  Ideally, it would set recData back to its original value
+    //   but that would require either an extra variable (increasing space)
+    //   or reparsing the modfile (increasing time)
+    //  Neither tradeoff seems worth it at this point.
     if(value)
         recData = NULL;
     return recData == NULL;
@@ -696,42 +679,79 @@ FNVRecord::~FNVRecord()
     //
     }
 
+bool FNVRecord::Read()
+    {
+    if(IsLoaded() || IsChanged())
+        return false;
+    UINT32 recSize = *(UINT32*)&recData[-20];
+
+    //Check against the original record flags to see if it is compressed since the current flags may have changed
+    if ((*(UINT32*)&recData[-16] & fIsCompressed) != 0)
+        {
+        unsigned char localBuffer[BUFFERSIZE];
+        UINT32 expandedRecSize = *(UINT32*)recData;
+        unsigned char *buffer = (expandedRecSize >= BUFFERSIZE) ? new unsigned char[expandedRecSize] : &localBuffer[0];
+        uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
+        ParseRecord(buffer, expandedRecSize);
+        if(buffer != &localBuffer[0])
+            delete [] buffer;
+        }
+    else
+        ParseRecord(recData, recSize);
+
+    IsLoaded(true);
+    return true;
+    }
+
 UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
     {
     UINT32 recSize = 0;
     UINT32 recType = GetType();
+    UINT32 cleanFlags = 0;
+    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
+    //So it has to be cleaned before being written.
+    if(IsLoaded())
+        {
+        IsLoaded(false);
+        cleanFlags = flags;
+        IsLoaded(true);
+        }
+    else
+        cleanFlags = flags;
+
     collapser.Accept(formID);
 
     if(!IsChanged())
         {
-        if(bMastersChanged)
+        if(bMastersChanged || cleanFlags != *(UINT32*)&recData[-16])
             {
             //if masters have changed, all formIDs have to be updated...
+            //or if the flags have changed internally (notably fIsDeleted or fIsCompressed, possibly others)
             //so the record can't just be written as is.
             if(Read())
                 {
                 //if(expander.IsValid(recData)) //optimization disabled for testing
                 //    VisitFormIDs(expander);
-                //printf("Looking for correct expander\n");
+                //printer("Looking for correct expander\n");
                 SINT32 index = -1;
                 for(UINT32 x = 0; x < Expanders.size(); ++x)
                     if(IsValid(*Expanders[x]))
                         {
                         //if(index != -1)
                         //    {
-                        //    printf("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
-                        //    printf("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
-                        //    printf("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
-                        //    printf("Expanders:\n");
+                        //    printer("Multiple 'Correct' expanders found (%08X)! Using last one found (likely incorrect unless lucky)\n", formID);
+                        //    printer("  %i:   %08X, %08X, %08X\n", index, Expanders[index]->FileStart, recData, Expanders[index]->FileEnd);
+                        //    printer("  %i:   %08X, %08X, %08X\n", x, Expanders[x]->FileStart, recData, Expanders[x]->FileEnd);
+                        //    printer("Expanders:\n");
                         //    for(UINT32 z = 0; z < Expanders.size(); ++z)
-                        //        printf("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
+                        //        printer("  %i of %i:   %08X, %08X\n", z, Expanders.size(), Expanders[z]->FileStart, Expanders[z]->FileEnd);
                         //    }
                         index = x;
                         break;
                         }
                 if(index == -1)
                     {
-                    printf("Unable to find the correct expander!\n");
+                    printer("Unable to find the correct expander!\n");
                     VisitFormIDs(expander);
                     }
                 else
@@ -743,15 +763,13 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
             //if masters have not changed, the record can just be written from the read buffer
             recSize = *(UINT32*)&recData[-20];
 
-            IsLoaded(false);
             writer.file_write(&recType, 4);
             writer.file_write(&recSize, 4);
-            writer.file_write(&flags, 4);
+            writer.file_write(&cleanFlags, 4);
             writer.file_write(&formID, 4);
             writer.file_write(&flagsUnk, 4);
             writer.file_write(&formVersion, 2);
             writer.file_write(&versionControl2[0], 2);
-            IsLoaded(true);
             writer.file_write(recData, recSize);
             Unload();
             return recSize + 24;
@@ -764,33 +782,29 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
         {
         //IsCompressed(true); //Test code
         WriteRecord(writer);
-        IsLoaded(false);
         recSize = IsCompressed() ? writer.record_compress() : writer.record_size();
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&flags, 4);
+        writer.file_write(&cleanFlags, 4);
         writer.file_write(&formID, 4);
         writer.file_write(&flagsUnk, 4);
         writer.file_write(&formVersion, 2);
         writer.file_write(&versionControl2[0], 2);
-        IsLoaded(true);
         //if(IsCompressed())
         //    {
-        //    printf("Compressed: %08X\n", formID);
+        //    printer("Compressed: %08X\n", formID);
         //    }
         writer.record_flush();
         }
     else
         {
-        IsLoaded(false);
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&flags, 4);
+        writer.file_write(&cleanFlags, 4);
         writer.file_write(&formID, 4);
         writer.file_write(&flagsUnk, 4);
         writer.file_write(&formVersion, 2);
         writer.file_write(&versionControl2[0], 2);
-        IsLoaded(true);
         }
 
     expander.Accept(formID);

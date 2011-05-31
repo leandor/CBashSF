@@ -15,7 +15,7 @@ TestEffects = [TestEffect, TestEffect, TestEffect, TestEffect]
 
 def fflags(y):
     for x in range(32):
-        z = pow(2, x)
+        z = 1 << x
         if y & z == z:
             print hex(z)
 
@@ -11897,7 +11897,7 @@ def TestReadWrite():
     Current.addMod("TestRW.esp", IgnoreExisting=True)
     Current.load()
     newMod = Current.LookupModFile("TestRW.esp")
-    
+
 ##    for record in Current.LoadOrderMods[0].GMST:
 ##        trgRecOver = record.CopyAsOverride(newMod)
 ##        trgRecNew = record.CopyAsNew(newMod)

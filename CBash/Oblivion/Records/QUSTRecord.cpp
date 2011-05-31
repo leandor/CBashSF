@@ -318,7 +318,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
         //if(CTDA[x]->value.ifunc == 214)
-        //    printf("%08X uses HasMagicEffect\n", formID);
+        //    printer("%08X uses HasMagicEffect\n", formID);
         curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
         if(curCTDAFunction != Function_Arguments.end())
             {
@@ -329,7 +329,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                 op.Accept(CTDA[x]->value.param2);
             }
         else
-            printf("Warning: QUSTRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+            printer("Warning: QUSTRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
     for(UINT32 x = 0; x < Stages.size(); x++)
         {
@@ -338,7 +338,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
             for(UINT32 p = 0; p < Stages[x]->Entries[y]->CTDA.size(); p++)
                 {
                 //if(Stages[x]->Entries[y]->CTDA[p]->value.ifunc == 214)
-                //    printf("%08X uses HasMagicEffect\n", formID);
+                //    printer("%08X uses HasMagicEffect\n", formID);
                 curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                 if(curCTDAFunction != Function_Arguments.end())
                     {
@@ -349,7 +349,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                         op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
                     }
                 else
-                    printf("Warning: QUSTRecord Stage %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
+                    printer("Warning: QUSTRecord Stage %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
                 }
             for(UINT32 p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
                 if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
@@ -363,7 +363,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
         for(UINT32 y = 0; y < Targets[x]->CTDA.size(); y++)
             {
             //if(Targets[x]->CTDA[y]->value.ifunc == 214)
-            //    printf("%08X uses HasMagicEffect\n", formID);
+            //    printer("%08X uses HasMagicEffect\n", formID);
             curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
             if(curCTDAFunction != Function_Arguments.end())
                 {
@@ -374,7 +374,7 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
                     op.Accept(Targets[x]->CTDA[y]->value.param2);
                 }
             else
-                printf("Warning: QUSTRecord Target %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
+                printer("Warning: QUSTRecord Target %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
             }
         }
 
@@ -570,10 +570,11 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 whichCTDA = 2;
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  QUST: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  QUST: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

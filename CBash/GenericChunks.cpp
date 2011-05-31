@@ -289,12 +289,12 @@ void FNVMINSCRIPT::SetScriptFlagMask(UINT16 Mask)
     SCHR.value.flags = Mask;
     }
 
-bool FNVMINSCRIPT::IsType(UINT32 Type)
+bool FNVMINSCRIPT::IsType(UINT16 Type)
     {
     return SCHR.value.scriptType == Type;
     }
 
-void FNVMINSCRIPT::SetType(UINT32 Type)
+void FNVMINSCRIPT::SetType(UINT16 Type)
     {
     SCHR.value.scriptType = Type;
     }
@@ -2629,11 +2629,11 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
                     op.Accept(param2);
                 }
             else
-                printf("Warning: CTDA uses an unknown VATS function (%d)!\n", param1);
+                printer("Warning: CTDA uses an unknown VATS function (%d)!\n", param1);
             }
         }
     else
-        printf("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
+        printer("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
 
     if(IsResultOnReference())
         op.Accept(reference);
@@ -2642,7 +2642,7 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
 
 FNVCTDA::FNVCTDA():
     operType(0),
-    compValue(0.0f),
+    compValue(0),
     ifunc(5), //GetLocked, for its eNone, eNone param types...so that new conditions don't try to resolve either param1 or param2 until ifunc is set
     param1(0),
     param2(0),
@@ -2660,7 +2660,7 @@ FNVCTDA::~FNVCTDA()
 bool FNVCTDA::operator ==(const FNVCTDA &other) const
     {
     return (operType == other.operType &&
-            AlmostEqual(compValue,other.compValue,2) &&
+            (IsUseGlobal() ? compValue == other.compValue : AlmostEqual(*(FLOAT32 *)&compValue,*(FLOAT32 *)&other.compValue,2)) &&
             ifunc == other.ifunc &&
             param1 == other.param1 &&
             param2 == other.param2 &&
@@ -2830,7 +2830,7 @@ void FNVCTDA::IsRunOnTarget(bool value)
     operType = value ? (operType | fIsRunOnTarget) : (operType & ~fIsRunOnTarget);
     }
 
-bool FNVCTDA::IsUseGlobal()
+bool FNVCTDA::IsUseGlobal() const
     {
     return ((operType & 0x0F) & fIsUseGlobal) != 0;
     }

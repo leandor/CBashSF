@@ -61,7 +61,7 @@ bool DEBRRecord::DEBRModel::Read(unsigned char *buffer, UINT32 subSize, UINT32 &
     {
     if(subSize < 3)
         {
-        printf("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
+        printer("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
                "of chunk (%u) is less than the minimum size of the subrecord (%u). "
                "The chunk has been skipped.\n",
                (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -83,7 +83,7 @@ bool DEBRRecord::DEBRModel::Read(unsigned char *buffer, UINT32 subSize, UINT32 &
     size += 2;
     if(size != subSize)
         {
-        printf("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
+        printer("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
                "of chunk (%u) is not equal to the parsed size (%u). "
                "The loaded fields are likely corrupt.\n",
                (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -299,10 +299,11 @@ SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 Models.MODS.back()->MODT.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  DEBR: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  DEBR: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

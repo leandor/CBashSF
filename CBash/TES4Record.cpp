@@ -127,11 +127,6 @@ STRING TES4Record::GetStrType()
 
 SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
-    #ifdef CBASH_USE_LOGGING
-        CLOGGER;
-        BOOST_LOG_FUNCTION();
-        BOOST_LOG_SEV(lg, trace) << "Parsing";
-    #endif
     UINT32 subType = 0;
     UINT32 subSize = 0;
     UINT32 curPos = 0;
@@ -186,7 +181,7 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized ONAM size: %i\n", subSize);
+                    printer("  Unrecognized ONAM size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -194,16 +189,10 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SCRN.Read(buffer, subSize, curPos);
                 break;
             default:
-                #ifdef CBASH_USE_LOGGING
-                    BOOST_LOG_SEV(lg, critical) << "TES4: Unknown subType = " << ((char *)&subType)[0] << ((char *)&subType)[1] << ((char *)&subType)[2] << ((char *)&subType)[3];
-                    BOOST_LOG_SEV(lg, critical) << "      Size = " << subSize;
-                    BOOST_LOG_SEV(lg, critical) << "      CurPos = " << curPos - 6;
-                #else
-                    //printf("FileName = %s\n", FileName);
-                    printf("  TES4: %08X - Unknown subType = %04x\n", formID, subType);
-                    printf("  Size = %i\n", subSize);
-                    printf("  CurPos = %04x\n\n", curPos - 6);
-                #endif
+                //printer("FileName = %s\n", FileName);
+                printer("  TES4: %08X - Unknown subType = %04x\n", formID, subType);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -239,7 +228,7 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
                 }
             break;
         case eIsFallout3:
-            printf("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
+            printer("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
             return -1;
         case eIsFalloutNewVegas:
             writer.record_write_subrecord(REV32(HEDR), &HEDR.value, sizeof(TES4HEDR));

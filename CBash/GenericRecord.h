@@ -70,31 +70,47 @@ class RecordProcessor
         bool IsAddMasters;
 
         FormIDResolver expander;
+
     public:
         RecordOp &parser;
+        std::vector<Record *> &DeletedRecords;
         const ModFlags &Flags;
 
-        RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
-        virtual ~RecordProcessor();
+        RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords);
+        ~RecordProcessor();
 
-        virtual bool operator()(Record *&curRecord);
+        bool operator()(Record *&curRecord);
         void IsEmpty(bool value);
     };
 
-class FNVRecordProcessor : public RecordProcessor
+class FNVRecordProcessor
     {
+    protected:
+        FileReader &reader;
+        FormIDHandlerClass &FormIDHandler;
+        boost::unordered_set<UINT32> &UsedFormIDs;
+
+        bool IsSkipNewRecords;
+        bool IsTrackNewTypes;
+        bool IsAddMasters;
+
+        FormIDResolver expander;
+
     public:
-        FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &_reader, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
+        RecordOp &parser;
+        std::vector<Record *> &DeletedRecords;
+        const ModFlags &Flags;
+
+        FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords);
         ~FNVRecordProcessor();
 
         bool operator()(Record *&curRecord);
+        void IsEmpty(bool value);
     };
 
 class Record
     {
     protected:
-        unsigned char *recData;
-
         enum headerFlags
             {
             fIsESM                  = 0x00000001,
@@ -119,6 +135,8 @@ class Record
             };
 
     public:
+        unsigned char *recData;
+
         UINT32 flags;
         FORMID formID;
         UINT32 flagsUnk; //Version Control Info 1, FNV
@@ -129,7 +147,6 @@ class Record
         virtual ~Record();
 
         virtual SINT32 Unload() abstract {};
-        //virtual UINT32 GetSize(bool forceCalc=false) abstract {};
         virtual UINT32 GetType() abstract {};
         virtual STRING GetStrType() abstract {};
         virtual SINT32 WriteRecord(FileWriter &writer) abstract {};
@@ -144,6 +161,7 @@ class Record
 
         virtual bool IsKeyedByEditorID();
         virtual STRING GetEditorIDKey();
+        virtual bool SetEditorIDKey(STRING EditorID);
         virtual bool HasSubRecords();
 
         virtual bool VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
@@ -151,7 +169,6 @@ class Record
 
         virtual bool Read();
         bool IsValid(FormIDResolver &expander);
-        //FormIDResolver& GetCorrectExpander(std::vector<FormIDResolver *> &Expanders, FormIDResolver &defaultResolver);
         virtual UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool IsDeleted() const;
@@ -190,8 +207,10 @@ class Record
         void IsCantWait(bool value);
         bool IsHeaderFlagMask(UINT32 Mask, bool Exact=false);
         void SetHeaderFlagMask(UINT32 Mask);
+
         bool IsHeaderUnknownFlagMask(UINT32 Mask, bool Exact=false);
         void SetHeaderUnknownFlagMask(UINT32 Mask);
+
         bool IsLoaded();
         void IsLoaded(bool value);
         bool IsChanged(bool value=false);

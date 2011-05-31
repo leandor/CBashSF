@@ -717,7 +717,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized RPLD size: %i\n", subSize);
+                    printer("  Unrecognized RPLD size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -741,7 +741,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized RDOT size: %i\n", subSize);
+                    printer("  Unrecognized RDOT size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -768,7 +768,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized RDOT size: %i\n", subSize);
+                    printer("  Unrecognized RDOT size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -795,7 +795,7 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized RDSD size: %i\n", subSize);
+                    printer("  Unrecognized RDSD size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
@@ -814,15 +814,16 @@ SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized RDWT size: %i\n", subSize);
+                    printer("  Unrecognized RDWT size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  REGN: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  REGN: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -909,7 +910,7 @@ SINT32 REGNRecord::WriteRecord(FileWriter &writer)
                         writer.record_write_subheader(REV32(RDSD), 0);
                     break;
                 default:
-                    printf("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);
+                    printer("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);
                     break;
                 }
             }

@@ -368,10 +368,10 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         //May not be ideal to junk them, but not much else can be done while their use is unknown
                         curPos += subSize;
                         break;
-                        //printf("  DIAL: %08X - Unexpected INFC chunk\n", formID);
+                        //printer("  DIAL: %08X - Unexpected INFC chunk\n", formID);
                         //CBASH_CHUNK_DEBUG
-                        //printf("  Size = %i\n", subSize);
-                        //printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("  Size = %i\n", subSize);
+                        //printer("  CurPos = %04x\n\n", curPos - 6);
                         //curPos += subSize;
                         //break;
                     }
@@ -399,10 +399,10 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         //May not be ideal to junk them, but not much else can be done while their use is unknown
                         curPos += subSize;
                         break;
-                        //printf("  DIAL: %08X - Unexpected INFX chunk\n", formID);
+                        //printer("  DIAL: %08X - Unexpected INFX chunk\n", formID);
                         //CBASH_CHUNK_DEBUG
-                        //printf("  Size = %i\n", subSize);
-                        //printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("  Size = %i\n", subSize);
+                        //printer("  CurPos = %04x\n\n", curPos - 6);
                         //curPos += subSize;
                         //break;
                     }
@@ -425,11 +425,11 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  DIAL: %08X - Unknown subType = %04x\n", formID, subType);
+                //printer("FileName = %s\n", FileName);
+                printer("  DIAL: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

@@ -25,7 +25,7 @@ for curFile in glob.glob('*.h'):
              'MGEFCODE_OR_UINT32', 'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32'
              'FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32',
              'ACTORVALUE', 'FORMID_OR_UINT32', 'RawRecord', 'NonNullStringRecord', 'StringRecord']
-    recs = ['ReqSimpleSubRecord', 'SemiOptSimpleSubRecord', 'OptSimpleSubRecord', 
+    recs = ['ReqSimpleSubRecord', 'SemiOptSimpleSubRecord', 'OptSimpleSubRecord',
             'ReqSubRecord', 'SemiOptSubRecord', 'OptSubRecord', 'OBMEEFIXSubRecord',
             'SimpleFloatSubRecord', 'ReqSimpleFloatSubRecord', 'OptSimpleFloatSubRecord',
             'SemiOptSimpleFloatSubRecord',
@@ -97,7 +97,7 @@ for curFile in glob.glob('*.h'):
                 for rec in recs:
                     if rec in line:
                         v = []
-                        
+
                         if 'Float' in rec:
                             _type = 'FLOAT32'
                             line = line[line.find('>') + len('>'):].strip()
@@ -313,7 +313,7 @@ for curFile in glob.glob('*.h'):
                                     v += [(n, type, s, '*' in type, [])]
                             vars += v
                             break
-                
+
     madeChanges = True
     def expandTypes(vs):
         global madeChanges
@@ -337,7 +337,7 @@ for curFile in glob.glob('*.h'):
         for str, vars in str_vars.iteritems():
             v = expandTypes(vars[1])
             str_vars[str] = (vars[0], v)
-     
+
     madeChanges = True
     while madeChanges:
         madeChanges = False
@@ -665,7 +665,7 @@ for curFile in glob.glob('*.h'):
                     MODT = 'MO4T'
                     MODS = 'MO4S'
                     MODD = 'MO4D'
-                else:                    
+                else:
                     MODL = 'MODL'
                     MODB = 'MODB'
                     MODT = 'MODT'
@@ -999,7 +999,7 @@ for curFile in glob.glob('*.h'):
                     MODT = 'MO4T'
                     MODS = 'MO4S'
                     MODD = 'MO4D'
-                else:                    
+                else:
                     MODL = 'MODL'
                     MODB = 'MODB'
                     MODT = 'MODT'
@@ -1115,7 +1115,7 @@ for curFile in glob.glob('*.h'):
                                 name = tname + `num`
                                 num += 1
                             usedNames.add(name)
-                                
+
                         if '//' in attr and 'case' not in attr:
                             x.append('                case %d: //%s\n' % (caseNum,name))
                             caseNum += 1
@@ -1266,7 +1266,7 @@ for curFile in glob.glob('*.h'):
                     MODT = 'MO4T'
                     MODS = 'MO4S'
                     MODD = 'MO4D'
-                else:                    
+                else:
                     MODL = 'MODL'
                     MODB = 'MODB'
                     MODT = 'MODT'
@@ -1374,7 +1374,7 @@ for curFile in glob.glob('*.h'):
                                         l = attr.find('*FieldValues')
                                         if l > 0:
                                             attr = attr[:attr.find('*FieldValues')] + '*FieldValues = %s;\n' % tern.groups()[2]
-                                    
+
                                 x.append('        ' + attr)
                         attrs += [x]
                         attrs.append('                default:\n')
@@ -1504,7 +1504,7 @@ for curFile in glob.glob('*.h'):
                     MODT = 'MO4T'
                     MODS = 'MO4S'
                     MODD = 'MO4D'
-                else:                    
+                else:
                     MODL = 'MODL'
                     MODB = 'MODB'
                     MODT = 'MODT'
@@ -1560,7 +1560,7 @@ for curFile in glob.glob('*.h'):
                 attrs.append('            %s.Load();\n' % (MODL,))
                 attrs.append('            %s->SetFlagMask(*(UINT8 *)FieldValue);\n' % (MODL,))
                 attrs.append('            break;\n')
-                    
+
             elif s > 0:
                 vk = makeSetApi(vars, history + [(name, type, ip)])
                 if 'Array' in type:
@@ -1600,7 +1600,7 @@ for curFile in glob.glob('*.h'):
                             if pre in attr:
                                 did = True
                                 break
-                        if did: continue                            
+                        if did: continue
 
                         inf = re_name.search(attr)
                         if inf:
@@ -1632,7 +1632,7 @@ for curFile in glob.glob('*.h'):
                                     attr = attr[:attr.rfind(topname) + len(topname)] + '.value[ListIndex]->' + attr[attr.rfind(topname) + len(topname) + 1:]
                                 else:
                                     attr = attr[:attr.rfind(topname) + len(topname)] + '.value[ListIndex].' + attr[attr.rfind(topname) + len(topname) + 1:]
-                                
+
                             x.append('        ' + attr)
                     attrs += [x]
                     attrs.append('                default:\n')
@@ -1755,7 +1755,7 @@ for curFile in glob.glob('*.h'):
                     MODT = 'MO4T'
                     MODS = 'MO4S'
                     MODD = 'MO4D'
-                else:                    
+                else:
                     MODL = 'MODL'
                     MODB = 'MODB'
                     MODT = 'MODT'
@@ -1902,7 +1902,7 @@ for curFile in glob.glob('*.h'):
                                     attr = attr[:attr.find(topname) + len(topname)] + '.value[ListIndex]->' + attr[attr.find(topname) + len(topname) + 1:]
                                 else:
                                     attr = attr[:attr.find(topname) + len(topname)] + '.value[ListIndex].' + attr[attr.find(topname) + len(topname) + 1:]
-                                
+
                             x.append('        ' + attr)
                     attrs += [x]
                     attrs.append('                default:\n')
@@ -2115,7 +2115,7 @@ for curFile in glob.glob('*.h'):
         f.write('/*\nGPL License and Copyright Notice ============================================\n This file is part of CBash.\n\n CBash is free software; you can redistribute it and/or\n modify it under the terms of the GNU General Public License\n as published by the Free Software Foundation; either version 2\n of the License, or (at your option) any later version.\n\n CBash is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU General Public License for more details.\n\n You should have received a copy of the GNU General Public License\n along with CBash; if not, write to the Free Software Foundation,\n Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n\n CBash copyright (C) 2010 Waruddar\n=============================================================================\n*/\n#include "..\\..\\..\\Common.h"\n')
         f.write('#include "..\\%s.h"\n\n' % cltag)
         f.write('namespace FNV\n{\n')
-        
+
         f.write('UINT32 %s::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)\n    {\n    switch(FieldID)\n        {\n        case 0: //recType\n            return GetType();\n        case 1: //flags1\n            return UINT32_FLAG_FIELD;\n        case 2: //fid\n            return FORMID_FIELD;\n        case 3: //versionControl1\n            switch(WhichAttribute)\n                {\n                case 0: //fieldType\n                    return UINT8_ARRAY_FIELD;\n                case 1: //fieldSize\n                    return 4;\n                default:\n                    return UNKNOWN_FIELD;\n                }\n            return UNKNOWN_FIELD;\n' % (cltag,))
         if ('EDID', 'StringRecord', 0, False, []) in cl_vars:
             f.write('        case 4: //eid\n            return ISTRING_FIELD;\n')

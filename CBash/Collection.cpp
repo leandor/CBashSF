@@ -25,6 +25,71 @@ GPL License and Copyright Notice ============================================
 #include <sys/utime.h>
 //#include <boost/threadpool.hpp>
 
+//SortedRecords::SortedRecords():
+//    size(0),
+//    mods(NULL),
+//    records(NULL)
+//    {
+//    //
+//    }
+//
+//SortedRecords::~SortedRecords()
+//    {
+//    delete []mods;
+//    delete []records;
+//    }
+//
+//void SortedRecords::push_back(ModFile *&mod, Record *&record)
+//    {
+//    ModFile ** temp_mods = new ModFile *[size + 1];
+//    Record ** temp_records = new Record *[size + 1];
+//    bool placed = false;
+//    for(UINT32 x = 0, y = 0; x < size; ++y)
+//        {
+//        if(!placed && mods[x]->ModID > mod->ModID)
+//            {
+//            placed = true;
+//            temp_mods[y] = mod;
+//            temp_records[y] = record;
+//            }
+//        else
+//            {
+//            temp_mods[y] = mods[x];
+//            temp_records[y] = records[x];
+//            ++x;
+//            }
+//        }
+//    if(!placed)
+//        {
+//        temp_mods[size] = mod;
+//        temp_records[size] = record;
+//        }
+//    size++;
+//    delete []mods;
+//    delete []records;
+//    mods = temp_mods;
+//    records = temp_records;
+//    }
+//
+//void SortedRecords::erase(UINT32 &index)
+//    {
+//    ModFile ** temp_mods = new ModFile *[size - 1];
+//    Record ** temp_records = new Record *[size - 1];
+//    for(UINT32 x = 0, y = 0; x < size; ++x)
+//        {
+//        if(x == index)
+//            continue;
+//        temp_mods[y] = mods[x];
+//        temp_records[y] = records[x];
+//        ++y;
+//        }
+//    size--;
+//    delete []mods;
+//    delete []records;
+//    mods = temp_mods;
+//    records = temp_records;
+//    }
+
 bool compModRecordPair(std::pair<ModFile *, Record *> *&lhs, std::pair<ModFile *, Record *> *&rhs)
     {
     return lhs->first->ModID < rhs->first->ModID;
@@ -101,9 +166,9 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
         if(!IsPreloading)
             {
             if(IsLoaded)
-                printf("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
+                printer("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
             else
-                printf("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
+                printer("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
             }
         delete []ModName;
         return -1;
@@ -119,7 +184,7 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
             ModFiles.back()->TES4.whichGame = eIsOblivion;
             break;
         case eIsFallout3:
-            printf("AddMod: Error - Unable to add mod \"%s\". Fallout 3 mod support is unimplemented.\n", ModName);
+            printer("AddMod: Error - Unable to add mod \"%s\". Fallout 3 mod support is unimplemented.\n", ModName);
             delete []ModName;
             break;
         case eIsFalloutNewVegas:
@@ -127,11 +192,11 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
             ModFiles.back()->TES4.whichGame = eIsFalloutNewVegas;
             break;
         default:
-            printf("AddMod: Error - Unable to add mod \"%s\". Invalid collection type.\n", ModName);
+            printer("AddMod: Error - Unable to add mod \"%s\". Invalid collection type.\n", ModName);
             delete []ModName;
             break;
         }
-    return 1;
+    return 0;
     }
 
 bool Collection::IsModAdded(STRING const &ModName)
@@ -146,7 +211,7 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
     {
     if(!curModFile->Flags.IsSaveable)
         {
-        printf("SaveMod: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", curModFile->reader.getModName());
+        printer("SaveMod: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", curModFile->reader.getModName());
         return -1;
         }
 
@@ -183,7 +248,7 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
         case EINVAL:
             //Fallthrough intentional. EINVAL should never be returned.
         default:
-            printf("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->reader.getFileName());
+            printer("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->reader.getFileName());
             return -1;
         }
 
@@ -207,7 +272,7 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
             case EINVAL:
                 //Fallthrough intentional. EINVAL should never be returned.
             default:
-                printf("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->reader.getFileName());
+                printer("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->reader.getFileName());
                 return -1;
             }
 
@@ -243,16 +308,16 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
                 case 0:
                     break;
                 case EACCES:
-                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", curModFile->reader.getFileName(), backupName);
+                    printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", curModFile->reader.getFileName(), backupName);
                     break;
                 case ENOENT:
-                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", curModFile->reader.getFileName(), backupName);
+                    printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", curModFile->reader.getFileName(), backupName);
                     break;
                 case EINVAL:
-                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", curModFile->reader.getFileName(), backupName);
+                    printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", curModFile->reader.getFileName(), backupName);
                     break;
                 default:
-                    printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", curModFile->reader.getFileName(), backupName);
+                    printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", curModFile->reader.getFileName(), backupName);
                     break;
                 }
 
@@ -267,16 +332,16 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
                 _utime(curModFile->reader.getFileName(), &originalTimes);
                 return 0;
             case EACCES:
-                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, curModFile->reader.getFileName());
+                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, curModFile->reader.getFileName());
                 break;
             case ENOENT:
-                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, curModFile->reader.getFileName());
+                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, curModFile->reader.getFileName());
                 break;
             case EINVAL:
-                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, curModFile->reader.getFileName());
+                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, curModFile->reader.getFileName());
                 break;
             default:
-                printf("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, curModFile->reader.getFileName());
+                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, curModFile->reader.getFileName());
                 break;
             }
 
@@ -302,21 +367,21 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
         switch(rename(tName, backupName))
             {
             case 0:
-                printf("SaveMod: Warning - Renamed temporary file \"%s\" to \"%s\" instead.\n", tName, backupName);
+                printer("SaveMod: Warning - Renamed temporary file \"%s\" to \"%s\" instead.\n", tName, backupName);
                 _utime(backupName, &originalTimes);
                 delete []backupName;
                 return 0;
             case EACCES:
-                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, backupName);
+                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, backupName);
                 break;
             case ENOENT:
-                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, backupName);
+                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, backupName);
                 break;
             case EINVAL:
-                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, backupName);
+                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, backupName);
                 break;
             default:
-                printf("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, backupName);
+                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, backupName);
                 break;
             }
         delete []backupName;
@@ -327,13 +392,13 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
         if(FileExists(tName))
             {
             if(remove(tName))
-                printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred. Temporary file \"%s\" deleted.\n", curModFile->reader.getFileName(), tName);
+                printer("SaveMod: Error - Unable to save \"%s\". Temporary file \"%s\" deleted.\n", curModFile->reader.getFileName(), tName);
             else
-                printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred. Unable to delete temporary file \"%s\"!.\n", curModFile->reader.getFileName(), tName);
+                printer("SaveMod: Error - Unable to save \"%s\". Unable to delete temporary file \"%s\"!.\n", curModFile->reader.getFileName(), tName);
             }
         else
-            printf("SaveMod: Error - Unable to save \"%s\". An unhandled exception occurred.\n", curModFile->reader.getFileName());
-        throw 1;
+            printer("SaveMod: Error - Unable to save \"%s\".\n", curModFile->reader.getFileName());
+        throw;
         return -1;
         }
     return 0;
@@ -341,20 +406,15 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, bool CloseCollection)
 
 SINT32 Collection::Load()
     {
-    #ifdef CBASH_USE_LOGGING
-        CLOGGER;
-        BOOST_LOG_FUNCTION();
-        BOOST_LOG_SEV(lg, trace) << "Load flags = " << LoadFlags;
-    #endif
-
     ModFile *curModFile = NULL;
     RecordIndexer indexer(EditorID_ModFile_Record, FormID_ModFile_Record);
     RecordIndexer extended_indexer(ExtendedEditorID_ModFile_Record, ExtendedFormID_ModFile_Record);
     bool Preloading = false;
+    std::vector<std::pair<ModFile *, std::vector<Record *> > > DeletedRecords;
 
     if(IsLoaded)
         {
-        printf("Load: Warning - Unable to load collection. It is already loaded.\n");
+        printer("Load: Warning - Unable to load collection. It is already loaded.\n");
         return 0;
         }
     try
@@ -362,7 +422,7 @@ SINT32 Collection::Load()
         _chdir(ModsDir);
         //Brute force approach to loading all masters
         //Could be done more elegantly with recursion
-        //printf("Before Preloading\n");
+        //printer("Before Preloading\n");
         do {
             Preloading = false;
             for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
@@ -380,28 +440,28 @@ SINT32 Collection::Load()
                     }
                 }
         }while(Preloading);
-        //printf("Load order before sort\n");
+        //printer("Load order before sort\n");
         //for(UINT32 x = 0; x < ModFiles.size(); ++x)
-        //    printf("%02X: %s\n", x, ModFiles[x]->FileName);
-        //printf("\n");
+        //    printer("%02X: %s\n", x, ModFiles[x]->FileName);
+        //printer("\n");
         std::_Insertion_sort(ModFiles.begin(), ModFiles.end(), sortMod);
         std::vector<STRING> strLoadOrder255;
         std::vector<STRING> strTempLoadOrder;
         std::vector< std::vector<STRING> > strAllLoadOrder;
         LoadOrder255.clear(); //shouldn't be needed
-        //printf("Load order:\n");
+        //printer("Load order:\n");
         for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
             {
             curModFile = ModFiles[p];
             curModFile->ModID = p;
-            //printf("ModID %02X: %s", p, curModFile->reader.getFileName());
+            //printer("ModID %02X: %s", p, curModFile->reader.getFileName());
             if(curModFile->Flags.IsInLoadOrder)
                 {
                 if(LoadOrder255.size() >= 255)
                     throw std::exception("Tried to load more than 255 mods.");
                 LoadOrder255.push_back(curModFile);
                 strLoadOrder255.push_back(curModFile->reader.getModName());
-                //printf(" , OrderID %02X", LoadOrder255.size() - 1);
+                //printer(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
             else if(!curModFile->Flags.IsIgnoreAbsentMasters) //every mod not in the std load order exists as if it and its masters are the only ones loaded
                 {//No need to sort since the masters should be in order well enough
@@ -410,9 +470,9 @@ SINT32 Collection::Load()
                 strAllLoadOrder.push_back(strTempLoadOrder);
                 strTempLoadOrder.clear();
                 }
-            //printf("\n");
+            //printer("\n");
             }
-        //printf("Load Set\n");
+        //printer("Load Set\n");
         UINT8 expandedIndex = 0;
         UINT32 x = 0;
         for(UINT32 p = 0; p < (UINT32)ModFiles.size(); ++p)
@@ -439,34 +499,86 @@ SINT32 Collection::Load()
                     curModFile->FormIDHandler.CreateFormIDLookup(curModFile->TES4.MAST.size());
                 }
             Expanders.push_back(new FormIDResolver(curModFile->FormIDHandler.ExpandTable, curModFile->FormIDHandler.FileStart, curModFile->FormIDHandler.FileEnd));
+            DeletedRecords.push_back(std::make_pair(curModFile, std::vector<Record *>()));
             if(curModFile->Flags.IsExtendedConflicts)
                 {
                 extended_indexer.SetModFile(curModFile);
-                curModFile->Load(extended_indexer, Expanders);
+                curModFile->Load(extended_indexer, Expanders, DeletedRecords.back().second);
                 }
             else
                 {
                 indexer.SetModFile(curModFile);
-                curModFile->Load(indexer, Expanders);
+                curModFile->Load(indexer, Expanders, DeletedRecords.back().second);
                 }
             }
-        //printf("Loaded\n");
+        //printer("Loaded\n");
         strAllLoadOrder.clear();
+        Record *curRecord = NULL;
+        bool found = false;
+        for(UINT32 x = 0; x < DeletedRecords.size(); ++x)
+            {
+            curModFile = DeletedRecords[x].first;
+            std::vector<Record *> &curRecords = DeletedRecords[x].second;
+            if(curModFile->Flags.IsExtendedConflicts)
+                {
+                curRecords.clear();
+                continue;
+                }
+            UINT8 &CollapsedIndex = curModFile->FormIDHandler.CollapsedIndex;
+            const UINT8 (&CollapseTable)[256] = curModFile->FormIDHandler.CollapseTable;
+            for(UINT32 z = 0; z < curRecords.size(); ++z)
+                {
+                curRecord = curRecords[z];
+                found = false;
+
+                if(curRecord->IsKeyedByEditorID())
+                    {
+                    STRING RecordEditorID = curRecord->GetEditorIDKey();
+                    if(RecordEditorID != NULL)
+                        {
+                        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
+                            {
+                            if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
+                                //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
+                                // that means the mod has that other mod as a master.
+                                if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != CollapsedIndex)
+                                    {
+                                    found = true;
+                                    curRecord->recData = range.first->second.second->recData;
+                                    DPRINT("Record %s in \"%s\" undeleted with record %s in \"%s\"", RecordEditorID, curModFile->reader.getFileName(), range.first->second.second->GetEditorIDKey(), range.first->second.first->reader.getFileName());
+                                    break;
+                                    }
+                            }
+                        }
+                    }
+                else
+                    {
+                    for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
+                        {
+                        if(range.first->second.first->Flags.IsInLoadOrder || range.first->second.first->Flags.IsIgnoreAbsentMasters)
+                            //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
+                            // that means the mod has that other mod as a master.
+                            if(CollapseTable[range.first->second.first->FormIDHandler.ExpandedIndex] != CollapsedIndex)
+                                {
+                                found = true;
+                                curRecord->recData = range.first->second.second->recData;
+                                DPRINT("Record %08X in \"%s\" undeleted with record %08X in \"%s\"", curRecord->formID, curModFile->reader.getFileName(), range.first->second.second->formID, range.first->second.first->reader.getFileName());
+                                break;
+                                }
+                        }
+                    }
+                if(!found)
+                    {
+                    DPRINT("Unable to undelete record %08X in \"%s\"", curRecord->formID, curModFile->reader.getFileName());
+                    }
+                }
+            }
         IsLoaded = true;
-        }
-    catch(std::exception& e)
-        {
-        printf("Load: Error - Unable to load collection. An exception occurred: %s\n", e.what());
-        IsLoaded = false;
-        throw;
-        return -1;
         }
     catch(...)
         {
-        printf("Load: Error - Unable to load collection. An unhandled exception occurred.\n");
         IsLoaded = false;
         throw;
-        return -1;
         }
     return 0;
     }
@@ -636,14 +748,14 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, REC
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), compModRecordPair);
         for(UINT32 x = 0; x < y; ++x)
             {
-            //if(y > 1) printf("sortedConflicts[%d] = %d\n", x, sortedConflicts[x]->ModID);
+            //if(y > 1) printer("sortedConflicts[%d] = %d\n", x, sortedConflicts[x]->ModID);
             ModIDs[x] = sortedConflicts[y - (x + 1)]->first;
             RecordIDs[x] = sortedConflicts[y - (x + 1)]->second;
             }
         //if(y > 1)
         //    for(UINT32 x = 0; x < y; ++x)
         //        {
-        //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
+        //        printer("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
         //        }
         sortedConflicts.clear();
         }
@@ -654,7 +766,7 @@ SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MO
     {
     if(curModFile->Flags.IsExtendedConflicts)
         {
-        printf("GetRecordHistory: Warning - No history available. Mod \"%s\" uses extended conflicts.\n", curModFile->reader.getModName());
+        printer("GetRecordHistory: Warning - No history available. Mod \"%s\" uses extended conflicts.\n", curModFile->reader.getModName());
         return -1;
         }
     std::vector<std::pair<ModFile *, Record *> *> sortedHistory;
@@ -689,14 +801,14 @@ SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MO
         std::sort(sortedHistory.begin(), sortedHistory.end(), compModRecordPair);
         for(UINT32 x = 0; x < y; ++x)
             {
-            //if(y > 1) printf("sortedHistory[%d] = %d\n", x, sortedHistory[x].first->ModID);
+            //if(y > 1) printer("sortedHistory[%d] = %d\n", x, sortedHistory[x].first->ModID);
             ModIDs[x] = sortedHistory[x]->first;
             RecordIDs[x] = sortedHistory[x]->second;
             }
         //if(y > 1)
         //    for(UINT32 x = 0; x < y; ++x)
         //        {
-        //        printf("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
+        //        printer("ModIDs[%d] = %d\n", x, ModIDs[x]->ModID);
         //        }
         sortedHistory.clear();
         }
@@ -711,18 +823,15 @@ UINT32 Collection::NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth)
     if(range.first == range.second)
         return curFormID;
     //The formID already exists, so try again (either in that mod, or being injected into that mod)
-    //Wrap around and recycle any freed ids.
-    if(depth < 0x00FFFFFF)
-        return NextFreeExpandedFormID(curModFile, ++depth);
-    //All formIDs are in use. Unlikely to ever occur.
-    return 0;
+    //Wrap around and check for any freed formIDs until they're all checked. Unlikely to ever occur.
+    return (depth < 0x00FFFFFF) ? NextFreeExpandedFormID(curModFile, ++depth) : 0;
     }
 
 Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags)
     {
     if(!curModFile->Flags.IsInLoadOrder)
         {
-        printf("CreateRecord: Error - Unable to create any records in mod \"%s\". It is not in the load order.\n", curModFile->reader.getModName());
+        printer("CreateRecord: Error - Unable to create any records in mod \"%s\". It is not in the load order.\n", curModFile->reader.getModName());
         return NULL;
         }
 
@@ -748,7 +857,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
         LookupRecord(curModFile, ParentFormID, ParentRecord);
         if(ParentRecord == NULL)
             {
-            printf("CreateRecord: Error - Unable to locate parent record (%08X). It does not exist in \"%s\".\n", ParentFormID, curModFile->reader.getModName());
+            printer("CreateRecord: Error - Unable to locate parent record (%08X). It does not exist in \"%s\".\n", ParentFormID, curModFile->reader.getModName());
             return NULL;
             }
         }
@@ -757,7 +866,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
     Record *curRecord = curModFile->CreateRecord(RecordType, RecordEditorID, DummyRecord, ParentRecord, options);
     if(curRecord == NULL)
         {
-        printf("CreateRecord: Error - Unable to create record of type \"%c%c%c%c\" in mod \"%s\". An unknown error occurred.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], curModFile->reader.getModName());
+        printer("CreateRecord: Error - Unable to create record of type \"%c%c%c%c\" in mod \"%s\". An unknown error occurred.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], curModFile->reader.getModName());
         return NULL;
         }
 
@@ -785,7 +894,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     {
     if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreAbsentMasters)
         {
-        printf("CopyRecord: Error - Unable to copy any records from source mod \"%s\". It is not in the load order and may require absent masters.\n", curModFile->reader.getModName());
+        printer("CopyRecord: Error - Unable to copy any records from source mod \"%s\". It is not in the load order and may require absent masters.\n", curModFile->reader.getModName());
         return NULL;
         }
 
@@ -836,13 +945,13 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
             LookupRecord(curModFile, DestParentFormID, ParentRecord);
             if(ParentRecord == NULL)
                 {
-                printf("CopyRecord: Error - Unable to locate destination parent record (%08X). It does not exist in \"%s\" or \"%s\".\n", DestParentFormID, DestModFile->reader.getModName(), curModFile->reader.getModName());
+                printer("CopyRecord: Error - Unable to locate destination parent record (%08X). It does not exist in \"%s\" or \"%s\".\n", DestParentFormID, DestModFile->reader.getModName(), curModFile->reader.getModName());
                 return NULL;
                 }
             ParentRecord = CopyRecord(curModFile, ParentRecord, DestModFile, 0, 0, 0, parentOptions.GetFlags());
             if(ParentRecord == NULL)
                 {
-                printf("CopyRecord: Error - Unable to copy missing destination parent record (%08X). It does not exist in \"%s\", and there was an error copying it from \"%s\".\n", DestParentFormID, DestModFile->reader.getModName(), curModFile->reader.getModName());
+                printer("CopyRecord: Error - Unable to copy missing destination parent record (%08X). It does not exist in \"%s\", and there was an error copying it from \"%s\".\n", DestParentFormID, DestModFile->reader.getModName(), curModFile->reader.getModName());
                 return NULL;
                 }
             }
@@ -850,13 +959,13 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
 
     if(curModFile == DestModFile && options.SetAsOverride)
         {
-        printf("CopyRecord: Error - Unable to copy (%08X) as an override record. Source and destination mods \"%s\" are the same.\n", curRecord->formID, curModFile->reader.getModName());
+        printer("CopyRecord: Error - Unable to copy (%08X) as an override record. Source and destination mods \"%s\" are the same.\n", curRecord->formID, curModFile->reader.getModName());
         return NULL;
         }
 
     if(!DestModFile->Flags.IsInLoadOrder && !options.SetAsOverride)
         {
-        printf("CopyRecord: Error - Unable to copy (%08X) as a new record. Destination \"%s\" is not in the load order.\n", curRecord->formID, DestModFile->reader.getModName());
+        printer("CopyRecord: Error - Unable to copy (%08X) as a new record. Destination \"%s\" is not in the load order.\n", curRecord->formID, DestModFile->reader.getModName());
         return NULL;
         }
 
@@ -864,7 +973,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
     RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
-        printf("CopyRecord: Error - Unable to create the copied record (%08X). An unknown error occurred when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->reader.getModName(), curModFile->reader.getModName());
+        printer("CopyRecord: Error - Unable to create the copied record (%08X). An unknown error occurred when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->reader.getModName(), curModFile->reader.getModName());
         return NULL;
         }
 
@@ -957,7 +1066,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
 
     if(curRecord != NULL)
         {
-        printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". One or more of the new record ids is already in use.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
+        printer("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". One or more of the new record ids is already in use.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
         return -1;
         }
 
@@ -989,7 +1098,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
             }
         else
             {
-            printf("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". Unable to locate the record.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
+            printer("SetRecordIDs: Error - Unable to set the new record ids (%08X, %s) on record (%08X, %s) in mod \"%s\". Unable to locate the record.\n", FormID, EditorID, curRecord->formID, curRecord->GetEditorIDKey(), curModFile->reader.getModName());
             return -1;
             }
         }
@@ -1008,7 +1117,7 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
         //Ensure the record is fully loaded, otherwise any changes could be lost when the record is later loaded
         RecordReader reader(curModFile->FormIDHandler, Expanders);
         reader.Accept(curRecord);
-        curRecord->SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorID, 0);
+        curRecord->SetEditorIDKey(EditorID);
         curRecord->IsChanged(true);
         }
 
@@ -1020,3 +1129,118 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
         }
     return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }
+
+//RecordDeleter::RecordDeleter(Record *_RecordToDelete, /*bool IsExtended,*/ EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record):
+//    RecordOp(),
+//    //IsExtended(IsExtended),
+//    EditorID_ModFile_Record(_EditorID_ModFile_Record),
+//    FormID_ModFile_Record(_FormID_ModFile_Record),
+//    RecordToDelete(_RecordToDelete)
+//    {
+//    //
+//    }
+//
+//RecordDeleter::~RecordDeleter()
+//    {
+//    //
+//    }
+//
+//bool RecordDeleter::Accept(Record *&curRecord)
+//    {
+//    if(curRecord == NULL || curRecord == NULL)
+//        return false;
+//
+//    if(RecordToDelete == NULL || curRecord == RecordToDelete)
+//        {
+//        //De-Index the record
+//        if(curRecord->IsKeyedByEditorID())
+//            {
+//            EditorID_Iterator it = EditorID_ModFile_Record.find(curRecord->GetEditorIDKey());
+//            if(it != EditorID_ModFile_Record.end())
+//                {
+//                //SortedRecords &records = IsExtended ? it->second.extended : it->second.loadordered;
+//                SortedRecords &records = it->second;
+//                for(UINT32 x = 0; x < records.size; ++x)
+//                    if(records.records[x] == curRecord)
+//                        {
+//                        records.erase(x);
+//                        if(records.size == 0)
+//                            EditorID_ModFile_Record.erase(it);
+//                        break;
+//                        }
+//                }
+//            }
+//        else
+//            {
+//            FormID_Iterator it = FormID_ModFile_Record.find(curRecord->formID);
+//            if(it != FormID_ModFile_Record.end())
+//                {
+//                //SortedRecords &records = IsExtended ? it->second.extended : it->second.loadordered;
+//                SortedRecords &records = it->second;
+//                for(UINT32 x = 0; x < records.size; ++x)
+//                    if(records.records[x] == curRecord)
+//                        {
+//                        records.erase(x);
+//                        if(records.size == 0)
+//                            FormID_ModFile_Record.erase(it);
+//                        break;
+//                        }
+//                }
+//            }
+//        if(curRecord->HasSubRecords())
+//            {
+//            RecordDeleter SubRecordDeleter(NULL, /*IsExtended,*/ EditorID_ModFile_Record, FormID_ModFile_Record);
+//            curRecord->VisitSubRecords(NULL, SubRecordDeleter);
+//            }
+//        //Delete the record
+//        delete curRecord;
+//        curRecord = NULL;
+//        ++count;
+//        result = true;
+//        stop = RecordToDelete != NULL;
+//        return stop;
+//        }
+//    return false;
+//    }
+//
+//RecordIndexer::RecordIndexer(ModFile *_curModFile, EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
+//    RecordOp(),
+//    //IsExtended(false),
+//    curModFile(_curModFile),
+//    EditorID_ModFile_Record(_EditorID_Map),
+//    FormID_ModFile_Record(_FormID_Map)
+//    {
+//    //
+//    }
+//
+//RecordIndexer::RecordIndexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
+//    RecordOp(),
+//    //IsExtended(false),
+//    EditorID_ModFile_Record(_EditorID_Map),
+//    FormID_ModFile_Record(_FormID_Map)
+//    {
+//    //
+//    }
+//
+//RecordIndexer::~RecordIndexer()
+//    {
+//    //
+//    }
+//
+//bool RecordIndexer::Accept(Record *&curRecord)
+//    {
+//    //IndexedRecords &indexedrecords = curRecord->IsKeyedByEditorID() ? EditorID_ModFile_Record[curRecord->GetEditorIDKey()] : FormID_ModFile_Record[curRecord->formID];
+//    SortedRecords &records = curRecord->IsKeyedByEditorID() ? EditorID_ModFile_Record[curRecord->GetEditorIDKey()] : FormID_ModFile_Record[curRecord->formID];
+//    records.push_back(curModFile, curRecord);
+//    return false;
+//    }
+//
+//void RecordIndexer::SetModFile(ModFile *_curModFile)
+//    {
+//    curModFile = _curModFile;
+//    }
+
+//void RecordIndexer::SetIsExtended(bool UseExtended)
+//    {
+//    IsExtended = UseExtended;
+//    }

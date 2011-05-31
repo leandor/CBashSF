@@ -42,14 +42,9 @@ SINT32 FNVFile::LoadTES4()
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
-            printf("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", reader.getModName());
+            printer("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", reader.getModName());
         return 0;
         }
-    #ifdef CBASH_USE_LOGGING
-        CLOGGER;
-        BOOST_LOG_FUNCTION();
-        BOOST_LOG_SEV(lg, trace) << "LoadTES4: " << FileName;
-    #endif
 
     reader.skip(4);
     UINT32 recSize = 0;
@@ -60,7 +55,7 @@ SINT32 FNVFile::LoadTES4()
     reader.read(&TES4.formVersion, 2);
     reader.read(&TES4.versionControl2[0], 2);
     if(TES4.IsLoaded())
-        printf("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
+        printer("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
 
     //Normally would read the record with the read method
     //However, that requires recData to be set on the record
@@ -68,14 +63,14 @@ SINT32 FNVFile::LoadTES4()
     //TES4 is constructed when the modfile is created
     // so the info isn't available then.
     //Must make sure this mimics the read method as needed
-    TES4.ParseRecord(reader.getBuffer(24), recSize);
+    TES4.ParseRecord(reader.tell(), recSize);
     TES4.IsLoaded(true);
     TES4.IsChanged(true);
     reader.skip(recSize);
     return 1;
     }
 
-SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders)
+SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
     {
     PROFILE_FUNC
 
@@ -188,9 +183,9 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
         if(!Flags.IsIgnoreExisting)
             {
             if(!reader.IsOpen())
-                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", reader.getModName());
+                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", reader.getModName());
             else
-                printf("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", reader.getModName());
+                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", reader.getModName());
             }
         return 0;
         }
@@ -203,8 +198,8 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
     RecordReader fullReader(FormIDHandler, Expanders);
     RecordOp skipReader;
 
-    FNVRecordProcessor processor_min(reader, FormIDHandler, skipReader, Flags, UsedFormIDs);
-    FNVRecordProcessor processor_full(reader, FormIDHandler, fullReader, Flags, UsedFormIDs);
+    FNVRecordProcessor processor_min(reader, FormIDHandler, skipReader, Flags, UsedFormIDs, DeletedRecords);
+    FNVRecordProcessor processor_full(reader, FormIDHandler, fullReader, Flags, UsedFormIDs, DeletedRecords);
 
     FNVRecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
 
@@ -213,7 +208,7 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
         reader.read(&GRUPSize, 4);
         reader.read(&GRUPLabel, 4);
         reader.skip(4); //Skip type (tops will all == 0)
-        //printf("%c%c%c%c\n", ((char *)&GRUPLabel)[0], ((char *)&GRUPLabel)[1], ((char *)&GRUPLabel)[2], ((char *)&GRUPLabel)[3]);
+        //printer("%c%c%c%c\n", ((char *)&GRUPLabel)[0], ((char *)&GRUPLabel)[1], ((char *)&GRUPLabel)[2], ((char *)&GRUPLabel)[3]);
         switch(GRUPLabel)
             {
             case eIgGMST:
@@ -826,20 +821,20 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
             default:
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printf("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
+                    printer("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
                     return 1;
                     }
                 //else
-                //    printf("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
+                //    printer("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
 
                 if(GRUPSize == 0)
                     {
-                    printf("Unable to continue loading.\n");
+                    printer("Unable to continue loading.\n");
                     return 1;
                     }
                 else
                     {
-                    //printf("Attempting to skip and continue loading.\n");
+                    //printer("Attempting to skip and continue loading.\n");
                     reader.skip(GRUPSize - 16); //Skip type (tops will all == 0)
                     }
                 break;
@@ -978,7 +973,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(PCBE):
         case REV32(NAVM):
         case REV32(LAND):
-            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            printer("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         ///////////////////////////////////////////////
         case REV32(WRLD):
@@ -1080,7 +1075,7 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
         case REV32(SLPD):
             //return (UINT32)SLPD.Records.size();
         default:
-            printf("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            printer("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         }
     return 0;
@@ -1092,7 +1087,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return NULL;
         }
 
@@ -1103,7 +1098,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(GMST):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
+                printer("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
                 return NULL;
                 }
 
@@ -1328,7 +1323,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 {
                 if(ParentRecord->GetType() != REV32(WRLD))
                     {
-                    printf("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                    printer("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
                     return NULL;
                     }
 
@@ -1371,7 +1366,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(INFO):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1381,7 +1376,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1391,7 +1386,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(ACRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1401,7 +1396,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(REFR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1411,7 +1406,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(PGRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create PGRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PGRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1421,7 +1416,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(PMIS):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create PMIS record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PMIS record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1431,7 +1426,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(PBEA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create PBEA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PBEA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1441,7 +1436,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(PFLA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create PFLA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PFLA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1451,7 +1446,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(PCBE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create PCBE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PCBE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1461,7 +1456,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(NAVM):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create NAVM record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create NAVM record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1471,7 +1466,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(LAND):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printf("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1674,7 +1669,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
             //newRecord = SLPD.Records.back();
             //break;
         default:
-            printf("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            printer("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         }
     return newRecord;
@@ -1686,7 +1681,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return -1;
         }
 
@@ -1700,9 +1695,9 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
     for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
         {
-        RecordMasterChecker checker(FormIDHandler, Expanders, p);
+        RecordMasterChecker checker(FormIDHandler, Expanders, (UINT8)p);
 
-        //printf("Checking: %s\n", TES4.MAST[p].value);
+        //printer("Checking: %s\n", TES4.MAST[p].value);
         if(checker.Accept(topRecord)) continue;
         if(GMST.VisitRecords(NULL, checker, false)) continue;
         if(TXST.VisitRecords(NULL, checker, false)) continue;
@@ -1806,7 +1801,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
         //if(HUNG.VisitRecords(NULL, checker, false)) continue;
         //if(SLPD.VisitRecords(NULL, checker, false)) continue;
 
-        //printf("ToRemove: %s\n", TES4.MAST[p].value);
+        //printer("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
         ++cleaned;
         }
@@ -1825,7 +1820,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
     if(!Flags.IsSaveable)
         {
-        printf("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
+        printer("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
         return -1;
         }
 
@@ -1958,7 +1953,7 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return;
         }
 
@@ -2076,7 +2071,7 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
 
     if(Flags.IsNoLoad)
         {
-        printf("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
         return;
         }
 
@@ -2392,9 +2387,9 @@ void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType
             //break;
         default:
             if(RecordType)
-                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
+                printer("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
             else
-                printf("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
+                printer("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
             break;
         }
     return;

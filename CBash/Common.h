@@ -32,33 +32,15 @@ GPL License and Copyright Notice ============================================
 #include <boost/unordered_set.hpp>
 #include <set>
 #include <map>
-#include <boost/interprocess/file_mapping.hpp>
-#include <boost/interprocess/mapped_region.hpp>
+//#include <boost/interprocess/file_mapping.hpp>
+//#include <boost/interprocess/mapped_region.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <vector>
 #include "MacroDefinitions.h"
 
-#ifdef CBASH_USE_LOGGING
-    #include <boost/shared_ptr.hpp>
-    #include <boost/log/common.hpp>
-    #include <boost/log/filters.hpp>
-    #include <boost/log/formatters.hpp>
-    #include <boost/log/attributes.hpp>
-    #include <boost/log/sinks/sync_frontend.hpp>
-    #include <boost/log/sinks/basic_sink_backend.hpp>
-    #include <boost/log/sources/logger.hpp>
-
-    // Here we define our application severity levels.
-    enum severity_level
-    {
-        trace,
-        normal,
-        notification,
-        warning,
-        error,
-        critical
-    };
-#endif
+extern int (*printer)(const char * _Format, ...);
+extern SINT32 (*LoggingCallback)(const STRING);
+extern void (*RaiseCallback)();
 
 enum whichGameTypes {
     eIsOblivion = 0,
@@ -184,12 +166,6 @@ class Ex_INVALIDMODINDEX : public std::exception
         const char * __CLR_OR_THIS_CALL what() const;
     };
 
-class Ex_INVALIDRECORDINDEX : public std::exception
-    {
-    public:
-        const char * __CLR_OR_THIS_CALL what() const;
-    };
-
 //wrappers for _stricmp and strcmp that handle NULL args
 int icmps(const STRING lhs, const STRING rhs);
 int cmps(const STRING lhs, const STRING rhs);
@@ -203,7 +179,7 @@ struct sameStr
     bool operator()( const STRING s1, const STRING s2 ) const;
     };
 
-typedef std::multimap<UINT32, std::pair<ModFile *, Record *> >   FormID_Map;
+typedef std::multimap<UINT32, std::pair<ModFile *, Record *> > FormID_Map;
 typedef std::multimap<STRING, std::pair<ModFile *, Record *>, sameStr> EditorID_Map;
 
 typedef FormID_Map::iterator FormID_Iterator;
@@ -216,13 +192,13 @@ typedef std::pair<varType, varType> FunctionArguments;
 
 typedef std::map<UINT32, FunctionArguments>::value_type Function_ArgumentsType;
 typedef std::map<UINT32, STRING>::value_type Function_NameType;
-typedef std::map<UINT32, std::vector<UINT32>>::value_type RecordType_PossibleGroupsType;
+typedef std::map<UINT32, std::vector<UINT32> >::value_type RecordType_PossibleGroupsType;
 
-typedef std::map<UINT32, std::vector<UINT32>>::const_iterator RecordType_PossibleGroups_Iterator;
+typedef std::map<UINT32, std::vector<UINT32> >::const_iterator RecordType_PossibleGroups_Iterator;
 typedef std::map<UINT32, FunctionArguments>::const_iterator Function_Arguments_Iterator;
 typedef std::map<UINT32, STRING>::const_iterator ID_Name_Iterator;
 
-extern const std::map<UINT32, std::vector<UINT32>> RecordType_PossibleGroups;
+extern const std::map<UINT32, std::vector<UINT32> > RecordType_PossibleGroups;
 extern const std::map<UINT32, FunctionArguments> Function_Arguments;
 extern const std::map<UINT32, STRING> Function_Name;
 extern const std::map<UINT32, STRING> Comparison_Name;
@@ -294,8 +270,7 @@ class FileReader
         STRING FileName;
         STRING ModName;
 
-        UINT32 buffer_position;
-        unsigned char *start, *end;
+        unsigned char *buffer_start, *buffer_position, *buffer_end;
 
     public:
         FileReader(STRING filename, STRING modname);
@@ -312,29 +287,166 @@ class FileReader
         SINT32 close();
         bool   IsOpen();
 
-        UINT32 tell();
+        unsigned char * tell();
+        unsigned char * start();
+        unsigned char * end();
         bool   eof();
         void   skip(UINT32 length);
         bool   IsInFile(void *buffer);
-        unsigned char *getBuffer(UINT32 offset=0);
-        UINT32 getBufferSize();
         void   read(void *destination, UINT32 length);
         #ifdef CBASH_DEBUG_CHUNK
-            void   peek_around(UINT32 length);
+            void   peek_around(UINT32 length, unsigned char *position=NULL);
         #endif
     };
 
 class FormIDHandlerClass
     {
+    //In order to identify a record across mods, two pieces of info are needed:
+    // 1) The originating mod.
+    // 2) A unique identifier within the mod.
+
+    //As long as those two requirements are met, the implementation details don't matter.
+    //In practice, there are two different implementations in use:
+    // 1) FormIDs (used by the game engine, TES4Edit, etc)
+    // 2) Long formIDs (used by Wrye Bash and therefore used in cint)
+
+    //A formID is composed of two parts, the modIndex and the objectID.
+    // The modIndex identifies the originating mod and the objectID identifies the record within that mod.
+    // The modIndex is a UINT8 index, and the objectID is a UINT24.
+    // They are combined into a single UINT32 where 0xFF000000 is the modIndex and the objectID is 0x00FFFFFF.
+    // I.E. a modIndex of 0x01 and an objectID of 0x00084F would result in the formID 0x0100084F.
+    // Considering that Oblivion.esm alone has over a million records,
+    //  and that each record may reference multiple other records, this is both a fast and low memory method.
+    //
+    // There's are a couple problems though:
+    //  1) A modIndex can only use 0-255, but there are several orders of magnitudes more mods.
+    //     Inevitably, mods will end up using the same modIndex value.
+    //  2) A modIndex can't directly identify a mod; mods are named, not numbered.
+    //
+    // Bethesda solves these issues by:
+    //  1) Limiting mods to 254 (255 is reserved)
+    //  2) Translating a mod name to a unique modIndex value.
+    // The implementation details of these fixes differs depending on whether the record is on disk or in memory.
+    //
+    // If the record is on disk (being read/written):
+    //  1) There is an array of mod names in the TES4 record termed the masters. It is signed with "MAST".
+    //     Whenever a record from another mod is added to a mod,
+    //      its originating mod name is added to this array if not already present.
+    //     This array is limited to 254 entries. Therefore a mod is unable to have more than 254 masters.
+    //  2) The modIndex identifies the array index of the originating mod's name.
+    //     If the modIndex is greater than the array size (up to 255), it identifies that mod as the source.
+    //
+    //  For example, if an esp named "Test.esp" uses records from "Oblivion.esm", "OOO.esm", and "COBL.esm",
+    //   it will have these names in the MAST chunk of its TES4 record. A record with the formID 0x0100084F
+    //   has a modIndex of 1, and an objectID of 0x84F. The modIndex is used to access the master array
+    //   resulting in "OOO.esm". The record is thus identified as originating from "OOO.esm" with the unique
+    //   identifier of 0x84F. Similarly, 0x0000084F is a completely different record that originates from
+    //   "Oblivion.esm". On the other hand, 0x0300084F, 0x0400084F, and 0xFF00084F all refer to the same
+    //   record that originates from "Test.esp". Although they have different modIndex values, they are all
+    //   greater than the master array length. For the majority of formIDs originating within a mod, the
+    //   modIndex will be equal to the size of the master array, but not always.
+    //
+    // If the record is in memory:
+    //  1) The number of active mods is limited to 254 (255 is used for the save file).
+    //     These mods are arranged into a load order based primarily on the modified time of each mod, with
+    //      esm mods sorting before esp mods.
+    //  2) The modIndex identifies the load order index of the mod. If the load order changes, the modIndex of a given
+    //      record will change to reflect this.
+    //
+    //  For example, if the mods "Test.esp", "Oblivion.esm", "OOO.esm", and "COBL.esm" are active, they may
+    //   be sorted into a load order "Oblivion.esm", "COBL.esm", "OOO.esm", and "Test.esp". A record with the
+    //   formID 0x0100084F has a modIndex of 1, and an objectID of 0x84F. The modIndex is used to access the
+    //   load order array resulting in "COBL.esm". The record is thus identified as originating from "COBL.esm"
+    //   with the unique identifier of 0x84F. Similarly, 0x0000084F is a completely different record that
+    //   originates from "Oblivion.esm", 0x0200084F comes from "OOO.esm", 0x0300084F comes from "Test.esp", and
+    //   0xFF00084F comes from the savegame.
+    //
+    // Notice that the formID 0x0100084F in the above examples identifies two completely different records based on
+    //  whether the record is on disk or in memory. The game engine has to be able to convert between the disk
+    //  representation and the in memory representation. This is known as resolving the formID. It occurs every time
+    //  the game engine is started, the Construction Set (CS) opens a mod, and when the CS saves a mod. Almost every
+    //  record has to have its formID resolved as well as every formID that record happens to reference.
+    //  (To complicate matters, some records are identified by their editorID instead of their formID, and any formID
+    //  with an objectID <= 0x800 doesn't use the modIndex at all. Instead, they're considered to belong to the
+    //  engine itself.)
+    //
+    //  The key to doing this lays in the fact that in both cases, the modIndex can be used to get a mod's name.
+    //   On disk, the modIndex directly references a name in the master array, and in memory, it references a mod at
+    //   a given load order, and the engine knows the name of that mod.
+    //
+    //  So, the on disk modIndex maps to a mod name which maps to the in memory modIndex.
+    //
+    //  Combining the two previous examples, the on disk formID 0x0100084F in mod "Test.esp" refers to
+    //   ("OOO.esm", 0x84F). The load order is "Oblivion.esm", "COBL.esm", "OOO.esm", and "Test.esp". The engine
+    //   finds a match between "OOO.esm" and the mod name at load order position 0x02, so the in memory modIndex
+    //   becomes 0x02, and the formID is 0x0200084F. "Oblivion.esm" has no masters, so the on disk formID 0x0100084F
+    //   in mod "Oblivion.esm" refers to ("Oblivion.esm", 0x84F). The engine finds a match between
+    //   "Oblivion.esm" and the mod name at load order position 0x00, so the modIndex becomes 0x00,
+    //   and the in memory formID is 0x0000084F.
+    //
+    //  When the CS saves a mod to disk, this process is essentially reversed. Given a new mod being saved
+    //   to "SaveTest.esp" with the same load order as above, the in memory formID 0x0200084F refers to the mod at
+    //   load order position 0x02 which has the name "OOO.esm". If "OOO.esm" is found at position 0x00 in
+    //   the mod's masters, so the on disk formID becomes 0x0000084F.
+    //
+    // Instead of directly working with formIDs, Wrye Bash uses a concept it calls long formIDs.
+    //  Rather than going from on disk modIndex to mod name to in memory modIndex, long formIDs stop at the mod name.
+    //  So the long formID is always just one step away from becoming either an on disk formID or in memory formID.
+    //
+    //  For example, using the same example setup as before, the on disk formID 0x0100084F in mod
+    //   "Test.esp" refers to ("OOO.esm", 0x84F), so the long formID is just that, ("OOO.esm", 0x84F).
+    //   When converting ("OOO.esm", 0x84F) back to the on disk formID, if "OOO.esm" is found at position 0x00
+    //   in the mod's masters, the on disk formID becomes 0x0000084F.
+    //
+    // Each approach satisfies the conditions to uniquely identify a record, but they have their own pros and cons.
+    //  FormID Pros:
+    //   1) A UINT32 uses much less memory than a string and UINT32.
+    //   2) It is much faster to load a UINT32 than a string and UINT32.
+    //   3) Comparing UINT32's is much faster than case insensitive comparing a string and a UINT32.
+    //  FormID Cons:
+    //   1) The resolution process is a bit involved.
+    //   2) Depending on implementation, resolving a formID can be very slow.
+    //      The naive approach is to case insensitively search through the load order and/or masters everytime a
+    //       formID is resolved.
+    //   3) Neither the on disk formID nor the in memory formID is stable. On disk formID 0x0100084F may refer to
+    //       ("OOO.esm", 0x84F) at one point in time, and ("COBL.esm", 0x84F) at some other time. It all depends on
+    //       whether the masters were changed. In memory formID 0x0100084F may refer to ("COBL.esm", 0x84F)
+    //       at one point in time, and ("Test.esp", 0x84F) at some other time. It all depends on whether the load order
+    //       was changed. It isn't trivial to match records across two different load orders.
+    //   4) A human can't simply look at the formID and know where the record originates.
+    //
+    //  Long formID Pros:
+    //   1) A long formID is stable. It doesn't matter what the load order is, nor what the mod masters are.
+    //      ("OOO.esm", 0x84F) always refers to the record in "OOO.esm" with the objectID 0x84F. This makes it
+    //      extremely trivial to match records despite differing load orders. This allows actions such as
+    //      importing data from a text file or from a mod file not in the load order.
+    //   2) The resolution process is simpler.
+    //   3) The originating mod of a record becomes extremely obvious.
+    //  Long formID Cons:
+    //   1) Uses much more memory than a formID.
+    //   2) Takes much more time to process than a formID.
+    //   3) Have to work with a "non-standard" format, and deal with conversions when needed.
+    //
+    //CBash uses the formID internally, but defaults to the long formID in its Python interface.
+    // This involves extra work, but allows Python to work with a stable record identifier while
+    //  preserving the speed and memory savings internally by using formIDs.
+    //
+    //CBash is heavily optimized for speedy formID resolution. Since there is a maximum of 255
+    // possible masters per mod, and a similar limit on the number of mods in a given load order,
+    // CBash can precompute all possible on disk modIndex to in memory modIndex matches. These
+    // are stored in a fixed size array, so that resolving a formID is a simple matter of
+    // selecting the appropriate resolution table, and using the given modIndex as the index.
+    // CBash uses the terminology "expand" when resolving an on disk formID to an in memory formID,
+    // and "collapse" when resolving an in memory formID to an on disk formID.
     public:
-        std::vector<StringRecord> &MAST;
-        std::vector<STRING> LoadOrder255;
-        boost::unordered_set<UINT32> NewTypes;
-        UINT32 &nextObject;
-        UINT8  ExpandedIndex;
-        UINT8  CollapsedIndex;
-        UINT8  ExpandTable[256];
-        UINT8  CollapseTable[256];
+        std::vector<StringRecord> &MAST;        //The list of masters
+        std::vector<STRING> LoadOrder255;       //The current load order of active mods
+        boost::unordered_set<UINT32> NewTypes;  //Tracks the type of any new records for reporting
+        UINT32 &nextObject;                     //The object counter for quickly providing new objectIDs
+        UINT8  ExpandedIndex;                   //The load order index
+        UINT8  CollapsedIndex;                  //The size of MAST
+        UINT8  ExpandTable[256];                //Maps the on disk modIndex to the in memory modIndex
+        UINT8  CollapseTable[256];              //Maps the in memory modIndex to the on disk modIndex (not always a direct inverse of ExpandTable)
         bool   IsEmpty;
         bool   bMastersChanged;
         unsigned char * FileStart;
@@ -554,6 +666,7 @@ class RawRecord
 
         bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
         void Write(UINT32 _Type, FileWriter &writer);
+        void ReqWrite(UINT32 _Type, FileWriter &writer);
 
         void Copy(unsigned char *FieldValue, UINT32 nSize);
 
@@ -612,7 +725,7 @@ struct SimpleSubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -625,7 +738,7 @@ struct SimpleSubRecord
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -716,7 +829,7 @@ struct SimpleFloatSubRecord
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("SimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -728,7 +841,7 @@ struct SimpleFloatSubRecord
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("SimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -819,7 +932,7 @@ struct ReqSimpleSubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -832,7 +945,7 @@ struct ReqSimpleSubRecord
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -907,7 +1020,7 @@ struct ReqSimpleFloatSubRecord
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("ReqSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("ReqSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -919,7 +1032,7 @@ struct ReqSimpleFloatSubRecord
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("ReqSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("ReqSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1005,7 +1118,7 @@ struct OptSimpleSubRecord
         if(subSize > sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            printf("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+            printer("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
                    (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1021,7 +1134,7 @@ struct OptSimpleSubRecord
             UINT32 test = *((UINT32 *)(buffer + curPos - 6));
             if (!(test == REV32(PKPT) && subSize == 1 && sizeof(T) == 2))
                 {
-                printf("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1111,7 +1224,7 @@ struct OptSimpleFloatSubRecord
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("OptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1123,7 +1236,7 @@ struct OptSimpleFloatSubRecord
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("OptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("OptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1214,7 +1327,7 @@ struct SemiOptSimpleSubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1227,7 +1340,7 @@ struct SemiOptSimpleSubRecord
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1329,7 +1442,7 @@ struct SemiOptSimpleFloatSubRecord
         if(subSize > sizeof(FLOAT32))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SemiOptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("SemiOptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1341,7 +1454,7 @@ struct SemiOptSimpleFloatSubRecord
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
                 {
-                printf("SemiOptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SemiOptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1445,7 +1558,7 @@ struct SubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1458,7 +1571,7 @@ struct SubRecord
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1539,7 +1652,7 @@ struct ReqSubRecord
         if(subSize > sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            printf("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+            printer("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
                    (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1570,7 +1683,7 @@ struct ReqSubRecord
 				!(test == REV32(DATA) && (test2 == REV32(EFSH) || test2 == REV32(GRUP)) && sizeof(T) == 308) //multiple possible subSizes
                 )
                 {
-                printf("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1655,7 +1768,7 @@ struct OptSubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1674,7 +1787,7 @@ struct OptSubRecord
                 !(test == REV32(DAT2) && (test2 == REV32(ONAM) || test2 == REV32(QNAM) || test2 == REV32(RCIL) || test2 == REV32(AMMO)) && subSize == 12 && sizeof(T) == 20)
                 )
                 {
-                printf("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1790,7 +1903,7 @@ struct SemiOptSubRecord
         if(subSize > sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            printf("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+            printer("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
                    (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1806,7 +1919,7 @@ struct SemiOptSubRecord
             UINT32 test = *((UINT32 *)(buffer + curPos - 6));
             if(!(test == REV32(XLOC) && subSize == 12 && sizeof(T) == 20))
                 {
-                printf("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1929,7 +2042,7 @@ struct OBMEEFIXSubRecord
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -1942,7 +2055,7 @@ struct OBMEEFIXSubRecord
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2055,7 +2168,7 @@ struct OrderedPackedArray
         #ifdef CBASH_CHUNK_WARN
             else
                 {
-                printf("PackedArray: Error - Unable to parse chunk. "
+                printer("PackedArray: Error - Unable to parse chunk. "
                        "Size of chunk (%u) is not a multiple of the "
                        "size of the subrecord (%u)\n", subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
@@ -2150,7 +2263,7 @@ struct UnorderedPackedArray
         #ifdef CBASH_CHUNK_WARN
             else
                 {
-                printf("UnorderedPackedArray: Error - Unable to parse chunk. "
+                printer("UnorderedPackedArray: Error - Unable to parse chunk. "
                        "Size of chunk (%u) is not a multiple of the "
                        "size of the subrecord (%u)\n", subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
@@ -2246,7 +2359,7 @@ struct OrderedSparseArray
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2259,7 +2372,7 @@ struct OrderedSparseArray
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2362,7 +2475,7 @@ struct OrderedSparseArray<T *, _Pr>
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2380,7 +2493,7 @@ struct OrderedSparseArray<T *, _Pr>
                     !(test == REV32(CTDA) && (subSize == 20 || subSize == 24)&& sizeof(T) == 28)
                     )
                     {
-                    printf("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                    printer("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                            "of chunk (%u) is less than the size of the subrecord (%u) and any "
                            "remaining fields have their default value.\n",
                            (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2490,7 +2603,7 @@ struct UnorderedSparseArray
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2503,7 +2616,7 @@ struct UnorderedSparseArray
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2608,7 +2721,7 @@ struct UnorderedSparseArray<T *>
         if(subSize > sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                printer("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
@@ -2621,7 +2734,7 @@ struct UnorderedSparseArray<T *>
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                printf("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                printer("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
                        (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],

@@ -10348,8 +10348,8 @@ from timeit import Timer
 
 ##phonenumber = raw_input(">")
 ##Current = ObCollection()
-##Current.addMod("Oblivion.esm")
-##print "MinLoad"
+####Current.addMod("Oblivion.esm")
+####print "MinLoad"
 ####Current.addMod("Oblivion.esm", MinLoad=False)
 ####print "FullLoad"
 ######Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
@@ -10359,7 +10359,7 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-regressionTests()
+##regressionTests()
 
 ##TestTemp()
 ##TestAttrReport()
@@ -10418,7 +10418,7 @@ regressionTests()
 ##TestCELL()
 ##TestWRLD()
 ##TestDIAL()
-TestQUST()
+##TestQUST()
 ##TestIDLE()
 ##TestPACK()
 ##TestCSTY()

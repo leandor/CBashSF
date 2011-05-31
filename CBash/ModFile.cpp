@@ -66,17 +66,17 @@ bool ModFile::Open()
         if(!Flags.IsIgnoreExisting)
             {
             if(Flags.IsNoLoad)
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", reader.getModName());
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", reader.getModName());
             else if(reader.IsOpen())
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", reader.getModName());
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", reader.getModName());
             else if(!reader.exists())
-                printf("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", reader.getModName());
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", reader.getModName());
             }
         return false;
         }
     reader.open();
-    FormIDHandler.FileStart = reader.getBuffer();
-    FormIDHandler.FileEnd = FormIDHandler.FileStart + reader.getBufferSize();
+    FormIDHandler.FileStart = reader.start();
+    FormIDHandler.FileEnd = reader.end();
     return true;
     }
 
@@ -87,7 +87,7 @@ bool ModFile::Close()
     if(!reader.IsOpen())
         {
         if(!Flags.IsIgnoreExisting)
-            printf("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", reader.getModName());
+            printer("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", reader.getModName());
         return false;
         }
     reader.close();

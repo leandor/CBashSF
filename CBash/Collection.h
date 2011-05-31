@@ -28,6 +28,31 @@ GPL License and Copyright Notice ============================================
 #include <map>
 #include "Visitors.h"
 
+//class SortedRecords
+//    {
+//    public:
+//        UINT32 size;
+//        ModFile ** mods;
+//        Record ** records;
+//
+//        SortedRecords();
+//        ~SortedRecords();
+//
+//	    void push_back(ModFile *&mod, Record *&record);
+//	    void erase(UINT32 &index);
+//    };
+
+//struct IndexedRecords
+//    {
+//    SortedRecords loadordered, extended;
+//    };
+
+//typedef std::map<UINT32, SortedRecords>   FormID_Map;
+//typedef std::map<STRING, SortedRecords, sameStr> EditorID_Map;
+//
+//typedef FormID_Map::iterator FormID_Iterator;
+//typedef EditorID_Map::iterator EditorID_Iterator;
+
 class Collection
     {
     private:
@@ -42,6 +67,7 @@ class Collection
 
         EditorID_Map EditorID_ModFile_Record;
         FormID_Map FormID_ModFile_Record;
+
         EditorID_Map ExtendedEditorID_ModFile_Record;
         FormID_Map ExtendedFormID_ModFile_Record;
 
@@ -70,3 +96,37 @@ class Collection
 
         SINT32 SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID FormID, STRING const &EditorID);
     };
+
+//class RecordDeleter : public RecordOp
+//    {
+//    private:
+//        EditorID_Map &EditorID_ModFile_Record;
+//        FormID_Map &FormID_ModFile_Record;
+//        Record *RecordToDelete;
+//        //bool IsExtended;
+//
+//    public:
+//        RecordDeleter(Record *_RecordToDelete, /*bool IsExtended,*/ EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
+//        ~RecordDeleter();
+//
+//        bool Accept(Record *&curRecord);
+//    };
+//
+//class RecordIndexer : public RecordOp
+//    {
+//    private:
+//        EditorID_Map &EditorID_ModFile_Record;
+//        FormID_Map &FormID_ModFile_Record;
+//        ModFile *curModFile;
+//        //bool IsExtended;
+//
+//    public:
+//        RecordIndexer(ModFile *_curModFile, EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
+//        RecordIndexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
+//        ~RecordIndexer();
+//
+//        bool Accept(Record *&curRecord);
+//
+//        void SetModFile(ModFile *_curModFile);
+//        //void SetIsExtended(bool UseExtended);
+//    };

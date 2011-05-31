@@ -89,11 +89,11 @@ GPL License and Copyright Notice ============================================
 #include "Records/EFSHRecord.h"
 #include "Records/EXPLRecord.h"
 #include "Records/DEBRRecord.h"
-//#include "Records/IMGSRecord.h"
-//#include "Records/IMADRecord.h"
-//#include "Records/FLSTRecord.h"
-//#include "Records/PERKRecord.h"
-//#include "Records/BPTDRecord.h"
+////#include "Records/IMGSRecord.h"
+////#include "Records/IMADRecord.h"
+////#include "Records/FLSTRecord.h"
+////#include "Records/PERKRecord.h"
+////#include "Records/BPTDRecord.h"
 //#include "Records/ADDNRecord.h"
 //#include "Records/AVIFRecord.h"
 //#include "Records/RADSRecord.h"
@@ -194,11 +194,11 @@ class FNVFile : public ModFile
         FNVGRUPRecords<FNV::EFSHRecord> EFSH;
         FNVGRUPRecords<FNV::EXPLRecord> EXPL;
         FNVGRUPRecords<FNV::DEBRRecord> DEBR;
-        //FNVGRUPRecords<FNV::IMGSRecord> IMGS;
-        //FNVGRUPRecords<FNV::IMADRecord> IMAD;
-        //FNVGRUPRecords<FNV::FLSTRecord> FLST;
-        //FNVGRUPRecords<FNV::PERKRecord> PERK;
-        //FNVGRUPRecords<FNV::BPTDRecord> BPTD;
+        ////FNVGRUPRecords<FNV::IMGSRecord> IMGS;
+        ////FNVGRUPRecords<FNV::IMADRecord> IMAD;
+        ////FNVGRUPRecords<FNV::FLSTRecord> FLST;
+        ////FNVGRUPRecords<FNV::PERKRecord> PERK;
+        ////FNVGRUPRecords<FNV::BPTDRecord> BPTD;
         //FNVGRUPRecords<FNV::ADDNRecord> ADDN;
         //FNVGRUPRecords<FNV::AVIFRecord> AVIF;
         //FNVGRUPRecords<FNV::RADSRecord> RADS;
@@ -237,7 +237,7 @@ class FNVFile : public ModFile
 
         Record * GetTES4();
         SINT32   LoadTES4();
-        SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders);
+        SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords);
         UINT32   GetNumRecords(const UINT32 &RecordType);
         STRING   GetMasterName(UINT8 &CollapsedIndex);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);

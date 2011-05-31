@@ -46,7 +46,7 @@ bool NAVIRecord::NAVINVMI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < 16)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVMI: Warning - Unable to fully parse chunk (NVMI). Size "
+            printer("NAVIRecord::NAVINVMI: Warning - Unable to fully parse chunk (NVMI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -153,7 +153,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -169,7 +169,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -185,7 +185,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -202,7 +202,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -218,7 +218,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -235,7 +235,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -251,7 +251,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         if(subSize < (curPos - initPos) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
-            printf("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
+            printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
                    "of chunk (%u) is less than expected and there "
                    "may be corrupt data present.\n",
                    subSize);
@@ -264,7 +264,7 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         memcpy(&doors[0], buffer + curPos, sizeElements);
     curPos += sizeElements;
     if(subSize != (curPos - initPos))
-        printf("NAVIRecord::NAVINVCI: Warning - Unable to properly parse chunk (NVCI). An "
+        printer("NAVIRecord::NAVINVCI: Warning - Unable to properly parse chunk (NVCI). An "
                "unexpected format was found and there may be corrupt data present.\n");
     return true;
     }
@@ -435,10 +435,11 @@ SINT32 NAVIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 NVCI.value.back()->Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  NAVI: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  NAVI: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

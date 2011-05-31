@@ -694,12 +694,12 @@ void WEAPRecord::IsCritOnDeath(bool value)
     CRDT.value.flags = value ? (CRDT.value.flags | fIsOnDeath) : (CRDT.value.flags & ~fIsOnDeath);
     }
 
-bool WEAPRecord::IsCritFlagMask(UINT32 Mask, bool Exact)
+bool WEAPRecord::IsCritFlagMask(UINT8 Mask, bool Exact)
     {
     return Exact ? ((CRDT.value.flags & Mask) == Mask) : ((CRDT.value.flags & Mask) != 0);
     }
 
-void WEAPRecord::SetCritFlagMask(UINT32 Mask)
+void WEAPRecord::SetCritFlagMask(UINT8 Mask)
     {
     CRDT.value.flags = Mask;
     }
@@ -1004,12 +1004,12 @@ void WEAPRecord::IsThrown1Hand(bool value)
     DNAM.value.animType = value ? eThrown1Hand : eHand2Hand;
     }
 
-bool WEAPRecord::IsType(UINT8 Type)
+bool WEAPRecord::IsType(UINT32 Type)
     {
     return DNAM.value.animType == Type;
     }
 
-void WEAPRecord::SetType(UINT8 Type)
+void WEAPRecord::SetType(UINT32 Type)
     {
     DNAM.value.animType = Type;
     }
@@ -2454,10 +2454,11 @@ SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 VNAM.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  WEAP: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  WEAP: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

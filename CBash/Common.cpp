@@ -23,6 +23,10 @@ GPL License and Copyright Notice ============================================
 #include "Common.h"
 #include "zlib/zlib.h"
 
+int (*printer)(const char * _Format, ...) = &printf;
+SINT32 (*LoggingCallback)(const STRING) = NULL;
+void (*RaiseCallback)() = NULL;
+
 #ifdef CBASH_CALLTIMING
     std::map<char *, double> CallTime;
 #endif
@@ -49,11 +53,6 @@ const STRING Ex_INVALIDCOLLECTIONINDEX::__CLR_OR_THIS_CALL what() const
 const STRING Ex_INVALIDMODINDEX::__CLR_OR_THIS_CALL what() const
     {
     return "Invalid Mod Index";
-    }
-
-const STRING Ex_INVALIDRECORDINDEX::__CLR_OR_THIS_CALL what() const
-    {
-    return "Invalid RecordID or RecordEditorID. Record not found.";
     }
 
 int icmps(const STRING lhs, const STRING rhs)
@@ -92,7 +91,7 @@ STRING DeGhostModName(STRING const ModName)
         NonGhostName = new char[NameLength];
         strcpy_s(NonGhostName, NameLength, ModName);
         NonGhostName[NameLength - 7] = 0x00;
-        //printf("DeGhostModName: De-ghosted (%s)(%d) to (%s)(%d)\n", ModName, strlen(ModName), NonGhostName, strlen(NonGhostName));
+        //printer("DeGhostModName: De-ghosted (%s)(%d) to (%s)(%d)\n", ModName, strlen(ModName), NonGhostName, strlen(NonGhostName));
         return NonGhostName;
         }
     return NULL;
@@ -160,22 +159,22 @@ SINT32 FileWriter::open()
         switch(err)
             {
             case EACCES:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Given path is a directory, or file is read-only, but an open-for-writing operation was attempted.\n", FileName);
                 return -1;
             case EEXIST:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. _O_CREAT and _O_EXCL flags were specified, but filename already exists.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. _O_CREAT and _O_EXCL flags were specified, but filename already exists.\n", FileName);
                 return -1;
             case EINVAL:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. Invalid oflag, shflag, or pmode  argument, or pfh or filename was a null pointer.\n", FileName);
                 return -1;
             case EMFILE:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. No more file descriptors available.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. No more file descriptors available.\n", FileName);
                 return -1;
             case ENOENT:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. File or path not found.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. File or path not found.\n", FileName);
                 return -1;
             default:
-                printf("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. An unknown error occurred.\n", FileName);
+                printer("FileWriter: Error - Unable to open \"%s\" as read,write via file handle. An unknown error occurred.\n", FileName);
                 return -1;
             }
         _close(fh);
@@ -205,7 +204,7 @@ void FileWriter::record_write(const void *source, UINT32 length)
         return;
     if(source == NULL)
         {
-        printf("FileWriter:write: Error - Unable to write. Source buffer is NULL.\n");
+        printer("FileWriter:write: Error - Unable to write. Source buffer is NULL.\n");
         return;
         }
 
@@ -294,12 +293,12 @@ void FileWriter::file_write(const void *source_buffer, UINT32 source_buffer_used
 
     if(fh == -1 || file_buffer == NULL)
         {
-        printf("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
+        printer("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
         return;
         }
     else if(source_buffer == NULL)
         {
-        printf("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
+        printer("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
         return;
         }
 
@@ -332,12 +331,12 @@ void FileWriter::file_write(UINT32 position, const void *source_buffer, UINT32 s
 
     if(fh == -1 || file_buffer == NULL)
         {
-        printf("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
+        printer("FileWriter::file_write: Error - Unable to write. File buffer or File Handle is invalid.\n");
         return;
         }
     else if(source_buffer == NULL)
         {
-        printf("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
+        printer("FileWriter::file_write: Error - Unable to write. Source buffer is NULL.\n");
         return;
         }
     SINT32 curPos = _tell(fh);
@@ -356,7 +355,7 @@ void FileWriter::file_write(UINT32 position, const void *source_buffer, UINT32 s
         }
     else
         {
-        printf("FileWriter::file_write: Error - Unable to write at offset. Provided offset is greater than the current position.\n");
+        printer("FileWriter::file_write: Error - Unable to write at offset. Provided offset is greater than the current position.\n");
         return;
         }
     return;
@@ -366,9 +365,9 @@ FileReader::FileReader(STRING filename, STRING modname):
     file_map(),
     FileName(filename),
     ModName(modname),
-    buffer_position(0),
-    start(NULL),
-    end(NULL)
+    buffer_position(NULL),
+    buffer_start(NULL),
+    buffer_end(NULL)
     {
     //
     }
@@ -419,14 +418,18 @@ SINT32 FileReader::open()
         {
         file_map.open(FileName);
         }
+    catch(std::ios::failure const & e)
+        {
+        printer("FileReader: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
+        throw e;
+        }
     catch(...)
         {
-        printf("FileReader: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
+        printer("FileReader: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
         throw;
-        return -1;
         }
-    start = (unsigned char *)file_map.data();
-    end = start + file_map.size();
+    buffer_position = buffer_start = (unsigned char *)file_map.data();
+    buffer_end = buffer_start + file_map.size();
     return 0;
     }
 
@@ -441,14 +444,24 @@ bool FileReader::IsOpen()
     return file_map.is_open();
     }
 
-UINT32 FileReader::tell()
+unsigned char *FileReader::tell()
     {
     return buffer_position;
     }
 
+unsigned char *FileReader::start()
+    {
+    return buffer_start;
+    }
+
+unsigned char *FileReader::end()
+    {
+    return buffer_end;
+    }
+
 bool FileReader::eof()
     {
-    return (buffer_position >= file_map.size());
+    return (buffer_position >= buffer_end);
     }
 
 void FileReader::skip(UINT32 length)
@@ -458,49 +471,39 @@ void FileReader::skip(UINT32 length)
 
 bool FileReader::IsInFile(void *buffer)
     {
-    return (buffer >= start) && (buffer <= end);
-    }
-
-unsigned char *FileReader::getBuffer(UINT32 offset)
-    {
-    if(IsInFile(start + offset))
-        return start + offset;
-    return NULL;
-    }
-
-UINT32 FileReader::getBufferSize()
-    {
-    return file_map.size();
+    return (buffer >= buffer_start) && (buffer <= buffer_end);
     }
 
 void FileReader::read(void *destination, UINT32 length)
     {
-    if(destination == NULL || !file_map.is_open())
-        {
-        if(destination == NULL)
-            printf("FileHandler: Error - Unable to read from buffer. Destination pointer is NULL.\n");
-        else
-            printf("FileHandler: Error - Unable to read from buffer. Source pointer is NULL.\n");
-        return;
-        }
-    memcpy(destination, start + buffer_position, length);
+    //if(destination == NULL || !file_map.is_open())
+    //    {
+    //    if(destination == NULL)
+    //        printer("FileHandler: Error - Unable to read from buffer. Destination pointer is NULL.\n");
+    //    else
+    //        printer("FileHandler: Error - Unable to read from buffer. Source pointer is NULL.\n");
+    //    return;
+    //    }
+    memcpy(destination, buffer_position, length);
     buffer_position += length;
     }
 
 #ifdef CBASH_DEBUG_CHUNK
-    void FileReader::peek_around(UINT32 length)
+    void FileReader::peek_around(UINT32 length, unsigned char *position)
         {
-        printf("File Position: %08X\n", buffer_position);
+        if(position == NULL)
+            position = buffer_position;
+        printer("File Position: %08X\n", position - buffer_start);
         for(SINT32 x = length; x > 0; x--)
-            printf("%02X ", (start + buffer_position)[-x]);
+            printer("%02X ", (position)[-x]);
         for(UINT32 x = 0; x < length; x++)
-            printf("%02X ", (start + buffer_position)[x]);
-        printf("\n\n");
+            printer("%02X ", (position)[x]);
+        printer("\n\n");
         for(SINT32 x = length; x > 0; x--)
-            printf("%c", (start + buffer_position)[-x]);
+            printer("%c", (position)[-x]);
         for(UINT32 x = 0; x < length; x++)
-            printf("%c", (start + buffer_position)[x]);
-        printf("\n");
+            printer("%c", (position)[x]);
+        printer("\n");
         }
 #endif
 
@@ -526,7 +529,7 @@ void FormIDHandlerClass::SetLoadOrder(std::vector<STRING> &cLoadOrder)
     {
     if(cLoadOrder.size() > 0xFF)
         {
-        printf("FormIDHandler: Error - Unable to set load order. Tried to set load order > 0xFF. Load order size = %i.\n", cLoadOrder.size());
+        printer("FormIDHandler: Error - Unable to set load order. Tried to set load order > 0xFF. Load order size = %i.\n", cLoadOrder.size());
         throw 1;
         return;
         }
@@ -537,10 +540,10 @@ void FormIDHandlerClass::SetLoadOrder(std::vector<STRING> &cLoadOrder)
 UINT32 FormIDHandlerClass::NextExpandedFormID()
     {
     //0x00FFFFFF is the highest formID that can be used.
-    if(nextObject >= 0x01000000)
-        nextObject = END_HARDCODED_IDS;
-    //printf("Assigning new: %08X\n", (ExpandedIndex << 24) | (nextObject + 1));
-    return (ExpandedIndex << 24) | ++nextObject;
+    if(++nextObject >= 0x01000000)
+        nextObject = END_HARDCODED_IDS + 1;
+    //printer("Assigning new: %08X\n", (ExpandedIndex << 24) | (nextObject + 1));
+    return (ExpandedIndex << 24) | nextObject;
     }
 
 void FormIDHandlerClass::UpdateFormIDLookup()
@@ -556,9 +559,12 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     UINT32 numMods = (UINT32)LoadOrder255.size();
     STRING curMaster = NULL;
     CollapsedIndex = (UINT8)MAST.size();
+    //By default, every in memory modIndex maps to the on disk modIndex of the mod
     for(UINT16 p = 0; p <= 0xFF; ++p)
         CollapseTable[(UINT8)p] = CollapsedIndex;
 
+    //Go ahead and sort the masters now since it can't otherwise be done without
+    // screwing up the CollapseTable
     std::vector<StringRecord> sortedMAST;
     sortedMAST.reserve(CollapsedIndex);
     for(UINT32 x = 0; x < LoadOrder255.size(); ++x)
@@ -575,26 +581,30 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     //MAST = sortedMAST;
     MAST.clear();
     MAST.resize(sortedMAST.size());
-    //printf("Base collapse table: %02X\n", CollapsedIndex);
-    //printf("Updating collapse table\n");
+    //printer("Base collapse table: %02X\n", CollapsedIndex);
+    //printer("Updating collapse table\n");
+    //Replace the masters with the sorted masters, and then map the in memory modIndex
+    // to the on disk modIndex
+    //The CollapseTable is essentially the same for every mod, except for the defaulted
+    // fields.
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
         MAST[(UINT8)p] = sortedMAST[(UINT8)p];
         curMaster = MAST[(UINT8)p].value;
-        //printf("master %s\n", curMaster);
+        //printer("master %s\n", curMaster);
         for(UINT32 y = 0; y < numMods; ++y)
             if(icmps(LoadOrder255[(UINT8)y], curMaster) == 0)
                 {
                 CollapseTable[(UINT8)y] = (UINT8)p;
-                //printf("%02X == %02X\n", (UINT8)y, (UINT8)p);
+                //printer("%02X == %02X\n", (UINT8)y, (UINT8)p);
                 break;
                 }
         }
-    //printf("Collapse table updated.\n");
-    //printf("Existing expand table: %02X\n", ExpandedIndex);
+    //printer("Collapse table updated.\n");
+    //printer("Existing expand table: %02X\n", ExpandedIndex);
     //for(UINT32 y = 0; y <= 0xFF; ++y)
-    //    printf("%02X == %02X\n", (UINT8)y, ExpandTable[(UINT8)y]);
-    //printf("End expand table.\n");
+    //    printer("%02X == %02X\n", (UINT8)y, ExpandTable[(UINT8)y]);
+    //printer("End expand table.\n");
     sortedMAST.clear();
     return;
     }
@@ -614,15 +624,19 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
 
     UINT32 numMods = (UINT32)LoadOrder255.size();
     STRING curMaster = NULL;
+
     CollapsedIndex = (UINT8)MAST.size();
     ExpandedIndex = expandedIndex;
 
+    //By default, every in memory modIndex maps to the on disk modIndex of the mod
+    //By default, every on disk modIndex maps to the in memory modIndex of the mod
     for(UINT16 p = 0; p <= 0xFF; ++p)
         {
         CollapseTable[(UINT8)p] = CollapsedIndex;
         ExpandTable[(UINT8)p] = ExpandedIndex;
         }
 
+    //Map every on disk modIndex to its in memory modIndex and vice versa
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
         curMaster = MAST[(UINT8)p].value;
@@ -654,14 +668,14 @@ bool FormIDHandlerClass::MastersChanged()
 bool FormIDHandlerClass::IsNewRecord(const UINT32 *&RecordFormID)
     {
     //if((*RecordFormID >> 24) >= ExpandedIndex)
-    //    printf("%02X - %08X - %02X\n", (*RecordFormID >> 24), *RecordFormID, ExpandedIndex);
+    //    printer("%02X - %08X - %02X\n", (*RecordFormID >> 24), *RecordFormID, ExpandedIndex);
     return ((*RecordFormID >> 24) >= ExpandedIndex);
     }
 
 bool FormIDHandlerClass::IsNewRecord(const UINT32 &RecordFormID)
     {
     //if((RecordFormID >> 24) >= ExpandedIndex)
-    //    printf("%02X - %08X - %02X\n", (RecordFormID >> 24), RecordFormID, ExpandedIndex);
+    //    printer("%02X - %08X - %02X\n", (RecordFormID >> 24), RecordFormID, ExpandedIndex);
     return ((RecordFormID >> 24) >= ExpandedIndex);
     }
 
@@ -1146,6 +1160,17 @@ void RawRecord::Write(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
         writer.record_write_subrecord(_Type, value, size);
+    }
+
+void RawRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, size);
+    else
+        {
+        char null = 0x00;
+        writer.record_write_subrecord(_Type, &null, 1);
+        }
     }
 
 void RawRecord::Copy(unsigned char *FieldValue, UINT32 nSize)

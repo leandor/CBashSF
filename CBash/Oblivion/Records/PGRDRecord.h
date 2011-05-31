@@ -37,9 +37,9 @@ class PGRDRecord : public Record
         //            {
         //            indentation += 2;
         //            PrintIndent(indentation);
-        //            printf("start = %u\n", start);
+        //            printer("start = %u\n", start);
         //            PrintIndent(indentation);
-        //            printf("end   = %u\n", end);
+        //            printer("end   = %u\n", end);
         //            indentation -= 2;
         //            }
         //        }

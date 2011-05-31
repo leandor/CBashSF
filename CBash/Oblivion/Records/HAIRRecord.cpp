@@ -190,10 +190,10 @@ SINT32 HAIRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  HAIR: Unknown subType = %04X\n", subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  HAIR: Unknown subType = %04X\n", subType);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

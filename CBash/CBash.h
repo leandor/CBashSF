@@ -34,9 +34,8 @@ EXPORT_FUNC UINT32 GetVersionRevision();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Logging action functions
-#ifdef CBASH_USE_LOGGING
-    EXPORT_FUNC SINT32 SetLogging(Collection *CollectionID, SINT32 (*_LoggingCallback)(const STRING), UINT32 LoggingLevel, UINT32 LoggingFlags);
-#endif
+EXPORT_FUNC void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING));
+EXPORT_FUNC void AllowRaising(void (*_RaiseCallback)());
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
@@ -71,7 +70,7 @@ EXPORT_FUNC STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const
 //EXPORT_FUNC SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
 EXPORT_FUNC UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID);
 EXPORT_FUNC SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC void   GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes);
+EXPORT_FUNC SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions

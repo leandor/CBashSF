@@ -163,18 +163,18 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         _readBuffer(&test, buffer, 3, curPos);
                         if(test != 0)
                             {
-                            printf("  IDLM: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
+                            printer("  IDLM: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
                             CBASH_CHUNK_DEBUG
-                            printf("  Size = %i\n", subSize);
-                            printf("  CurPos = %04x\n\n", curPos - 6);
+                            printer("  Size = %i\n", subSize);
+                            printer("  CurPos = %04x\n\n", curPos - 6);
                             }
                         }
                         break;
                     default:
-                        printf("  IDLM: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
+                        printer("  IDLM: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -186,10 +186,11 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 IDLA.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  IDLM: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  IDLM: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

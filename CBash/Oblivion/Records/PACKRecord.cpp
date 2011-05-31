@@ -147,7 +147,7 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
     for(UINT32 x = 0; x < CTDA.size(); x++)
         {
         //if(CTDA[x]->value.ifunc == 214)
-        //    printf("%08X uses HasMagicEffect\n", formID);
+        //    printer("%08X uses HasMagicEffect\n", formID);
         curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
         if(curCTDAFunction != Function_Arguments.end())
             {
@@ -158,7 +158,7 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
                 op.Accept(CTDA[x]->value.param2);
             }
         else
-            printf("Warning: PACKRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+            printer("Warning: PACKRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
         }
 
     return op.Stop();
@@ -804,10 +804,11 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 CTDA.push_back(newCTDA);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

@@ -738,8 +738,8 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         _readBuffer(&XSED->seed, buffer, 4, curPos);
                         break;
                     default:
-                        printf("  REFR: %08X - Unknown XSED size = %u\n", formID, subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  REFR: %08X - Unknown XSED size = %u\n", formID, subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -769,9 +769,9 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         Marker->FULL.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  REFR: %08X - Unexpected FULL chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  REFR: %08X - Unexpected FULL chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -815,10 +815,11 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  REFR: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  REFR: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

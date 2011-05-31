@@ -406,7 +406,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized VTXT size: %i\n", subSize);
+                    printer("  Unrecognized VTXT size: %i\n", subSize);
                     curPos += subSize;
                     }
                 //switch(curTexture.value.quadrant)
@@ -428,7 +428,7 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //            Merged->Points[(VTXT[x].position % 17) + 16][(VTXT[x].position / 17) + 16].AlphaLayer[curTexture.value.layer] = VTXT[x].opacity;
                 //        break;
                 //    default:
-                //        printf("Invalid ATXT quadrant when parsing VTXT: %u\n", curTexture.value.quadrant);
+                //        printer("Invalid ATXT quadrant when parsing VTXT: %u\n", curTexture.value.quadrant);
                 //        break;
                 //    }
                 break;
@@ -442,15 +442,16 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 else
                     {
-                    printf("  Unrecognized VTEX size: %i\n", subSize);
+                    printer("  Unrecognized VTEX size: %i\n", subSize);
                     curPos += subSize;
                     }
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  LAND: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  LAND: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

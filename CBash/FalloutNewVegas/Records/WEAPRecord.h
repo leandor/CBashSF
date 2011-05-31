@@ -429,8 +429,8 @@ class WEAPRecord : public FNVRecord //Weapon
 
         bool   IsCritOnDeath();
         void   IsCritOnDeath(bool value);
-        bool   IsCritFlagMask(UINT32 Mask, bool Exact=false);
-        void   SetCritFlagMask(UINT32 Mask);
+        bool   IsCritFlagMask(UINT8 Mask, bool Exact=false);
+        void   SetCritFlagMask(UINT8 Mask);
 
         bool   IsNone();
         void   IsNone(bool value);
@@ -493,8 +493,8 @@ class WEAPRecord : public FNVRecord //Weapon
         void   IsMineDrop1Hand(bool value);
         bool   IsThrown1Hand();
         void   IsThrown1Hand(bool value);
-        bool   IsType(UINT8 Type);
-        void   SetType(UINT8 Type);
+        bool   IsType(UINT32 Type);
+        void   SetType(UINT32 Type);
 
         bool   IsGripHandGrip1();
         void   IsGripHandGrip1(bool value);

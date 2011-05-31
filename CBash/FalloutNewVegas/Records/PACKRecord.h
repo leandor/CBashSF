@@ -611,8 +611,8 @@ class PACKRecord : public FNVRecord //Package
         void   IsNotRepeatable(bool value);
         bool   IsRepeatable();
         void   IsRepeatable(bool value);
-        bool   IsRepeatType(UINT8 Type);
-        void   SetRepeatType(UINT8 Type);
+        bool   IsRepeatType(UINT16 Type);
+        void   SetRepeatType(UINT16 Type);
 
         bool   IsAutoFire();
         void   IsAutoFire(bool value);

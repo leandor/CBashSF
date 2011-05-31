@@ -112,8 +112,8 @@ class CSTYRecord : public Record
 
         bool   IsDoNotAcquire();
         void   IsDoNotAcquire(bool value);
-        bool   IsFlagBMask(UINT8 Mask, bool Exact=false);
-        void   SetFlagBMask(UINT8 Mask);
+        bool   IsFlagBMask(UINT32 Mask, bool Exact=false);
+        void   SetFlagBMask(UINT32 Mask);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

@@ -190,19 +190,19 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         curPos += subSize;
                         break;
                     default:
-                        //printf("FileName = %s\n", FileName);
-                        printf("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        //printer("FileName = %s\n", FileName);
+                        printer("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos = recSize;
                         break;
                     }
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  GMST: Unknown subType = %04X\n", subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  GMST: Unknown subType = %04X\n", subType);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }
@@ -245,7 +245,7 @@ SINT32 GMSTRecord::WriteRecord(FileWriter &writer)
                 writer.record_write_subrecord(REV32(DATA), &null, 1);
             break;
         default:
-            printf("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
+            printer("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
         }
     return -1;
     }

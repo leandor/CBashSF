@@ -2,24 +2,23 @@
 
 //define or undef as desired
 #undef CBASH_PROFILING
-#undef CBASH_USE_LOGGING
-#define CBASH_CHUNK_WARN
-#define CBASH_CHUNK_LCHECK
+#undef CBASH_CHUNK_WARN
+#undef CBASH_CHUNK_LCHECK
 
 #define CBASH_DEBUG_CHUNK
 
 //Peek into the data before and after to see what's up
 #ifdef CBASH_DEBUG_CHUNK
     #define CBASH_CHUNK_DEBUG   for(SINT32 x = 32; x > 0; x--) \
-                                    printf("%02X ", (buffer + curPos)[-x]); \
+                                    printer("%02X ", (buffer + curPos)[-x]); \
                                 for(UINT32 x = 0; x < 32; x++) \
-                                    printf("%02X ", (buffer + curPos)[x]); \
-                                printf("\n\n"); \
+                                    printer("%02X ", (buffer + curPos)[x]); \
+                                printer("\n\n"); \
                                 for(SINT32 x = 32; x > 0; x--) \
-                                    printf("%c", (buffer + curPos)[-x]); \
+                                    printer("%c", (buffer + curPos)[-x]); \
                                 for(UINT32 x = 0; x < 32; x++) \
-                                    printf("%c", (buffer + curPos)[x]); \
-                                printf("\n");
+                                    printer("%c", (buffer + curPos)[x]); \
+                                printer("\n");
 #else
     //don't touch
     #define CBASH_CHUNK_DEBUG
@@ -43,7 +42,7 @@
 #endif
 
 #ifdef CBASH_TRACE
-    #define TRACE_FUNC printf("%s\n", __FUNCTION__)
+    #define TRACE_FUNC printer("%s\n", __FUNCTION__)
 #else
     #define TRACE_FUNC
 #endif
@@ -113,18 +112,12 @@
     #define COUNT_FUNC
 #endif
 
-#ifdef CBASH_USE_LOGGING
-    #ifndef CLOGGER
-        #define CLOGGER    boost::log::sources::severity_logger< severity_level > lg
-    #endif
-#endif
-
 #ifndef MAJOR_VERSION
     #define MAJOR_VERSION    0
 #endif
 
 #ifndef MINOR_VERSION
-    #define MINOR_VERSION    5
+    #define MINOR_VERSION    6
 #endif
 
 #ifndef REVISION_VERSION
@@ -147,19 +140,19 @@
 #endif
 
 #ifndef PRINT_RECORD_IDENTIFIERS
-    #define PRINT_RECORD_IDENTIFIERS printf("CollectionID: %08X, ModID: %08X, RecordID: %08X\n", CollectionID, ModID, RecordID)
+    #define PRINT_RECORD_IDENTIFIERS printer("CollectionID: %08X, ModID: %08X, RecordID: %08X\n", CollectionID, ModID, RecordID)
 #endif
 
 #ifndef PRINT_FIELD_IDENTIFIERS
-    #define PRINT_FIELD_IDENTIFIERS printf("FieldID: %i, ListIndex: %i, ListFieldID: %i, ListX2Index: %i, ListX2FieldID: %i, ListX3Index: %i, ListX3FieldID: %i \n", FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID)
+    #define PRINT_FIELD_IDENTIFIERS printer("FieldID: %i, ListIndex: %i, ListFieldID: %i, ListX2Index: %i, ListX2FieldID: %i, ListX3Index: %i, ListX3FieldID: %i \n", FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index, ListX3FieldID)
 #endif
 
 #ifndef PRINT_EXCEPTION
-    #define PRINT_EXCEPTION(ex) printf("%s: Error - General error. %s\n", __FUNCTION__, ex.what())
+    #define PRINT_EXCEPTION(ex) printer("%s: Error - %s\n", __FUNCTION__, ex.what())
 #endif
 
 #ifndef PRINT_ERROR
-#define PRINT_ERROR printf("%s: Error - General error. An unhandled exception occurred.\n", __FUNCTION__)
+#define PRINT_ERROR printer("%s: Error - An unhandled exception occurred.\n", __FUNCTION__)
 #endif
 
 #ifndef NUMTHREADS
@@ -293,10 +286,10 @@
 
 #define WHERESTR  "%d: [file %s, line %d, func %s]: "
 #define WHEREARG  __COUNTER__, __FILE__, __LINE__, __FUNCTION__
-#define DEBUGPRINT2(...)       fprintf(stderr, __VA_ARGS__)
+#define DEBUGPRINT2(...)       printer(__VA_ARGS__)
 #define DPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
 
-#define QDPRINT fprintf(stderr, WHERESTR "\n", WHEREARG)
+#define QDPRINT printer(WHERESTR "\n", WHEREARG)
 
 #define REV32(x)((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
 #define WRITE(x) x.Write(REV32(x), writer)

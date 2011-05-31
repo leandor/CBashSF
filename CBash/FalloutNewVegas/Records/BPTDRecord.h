@@ -42,8 +42,7 @@ class BPTDRecord : public FNVRecord //Body Part Data
             FLOAT32 severableDebrisScale;
 
             //Gore Positioning
-            FLOAT32 transX, transY, transZ;
-            FLOAT32 rotX, rotY, rotZ;
+            FLOAT32 transX, transY, transZ, rotX, rotY, rotZ;
 
             FORMID  severableImpact, explodableImpact;
             UINT8   severableDecalCount, explodableDecalCount, unused1[2];
@@ -62,7 +61,7 @@ class BPTDRecord : public FNVRecord //Body Part Data
             StringRecord BPNN; //Part Node
             StringRecord BPNT; //VATS Target
             StringRecord BPNI; //IK Data - Start Node
-            OptSubRecord<BPTDBPND> BPND; //Data
+            ReqSubRecord<BPTDBPND> BPND; //Data
             StringRecord NAM1; //Limb Replacement Model
             StringRecord NAM4; //Gore Effects - Target Bone
             RawRecord NAM5; //Texture Files Hashes
@@ -147,6 +146,8 @@ class BPTDRecord : public FNVRecord //Body Part Data
             bool   IsType(UINT8 Type);
             void   SetType(UINT8 Type);
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const BPTDPart &other) const;
             bool operator !=(const BPTDPart &other) const;
             };
@@ -154,8 +155,8 @@ class BPTDRecord : public FNVRecord //Body Part Data
     public:
         StringRecord EDID; //Editor ID
         OptSubRecord<FNVMODEL> MODL; //Model
-        std::vector<ReqSubRecord<BPTDPart> *> Parts; // Body Parts
-        OptSimpleSubRecord<FORMID> RAGA; //Ragdoll
+        UnorderedSparseArray<BPTDPart *> Parts; // Body Parts
+        ReqSimpleSubRecord<FORMID> RAGA; //Ragdoll
 
         BPTDRecord(unsigned char *_recData=NULL);
         BPTDRecord(BPTDRecord *srcRecord);

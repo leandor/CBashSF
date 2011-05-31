@@ -854,9 +854,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCHR.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCHR chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCHR chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -871,9 +871,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCDA.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCDA chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCDA chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -888,9 +888,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCTX.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCTX chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCTX chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -907,9 +907,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SLSD chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SLSD chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -928,9 +928,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCVR chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCVR chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -947,9 +947,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCR_.value.back()->isSCRO = false;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCRV chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCRV chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -966,9 +966,9 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         EndSCR_.value.back()->isSCRO = true;
                         break;
                     default:
-                        printf("  INFO: %08X - Unexpected SCRO chunk\n", formID);
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  INFO: %08X - Unexpected SCRO chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -992,10 +992,11 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DNAM.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  INFO: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  INFO: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

@@ -336,10 +336,10 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         DATA.Read(buffer, 2, curPos);
                         break;
                     default:
-                        printf("  WATR: %08X - Unexpected DATA size\n", formID);
+                        printer("  WATR: %08X - Unexpected DATA size\n", formID);
                         CBASH_CHUNK_DEBUG
-                        printf("  Size = %i\n", subSize);
-                        printf("  CurPos = %04x\n\n", curPos - 6);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", curPos - 6);
                         curPos += subSize;
                         break;
                     }
@@ -351,11 +351,11 @@ SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 GNAM.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  WATR: %08X - Unknown subType = %04x\n", formID, subType);
+                //printer("FileName = %s\n", FileName);
+                printer("  WATR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

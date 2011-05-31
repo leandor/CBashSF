@@ -25,7 +25,9 @@ GPL License and Copyright Notice ============================================
 ACHRRecord::ACHRRecord(unsigned char *_recData):
     Record(_recData)
     {
-    IsPersistent(true);
+    //ACHR records are normally persistent
+    if(_recData == NULL)
+        IsPersistent(true);
     }
 
 ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
@@ -182,10 +184,11 @@ SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DATA.Read(buffer, subSize, curPos);
                 break;
             default:
-                //printf("FileName = %s\n", FileName);
-                printf("  ACHR: %08X - Unknown subType = %04x\n", formID, subType);
-                printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
+                //printer("FileName = %s\n", FileName);
+                printer("  ACHR: %08X - Unknown subType = %04x\n", formID, subType);
+                CBASH_CHUNK_DEBUG
+                printer("  Size = %i\n", subSize);
+                printer("  CurPos = %04x\n\n", curPos - 6);
                 curPos = recSize;
                 break;
             }

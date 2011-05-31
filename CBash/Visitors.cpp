@@ -52,7 +52,7 @@ bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
         }
 
     UINT32 modIndex = curFormID >> 24;
-    //printf("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
+    //printer("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
     //If the formID belongs to the mod, or if the master is already present, do nothing
     if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;

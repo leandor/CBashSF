@@ -75,100 +75,153 @@ UINT32 BPTDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 10: //mods Alternate Textures
-            return ISTRING_FIELD;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return UNKNOWN_FIELD;
 
-        case 13: //modelFlags
-            return UINT8_FIELD;
-        case 14: //bptn Part Name
-            return ISTRING_FIELD;
-        case 15: //bpnn Part Node
-            return ISTRING_FIELD;
-        case 16: //bpnt VATS Target
-            return ISTRING_FIELD;
-        case 17: //bpni IK Data - Start Node
-            return ISTRING_FIELD;
-        case 18: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 19: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 20: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 21: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 22: //bpnd BPND ,, Struct
-            return UNPARSED_FIELD;
-        case 23: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 24: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 25: //bpnd BPND ,, Struct
-            return UINT16_FIELD;
-        case 26: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 27: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 28: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 29: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 30: //bpnd BPND ,, Struct
-            return SINT32_FIELD;
-        case 31: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 32: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 33: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 34: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 35: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 36: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 37: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 38: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 39: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 40: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 41: //bpnd BPND ,, Struct
-            return FORMID_FIELD;
-        case 42: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 43: //bpnd BPND ,, Struct
-            return UINT8_FIELD;
-        case 44: //bpnd_p BPND ,, Struct
-            switch(WhichAttribute)
+            if(ListFieldID == 0) //altTextures
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return 2;
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return MODL->Textures.MODS.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return STRING_FIELD;
+                case 2: //texture
+                    return FORMID_FIELD;
+                case 3: //index
+                    return SINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 45: //bpnd BPND ,, Struct
-            return FLOAT32_FIELD;
-        case 46: //nam1 Limb Replacement Model
-            return ISTRING_FIELD;
-        case 47: //nam4 Gore Effects - Target Bone
-            return ISTRING_FIELD;
-        case 48: //nam5_p Texture Files Hashes
-            switch(WhichAttribute)
+        case 11: //modelFlags
+            return UINT8_FLAG_FIELD;
+        case 12: //parts
+            if(ListFieldID == 0) //parts
                 {
-                case 0: //fieldType
-                    return UINT8_ARRAY_FIELD;
-                case 1: //fieldSize
-                    return NAM5.GetSize();
+                switch(WhichAttribute)
+                    {
+                    case 0: //fieldType
+                        return LIST_FIELD;
+                    case 1: //fieldSize
+                        return (UINT32)Parts.value.size();
+                    default:
+                        return UNKNOWN_FIELD;
+                    }
+                return UNKNOWN_FIELD;
+                }
+
+            if(ListIndex >= Parts.value.size())
+                return UNKNOWN_FIELD;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return ISTRING_FIELD;
+                case 2: //node
+                    return ISTRING_FIELD;
+                case 3: //vats
+                    return ISTRING_FIELD;
+                case 4: //IKData
+                    return ISTRING_FIELD;
+                case 5: //damageMult
+                    return FLOAT32_FIELD;
+                case 6: //flags
+                    return UINT8_FLAG_FIELD;
+                case 7: //partType
+                    return UINT8_TYPE_FIELD;
+                case 8: //healthPercent
+                    return UINT8_FIELD;
+                case 9: //actorValue
+                    return SINT8_FIELD;
+                case 10: //hitChance
+                    return UINT8_FIELD;
+                case 11: //explodableExplosionChance
+                    return UINT8_FIELD;
+                case 12: //explodableDebrisCount
+                    return UINT16_FIELD;
+                case 13: //explodableDebris
+                    return FORMID_FIELD;
+                case 14: //explodableExplosion
+                    return FORMID_FIELD;
+                case 15: //maxTrackAngle
+                    return FLOAT32_FIELD;
+                case 16: //explodableDebrisScale
+                    return FLOAT32_FIELD;
+                case 17: //severableDebrisCount
+                    return SINT32_FIELD;
+                case 18: //severableDebris
+                    return FORMID_FIELD;
+                case 19: //severableExplosion
+                    return FORMID_FIELD;
+                case 20: //severableDebrisScale
+                    return FLOAT32_FIELD;
+                case 21: //transX
+                    return FLOAT32_FIELD;
+                case 22: //transY
+                    return FLOAT32_FIELD;
+                case 23: //transZ
+                    return FLOAT32_FIELD;
+                case 24: //rotX
+                    return RADIAN_FIELD;
+                case 25: //rotY
+                    return RADIAN_FIELD;
+                case 26: //rotZ
+                    return RADIAN_FIELD;
+                case 27: //severableImpact
+                    return FORMID_FIELD;
+                case 28: //explodableImpact
+                    return FORMID_FIELD;
+                case 29: //severableDecalCount
+                    return UINT8_FIELD;
+                case 30: //explodableDecalCount
+                    return UINT8_FIELD;
+                case 31: //unused1
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return 2;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
+                case 32: //limbReplaceScale
+                    return FLOAT32_FIELD;
+                case 33: //limbReplaceModPath
+                    return STRING_FIELD;
+                case 34: //goreBone
+                    return STRING_FIELD;
+                case 35: //nam5_p
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return UINT8_ARRAY_FIELD;
+                        case 1: //fieldSize
+                            return NAM5.GetSize();
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
             return UNKNOWN_FIELD;
-        case 49: //raga Ragdoll
+        case 13: //ragdoll
             return FORMID_FIELD;
         default:
             return UNKNOWN_FIELD;
@@ -201,88 +254,111 @@ void * BPTDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //modt_p
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
-        case 10: //mods Alternate Textures
-            return MODL.IsLoaded() ? MODL->MODS.value : NULL;
-        case 11: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value11 : NULL;
-        case 12: //mods Alternate Textures
-            return MODL.IsLoaded() ? &MODL->MODS->value12 : NULL;
-        case 13: //modelFlags
-            return MODL.IsLoaded() ? &MODL->MODD->value13 : NULL;
-        case 14: //bptn Part Name
-            return BPTN.value;
-        case 15: //bpnn Part Node
-            return BPNN.value;
-        case 16: //bpnt VATS Target
-            return BPNT.value;
-        case 17: //bpni IK Data - Start Node
-            return BPNI.value;
-        case 18: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value18 : NULL;
-        case 19: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value19 : NULL;
-        case 20: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value20 : NULL;
-        case 21: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value21 : NULL;
-        case 22: //bpnd BPND ,, Struct
-            return UNPARSEDGET_FIELD22;
-        case 23: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value23 : NULL;
-        case 24: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value24 : NULL;
-        case 25: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value25 : NULL;
-        case 26: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value26 : NULL;
-        case 27: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value27 : NULL;
-        case 28: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value28 : NULL;
-        case 29: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value29 : NULL;
-        case 30: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value30 : NULL;
-        case 31: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value31 : NULL;
-        case 32: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value32 : NULL;
-        case 33: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value33 : NULL;
-        case 34: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value34 : NULL;
-        case 35: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value35 : NULL;
-        case 36: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value36 : NULL;
-        case 37: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value37 : NULL;
-        case 38: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value38 : NULL;
-        case 39: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value39 : NULL;
-        case 40: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value40 : NULL;
-        case 41: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value41 : NULL;
-        case 42: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value42 : NULL;
-        case 43: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value43 : NULL;
-        case 44: //bpnd_p BPND ,, Struct
-            *FieldValues = BPND.IsLoaded() ? &BPND->value44[0] : NULL;
+        case 10: //altTextures
+            if(!MODL.IsLoaded())
+                return NULL;
+
+            if(ListIndex >= MODL->Textures.MODS.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return MODL->Textures.MODS[ListIndex]->name;
+                case 2: //texture
+                    return &MODL->Textures.MODS[ListIndex]->texture;
+                case 3: //index
+                    return &MODL->Textures.MODS[ListIndex]->index;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 45: //bpnd BPND ,, Struct
-            return BPND.IsLoaded() ? &BPND->value45 : NULL;
-        case 46: //nam1 Limb Replacement Model
-            return NAM1.value;
-        case 47: //nam4 Gore Effects - Target Bone
-            return NAM4.value;
-        case 48: //nam5_p Texture Files Hashes
-            *FieldValues = NAM5.value;
+        case 11: //modelFlags
+            return MODL.IsLoaded() ? &MODL->MODD.value : NULL;
+        case 12: //parts
+            if(ListIndex >= Parts.value.size())
+                return NULL;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    return Parts.value[ListIndex]->BPTN.value;
+                case 2: //node
+                    return Parts.value[ListIndex]->BPNN.value;
+                case 3: //vats
+                    return Parts.value[ListIndex]->BPNT.value;
+                case 4: //IKData
+                    return Parts.value[ListIndex]->BPNI.value;
+                case 5: //damageMult
+                    return &Parts.value[ListIndex]->BPND.value.damageMult;
+                case 6: //flags
+                    return &Parts.value[ListIndex]->BPND.value.flags;
+                case 7: //partType
+                    return &Parts.value[ListIndex]->BPND.value.partType;
+                case 8: //healthPercent
+                    return &Parts.value[ListIndex]->BPND.value.healthPercent;
+                case 9: //actorValue
+                    return &Parts.value[ListIndex]->BPND.value.actorValue;
+                case 10: //hitChance
+                    return &Parts.value[ListIndex]->BPND.value.hitChance;
+                case 11: //explodableExplosionChance
+                    return &Parts.value[ListIndex]->BPND.value.explodableExplosionChance;
+                case 12: //explodableDebrisCount
+                    return &Parts.value[ListIndex]->BPND.value.explodableDebrisCount;
+                case 13: //explodableDebris
+                    return &Parts.value[ListIndex]->BPND.value.explodableDebris;
+                case 14: //explodableExplosion
+                    return &Parts.value[ListIndex]->BPND.value.explodableExplosion;
+                case 15: //maxTrackAngle
+                    return &Parts.value[ListIndex]->BPND.value.maxTrackAngle;
+                case 16: //explodableDebrisScale
+                    return &Parts.value[ListIndex]->BPND.value.explodableDebrisScale;
+                case 17: //severableDebrisCount
+                    return &Parts.value[ListIndex]->BPND.value.severableDebrisCount;
+                case 18: //severableDebris
+                    return &Parts.value[ListIndex]->BPND.value.severableDebris;
+                case 19: //severableExplosion
+                    return &Parts.value[ListIndex]->BPND.value.severableExplosion;
+                case 20: //severableDebrisScale
+                    return &Parts.value[ListIndex]->BPND.value.severableDebrisScale;
+                case 21: //transX
+                    return &Parts.value[ListIndex]->BPND.value.transX;
+                case 22: //transY
+                    return &Parts.value[ListIndex]->BPND.value.transY;
+                case 23: //transZ
+                    return &Parts.value[ListIndex]->BPND.value.transZ;
+                case 24: //rotX
+                    return &Parts.value[ListIndex]->BPND.value.rotX;
+                case 25: //rotY
+                    return &Parts.value[ListIndex]->BPND.value.rotY;
+                case 26: //rotZ
+                    return &Parts.value[ListIndex]->BPND.value.rotZ;
+                case 27: //severableImpact
+                    return &Parts.value[ListIndex]->BPND.value.severableImpact;
+                case 28: //explodableImpact
+                    return &Parts.value[ListIndex]->BPND.value.explodableImpact;
+                case 29: //severableDecalCount
+                    return &Parts.value[ListIndex]->BPND.value.severableDecalCount;
+                case 30: //explodableDecalCount
+                    return &Parts.value[ListIndex]->BPND.value.explodableDecalCount;
+                case 31: //unused1
+                    *FieldValues = &Parts.value[ListIndex]->BPND.value.unused1[0];
+                    return NULL;
+                case 32: //limbReplaceScale
+                    return &Parts.value[ListIndex]->BPND.value.limbReplaceScale;
+                case 33: //limbReplaceModPath
+                    return Parts.value[ListIndex]->NAM1.value;
+                case 34: //goreBone
+                    return Parts.value[ListIndex]->NAM4.value;
+                case 35: //nam5_p
+                    *FieldValues = Parts.value[ListIndex]->NAM5.value;
+                    return NULL;
+                default:
+                    return NULL;
+                }
             return NULL;
-        case 49: //raga Ragdoll
-            return RAGA.IsLoaded() ? &RAGA->value49 : NULL;
+        case 13: //ragdoll
+            return &RAGA.value;
         default:
             return NULL;
         }
@@ -328,162 +404,169 @@ bool BPTDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             MODL.Load();
             MODL->MODT.Copy((UINT8ARRAY)FieldValue, ArraySize);
             break;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             MODL.Load();
-            MODL->MODS.Copy((STRING)FieldValue);
-            break;
-        case 11: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value11 = *(FORMID *)FieldValue;
-            return true;
-        case 12: //mods Alternate Textures
-            MODL.Load();
-            MODL->MODS.Load();
-            MODL->MODS->value12 = *(SINT32 *)FieldValue;
-            break;
-        case 13: //modelFlags
-            MODL.Load();
-            MODL->MODD.Load();
-            MODL->MODD->value13 = *(UINT8 *)FieldValue;
-            break;
-        case 14: //bptn Part Name
-            BPTN.Copy((STRING)FieldValue);
-            break;
-        case 15: //bpnn Part Node
-            BPNN.Copy((STRING)FieldValue);
-            break;
-        case 16: //bpnt VATS Target
-            BPNT.Copy((STRING)FieldValue);
-            break;
-        case 17: //bpni IK Data - Start Node
-            BPNI.Copy((STRING)FieldValue);
-            break;
-        case 18: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value18 = *(FLOAT32 *)FieldValue;
-            break;
-        case 19: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value19 = *(UINT8 *)FieldValue;
-            break;
-        case 20: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value20 = *(UINT8 *)FieldValue;
-            break;
-        case 21: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value21 = *(UINT8 *)FieldValue;
-            break;
-        case 22: //bpnd BPND ,, Struct
-            return UNPARSEDGET_FIELD22;
-        case 23: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value23 = *(UINT8 *)FieldValue;
-            break;
-        case 24: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value24 = *(UINT8 *)FieldValue;
-            break;
-        case 25: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value25 = *(UINT16 *)FieldValue;
-            break;
-        case 26: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value26 = *(FORMID *)FieldValue;
-            return true;
-        case 27: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value27 = *(FORMID *)FieldValue;
-            return true;
-        case 28: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value28 = *(FLOAT32 *)FieldValue;
-            break;
-        case 29: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value29 = *(FLOAT32 *)FieldValue;
-            break;
-        case 30: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value30 = *(SINT32 *)FieldValue;
-            break;
-        case 31: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value31 = *(FORMID *)FieldValue;
-            return true;
-        case 32: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value32 = *(FORMID *)FieldValue;
-            return true;
-        case 33: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value33 = *(FLOAT32 *)FieldValue;
-            break;
-        case 34: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value34 = *(FLOAT32 *)FieldValue;
-            break;
-        case 35: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value35 = *(FLOAT32 *)FieldValue;
-            break;
-        case 36: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value36 = *(FLOAT32 *)FieldValue;
-            break;
-        case 37: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value37 = *(FLOAT32 *)FieldValue;
-            break;
-        case 38: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value38 = *(FLOAT32 *)FieldValue;
-            break;
-        case 39: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value39 = *(FLOAT32 *)FieldValue;
-            break;
-        case 40: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value40 = *(FORMID *)FieldValue;
-            return true;
-        case 41: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value41 = *(FORMID *)FieldValue;
-            return true;
-        case 42: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value42 = *(UINT8 *)FieldValue;
-            break;
-        case 43: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value43 = *(UINT8 *)FieldValue;
-            break;
-        case 44: //bpnd_p BPND ,, Struct
-            if(ArraySize != 2)
+            if(ListFieldID == 0) //altTexturesSize
+                {
+                MODL->Textures.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= MODL->Textures.MODS.size())
                 break;
-            BPND.Load();
-            BPND->value44[0] = ((UINT8ARRAY)FieldValue)[0];
-            BPND->value44[1] = ((UINT8ARRAY)FieldValue)[1];
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    delete []MODL->Textures.MODS[ListIndex]->name;
+                    MODL->Textures.MODS[ListIndex]->name = NULL;
+                    if(FieldValue != NULL)
+                        {
+                        ArraySize = (UINT32)strlen((STRING)FieldValue) + 1;
+                        MODL->Textures.MODS[ListIndex]->name = new char[ArraySize];
+                        strcpy_s(MODL->Textures.MODS[ListIndex]->name, ArraySize, (STRING)FieldValue);
+                        }
+                    break;
+                case 2: //texture
+                    MODL->Textures.MODS[ListIndex]->texture = *(FORMID *)FieldValue;
+                    return true;
+                case 3: //index
+                    MODL->Textures.MODS[ListIndex]->index = *(SINT32 *)FieldValue;
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 45: //bpnd BPND ,, Struct
-            BPND.Load();
-            BPND->value45 = *(FLOAT32 *)FieldValue;
+        case 11: //modelFlags
+            MODL.Load();
+            MODL->SetFlagMask(*(UINT8 *)FieldValue);
             break;
-        case 46: //nam1 Limb Replacement Model
-            NAM1.Copy((STRING)FieldValue);
+        case 12: //parts
+            if(ListFieldID == 0) //partsSize
+                {
+                Parts.resize(ArraySize);
+                return false;
+                }
+
+            if(ListIndex >= Parts.value.size())
+                break;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    Parts.value[ListIndex]->BPTN.Copy((STRING)FieldValue);
+                    break;
+                case 2: //node
+                    Parts.value[ListIndex]->BPNN.Copy((STRING)FieldValue);
+                    break;
+                case 3: //vats
+                    Parts.value[ListIndex]->BPNT.Copy((STRING)FieldValue);
+                    break;
+                case 4: //IKData
+                    Parts.value[ListIndex]->BPNI.Copy((STRING)FieldValue);
+                    break;
+                case 5: //damageMult
+                    Parts.value[ListIndex]->BPND.value.damageMult = *(FLOAT32 *)FieldValue;
+                    break;
+                case 6: //flags
+                    Parts.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    break;
+                case 7: //partType
+                    Parts.value[ListIndex]->SetType(*(UINT8 *)FieldValue);
+                    break;
+                case 8: //healthPercent
+                    Parts.value[ListIndex]->BPND.value.healthPercent = *(UINT8 *)FieldValue;
+                    break;
+                case 9: //actorValue
+                    Parts.value[ListIndex]->BPND.value.actorValue = *(SINT8 *)FieldValue;
+                    break;
+                case 10: //hitChance
+                    Parts.value[ListIndex]->BPND.value.hitChance = *(UINT8 *)FieldValue;
+                    break;
+                case 11: //explodableExplosionChance
+                    Parts.value[ListIndex]->BPND.value.explodableExplosionChance = *(UINT8 *)FieldValue;
+                    break;
+                case 12: //explodableDebrisCount
+                    Parts.value[ListIndex]->BPND.value.explodableDebrisCount = *(UINT16 *)FieldValue;
+                    break;
+                case 13: //explodableDebris
+                    Parts.value[ListIndex]->BPND.value.explodableDebris = *(FORMID *)FieldValue;
+                    return true;
+                case 14: //explodableExplosion
+                    Parts.value[ListIndex]->BPND.value.explodableExplosion = *(FORMID *)FieldValue;
+                    return true;
+                case 15: //maxTrackAngle
+                    Parts.value[ListIndex]->BPND.value.maxTrackAngle = *(FLOAT32 *)FieldValue;
+                    break;
+                case 16: //explodableDebrisScale
+                    Parts.value[ListIndex]->BPND.value.explodableDebrisScale = *(FLOAT32 *)FieldValue;
+                    break;
+                case 17: //severableDebrisCount
+                    Parts.value[ListIndex]->BPND.value.severableDebrisCount = *(SINT32 *)FieldValue;
+                    break;
+                case 18: //severableDebris
+                    Parts.value[ListIndex]->BPND.value.severableDebris = *(FORMID *)FieldValue;
+                    return true;
+                case 19: //severableExplosion
+                    Parts.value[ListIndex]->BPND.value.severableExplosion = *(FORMID *)FieldValue;
+                    return true;
+                case 20: //severableDebrisScale
+                    Parts.value[ListIndex]->BPND.value.severableDebrisScale = *(FLOAT32 *)FieldValue;
+                    break;
+                case 21: //transX
+                    Parts.value[ListIndex]->BPND.value.transX = *(FLOAT32 *)FieldValue;
+                    break;
+                case 22: //transY
+                    Parts.value[ListIndex]->BPND.value.transY = *(FLOAT32 *)FieldValue;
+                    break;
+                case 23: //transZ
+                    Parts.value[ListIndex]->BPND.value.transZ = *(FLOAT32 *)FieldValue;
+                    break;
+                case 24: //rotX
+                    Parts.value[ListIndex]->BPND.value.rotX = *(FLOAT32 *)FieldValue;
+                    break;
+                case 25: //rotY
+                    Parts.value[ListIndex]->BPND.value.rotY = *(FLOAT32 *)FieldValue;
+                    break;
+                case 26: //rotZ
+                    Parts.value[ListIndex]->BPND.value.rotZ = *(FLOAT32 *)FieldValue;
+                    break;
+                case 27: //severableImpact
+                    Parts.value[ListIndex]->BPND.value.severableImpact = *(FORMID *)FieldValue;
+                    return true;
+                case 28: //explodableImpact
+                    Parts.value[ListIndex]->BPND.value.explodableImpact = *(FORMID *)FieldValue;
+                    return true;
+                case 29: //severableDecalCount
+                    Parts.value[ListIndex]->BPND.value.severableDecalCount = *(UINT8 *)FieldValue;
+                    break;
+                case 30: //explodableDecalCount
+                    Parts.value[ListIndex]->BPND.value.explodableDecalCount = *(UINT8 *)FieldValue;
+                    break;
+                case 31: //unused1
+                    if(ArraySize != 2)
+                        break;
+                    Parts.value[ListIndex]->BPND.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Parts.value[ListIndex]->BPND.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    break;
+                case 32: //limbReplaceScale
+                    Parts.value[ListIndex]->BPND.value.limbReplaceScale = *(FLOAT32 *)FieldValue;
+                    break;
+                case 33: //limbReplaceModPath
+                    Parts.value[ListIndex]->NAM1.Copy((STRING)FieldValue);
+                    break;
+                case 34: //goreBone
+                    Parts.value[ListIndex]->NAM4.Copy((STRING)FieldValue);
+                    break;
+                case 35: //nam5_p
+                    Parts.value[ListIndex]->NAM5.Copy((UINT8ARRAY)FieldValue, ArraySize);
+                    break;
+                default:
+                    break;
+                }
             break;
-        case 47: //nam4 Gore Effects - Target Bone
-            NAM4.Copy((STRING)FieldValue);
-            break;
-        case 48: //nam5_p Texture Files Hashes
-            NAM5.Copy((UINT8ARRAY)FieldValue, ArraySize);
-            break;
-        case 49: //raga Ragdoll
-            RAGA.Load();
-            RAGA->value49 = *(FORMID *)FieldValue;
+        case 13: //ragdoll
+            RAGA.value = *(FORMID *)FieldValue;
             return true;
         default:
             break;
@@ -523,127 +606,162 @@ void BPTDRecord::DeleteField(FIELD_IDENTIFIERS)
             if(MODL.IsLoaded())
                 MODL->MODT.Unload();
             return;
-        case 10: //mods Alternate Textures
+        case 10: //altTextures
             if(MODL.IsLoaded())
-                MODL->MODS.Unload();
+                {
+                if(ListFieldID == 0) //altTextures
+                    {
+                    MODL->Textures.Unload();
+                    return;
+                    }
+
+                if(ListIndex >= MODL->Textures.MODS.size())
+                    return;
+
+                switch(ListFieldID)
+                    {
+                    case 1: //name
+                        delete []MODL->Textures.MODS[ListIndex]->name;
+                        MODL->Textures.MODS[ListIndex]->name = NULL;
+                        return;
+                    case 2: //texture
+                        MODL->Textures.MODS[ListIndex]->texture = defaultMODS.texture;
+                        return;
+                    case 3: //index
+                        MODL->Textures.MODS[ListIndex]->index = defaultMODS.index;
+                        return;
+                    default:
+                        return;
+                    }
+                }
             return;
-        case 11: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 12: //mods Alternate Textures
-            if(MODL.IsLoaded())
-                MODL->MODS.Unload();
-            return;
-        case 13: //modelFlags
+        case 11: //modelFlags
             if(MODL.IsLoaded())
                 MODL->MODD.Unload();
             return;
-        case 14: //bptn Part Name
-            BPTN.Unload();
+        case 12: //parts
+            if(ListFieldID == 0) //partsSize
+                {
+                Parts.Unload();
+                return;
+                }
+
+            if(ListIndex >= Parts.value.size())
+                return;
+
+            switch(ListFieldID)
+                {
+                case 1: //name
+                    Parts.value[ListIndex]->BPTN.Unload();
+                    return;
+                case 2: //node
+                    Parts.value[ListIndex]->BPNN.Unload();
+                    return;
+                case 3: //vats
+                    Parts.value[ListIndex]->BPNT.Unload();
+                    return;
+                case 4: //IKData
+                    Parts.value[ListIndex]->BPNI.Unload();
+                    return;
+                case 5: //damageMult
+                    Parts.value[ListIndex]->BPND.value.damageMult = defaultBPND.damageMult;
+                    return;
+                case 6: //flags
+                    Parts.value[ListIndex]->SetFlagMask(defaultBPND.flags);
+                    return;
+                case 7: //partType
+                    Parts.value[ListIndex]->SetType(defaultBPND.partType);
+                    return;
+                case 8: //healthPercent
+                    Parts.value[ListIndex]->BPND.value.healthPercent = defaultBPND.healthPercent;
+                    return;
+                case 9: //actorValue
+                    Parts.value[ListIndex]->BPND.value.actorValue = defaultBPND.actorValue;
+                    return;
+                case 10: //hitChance
+                    Parts.value[ListIndex]->BPND.value.hitChance = defaultBPND.hitChance;
+                    return;
+                case 11: //explodableExplosionChance
+                    Parts.value[ListIndex]->BPND.value.explodableExplosionChance = defaultBPND.explodableExplosionChance;
+                    return;
+                case 12: //explodableDebrisCount
+                    Parts.value[ListIndex]->BPND.value.explodableDebrisCount = defaultBPND.explodableDebrisCount;
+                    return;
+                case 13: //explodableDebris
+                    Parts.value[ListIndex]->BPND.value.explodableDebris = defaultBPND.explodableDebris;
+                    return;
+                case 14: //explodableExplosion
+                    Parts.value[ListIndex]->BPND.value.explodableExplosion = defaultBPND.explodableExplosion;
+                    return;
+                case 15: //maxTrackAngle
+                    Parts.value[ListIndex]->BPND.value.maxTrackAngle = defaultBPND.maxTrackAngle;
+                    return;
+                case 16: //explodableDebrisScale
+                    Parts.value[ListIndex]->BPND.value.explodableDebrisScale = defaultBPND.explodableDebrisScale;
+                    return;
+                case 17: //severableDebrisCount
+                    Parts.value[ListIndex]->BPND.value.severableDebrisCount = defaultBPND.severableDebrisCount;
+                    return;
+                case 18: //severableDebris
+                    Parts.value[ListIndex]->BPND.value.severableDebris = defaultBPND.severableDebris;
+                    return;
+                case 19: //severableExplosion
+                    Parts.value[ListIndex]->BPND.value.severableExplosion = defaultBPND.severableExplosion;
+                    return;
+                case 20: //severableDebrisScale
+                    Parts.value[ListIndex]->BPND.value.severableDebrisScale = defaultBPND.severableDebrisScale;
+                    return;
+                case 21: //transX
+                    Parts.value[ListIndex]->BPND.value.transX = defaultBPND.transX;
+                    return;
+                case 22: //transY
+                    Parts.value[ListIndex]->BPND.value.transY = defaultBPND.transY;
+                    return;
+                case 23: //transZ
+                    Parts.value[ListIndex]->BPND.value.transZ = defaultBPND.transZ;
+                    return;
+                case 24: //rotX
+                    Parts.value[ListIndex]->BPND.value.rotX = defaultBPND.rotX;
+                    return;
+                case 25: //rotY
+                    Parts.value[ListIndex]->BPND.value.rotY = defaultBPND.rotY;
+                    return;
+                case 26: //rotZ
+                    Parts.value[ListIndex]->BPND.value.rotZ = defaultBPND.rotZ;
+                    return;
+                case 27: //severableImpact
+                    Parts.value[ListIndex]->BPND.value.severableImpact = defaultBPND.severableImpact;
+                    return;
+                case 28: //explodableImpact
+                    Parts.value[ListIndex]->BPND.value.explodableImpact = defaultBPND.explodableImpact;
+                    return;
+                case 29: //severableDecalCount
+                    Parts.value[ListIndex]->BPND.value.severableDecalCount = defaultBPND.severableDecalCount;
+                    return;
+                case 30: //explodableDecalCount
+                    Parts.value[ListIndex]->BPND.value.explodableDecalCount = defaultBPND.explodableDecalCount;
+                    return;
+                case 31: //unused1
+                    Parts.value[ListIndex]->BPND.value.unused1[0] = defaultBPND.unused1[0];
+                    Parts.value[ListIndex]->BPND.value.unused1[1] = defaultBPND.unused1[1];
+                    return;
+                case 32: //limbReplaceScale
+                    Parts.value[ListIndex]->BPND.value.limbReplaceScale = defaultBPND.limbReplaceScale;
+                    return;
+                case 33: //limbReplaceModPath
+                    Parts.value[ListIndex]->NAM1.Unload();
+                    return;
+                case 34: //goreBone
+                    Parts.value[ListIndex]->NAM4.Unload();
+                    return;
+                case 35: //nam5_p
+                    Parts.value[ListIndex]->NAM5.Unload();
+                    return;
+                default:
+                    return;
+                }
             return;
-        case 15: //bpnn Part Node
-            BPNN.Unload();
-            return;
-        case 16: //bpnt VATS Target
-            BPNT.Unload();
-            return;
-        case 17: //bpni IK Data - Start Node
-            BPNI.Unload();
-            return;
-        case 18: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 19: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 20: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 21: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 22: //bpnd BPND ,, Struct
-            return UNPARSEDDEL_FIELD22;
-        case 23: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 24: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 25: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 26: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 27: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 28: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 29: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 30: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 31: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 32: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 33: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 34: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 35: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 36: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 37: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 38: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 39: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 40: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 41: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 42: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 43: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 44: //bpnd_p BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 45: //bpnd BPND ,, Struct
-            BPND.Unload();
-            return;
-        case 46: //nam1 Limb Replacement Model
-            NAM1.Unload();
-            return;
-        case 47: //nam4 Gore Effects - Target Bone
-            NAM4.Unload();
-            return;
-        case 48: //nam5_p Texture Files Hashes
-            NAM5.Unload();
-            return;
-        case 49: //raga Ragdoll
+        case 13: //ragdoll
             RAGA.Unload();
             return;
         default:

@@ -151,7 +151,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 27: //withdrawalEffect
             return FORMID_FIELD;
         case 28: //addictionChance
-            return SINT32_FIELD;
+            return FLOAT32_FIELD;
         case 29: //consumeSound
             return FORMID_FIELD;
         case 30: //effects
@@ -717,7 +717,7 @@ bool ALCHRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             ENIT.value.withdrawalEffect = *(FORMID *)FieldValue;
             return true;
         case 28: //addictionChance
-            ENIT.value.addictionChance = *(SINT32 *)FieldValue;
+            ENIT.value.addictionChance = *(FLOAT32 *)FieldValue;
             break;
         case 29: //consumeSound
             ENIT.value.consumeSound = *(FORMID *)FieldValue;
