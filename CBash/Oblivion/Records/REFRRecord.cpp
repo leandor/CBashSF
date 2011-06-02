@@ -112,6 +112,39 @@ bool REFRRecord::REFRMAPMARKER::operator !=(const REFRMAPMARKER &other) const
     return !(*this == other);
     }
 
+
+
+bool REFRRecord::REFRData::operator ==(const REFRData &other) const
+    {
+    return (EDID.equalsi(other.EDID) &&
+            NAME == other.NAME &&
+            XTEL == other.XTEL &&
+            XLOC == other.XLOC &&
+            Ownership == other.Ownership &&
+            XESP == other.XESP &&
+            XTRG == other.XTRG &&
+            XSED == other.XSED &&
+            XLOD == other.XLOD &&
+            XCHG == other.XCHG &&
+            XHLT == other.XHLT &&
+            XPCI == other.XPCI &&
+            XLCM == other.XLCM &&
+            XRTM == other.XRTM &&
+            XACT == other.XACT &&
+            XCNT == other.XCNT &&
+            Marker == other.Marker &&
+            XSCL == other.XSCL &&
+            XSOL == other.XSOL &&
+            DATA == other.DATA);
+    }
+
+bool REFRRecord::REFRData::operator !=(const REFRData &other) const
+    {
+    return !(*this == other);
+    }
+
+
+
 REFRRecord::REFRRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -135,45 +168,49 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
         return;
         }
 
-    EDID = srcRecord->EDID;
-    NAME = srcRecord->NAME;
-    XTEL = srcRecord->XTEL;
-    XLOC = srcRecord->XLOC;
-    if(srcRecord->Ownership.IsLoaded())
+    if(srcRecord->Data.IsLoaded())
         {
-        Ownership.Load();
-        Ownership->XOWN = srcRecord->Ownership->XOWN;
-        Ownership->XRNK = srcRecord->Ownership->XRNK;
-        Ownership->XGLB = srcRecord->Ownership->XGLB;
+        Data.Load();
+        Data->EDID = srcRecord->Data->EDID;
+        Data->NAME = srcRecord->Data->NAME;
+        Data->XTEL = srcRecord->Data->XTEL;
+        Data->XLOC = srcRecord->Data->XLOC;
+        if(srcRecord->Data->Ownership.IsLoaded())
+            {
+            Data->Ownership.Load();
+            Data->Ownership->XOWN = srcRecord->Data->Ownership->XOWN;
+            Data->Ownership->XRNK = srcRecord->Data->Ownership->XRNK;
+            Data->Ownership->XGLB = srcRecord->Data->Ownership->XGLB;
+            }
+        Data->XESP = srcRecord->Data->XESP;
+        Data->XTRG = srcRecord->Data->XTRG;
+        Data->XSED = srcRecord->Data->XSED;
+        Data->XLOD = srcRecord->Data->XLOD;
+        Data->XCHG = srcRecord->Data->XCHG;
+        Data->XHLT = srcRecord->Data->XHLT;
+        if(srcRecord->Data->XPCI.IsLoaded())
+            {
+            Data->XPCI.Load();
+            Data->XPCI->XPCI = srcRecord->Data->XPCI->XPCI;
+            Data->XPCI->FULL = srcRecord->Data->XPCI->FULL;
+            }
+        Data->XLCM = srcRecord->Data->XLCM;
+        Data->XRTM = srcRecord->Data->XRTM;
+        Data->XACT = srcRecord->Data->XACT;
+        Data->XCNT = srcRecord->Data->XCNT;
+        if(srcRecord->Data->Marker.IsLoaded())
+            {
+            Data->Marker.Load();
+            Data->Marker->FNAM = srcRecord->Data->Marker->FNAM;
+            Data->Marker->FULL = srcRecord->Data->Marker->FULL;
+            Data->Marker->TNAM = srcRecord->Data->Marker->TNAM;
+            }
+        if(srcRecord->IsOpenByDefault())//bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
+            IsOpenByDefault(true);
+        Data->XSCL = srcRecord->Data->XSCL;
+        Data->XSOL = srcRecord->Data->XSOL;
+        Data->DATA = srcRecord->Data->DATA;
         }
-    XESP = srcRecord->XESP;
-    XTRG = srcRecord->XTRG;
-    XSED = srcRecord->XSED;
-    XLOD = srcRecord->XLOD;
-    XCHG = srcRecord->XCHG;
-    XHLT = srcRecord->XHLT;
-    if(srcRecord->XPCI.IsLoaded())
-        {
-        XPCI.Load();
-        XPCI->XPCI = srcRecord->XPCI->XPCI;
-        XPCI->FULL = srcRecord->XPCI->FULL;
-        }
-    XLCM = srcRecord->XLCM;
-    XRTM = srcRecord->XRTM;
-    XACT = srcRecord->XACT;
-    XCNT = srcRecord->XCNT;
-    if(srcRecord->Marker.IsLoaded())
-        {
-        Marker.Load();
-        Marker->FNAM = srcRecord->Marker->FNAM;
-        Marker->FULL = srcRecord->Marker->FULL;
-        Marker->TNAM = srcRecord->Marker->TNAM;
-        }
-    if(srcRecord->IsOpenByDefault())//bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-        IsOpenByDefault(true);
-    XSCL = srcRecord->XSCL;
-    XSOL = srcRecord->XSOL;
-    DATA = srcRecord->DATA;
     }
 
 REFRRecord::~REFRRecord()
@@ -186,457 +223,526 @@ bool REFRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    op.Accept(NAME.value);
-    if(XTEL.IsLoaded())
-        op.Accept(XTEL->destinationFid);
-    if(XLOC.IsLoaded())
-        op.Accept(XLOC->key);
-    if(Ownership.IsLoaded())
+    if(Data.IsLoaded())
         {
-        if(Ownership->XOWN.IsLoaded())
-            op.Accept(Ownership->XOWN.value);
-        if(Ownership->XGLB.IsLoaded())
-            op.Accept(Ownership->XGLB.value);
+        op.Accept(Data->NAME.value);
+        if(Data->XTEL.IsLoaded())
+            op.Accept(Data->XTEL->destinationFid);
+        if(Data->XLOC.IsLoaded())
+            op.Accept(Data->XLOC->key);
+        if(Data->Ownership.IsLoaded())
+            {
+            if(Data->Ownership->XOWN.IsLoaded())
+                op.Accept(Data->Ownership->XOWN.value);
+            if(Data->Ownership->XGLB.IsLoaded())
+                op.Accept(Data->Ownership->XGLB.value);
+            }
+        if(Data->XESP.IsLoaded())
+            op.Accept(Data->XESP->parent);
+        if(Data->XTRG.IsLoaded())
+            op.Accept(Data->XTRG.value);
+        if(Data->XPCI.IsLoaded() && Data->XPCI->XPCI.IsLoaded())
+            op.Accept(Data->XPCI->XPCI.value);
+        if(Data->XRTM.IsLoaded())
+            op.Accept(Data->XRTM.value);
         }
-    if(XESP.IsLoaded())
-        op.Accept(XESP->parent);
-    if(XTRG.IsLoaded())
-        op.Accept(XTRG.value);
-    if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        op.Accept(XPCI->XPCI.value);
-    if(XRTM.IsLoaded())
-        op.Accept(XRTM.value);
 
     return op.Stop();
     }
 
 bool REFRRecord::IsOppositeParent()
     {
-    if(!XESP.IsLoaded()) return false;
-    return (XESP->flags & fIsOppositeParent) != 0;
+    if(!Data.IsLoaded()) return false;
+    if(!Data->XESP.IsLoaded()) return false;
+    return (Data->XESP->flags & fIsOppositeParent) != 0;
     }
 
 void REFRRecord::IsOppositeParent(bool value)
     {
-    if(!XESP.IsLoaded()) return;
-    XESP->flags = value ? (XESP->flags | fIsOppositeParent) : (XESP->flags & ~fIsOppositeParent);
+    if(!Data.IsLoaded()) return;
+    if(!Data->XESP.IsLoaded()) return;
+    Data->XESP->flags = value ? (Data->XESP->flags | fIsOppositeParent) : (Data->XESP->flags & ~fIsOppositeParent);
     }
 
 bool REFRRecord::IsParentFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!XESP.IsLoaded()) return false;
-    return Exact ? ((XESP->flags & Mask) == Mask) : ((XESP->flags & Mask) != 0);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->XESP.IsLoaded()) return false;
+    return Exact ? ((Data->XESP->flags & Mask) == Mask) : ((Data->XESP->flags & Mask) != 0);
     }
 
 void REFRRecord::SetParentFlagMask(UINT8 Mask)
     {
-    XESP.Load();
-    XESP->flags = Mask;
+    Data.Load();
+    Data->XESP.Load();
+    Data->XESP->flags = Mask;
     }
 
 bool REFRRecord::IsVisible()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value & fVisible) != 0;
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->FNAM.value & fVisible) != 0;
     }
 
 void REFRRecord::IsVisible(bool value)
     {
-    if(!Marker.IsLoaded()) return;
-    Marker->FNAM.value = value ? (Marker->FNAM.value | fVisible) : (Marker->FNAM.value & ~fVisible);
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
+    Data->Marker->FNAM.value = value ? (Data->Marker->FNAM.value | fVisible) : (Data->Marker->FNAM.value & ~fVisible);
     }
 
 bool REFRRecord::IsCanTravelTo()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->FNAM.value & fCanTravelTo) != 0;
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->FNAM.value & fCanTravelTo) != 0;
     }
 
 void REFRRecord::IsCanTravelTo(bool value)
     {
-    if(!Marker.IsLoaded()) return;
-    Marker->FNAM.value = value ? (Marker->FNAM.value | fCanTravelTo) : (Marker->FNAM.value & ~fCanTravelTo);
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
+    Data->Marker->FNAM.value = value ? (Data->Marker->FNAM.value | fCanTravelTo) : (Data->Marker->FNAM.value & ~fCanTravelTo);
     }
 
 bool REFRRecord::IsMapFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!Marker.IsLoaded()) return false;
-    return Exact ? ((Marker->FNAM.value & Mask) == Mask) : ((Marker->FNAM.value & Mask) != 0);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return Exact ? ((Data->Marker->FNAM.value & Mask) == Mask) : ((Data->Marker->FNAM.value & Mask) != 0);
     }
 
 void REFRRecord::SetMapFlagMask(UINT8 Mask)
     {
-    Marker.Load();
-    Marker->FNAM.value = Mask;
+    Data.Load();
+    Data->Marker.Load();
+    Data->Marker->FNAM.value = Mask;
     }
 
 bool REFRRecord::IsUseDefault()
     {
-    return (XACT.value & fUseDefault) != 0;
+    if(!Data.IsLoaded()) return false;
+    return (Data->XACT.value & fUseDefault) != 0;
     }
 
 void REFRRecord::IsUseDefault(bool value)
     {
-    XACT.value = value ? (XACT.value | fUseDefault) : (XACT.value & ~fUseDefault);
+    if(!Data.IsLoaded()) return;
+    Data->XACT.value = value ? (Data->XACT.value | fUseDefault) : (Data->XACT.value & ~fUseDefault);
     }
 
 bool REFRRecord::IsActivate()
     {
-    return (XACT.value & fActivate) != 0;
+    if(!Data.IsLoaded()) return false;
+    return (Data->XACT.value & fActivate) != 0;
     }
 
 void REFRRecord::IsActivate(bool value)
     {
-    XACT.value = value ? (XACT.value | fActivate) : (XACT.value & ~fActivate);
+    if(!Data.IsLoaded()) return;
+    Data->XACT.value = value ? (Data->XACT.value | fActivate) : (Data->XACT.value & ~fActivate);
     }
 
 bool REFRRecord::IsOpen()
     {
-    return (XACT.value & fOpen) != 0;
+    if(!Data.IsLoaded()) return false;
+    return (Data->XACT.value & fOpen) != 0;
     }
 
 void REFRRecord::IsOpen(bool value)
     {
-    XACT.value = value ? (XACT.value | fOpen) : (XACT.value & ~fOpen);
+    if(!Data.IsLoaded()) return;
+    Data->XACT.value = value ? (Data->XACT.value | fOpen) : (Data->XACT.value & ~fOpen);
     }
 
 bool REFRRecord::IsOpenByDefault()
     {
-    return (XACT.value & fOpenByDefault) != 0;
+    if(!Data.IsLoaded()) return false;
+    return (Data->XACT.value & fOpenByDefault) != 0;
     }
 
 void REFRRecord::IsOpenByDefault(bool value)
     {
-    XACT.value = value ? (XACT.value | fOpenByDefault) : (XACT.value & ~fOpenByDefault);
+    if(!Data.IsLoaded()) return;
+    Data->XACT.value = value ? (Data->XACT.value | fOpenByDefault) : (Data->XACT.value & ~fOpenByDefault);
     }
 
 bool REFRRecord::IsActionFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? ((XACT.value & Mask) == Mask) : ((XACT.value & Mask) != 0);
+    if(!Data.IsLoaded()) return false;
+    return Exact ? ((Data->XACT.value & Mask) == Mask) : ((Data->XACT.value & Mask) != 0);
     }
 
 void REFRRecord::SetActionFlagMask(UINT32 Mask)
     {
-    XACT.value = Mask;
+    Data.Load();
+    Data->XACT.value = Mask;
     }
 
 bool REFRRecord::IsLeveledLock()
     {
-    if(!XLOC.IsLoaded()) return false;
-    return (XLOC->flags & fLeveledLock) != 0;
+    if(!Data.IsLoaded()) return false;
+    if(!Data->XLOC.IsLoaded()) return false;
+    return (Data->XLOC->flags & fLeveledLock) != 0;
     }
 
 void REFRRecord::IsLeveledLock(bool value)
     {
-    if(!XLOC.IsLoaded()) return;
-    XLOC->flags = value ? (XLOC->flags | fLeveledLock) : (XLOC->flags & ~fLeveledLock);
+    if(!Data.IsLoaded()) return;
+    if(!Data->XLOC.IsLoaded()) return;
+    Data->XLOC->flags = value ? (Data->XLOC->flags | fLeveledLock) : (Data->XLOC->flags & ~fLeveledLock);
     }
 
 bool REFRRecord::IsLockFlagMask(UINT8 Mask, bool Exact)
     {
-    if(!XLOC.IsLoaded()) return false;
-    return Exact ? ((XLOC->flags & Mask) == Mask) : ((XLOC->flags & Mask) != 0);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->XLOC.IsLoaded()) return false;
+    return Exact ? ((Data->XLOC->flags & Mask) == Mask) : ((Data->XLOC->flags & Mask) != 0);
     }
 
 void REFRRecord::SetLockFlagMask(UINT8 Mask)
     {
-    XLOC.Load();
-    XLOC->flags = Mask;
+    Data.Load();
+    Data->XLOC.Load();
+    Data->XLOC->flags = Mask;
     }
 
 bool REFRRecord::IsNoMarker()
     {
-    if(!Marker.IsLoaded()) return true;
-    return (Marker->TNAM.value.markerType == eMarkerNone);
+    if(!Data.IsLoaded()) return true;
+    if(!Data->Marker.IsLoaded()) return true;
+    return (Data->Marker->TNAM.value.markerType == eMarkerNone);
     }
 
 void REFRRecord::IsNoMarker(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     else if(IsNoMarker())
-        Marker->TNAM.value.markerType = eCamp;
+        Data->Marker->TNAM.value.markerType = eCamp;
     }
 
 bool REFRRecord::IsCamp()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eCamp);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eCamp);
     }
 
 void REFRRecord::IsCamp(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eCamp;
+        Data->Marker->TNAM.value.markerType = eCamp;
     else if(IsCamp())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsCave()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eCave);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eCave);
     }
 
 void REFRRecord::IsCave(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eCave;
+        Data->Marker->TNAM.value.markerType = eCave;
     else if(IsCave())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsCity()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eCity);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eCity);
     }
 
 void REFRRecord::IsCity(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eCity;
+        Data->Marker->TNAM.value.markerType = eCity;
     else if(IsCity())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsElvenRuin()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eElvenRuin);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eElvenRuin);
     }
 
 void REFRRecord::IsElvenRuin(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eElvenRuin;
+        Data->Marker->TNAM.value.markerType = eElvenRuin;
     else if(IsElvenRuin())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsFortRuin()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eFortRuin);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eFortRuin);
     }
 
 void REFRRecord::IsFortRuin(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eFortRuin;
+        Data->Marker->TNAM.value.markerType = eFortRuin;
     else if(IsFortRuin())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsMine()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eMine);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eMine);
     }
 
 void REFRRecord::IsMine(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eMine;
+        Data->Marker->TNAM.value.markerType = eMine;
     else if(IsMine())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsLandmark()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eLandmark);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eLandmark);
     }
 
 void REFRRecord::IsLandmark(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eLandmark;
+        Data->Marker->TNAM.value.markerType = eLandmark;
     else if(IsLandmark())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsTavern()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eTavern);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eTavern);
     }
 
 void REFRRecord::IsTavern(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eTavern;
+        Data->Marker->TNAM.value.markerType = eTavern;
     else if(IsTavern())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsSettlement()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eSettlement);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eSettlement);
     }
 
 void REFRRecord::IsSettlement(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eSettlement;
+        Data->Marker->TNAM.value.markerType = eSettlement;
     else if(IsSettlement())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsDaedricShrine()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eDaedricShrine);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eDaedricShrine);
     }
 
 void REFRRecord::IsDaedricShrine(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eDaedricShrine;
+        Data->Marker->TNAM.value.markerType = eDaedricShrine;
     else if(IsDaedricShrine())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsOblivionGate()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eOblivionGate);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eOblivionGate);
     }
 
 void REFRRecord::IsOblivionGate(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eOblivionGate;
+        Data->Marker->TNAM.value.markerType = eOblivionGate;
     else if(IsOblivionGate())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsUnknownDoorIcon()
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == eUnknownDoorIcon);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == eUnknownDoorIcon);
     }
 
 void REFRRecord::IsUnknownDoorIcon(bool value)
     {
-    if(!Marker.IsLoaded()) return;
+    if(!Data.IsLoaded()) return;
+    if(!Data->Marker.IsLoaded()) return;
     if(value)
-        Marker->TNAM.value.markerType = eUnknownDoorIcon;
+        Data->Marker->TNAM.value.markerType = eUnknownDoorIcon;
     else if(IsUnknownDoorIcon())
-        Marker->TNAM.value.markerType = eMarkerNone;
+        Data->Marker->TNAM.value.markerType = eMarkerNone;
     }
 
 bool REFRRecord::IsMarkerType(UINT8 Type)
     {
-    if(!Marker.IsLoaded()) return false;
-    return (Marker->TNAM.value.markerType == Type);
+    if(!Data.IsLoaded()) return false;
+    if(!Data->Marker.IsLoaded()) return false;
+    return (Data->Marker->TNAM.value.markerType == Type);
     }
 
 void REFRRecord::SetMarkerType(UINT8 Type)
     {
-    Marker.Load();
-    Marker->TNAM.value.markerType = Type;
+    Data.Load();
+    Data->Marker.Load();
+    Data->Marker->TNAM.value.markerType = Type;
     }
 
 bool REFRRecord::IsNoSoul()
     {
-    return (XSOL.value == eNone);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == eNone);
     }
 
 void REFRRecord::IsNoSoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     else if(IsNoSoul())
-        XSOL.value = ePetty;
+        Data->XSOL.value = ePetty;
     }
 
 bool REFRRecord::IsPettySoul()
     {
-    return (XSOL.value == ePetty);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == ePetty);
     }
 
 void REFRRecord::IsPettySoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = ePetty;
+        Data->XSOL.value = ePetty;
     else if(IsPettySoul())
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     }
 
 bool REFRRecord::IsLesserSoul()
     {
-    return (XSOL.value == eLesser);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == eLesser);
     }
 
 void REFRRecord::IsLesserSoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = eLesser;
+        Data->XSOL.value = eLesser;
     else if(IsLesserSoul())
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     }
 
 bool REFRRecord::IsCommonSoul()
     {
-    return (XSOL.value == eCommon);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == eCommon);
     }
 
 void REFRRecord::IsCommonSoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = eCommon;
+        Data->XSOL.value = eCommon;
     else if(IsCommonSoul())
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     }
 
 bool REFRRecord::IsGreaterSoul()
     {
-    return (XSOL.value == eGreater);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == eGreater);
     }
 
 void REFRRecord::IsGreaterSoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = eGreater;
+        Data->XSOL.value = eGreater;
     else if(IsGreaterSoul())
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     }
 
 bool REFRRecord::IsGrandSoul()
     {
-    return (XSOL.value == eGrand);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == eGrand);
     }
 
 void REFRRecord::IsGrandSoul(bool value)
     {
+    if(!Data.IsLoaded()) return;
     if(value)
-        XSOL.value = eGrand;
+        Data->XSOL.value = eGrand;
     else if(IsGrandSoul())
-        XSOL.value = eNone;
+        Data->XSOL.value = eNone;
     }
 
 bool REFRRecord::IsSoul(UINT8 Type)
     {
-    return (XSOL.value == Type);
+    if(!Data.IsLoaded()) return false;
+    return (Data->XSOL.value == Type);
     }
 
 void REFRRecord::SetSoul(UINT8 Type)
     {
-    XSOL.value = Type;
+    Data.Load();
+    Data->XSOL.value = Type;
     }
 
 UINT32 REFRRecord::GetType()
@@ -660,6 +766,7 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     UINT32 subSize = 0;
     UINT32 curPos = 0;
     UINT32 lastChunk = 0;
+    Data.Load();
     while(curPos < recSize){
         _readBuffer(&subType, buffer, 4, curPos);
         switch(subType)
@@ -678,64 +785,64 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                Data->EDID.Read(buffer, subSize, curPos);
                 break;
             case REV32(NAME):
-                NAME.Read(buffer, subSize, curPos);
+                Data->NAME.Read(buffer, subSize, curPos);
                 break;
             case REV32(XTEL):
-                XTEL.Read(buffer, subSize, curPos);
+                Data->XTEL.Read(buffer, subSize, curPos);
                 break;
             case REV32(XLOC):
                 switch(subSize)
                     {
                     case 12: //unused2 is absent, so shift the values read into it
-                        XLOC.Read(buffer, subSize, curPos);
-                        XLOC->flags = XLOC->unused2[0];
-                        XLOC->unused3[0] = XLOC->unused2[1];
-                        XLOC->unused3[1] = XLOC->unused2[2];
-                        XLOC->unused3[2] = XLOC->unused2[3];
-                        memset(&XLOC->unused2[0], 0x00, 4);
+                        Data->XLOC.Read(buffer, subSize, curPos);
+                        Data->XLOC->flags = Data->XLOC->unused2[0];
+                        Data->XLOC->unused3[0] = Data->XLOC->unused2[1];
+                        Data->XLOC->unused3[1] = Data->XLOC->unused2[2];
+                        Data->XLOC->unused3[2] = Data->XLOC->unused2[3];
+                        memset(&Data->XLOC->unused2[0], 0x00, 4);
                         break;
                     default:
-                        XLOC.Read(buffer, subSize, curPos);
+                        Data->XLOC.Read(buffer, subSize, curPos);
                         break;
                     }
                 break;
             case REV32(XOWN):
-                Ownership.Load();
-                Ownership->XOWN.Read(buffer, subSize, curPos);
+                Data->Ownership.Load();
+                Data->Ownership->XOWN.Read(buffer, subSize, curPos);
                 break;
             case REV32(XRNK):
-                Ownership.Load();
-                Ownership->XRNK.Read(buffer, subSize, curPos);
+                Data->Ownership.Load();
+                Data->Ownership->XRNK.Read(buffer, subSize, curPos);
                 break;
             case REV32(XGLB):
-                Ownership.Load();
-                Ownership->XGLB.Read(buffer, subSize, curPos);
+                Data->Ownership.Load();
+                Data->Ownership->XGLB.Read(buffer, subSize, curPos);
                 break;
             case REV32(XESP):
-                XESP.Read(buffer, subSize, curPos);
+                Data->XESP.Read(buffer, subSize, curPos);
                 break;
             case REV32(XTRG):
-                XTRG.Read(buffer, subSize, curPos);
+                Data->XTRG.Read(buffer, subSize, curPos);
                 break;
             case REV32(XSED):
                 switch(subSize)
                     {
                     case 1:
                         //if it's a single byte then it's an offset into the list of seed values in the TREE record
-                        XSED.Load();
-                        XSED->isOffset = true;
+                        Data->XSED.Load();
+                        Data->XSED->isOffset = true;
                         //XSED.size = 1;
-                        _readBuffer(&XSED->offset, buffer, 1, curPos);
+                        _readBuffer(&Data->XSED->offset, buffer, 1, curPos);
                         break;
                     case 4:
                         //if it's 4 byte it's the seed value directly
-                        XSED.Load();
-                        XSED->isOffset = false;
+                        Data->XSED.Load();
+                        Data->XSED->isOffset = false;
                         //XSED.size = 4;
-                        _readBuffer(&XSED->seed, buffer, 4, curPos);
+                        _readBuffer(&Data->XSED->seed, buffer, 4, curPos);
                         break;
                     default:
                         printer("  REFR: %08X - Unknown XSED size = %u\n", formID, subSize);
@@ -745,28 +852,28 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 break;
             case REV32(XLOD):
-                XLOD.Read(buffer, subSize, curPos);
+                Data->XLOD.Read(buffer, subSize, curPos);
                 break;
             case REV32(XCHG):
-                XCHG.Read(buffer, subSize, curPos);
+                Data->XCHG.Read(buffer, subSize, curPos);
                 break;
             case REV32(XHLT):
-                XHLT.Read(buffer, subSize, curPos);
+                Data->XHLT.Read(buffer, subSize, curPos);
                 break;
             case REV32(XPCI):
-                XPCI.Load();
-                XPCI->XPCI.Read(buffer, subSize, curPos);
+                Data->XPCI.Load();
+                Data->XPCI->XPCI.Read(buffer, subSize, curPos);
                 lastChunk = REV32(XPCI);
                 break;
             case REV32(FULL):
                 switch(lastChunk)
                     {
                     case REV32(XPCI):
-                        XPCI.Load();
-                        XPCI->FULL.Read(buffer, subSize, curPos);
+                        Data->XPCI.Load();
+                        Data->XPCI->FULL.Read(buffer, subSize, curPos);
                         break;
                     case REV32(XMRK):
-                        Marker->FULL.Read(buffer, subSize, curPos);
+                        Data->Marker->FULL.Read(buffer, subSize, curPos);
                         break;
                     default:
                         printer("  REFR: %08X - Unexpected FULL chunk\n", formID);
@@ -777,42 +884,42 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 break;
             case REV32(XLCM):
-                XLCM.Read(buffer, subSize, curPos);
+                Data->XLCM.Read(buffer, subSize, curPos);
                 break;
             case REV32(XRTM):
-                XRTM.Read(buffer, subSize, curPos);
+                Data->XRTM.Read(buffer, subSize, curPos);
                 break;
             case REV32(XACT):
-                XACT.Read(buffer, subSize, curPos);
+                Data->XACT.Read(buffer, subSize, curPos);
                 break;
             case REV32(XCNT):
-                XCNT.Read(buffer, subSize, curPos);
+                Data->XCNT.Read(buffer, subSize, curPos);
                 break;
             case REV32(XMRK):
-                Marker.Load();
+                Data->Marker.Load();
                 curPos += subSize;
                 lastChunk = REV32(XMRK);
                 break;
             case REV32(FNAM):
-                Marker.Load();
-                Marker->FNAM.Read(buffer, subSize, curPos);
+                Data->Marker.Load();
+                Data->Marker->FNAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(TNAM):
-                Marker.Load();
-                Marker->TNAM.Read(buffer, subSize, curPos);
+                Data->Marker.Load();
+                Data->Marker->TNAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(ONAM):
                 IsOpenByDefault(true);
                 curPos += subSize;
                 break;
             case REV32(XSCL):
-                XSCL.Read(buffer, subSize, curPos);
+                Data->XSCL.Read(buffer, subSize, curPos);
                 break;
             case REV32(XSOL):
-                XSOL.Read(buffer, subSize, curPos);
+                Data->XSOL.Read(buffer, subSize, curPos);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                Data->DATA.Read(buffer, subSize, curPos);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
@@ -831,144 +938,128 @@ SINT32 REFRRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
-    EDID.Unload();
-    NAME.Unload();
-    XTEL.Unload();
-    XLOC.Unload();
-    Ownership.Unload();
-    XESP.Unload();
-    XTRG.Unload();
-    XSED.Unload();
-    XLOD.Unload();
-    XCHG.Unload();
-    XHLT.Unload();
-    XPCI.Unload();
-    XLCM.Unload();
-    XRTM.Unload();
-    XACT.Unload();
-    XCNT.Unload();
-    Marker.Unload();
-    XSCL.Unload();
-    XSOL.Unload();
-    DATA.Unload();
+    Data.Unload();
+    //EDID.Unload();
+    //NAME.Unload();
+    //XTEL.Unload();
+    //XLOC.Unload();
+    //Ownership.Unload();
+    //Data->XESP.Unload();
+    //XTRG.Unload();
+    //XSED.Unload();
+    //XLOD.Unload();
+    //XCHG.Unload();
+    //XHLT.Unload();
+    //XPCI.Unload();
+    //XLCM.Unload();
+    //XRTM.Unload();
+    //XACT.Unload();
+    //XCNT.Unload();
+    //Marker.Unload();
+    //XSCL.Unload();
+    //XSOL.Unload();
+    //DATA.Unload();
     return 1;
     }
 
 SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     {
     char null = 0;
+    if(!Data.IsLoaded())
+        return 0;
 
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
+    if(Data->EDID.IsLoaded())
+        writer.record_write_subrecord(REV32(EDID), Data->EDID.value, Data->EDID.GetSize());
 
-    if(NAME.IsLoaded())
-        writer.record_write_subrecord(REV32(NAME), &NAME.value, NAME.GetSize());
+    if(Data->NAME.IsLoaded())
+        writer.record_write_subrecord(REV32(NAME), &Data->NAME.value, Data->NAME.GetSize());
 
-    if(XTEL.IsLoaded())
-        writer.record_write_subrecord(REV32(XTEL), XTEL.value, XTEL.GetSize());
+    if(Data->XTEL.IsLoaded())
+        writer.record_write_subrecord(REV32(XTEL), Data->XTEL.value, Data->XTEL.GetSize());
 
-    if(XLOC.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOC), XLOC.value, XLOC.GetSize());
+    if(Data->XLOC.IsLoaded())
+        writer.record_write_subrecord(REV32(XLOC), Data->XLOC.value, Data->XLOC.GetSize());
 
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
+    if(Data->Ownership.IsLoaded() && Data->Ownership->XOWN.IsLoaded())
         {
-        writer.record_write_subrecord(REV32(XOWN), &Ownership->XOWN.value, Ownership->XOWN.GetSize());
-        if(Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord(REV32(XRNK), Ownership->XRNK.value, Ownership->XRNK.GetSize());
-        if(Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord(REV32(XGLB), &Ownership->XGLB.value, Ownership->XGLB.GetSize());
+        writer.record_write_subrecord(REV32(XOWN), &Data->Ownership->XOWN.value, Data->Ownership->XOWN.GetSize());
+        if(Data->Ownership->XRNK.IsLoaded())
+            writer.record_write_subrecord(REV32(XRNK), Data->Ownership->XRNK.value, Data->Ownership->XRNK.GetSize());
+        if(Data->Ownership->XGLB.IsLoaded())
+            writer.record_write_subrecord(REV32(XGLB), &Data->Ownership->XGLB.value, Data->Ownership->XGLB.GetSize());
         }
 
-    if(XESP.IsLoaded())
-        writer.record_write_subrecord(REV32(XESP), XESP.value, XESP.GetSize());
+    if(Data->XESP.IsLoaded())
+        writer.record_write_subrecord(REV32(XESP), Data->XESP.value, Data->XESP.GetSize());
 
-    if(XTRG.IsLoaded())
-        writer.record_write_subrecord(REV32(XTRG), &XTRG.value, XTRG.GetSize());
+    if(Data->XTRG.IsLoaded())
+        writer.record_write_subrecord(REV32(XTRG), &Data->XTRG.value, Data->XTRG.GetSize());
 
-    if(XSED.IsLoaded())
-        if(XSED->isOffset)
-            writer.record_write_subrecord(REV32(XSED), &XSED->offset, 1);
+    if(Data->XSED.IsLoaded())
+        if(Data->XSED->isOffset)
+            writer.record_write_subrecord(REV32(XSED), &Data->XSED->offset, 1);
         else
-            writer.record_write_subrecord(REV32(XSED), &XSED->seed, 4);
+            writer.record_write_subrecord(REV32(XSED), &Data->XSED->seed, 4);
 
-    if(XLOD.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOD), XLOD.value, XLOD.GetSize());
+    if(Data->XLOD.IsLoaded())
+        writer.record_write_subrecord(REV32(XLOD), Data->XLOD.value, Data->XLOD.GetSize());
 
-    if(XCHG.IsLoaded())
-        writer.record_write_subrecord(REV32(XCHG), &XCHG.value, XCHG.GetSize());
+    if(Data->XCHG.IsLoaded())
+        writer.record_write_subrecord(REV32(XCHG), &Data->XCHG.value, Data->XCHG.GetSize());
 
-    if(XHLT.IsLoaded())
-        writer.record_write_subrecord(REV32(XHLT), &XHLT.value, XHLT.GetSize());
+    if(Data->XHLT.IsLoaded())
+        writer.record_write_subrecord(REV32(XHLT), &Data->XHLT.value, Data->XHLT.GetSize());
 
-    if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
+    if(Data->XPCI.IsLoaded() && Data->XPCI->XPCI.IsLoaded())
         {
-        writer.record_write_subrecord(REV32(XPCI), &XPCI->XPCI.value, XPCI->XPCI.GetSize());
-        if(XPCI->FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), XPCI->FULL.value, XPCI->FULL.GetSize());
+        writer.record_write_subrecord(REV32(XPCI), &Data->XPCI->XPCI.value, Data->XPCI->XPCI.GetSize());
+        if(Data->XPCI->FULL.IsLoaded())
+            writer.record_write_subrecord(REV32(FULL), Data->XPCI->FULL.value, Data->XPCI->FULL.GetSize());
         else
             writer.record_write_subrecord(REV32(FULL), &null, 1);
         }
 
-    if(XLCM.IsLoaded())
-        writer.record_write_subrecord(REV32(XLCM), &XLCM.value, XLCM.GetSize());
+    if(Data->XLCM.IsLoaded())
+        writer.record_write_subrecord(REV32(XLCM), &Data->XLCM.value, Data->XLCM.GetSize());
 
-    if(XRTM.IsLoaded())
-        writer.record_write_subrecord(REV32(XRTM), &XRTM.value, XRTM.GetSize());
+    if(Data->XRTM.IsLoaded())
+        writer.record_write_subrecord(REV32(XRTM), &Data->XRTM.value, Data->XRTM.GetSize());
 
-    if(XACT.IsLoaded())
-        writer.record_write_subrecord(REV32(XACT), &XACT.value, XACT.GetSize());
+    if(Data->XACT.IsLoaded())
+        writer.record_write_subrecord(REV32(XACT), &Data->XACT.value, Data->XACT.GetSize());
 
-    if(XCNT.IsLoaded())
-        writer.record_write_subrecord(REV32(XCNT), &XCNT.value, XCNT.GetSize());
+    if(Data->XCNT.IsLoaded())
+        writer.record_write_subrecord(REV32(XCNT), &Data->XCNT.value, Data->XCNT.GetSize());
 
-    if(Marker.IsLoaded())
+    if(Data->Marker.IsLoaded())
         {
         writer.record_write_subheader(REV32(XMRK), 0);
-        if(Marker->FNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(FNAM), &Marker->FNAM.value, Marker->FNAM.GetSize());
-        if(Marker->FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), Marker->FULL.value, Marker->FULL.GetSize());
-        if(Marker->TNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(TNAM), &Marker->TNAM.value, Marker->TNAM.GetSize());
+        if(Data->Marker->FNAM.IsLoaded())
+            writer.record_write_subrecord(REV32(FNAM), &Data->Marker->FNAM.value, Data->Marker->FNAM.GetSize());
+        if(Data->Marker->FULL.IsLoaded())
+            writer.record_write_subrecord(REV32(FULL), Data->Marker->FULL.value, Data->Marker->FULL.GetSize());
+        if(Data->Marker->TNAM.IsLoaded())
+            writer.record_write_subrecord(REV32(TNAM), &Data->Marker->TNAM.value, Data->Marker->TNAM.GetSize());
         }
 
     if(IsOpenByDefault()) //ONAM
         writer.record_write_subheader(REV32(ONAM), 0);
 
-    if(XSCL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSCL), &XSCL.value, XSCL.GetSize());
+    if(Data->XSCL.IsLoaded())
+        writer.record_write_subrecord(REV32(XSCL), &Data->XSCL.value, Data->XSCL.GetSize());
 
-    if(XSOL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSOL), &XSOL.value, XSOL.GetSize());
+    if(Data->XSOL.IsLoaded())
+        writer.record_write_subrecord(REV32(XSOL), &Data->XSOL.value, Data->XSOL.GetSize());
 
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    if(Data->DATA.IsLoaded())
+        writer.record_write_subrecord(REV32(DATA), &Data->DATA.value, Data->DATA.GetSize());
 
     return -1;
     }
 
 bool REFRRecord::operator ==(const REFRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            NAME == other.NAME &&
-            XTEL == other.XTEL &&
-            XLOC == other.XLOC &&
-            Ownership == other.Ownership &&
-            XESP == other.XESP &&
-            XTRG == other.XTRG &&
-            XSED == other.XSED &&
-            XLOD == other.XLOD &&
-            XCHG == other.XCHG &&
-            XHLT == other.XHLT &&
-            XPCI == other.XPCI &&
-            XLCM == other.XLCM &&
-            XRTM == other.XRTM &&
-            XACT == other.XACT &&
-            XCNT == other.XCNT &&
-            Marker == other.Marker &&
-            XSCL == other.XSCL &&
-            XSOL == other.XSOL &&
-            DATA == other.DATA);
+    return (Data == other.Data);
     }
 
 bool REFRRecord::operator !=(const REFRRecord &other) const

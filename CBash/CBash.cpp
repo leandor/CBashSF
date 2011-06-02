@@ -30,6 +30,7 @@ GPL License and Copyright Notice ============================================
 #include "CBash.h"
 #include <vector>
 #include <stdarg.h>
+#include <new.h>
 //#include "mmgr.h"
 
 static std::vector<Collection *> Collections;
@@ -180,9 +181,49 @@ void AllowRaising(void (*_RaiseCallback)())
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
+int handle_program_memory_depletion(size_t size)
+    {
+    static int retrying = 0;
+
+    if(retrying == 0)
+        {    
+        printer("Warning - Allocation of %u bytes failed. Attempting to free memory and continue.\n", size);
+        //try to free up some memory
+        if(UnloadAllCollections() == 0)
+            {
+            //see if enough memory was freed
+            //flag the function so that if the new fails, it doesn't infi-loop
+            retrying = 1;
+            char *test = new char[size];
+            //if the code gets this far, there's enough memory
+            //so free the test, and retry the initial allocation
+            delete []test;
+            retrying = 0;
+            return 1;
+            }
+        }
+
+    printer("Error - Unable to allocate %u bytes. CBash will terminate.\n", size);
+    DeleteAllCollections();
+    throw std::bad_alloc();
+    return 0;
+    }
+
 Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     {
     PROFILE_FUNC
+    try
+        {
+        _set_new_handler(handle_program_memory_depletion);
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
 
     try
         {
@@ -338,6 +379,30 @@ SINT32 UnloadCollection(Collection *CollectionID)
     return -1;
     }
 
+SINT32 UnloadAllCollections()
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        for(UINT32 p = 0; p < Collections.size(); ++p)
+            Collections[p]->Unload();
+        return 0;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
+    }
+
 SINT32 DeleteAllCollections()
     {
     PROFILE_FUNC
@@ -426,6 +491,7 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
         //ValidatePointer(ModID);
         RecordUnloader unloader;
         ModID->VisitAllRecords(unloader);
+        return 0;
         }
     catch(std::exception &ex)
         {
@@ -438,7 +504,7 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     printer("\n\n");
     if(RaiseCallback != NULL)
         RaiseCallback();
-    return 0;
+    return -1;
     }
 
 SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
@@ -781,7 +847,7 @@ SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
     printer("\n\n");
     if(RaiseCallback != NULL)
         RaiseCallback();
-    return -1;
+    return -2;
     }
 
 STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex)

@@ -58,6 +58,8 @@ if(exists(".\\CBash.dll")):
         _CLoadCollection.errcheck = NegativeIsErrorCheck
         _CUnloadCollection = CBash.UnloadCollection
         _CUnloadCollection.errcheck = NegativeIsErrorCheck
+        _CUnloadAllCollections = CBash.UnloadAllCollections
+        _CUnloadAllCollections.errcheck = NegativeIsErrorCheck
         _CDeleteAllCollections = CBash.DeleteAllCollections
         _CDeleteAllCollections.errcheck = NegativeIsErrorCheck
         _CAddMod = CBash.AddMod

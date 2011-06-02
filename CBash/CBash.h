@@ -43,6 +43,7 @@ EXPORT_FUNC Collection * CreateCollection(STRING const ModsPath, const UINT32 Co
 EXPORT_FUNC SINT32 DeleteCollection(Collection *CollectionID);
 EXPORT_FUNC SINT32 LoadCollection(Collection *CollectionID);
 EXPORT_FUNC SINT32 UnloadCollection(Collection *CollectionID);
+EXPORT_FUNC SINT32 UnloadAllCollections();
 EXPORT_FUNC SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

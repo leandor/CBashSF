@@ -10346,18 +10346,16 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-##phonenumber = raw_input(">")
-##Current = ObCollection()
-####Current.addMod("Oblivion.esm")
-####print "MinLoad"
-####Current.addMod("Oblivion.esm", MinLoad=False)
-####print "FullLoad"
-######Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
-######Current.fullLoad(LoadMasters=True)
-##Current.load()
-##phonenumber = raw_input(">")
-##del Current
-##phonenumber = raw_input("!")
+phonenumber = raw_input(">")
+Current = ObCollection()
+##Current.addMod("Oblivion.esm")
+##print "MinLoad"
+Current.addMod("Oblivion.esm", MinLoad=False)
+print "FullLoad"
+Current.load()
+phonenumber = raw_input(">")
+del Current
+phonenumber = raw_input("!")
 
 ##regressionTests()
 

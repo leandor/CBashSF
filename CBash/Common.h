@@ -593,15 +593,15 @@ class StringRecord
         StringRecord();
         StringRecord(const StringRecord &p);
         StringRecord(const STRING p);
-        virtual ~StringRecord();
+        ~StringRecord();
 
-        virtual UINT32 GetSize() const;
+        UINT32 GetSize() const;
 
         bool IsLoaded() const;
         void Load();
         void Unload();
 
-        virtual bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+        bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
@@ -613,16 +613,31 @@ class StringRecord
         StringRecord& operator = (const StringRecord &rhs);
     };
 
-class NonNullStringRecord : public StringRecord
+class NonNullStringRecord
     {
     public:
+        STRING value;
+
         NonNullStringRecord();
         NonNullStringRecord(const NonNullStringRecord &p);
         ~NonNullStringRecord();
 
         UINT32 GetSize() const;
 
+        bool IsLoaded() const;
+        void Load();
+        void Unload();
+
         bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+        void Write(UINT32 _Type, FileWriter &writer);
+        void ReqWrite(UINT32 _Type, FileWriter &writer);
+
+        void Copy(const NonNullStringRecord &FieldValue);
+        void Copy(STRING FieldValue);
+
+        bool equals(const NonNullStringRecord &other) const;
+        bool equalsi(const NonNullStringRecord &other) const;
+        NonNullStringRecord& operator = (const NonNullStringRecord &rhs);
     };
 
 struct UnorderedPackedStrings

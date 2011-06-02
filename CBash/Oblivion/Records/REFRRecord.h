@@ -69,9 +69,9 @@ class REFRRecord : public Record
 
         struct REFRMAPMARKER
             {
-            ReqSimpleSubRecord<UINT8> FNAM;
             StringRecord FULL;
             ReqSubRecord<GENTNAM> TNAM;
+            ReqSimpleSubRecord<UINT8> FNAM;
 
             bool operator ==(const REFRMAPMARKER &other) const;
             bool operator !=(const REFRMAPMARKER &other) const;
@@ -128,29 +128,36 @@ class REFRRecord : public Record
             eGrand   = 5
             };
 
-    public:
-        StringRecord EDID;
-        ReqSimpleSubRecord<FORMID> NAME;
-        OptSubRecord<REFRXTEL> XTEL;
-        SemiOptSubRecord<REFRXLOC> XLOC;
-        OptSubRecord<GENXOWN> Ownership;
-        OptSubRecord<GENXESP> XESP;
-        OptSimpleSubRecord<FORMID> XTRG;
-        SemiOptSubRecord<REFRXSED> XSED;
-        OptSubRecord<GENXLOD> XLOD;
-        OptSimpleFloatSubRecord<flt_0> XCHG;
-        OptSimpleSubRecord<SINT32> XHLT;
-        OptSubRecord<GENXPCI> XPCI;
-        OptSimpleSubRecord<SINT32> XLCM;
-        OptSimpleSubRecord<FORMID> XRTM;
-        OptSimpleSubRecord<UINT32> XACT;
-        OptSimpleSubRecord<SINT32> XCNT;
-        OptSubRecord<REFRMAPMARKER> Marker;
-        //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-        OptSimpleFloatSubRecord<flt_1> XSCL; // scale
-        OptSimpleSubRecord<UINT8> XSOL;
-        ReqSubRecord<GENPOSDATA> DATA;
+        struct REFRData
+            {
+            StringRecord EDID;
+            ReqSimpleSubRecord<FORMID> NAME;
+            OptSubRecord<REFRXTEL> XTEL;
+            SemiOptSubRecord<REFRXLOC> XLOC;
+            OptSubRecord<GENXOWN> Ownership;
+            OptSubRecord<GENXESP> XESP;
+            OptSimpleSubRecord<FORMID> XTRG;
+            SemiOptSubRecord<REFRXSED> XSED;
+            OptSubRecord<GENXLOD> XLOD;
+            OptSimpleFloatSubRecord<flt_0> XCHG;
+            OptSimpleSubRecord<SINT32> XHLT;
+            OptSubRecord<GENXPCI> XPCI;
+            OptSimpleSubRecord<SINT32> XLCM;
+            OptSimpleSubRecord<FORMID> XRTM;
+            OptSimpleSubRecord<UINT32> XACT;
+            OptSimpleSubRecord<SINT32> XCNT;
+            OptSubRecord<REFRMAPMARKER> Marker;
+            //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
+            OptSimpleFloatSubRecord<flt_1> XSCL; // scale
+            OptSimpleSubRecord<UINT8> XSOL;
+            ReqSubRecord<GENPOSDATA> DATA;
 
+            bool operator ==(const REFRData &other) const;
+            bool operator !=(const REFRData &other) const;
+            };
+    public:
+        SemiOptSubRecord<REFRData> Data;
+       
         REFRRecord(unsigned char *_recData=NULL);
         REFRRecord(REFRRecord *srcRecord);
         ~REFRRecord();

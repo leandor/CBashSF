@@ -807,7 +807,8 @@ UINT32 ModFlags::GetFlags()
     return flags;
     }
 
-StringRecord::StringRecord():value(NULL)
+StringRecord::StringRecord():
+    value(NULL)
     {
     //
     }
@@ -834,7 +835,7 @@ StringRecord::StringRecord(const STRING p):
 
 StringRecord::~StringRecord()
     {
-    Unload();
+    delete []value;
     }
 
 UINT32 StringRecord::GetSize() const
@@ -887,6 +888,7 @@ void StringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
         writer.record_write_subrecord(_Type, &null, 1);
         }
     }
+
 void StringRecord::Copy(const StringRecord &FieldValue)
     {
     Copy(FieldValue.value);
@@ -921,25 +923,41 @@ StringRecord& StringRecord::operator = (const StringRecord &rhs)
     }
 
 NonNullStringRecord::NonNullStringRecord():
-    StringRecord()
+    value(NULL)
     {
     //
     }
 
 NonNullStringRecord::NonNullStringRecord(const NonNullStringRecord &p):
-    StringRecord()
+    value(NULL)
     {
     Copy(p.value);
     }
 
 NonNullStringRecord::~NonNullStringRecord()
     {
-    //
+    delete []value;
     }
 
 UINT32 NonNullStringRecord::GetSize() const
     {
     return (UINT32)strlen(value);
+    }
+
+bool NonNullStringRecord::IsLoaded() const
+    {
+    return value != NULL;
+    }
+
+void NonNullStringRecord::Load()
+    {
+    //
+    }
+
+void NonNullStringRecord::Unload()
+    {
+    delete []value;
+    value = NULL;
     }
 
 bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
@@ -954,6 +972,56 @@ bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UIN
     memcpy(value, buffer + curPos, subSize);
     curPos += subSize;
     return true;
+    }
+
+void NonNullStringRecord::Write(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value));
+    }
+
+void NonNullStringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
+    {
+    if(value != NULL)
+        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value));
+    else
+        {
+        char null = 0x00;
+        writer.record_write_subrecord(_Type, &null, 1);
+        }
+    }
+
+void NonNullStringRecord::Copy(const NonNullStringRecord &FieldValue)
+    {
+    Copy(FieldValue.value);
+    }
+
+void NonNullStringRecord::Copy(STRING FieldValue)
+    {
+    Unload();
+    if(FieldValue != NULL)
+        {
+        UINT32 size = (UINT32)strlen(FieldValue) + 1;
+        value = new char[size];
+        strcpy_s(value, size, FieldValue);
+        }
+    }
+
+bool NonNullStringRecord::equals(const NonNullStringRecord &other) const
+    {
+    return cmps(value, other.value) == 0;
+    }
+
+bool NonNullStringRecord::equalsi(const NonNullStringRecord &other) const
+    {
+    return icmps(value, other.value) == 0;
+    }
+
+NonNullStringRecord& NonNullStringRecord::operator = (const NonNullStringRecord &rhs)
+    {
+    if(this != &rhs)
+        Copy(rhs);
+    return *this;
     }
 
 UnorderedPackedStrings::UnorderedPackedStrings()

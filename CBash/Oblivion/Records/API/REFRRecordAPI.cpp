@@ -60,7 +60,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return XLOC.IsLoaded() ? 3: 0;
+                    return Data.IsLoaded() && Data->XLOC.IsLoaded() ? 3: 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -73,7 +73,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return XLOC.IsLoaded() ? 4: 0;
+                    return Data.IsLoaded() && Data->XLOC.IsLoaded() ? 4: 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -86,7 +86,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return XLOC.IsLoaded() ? 3: 0;
+                    return Data.IsLoaded() && Data->XLOC.IsLoaded() ? 3: 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -107,7 +107,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return XESP.IsLoaded() ? 3: 0;
+                    return Data.IsLoaded() && Data->XESP.IsLoaded() ? 3: 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -120,8 +120,8 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_OR_UINT32_FIELD;
                 case 2: //WhichType
-                    if(XSED.IsLoaded())
-                        return XSED->isOffset ? UINT8_FIELD : UINT32_FIELD;
+                    if(Data.IsLoaded() && Data->XSED.IsLoaded())
+                        return Data->XSED->isOffset ? UINT8_FIELD : UINT32_FIELD;
                     return UINT32_FIELD;
                 default:
                     return UNKNOWN_FIELD;
@@ -161,7 +161,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT8_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return Marker.IsLoaded() ? 1: 0;
+                    return Data.IsLoaded() && Data->Marker.IsLoaded() ? 1: 0;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -198,109 +198,116 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &formID;
         case 3: //flags2
             return &flagsUnk;
+        default:
+            break;
+        }
+    if(!Data.IsLoaded())
+        return NULL;
+    switch(FieldID)
+        {
         case 4: //eid
-            return EDID.value;
+            return Data->EDID.value;
         case 5: //base
-            return &NAME.value;
+            return &Data->NAME.value;
         case 6: //destination
-            return XTEL.IsLoaded() ? &XTEL->destinationFid : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destinationFid : NULL;
         case 7: //destinationPosX
-            return XTEL.IsLoaded() ? &XTEL->destination.posX : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.posX : NULL;
         case 8: //destinationPosY
-            return XTEL.IsLoaded() ? &XTEL->destination.posY : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.posY : NULL;
         case 9: //destinationPosZ
-            return XTEL.IsLoaded() ? &XTEL->destination.posZ : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.posZ : NULL;
         case 10: //destinationRotX
-            return XTEL.IsLoaded() ? &XTEL->destination.rotX : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.rotX : NULL;
         case 11: //destinationRotY
-            return XTEL.IsLoaded() ? &XTEL->destination.rotY : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.rotY : NULL;
         case 12: //destinationRotZ
-            return XTEL.IsLoaded() ? &XTEL->destination.rotZ : NULL;
+            return Data->XTEL.IsLoaded() ? &Data->XTEL->destination.rotZ : NULL;
         case 13: //lockLevel
-            return XLOC.IsLoaded() ? &XLOC->level : NULL;
+            return Data->XLOC.IsLoaded() ? &Data->XLOC->level : NULL;
         case 14: //unused1
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->unused1[0] : NULL;
+            *FieldValues = Data->XLOC.IsLoaded() ? &Data->XLOC->unused1[0] : NULL;
             return NULL;
         case 15: //lockKey
-            return XLOC.IsLoaded() ? &XLOC->key : NULL;
+            return Data->XLOC.IsLoaded() ? &Data->XLOC->key : NULL;
         case 16: //unused2
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->unused2[0] : NULL;
+            *FieldValues = Data->XLOC.IsLoaded() ? &Data->XLOC->unused2[0] : NULL;
             return NULL;
         case 17: //lockFlags
-            return XLOC.IsLoaded() ? &XLOC->flags : NULL;
+            return Data->XLOC.IsLoaded() ? &Data->XLOC->flags : NULL;
         case 18: //unused3
-            *FieldValues = XLOC.IsLoaded() ? &XLOC->unused3[0] : NULL;
+            *FieldValues = Data->XLOC.IsLoaded() ? &Data->XLOC->unused3[0] : NULL;
             return NULL;
         case 19: //owner
-            return Ownership.IsLoaded() ? &Ownership->XOWN.value : NULL;
+            return Data->Ownership.IsLoaded() ? &Data->Ownership->XOWN.value : NULL;
         case 20: //rank
-            return Ownership.IsLoaded() ? Ownership->XRNK.value : NULL;
+            return Data->Ownership.IsLoaded() ? Data->Ownership->XRNK.value : NULL;
         case 21: //globalVariable
-            return (Ownership.IsLoaded() && Ownership->XGLB.IsLoaded()) ? &Ownership->XGLB.value : NULL;
+            return (Data->Ownership.IsLoaded() && Data->Ownership->XGLB.IsLoaded()) ? &Data->Ownership->XGLB.value : NULL;
         case 22: //parent
-            return XESP.IsLoaded() ? &XESP->parent : NULL;
+            return Data->XESP.IsLoaded() ? &Data->XESP->parent : NULL;
         case 23: //parentFlags
-            return XESP.IsLoaded() ? &XESP->flags : NULL;
+            return Data->XESP.IsLoaded() ? &Data->XESP->flags : NULL;
         case 24: //unused4
-            *FieldValues = XESP.IsLoaded() ? &XESP->unused1[0] : NULL;
+            *FieldValues = Data->XESP.IsLoaded() ? &Data->XESP->unused1[0] : NULL;
             return NULL;
         case 25: //target
-            return XTRG.IsLoaded() ? &XTRG.value : NULL;
+            return Data->XTRG.IsLoaded() ? &Data->XTRG.value : NULL;
         case 26: //seed
-            if(XSED.IsLoaded())
+            if(Data->XSED.IsLoaded())
                 {
-                if(XSED->offset)
-                    return &XSED->offset;
-                return &XSED->seed;
+                if(Data->XSED->isOffset)
+                    return &Data->XSED->offset;
+                return &Data->XSED->seed;
                 }
             return NULL;
         case 27: //lod1
-            return XLOD.IsLoaded() ? &XLOD->lod1 : NULL;
+            return Data->XLOD.IsLoaded() ? &Data->XLOD->lod1 : NULL;
         case 28: //lod2
-            return XLOD.IsLoaded() ? &XLOD->lod2 : NULL;
+            return Data->XLOD.IsLoaded() ? &Data->XLOD->lod2 : NULL;
         case 29: //lod3
-            return XLOD.IsLoaded() ? &XLOD->lod3 : NULL;
+            return Data->XLOD.IsLoaded() ? &Data->XLOD->lod3 : NULL;
         case 30: //charge
-            return XCHG.IsLoaded() ? &XCHG.value : NULL;
+            return Data->XCHG.IsLoaded() ? &Data->XCHG.value : NULL;
         case 31: //health
-            return XHLT.IsLoaded() ? &XHLT.value : NULL;
+            return Data->XHLT.IsLoaded() ? &Data->XHLT.value : NULL;
         case 32: //unknownXPCIFormID
-            return (XPCI.IsLoaded() && XPCI->XPCI.IsLoaded()) ? &XPCI->XPCI.value : NULL;
+            return (Data->XPCI.IsLoaded() && Data->XPCI->XPCI.IsLoaded()) ? &Data->XPCI->XPCI.value : NULL;
         case 33: //unknownXPCIString
-            return XPCI.IsLoaded() ? XPCI->FULL.value : NULL;
+            return Data->XPCI.IsLoaded() ? Data->XPCI->FULL.value : NULL;
         case 34: //levelMod
-            return XLCM.IsLoaded() ? &XLCM.value : NULL;
+            return Data->XLCM.IsLoaded() ? &Data->XLCM.value : NULL;
         case 35: //unknownXRTMFormID
-            return XRTM.IsLoaded() ? &XRTM.value : NULL;
+            return Data->XRTM.IsLoaded() ? &Data->XRTM.value : NULL;
         case 36: //actionFlags
-            return XACT.IsLoaded() ? &XACT.value : NULL;
+            return Data->XACT.IsLoaded() ? &Data->XACT.value : NULL;
         case 37: //count
-            return XCNT.IsLoaded() ? &XCNT.value : NULL;
+            return Data->XCNT.IsLoaded() ? &Data->XCNT.value : NULL;
         case 38: //markerFlags
-            return Marker.IsLoaded() ? &Marker->FNAM.value : NULL;
+            return Data->Marker.IsLoaded() ? &Data->Marker->FNAM.value : NULL;
         case 39: //markerName
-            return Marker.IsLoaded() ? Marker->FULL.value : NULL;
+            return Data->Marker.IsLoaded() ? Data->Marker->FULL.value : NULL;
         case 40: //markerType
-            return Marker.IsLoaded() ? &Marker->TNAM.value.markerType : NULL;
+            return Data->Marker.IsLoaded() ? &Data->Marker->TNAM.value.markerType : NULL;
         case 41: //markerUnused
-            *FieldValues = Marker.IsLoaded() ? &Marker->TNAM.value.unused1 : NULL;
+            *FieldValues = Data->Marker.IsLoaded() ? &Data->Marker->TNAM.value.unused1 : NULL;
             return NULL;
         case 42: //scale
-            return XSCL.IsLoaded() ? &XSCL.value : NULL;
+            return Data->XSCL.IsLoaded() ? &Data->XSCL.value : NULL;
         case 43: //soulType
-            return XSOL.IsLoaded() ? &XSOL.value : NULL;
+            return Data->XSOL.IsLoaded() ? &Data->XSOL.value : NULL;
         case 44: //posX
-            return &DATA.value.posX;
+            return &Data->DATA.value.posX;
         case 45: //posY
-            return &DATA.value.posY;
+            return &Data->DATA.value.posY;
         case 46: //posZ
-            return &DATA.value.posZ;
+            return &Data->DATA.value.posZ;
         case 47: //rotX
-            return &DATA.value.rotX;
+            return &Data->DATA.value.rotX;
         case 48: //rotY
-            return &DATA.value.rotY;
+            return &Data->DATA.value.rotY;
         case 49: //rotZ
-            return &DATA.value.rotZ;
+            return &Data->DATA.value.rotZ;
         default:
             return NULL;
         }
@@ -309,6 +316,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
 
 bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
     {
+    Data.Load();
     switch(FieldID)
         {
         case 1: //flags1
@@ -318,63 +326,63 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetHeaderUnknownFlagMask(*(UINT32 *)FieldValue);
             break;
         case 4: //eid
-            EDID.Copy((STRING)FieldValue);
+            Data->EDID.Copy((STRING)FieldValue);
             break;
         case 5: //base
-            NAME.value = *(FORMID *)FieldValue;
+            Data->NAME.value = *(FORMID *)FieldValue;
             return true;
         case 6: //destination
-            XTEL.Load();
-            XTEL->destinationFid = *(FORMID *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destinationFid = *(FORMID *)FieldValue;
             return true;
         case 7: //destinationPosX
-            XTEL.Load();
-            XTEL->destination.posX = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.posX = *(FLOAT32 *)FieldValue;
             break;
         case 8: //destinationPosY
-            XTEL.Load();
-            XTEL->destination.posY = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.posY = *(FLOAT32 *)FieldValue;
             break;
         case 9: //destinationPosZ
-            XTEL.Load();
-            XTEL->destination.posZ = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.posZ = *(FLOAT32 *)FieldValue;
             break;
         case 10: //destinationRotX
-            XTEL.Load();
-            XTEL->destination.rotX = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.rotX = *(FLOAT32 *)FieldValue;
             break;
         case 11: //destinationRotY
-            XTEL.Load();
-            XTEL->destination.rotY = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.rotY = *(FLOAT32 *)FieldValue;
             break;
         case 12: //destinationRotZ
-            XTEL.Load();
-            XTEL->destination.rotZ = *(FLOAT32 *)FieldValue;
+            Data->XTEL.Load();
+            Data->XTEL->destination.rotZ = *(FLOAT32 *)FieldValue;
             break;
         case 13: //lockLevel
-            XLOC.Load();
-            XLOC->level = *(UINT8 *)FieldValue;
+            Data->XLOC.Load();
+            Data->XLOC->level = *(UINT8 *)FieldValue;
             break;
         case 14: //unused1
             if(ArraySize != 3)
                 break;
-            XLOC.Load();
-            XLOC->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            Data->XLOC.Load();
+            Data->XLOC->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Data->XLOC->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            Data->XLOC->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 15: //lockKey
-            XLOC.Load();
-            XLOC->key = *(FORMID *)FieldValue;
+            Data->XLOC.Load();
+            Data->XLOC->key = *(FORMID *)FieldValue;
             return true;
         case 16: //unused2
             if(ArraySize != 4)
                 break;
-            XLOC.Load();
-            XLOC->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->unused2[2] = ((UINT8ARRAY)FieldValue)[2];
-            XLOC->unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+            Data->XLOC.Load();
+            Data->XLOC->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+            Data->XLOC->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+            Data->XLOC->unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+            Data->XLOC->unused2[3] = ((UINT8ARRAY)FieldValue)[3];
             break;
         case 17: //lockFlags
             SetLockFlagMask(*(UINT8 *)FieldValue);
@@ -382,27 +390,27 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 18: //unused3
             if(ArraySize != 3)
                 break;
-            XLOC.Load();
-            XLOC->unused3[0] = ((UINT8ARRAY)FieldValue)[0];
-            XLOC->unused3[1] = ((UINT8ARRAY)FieldValue)[1];
-            XLOC->unused3[2] = ((UINT8ARRAY)FieldValue)[2];
+            Data->XLOC.Load();
+            Data->XLOC->unused3[0] = ((UINT8ARRAY)FieldValue)[0];
+            Data->XLOC->unused3[1] = ((UINT8ARRAY)FieldValue)[1];
+            Data->XLOC->unused3[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 19: //owner
-            Ownership.Load();
-            Ownership->XOWN.value = *(FORMID *)FieldValue;
+            Data->Ownership.Load();
+            Data->Ownership->XOWN.value = *(FORMID *)FieldValue;
             return true;
         case 20: //rank
-            Ownership.Load();
-            Ownership->XRNK.Load();
-            *Ownership->XRNK.value = *(SINT32 *)FieldValue;
+            Data->Ownership.Load();
+            Data->Ownership->XRNK.Load();
+            *Data->Ownership->XRNK.value = *(SINT32 *)FieldValue;
             break;
         case 21: //globalVariable
-            Ownership.Load();
-            Ownership->XGLB.value = *(FORMID *)FieldValue;
+            Data->Ownership.Load();
+            Data->Ownership->XGLB.value = *(FORMID *)FieldValue;
             return true;
         case 22: //parent
-            XESP.Load();
-            XESP->parent = *(FORMID *)FieldValue;
+            Data->XESP.Load();
+            Data->XESP->parent = *(FORMID *)FieldValue;
             return true;
         case 23: //parentFlags
             SetParentFlagMask(*(UINT8 *)FieldValue);
@@ -410,72 +418,72 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 24: //unused4
             if(ArraySize != 3)
                 break;
-            XESP.Load();
-            XESP->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-            XESP->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-            XESP->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+            Data->XESP.Load();
+            Data->XESP->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+            Data->XESP->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+            Data->XESP->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
             break;
         case 25: //target
-            XTRG.value = *(FORMID *)FieldValue;
+            Data->XTRG.value = *(FORMID *)FieldValue;
             return true;
         case 26: //seed
-            XSED.Load();
+            Data->XSED.Load();
             //Borrowing ArraySize to flag if the new value is an offset
             if(ArraySize)
                 {
-                XSED->isOffset = true;
-                XSED->offset = *(UINT8 *)FieldValue;
+                Data->XSED->isOffset = true;
+                Data->XSED->offset = *(UINT8 *)FieldValue;
                 }
             else
                 {
-                XSED->isOffset = false;
-                XSED->seed = *(UINT32 *)FieldValue;
+                Data->XSED->isOffset = false;
+                Data->XSED->seed = *(UINT32 *)FieldValue;
                 }
             break;
         case 27: //lod1
-            XLOD.Load();
-            XLOD->lod1 = *(FLOAT32 *)FieldValue;
+            Data->XLOD.Load();
+            Data->XLOD->lod1 = *(FLOAT32 *)FieldValue;
             break;
         case 28: //lod2
-            XLOD.Load();
-            XLOD->lod2 = *(FLOAT32 *)FieldValue;
+            Data->XLOD.Load();
+            Data->XLOD->lod2 = *(FLOAT32 *)FieldValue;
             break;
         case 29: //lod3
-            XLOD.Load();
-            XLOD->lod3 = *(FLOAT32 *)FieldValue;
+            Data->XLOD.Load();
+            Data->XLOD->lod3 = *(FLOAT32 *)FieldValue;
             break;
         case 30: //charge
-            XCHG.value = *(FLOAT32 *)FieldValue;
+            Data->XCHG.value = *(FLOAT32 *)FieldValue;
             break;
         case 31: //health
-            XHLT.value = *(SINT32 *)FieldValue;
+            Data->XHLT.value = *(SINT32 *)FieldValue;
             break;
         case 32: //unknownXPCIFormID
-            XPCI.Load();
-            XPCI->XPCI.value = *(FORMID *)FieldValue;
+            Data->XPCI.Load();
+            Data->XPCI->XPCI.value = *(FORMID *)FieldValue;
             return true;
         case 33: //unknownXPCIString
-            XPCI.Load();
-            XPCI->FULL.Copy((STRING)FieldValue);
+            Data->XPCI.Load();
+            Data->XPCI->FULL.Copy((STRING)FieldValue);
             break;
         case 34: //levelMod
-            XLCM.value = *(SINT32 *)FieldValue;
+            Data->XLCM.value = *(SINT32 *)FieldValue;
             break;
         case 35: //unknownXRTMFormID
-            XRTM.value = *(FORMID *)FieldValue;
+            Data->XRTM.value = *(FORMID *)FieldValue;
             return true;
         case 36: //actionFlags
             SetActionFlagMask(*(UINT32 *)FieldValue);
             break;
         case 37: //count
-            XCNT.value = *(SINT32 *)FieldValue;
+            Data->XCNT.value = *(SINT32 *)FieldValue;
             break;
         case 38: //markerFlags
             SetMapFlagMask(*(UINT8 *)FieldValue);
             break;
         case 39: //markerName
-            Marker.Load();
-            Marker->FULL.Copy((STRING)FieldValue);
+            Data->Marker.Load();
+            Data->Marker->FULL.Copy((STRING)FieldValue);
             break;
         case 40: //markerType
             SetMarkerType(*(UINT8 *)FieldValue);
@@ -483,33 +491,33 @@ bool REFRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 41: //markerUnused
             if(ArraySize != 1)
                 break;
-            Marker.Load();
-            Marker->TNAM.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
+            Data->Marker.Load();
+            Data->Marker->TNAM.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
             break;
         case 42: //scale
-            XSCL.Load();
-            XSCL.value = *(FLOAT32 *)FieldValue;
+            Data->XSCL.Load();
+            Data->XSCL.value = *(FLOAT32 *)FieldValue;
             break;
         case 43: //soulType
             SetSoul(*(UINT8 *)FieldValue);
             break;
         case 44: //posX
-            DATA.value.posX = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.posX = *(FLOAT32 *)FieldValue;
             break;
         case 45: //posY
-            DATA.value.posY = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.posY = *(FLOAT32 *)FieldValue;
             break;
         case 46: //posZ
-            DATA.value.posZ = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.posZ = *(FLOAT32 *)FieldValue;
             break;
         case 47: //rotX
-            DATA.value.rotX = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.rotX = *(FLOAT32 *)FieldValue;
             break;
         case 48: //rotY
-            DATA.value.rotY = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.rotY = *(FLOAT32 *)FieldValue;
             break;
         case 49: //rotZ
-            DATA.value.rotZ = *(FLOAT32 *)FieldValue;
+            Data->DATA.value.rotZ = *(FLOAT32 *)FieldValue;
             break;
         default:
             break;
@@ -525,7 +533,7 @@ void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
     GENXLOD defaultXLOD;
     GENTNAM defaultTNAM;
     GENPOSDATA defaultDATA;
-
+    Data.Load();
     switch(FieldID)
         {
         case 1: //flags1
@@ -535,187 +543,187 @@ void REFRRecord::DeleteField(FIELD_IDENTIFIERS)
             flagsUnk = 0;
             return;
         case 4: //eid
-            EDID.Unload();
+            Data->EDID.Unload();
             return;
         case 5: //base
-            NAME.Unload();
+            Data->NAME.Unload();
             return;
         case 6: //destination
-            if(XTEL.IsLoaded())
-                XTEL->destinationFid = defaultXTEL.destinationFid;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destinationFid = defaultXTEL.destinationFid;
             return;
         case 7: //destinationPosX
-            if(XTEL.IsLoaded())
-                XTEL->destination.posX = defaultXTEL.destination.posX;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.posX = defaultXTEL.destination.posX;
             return;
         case 8: //destinationPosY
-            if(XTEL.IsLoaded())
-                XTEL->destination.posY = defaultXTEL.destination.posY;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.posY = defaultXTEL.destination.posY;
             return;
         case 9: //destinationPosZ
-            if(XTEL.IsLoaded())
-                XTEL->destination.posZ = defaultXTEL.destination.posZ;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.posZ = defaultXTEL.destination.posZ;
             return;
         case 10: //destinationRotX
-            if(XTEL.IsLoaded())
-                XTEL->destination.rotX = defaultXTEL.destination.rotX;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.rotX = defaultXTEL.destination.rotX;
             return;
         case 11: //destinationRotY
-            if(XTEL.IsLoaded())
-                XTEL->destination.rotY = defaultXTEL.destination.rotY;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.rotY = defaultXTEL.destination.rotY;
             return;
         case 12: //destinationRotZ
-            if(XTEL.IsLoaded())
-                XTEL->destination.rotZ = defaultXTEL.destination.rotZ;
+            if(Data->XTEL.IsLoaded())
+                Data->XTEL->destination.rotZ = defaultXTEL.destination.rotZ;
             return;
         case 13: //lockLevel
-            if(XLOC.IsLoaded())
-                XLOC->level = defaultXLOC.level;
+            if(Data->XLOC.IsLoaded())
+                Data->XLOC->level = defaultXLOC.level;
             return;
         case 14: //unused1
-            if(XLOC.IsLoaded())
+            if(Data->XLOC.IsLoaded())
                 {
-                XLOC->unused1[0] = defaultXLOC.unused1[0];
-                XLOC->unused1[1] = defaultXLOC.unused1[1];
-                XLOC->unused1[2] = defaultXLOC.unused1[2];
+                Data->XLOC->unused1[0] = defaultXLOC.unused1[0];
+                Data->XLOC->unused1[1] = defaultXLOC.unused1[1];
+                Data->XLOC->unused1[2] = defaultXLOC.unused1[2];
                 }
             return;
         case 15: //lockKey
-            if(XLOC.IsLoaded())
-                XLOC->key = defaultXLOC.key;
+            if(Data->XLOC.IsLoaded())
+                Data->XLOC->key = defaultXLOC.key;
             return;
         case 16: //unused2
-            if(XLOC.IsLoaded())
+            if(Data->XLOC.IsLoaded())
                 {
-                XLOC->unused2[0] = defaultXLOC.unused2[0];
-                XLOC->unused2[1] = defaultXLOC.unused2[1];
-                XLOC->unused2[2] = defaultXLOC.unused2[2];
-                XLOC->unused2[3] = defaultXLOC.unused2[3];
+                Data->XLOC->unused2[0] = defaultXLOC.unused2[0];
+                Data->XLOC->unused2[1] = defaultXLOC.unused2[1];
+                Data->XLOC->unused2[2] = defaultXLOC.unused2[2];
+                Data->XLOC->unused2[3] = defaultXLOC.unused2[3];
                 }
             return;
         case 17: //lockFlags
-            if(XLOC.IsLoaded())
-                XLOC->flags = defaultXLOC.flags;
+            if(Data->XLOC.IsLoaded())
+                Data->XLOC->flags = defaultXLOC.flags;
             return;
         case 18: //unused3
-            if(XLOC.IsLoaded())
+            if(Data->XLOC.IsLoaded())
                 {
-                XLOC->unused3[0] = defaultXLOC.unused3[0];
-                XLOC->unused3[1] = defaultXLOC.unused3[1];
-                XLOC->unused3[2] = defaultXLOC.unused3[2];
+                Data->XLOC->unused3[0] = defaultXLOC.unused3[0];
+                Data->XLOC->unused3[1] = defaultXLOC.unused3[1];
+                Data->XLOC->unused3[2] = defaultXLOC.unused3[2];
                 }
             return;
         case 19: //owner
-            if(Ownership.IsLoaded())
-                Ownership->XOWN.Unload();
+            if(Data->Ownership.IsLoaded())
+                Data->Ownership->XOWN.Unload();
             return;
         case 20: //rank
-            if(Ownership.IsLoaded())
-                Ownership->XRNK.Unload();
+            if(Data->Ownership.IsLoaded())
+                Data->Ownership->XRNK.Unload();
             return;
         case 21: //globalVariable
-            if(Ownership.IsLoaded())
-                Ownership->XGLB.Unload();
+            if(Data->Ownership.IsLoaded())
+                Data->Ownership->XGLB.Unload();
             return;
         case 22: //parent
-            if(XESP.IsLoaded())
-                XESP->parent = defaultXESP.parent;
+            if(Data->XESP.IsLoaded())
+                Data->XESP->parent = defaultXESP.parent;
             return;
         case 23: //parentFlags
-            if(XESP.IsLoaded())
-                XESP->flags = defaultXESP.flags;
+            if(Data->XESP.IsLoaded())
+                Data->XESP->flags = defaultXESP.flags;
             return;
         case 24: //unused4
-            if(XESP.IsLoaded())
+            if(Data->XESP.IsLoaded())
                 {
-                XESP->unused1[0] = defaultXESP.unused1[0];
-                XESP->unused1[1] = defaultXESP.unused1[1];
-                XESP->unused1[2] = defaultXESP.unused1[2];
+                Data->XESP->unused1[0] = defaultXESP.unused1[0];
+                Data->XESP->unused1[1] = defaultXESP.unused1[1];
+                Data->XESP->unused1[2] = defaultXESP.unused1[2];
                 }
             return;
         case 25: //target
-            XTRG.Unload();
+            Data->XTRG.Unload();
             return;
         case 26: //seed
-            XSED.Unload();
+            Data->XSED.Unload();
             return;
         case 27: //lod1
-            if(XLOD.IsLoaded())
-                XLOD->lod1 = defaultXLOD.lod1;
+            if(Data->XLOD.IsLoaded())
+                Data->XLOD->lod1 = defaultXLOD.lod1;
             return;
         case 28: //lod2
-            if(XLOD.IsLoaded())
-                XLOD->lod2 = defaultXLOD.lod2;
+            if(Data->XLOD.IsLoaded())
+                Data->XLOD->lod2 = defaultXLOD.lod2;
             return;
         case 29: //lod3
-            if(XLOD.IsLoaded())
-                XLOD->lod3 = defaultXLOD.lod3;
+            if(Data->XLOD.IsLoaded())
+                Data->XLOD->lod3 = defaultXLOD.lod3;
             return;
         case 30: //charge
-            XCHG.Unload();
+            Data->XCHG.Unload();
             return;
         case 31: //health
-            XHLT.Unload();
+            Data->XHLT.Unload();
             return;
         case 32: //unknownXPCIFormID
-            if(XPCI.IsLoaded())
-                XPCI->XPCI.Unload();
+            if(Data->XPCI.IsLoaded())
+                Data->XPCI->XPCI.Unload();
             return;
         case 33: //unknownXPCIString
-            if(XPCI.IsLoaded())
-                XPCI->FULL.Unload();
+            if(Data->XPCI.IsLoaded())
+                Data->XPCI->FULL.Unload();
             return;
         case 34: //levelMod
-            XLCM.Unload();
+            Data->XLCM.Unload();
             return;
         case 35: //unknownXRTMFormID
-            XRTM.Unload();
+            Data->XRTM.Unload();
             return;
         case 36: //actionFlags
-            XACT.Unload();
+            Data->XACT.Unload();
             return;
         case 37: //count
-            XCNT.Unload();
+            Data->XCNT.Unload();
             return;
         case 38: //markerFlags
-            if(Marker.IsLoaded())
-                Marker->FNAM.Unload();
+            if(Data->Marker.IsLoaded())
+                Data->Marker->FNAM.Unload();
             return;
         case 39: //markerName
-            if(Marker.IsLoaded())
-                Marker->FULL.Unload();
+            if(Data->Marker.IsLoaded())
+                Data->Marker->FULL.Unload();
             return;
         case 40: //markerType
-            if(Marker.IsLoaded())
-                Marker->TNAM.value.markerType = defaultTNAM.markerType;
+            if(Data->Marker.IsLoaded())
+                Data->Marker->TNAM.value.markerType = defaultTNAM.markerType;
             return;
         case 41: //markerUnused
-            if(Marker.IsLoaded())
-                Marker->TNAM.value.unused1 = defaultTNAM.unused1;
+            if(Data->Marker.IsLoaded())
+                Data->Marker->TNAM.value.unused1 = defaultTNAM.unused1;
             return;
         case 42: //scale
-            XSCL.Unload();
+            Data->XSCL.Unload();
             return;
         case 43: //soulType
-            XSOL.Unload();
+            Data->XSOL.Unload();
             return;
         case 44: //posX
-            DATA.value.posX = defaultDATA.posX;
+            Data->DATA.value.posX = defaultDATA.posX;
             return;
         case 45: //posY
-            DATA.value.posY = defaultDATA.posY;
+            Data->DATA.value.posY = defaultDATA.posY;
             return;
         case 46: //posZ
-            DATA.value.posZ = defaultDATA.posZ;
+            Data->DATA.value.posZ = defaultDATA.posZ;
             return;
         case 47: //rotX
-            DATA.value.rotX = defaultDATA.rotX;
+            Data->DATA.value.rotX = defaultDATA.rotX;
             return;
         case 48: //rotY
-            DATA.value.rotY = defaultDATA.rotY;
+            Data->DATA.value.rotY = defaultDATA.rotY;
             return;
         case 49: //rotZ
-            DATA.value.rotZ = defaultDATA.rotZ;
+            Data->DATA.value.rotZ = defaultDATA.rotZ;
             return;
         default:
             return;

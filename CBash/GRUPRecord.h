@@ -64,6 +64,9 @@ class GRUPRecords
         GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
+            //Record *rec = new T();
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(T), Records.size() * sizeof(T));
+            //delete rec;
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
@@ -176,6 +179,17 @@ class GRUPRecords<DIALRecord>
         GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
+            //Record *rec = new DIALRecord();
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(DIALRecord), Records.size() * sizeof(DIALRecord));
+            //delete rec;
+            //rec = new INFORecord();
+            //UINT32 count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((DIALRecord *)Records[p])->INFO.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(INFORecord), count * sizeof(INFORecord));
+            //delete rec;
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
@@ -354,6 +368,49 @@ class GRUPRecords<CELLRecord>
         GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
+            //Record *rec = new CELLRecord();
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(CELLRecord), Records.size() * sizeof(CELLRecord));
+            //delete rec;
+            //rec = new REFRRecord();
+            //UINT32 count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((CELLRecord *)Records[p])->REFR.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(REFRRecord), count * sizeof(REFRRecord));
+            //delete rec;
+            //rec = new ACRERecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((CELLRecord *)Records[p])->ACRE.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACRERecord), count * sizeof(ACRERecord));
+            //delete rec;
+            //rec = new ACHRRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((CELLRecord *)Records[p])->ACHR.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACHRRecord), count * sizeof(ACHRRecord));
+            //delete rec;
+            //rec = new LANDRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((CELLRecord *)Records[p])->LAND != 0 ? 1 : 0;
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(LANDRecord), count * sizeof(LANDRecord));
+            //delete rec;
+            //rec = new PGRDRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((CELLRecord *)Records[p])->PGRD != 0 ? 1 : 0;
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(PGRDRecord), count * sizeof(PGRDRecord));
+            //delete rec;
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
@@ -765,6 +822,78 @@ class GRUPRecords<WRLDRecord>
         GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
         ~GRUPRecords()
             {
+            //Record *rec = new WRLDRecord();
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(WRLDRecord), Records.size() * sizeof(WRLDRecord));
+            //delete rec;
+
+            //rec = new CELLRecord();
+            //UINT32 count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    count += ((WRLDRecord *)Records[p])->CELL != 0 ? 1 : 0;
+            //    count += ((WRLDRecord *)Records[p])->CELLS.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(CELLRecord), count * sizeof(CELLRecord));
+            //delete rec;
+
+            //rec = new REFRRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->REFR.size();
+            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->REFR.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(REFRRecord), count * sizeof(REFRRecord));
+            //delete rec;
+
+            //rec = new ACRERecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->ACRE.size();
+            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->ACRE.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACRERecord), count * sizeof(ACRERecord));
+            //delete rec;
+
+            //rec = new ACHRRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->ACHR.size();
+            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->ACHR.size();
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACHRRecord), count * sizeof(ACHRRecord));
+            //delete rec;
+
+            //rec = new LANDRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->LAND != 0 ? 1 : 0;
+            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->LAND != 0 ? 1 : 0;
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(LANDRecord), count * sizeof(LANDRecord));
+            //delete rec;
+            //rec = new PGRDRecord();
+            //count = 0;
+            //for(UINT32 p = 0; p < Records.size(); p++)
+            //    {
+            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->PGRD != 0 ? 1 : 0;
+            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
+            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->PGRD != 0 ? 1 : 0;
+            //    }
+            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(PGRDRecord), count * sizeof(PGRDRecord));
+            //delete rec;
             for(UINT32 p = 0;p < Records.size(); p++)
                 delete Records[p];
             }
@@ -1048,8 +1177,8 @@ class GRUPRecords<WRLDRecord>
                                 curRecord = curWRLDCELL->REFR[x];
                                 fullReader.Accept(curRecord);
 
-                                gridX = (SINT32)floor(((REFRRecord *)curRecord)->DATA.value.posX / 4096.0);
-                                gridY = (SINT32)floor(((REFRRecord *)curRecord)->DATA.value.posY / 4096.0);
+                                gridX = (SINT32)floor(((REFRRecord *)curRecord)->Data->DATA.value.posX / 4096.0);
+                                gridY = (SINT32)floor(((REFRRecord *)curRecord)->Data->DATA.value.posY / 4096.0);
 
                                 if(processor.Flags.IsMinLoad)
                                     curRecord->Unload();
