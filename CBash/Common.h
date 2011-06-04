@@ -443,14 +443,14 @@ class FormIDHandlerClass
         std::vector<STRING> LoadOrder255;       //The current load order of active mods
         boost::unordered_set<UINT32> NewTypes;  //Tracks the type of any new records for reporting
         UINT32 &nextObject;                     //The object counter for quickly providing new objectIDs
-        UINT8  ExpandedIndex;                   //The load order index
-        UINT8  CollapsedIndex;                  //The size of MAST
         UINT8  ExpandTable[256];                //Maps the on disk modIndex to the in memory modIndex
         UINT8  CollapseTable[256];              //Maps the in memory modIndex to the on disk modIndex (not always a direct inverse of ExpandTable)
-        bool   IsEmpty;
-        bool   bMastersChanged;
         unsigned char * FileStart;
         unsigned char * FileEnd;
+        UINT8  ExpandedIndex;                   //The load order index
+        UINT8  CollapsedIndex;                  //The size of MAST
+        bool   IsEmpty;
+        bool   bMastersChanged;
 
         FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();
@@ -2474,7 +2474,7 @@ struct OrderedSparseArray<T *, _Pr>
     void resize(UINT32 &newSize)
         {
         //Shrink
-        UINT32 size = value.size();
+        UINT32 size = (UINT32)value.size();
         for(; size > newSize;)
             delete value[--size];
         value.resize(newSize);
@@ -2720,7 +2720,7 @@ struct UnorderedSparseArray<T *>
     void resize(UINT32 &newSize)
         {
         //Shrink
-        UINT32 size = value.size();
+        UINT32 size = (UINT32)value.size();
         for(; size > newSize;)
             delete value[--size];
         value.resize(newSize);

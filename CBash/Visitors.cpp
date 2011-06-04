@@ -302,62 +302,6 @@ bool RecordFormIDSwapper::Accept(Record *&curRecord)
     return stop;
     }
 
-RecordDeleter::RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record):
-    RecordOp(),
-    EditorID_ModFile_Record(_EditorID_ModFile_Record),
-    FormID_ModFile_Record(_FormID_ModFile_Record),
-    RecordToDelete(_RecordToDelete)
-    {
-    //
-    }
-
-RecordDeleter::~RecordDeleter()
-    {
-    //
-    }
-
-bool RecordDeleter::Accept(Record *&curRecord)
-    {
-    if(curRecord == NULL || curRecord == NULL)
-        return false;
-
-    if(RecordToDelete == NULL || curRecord == RecordToDelete)
-        {
-        //De-Index the record
-        if(curRecord->IsKeyedByEditorID())
-            {
-            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
-                if(range.first->second.second == curRecord)
-                    {
-                    EditorID_ModFile_Record.erase(range.first);
-                    break;
-                    }
-            }
-        else
-            {
-            for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
-                if(range.first->second.second == curRecord)
-                    {
-                    FormID_ModFile_Record.erase(range.first);
-                    break;
-                    }
-            }
-        if(curRecord->HasSubRecords())
-            {
-            RecordDeleter SubRecordDeleter(NULL, EditorID_ModFile_Record, FormID_ModFile_Record);
-            curRecord->VisitSubRecords(NULL, SubRecordDeleter);
-            }
-        //Delete the record
-        delete curRecord;
-        curRecord = NULL;
-        ++count;
-        result = true;
-        stop = RecordToDelete != NULL;
-        return stop;
-        }
-    return false;
-    }
-
 RecordIndexer::RecordIndexer(ModFile *_curModFile, EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
     RecordOp(),
     curModFile(_curModFile),
@@ -392,6 +336,81 @@ bool RecordIndexer::Accept(Record *&curRecord)
 void RecordIndexer::SetModFile(ModFile *_curModFile)
     {
     curModFile = _curModFile;
+    }
+
+RecordDeindexer::RecordDeindexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
+    RecordOp(),
+    EditorID_ModFile_Record(_EditorID_Map),
+    FormID_ModFile_Record(_FormID_Map)
+    {
+    //
+    }
+
+RecordDeindexer::~RecordDeindexer()
+    {
+    //
+    }
+
+bool RecordDeindexer::Accept(Record *&curRecord)
+    {
+    //De-Index the record
+    if(curRecord->IsKeyedByEditorID())
+        {
+        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
+            if(range.first->second.second == curRecord)
+                {
+                EditorID_ModFile_Record.erase(range.first);
+                ++count;
+                result = true;
+                return false;
+                }
+        }
+    else
+        {
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
+            if(range.first->second.second == curRecord)
+                {
+                FormID_ModFile_Record.erase(range.first);
+                ++count;
+                result = true;
+                return false;
+                }
+        }
+    return false;
+    }
+
+RecordDeleter::RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record):
+    RecordOp(),
+    deindexer(_EditorID_ModFile_Record, _FormID_ModFile_Record),
+    RecordToDelete(_RecordToDelete)
+    {
+    //
+    }
+
+RecordDeleter::~RecordDeleter()
+    {
+    //
+    }
+
+bool RecordDeleter::Accept(Record *&curRecord)
+    {
+    if(curRecord == NULL || curRecord == NULL)
+        return false;
+
+    if(RecordToDelete == NULL || curRecord == RecordToDelete)
+        {
+        //De-Index the record
+        deindexer.Accept(curRecord);
+        //De-index any subrecords
+        curRecord->VisitSubRecords(NULL, deindexer);
+        //Mark the record for deletion
+        curRecord = NULL;
+        ++count;
+        result = true;
+        stop = RecordToDelete != NULL;
+        return stop;
+        }
+    return false;
     }
 
 RecordChanger::RecordChanger(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):

@@ -143,7 +143,6 @@ bool RecordProcessor::operator()(Record *&curRecord)
 
     if(IsSkipNewRecords && FormIDHandler.IsNewRecord(curRecord->formID))
         {
-        delete curRecord;
         return false;
         }
 
@@ -162,7 +161,6 @@ bool RecordProcessor::operator()(Record *&curRecord)
         {
         if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
             printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", curRecord->formID);
-        delete curRecord;
         return false;
         }
     return true;
@@ -298,11 +296,6 @@ STRING Record::GetEditorIDKey()
 bool Record::SetEditorIDKey(STRING EditorID)
     {
     SetField(4, 0, 0, 0, 0, 0, 0, (void *)EditorID, 0);
-    return false;
-    }
-
-bool Record::HasSubRecords()
-    {
     return false;
     }
 

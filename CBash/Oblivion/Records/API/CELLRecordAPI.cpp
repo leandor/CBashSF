@@ -160,7 +160,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)ACHR.size();
+                    return (UINT32)achr_pool.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -171,7 +171,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)ACRE.size();
+                    return (UINT32)acre_pool.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -182,7 +182,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)REFR.size();
+                    return (UINT32)refr_pool.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -276,16 +276,13 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 34: //water
             return XCWT.IsLoaded() ? &XCWT.value : NULL;
         case 35: //ACHR
-            for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
-                ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
+            achr_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
             return NULL;
         case 36: //ACRE
-            for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
-                ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
+            acre_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
             return NULL;
         case 37: //REFR
-            for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
-                ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
+            refr_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
             return NULL;
         case 38: //PGRD
             return PGRD;

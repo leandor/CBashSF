@@ -1675,6 +1675,12 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
     return newRecord;
     }
 
+SINT32 FNVFile::DeleteRecord(Record *&curRecord, Record *&ParentRecord)
+    {
+    //Unimplemented
+    return 0;
+    }
+
 SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     PROFILE_FUNC

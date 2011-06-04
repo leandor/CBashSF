@@ -140,11 +140,6 @@ DIALRecord::~DIALRecord()
         delete INFO[x];
     }
 
-bool DIALRecord::HasSubRecords()
-    {
-    return true;
-    }
-
 bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;

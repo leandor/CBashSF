@@ -105,7 +105,7 @@ UINT32 TES4Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)ONAM.size();
+                    return (UINT32)ONAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -167,7 +167,7 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &versionControl2[0];
             return NULL;
         case 16: //overrides
-            *FieldValues = ONAM.size() ? &ONAM[0] : NULL;
+            *FieldValues = ONAM.value.size() ? &ONAM.value[0] : NULL;
             return NULL;
         case 17: //screenshot_p
             *FieldValues = SCRN.value;
@@ -226,7 +226,7 @@ bool TES4Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 16: //overrides
             ONAM.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                ONAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                ONAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 17: //screenshot_p
             SCRN.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -284,7 +284,7 @@ void TES4Record::DeleteField(FIELD_IDENTIFIERS)
             versionControl2[1] = 0;
             return;
         case 16: //overrides
-            ONAM.clear();
+            ONAM.Unload();
             return;
         case 17: //screenshot_p
             SCRN.Unload();

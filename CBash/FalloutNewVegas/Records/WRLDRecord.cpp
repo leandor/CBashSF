@@ -86,11 +86,6 @@ WRLDRecord::~WRLDRecord()
         delete CELLS[x];
     }
 
-bool WRLDRecord::HasSubRecords()
-    {
-    return true;
-    }
-
 bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;

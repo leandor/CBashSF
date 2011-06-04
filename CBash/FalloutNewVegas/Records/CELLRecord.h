@@ -113,7 +113,6 @@ class CELLRecord : public FNVRecord //Cell
         CELLRecord(CELLRecord *srcRecord);
         ~CELLRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

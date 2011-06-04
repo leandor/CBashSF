@@ -313,7 +313,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return Entries.value[ListIndex]->RDSB.value.size();
+                            return (UINT32)Entries.value[ListIndex]->RDSB.value.size();
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -380,7 +380,7 @@ UINT32 REGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return Entries.value[ListIndex]->RDID.value.size();
+                            return (UINT32)Entries.value[ListIndex]->RDID.value.size();
                         default:
                             return UNKNOWN_FIELD;
                         }

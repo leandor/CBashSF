@@ -22,9 +22,10 @@ GPL License and Copyright Notice ============================================
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-//#include "ACHRRecord.h"
-//#include "ACRERecord.h"
-//#include "REFRRecord.h"
+#include "..\..\Allocator.h"
+#include "ACHRRecord.h"
+#include "ACRERecord.h"
+#include "REFRRecord.h"
 //#include "PGRDRecord.h"
 //#include "LANDRecord.h"
 //#include "WRLDRecord.h"
@@ -91,9 +92,11 @@ class CELLRecord : public Record
         std::vector<FORMID> XCLR;
         SemiOptSubRecord<CELLXCLC> XCLC;
         SimpleSubRecord<FORMID> XCWT;
-        std::vector<Record *> ACHR;
-        std::vector<Record *> ACRE;
-        std::vector<Record *> REFR;
+
+        RecordPoolAllocator<ACHRRecord, REV32(ACHR), 5> achr_pool;
+        RecordPoolAllocator<ACRERecord, REV32(ACRE), 5> acre_pool;
+        RecordPoolAllocator<REFRRecord, REV32(REFR), 25> refr_pool;
+
         Record *PGRD;
         Record *LAND;
 
@@ -103,7 +106,6 @@ class CELLRecord : public Record
         CELLRecord(CELLRecord *srcRecord);
         ~CELLRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

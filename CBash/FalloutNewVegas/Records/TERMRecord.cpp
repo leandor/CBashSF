@@ -57,7 +57,7 @@ void TERMRecord::TERMMenu::Write(FileWriter &writer)
     WRITE(ANAM);
     WRITE(INAM);
     WRITE(TNAM);
-    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
     SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
     //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;

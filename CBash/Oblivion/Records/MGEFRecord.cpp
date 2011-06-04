@@ -205,9 +205,9 @@ bool MGEFRecord::VisitFormIDs(FormIDOp &op)
         {
         //Conditional resolution of mgefCode's based on JRoush's OBME mod
         //It's resolved just like a formID, except it uses the lower byte instead of the upper
-        if((MGEFCODE)OBME->EDDX.value.mgefCode >= 0x80000000)
+        if(*(MGEFCODE *)&OBME->EDDX.value.mgefCode[0] >= 0x80000000)
             {
-            MGEFCODE tempMgef = (MGEFCODE)OBME->EDDX.value.mgefCode;
+            MGEFCODE tempMgef = *(MGEFCODE *)&OBME->EDDX.value.mgefCode[0];
             op.AcceptMGEF(tempMgef);
             memcpy(&OBME->EDDX.value.mgefCode[0], &tempMgef, 4);
             OBME->EDDX.value.mgefCode[4] = 0;

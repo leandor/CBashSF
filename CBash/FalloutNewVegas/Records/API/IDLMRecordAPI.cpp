@@ -84,7 +84,7 @@ UINT32 IDLMRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return IDLA.value.size();
+                    return (UINT32)IDLA.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }

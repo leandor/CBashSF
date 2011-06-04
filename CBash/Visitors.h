@@ -127,20 +127,6 @@ class RecordFormIDSwapper : public RecordOp
         bool Accept(Record *&curRecord);
     };
 
-class RecordDeleter : public RecordOp
-    {
-    private:
-        EditorID_Map &EditorID_ModFile_Record;
-        FormID_Map &FormID_ModFile_Record;
-        Record *RecordToDelete;
-
-    public:
-        RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
-        ~RecordDeleter();
-
-        bool Accept(Record *&curRecord);
-    };
-
 class RecordIndexer : public RecordOp
     {
     private:
@@ -156,6 +142,32 @@ class RecordIndexer : public RecordOp
         bool Accept(Record *&curRecord);
 
         void SetModFile(ModFile *_curModFile);
+    };
+
+class RecordDeindexer : public RecordOp
+    {
+    private:
+        EditorID_Map &EditorID_ModFile_Record;
+        FormID_Map &FormID_ModFile_Record;
+
+    public:
+        RecordDeindexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
+        ~RecordDeindexer();
+
+        bool Accept(Record *&curRecord);
+    };
+
+class RecordDeleter : public RecordOp
+    {
+    private:
+        RecordDeindexer deindexer;
+        Record *RecordToDelete;
+
+    public:
+        RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
+        ~RecordDeleter();
+
+        bool Accept(Record *&curRecord);
     };
 
 class RecordChanger : public RecordOp

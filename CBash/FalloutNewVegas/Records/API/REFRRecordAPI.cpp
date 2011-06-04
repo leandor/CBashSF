@@ -569,7 +569,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return XLTW.value.size();
+                    return (UINT32)XLTW.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -634,7 +634,7 @@ UINT32 REFRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return Room.IsLoaded() ? Room->XLRM.value.size() : 0;
+                    return Room.IsLoaded() ? (UINT32)Room->XLRM.value.size() : 0;
                 default:
                     return UNKNOWN_FIELD;
                 }

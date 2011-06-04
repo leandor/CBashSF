@@ -274,20 +274,20 @@ void NAVIRecord::NAVINVCI::Write(FileWriter &writer)
     if(unknown1 != 0 || unknown2.size() != 0 || unknown3.size() != 0 || doors.size() != 0)
         {
         UINT32 cSize = 16; //unknown1, and sizes for unknown2, unknown3, and doors
-        cSize += unknown2.size() * sizeof(FORMID);
-        cSize += unknown3.size() * sizeof(FORMID);
-        cSize += doors.size() * sizeof(FORMID);
+        cSize += (UINT32)unknown2.size() * sizeof(FORMID);
+        cSize += (UINT32)unknown3.size() * sizeof(FORMID);
+        cSize += (UINT32)doors.size() * sizeof(FORMID);
         writer.record_write_subheader(REV32(NVCI), cSize);
         writer.record_write(&unknown1, sizeof(FORMID));
-        cSize = unknown2.size();
+        cSize = (UINT32)unknown2.size();
         writer.record_write(&cSize, 4);
         if(cSize)
             writer.record_write(&unknown2[0], cSize * sizeof(FORMID));
-        cSize = unknown3.size();
+        cSize = (UINT32)unknown3.size();
         writer.record_write(&cSize, 4);
         if(cSize)
             writer.record_write(&unknown3[0], cSize * sizeof(FORMID));
-        cSize = doors.size();
+        cSize = (UINT32)doors.size();
         writer.record_write(&cSize, 4);
         if(cSize)
             writer.record_write(&doors[0], cSize * sizeof(FORMID));

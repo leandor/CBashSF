@@ -157,7 +157,7 @@ void DEBRRecord::DEBRModels::Unload()
 void DEBRRecord::DEBRModels::resize(UINT32 newSize)
     {
     //Shrink
-    UINT32 size = MODS.size();
+    UINT32 size = (UINT32)MODS.size();
     for(; size > newSize;)
         delete MODS[--size];
     MODS.resize(newSize);

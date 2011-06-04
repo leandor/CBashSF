@@ -172,10 +172,6 @@
     #define VATSFUNCTIONSIZE 18
 #endif
 
-#ifndef EXPORT_FUNC
-    #define EXPORT_FUNC extern "C" __declspec(dllexport)
-#endif
-
 #ifndef UINT8
     #define UINT8 unsigned char
 #endif
@@ -284,12 +280,13 @@
     #define FIELD_IDENTIFIERS const UINT32 FieldID, const UINT32 ListIndex, const UINT32 ListFieldID, const UINT32 ListX2Index, const UINT32 ListX2FieldID, const UINT32 ListX3Index, const UINT32 ListX3FieldID
 #endif
 
-#define WHERESTR  "%d: [file %s, line %d, func %s]: "
-#define WHEREARG  __COUNTER__, __FILE__, __LINE__, __FUNCTION__
+#define WHERESTR  "[%s, line %d, %s]: "
+#define WHEREARG  __FILE__, __LINE__, __FUNCTION__
 #define DEBUGPRINT2(...)       printer(__VA_ARGS__)
 #define DPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
+#define DPRINT1(_fmt)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG)
 
-#define QDPRINT printer(WHERESTR "\n", WHEREARG)
+#define QDPRINT DEBUGPRINT2(WHERESTR "\n", WHEREARG)
 
 #define REV32(x)((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
 #define WRITE(x) x.Write(REV32(x), writer)

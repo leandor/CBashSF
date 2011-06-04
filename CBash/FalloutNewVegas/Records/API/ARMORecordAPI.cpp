@@ -117,7 +117,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.MODS.size();
+                        return (UINT32)MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -165,7 +165,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MOD2->Textures.MODS.size();
+                        return (UINT32)MOD2->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -215,7 +215,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MOD3->Textures.MODS.size();
+                        return (UINT32)MOD3->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -262,7 +262,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MOD4->Textures.MODS.size();
+                        return (UINT32)MOD4->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -332,7 +332,7 @@ UINT32 ARMORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return Sounds.value.size();
+                        return (UINT32)Sounds.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }

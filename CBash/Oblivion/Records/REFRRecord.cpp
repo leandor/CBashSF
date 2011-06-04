@@ -143,8 +143,6 @@ bool REFRRecord::REFRData::operator !=(const REFRData &other) const
     return !(*this == other);
     }
 
-
-
 REFRRecord::REFRRecord(unsigned char *_recData):
     Record(_recData)
     {

@@ -85,7 +85,7 @@ bool sameStr::operator()( const STRING s1, const STRING s2 ) const
 STRING DeGhostModName(STRING const ModName)
     {
     STRING NonGhostName = NULL;
-    UINT32 NameLength = strlen(ModName) + 1;
+    UINT32 NameLength = (UINT32)strlen(ModName) + 1;
     if(icmps(".ghost",ModName + NameLength - 7) == 0)
         {
         NonGhostName = new char[NameLength];
@@ -1041,7 +1041,7 @@ UINT32 UnorderedPackedStrings::GetSize() const
         UINT32 cSize = 1; //final null terminator
         for(UINT32 p = 0; p < value.size(); p++)
             if(value[p] != NULL)
-                cSize += strlen(value[p]) + 1;
+                cSize += (UINT32)strlen(value[p]) + 1;
         return cSize == 1 ? 0 : cSize;
         }
     return 0;
@@ -1067,7 +1067,7 @@ void UnorderedPackedStrings::Unload()
 void UnorderedPackedStrings::resize(UINT32 newSize)
     {
     //Shrink
-    UINT32 size = value.size();
+    UINT32 size = (UINT32)value.size();
     for(; size > newSize;)
         delete value[--size];
     value.resize(newSize);
@@ -1106,7 +1106,7 @@ void UnorderedPackedStrings::Write(UINT32 _Type, FileWriter &writer)
         writer.record_write_subheader(_Type, GetSize());
         for(UINT32 p = 0; p < value.size(); p++)
             if(value[p] != NULL)
-                writer.record_write(value[p], strlen(value[p]) + 1);
+                writer.record_write(value[p], (UINT32)strlen(value[p]) + 1);
         UINT8 cSize = 0x00;
         //write final null terminator
         writer.record_write(&cSize, 1);

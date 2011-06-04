@@ -100,7 +100,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.MODS.size();
+                        return (UINT32)MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -350,7 +350,7 @@ UINT32 ALCHRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return Destructable->Stages.value.size();
+                        return (UINT32)Destructable->Stages.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }

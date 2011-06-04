@@ -60,31 +60,16 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
 
 DIALRecord::~DIALRecord()
     {
-    for(UINT32 x = 0; x < INFO.size(); x++)
-        delete INFO[x];
-    }
-
-bool DIALRecord::HasSubRecords()
-    {
-    return true;
+    //
     }
 
 bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
-
     if(RecordType == NULL || RecordType == REV32(INFO))
-        for(UINT32 x = 0; x < INFO.size();++x)
-            {
-            stop = op.Accept(INFO[x]);
-            if(INFO[x] == NULL)
-                {
-                INFO.erase(INFO.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
+        stop = info_pool.VisitRecords(RecordType, op, true);
+    if(stop)
+        return stop;
 
     return op.Stop();
     }

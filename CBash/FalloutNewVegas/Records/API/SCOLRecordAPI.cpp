@@ -98,7 +98,7 @@ UINT32 SCOLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.MODS.size();
+                        return (UINT32)MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -129,7 +129,7 @@ UINT32 SCOLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return Parts.value.size();
+                        return (UINT32)Parts.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }

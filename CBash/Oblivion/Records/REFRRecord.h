@@ -157,7 +157,7 @@ class REFRRecord : public Record
             };
     public:
         SemiOptSubRecord<REFRData> Data;
-       
+
         REFRRecord(unsigned char *_recData=NULL);
         REFRRecord(REFRRecord *srcRecord);
         ~REFRRecord();

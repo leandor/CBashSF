@@ -26,12 +26,14 @@ GPL License and Copyright Notice ============================================
 //    //#define BOOST_PYTHON_STATIC_LIB
 //    //#include <boost/python.hpp>
 //#endif
-
+#define COMPILING_CBASH
 #include "CBash.h"
 #include <vector>
 #include <stdarg.h>
 #include <new.h>
 //#include "mmgr.h"
+
+#define CPPDLLEXTERN extern "C" __declspec(dllexport)
 
 static std::vector<Collection *> Collections;
 #ifdef CBASH_CALLTIMING
@@ -130,17 +132,17 @@ ModFile *ValidateLoadOrderIndex(Collection *curCollection, STRING const ModName)
 ////////////////////////////////////////////////////////////////////////
 //Exported DLL
 //Version info functions
-UINT32 GetVersionMajor()
+CPPDLLEXTERN UINT32 GetVersionMajor()
     {
     return MAJOR_VERSION;
     }
 
-UINT32 GetVersionMinor()
+CPPDLLEXTERN UINT32 GetVersionMinor()
     {
     return MINOR_VERSION;
     }
 
-UINT32 GetVersionRevision()
+CPPDLLEXTERN UINT32 GetVersionRevision()
     {
     return REVISION_VERSION;
     }
@@ -159,7 +161,7 @@ int logback_printer(const char * _Format, ...)
     return nSize;
     }
 
-void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING))
+CPPDLLEXTERN void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING))
     {
     if(_LoggingCallback)
         {
@@ -173,7 +175,7 @@ void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING))
         }
     }
 
-void AllowRaising(void (*_RaiseCallback)())
+CPPDLLEXTERN void AllowRaising(void (*_RaiseCallback)())
     {
     RaiseCallback = _RaiseCallback;
     }
@@ -186,7 +188,7 @@ int handle_program_memory_depletion(size_t size)
     static int retrying = 0;
 
     if(retrying == 0)
-        {    
+        {
         printer("Warning - Allocation of %u bytes failed. Attempting to free memory and continue.\n", size);
         //try to free up some memory
         if(UnloadAllCollections() == 0)
@@ -209,7 +211,7 @@ int handle_program_memory_depletion(size_t size)
     return 0;
     }
 
-Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
+CPPDLLEXTERN Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     {
     PROFILE_FUNC
     try
@@ -253,7 +255,7 @@ Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType
     return NULL;
     }
 
-SINT32 DeleteCollection(Collection *CollectionID)
+CPPDLLEXTERN SINT32 DeleteCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
 
@@ -331,7 +333,7 @@ SINT32 DeleteCollection(Collection *CollectionID)
     return -1;
     }
 
-SINT32 LoadCollection(Collection *CollectionID)
+CPPDLLEXTERN SINT32 LoadCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
 
@@ -355,7 +357,7 @@ SINT32 LoadCollection(Collection *CollectionID)
     return -1;
     }
 
-SINT32 UnloadCollection(Collection *CollectionID)
+CPPDLLEXTERN SINT32 UnloadCollection(Collection *CollectionID)
     {
     PROFILE_FUNC
 
@@ -379,7 +381,7 @@ SINT32 UnloadCollection(Collection *CollectionID)
     return -1;
     }
 
-SINT32 UnloadAllCollections()
+CPPDLLEXTERN SINT32 UnloadAllCollections()
     {
     PROFILE_FUNC
 
@@ -403,7 +405,7 @@ SINT32 UnloadAllCollections()
     return -1;
     }
 
-SINT32 DeleteAllCollections()
+CPPDLLEXTERN SINT32 DeleteAllCollections()
     {
     PROFILE_FUNC
 
@@ -430,7 +432,7 @@ SINT32 DeleteAllCollections()
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
+CPPDLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
     {
     PROFILE_FUNC
 
@@ -456,7 +458,7 @@ SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFl
     return -1;
     }
 
-SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -482,7 +484,7 @@ SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
     return -1;
     }
 
-SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -507,7 +509,7 @@ SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID)
     return -1;
     }
 
-SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -531,7 +533,7 @@ SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     return -1;
     }
 
-SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
+CPPDLLEXTERN SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
     {
     SINT32 err = 0;
     try
@@ -563,14 +565,14 @@ SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollect
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-SINT32 GetAllNumMods(Collection *CollectionID)
+CPPDLLEXTERN SINT32 GetAllNumMods(Collection *CollectionID)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        return CollectionID->ModFiles.size();
+        return (SINT32)CollectionID->ModFiles.size();
         }
     catch(std::exception &ex)
         {
@@ -586,14 +588,14 @@ SINT32 GetAllNumMods(Collection *CollectionID)
     return -1;
     }
 
-SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
+CPPDLLEXTERN SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        UINT32 numMods = CollectionID->ModFiles.size();
+        UINT32 numMods = (UINT32)CollectionID->ModFiles.size();
         for(UINT32 x = 0; x < numMods; ++x)
             ModIDs[x] = CollectionID->ModFiles[x];
         return 0;
@@ -612,14 +614,14 @@ SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     return -1;
     }
 
-SINT32 GetLoadOrderNumMods(Collection *CollectionID)
+CPPDLLEXTERN SINT32 GetLoadOrderNumMods(Collection *CollectionID)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        return CollectionID->LoadOrder255.size();
+        return (SINT32)CollectionID->LoadOrder255.size();
         }
     catch(std::exception &ex)
         {
@@ -635,14 +637,14 @@ SINT32 GetLoadOrderNumMods(Collection *CollectionID)
     return -1;
     }
 
-SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
+CPPDLLEXTERN SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        UINT32 numMods = CollectionID->LoadOrder255.size();
+        UINT32 numMods = (UINT32)CollectionID->LoadOrder255.size();
         for(UINT32 x = 0; x < numMods; ++x)
             ModIDs[x] = CollectionID->LoadOrder255[x];
         return 0;
@@ -661,7 +663,7 @@ SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
     return -1;
     }
 
-STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -684,7 +686,7 @@ STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID)
     return NULL;
     }
 
-STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
+CPPDLLEXTERN STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     PROFILE_FUNC
 
@@ -707,7 +709,7 @@ STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     return NULL;
     }
 
-STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -730,7 +732,7 @@ STRING GetModNameByID(Collection *CollectionID, ModFile *ModID)
     return NULL;
     }
 
-STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
+CPPDLLEXTERN STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     PROFILE_FUNC
 
@@ -753,7 +755,7 @@ STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     return NULL;
     }
 
-ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
+CPPDLLEXTERN ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
     {
     PROFILE_FUNC
 
@@ -776,7 +778,7 @@ ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName)
     return NULL;
     }
 
-ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
+CPPDLLEXTERN ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     {
     PROFILE_FUNC
 
@@ -800,7 +802,7 @@ ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex)
     return NULL;
     }
 
-SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
+CPPDLLEXTERN SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
     {
     PROFILE_FUNC
 
@@ -823,7 +825,7 @@ SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName)
     return -1;
     }
 
-SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -850,7 +852,7 @@ SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID)
     return -2;
     }
 
-STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex)
+CPPDLLEXTERN STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex)
     {
     PROFILE_FUNC
 
@@ -878,7 +880,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
     return NULL;
     }
 
-//SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName)
+//CPPDLLEXTERN SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName)
 //    {
 //    if(ModID == -1)
 //        return GetModLoadOrderByName(CollectionID, ModName);
@@ -905,7 +907,7 @@ STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIn
 //    return -1;
 //    }
 
-UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -928,7 +930,7 @@ UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID)
     return 0;
     }
 
-SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -943,7 +945,7 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
             return -1;
             }
 
-        return ModID->FormIDHandler.NewTypes.size();
+        return (SINT32)ModID->FormIDHandler.NewTypes.size();
         }
     catch(std::exception &ex)
         {
@@ -959,7 +961,7 @@ SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID)
     return -1;
     }
 
-SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes)
+CPPDLLEXTERN SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes)
     {
     PROFILE_FUNC
 
@@ -995,7 +997,7 @@ SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordT
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions
-Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags)
+CPPDLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags)
     {
     PROFILE_FUNC
 
@@ -1020,7 +1022,7 @@ Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 Rec
     return 0;
     }
 
-SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID)
+CPPDLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID)
     {
     PROFILE_FUNC
 
@@ -1044,7 +1046,7 @@ SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
     return 0;
     }
 
-Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
+CPPDLLEXTERN Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
     {
     PROFILE_FUNC
 
@@ -1070,7 +1072,7 @@ Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, 
     return NULL;
     }
 
-SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
+CPPDLLEXTERN SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
     {
     PROFILE_FUNC
 
@@ -1093,7 +1095,7 @@ SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
     return 0;
     }
 
-SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID)
+CPPDLLEXTERN SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID)
     {
     PROFILE_FUNC
 
@@ -1119,7 +1121,7 @@ SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *Re
     }
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID)
+CPPDLLEXTERN Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID)
     {
     PROFILE_FUNC
 
@@ -1152,7 +1154,7 @@ Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID Reco
     return NULL;
     }
 
-SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType)
+CPPDLLEXTERN SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType)
     {
     PROFILE_FUNC
 
@@ -1175,7 +1177,7 @@ SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 Reco
     return -1;
     }
 
-SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs)
+CPPDLLEXTERN SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs)
     {
     PROFILE_FUNC
 
@@ -1200,7 +1202,7 @@ SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 Recor
     return -1;
     }
 
-SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
@@ -1224,7 +1226,7 @@ SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordI
     return -1;
     }
 
-SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
@@ -1247,7 +1249,7 @@ SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const b
     return -1;
     }
 
-SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
@@ -1270,7 +1272,7 @@ SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY
     return -1;
     }
 
-SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
+CPPDLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
     {
     PROFILE_FUNC
 
@@ -1295,7 +1297,7 @@ SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *Record
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
+CPPDLLEXTERN SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
     {
     PROFILE_FUNC
 
@@ -1342,7 +1344,7 @@ SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *Record
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch)
+CPPDLLEXTERN SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch)
     {
     PROFILE_FUNC
 
@@ -1376,7 +1378,7 @@ SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *Record
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
+CPPDLLEXTERN void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
     {
     PROFILE_FUNC
 
@@ -1418,7 +1420,7 @@ void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_
     return;
     }
 
-void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS)
+CPPDLLEXTERN void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS)
     {
     PROFILE_FUNC
 
@@ -1454,7 +1456,7 @@ void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIE
     }
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
+CPPDLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
     {
     PROFILE_FUNC
 
@@ -1490,7 +1492,7 @@ UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *Recor
     return UNKNOWN_FIELD;
     }
 
-void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
+CPPDLLEXTERN void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
     {
     PROFILE_FUNC
 

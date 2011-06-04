@@ -104,7 +104,6 @@ class DIALRecord : public FNVRecord //Dialog Topic
         DIALRecord(DIALRecord *srcRecord);
         ~DIALRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

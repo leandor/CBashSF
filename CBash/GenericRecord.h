@@ -60,7 +60,7 @@ class RecordReader : public RecordOp
 
 class RecordProcessor
     {
-    protected:
+    public:
         FileReader &reader;
         FormIDHandlerClass &FormIDHandler;
         boost::unordered_set<UINT32> &UsedFormIDs;
@@ -71,7 +71,6 @@ class RecordProcessor
 
         FormIDResolver expander;
 
-    public:
         RecordOp &parser;
         std::vector<Record *> &DeletedRecords;
         const ModFlags &Flags;
@@ -85,7 +84,7 @@ class RecordProcessor
 
 class FNVRecordProcessor
     {
-    protected:
+    public:
         FileReader &reader;
         FormIDHandlerClass &FormIDHandler;
         boost::unordered_set<UINT32> &UsedFormIDs;
@@ -96,7 +95,6 @@ class FNVRecordProcessor
 
         FormIDResolver expander;
 
-    public:
         RecordOp &parser;
         std::vector<Record *> &DeletedRecords;
         const ModFlags &Flags;
@@ -162,7 +160,6 @@ class Record
         virtual bool IsKeyedByEditorID();
         virtual STRING GetEditorIDKey();
         virtual bool SetEditorIDKey(STRING EditorID);
-        virtual bool HasSubRecords();
 
         virtual bool VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         virtual bool VisitFormIDs(FormIDOp &op);

@@ -91,7 +91,7 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)CELLS.size();
+                    return (UINT32)cell_pool.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -155,8 +155,7 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 24: //CELL
             return CELL;
         case 25: //CELLS
-            for(UINT32 p = 0;p < (UINT32)CELLS.size();++p)
-                ((RECORDIDARRAY)FieldValues)[p] = CELLS[p];
+            cell_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
             return NULL;
         default:
             return NULL;

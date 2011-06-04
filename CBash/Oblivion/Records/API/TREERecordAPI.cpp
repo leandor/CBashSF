@@ -59,7 +59,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT32_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return SNAM.size();
+                    return (UINT32)SNAM.size();
                 default:
                     return UNKNOWN_FIELD;
                 }

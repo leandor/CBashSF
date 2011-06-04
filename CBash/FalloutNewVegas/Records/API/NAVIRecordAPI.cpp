@@ -144,7 +144,7 @@ UINT32 NAVIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return NVCI.value[ListIndex]->unknown2.size();
+                            return (UINT32)NVCI.value[ListIndex]->unknown2.size();
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -155,7 +155,7 @@ UINT32 NAVIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return NVCI.value[ListIndex]->unknown3.size();
+                            return (UINT32)NVCI.value[ListIndex]->unknown3.size();
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -166,7 +166,7 @@ UINT32 NAVIRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_ARRAY_FIELD;
                         case 1: //fieldSize
-                            return NVCI.value[ListIndex]->doors.size();
+                            return (UINT32)NVCI.value[ListIndex]->doors.size();
                         default:
                             return UNKNOWN_FIELD;
                         }

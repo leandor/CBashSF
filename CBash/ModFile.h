@@ -50,6 +50,7 @@ class ModFile
         virtual SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords) abstract {};
         virtual UINT32   GetNumRecords(const UINT32 &RecordType) abstract {};
         virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options) abstract {};
+        virtual SINT32   DeleteRecord(Record *&curRecord, Record *&ParentRecord) abstract {};
         virtual SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders) abstract {};
         virtual SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod) abstract {};
 

@@ -160,6 +160,137 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
 
     //RecordProcessFunc RecordProcessor = (Flags.IsSkipNewRecords || Flags.IsTrackNewTypes) ? (Flags.IsSkipNewRecords ? &ProcessRecord_SkipNew : &ProcessRecord_TrackNew) : &ProcessRecord_Base;
 
+    if(TES4.HEDR.value.numRecords == 1252095 && icmps(reader.getModName(), "Oblivion.esm") == 0)
+        {
+        //Override the default pool allocations with those tailored for Oblivion.esm
+        //ACHR.pool.purge_no_destructors(false);
+        //ACHR.pool.reserve(2190);
+        //ACRE.pool.purge_no_destructors(false);
+        //ACRE.pool.reserve(1473);
+        ACTI.pool.purge_no_destructors(false);
+        ACTI.pool.reserve(1252);
+        ALCH.pool.purge_no_destructors(false);
+        ALCH.pool.reserve(253);
+        AMMO.pool.purge_no_destructors(false);
+        AMMO.pool.reserve(128);
+        ANIO.pool.purge_no_destructors(false);
+        ANIO.pool.reserve(34);
+        APPA.pool.purge_no_destructors(false);
+        APPA.pool.reserve(23);
+        ARMO.pool.purge_no_destructors(false);
+        ARMO.pool.reserve(996);
+        BOOK.pool.purge_no_destructors(false);
+        BOOK.pool.reserve(887);
+        BSGN.pool.purge_no_destructors(false);
+        BSGN.pool.reserve(13);
+        CELL.pool.purge_no_destructors(false);
+        CELL.pool.reserve(33639);
+        CELL.pgrd_pool.purge_no_destructors(false);
+        CELL.pgrd_pool.reserve(8228);
+        CLAS.pool.purge_no_destructors(false);
+        CLAS.pool.reserve(111);
+        CLMT.pool.purge_no_destructors(false);
+        CLMT.pool.reserve(19);
+        CLOT.pool.purge_no_destructors(false);
+        CLOT.pool.reserve(604);
+        CONT.pool.purge_no_destructors(false);
+        CONT.pool.reserve(873);
+        CREA.pool.purge_no_destructors(false);
+        CREA.pool.reserve(914);
+        CSTY.pool.purge_no_destructors(false);
+        CSTY.pool.reserve(126);
+        DIAL.pool.purge_no_destructors(false);
+        DIAL.pool.reserve(3817);
+        DOOR.pool.purge_no_destructors(false);
+        DOOR.pool.reserve(501);
+        EFSH.pool.purge_no_destructors(false);
+        EFSH.pool.reserve(102);
+        ENCH.pool.purge_no_destructors(false);
+        ENCH.pool.reserve(1542);
+        EYES.pool.purge_no_destructors(false);
+        EYES.pool.reserve(13);
+        FACT.pool.purge_no_destructors(false);
+        FACT.pool.reserve(476);
+        FLOR.pool.purge_no_destructors(false);
+        FLOR.pool.reserve(155);
+        FURN.pool.purge_no_destructors(false);
+        FURN.pool.reserve(186);
+        GLOB.pool.purge_no_destructors(false);
+        GLOB.pool.reserve(94);
+        GMST.pool.purge_no_destructors(false);
+        GMST.pool.reserve(382);
+        GRAS.pool.purge_no_destructors(false);
+        GRAS.pool.reserve(108);
+        HAIR.pool.purge_no_destructors(false);
+        HAIR.pool.reserve(57);
+        IDLE.pool.purge_no_destructors(false);
+        IDLE.pool.reserve(650);
+        //INFO.pool.purge_no_destructors(false);
+        //INFO.pool.reserve(19278);
+        INGR.pool.purge_no_destructors(false);
+        INGR.pool.reserve(173);
+        KEYM.pool.purge_no_destructors(false);
+        KEYM.pool.reserve(464);
+        LIGH.pool.purge_no_destructors(false);
+        LIGH.pool.reserve(1625);
+        LSCR.pool.purge_no_destructors(false);
+        LSCR.pool.reserve(337);
+        LTEX.pool.purge_no_destructors(false);
+        LTEX.pool.reserve(229);
+        LVLC.pool.purge_no_destructors(false);
+        LVLC.pool.reserve(682);
+        LVLI.pool.purge_no_destructors(false);
+        LVLI.pool.reserve(1398);
+        LVSP.pool.purge_no_destructors(false);
+        LVSP.pool.reserve(306);
+        MGEF.pool.purge_no_destructors(false);
+        MGEF.pool.reserve(145);
+        MISC.pool.purge_no_destructors(false);
+        MISC.pool.reserve(407);
+        NPC_.pool.purge_no_destructors(false);
+        NPC_.pool.reserve(2482);
+        PACK.pool.purge_no_destructors(false);
+        PACK.pool.reserve(7209);
+        QUST.pool.purge_no_destructors(false);
+        QUST.pool.reserve(390);
+        RACE.pool.purge_no_destructors(false);
+        RACE.pool.reserve(15);
+        //REFR.pool.purge_no_destructors(false);
+        //REFR.pool.reserve(1025617);
+        REGN.pool.purge_no_destructors(false);
+        REGN.pool.reserve(211);
+        SBSP.pool.purge_no_destructors(false);
+        SBSP.pool.reserve(33);
+        SCPT.pool.purge_no_destructors(false);
+        SCPT.pool.reserve(2393);
+        SGST.pool.purge_no_destructors(false);
+        SGST.pool.reserve(150);
+        SKIL.pool.purge_no_destructors(false);
+        SKIL.pool.reserve(21);
+        SLGM.pool.purge_no_destructors(false);
+        SLGM.pool.reserve(29);
+        SOUN.pool.purge_no_destructors(false);
+        SOUN.pool.reserve(1140);
+        SPEL.pool.purge_no_destructors(false);
+        SPEL.pool.reserve(1137);
+        STAT.pool.purge_no_destructors(false);
+        STAT.pool.reserve(6014);
+        TREE.pool.purge_no_destructors(false);
+        TREE.pool.reserve(142);
+        WATR.pool.purge_no_destructors(false);
+        WATR.pool.reserve(23);
+        WEAP.pool.purge_no_destructors(false);
+        WEAP.pool.reserve(1319);
+        WRLD.pool.purge_no_destructors(false);
+        WRLD.pool.reserve(84);
+        WRLD.land_pool.purge_no_destructors(false);
+        WRLD.land_pool.reserve(31823);
+        WRLD.cell_pool.purge_no_destructors(false);
+        WRLD.cell_pool.reserve(1855);
+        WTHR.pool.purge_no_destructors(false);
+        WTHR.pool.reserve(37);
+        }
+
     while(!reader.eof()){
         reader.skip(4); //Skip "GRUP"
         reader.read(&GRUPSize, 4);
@@ -397,7 +528,7 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
             //case eIgWRLD: //Same as normal
             case REV32(WRLD):
                 reader.read(&WRLD.stamp, 4);
-                WRLD.Skim(reader, GRUPSize, processor, indexer, fullReader);
+                WRLD.Skim(reader, GRUPSize, processor, indexer, fullReader, CELL.pgrd_pool);
                 break;
             case eIgDIAL:
             case REV32(DIAL):
@@ -471,6 +602,72 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
                 break;
             }
         };
+
+    //ACHR.pool.consolidate();
+    //ACRE.pool.consolidate();
+    //REFR.pool.consolidate();
+    //INFO.pool.consolidate();
+    ACTI.pool.consolidate();
+    ALCH.pool.consolidate();
+    AMMO.pool.consolidate();
+    ANIO.pool.consolidate();
+    APPA.pool.consolidate();
+    ARMO.pool.consolidate();
+    BOOK.pool.consolidate();
+    BSGN.pool.consolidate();
+    CELL.pool.consolidate();
+    CELL.pgrd_pool.consolidate();
+    CLAS.pool.consolidate();
+    CLMT.pool.consolidate();
+    CLOT.pool.consolidate();
+    CONT.pool.consolidate();
+    CREA.pool.consolidate();
+    CSTY.pool.consolidate();
+    DIAL.pool.consolidate();
+    DOOR.pool.consolidate();
+    EFSH.pool.consolidate();
+    ENCH.pool.consolidate();
+    EYES.pool.consolidate();
+    FACT.pool.consolidate();
+    FLOR.pool.consolidate();
+    FURN.pool.consolidate();
+    GLOB.pool.consolidate();
+    GMST.pool.consolidate();
+    GRAS.pool.consolidate();
+    HAIR.pool.consolidate();
+    IDLE.pool.consolidate();
+    INGR.pool.consolidate();
+    KEYM.pool.consolidate();
+    LIGH.pool.consolidate();
+    LSCR.pool.consolidate();
+    LTEX.pool.consolidate();
+    LVLC.pool.consolidate();
+    LVLI.pool.consolidate();
+    LVSP.pool.consolidate();
+    MGEF.pool.consolidate();
+    MISC.pool.consolidate();
+    NPC_.pool.consolidate();
+    PACK.pool.consolidate();
+    QUST.pool.consolidate();
+    RACE.pool.consolidate();
+    REGN.pool.consolidate();
+    SBSP.pool.consolidate();
+    SCPT.pool.consolidate();
+    SGST.pool.consolidate();
+    SKIL.pool.consolidate();
+    SLGM.pool.consolidate();
+    SOUN.pool.consolidate();
+    SPEL.pool.consolidate();
+    STAT.pool.consolidate();
+    TREE.pool.consolidate();
+    WATR.pool.consolidate();
+    WEAP.pool.consolidate();
+    WRLD.pool.consolidate();
+    WRLD.land_pool.consolidate();
+    WRLD.road_pool.consolidate();
+    WRLD.cell_pool.consolidate();
+    WTHR.pool.consolidate();
+
     return 1;
     }
 
@@ -481,99 +678,99 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
     switch(RecordType)
         {
         case REV32(GMST):
-            return (UINT32)GMST.Records.size();
+            return (UINT32)GMST.pool.GetSize();
         case REV32(GLOB):
-            return (UINT32)GLOB.Records.size();
+            return (UINT32)GLOB.pool.GetSize();
         case REV32(CLAS):
-            return (UINT32)CLAS.Records.size();
+            return (UINT32)CLAS.pool.GetSize();
         case REV32(FACT):
-            return (UINT32)FACT.Records.size();
+            return (UINT32)FACT.pool.GetSize();
         case REV32(HAIR):
-            return (UINT32)HAIR.Records.size();
+            return (UINT32)HAIR.pool.GetSize();
         case REV32(EYES):
-            return (UINT32)EYES.Records.size();
+            return (UINT32)EYES.pool.GetSize();
         case REV32(RACE):
-            return (UINT32)RACE.Records.size();
+            return (UINT32)RACE.pool.GetSize();
         case REV32(SOUN):
-            return (UINT32)SOUN.Records.size();
+            return (UINT32)SOUN.pool.GetSize();
         case REV32(SKIL):
-            return (UINT32)SKIL.Records.size();
+            return (UINT32)SKIL.pool.GetSize();
         case REV32(MGEF):
-            return (UINT32)MGEF.Records.size();
+            return (UINT32)MGEF.pool.GetSize();
         case REV32(SCPT):
-            return (UINT32)SCPT.Records.size();
+            return (UINT32)SCPT.pool.GetSize();
         case REV32(LTEX):
-            return (UINT32)LTEX.Records.size();
+            return (UINT32)LTEX.pool.GetSize();
         case REV32(ENCH):
-            return (UINT32)ENCH.Records.size();
+            return (UINT32)ENCH.pool.GetSize();
         case REV32(SPEL):
-            return (UINT32)SPEL.Records.size();
+            return (UINT32)SPEL.pool.GetSize();
         case REV32(BSGN):
-            return (UINT32)BSGN.Records.size();
+            return (UINT32)BSGN.pool.GetSize();
         case REV32(ACTI):
-            return (UINT32)ACTI.Records.size();
+            return (UINT32)ACTI.pool.GetSize();
         case REV32(APPA):
-            return (UINT32)APPA.Records.size();
+            return (UINT32)APPA.pool.GetSize();
         case REV32(ARMO):
-            return (UINT32)ARMO.Records.size();
+            return (UINT32)ARMO.pool.GetSize();
         case REV32(BOOK):
-            return (UINT32)BOOK.Records.size();
+            return (UINT32)BOOK.pool.GetSize();
         case REV32(CLOT):
-            return (UINT32)CLOT.Records.size();
+            return (UINT32)CLOT.pool.GetSize();
         case REV32(CONT):
-            return (UINT32)CONT.Records.size();
+            return (UINT32)CONT.pool.GetSize();
         case REV32(DOOR):
-            return (UINT32)DOOR.Records.size();
+            return (UINT32)DOOR.pool.GetSize();
         case REV32(INGR):
-            return (UINT32)INGR.Records.size();
+            return (UINT32)INGR.pool.GetSize();
         case REV32(LIGH):
-            return (UINT32)LIGH.Records.size();
+            return (UINT32)LIGH.pool.GetSize();
         case REV32(MISC):
-            return (UINT32)MISC.Records.size();
+            return (UINT32)MISC.pool.GetSize();
         case REV32(STAT):
-            return (UINT32)STAT.Records.size();
+            return (UINT32)STAT.pool.GetSize();
         case REV32(GRAS):
-            return (UINT32)GRAS.Records.size();
+            return (UINT32)GRAS.pool.GetSize();
         case REV32(TREE):
-            return (UINT32)TREE.Records.size();
+            return (UINT32)TREE.pool.GetSize();
         case REV32(FLOR):
-            return (UINT32)FLOR.Records.size();
+            return (UINT32)FLOR.pool.GetSize();
         case REV32(FURN):
-            return (UINT32)FURN.Records.size();
+            return (UINT32)FURN.pool.GetSize();
         case REV32(WEAP):
-            return (UINT32)WEAP.Records.size();
+            return (UINT32)WEAP.pool.GetSize();
         case REV32(AMMO):
-            return (UINT32)AMMO.Records.size();
+            return (UINT32)AMMO.pool.GetSize();
         case REV32(NPC_):
-            return (UINT32)NPC_.Records.size();
+            return (UINT32)NPC_.pool.GetSize();
         case REV32(CREA):
-            return (UINT32)CREA.Records.size();
+            return (UINT32)CREA.pool.GetSize();
         case REV32(LVLC):
-            return (UINT32)LVLC.Records.size();
+            return (UINT32)LVLC.pool.GetSize();
         case REV32(SLGM):
-            return (UINT32)SLGM.Records.size();
+            return (UINT32)SLGM.pool.GetSize();
         case REV32(KEYM):
-            return (UINT32)KEYM.Records.size();
+            return (UINT32)KEYM.pool.GetSize();
         case REV32(ALCH):
-            return (UINT32)ALCH.Records.size();
+            return (UINT32)ALCH.pool.GetSize();
         case REV32(SBSP):
-            return (UINT32)SBSP.Records.size();
+            return (UINT32)SBSP.pool.GetSize();
         case REV32(SGST):
-            return (UINT32)SGST.Records.size();
+            return (UINT32)SGST.pool.GetSize();
         case REV32(LVLI):
-            return (UINT32)LVLI.Records.size();
+            return (UINT32)LVLI.pool.GetSize();
         case REV32(WTHR):
-            return (UINT32)WTHR.Records.size();
+            return (UINT32)WTHR.pool.GetSize();
         case REV32(CLMT):
-            return (UINT32)CLMT.Records.size();
+            return (UINT32)CLMT.pool.GetSize();
         case REV32(REGN):
-            return (UINT32)REGN.Records.size();
+            return (UINT32)REGN.pool.GetSize();
         case REV32(CELL):
-            return (UINT32)CELL.Records.size();
+            return (UINT32)CELL.pool.GetSize();
         case REV32(WRLD):
-            return (UINT32)WRLD.Records.size();
+            return (UINT32)WRLD.pool.GetSize();
         case REV32(DIAL):
-            return (UINT32)DIAL.Records.size();
+            return (UINT32)DIAL.pool.GetSize();
         ///////////////////////////////////////////////
         //SubRecords are counted via GetFieldAttribute API function
         //Fallthroughs are intentional
@@ -588,23 +785,23 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
             break;
         ///////////////////////////////////////////////
         case REV32(QUST):
-            return (UINT32)QUST.Records.size();
+            return (UINT32)QUST.pool.GetSize();
         case REV32(IDLE):
-            return (UINT32)IDLE.Records.size();
+            return (UINT32)IDLE.pool.GetSize();
         case REV32(PACK):
-            return (UINT32)PACK.Records.size();
+            return (UINT32)PACK.pool.GetSize();
         case REV32(CSTY):
-            return (UINT32)CSTY.Records.size();
+            return (UINT32)CSTY.pool.GetSize();
         case REV32(LSCR):
-            return (UINT32)LSCR.Records.size();
+            return (UINT32)LSCR.pool.GetSize();
         case REV32(LVSP):
-            return (UINT32)LVSP.Records.size();
+            return (UINT32)LVSP.pool.GetSize();
         case REV32(ANIO):
-            return (UINT32)ANIO.Records.size();
+            return (UINT32)ANIO.pool.GetSize();
         case REV32(WATR):
-            return (UINT32)WATR.Records.size();
+            return (UINT32)WATR.pool.GetSize();
         case REV32(EFSH):
-            return (UINT32)EFSH.Records.size();
+            return (UINT32)EFSH.pool.GetSize();
         default:
             printer("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
@@ -632,48 +829,30 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 printer("TES4File::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
                 return NULL;
                 }
-
-            GMST.Records.push_back(new GMSTRecord((GMSTRecord *)SourceRecord));
-            newRecord = GMST.Records.back();
+            newRecord = GMST.pool.construct(SourceRecord);
 
             if(RecordEditorID != NULL)
                 {
                 ((GMSTRecord *)newRecord)->EDID.Copy(RecordEditorID);
                 ((GMSTRecord *)newRecord)->DATA.format = ((GMSTRecord *)newRecord)->EDID.value[0];
                 }
-            break;
+            return newRecord;
         case REV32(GLOB):
-            GLOB.Records.push_back(new GLOBRecord((GLOBRecord *)SourceRecord));
-            newRecord = GLOB.Records.back();
-            break;
+            return GLOB.pool.construct(SourceRecord);
         case REV32(CLAS):
-            CLAS.Records.push_back(new CLASRecord((CLASRecord *)SourceRecord));
-            newRecord = CLAS.Records.back();
-            break;
+            return CLAS.pool.construct(SourceRecord);
         case REV32(FACT):
-            FACT.Records.push_back(new FACTRecord((FACTRecord *)SourceRecord));
-            newRecord = FACT.Records.back();
-            break;
+            return FACT.pool.construct(SourceRecord);
         case REV32(HAIR):
-            HAIR.Records.push_back(new HAIRRecord((HAIRRecord *)SourceRecord));
-            newRecord = HAIR.Records.back();
-            break;
+            return HAIR.pool.construct(SourceRecord);
         case REV32(EYES):
-            EYES.Records.push_back(new EYESRecord((EYESRecord *)SourceRecord));
-            newRecord = EYES.Records.back();
-            break;
+            return EYES.pool.construct(SourceRecord);
         case REV32(RACE):
-            RACE.Records.push_back(new RACERecord((RACERecord *)SourceRecord));
-            newRecord = RACE.Records.back();
-            break;
+            return RACE.pool.construct(SourceRecord);
         case REV32(SOUN):
-            SOUN.Records.push_back(new SOUNRecord((SOUNRecord *)SourceRecord));
-            newRecord = SOUN.Records.back();
-            break;
+            return SOUN.pool.construct(SourceRecord);
         case REV32(SKIL):
-            SKIL.Records.push_back(new SKILRecord((SKILRecord *)SourceRecord));
-            newRecord = SKIL.Records.back();
-            break;
+            return SKIL.pool.construct(SourceRecord);
         case REV32(MGEF):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
@@ -681,8 +860,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            MGEF.Records.push_back(new MGEFRecord((MGEFRecord *)SourceRecord));
-            newRecord = MGEF.Records.back();
+            newRecord = MGEF.pool.construct(SourceRecord);
 
             if(RecordEditorID != NULL)
                 {
@@ -694,150 +872,81 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 else
                     ((MGEFRecord *)newRecord)->EDID.Copy(RecordEditorID);
                 }
-            break;
+            return newRecord;
         case REV32(SCPT):
-            SCPT.Records.push_back(new SCPTRecord((SCPTRecord *)SourceRecord));
-            newRecord = SCPT.Records.back();
-            break;
+            return SCPT.pool.construct(SourceRecord);
         case REV32(LTEX):
-            LTEX.Records.push_back(new LTEXRecord((LTEXRecord *)SourceRecord));
-            newRecord = LTEX.Records.back();
-            break;
+            return LTEX.pool.construct(SourceRecord);
         case REV32(ENCH):
-            ENCH.Records.push_back(new ENCHRecord((ENCHRecord *)SourceRecord));
-            newRecord = ENCH.Records.back();
-            break;
+            return ENCH.pool.construct(SourceRecord);
         case REV32(SPEL):
-            SPEL.Records.push_back(new SPELRecord((SPELRecord *)SourceRecord));
-            newRecord = SPEL.Records.back();
-            break;
+            return SPEL.pool.construct(SourceRecord);
         case REV32(BSGN):
-            BSGN.Records.push_back(new BSGNRecord((BSGNRecord *)SourceRecord));
-            newRecord = BSGN.Records.back();
-            break;
+            return BSGN.pool.construct(SourceRecord);
         case REV32(ACTI):
-            ACTI.Records.push_back(new ACTIRecord((ACTIRecord *)SourceRecord));
-            newRecord = ACTI.Records.back();
-            break;
+            return ACTI.pool.construct(SourceRecord);
         case REV32(APPA):
-            APPA.Records.push_back(new APPARecord((APPARecord *)SourceRecord));
-            newRecord = APPA.Records.back();
-            break;
+            return APPA.pool.construct(SourceRecord);
         case REV32(ARMO):
-            ARMO.Records.push_back(new ARMORecord((ARMORecord *)SourceRecord));
-            newRecord = ARMO.Records.back();
-            break;
+            return ARMO.pool.construct(SourceRecord);
         case REV32(BOOK):
-            BOOK.Records.push_back(new BOOKRecord((BOOKRecord *)SourceRecord));
-            newRecord = BOOK.Records.back();
-            break;
+            return BOOK.pool.construct(SourceRecord);
         case REV32(CLOT):
-            CLOT.Records.push_back(new CLOTRecord((CLOTRecord *)SourceRecord));
-            newRecord = CLOT.Records.back();
-            break;
+            return CLOT.pool.construct(SourceRecord);
         case REV32(CONT):
-            CONT.Records.push_back(new CONTRecord((CONTRecord *)SourceRecord));
-            newRecord = CONT.Records.back();
-            break;
+            return CONT.pool.construct(SourceRecord);
         case REV32(DOOR):
-            DOOR.Records.push_back(new DOORRecord((DOORRecord *)SourceRecord));
-            newRecord = DOOR.Records.back();
-            break;
+            return DOOR.pool.construct(SourceRecord);
         case REV32(INGR):
-            INGR.Records.push_back(new INGRRecord((INGRRecord *)SourceRecord));
-            newRecord = INGR.Records.back();
-            break;
+            return INGR.pool.construct(SourceRecord);
         case REV32(LIGH):
-            LIGH.Records.push_back(new LIGHRecord((LIGHRecord *)SourceRecord));
-            newRecord = LIGH.Records.back();
-            break;
+            return LIGH.pool.construct(SourceRecord);
         case REV32(MISC):
-            MISC.Records.push_back(new MISCRecord((MISCRecord *)SourceRecord));
-            newRecord = MISC.Records.back();
-            break;
+            return MISC.pool.construct(SourceRecord);
         case REV32(STAT):
-            STAT.Records.push_back(new STATRecord((STATRecord *)SourceRecord));
-            newRecord = STAT.Records.back();
-            break;
+            return STAT.pool.construct(SourceRecord);
         case REV32(GRAS):
-            GRAS.Records.push_back(new GRASRecord((GRASRecord *)SourceRecord));
-            newRecord = GRAS.Records.back();
-            break;
+            return GRAS.pool.construct(SourceRecord);
         case REV32(TREE):
-            TREE.Records.push_back(new TREERecord((TREERecord *)SourceRecord));
-            newRecord = TREE.Records.back();
-            break;
+            return TREE.pool.construct(SourceRecord);
         case REV32(FLOR):
-            FLOR.Records.push_back(new FLORRecord((FLORRecord *)SourceRecord));
-            newRecord = FLOR.Records.back();
-            break;
+            return FLOR.pool.construct(SourceRecord);
         case REV32(FURN):
-            FURN.Records.push_back(new FURNRecord((FURNRecord *)SourceRecord));
-            newRecord = FURN.Records.back();
-            break;
+            return FURN.pool.construct(SourceRecord);
         case REV32(WEAP):
-            WEAP.Records.push_back(new WEAPRecord((WEAPRecord *)SourceRecord));
-            newRecord = WEAP.Records.back();
-            break;
+            return WEAP.pool.construct(SourceRecord);
         case REV32(AMMO):
-            AMMO.Records.push_back(new AMMORecord((AMMORecord *)SourceRecord));
-            newRecord = AMMO.Records.back();
-            break;
+            return AMMO.pool.construct(SourceRecord);
         case REV32(NPC_):
-            NPC_.Records.push_back(new NPC_Record((NPC_Record *)SourceRecord));
-            newRecord = NPC_.Records.back();
-            break;
+            return NPC_.pool.construct(SourceRecord);
         case REV32(CREA):
-            CREA.Records.push_back(new CREARecord((CREARecord *)SourceRecord));
-            newRecord = CREA.Records.back();
-            break;
+            return CREA.pool.construct(SourceRecord);
         case REV32(LVLC):
-            LVLC.Records.push_back(new LVLCRecord((LVLCRecord *)SourceRecord));
-            newRecord = LVLC.Records.back();
-            break;
+            return LVLC.pool.construct(SourceRecord);
         case REV32(SLGM):
-            SLGM.Records.push_back(new SLGMRecord((SLGMRecord *)SourceRecord));
-            newRecord = SLGM.Records.back();
-            break;
+            return SLGM.pool.construct(SourceRecord);
         case REV32(KEYM):
-            KEYM.Records.push_back(new KEYMRecord((KEYMRecord *)SourceRecord));
-            newRecord = KEYM.Records.back();
-            break;
+            return KEYM.pool.construct(SourceRecord);
         case REV32(ALCH):
-            ALCH.Records.push_back(new ALCHRecord((ALCHRecord *)SourceRecord));
-            newRecord = ALCH.Records.back();
-            break;
+            return ALCH.pool.construct(SourceRecord);
         case REV32(SBSP):
-            SBSP.Records.push_back(new SBSPRecord((SBSPRecord *)SourceRecord));
-            newRecord = SBSP.Records.back();
-            break;
+            return SBSP.pool.construct(SourceRecord);
         case REV32(SGST):
-            SGST.Records.push_back(new SGSTRecord((SGSTRecord *)SourceRecord));
-            newRecord = SGST.Records.back();
-            break;
+            return SGST.pool.construct(SourceRecord);
         case REV32(LVLI):
-            LVLI.Records.push_back(new LVLIRecord((LVLIRecord *)SourceRecord));
-            newRecord = LVLI.Records.back();
-            break;
+            return LVLI.pool.construct(SourceRecord);
         case REV32(WTHR):
-            WTHR.Records.push_back(new WTHRRecord((WTHRRecord *)SourceRecord));
-            newRecord = WTHR.Records.back();
-            break;
+            return WTHR.pool.construct(SourceRecord);
         case REV32(CLMT):
-            CLMT.Records.push_back(new CLMTRecord((CLMTRecord *)SourceRecord));
-            newRecord = CLMT.Records.back();
-            break;
+            return CLMT.pool.construct(SourceRecord);
         case REV32(REGN):
-            REGN.Records.push_back(new REGNRecord((REGNRecord *)SourceRecord));
-            newRecord = REGN.Records.back();
-            break;
+            return REGN.pool.construct(SourceRecord);
         case REV32(CELL):
             if(ParentRecord == NULL)
                 {
-                CELL.Records.push_back(new CELLRecord((CELLRecord *)SourceRecord));
-                newRecord = CELL.Records.back();
-
+                newRecord = CELL.pool.construct(SourceRecord);
                 ((CELLRecord *)newRecord)->IsInterior(true);
+                return newRecord;
                 }
             else
                 {
@@ -864,27 +973,21 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                         return ((WRLDRecord *)ParentRecord)->CELL;
                         }
 
-                    ((WRLDRecord *)ParentRecord)->CELL = new CELLRecord((CELLRecord *)SourceRecord);
-                    newRecord = ((WRLDRecord *)ParentRecord)->CELL;
+                    newRecord = ((WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
                     }
                 else
                     {
-                    ((WRLDRecord *)ParentRecord)->CELLS.push_back(new CELLRecord((CELLRecord *)SourceRecord));
-                    newRecord = ((WRLDRecord *)ParentRecord)->CELLS.back();
+                    newRecord = ((WRLDRecord *)ParentRecord)->cell_pool.construct(SourceRecord);
                     }
 
                 ((CELLRecord *)newRecord)->IsInterior(false);
                 ((CELLRecord *)newRecord)->Parent = ParentRecord;
+                return newRecord;
                 }
-            break;
         case REV32(WRLD):
-            WRLD.Records.push_back(new WRLDRecord((WRLDRecord *)SourceRecord));
-            newRecord = WRLD.Records.back();
-            break;
+            return WRLD.pool.construct(SourceRecord);
         case REV32(DIAL):
-            DIAL.Records.push_back(new DIALRecord((DIALRecord *)SourceRecord));
-            newRecord = DIAL.Records.back();
-            break;
+            return DIAL.pool.construct(SourceRecord);
         case REV32(PGRD):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -898,10 +1001,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 options.ExistingReturned = true;
                 return ((CELLRecord *)ParentRecord)->PGRD;
                 }
-
-            ((CELLRecord *)ParentRecord)->PGRD = new PGRDRecord((PGRDRecord *)SourceRecord);
-            newRecord = ((CELLRecord *)ParentRecord)->PGRD;
-            break;
+            return ((CELLRecord *)ParentRecord)->PGRD = CELL.pgrd_pool.construct(SourceRecord);
         case REV32(LAND):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -916,9 +1016,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return ((CELLRecord *)ParentRecord)->LAND;
                 }
 
-            ((CELLRecord *)ParentRecord)->LAND = new LANDRecord((LANDRecord *)SourceRecord);
-            newRecord = ((CELLRecord *)ParentRecord)->LAND;
-            break;
+            return ((CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord);
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -926,9 +1024,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((CELLRecord *)ParentRecord)->ACHR.push_back(new ACHRRecord((ACHRRecord *)SourceRecord));
-            newRecord = ((CELLRecord *)ParentRecord)->ACHR.back();
-            break;
+            return ((CELLRecord *)ParentRecord)->achr_pool.construct(SourceRecord);
         case REV32(ACRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -936,9 +1032,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((CELLRecord *)ParentRecord)->ACRE.push_back(new ACRERecord((ACRERecord *)SourceRecord));
-            newRecord = ((CELLRecord *)ParentRecord)->ACRE.back();
-            break;
+            return ((CELLRecord *)ParentRecord)->acre_pool.construct(SourceRecord);
         case REV32(REFR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
@@ -946,9 +1040,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((CELLRecord *)ParentRecord)->REFR.push_back(new REFRRecord((REFRRecord *)SourceRecord));
-            newRecord = ((CELLRecord *)ParentRecord)->REFR.back();
-            break;
+            return ((CELLRecord *)ParentRecord)->refr_pool.construct(SourceRecord);
         case REV32(ROAD):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
                 {
@@ -960,9 +1052,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             if(((WRLDRecord *)ParentRecord)->ROAD != NULL)
                 return ((WRLDRecord *)ParentRecord)->ROAD;
 
-            ((WRLDRecord *)ParentRecord)->ROAD = new ROADRecord((ROADRecord *)SourceRecord);
-            newRecord = ((WRLDRecord *)ParentRecord)->ROAD;
-            break;
+            return ((WRLDRecord *)ParentRecord)->ROAD = WRLD.road_pool.construct(SourceRecord);
         case REV32(INFO):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
@@ -970,50 +1060,299 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((DIALRecord *)ParentRecord)->INFO.push_back(new INFORecord((INFORecord *)SourceRecord));
-            newRecord = ((DIALRecord *)ParentRecord)->INFO.back();
-            break;
+            return ((DIALRecord *)ParentRecord)->info_pool.construct(SourceRecord);
         case REV32(QUST):
-            QUST.Records.push_back(new QUSTRecord((QUSTRecord *)SourceRecord));
-            newRecord = QUST.Records.back();
-            break;
+            return QUST.pool.construct(SourceRecord);
         case REV32(IDLE):
-            IDLE.Records.push_back(new IDLERecord((IDLERecord *)SourceRecord));
-            newRecord = IDLE.Records.back();
-            break;
+            return IDLE.pool.construct(SourceRecord);
         case REV32(PACK):
-            PACK.Records.push_back(new PACKRecord((PACKRecord *)SourceRecord));
-            newRecord = PACK.Records.back();
-            break;
+            return PACK.pool.construct(SourceRecord);
         case REV32(CSTY):
-            CSTY.Records.push_back(new CSTYRecord((CSTYRecord *)SourceRecord));
-            newRecord = CSTY.Records.back();
-            break;
+            return CSTY.pool.construct(SourceRecord);
         case REV32(LSCR):
-            LSCR.Records.push_back(new LSCRRecord((LSCRRecord *)SourceRecord));
-            newRecord = LSCR.Records.back();
-            break;
+            return LSCR.pool.construct(SourceRecord);
         case REV32(LVSP):
-            LVSP.Records.push_back(new LVSPRecord((LVSPRecord *)SourceRecord));
-            newRecord = LVSP.Records.back();
-            break;
+            return LVSP.pool.construct(SourceRecord);
         case REV32(ANIO):
-            ANIO.Records.push_back(new ANIORecord((ANIORecord *)SourceRecord));
-            newRecord = ANIO.Records.back();
-            break;
+            return ANIO.pool.construct(SourceRecord);
         case REV32(WATR):
-            WATR.Records.push_back(new WATRRecord((WATRRecord *)SourceRecord));
-            newRecord = WATR.Records.back();
-            break;
+            return WATR.pool.construct(SourceRecord);
         case REV32(EFSH):
-            EFSH.Records.push_back(new EFSHRecord((EFSHRecord *)SourceRecord));
-            newRecord = EFSH.Records.back();
-            break;
+            return EFSH.pool.construct(SourceRecord);
         default:
             printer("TES4File::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
         }
-    return newRecord;
+    return NULL;
+    }
+
+SINT32 TES4File::DeleteRecord(Record *&curRecord, Record *&ParentRecord)
+    {
+    UINT32 LowType, TopType, MidType;
+    TopType = MidType = LowType = curRecord->GetType();
+
+    if(ParentRecord != NULL)
+        {
+        TopType = ParentRecord->GetParentType();
+        if(TopType)
+            MidType = ParentRecord->GetType();
+        else
+            TopType = ParentRecord->GetType();
+        }
+
+    switch(TopType)
+        {
+        case REV32(GMST):
+            GMST.pool.destroy(curRecord);
+            return 1;
+        case REV32(GLOB):
+            GLOB.pool.destroy(curRecord);
+            return 1;
+        case REV32(CLAS):
+            CLAS.pool.destroy(curRecord);
+            return 1;
+        case REV32(FACT):
+            FACT.pool.destroy(curRecord);
+            return 1;
+        case REV32(HAIR):
+            HAIR.pool.destroy(curRecord);
+            return 1;
+        case REV32(EYES):
+            EYES.pool.destroy(curRecord);
+            return 1;
+        case REV32(RACE):
+            RACE.pool.destroy(curRecord);
+            return 1;
+        case REV32(SOUN):
+            SOUN.pool.destroy(curRecord);
+            return 1;
+        case REV32(SKIL):
+            SKIL.pool.destroy(curRecord);
+            return 1;
+        case REV32(MGEF):
+            MGEF.pool.destroy(curRecord);
+            return 1;
+        case REV32(SCPT):
+            SCPT.pool.destroy(curRecord);
+            return 1;
+        case REV32(LTEX):
+            LTEX.pool.destroy(curRecord);
+            return 1;
+        case REV32(ENCH):
+            ENCH.pool.destroy(curRecord);
+            return 1;
+        case REV32(SPEL):
+            SPEL.pool.destroy(curRecord);
+            return 1;
+        case REV32(BSGN):
+            BSGN.pool.destroy(curRecord);
+            return 1;
+        case REV32(ACTI):
+            ACTI.pool.destroy(curRecord);
+            return 1;
+        case REV32(APPA):
+            APPA.pool.destroy(curRecord);
+            return 1;
+        case REV32(ARMO):
+            ARMO.pool.destroy(curRecord);
+            return 1;
+        case REV32(BOOK):
+            BOOK.pool.destroy(curRecord);
+            return 1;
+        case REV32(CLOT):
+            CLOT.pool.destroy(curRecord);
+            return 1;
+        case REV32(CONT):
+            CONT.pool.destroy(curRecord);
+            return 1;
+        case REV32(DOOR):
+            DOOR.pool.destroy(curRecord);
+            return 1;
+        case REV32(INGR):
+            INGR.pool.destroy(curRecord);
+            return 1;
+        case REV32(LIGH):
+            LIGH.pool.destroy(curRecord);
+            return 1;
+        case REV32(MISC):
+            MISC.pool.destroy(curRecord);
+            return 1;
+        case REV32(STAT):
+            STAT.pool.destroy(curRecord);
+            return 1;
+        case REV32(GRAS):
+            GRAS.pool.destroy(curRecord);
+            return 1;
+        case REV32(TREE):
+            TREE.pool.destroy(curRecord);
+            return 1;
+        case REV32(FLOR):
+            FLOR.pool.destroy(curRecord);
+            return 1;
+        case REV32(FURN):
+            FURN.pool.destroy(curRecord);
+            return 1;
+        case REV32(WEAP):
+            WEAP.pool.destroy(curRecord);
+            return 1;
+        case REV32(AMMO):
+            AMMO.pool.destroy(curRecord);
+            return 1;
+        case REV32(NPC_):
+            NPC_.pool.destroy(curRecord);
+            return 1;
+        case REV32(CREA):
+            CREA.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVLC):
+            LVLC.pool.destroy(curRecord);
+            return 1;
+        case REV32(SLGM):
+            SLGM.pool.destroy(curRecord);
+            return 1;
+        case REV32(KEYM):
+            KEYM.pool.destroy(curRecord);
+            return 1;
+        case REV32(ALCH):
+            ALCH.pool.destroy(curRecord);
+            return 1;
+        case REV32(SBSP):
+            SBSP.pool.destroy(curRecord);
+            return 1;
+        case REV32(SGST):
+            SGST.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVLI):
+            LVLI.pool.destroy(curRecord);
+            return 1;
+        case REV32(WTHR):
+            WTHR.pool.destroy(curRecord);
+            return 1;
+        case REV32(CLMT):
+            CLMT.pool.destroy(curRecord);
+            return 1;
+        case REV32(REGN):
+            REGN.pool.destroy(curRecord);
+            return 1;
+        case REV32(CELL):
+            switch(LowType)
+                {
+                case REV32(CELL):
+                    CELL.pool.destroy(curRecord);
+                    return 1;
+                case REV32(ACHR):
+                    ((CELLRecord *)ParentRecord)->achr_pool.destroy(curRecord);
+                    return 1;
+                case REV32(ACRE):
+                    ((CELLRecord *)ParentRecord)->acre_pool.destroy(curRecord);
+                    return 1;
+                case REV32(REFR):
+                    ((CELLRecord *)ParentRecord)->refr_pool.destroy(curRecord);
+                    return 1;
+                case REV32(PGRD):
+                    CELL.pgrd_pool.destroy(curRecord);
+                    ((CELLRecord *)ParentRecord)->PGRD = NULL;
+                    return 1;
+                default:
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", curRecord->GetStrType(), ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3], reader.getModName());
+                    return 0;
+                }
+            return 0;
+        case REV32(WRLD):
+            switch(MidType)
+                {
+                case REV32(WRLD):
+                    WRLD.pool.destroy(curRecord);
+                    return 1;
+                case REV32(CELL):
+                    switch(LowType)
+                        {
+                        case REV32(CELL):
+                            if(((WRLDRecord *)ParentRecord)->CELL == curRecord)
+                                {
+                                WRLD.cell_pool.destroy(curRecord);
+                                ((WRLDRecord *)ParentRecord)->CELL = NULL;
+                                }
+                            else
+                                ((WRLDRecord *)ParentRecord)->cell_pool.destroy(curRecord);
+                            return 1;
+                        case REV32(ACHR):
+                            ((CELLRecord *)ParentRecord)->achr_pool.destroy(curRecord);
+                            return 1;
+                        case REV32(ACRE):
+                            ((CELLRecord *)ParentRecord)->acre_pool.destroy(curRecord);
+                            return 1;
+                        case REV32(REFR):
+                            ((CELLRecord *)ParentRecord)->refr_pool.destroy(curRecord);
+                            return 1;
+                        case REV32(PGRD):
+                            CELL.pgrd_pool.destroy(curRecord);
+                            ((CELLRecord *)ParentRecord)->PGRD = NULL;
+                            return 1;
+                        case REV32(LAND):
+                            WRLD.land_pool.destroy(curRecord);
+                            ((CELLRecord *)ParentRecord)->LAND = NULL;
+                            return 1;
+                        default:
+                            printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", curRecord->GetStrType(), ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3], reader.getModName());
+                            return 0;
+                        }
+                    return 0;
+                case REV32(ROAD):
+                    WRLD.road_pool.destroy(curRecord);
+                    ((WRLDRecord *)ParentRecord)->ROAD = NULL;
+                    return 1;
+                default:
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", curRecord->GetStrType(), ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3], reader.getModName());
+                    return 0;
+                }
+            return 0;
+        case REV32(DIAL):
+            switch(LowType)
+                {
+                case REV32(DIAL):
+                    DIAL.pool.destroy(curRecord);
+                    return 1;
+                case REV32(INFO):
+                    ((DIALRecord *)ParentRecord)->info_pool.destroy(curRecord);
+                    return 1;
+                default:
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", curRecord->GetStrType(), ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3], reader.getModName());
+                    return 0;
+                }
+            return 0;
+        case REV32(QUST):
+            QUST.pool.destroy(curRecord);
+            return 1;
+        case REV32(IDLE):
+            IDLE.pool.destroy(curRecord);
+            return 1;
+        case REV32(PACK):
+            PACK.pool.destroy(curRecord);
+            return 1;
+        case REV32(CSTY):
+            CSTY.pool.destroy(curRecord);
+            return 1;
+        case REV32(LSCR):
+            LSCR.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVSP):
+            LVSP.pool.destroy(curRecord);
+            return 1;
+        case REV32(ANIO):
+            ANIO.pool.destroy(curRecord);
+            return 1;
+        case REV32(WATR):
+            WATR.pool.destroy(curRecord);
+            return 1;
+        case REV32(EFSH):
+            EFSH.pool.destroy(curRecord);
+            return 1;
+        default:
+            printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", curRecord->GetStrType(), ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3], reader.getModName());
+            return 0;
+        }
+    return 0;
     }
 
 SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
@@ -1040,62 +1379,62 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
         //printer("Checking: %s\n", TES4.MAST[p].value);
         if(checker.Accept(topRecord)) continue;
-        if(GMST.VisitRecords(NULL, checker, false)) continue;
-        if(GLOB.VisitRecords(NULL, checker, false)) continue;
-        if(CLAS.VisitRecords(NULL, checker, false)) continue;
-        if(FACT.VisitRecords(NULL, checker, false)) continue;
-        if(HAIR.VisitRecords(NULL, checker, false)) continue;
-        if(EYES.VisitRecords(NULL, checker, false)) continue;
-        if(RACE.VisitRecords(NULL, checker, false)) continue;
-        if(SOUN.VisitRecords(NULL, checker, false)) continue;
-        if(SKIL.VisitRecords(NULL, checker, false)) continue;
-        if(MGEF.VisitRecords(NULL, checker, false)) continue;
-        if(SCPT.VisitRecords(NULL, checker, false)) continue;
-        if(LTEX.VisitRecords(NULL, checker, false)) continue;
-        if(ENCH.VisitRecords(NULL, checker, false)) continue;
-        if(SPEL.VisitRecords(NULL, checker, false)) continue;
-        if(BSGN.VisitRecords(NULL, checker, false)) continue;
-        if(ACTI.VisitRecords(NULL, checker, false)) continue;
-        if(APPA.VisitRecords(NULL, checker, false)) continue;
-        if(ARMO.VisitRecords(NULL, checker, false)) continue;
-        if(BOOK.VisitRecords(NULL, checker, false)) continue;
-        if(CLOT.VisitRecords(NULL, checker, false)) continue;
-        if(CONT.VisitRecords(NULL, checker, false)) continue;
-        if(DOOR.VisitRecords(NULL, checker, false)) continue;
-        if(INGR.VisitRecords(NULL, checker, false)) continue;
-        if(LIGH.VisitRecords(NULL, checker, false)) continue;
-        if(MISC.VisitRecords(NULL, checker, false)) continue;
-        if(STAT.VisitRecords(NULL, checker, false)) continue;
-        if(GRAS.VisitRecords(NULL, checker, false)) continue;
-        if(TREE.VisitRecords(NULL, checker, false)) continue;
-        if(FLOR.VisitRecords(NULL, checker, false)) continue;
-        if(FURN.VisitRecords(NULL, checker, false)) continue;
-        if(WEAP.VisitRecords(NULL, checker, false)) continue;
-        if(AMMO.VisitRecords(NULL, checker, false)) continue;
-        if(NPC_.VisitRecords(NULL, checker, false)) continue;
-        if(CREA.VisitRecords(NULL, checker, false)) continue;
-        if(LVLC.VisitRecords(NULL, checker, false)) continue;
-        if(SLGM.VisitRecords(NULL, checker, false)) continue;
-        if(KEYM.VisitRecords(NULL, checker, false)) continue;
-        if(ALCH.VisitRecords(NULL, checker, false)) continue;
-        if(SBSP.VisitRecords(NULL, checker, false)) continue;
-        if(SGST.VisitRecords(NULL, checker, false)) continue;
-        if(LVLI.VisitRecords(NULL, checker, false)) continue;
-        if(WTHR.VisitRecords(NULL, checker, false)) continue;
-        if(CLMT.VisitRecords(NULL, checker, false)) continue;
-        if(REGN.VisitRecords(NULL, checker, false)) continue;
-        if(CELL.VisitRecords(NULL, checker, true)) continue;
-        if(WRLD.VisitRecords(NULL, checker, true)) continue;
-        if(DIAL.VisitRecords(NULL, checker, true)) continue;
-        if(QUST.VisitRecords(NULL, checker, false)) continue;
-        if(IDLE.VisitRecords(NULL, checker, false)) continue;
-        if(PACK.VisitRecords(NULL, checker, false)) continue;
-        if(CSTY.VisitRecords(NULL, checker, false)) continue;
-        if(LSCR.VisitRecords(NULL, checker, false)) continue;
-        if(LVSP.VisitRecords(NULL, checker, false)) continue;
-        if(ANIO.VisitRecords(NULL, checker, false)) continue;
-        if(WATR.VisitRecords(NULL, checker, false)) continue;
-        if(EFSH.VisitRecords(NULL, checker, false)) continue;
+        if(GMST.pool.VisitRecords(NULL, checker, false)) continue;
+        if(GLOB.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CLAS.pool.VisitRecords(NULL, checker, false)) continue;
+        if(FACT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(HAIR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(EYES.pool.VisitRecords(NULL, checker, false)) continue;
+        if(RACE.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SOUN.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SKIL.pool.VisitRecords(NULL, checker, false)) continue;
+        if(MGEF.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SCPT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LTEX.pool.VisitRecords(NULL, checker, false)) continue;
+        if(ENCH.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SPEL.pool.VisitRecords(NULL, checker, false)) continue;
+        if(BSGN.pool.VisitRecords(NULL, checker, false)) continue;
+        if(ACTI.pool.VisitRecords(NULL, checker, false)) continue;
+        if(APPA.pool.VisitRecords(NULL, checker, false)) continue;
+        if(ARMO.pool.VisitRecords(NULL, checker, false)) continue;
+        if(BOOK.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CLOT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CONT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(DOOR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(INGR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LIGH.pool.VisitRecords(NULL, checker, false)) continue;
+        if(MISC.pool.VisitRecords(NULL, checker, false)) continue;
+        if(STAT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(GRAS.pool.VisitRecords(NULL, checker, false)) continue;
+        if(TREE.pool.VisitRecords(NULL, checker, false)) continue;
+        if(FLOR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(FURN.pool.VisitRecords(NULL, checker, false)) continue;
+        if(WEAP.pool.VisitRecords(NULL, checker, false)) continue;
+        if(AMMO.pool.VisitRecords(NULL, checker, false)) continue;
+        if(NPC_.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CREA.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LVLC.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SLGM.pool.VisitRecords(NULL, checker, false)) continue;
+        if(KEYM.pool.VisitRecords(NULL, checker, false)) continue;
+        if(ALCH.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SBSP.pool.VisitRecords(NULL, checker, false)) continue;
+        if(SGST.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LVLI.pool.VisitRecords(NULL, checker, false)) continue;
+        if(WTHR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CLMT.pool.VisitRecords(NULL, checker, false)) continue;
+        if(REGN.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CELL.pool.VisitRecords(NULL, checker, true)) continue;
+        if(WRLD.pool.VisitRecords(NULL, checker, true)) continue;
+        if(DIAL.pool.VisitRecords(NULL, checker, true)) continue;
+        if(QUST.pool.VisitRecords(NULL, checker, false)) continue;
+        if(IDLE.pool.VisitRecords(NULL, checker, false)) continue;
+        if(PACK.pool.VisitRecords(NULL, checker, false)) continue;
+        if(CSTY.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LSCR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(LVSP.pool.VisitRecords(NULL, checker, false)) continue;
+        if(ANIO.pool.VisitRecords(NULL, checker, false)) continue;
+        if(WATR.pool.VisitRecords(NULL, checker, false)) continue;
+        if(EFSH.pool.VisitRecords(NULL, checker, false)) continue;
         //printer("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
         ++cleaned;
@@ -1132,62 +1471,62 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
     TES4.Write(writer, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP(REV32(GMST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GLOB.WriteGRUP(REV32(GLOB), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLAS.WriteGRUP(REV32(CLAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FACT.WriteGRUP(REV32(FACT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HAIR.WriteGRUP(REV32(HAIR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EYES.WriteGRUP(REV32(EYES), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += RACE.WriteGRUP(REV32(RACE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SOUN.WriteGRUP(REV32(SOUN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SKIL.WriteGRUP(REV32(SKIL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MGEF.WriteGRUP(REV32(MGEF), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SCPT.WriteGRUP(REV32(SCPT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LTEX.WriteGRUP(REV32(LTEX), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ENCH.WriteGRUP(REV32(ENCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SPEL.WriteGRUP(REV32(SPEL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += BSGN.WriteGRUP(REV32(BSGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ACTI.WriteGRUP(REV32(ACTI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += APPA.WriteGRUP(REV32(APPA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ARMO.WriteGRUP(REV32(ARMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += BOOK.WriteGRUP(REV32(BOOK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLOT.WriteGRUP(REV32(CLOT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CONT.WriteGRUP(REV32(CONT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += DOOR.WriteGRUP(REV32(DOOR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += INGR.WriteGRUP(REV32(INGR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LIGH.WriteGRUP(REV32(LIGH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MISC.WriteGRUP(REV32(MISC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += STAT.WriteGRUP(REV32(STAT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GRAS.WriteGRUP(REV32(GRAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TREE.WriteGRUP(REV32(TREE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FLOR.WriteGRUP(REV32(FLOR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FURN.WriteGRUP(REV32(FURN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WEAP.WriteGRUP(REV32(WEAP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += AMMO.WriteGRUP(REV32(AMMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += NPC_.WriteGRUP(REV32(NPC_), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CREA.WriteGRUP(REV32(CREA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLC.WriteGRUP(REV32(LVLC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SLGM.WriteGRUP(REV32(SLGM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += KEYM.WriteGRUP(REV32(KEYM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ALCH.WriteGRUP(REV32(ALCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SBSP.WriteGRUP(REV32(SBSP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SGST.WriteGRUP(REV32(SGST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLI.WriteGRUP(REV32(LVLI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WTHR.WriteGRUP(REV32(WTHR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLMT.WriteGRUP(REV32(CLMT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += REGN.WriteGRUP(REV32(REGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GMST.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += RACE.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SKIL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MGEF.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCPT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LTEX.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ENCH.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SPEL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BSGN.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ACTI.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += APPA.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ARMO.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BOOK.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLOT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CONT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DOOR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += INGR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LIGH.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MISC.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += STAT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GRAS.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TREE.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FLOR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FURN.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WEAP.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += AMMO.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NPC_.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CREA.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLC.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SLGM.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += KEYM.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ALCH.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SBSP.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SGST.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLI.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WTHR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLMT.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += REGN.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
     formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WRLD.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod, FormIDHandler);
     formCount += DIAL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVSP.WriteGRUP(REV32(LVSP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += QUST.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLE.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PACK.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CSTY.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LSCR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVSP.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ANIO.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WATR.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EFSH.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(30, &formCount, 4);
@@ -1211,62 +1550,62 @@ void TES4File::VisitAllRecords(RecordOp &op)
 
     //This visits every record and subrecord
     op.Accept(topRecord);
-    GMST.VisitRecords(NULL, op, true);
-    GLOB.VisitRecords(NULL, op, true);
-    CLAS.VisitRecords(NULL, op, true);
-    FACT.VisitRecords(NULL, op, true);
-    HAIR.VisitRecords(NULL, op, true);
-    EYES.VisitRecords(NULL, op, true);
-    RACE.VisitRecords(NULL, op, true);
-    SOUN.VisitRecords(NULL, op, true);
-    SKIL.VisitRecords(NULL, op, true);
-    MGEF.VisitRecords(NULL, op, true);
-    SCPT.VisitRecords(NULL, op, true);
-    LTEX.VisitRecords(NULL, op, true);
-    ENCH.VisitRecords(NULL, op, true);
-    SPEL.VisitRecords(NULL, op, true);
-    BSGN.VisitRecords(NULL, op, true);
-    ACTI.VisitRecords(NULL, op, true);
-    APPA.VisitRecords(NULL, op, true);
-    ARMO.VisitRecords(NULL, op, true);
-    BOOK.VisitRecords(NULL, op, true);
-    CLOT.VisitRecords(NULL, op, true);
-    CONT.VisitRecords(NULL, op, true);
-    DOOR.VisitRecords(NULL, op, true);
-    INGR.VisitRecords(NULL, op, true);
-    LIGH.VisitRecords(NULL, op, true);
-    MISC.VisitRecords(NULL, op, true);
-    STAT.VisitRecords(NULL, op, true);
-    GRAS.VisitRecords(NULL, op, true);
-    TREE.VisitRecords(NULL, op, true);
-    FLOR.VisitRecords(NULL, op, true);
-    FURN.VisitRecords(NULL, op, true);
-    WEAP.VisitRecords(NULL, op, true);
-    AMMO.VisitRecords(NULL, op, true);
-    NPC_.VisitRecords(NULL, op, true);
-    CREA.VisitRecords(NULL, op, true);
-    LVLC.VisitRecords(NULL, op, true);
-    SLGM.VisitRecords(NULL, op, true);
-    KEYM.VisitRecords(NULL, op, true);
-    ALCH.VisitRecords(NULL, op, true);
-    SBSP.VisitRecords(NULL, op, true);
-    SGST.VisitRecords(NULL, op, true);
-    LVLI.VisitRecords(NULL, op, true);
-    WTHR.VisitRecords(NULL, op, true);
-    CLMT.VisitRecords(NULL, op, true);
-    REGN.VisitRecords(NULL, op, true);
-    CELL.VisitRecords(NULL, op, true);
-    WRLD.VisitRecords(NULL, op, true);
-    DIAL.VisitRecords(NULL, op, true);
-    QUST.VisitRecords(NULL, op, true);
-    IDLE.VisitRecords(NULL, op, true);
-    PACK.VisitRecords(NULL, op, true);
-    CSTY.VisitRecords(NULL, op, true);
-    LSCR.VisitRecords(NULL, op, true);
-    LVSP.VisitRecords(NULL, op, true);
-    ANIO.VisitRecords(NULL, op, true);
-    WATR.VisitRecords(NULL, op, true);
-    EFSH.VisitRecords(NULL, op, true);
+    GMST.pool.VisitRecords(NULL, op, true);
+    GLOB.pool.VisitRecords(NULL, op, true);
+    CLAS.pool.VisitRecords(NULL, op, true);
+    FACT.pool.VisitRecords(NULL, op, true);
+    HAIR.pool.VisitRecords(NULL, op, true);
+    EYES.pool.VisitRecords(NULL, op, true);
+    RACE.pool.VisitRecords(NULL, op, true);
+    SOUN.pool.VisitRecords(NULL, op, true);
+    SKIL.pool.VisitRecords(NULL, op, true);
+    MGEF.pool.VisitRecords(NULL, op, true);
+    SCPT.pool.VisitRecords(NULL, op, true);
+    LTEX.pool.VisitRecords(NULL, op, true);
+    ENCH.pool.VisitRecords(NULL, op, true);
+    SPEL.pool.VisitRecords(NULL, op, true);
+    BSGN.pool.VisitRecords(NULL, op, true);
+    ACTI.pool.VisitRecords(NULL, op, true);
+    APPA.pool.VisitRecords(NULL, op, true);
+    ARMO.pool.VisitRecords(NULL, op, true);
+    BOOK.pool.VisitRecords(NULL, op, true);
+    CLOT.pool.VisitRecords(NULL, op, true);
+    CONT.pool.VisitRecords(NULL, op, true);
+    DOOR.pool.VisitRecords(NULL, op, true);
+    INGR.pool.VisitRecords(NULL, op, true);
+    LIGH.pool.VisitRecords(NULL, op, true);
+    MISC.pool.VisitRecords(NULL, op, true);
+    STAT.pool.VisitRecords(NULL, op, true);
+    GRAS.pool.VisitRecords(NULL, op, true);
+    TREE.pool.VisitRecords(NULL, op, true);
+    FLOR.pool.VisitRecords(NULL, op, true);
+    FURN.pool.VisitRecords(NULL, op, true);
+    WEAP.pool.VisitRecords(NULL, op, true);
+    AMMO.pool.VisitRecords(NULL, op, true);
+    NPC_.pool.VisitRecords(NULL, op, true);
+    CREA.pool.VisitRecords(NULL, op, true);
+    LVLC.pool.VisitRecords(NULL, op, true);
+    SLGM.pool.VisitRecords(NULL, op, true);
+    KEYM.pool.VisitRecords(NULL, op, true);
+    ALCH.pool.VisitRecords(NULL, op, true);
+    SBSP.pool.VisitRecords(NULL, op, true);
+    SGST.pool.VisitRecords(NULL, op, true);
+    LVLI.pool.VisitRecords(NULL, op, true);
+    WTHR.pool.VisitRecords(NULL, op, true);
+    CLMT.pool.VisitRecords(NULL, op, true);
+    REGN.pool.VisitRecords(NULL, op, true);
+    CELL.pool.VisitRecords(NULL, op, true);
+    WRLD.pool.VisitRecords(NULL, op, true);
+    DIAL.pool.VisitRecords(NULL, op, true);
+    QUST.pool.VisitRecords(NULL, op, true);
+    IDLE.pool.VisitRecords(NULL, op, true);
+    PACK.pool.VisitRecords(NULL, op, true);
+    CSTY.pool.VisitRecords(NULL, op, true);
+    LSCR.pool.VisitRecords(NULL, op, true);
+    LVSP.pool.VisitRecords(NULL, op, true);
+    ANIO.pool.VisitRecords(NULL, op, true);
+    WATR.pool.VisitRecords(NULL, op, true);
+    EFSH.pool.VisitRecords(NULL, op, true);
     return;
     }
 
@@ -1289,172 +1628,172 @@ void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordTyp
             op.Accept(topRecord);
             break;
         case REV32(GMST):
-            GMST.VisitRecords(RecordType, op, DeepVisit);
+            GMST.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(GLOB):
-            GLOB.VisitRecords(RecordType, op, DeepVisit);
+            GLOB.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CLAS):
-            CLAS.VisitRecords(RecordType, op, DeepVisit);
+            CLAS.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(FACT):
-            FACT.VisitRecords(RecordType, op, DeepVisit);
+            FACT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(HAIR):
-            HAIR.VisitRecords(RecordType, op, DeepVisit);
+            HAIR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(EYES):
-            EYES.VisitRecords(RecordType, op, DeepVisit);
+            EYES.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(RACE):
-            RACE.VisitRecords(RecordType, op, DeepVisit);
+            RACE.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SOUN):
-            SOUN.VisitRecords(RecordType, op, DeepVisit);
+            SOUN.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SKIL):
-            SKIL.VisitRecords(RecordType, op, DeepVisit);
+            SKIL.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(MGEF):
-            MGEF.VisitRecords(RecordType, op, DeepVisit);
+            MGEF.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SCPT):
-            SCPT.VisitRecords(RecordType, op, DeepVisit);
+            SCPT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LTEX):
-            LTEX.VisitRecords(RecordType, op, DeepVisit);
+            LTEX.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ENCH):
-            ENCH.VisitRecords(RecordType, op, DeepVisit);
+            ENCH.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SPEL):
-            SPEL.VisitRecords(RecordType, op, DeepVisit);
+            SPEL.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(BSGN):
-            BSGN.VisitRecords(RecordType, op, DeepVisit);
+            BSGN.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ACTI):
-            ACTI.VisitRecords(RecordType, op, DeepVisit);
+            ACTI.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(APPA):
-            APPA.VisitRecords(RecordType, op, DeepVisit);
+            APPA.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ARMO):
-            ARMO.VisitRecords(RecordType, op, DeepVisit);
+            ARMO.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(BOOK):
-            BOOK.VisitRecords(RecordType, op, DeepVisit);
+            BOOK.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CLOT):
-            CLOT.VisitRecords(RecordType, op, DeepVisit);
+            CLOT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CONT):
-            CONT.VisitRecords(RecordType, op, DeepVisit);
+            CONT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(DOOR):
-            DOOR.VisitRecords(RecordType, op, DeepVisit);
+            DOOR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(INGR):
-            INGR.VisitRecords(RecordType, op, DeepVisit);
+            INGR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LIGH):
-            LIGH.VisitRecords(RecordType, op, DeepVisit);
+            LIGH.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(MISC):
-            MISC.VisitRecords(RecordType, op, DeepVisit);
+            MISC.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(STAT):
-            STAT.VisitRecords(RecordType, op, DeepVisit);
+            STAT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(GRAS):
-            GRAS.VisitRecords(RecordType, op, DeepVisit);
+            GRAS.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(TREE):
-            TREE.VisitRecords(RecordType, op, DeepVisit);
+            TREE.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(FLOR):
-            FLOR.VisitRecords(RecordType, op, DeepVisit);
+            FLOR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(FURN):
-            FURN.VisitRecords(RecordType, op, DeepVisit);
+            FURN.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(WEAP):
-            WEAP.VisitRecords(RecordType, op, DeepVisit);
+            WEAP.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(AMMO):
-            AMMO.VisitRecords(RecordType, op, DeepVisit);
+            AMMO.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(NPC_):
-            NPC_.VisitRecords(RecordType, op, DeepVisit);
+            NPC_.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CREA):
-            CREA.VisitRecords(RecordType, op, DeepVisit);
+            CREA.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LVLC):
-            LVLC.VisitRecords(RecordType, op, DeepVisit);
+            LVLC.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SLGM):
-            SLGM.VisitRecords(RecordType, op, DeepVisit);
+            SLGM.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(KEYM):
-            KEYM.VisitRecords(RecordType, op, DeepVisit);
+            KEYM.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ALCH):
-            ALCH.VisitRecords(RecordType, op, DeepVisit);
+            ALCH.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SBSP):
-            SBSP.VisitRecords(RecordType, op, DeepVisit);
+            SBSP.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(SGST):
-            SGST.VisitRecords(RecordType, op, DeepVisit);
+            SGST.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LVLI):
-            LVLI.VisitRecords(RecordType, op, DeepVisit);
+            LVLI.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(WTHR):
-            WTHR.VisitRecords(RecordType, op, DeepVisit);
+            WTHR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CLMT):
-            CLMT.VisitRecords(RecordType, op, DeepVisit);
+            CLMT.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(REGN):
-            REGN.VisitRecords(RecordType, op, DeepVisit);
+            REGN.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CELL):
-            CELL.VisitRecords(RecordType, op, DeepVisit);
+            CELL.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(WRLD):
-            WRLD.VisitRecords(RecordType, op, DeepVisit);
+            WRLD.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(DIAL):
-            DIAL.VisitRecords(RecordType, op, DeepVisit);
+            DIAL.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(QUST):
-            QUST.VisitRecords(RecordType, op, DeepVisit);
+            QUST.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(IDLE):
-            IDLE.VisitRecords(RecordType, op, DeepVisit);
+            IDLE.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(PACK):
-            PACK.VisitRecords(RecordType, op, DeepVisit);
+            PACK.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(CSTY):
-            CSTY.VisitRecords(RecordType, op, DeepVisit);
+            CSTY.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LSCR):
-            LSCR.VisitRecords(RecordType, op, DeepVisit);
+            LSCR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(LVSP):
-            LVSP.VisitRecords(RecordType, op, DeepVisit);
+            LVSP.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(ANIO):
-            ANIO.VisitRecords(RecordType, op, DeepVisit);
+            ANIO.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(WATR):
-            WATR.VisitRecords(RecordType, op, DeepVisit);
+            WATR.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         case REV32(EFSH):
-            EFSH.VisitRecords(RecordType, op, DeepVisit);
+            EFSH.pool.VisitRecords(RecordType, op, DeepVisit);
             break;
         default:
             if(RecordType)

@@ -50,7 +50,7 @@ class TES4Record : public Record
         std::vector<StringRecord> MAST; //Master Files
 
         //FNV Specific
-        std::vector<FORMID> ONAM; //Overridden Forms
+        UnorderedPackedArray<FORMID> ONAM; //Overridden Forms
         RawRecord SCRN; //Screenshot
         //Part of FNVRecord
         UINT16 formVersion; //FNV

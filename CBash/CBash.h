@@ -19,90 +19,97 @@ GPL License and Copyright Notice ============================================
  CBash copyright (C) 2010 Waruddar
 =============================================================================
 */
+#pragma once
 // CBash.h
 //#define _UNICODE
 #include "MacroDefinitions.h"
 #include "Collection.h"
 
+#ifdef COMPILING_CBASH
+    #define DLLEXTERN extern "C" __declspec(dllexport)
+#else
+    #define DLLEXTERN extern "C" __declspec(dllimport)
+#endif
+
 //Exported Functions
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Version info functions
-EXPORT_FUNC UINT32 GetVersionMajor();
-EXPORT_FUNC UINT32 GetVersionMinor();
-EXPORT_FUNC UINT32 GetVersionRevision();
+DLLEXTERN UINT32 GetVersionMajor();
+DLLEXTERN UINT32 GetVersionMinor();
+DLLEXTERN UINT32 GetVersionRevision();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Logging action functions
-EXPORT_FUNC void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING));
-EXPORT_FUNC void AllowRaising(void (*_RaiseCallback)());
+DLLEXTERN void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING));
+DLLEXTERN void AllowRaising(void (*_RaiseCallback)());
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
-EXPORT_FUNC Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType);
-EXPORT_FUNC SINT32 DeleteCollection(Collection *CollectionID);
-EXPORT_FUNC SINT32 LoadCollection(Collection *CollectionID);
-EXPORT_FUNC SINT32 UnloadCollection(Collection *CollectionID);
-EXPORT_FUNC SINT32 UnloadAllCollections();
-EXPORT_FUNC SINT32 DeleteAllCollections();
+DLLEXTERN Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType);
+DLLEXTERN SINT32 DeleteCollection(Collection *CollectionID);
+DLLEXTERN SINT32 LoadCollection(Collection *CollectionID);
+DLLEXTERN SINT32 UnloadCollection(Collection *CollectionID);
+DLLEXTERN SINT32 UnloadAllCollections();
+DLLEXTERN SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-EXPORT_FUNC SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
-EXPORT_FUNC SINT32 LoadMod(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection);
+DLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
+DLLEXTERN SINT32 LoadMod(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 UnloadMod(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection);
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
-EXPORT_FUNC SINT32 GetAllNumMods(Collection *CollectionID);
-EXPORT_FUNC SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
-EXPORT_FUNC SINT32 GetLoadOrderNumMods(Collection *CollectionID);
-EXPORT_FUNC SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
-EXPORT_FUNC STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC STRING GetModNameByID(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName);
-EXPORT_FUNC ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
-EXPORT_FUNC SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName);
-EXPORT_FUNC SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex);
-//EXPORT_FUNC SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
-EXPORT_FUNC UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID);
-EXPORT_FUNC SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes);
+DLLEXTERN SINT32 GetAllNumMods(Collection *CollectionID);
+DLLEXTERN SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
+DLLEXTERN SINT32 GetLoadOrderNumMods(Collection *CollectionID);
+DLLEXTERN SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModIDs);
+DLLEXTERN STRING GetFileNameByID(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+DLLEXTERN STRING GetModNameByID(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+DLLEXTERN ModFile * GetModIDByName(Collection *CollectionID, STRING const ModName);
+DLLEXTERN ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
+DLLEXTERN SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName);
+DLLEXTERN SINT32 GetModLoadOrderByID(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN STRING GetLongIDName(Collection *CollectionID, ModFile *ModID, const UINT8 ModIndex);
+//DLLEXTERN SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
+DLLEXTERN UINT32 IsModEmpty(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 GetModNumTypes(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 GetModTypes(Collection *CollectionID, ModFile *ModID, UINT32ARRAY RecordTypes);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions
-EXPORT_FUNC Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags);
-EXPORT_FUNC SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID);
-EXPORT_FUNC Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
-EXPORT_FUNC SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID);
-EXPORT_FUNC SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID);
+DLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags);
+DLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, Record *ParentID);
+DLLEXTERN Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
+DLLEXTERN SINT32 UnloadRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID);
+DLLEXTERN SINT32 SetRecordIdentifiers(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID);
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-EXPORT_FUNC Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID);
-EXPORT_FUNC SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType);
-EXPORT_FUNC SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs);
-EXPORT_FUNC SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts);
-EXPORT_FUNC SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts);
-EXPORT_FUNC SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
-EXPORT_FUNC SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs);
+DLLEXTERN Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID);
+DLLEXTERN SINT32 GetNumRecords(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType);
+DLLEXTERN SINT32 GetRecordIDs(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs);
+DLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-EXPORT_FUNC SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);
+DLLEXTERN SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-EXPORT_FUNC SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch);
+DLLEXTERN SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-EXPORT_FUNC void   SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
-EXPORT_FUNC void   DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS);
+DLLEXTERN void   SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
+DLLEXTERN void   DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS);
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-EXPORT_FUNC UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
-EXPORT_FUNC void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues);
+DLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
+DLLEXTERN void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

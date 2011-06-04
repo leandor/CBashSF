@@ -66,52 +66,31 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
 
 WRLDRecord::~WRLDRecord()
     {
-    delete ROAD;
-    delete CELL;
-    for(UINT32 x = 0; x < CELLS.size(); ++x)
-        delete CELLS[x];
-    }
-
-bool WRLDRecord::HasSubRecords()
-    {
-    return true;
+    //
     }
 
 bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;
 
-    if(RecordType == NULL || RecordType == REV32(ROAD))
-        {
-        if(ROAD != NULL)
-            {
-            if(op.Accept(ROAD))
-                return true;
-            }
-        }
+    if(ROAD != NULL && (RecordType == NULL || RecordType == REV32(ROAD)))
+        stop = op.Accept(ROAD);
+    if(stop)
+        return stop;
 
     if(RecordType == NULL || RecordType != REV32(CELL) ||
         RecordType != REV32(PGRD) || RecordType != REV32(LAND) ||
         RecordType != REV32(REFR) || RecordType != REV32(ACHR) ||
         RecordType != REV32(ACRE))
         {
-        if(CELL != NULL)
-            {
-            if(op.Accept(CELL))
-                return true;
-            }
+        if(CELL != NULL && (RecordType == NULL || RecordType == REV32(CELL)))
+            stop = op.Accept(CELL);
+        if(stop)
+            return stop;
 
-        for(UINT32 x = 0; x < CELLS.size();++x)
-            {
-            stop = op.Accept(CELLS[x]);
-            if(CELLS[x] == NULL)
-                {
-                CELLS.erase(CELLS.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
+        stop = cell_pool.VisitRecords(RecordType, op, true);
+        if(stop)
+            return stop;
         }
 
     return op.Stop();

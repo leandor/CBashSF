@@ -100,7 +100,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return MODL->Textures.MODS.size();
+                        return (UINT32)MODL->Textures.MODS.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -151,7 +151,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return SNAM.value.size();
+                        return (UINT32)SNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -195,7 +195,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return SPLO.value.size();
+                    return (UINT32)SPLO.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -232,7 +232,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return Destructable->Stages.value.size();
+                        return (UINT32)Destructable->Stages.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
@@ -359,7 +359,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return PKID.value.size();
+                    return (UINT32)PKID.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -444,7 +444,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return PNAM.value.size();
+                    return (UINT32)PNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }

@@ -131,20 +131,8 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
 
 CELLRecord::~CELLRecord()
     {
-    for(UINT32 x = 0; x < ACHR.size(); ++x)
-        delete ACHR[x];
-    for(UINT32 x = 0; x < ACRE.size(); ++x)
-        delete ACRE[x];
-    for(UINT32 x = 0; x < REFR.size(); ++x)
-        delete REFR[x];
-    delete PGRD;
-    delete LAND;
+    //
     //Parent is a shared pointer that's deleted when the WRLD group is deleted
-    }
-
-bool CELLRecord::HasSubRecords()
-    {
-    return true;
     }
 
 bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
@@ -152,61 +140,29 @@ bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     bool stop;
 
     if(RecordType == NULL || RecordType == REV32(ACHR))
-        for(UINT32 x = 0; x < ACHR.size();++x)
-            {
-            stop = op.Accept(ACHR[x]);
-            if(ACHR[x] == NULL)
-                {
-                ACHR.erase(ACHR.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
+        stop = achr_pool.VisitRecords(RecordType, op, true);
+    if(stop)
+        return stop;
 
     if(RecordType == NULL || RecordType == REV32(ACRE))
-        for(UINT32 x = 0; x < ACRE.size();++x)
-            {
-            stop = op.Accept(ACRE[x]);
-            if(ACRE[x] == NULL)
-                {
-                ACRE.erase(ACRE.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
+        stop = achr_pool.VisitRecords(RecordType, op, true);
+    if(stop)
+        return stop;
 
     if(RecordType == NULL || RecordType == REV32(REFR))
-        for(UINT32 x = 0; x < REFR.size();++x)
-            {
-            stop = op.Accept(REFR[x]);
-            if(REFR[x] == NULL)
-                {
-                REFR.erase(REFR.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
+        stop = refr_pool.VisitRecords(RecordType, op, true);
+    if(stop)
+        return stop;
 
-    if(RecordType == NULL || RecordType == REV32(PGRD))
-        {
-        if(PGRD != NULL)
-            {
-            if(op.Accept(PGRD))
-                return true;
-            }
-        }
+    if(PGRD != NULL && (RecordType == NULL || RecordType == REV32(PGRD)))
+        stop = op.Accept(PGRD);
+    if(stop)
+        return stop;
 
-    if(RecordType == NULL || RecordType == REV32(LAND))
-        {
-        if(LAND != NULL)
-            {
-            if(op.Accept(LAND))
-                return true;
-            }
-        }
+    if(LAND != NULL && (RecordType == NULL || RecordType == REV32(LAND)))
+        stop = op.Accept(LAND);
+    if(stop)
+        return stop;
 
     return op.Stop();
     }

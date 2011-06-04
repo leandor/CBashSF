@@ -97,8 +97,8 @@ bool TES4Record::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < ONAM.size(); x++)
-        op.Accept(ONAM[x]);
+    for(UINT32 x = 0; x < ONAM.value.size(); x++)
+        op.Accept(ONAM.value[x]);
 
     return op.Stop();
     }
@@ -172,18 +172,7 @@ SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 DELE.Read(buffer, subSize, curPos);
                 break;
             case REV32(ONAM):
-                if(subSize % sizeof(FORMID) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    ONAM.resize(subSize / sizeof(FORMID));
-                    _readBuffer(&ONAM[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized ONAM size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                ONAM.Read(buffer, subSize, curPos);
                 break;
             case REV32(SCRN):
                 SCRN.Read(buffer, subSize, curPos);
@@ -231,24 +220,18 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
             printer("TES4Record::WriteRecord: Error - Unable to write TES4 record. Fallout 3 support not yet implemented.\n");
             return -1;
         case eIsFalloutNewVegas:
-            writer.record_write_subrecord(REV32(HEDR), &HEDR.value, sizeof(TES4HEDR));
-            if(OFST.IsLoaded())
-                writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
-            if(DELE.IsLoaded())
-                writer.record_write_subrecord(REV32(DELE), DELE.value, DELE.GetSize());
-            if(CNAM.IsLoaded())
-                writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
-            if(SNAM.IsLoaded())
-                writer.record_write_subrecord(REV32(SNAM), SNAM.value, SNAM.GetSize());
+            WRITE(HEDR);
+            WRITE(OFST);
+            WRITE(DELE);
+            WRITE(CNAM);
+            WRITE(SNAM);
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                writer.record_write_subrecord(REV32(MAST), MAST[p].value, MAST[p].GetSize());
+                WRITEAS(MAST[p], MAST);
                 writer.record_write_subrecord(REV32(DATA), &DATA[0], sizeof(DATA));
                 }
-            if(ONAM.size())
-                writer.record_write_subrecord(REV32(ONAM), &ONAM[0], (UINT32)ONAM.size() * sizeof(FORMID));
-            if(SCRN.IsLoaded())
-                writer.record_write_subrecord(REV32(SCRN), SCRN.value, SCRN.GetSize());
+            WRITE(ONAM);
+            WRITE(SCRN);
             break;
         }
 
@@ -257,18 +240,29 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
 
 UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
     {
+    IsCompressed(false);
     UINT32 recSize = 0;
     UINT32 recType = GetType();
+    UINT32 cleanFlags = 0;
+    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
+    //So it has to be cleaned before being written.
+    if(IsLoaded())
+        {
+        IsLoaded(false);
+        cleanFlags = flags;
+        IsLoaded(true);
+        }
+    else
+        cleanFlags = flags;
+
     collapser.Accept(formID);
 
     VisitFormIDs(collapser);
-    IsCompressed(false);
     WriteRecord(writer);
-    IsLoaded(false);
     recSize = writer.record_size();
     writer.file_write(&recType, 4);
     writer.file_write(&recSize, 4);
-    writer.file_write(&flags, 4);
+    writer.file_write(&cleanFlags, 4);
     writer.file_write(&formID, 4);
     writer.file_write(&flagsUnk, 4);
     if(whichGame == eIsFalloutNewVegas)
@@ -276,7 +270,6 @@ UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormID
         writer.file_write(&formVersion, 2);
         writer.file_write(&versionControl2[0], 2);
         }
-    IsLoaded(true);
     writer.record_flush();
 
     expander.Accept(formID);
@@ -301,7 +294,7 @@ bool TES4Record::operator ==(const TES4Record &other) const
         versionControl2[1] == other.versionControl2[1] &&
         SCRN == other.SCRN &&
         MAST.size() == other.MAST.size() &&
-        ONAM.size() == other.ONAM.size())
+        ONAM == other.ONAM)
         {
         //Record order kinda sorta but doesn't really matter on masters, so equality testing is easy
         //The order determines the mod index of all formIDs in the mod file
@@ -310,12 +303,6 @@ bool TES4Record::operator ==(const TES4Record &other) const
         //The ordering has no effect on load order in game or in the editor
         for(UINT32 x = 0; x < MAST.size(); ++x)
             if(!(MAST[x].equalsi(other.MAST[x])))
-                return false;
-        //Record order probably doesn't matter on overrides, so equality testing isn't easy
-        //The proper solution would be to make a set of each vector and compare that instead
-        //Fix-up later
-        for(UINT32 x = 0; x < ONAM.size(); ++x)
-            if(ONAM[x] != other.ONAM[x])
                 return false;
         return true;
         }

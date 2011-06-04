@@ -1,20 +1,85 @@
 from cint import *
 
-RecIndent = -2
+def fflags(y):
+    for x in range(32):
+        z = 1 << x
+        if y & z == z:
+            print hex(z)
+
+RecIndent = 2
+LastIndent = RecIndent
+expandLists = True
 def printRecord(record):
     global RecIndent
-    RecIndent += 2
+    global LastIndent
     if hasattr(record, 'copyattrs'):
+        if expandLists == True:
+            msize = max([len(attr) for attr in record.copyattrs if not attr.endswith('_list')])
+        else:
+            msize = max([len(attr) for attr in record.copyattrs])
         for attr in record.copyattrs:
+            wasList = False
+            if expandLists == True:
+                if attr.endswith('_list'):
+                    attr = attr[:-5]
+                    wasList = True
             rec = getattr(record, attr)
             if RecIndent: print " " * (RecIndent - 1),
-            print attr, ":", rec
+            if wasList:
+                print attr
+            else:
+                print attr + " " * (msize - len(attr)), ":",
+            if rec is None:
+                print rec
+            elif 'flag' in attr.lower() or 'service' in attr.lower():
+                print hex(rec)
+                if expandLists == True:
+                    for x in range(32):
+                        z = pow(2, x)
+                        if rec & z == z:
+                            print " " * RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z)
+
+            elif isinstance(rec, tuple) and len(rec) == 2 and isinstance(rec[0], basestring) and isinstance(rec[1], int):
+                print PrintFormID(rec)
+            elif isinstance(rec, list):
+                if len(rec) > 0:
+                    IsFidList = True
+                    for obj in rec:
+                        if not (isinstance(obj, tuple) and len(obj) == 2 and isinstance(obj[0], basestring) and isinstance(obj[1], int)):
+                            IsFidList = False
+                            break
+                    if IsFidList:
+                        print [PrintFormID(x) for x in rec]
+                    elif not wasList:
+                        print rec
+                elif not wasList:
+                    print rec
+            elif isinstance(rec, basestring):
+                print `rec`
+            elif not wasList:
+                print rec
+            RecIndent += 2
             printRecord(rec)
+            RecIndent -= 2
     elif isinstance(record, list):
-        if len(record) > 0 and hasattr(record[0], 'copyattrs'):
-            for rec in record:
-                printRecord(rec)
-    RecIndent -= 2
+        if len(record) > 0:
+            if hasattr(record[0], 'copyattrs'):
+                LastIndent = RecIndent
+                for rec in record:
+                    printRecord(rec)
+                    if LastIndent == RecIndent:
+                        print
+
+def d(record, expand=False):
+    global expandLists
+    expandLists = expand
+    try:
+        fid = record.fid
+        msize = max([len(attr) for attr in record.copyattrs])
+        print "  fid" + " " * (msize - len("fid")), ":", PrintFormID(fid)
+    except AttributeError:
+        pass
+    printRecord(record)
 
 def regressionTests():
     Current = ObCollection()
@@ -10348,16 +10413,16 @@ from timeit import Timer
 
 phonenumber = raw_input(">")
 Current = ObCollection()
-##Current.addMod("Oblivion.esm")
-##print "MinLoad"
-Current.addMod("Oblivion.esm", MinLoad=False)
-print "FullLoad"
+Current.addMod("Oblivion.esm")
+print "MinLoad"
+##Current.addMod("Oblivion.esm", MinLoad=False)
+##print "FullLoad"
 Current.load()
 phonenumber = raw_input(">")
 del Current
 phonenumber = raw_input("!")
 
-##regressionTests()
+regressionTests()
 
 ##TestTemp()
 ##TestAttrReport()

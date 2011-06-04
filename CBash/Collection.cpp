@@ -496,7 +496,7 @@ SINT32 Collection::Load()
                     ++expandedIndex;
                     }
                 else
-                    curModFile->FormIDHandler.CreateFormIDLookup(curModFile->TES4.MAST.size());
+                    curModFile->FormIDHandler.CreateFormIDLookup((UINT8)curModFile->TES4.MAST.size());
                 }
             Expanders.push_back(new FormIDResolver(curModFile->FormIDHandler.ExpandTable, curModFile->FormIDHandler.FileStart, curModFile->FormIDHandler.FileEnd));
             DeletedRecords.push_back(std::make_pair(curModFile, std::vector<Record *>()));
@@ -694,16 +694,16 @@ UINT32 Collection::GetNumRecordConflicts(Record *&curRecord, const bool GetExten
         STRING RecordEditorID = curRecord->GetEditorIDKey();
         if(RecordEditorID != NULL)
             {
-            count = EditorID_ModFile_Record.count(RecordEditorID);
+            count = (UINT32)EditorID_ModFile_Record.count(RecordEditorID);
             if(GetExtendedConflicts)
-                count += ExtendedEditorID_ModFile_Record.count(RecordEditorID);
+                count += (UINT32)ExtendedEditorID_ModFile_Record.count(RecordEditorID);
             }
         }
     else
         {
-        count = FormID_ModFile_Record.count(curRecord->formID);
+        count = (UINT32)FormID_ModFile_Record.count(curRecord->formID);
         if(GetExtendedConflicts)
-            count += ExtendedFormID_ModFile_Record.count(curRecord->formID);
+            count += (UINT32)ExtendedFormID_ModFile_Record.count(curRecord->formID);
         }
     return count;
     }
@@ -742,7 +742,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, MODIDARRAY ModIDs, REC
             }
         }
 
-    UINT32 y = sortedConflicts.size();
+    UINT32 y = (UINT32)sortedConflicts.size();
     if(y)
         {
         std::sort(sortedConflicts.begin(), sortedConflicts.end(), compModRecordPair);
@@ -795,7 +795,7 @@ SINT32 Collection::GetRecordHistory(ModFile *&curModFile, Record *&curRecord, MO
             }
         }
 
-    UINT32 y = sortedHistory.size();
+    UINT32 y = (UINT32)sortedHistory.size();
     if(y)
         {
         std::sort(sortedHistory.begin(), sortedHistory.end(), compModRecordPair);
@@ -1009,20 +1009,10 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
 
 SINT32 Collection::DeleteRecord(ModFile *&curModFile, Record *&curRecord, Record *&ParentRecord)
     {
-    RecordDeleter deleter(curRecord, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
-
-    UINT32 RecordType = curRecord->GetType();
-    UINT32 TopType = ParentRecord != NULL ?
-                        (ParentRecord->GetParentType() ?
-                            ParentRecord->GetParentType() :
-                            ParentRecord->GetType()) :
-                        RecordType;
-    //if(ParentRecord != NULL)
-    //    DPRINT("Deleting %08X (%s) under %08X (%s) vs (%c%c%c%c) under (%c%c%c%c)", curRecord->formID, curRecord->GetStrType(), ParentRecord->formID, ParentRecord->GetStrType(), ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopType)[0], ((STRING)&TopType)[1], ((STRING)&TopType)[2], ((STRING)&TopType)[3]);
-    //else
-    //    DPRINT("Deleting %08X (%s) vs (%c%c%c%c)", curRecord->formID, curRecord->GetStrType(), ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3]);
-    curModFile->VisitRecords(TopType, RecordType, deleter, true);
-    return deleter.GetCount();
+    RecordDeindexer deindexer(curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
+    deindexer.Accept(curRecord);
+    curRecord->VisitSubRecords(NULL, deindexer);
+    return curModFile->DeleteRecord(curRecord, ParentRecord);
     }
 
 SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID FormID, STRING const &EditorID)
@@ -1129,118 +1119,3 @@ SINT32 Collection::SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID 
         }
     return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }
-
-//RecordDeleter::RecordDeleter(Record *_RecordToDelete, /*bool IsExtended,*/ EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record):
-//    RecordOp(),
-//    //IsExtended(IsExtended),
-//    EditorID_ModFile_Record(_EditorID_ModFile_Record),
-//    FormID_ModFile_Record(_FormID_ModFile_Record),
-//    RecordToDelete(_RecordToDelete)
-//    {
-//    //
-//    }
-//
-//RecordDeleter::~RecordDeleter()
-//    {
-//    //
-//    }
-//
-//bool RecordDeleter::Accept(Record *&curRecord)
-//    {
-//    if(curRecord == NULL || curRecord == NULL)
-//        return false;
-//
-//    if(RecordToDelete == NULL || curRecord == RecordToDelete)
-//        {
-//        //De-Index the record
-//        if(curRecord->IsKeyedByEditorID())
-//            {
-//            EditorID_Iterator it = EditorID_ModFile_Record.find(curRecord->GetEditorIDKey());
-//            if(it != EditorID_ModFile_Record.end())
-//                {
-//                //SortedRecords &records = IsExtended ? it->second.extended : it->second.loadordered;
-//                SortedRecords &records = it->second;
-//                for(UINT32 x = 0; x < records.size; ++x)
-//                    if(records.records[x] == curRecord)
-//                        {
-//                        records.erase(x);
-//                        if(records.size == 0)
-//                            EditorID_ModFile_Record.erase(it);
-//                        break;
-//                        }
-//                }
-//            }
-//        else
-//            {
-//            FormID_Iterator it = FormID_ModFile_Record.find(curRecord->formID);
-//            if(it != FormID_ModFile_Record.end())
-//                {
-//                //SortedRecords &records = IsExtended ? it->second.extended : it->second.loadordered;
-//                SortedRecords &records = it->second;
-//                for(UINT32 x = 0; x < records.size; ++x)
-//                    if(records.records[x] == curRecord)
-//                        {
-//                        records.erase(x);
-//                        if(records.size == 0)
-//                            FormID_ModFile_Record.erase(it);
-//                        break;
-//                        }
-//                }
-//            }
-//        if(curRecord->HasSubRecords())
-//            {
-//            RecordDeleter SubRecordDeleter(NULL, /*IsExtended,*/ EditorID_ModFile_Record, FormID_ModFile_Record);
-//            curRecord->VisitSubRecords(NULL, SubRecordDeleter);
-//            }
-//        //Delete the record
-//        delete curRecord;
-//        curRecord = NULL;
-//        ++count;
-//        result = true;
-//        stop = RecordToDelete != NULL;
-//        return stop;
-//        }
-//    return false;
-//    }
-//
-//RecordIndexer::RecordIndexer(ModFile *_curModFile, EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
-//    RecordOp(),
-//    //IsExtended(false),
-//    curModFile(_curModFile),
-//    EditorID_ModFile_Record(_EditorID_Map),
-//    FormID_ModFile_Record(_FormID_Map)
-//    {
-//    //
-//    }
-//
-//RecordIndexer::RecordIndexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
-//    RecordOp(),
-//    //IsExtended(false),
-//    EditorID_ModFile_Record(_EditorID_Map),
-//    FormID_ModFile_Record(_FormID_Map)
-//    {
-//    //
-//    }
-//
-//RecordIndexer::~RecordIndexer()
-//    {
-//    //
-//    }
-//
-//bool RecordIndexer::Accept(Record *&curRecord)
-//    {
-//    //IndexedRecords &indexedrecords = curRecord->IsKeyedByEditorID() ? EditorID_ModFile_Record[curRecord->GetEditorIDKey()] : FormID_ModFile_Record[curRecord->formID];
-//    SortedRecords &records = curRecord->IsKeyedByEditorID() ? EditorID_ModFile_Record[curRecord->GetEditorIDKey()] : FormID_ModFile_Record[curRecord->formID];
-//    records.push_back(curModFile, curRecord);
-//    return false;
-//    }
-//
-//void RecordIndexer::SetModFile(ModFile *_curModFile)
-//    {
-//    curModFile = _curModFile;
-//    }
-
-//void RecordIndexer::SetIsExtended(bool UseExtended)
-//    {
-//    IsExtended = UseExtended;
-//    }

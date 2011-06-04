@@ -68,7 +68,7 @@ UINT32 DIALRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)INFO.size();
+                    return (UINT32)info_pool.GetSize();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -101,8 +101,7 @@ void * DIALRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //dialType
             return &DATA.value;
         case 9: //INFO
-            for(UINT32 p = 0;p < (UINT32)INFO.size();++p)
-                ((RECORDIDARRAY)FieldValues)[p] = INFO[p];
+            info_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
             return NULL;
         default:
             return NULL;

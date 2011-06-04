@@ -2371,7 +2371,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
 
     WRITEEMPTY(POBA);
     WRITEAS(BeginINAM, INAM);
-    BeginSCHR.value.numRefs = BeginSCR_.value.size(); //Just to ensure that the value is correct
+    BeginSCHR.value.numRefs = (UINT32)BeginSCR_.value.size(); //Just to ensure that the value is correct
     BeginSCHR.value.compiledSize = BeginSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < BeginVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    BeginSCHR.value.lastIndex = (BeginSCHR.value.lastIndex > BeginVARS.value[x]->SLSD.value.index) ? BeginSCHR.value.lastIndex : BeginVARS.value[x]->SLSD.value.index;
@@ -2384,7 +2384,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
 
     WRITEEMPTY(POEA);
     WRITEAS(EndINAM, INAM);
-    EndSCHR.value.numRefs = EndSCR_.value.size(); //Just to ensure that the value is correct
+    EndSCHR.value.numRefs = (UINT32)EndSCR_.value.size(); //Just to ensure that the value is correct
     EndSCHR.value.compiledSize = EndSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < EndVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    EndSCHR.value.lastIndex = (EndSCHR.value.lastIndex > EndVARS.value[x]->SLSD.value.index) ? EndSCHR.value.lastIndex : EndVARS.value[x]->SLSD.value.index;
@@ -2397,7 +2397,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
 
     WRITEEMPTY(POCA);
     WRITEAS(ChangeINAM, INAM);
-    ChangeSCHR.value.numRefs = ChangeSCR_.value.size(); //Just to ensure that the value is correct
+    ChangeSCHR.value.numRefs = (UINT32)ChangeSCR_.value.size(); //Just to ensure that the value is correct
     ChangeSCHR.value.compiledSize = ChangeSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < ChangeVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    ChangeSCHR.value.lastIndex = (ChangeSCHR.value.lastIndex > ChangeVARS.value[x]->SLSD.value.index) ? ChangeSCHR.value.lastIndex : ChangeVARS.value[x]->SLSD.value.index;

@@ -23,8 +23,8 @@ GPL License and Copyright Notice ============================================
 // GRUPRecord.h
 #include "Common.h"
 #include "GenericRecord.h"
+#include "Allocator.h"
 #include "Oblivion/Records/DIALRecord.h"
-#include "Oblivion/Records/INFORecord.h"
 #include "Oblivion/Records/CELLRecord.h"
 #include "Oblivion/Records/ACRERecord.h"
 #include "Oblivion/Records/ACHRRecord.h"
@@ -54,94 +54,102 @@ GPL License and Copyright Notice ============================================
 
 //#include "mmgr.h"
 
-template<class T>
+template<class T, UINT32 RecType, UINT32 InitAlloc>
 class GRUPRecords
     {
     public:
+        RecordPoolAllocator<T, RecType, InitAlloc> pool;
         UINT32 stamp;
-        bool SkimmedGRUP;
-        std::vector<Record *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+
+        GRUPRecords():
+            stamp(134671)
+            {
+            //
+            }
+
         ~GRUPRecords()
             {
-            //Record *rec = new T();
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(T), Records.size() * sizeof(T));
-            //delete rec;
-            for(UINT32 p = 0;p < Records.size(); p++)
-                delete Records[p];
+            //
             }
 
         bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
-            if(SkimmedGRUP || gSize == 0)
+            if(gSize == 0)
                 {
-                printer("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printer("GRUPRecords::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif
                 return false;
                 }
-            SkimmedGRUP = true;
+
             Record * curRecord = NULL;
-            //UINT32 recordType = 0;
             unsigned char *gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
-
+            FORMID formID;
+            UINT32 flags, flagsUnk;
             while(reader.tell() < gEnd){
-                curRecord = new T(reader.tell() + 20);
                 reader.skip(4); //reader.read(&recordType, 4);
                 reader.read(&recordSize, 4);
-                if(processor(curRecord))
+                reader.read(&flags, 4);
+                reader.read(&formID, 4);
+                reader.read(&flagsUnk, 4);
+                processor.expander.Accept(formID);
+
+                //Testing Messages
+                //if(curRecord->IsLoaded())
+                //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+                //if((curRecord->flags & 0x4000) != 0)
+                //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+                if(processor.IsSkipNewRecords && processor.FormIDHandler.IsNewRecord(formID))
                     {
-                    indexer.Accept(curRecord);
-                    Records.push_back(curRecord);
+                    reader.skip(recordSize);
+                    continue;
                     }
+
+                //Make sure the formID is unique within the mod
+                if(processor.UsedFormIDs.insert(formID).second == false)
+                    {
+                    if(!processor.IsAddMasters) //Can cause any new records to be given a duplicate ID
+                        printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", formID);
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
+                curRecord = pool.construct(reader.tell());
+                curRecord->flags = flags;
+                curRecord->formID = formID;
+                curRecord->flagsUnk = flagsUnk;
+
+                curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+                processor.parser.Accept(curRecord);
+                if(curRecord->IsDeleted())
+                    processor.DeletedRecords.push_back(curRecord);
+                //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+                if(processor.IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && processor.FormIDHandler.IsNewRecord(curRecord->formID))
+                    processor.FormIDHandler.NewTypes.insert(curRecord->GetType());
+                indexer.Accept(curRecord);
+                //Records.push_back(curRecord);
                 reader.skip(recordSize);
                 };
-            if(Records.size())
+            if(pool.GetSize())
                 processor.IsEmpty(false);
             return true;
             }
-        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
-            Record * curRecord = NULL;
-
-            bool stop = false;
-
-            if(RecordType != NULL && Records.size() > 0 && Records[0]->GetType() != RecordType)
-                return false;
-            for(UINT32 p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                if(RecordType == NULL || RecordType == curRecord->GetType())
-                    {
-                    stop = op.Accept(curRecord);
-                    if(curRecord == NULL)
-                        {
-                        Records.erase(Records.begin() + p);
-                        --p;
-                        }
-                    if(stop)
-                        return stop;
-                    }
-
-                if(DeepVisit)
-                    {
-                    stop = curRecord->VisitSubRecords(RecordType, op);
-                    if(stop)
-                        return stop;
-                    }
-                }
-            return stop;
-            }
-        UINT32 WriteGRUP(UINT32 TopLabel, FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
-            {
+            std::vector<Record *> Records;
+            pool.MakeRecordsVector(Records);
             UINT32 numRecords = (UINT32)Records.size();
             if(numRecords == 0)
                 return 0;
             UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
             UINT32 TopSize = 0;
+            UINT32 TopLabel = RecType;
             UINT32 formCount = 0;
 
             //Top GRUP Header
@@ -156,141 +164,138 @@ class GRUPRecords
 
             formCount += numRecords;
             for(UINT32 p = 0; p < numRecords; p++)
-                {
                 TopSize += Records[p]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                if(CloseMod)
-                    delete Records[p];
-                }
+
             writer.file_write(TopSizePos, &TopSize, 4);
             if(CloseMod)
-                Records.clear();
+                pool.purge_with_destructors();
             return formCount;
             }
-
     };
 
-template<>
-class GRUPRecords<DIALRecord>
+template<UINT32 RecType, UINT32 InitAlloc>
+class GRUPRecords<DIALRecord, RecType, InitAlloc>
     {
     public:
+        RecordPoolAllocator<DIALRecord, RecType, InitAlloc> pool;
         UINT32 stamp;
-        bool SkimmedGRUP;
-        std::vector<Record *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+
+        GRUPRecords():
+            stamp(134671)
+            {
+            //
+            }
+
         ~GRUPRecords()
             {
-            //Record *rec = new DIALRecord();
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(DIALRecord), Records.size() * sizeof(DIALRecord));
-            //delete rec;
-            //rec = new INFORecord();
-            //UINT32 count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((DIALRecord *)Records[p])->INFO.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(INFORecord), count * sizeof(INFORecord));
-            //delete rec;
-            for(UINT32 p = 0;p < Records.size(); p++)
-                delete Records[p];
+            //
             }
+
         bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
-            if(SkimmedGRUP || gSize == 0)
+            if(gSize == 0)
                 {
-                printer("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printer("GRUPRecords<DIALRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif
                 return false;
                 }
-            SkimmedGRUP = true;
             Record *curDIALRecord = NULL, *curRecord = NULL, *orphans = NULL;
             UINT32 recordType = 0;
             unsigned char *gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
+            FORMID formID;
+            UINT32 flags, flagsUnk;
 
             curDIALRecord = orphans = new DIALRecord();
             while(reader.tell() < gEnd){
                 reader.read(&recordType, 4);
                 reader.read(&recordSize, 4);
+                reader.read(&flags, 4);
+                reader.read(&formID, 4);
+                reader.read(&flagsUnk, 4);
+
+                if(recordType == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
+                    continue;
+
+                processor.expander.Accept(formID);
+
+                //Testing Messages
+                //if(curRecord->IsLoaded())
+                //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+                //if((curRecord->flags & 0x4000) != 0)
+                //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+                if(processor.IsSkipNewRecords && processor.FormIDHandler.IsNewRecord(formID))
+                    {
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
+                //Make sure the formID is unique within the mod
+                if(processor.UsedFormIDs.insert(formID).second == false)
+                    {
+                    if(!processor.IsAddMasters) //Can cause any new records to be given a duplicate ID
+                        printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", formID);
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
                 switch(recordType)
                     {
                     case REV32(DIAL):
-                        curDIALRecord = new DIALRecord(reader.tell() + 12);
-                        if(processor(curDIALRecord))
-                            {
-                            indexer.Accept(curDIALRecord);
-                            Records.push_back(curDIALRecord);
-                            }
+                        ((DIALRecord *)curDIALRecord)->info_pool.consolidate();
+                        curRecord = curDIALRecord = pool.construct(reader.tell());
                         break;
-                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
-                        reader.skip(8); //Skip label and type fields
-                        reader.read(&stamp, 4);
-                        continue;
                     case REV32(INFO):
-                        curRecord = new INFORecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((DIALRecord *)curDIALRecord)->INFO.push_back(curRecord);
-                            }
+                        curRecord = ((DIALRecord *)curDIALRecord)->info_pool.construct(reader.tell());
                         break;
                     default:
                         printer("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         #ifdef CBASH_DEBUG_CHUNK
                             reader.peek_around(PEEK_SIZE);
                         #endif
+                        reader.skip(recordSize);
+                        continue;
                         break;
                     }
+
+                curRecord->flags = flags;
+                curRecord->formID = formID;
+                curRecord->flagsUnk = flagsUnk;
+
+                curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+                processor.parser.Accept(curRecord);
+                if(curRecord->IsDeleted())
+                    processor.DeletedRecords.push_back(curRecord);
+                //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+                if(processor.IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && processor.FormIDHandler.IsNewRecord(curRecord->formID))
+                    processor.FormIDHandler.NewTypes.insert(curRecord->GetType());
+                indexer.Accept(curRecord);
                 reader.skip(recordSize);
                 };
-            if(Records.size())
+            ((DIALRecord *)curDIALRecord)->info_pool.consolidate();
+            if(pool.GetSize())
                 processor.IsEmpty(false);
-
-            for(UINT32 x = 0; x < ((DIALRecord *)orphans)->INFO.size(); ++x)
+            std::vector<Record *> orphaned;
+            ((DIALRecord *)orphans)->info_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", ((DIALRecord *)orphans)->INFO[x]->formID, ((DIALRecord *)orphans)->INFO[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<DIALRecord>::Skim: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((DIALRecord *)orphans)->INFO[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
             delete orphans;
             return true;
             }
-        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
-            {
-            Record * curRecord = NULL;
-            bool stop = false;
 
-            if(RecordType != NULL && RecordType != REV32(DIAL) && RecordType != REV32(INFO))
-                return false;
-
-            for(UINT32 p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                if(RecordType == NULL || RecordType == curRecord->GetType())
-                    {
-                    stop = op.Accept(curRecord);
-                    if(curRecord == NULL)
-                        {
-                        Records.erase(Records.begin() + p);
-                        --p;
-                        }
-                    if(stop)
-                        return stop;
-                    }
-
-                if(DeepVisit)
-                    {
-                    stop = curRecord->VisitSubRecords(RecordType, op);
-                    if(stop)
-                        return stop;
-                    }
-                }
-            return stop;
-            }
         UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
+            std::vector<Record *> Records;
+            pool.MakeRecordsVector(Records);
             UINT32 numDIALRecords = (UINT32)Records.size(); //Parent Records
             if(numDIALRecords == 0)
                 return 0;
@@ -323,7 +328,9 @@ class GRUPRecords<DIALRecord>
                 collapser.Accept(parentFormID);
                 TopSize += curRecord->Write(writer, bMastersChanged, expander, collapser, Expanders);
 
-                numINFORecords = (UINT32)curRecord->INFO.size();
+                std::vector<Record *> INFORecords;
+                curRecord->info_pool.MakeRecordsVector(INFORecords);
+                numINFORecords = (UINT32)INFORecords.size();
                 if(numINFORecords)
                     {
                     writer.file_write(&type, 4);
@@ -336,240 +343,200 @@ class GRUPRecords<DIALRecord>
                     ChildrenSize = 20;
 
                     formCount += numINFORecords;
-                    for(UINT32 y = 0; y < curRecord->INFO.size(); ++y)
-                        {
-                        ChildrenSize += curRecord->INFO[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                        if(CloseMod)
-                            delete curRecord->INFO[y];
-                        }
+                    for(UINT32 y = 0; y < numINFORecords; ++y)
+                        ChildrenSize += INFORecords[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
                     writer.file_write(ChildrenSizePos, &ChildrenSize, 4);
                     TopSize += ChildrenSize;
-                    if(CloseMod)
-                        curRecord->INFO.clear();
                     }
-                if(CloseMod)
-                    delete curRecord;
                 }
             writer.file_write(TopSizePos, &TopSize, 4);
             if(CloseMod)
-                Records.clear();
+                pool.purge_with_destructors();
             return formCount;
             }
 
     };
 
-template<>
-class GRUPRecords<CELLRecord>
+template<UINT32 RecType, UINT32 InitAlloc>
+class GRUPRecords<CELLRecord, RecType, InitAlloc>
     {
     public:
+        RecordPoolAllocator<CELLRecord, RecType, InitAlloc> pool;
+        RecordPoolAllocator<PGRDRecord, REV32(PGRD), 5> pgrd_pool;
         UINT32 stamp;
-        bool SkimmedGRUP;
-        std::vector<Record *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+
+        GRUPRecords():
+            stamp(134671)
+            {
+            //
+            }
+
         ~GRUPRecords()
             {
-            //Record *rec = new CELLRecord();
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(CELLRecord), Records.size() * sizeof(CELLRecord));
-            //delete rec;
-            //rec = new REFRRecord();
-            //UINT32 count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((CELLRecord *)Records[p])->REFR.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(REFRRecord), count * sizeof(REFRRecord));
-            //delete rec;
-            //rec = new ACRERecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((CELLRecord *)Records[p])->ACRE.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACRERecord), count * sizeof(ACRERecord));
-            //delete rec;
-            //rec = new ACHRRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((CELLRecord *)Records[p])->ACHR.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACHRRecord), count * sizeof(ACHRRecord));
-            //delete rec;
-            //rec = new LANDRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((CELLRecord *)Records[p])->LAND != 0 ? 1 : 0;
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(LANDRecord), count * sizeof(LANDRecord));
-            //delete rec;
-            //rec = new PGRDRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((CELLRecord *)Records[p])->PGRD != 0 ? 1 : 0;
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(PGRDRecord), count * sizeof(PGRDRecord));
-            //delete rec;
-            for(UINT32 p = 0;p < Records.size(); p++)
-                delete Records[p];
+            //
             }
+
         bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer)
             {
-            if(SkimmedGRUP || gSize == 0)
+            if(gSize == 0)
                 {
-                printer("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif
                 return false;
                 }
-            SkimmedGRUP = true;
             Record *curCELLRecord = NULL, *curRecord = NULL, *orphans = NULL;
             UINT32 recordType = 0;
             unsigned char *gEnd = reader.tell() + gSize - 20;
             UINT32 recordSize = 0;
+            FORMID formID;
+            UINT32 flags, flagsUnk;
 
             curCELLRecord = orphans = new CELLRecord();
             while(reader.tell() < gEnd){
                 reader.read(&recordType, 4);
                 reader.read(&recordSize, 4);
+                reader.read(&flags, 4);
+                reader.read(&formID, 4);
+                reader.read(&flagsUnk, 4);
+
+                if(recordType == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
+                    continue;
+
+                processor.expander.Accept(formID);
+
+                //Testing Messages
+                //if(curRecord->IsLoaded())
+                //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+                //if((curRecord->flags & 0x4000) != 0)
+                //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+                if(processor.IsSkipNewRecords && processor.FormIDHandler.IsNewRecord(formID))
+                    {
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
+                //Make sure the formID is unique within the mod
+                if(processor.UsedFormIDs.insert(formID).second == false)
+                    {
+                    if(!processor.IsAddMasters) //Can cause any new records to be given a duplicate ID
+                        printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", formID);
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
                 switch(recordType)
                     {
                     case REV32(CELL):
-                        curCELLRecord = new CELLRecord(reader.tell() + 12);
-                        if(processor(curCELLRecord))
-                            {
-                            indexer.Accept(curCELLRecord);
-                            Records.push_back(curCELLRecord);
-                            }
+                        ((CELLRecord *)curCELLRecord)->achr_pool.consolidate();
+                        ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
+                        ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
+                        curRecord = curCELLRecord = pool.construct(reader.tell());
                         break;
-                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
-                        reader.skip(12); //skip the rest of the header
-                        continue;
                     case REV32(ACHR):
-                        curRecord = new ACHRRecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->ACHR.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->achr_pool.construct(reader.tell());
                         break;
                     case REV32(ACRE):
-                        curRecord = new ACRERecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->ACRE.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->acre_pool.construct(reader.tell());
                         break;
                     case REV32(REFR):
-                        curRecord = new REFRRecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->REFR.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->refr_pool.construct(reader.tell());
                         break;
                     case REV32(PGRD):
-                        curRecord = new PGRDRecord(reader.tell() + 12);
-                        if(processor(curRecord))
+                        if(curCELLRecord == orphans)
                             {
-                            if(curCELLRecord == orphans)
-                                {
-                                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName());
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else if(((CELLRecord *)curCELLRecord)->PGRD != NULL)
-                                {
-                                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else
-                                {
-                                indexer.Accept(curRecord);
-                                ((CELLRecord *)curCELLRecord)->PGRD = curRecord;
-                                }
+                            printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", formID, reader.tell() - reader.start(), reader.getFileName());
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
                             }
+                        else if(((CELLRecord *)curCELLRecord)->PGRD != NULL)
+                            {
+                            printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
+                            }
+                        else
+                            curRecord = ((CELLRecord *)curCELLRecord)->PGRD = pgrd_pool.construct(reader.tell());
                         break;
                     default:
                         printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         #ifdef CBASH_DEBUG_CHUNK
                             reader.peek_around(PEEK_SIZE);
                         #endif
+                        reader.skip(recordSize);
+                        continue;
                         break;
                     }
+
+                curRecord->flags = flags;
+                curRecord->formID = formID;
+                curRecord->flagsUnk = flagsUnk;
+
+                curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+                processor.parser.Accept(curRecord);
+                if(curRecord->IsDeleted())
+                    processor.DeletedRecords.push_back(curRecord);
+                //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+                if(processor.IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && processor.FormIDHandler.IsNewRecord(curRecord->formID))
+                    processor.FormIDHandler.NewTypes.insert(curRecord->GetType());
+                indexer.Accept(curRecord);
                 reader.skip(recordSize);
                 };
-            if(Records.size())
+            ((CELLRecord *)curCELLRecord)->achr_pool.consolidate();
+            ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
+            ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
+
+            if(pool.GetSize())
                 processor.IsEmpty(false);
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->ACHR.size(); ++x)
+            std::vector<Record *> orphaned;
+            ((CELLRecord *)orphans)->achr_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->ACHR[x]->formID, ((CELLRecord *)orphans)->ACHR[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->ACHR[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->ACRE.size(); ++x)
+            orphaned.clear();
+            ((CELLRecord *)orphans)->acre_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->ACRE[x]->formID, ((CELLRecord *)orphans)->ACRE[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->ACRE[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->REFR.size(); ++x)
+            orphaned.clear();
+            ((CELLRecord *)orphans)->refr_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->REFR[x]->formID, ((CELLRecord *)orphans)->REFR[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->REFR[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
             delete orphans;
             return true;
             }
-        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
-            {
-            Record * curRecord = NULL;
-            bool stop = false;
 
-            if(RecordType != NULL && RecordType != REV32(CELL) && RecordType != REV32(PGRD) && RecordType != REV32(LAND) && RecordType != REV32(REFR) && RecordType != REV32(ACHR) && RecordType != REV32(ACRE))
-                return false;
-
-            for(UINT32 p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                if(RecordType == NULL || RecordType == curRecord->GetType())
-                    {
-                    stop = op.Accept(curRecord);
-                    if(curRecord == NULL)
-                        {
-                        Records.erase(Records.begin() + p);
-                        --p;
-                        }
-                    if(stop)
-                        return stop;
-                    }
-
-                if(DeepVisit)
-                    {
-                    stop = curRecord->VisitSubRecords(RecordType, op);
-                    if(stop)
-                        return stop;
-                    }
-                }
-            return stop;
-            }
         UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
             {
+            std::vector<Record *> Records;
+            pool.MakeRecordsVector(Records);
             UINT32 numCELLRecords = (UINT32)Records.size();
             if(numCELLRecords == 0)
                 return 0;
@@ -588,7 +555,7 @@ class GRUPRecords<CELLRecord>
 
             UINT32 formCount = 0;
 
-            UINT32 gLabel = REV32(CELL);
+            UINT32 gLabel = RecType;
             UINT32 numSubBlocks = 0;
             UINT32 numChildren = 0;
             UINT32 numChild = 0;
@@ -661,44 +628,42 @@ class GRUPRecords<CELLRecord>
                             //Place the PGRD, ACHR, ACRE, and REFR records into their proper GRUP
                             if(curRecord->PGRD != NULL)
                                 Temporary.push_back(curRecord->PGRD);
-                            if(CloseMod)
-                                curRecord->PGRD = NULL;
 
-                            for(UINT32 y = 0; y < curRecord->ACHR.size(); ++y)
+                            std::vector<Record *> ACHRRecords;
+                            curRecord->achr_pool.MakeRecordsVector(ACHRRecords);
+                            for(UINT32 y = 0; y < ACHRRecords.size(); ++y)
                                 {
-                                if(curRecord->ACHR[y]->IsPersistent())
-                                    Persistent.push_back(curRecord->ACHR[y]);
-                                else if(curRecord->ACHR[y]->IsVWD())
-                                    VWD.push_back(curRecord->ACHR[y]);
+                                if(ACHRRecords[y]->IsPersistent())
+                                    Persistent.push_back(ACHRRecords[y]);
+                                else if(ACHRRecords[y]->IsVWD())
+                                    VWD.push_back(ACHRRecords[y]);
                                 else
-                                    Temporary.push_back(curRecord->ACHR[y]);
+                                    Temporary.push_back(ACHRRecords[y]);
                                 }
-                            if(CloseMod)
-                                curRecord->ACHR.clear();
 
-                            for(UINT32 y = 0; y < curRecord->ACRE.size(); ++y)
+                            std::vector<Record *> ACRERecords;
+                            curRecord->acre_pool.MakeRecordsVector(ACRERecords);
+                            for(UINT32 y = 0; y < ACRERecords.size(); ++y)
                                 {
-                                if(curRecord->ACRE[y]->IsPersistent())
-                                    Persistent.push_back(curRecord->ACRE[y]);
-                                else if(curRecord->ACRE[y]->IsVWD())
-                                    VWD.push_back(curRecord->ACRE[y]);
+                                if(ACRERecords[y]->IsPersistent())
+                                    Persistent.push_back(ACRERecords[y]);
+                                else if(ACRERecords[y]->IsVWD())
+                                    VWD.push_back(ACRERecords[y]);
                                 else
-                                    Temporary.push_back(curRecord->ACRE[y]);
+                                    Temporary.push_back(ACRERecords[y]);
                                 }
-                            if(CloseMod)
-                                curRecord->ACRE.clear();
 
-                            for(UINT32 y = 0; y < curRecord->REFR.size(); ++y)
+                            std::vector<Record *> REFRRecords;
+                            curRecord->refr_pool.MakeRecordsVector(REFRRecords);
+                            for(UINT32 y = 0; y < REFRRecords.size(); ++y)
                                 {
-                                if(curRecord->REFR[y]->IsPersistent())
-                                    Persistent.push_back(curRecord->REFR[y]);
-                                else if(curRecord->REFR[y]->IsVWD())
-                                    VWD.push_back(curRecord->REFR[y]);
+                                if(REFRRecords[y]->IsPersistent())
+                                    Persistent.push_back(REFRRecords[y]);
+                                else if(REFRRecords[y]->IsVWD())
+                                    VWD.push_back(REFRRecords[y]);
                                 else
-                                    Temporary.push_back(curRecord->REFR[y]);
+                                    Temporary.push_back(REFRRecords[y]);
                                 }
-                            if(CloseMod)
-                                curRecord->REFR.clear();
 
                             numChildren = (UINT32)Persistent.size() + (UINT32)VWD.size() + (UINT32)Temporary.size();
                             if(numChildren)
@@ -728,11 +693,8 @@ class GRUPRecords<CELLRecord>
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
-                                        {
                                         childSize += Persistent[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                        if(CloseMod)
-                                            delete Persistent[x];
-                                        }
+
                                     childrenSize += childSize;
                                     writer.file_write(childSizePos, &childSize, 4);
                                     Persistent.clear();
@@ -752,11 +714,8 @@ class GRUPRecords<CELLRecord>
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
-                                        {
                                         childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                        if(CloseMod)
-                                            delete VWD[x];
-                                        }
+
                                     childrenSize += childSize;
                                     writer.file_write(childSizePos, &childSize, 4);
                                     VWD.clear();
@@ -776,11 +735,8 @@ class GRUPRecords<CELLRecord>
                                     childSize = 20;
 
                                     for(UINT32 x = 0; x < numChild; ++x)
-                                        {
                                         childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                        if(CloseMod)
-                                            delete Temporary[x];
-                                        }
+
                                     childrenSize += childSize;
                                     writer.file_write(childSizePos, &childSize, 4);
                                     Temporary.clear();
@@ -788,8 +744,6 @@ class GRUPRecords<CELLRecord>
                                 subBlockSize += childrenSize;
                                 writer.file_write(childrenSizePos, &childrenSize, 4);
                                 }
-                            if(CloseMod)
-                                delete curRecord;
                             }
                         blockSize += subBlockSize;
                         writer.file_write(subBlockSizePos, &subBlockSize, 4);
@@ -803,112 +757,48 @@ class GRUPRecords<CELLRecord>
                     }
                 BlockedRecords[curBlock].clear();
                 }
-            if(CloseMod)
-                Records.clear();
             writer.file_write(TopSizePos, &TopSize, 4);
             BlockedRecords.clear();
+            if(CloseMod)
+                pool.purge_with_destructors();
             return formCount;
             }
-
     };
 
-template<>
-class GRUPRecords<WRLDRecord>
+template<UINT32 RecType, UINT32 InitAlloc>
+class GRUPRecords<WRLDRecord, RecType, InitAlloc>
     {
     public:
+        RecordPoolAllocator<WRLDRecord, RecType, InitAlloc> pool;
+        RecordPoolAllocator<CELLRecord, REV32(CELL), 5> cell_pool;
+        RecordPoolAllocator<LANDRecord, REV32(LAND), 5> land_pool;
+        RecordPoolAllocator<ROADRecord, REV32(ROAD), 5> road_pool;
+
         UINT32 stamp;
-        bool SkimmedGRUP;
-        std::vector<Record *> Records;
-        GRUPRecords():stamp(134671), SkimmedGRUP(false) {}
+
+        GRUPRecords():
+            stamp(134671)
+            {
+            //
+            }
+
         ~GRUPRecords()
             {
-            //Record *rec = new WRLDRecord();
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), Records.size(), sizeof(WRLDRecord), Records.size() * sizeof(WRLDRecord));
-            //delete rec;
-
-            //rec = new CELLRecord();
-            //UINT32 count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    count += ((WRLDRecord *)Records[p])->CELL != 0 ? 1 : 0;
-            //    count += ((WRLDRecord *)Records[p])->CELLS.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(CELLRecord), count * sizeof(CELLRecord));
-            //delete rec;
-
-            //rec = new REFRRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->REFR.size();
-            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->REFR.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(REFRRecord), count * sizeof(REFRRecord));
-            //delete rec;
-
-            //rec = new ACRERecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->ACRE.size();
-            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->ACRE.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACRERecord), count * sizeof(ACRERecord));
-            //delete rec;
-
-            //rec = new ACHRRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->ACHR.size();
-            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->ACHR.size();
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(ACHRRecord), count * sizeof(ACHRRecord));
-            //delete rec;
-
-            //rec = new LANDRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->LAND != 0 ? 1 : 0;
-            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->LAND != 0 ? 1 : 0;
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(LANDRecord), count * sizeof(LANDRecord));
-            //delete rec;
-            //rec = new PGRDRecord();
-            //count = 0;
-            //for(UINT32 p = 0; p < Records.size(); p++)
-            //    {
-            //    if(((WRLDRecord *)Records[p])->CELL != NULL)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELL)->PGRD != 0 ? 1 : 0;
-            //    for(UINT32 x = 0; x < ((WRLDRecord *)Records[p])->CELLS.size(); x++)
-            //        count += ((CELLRecord *)((WRLDRecord *)Records[p])->CELLS[x])->PGRD != 0 ? 1 : 0;
-            //    }
-            //printer("num %s = %d, sizeof = %d, min mem = %d\n", rec->GetStrType(), count, sizeof(PGRDRecord), count * sizeof(PGRDRecord));
-            //delete rec;
-            for(UINT32 p = 0;p < Records.size(); p++)
-                delete Records[p];
+            //
             }
-        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer, RecordOp &fullReader)
+
+        template<typename U>
+        bool Skim(FileReader &reader, const UINT32 &gSize, RecordProcessor &processor, RecordOp &indexer, RecordOp &fullReader, U &pgrd_pool)
             {
-            if(SkimmedGRUP || gSize == 0)
+            if(gSize == 0)
                 {
-                printer("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has already been loaded or has a size of 0.\n", reader.getFileName());
+                printer("GRUPRecords<WRLDRecord>::Skim: Error - Unable to load group in file \"%s\". The group has a size of 0.\n", reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
                     reader.peek_around(PEEK_SIZE);
                 #endif
                 return false;
                 }
-            SkimmedGRUP = true;
-            Record *curWRLDRecord = NULL, *curCELLRecord = NULL, *curRecord = NULL, *orphans = NULL;
+            Record *curWRLDRecord = NULL, *curCELLRecord = NULL, *curRecord = NULL, *cell_orphans = NULL, *world_orphans = NULL;
 
             std::map<SINT32, std::map<SINT32, LANDRecord *> > GridXY_LAND;
             std::vector<std::pair<UINT32, unsigned char *> > GRUPs;
@@ -919,8 +809,11 @@ class GRUPRecords<WRLDRecord>
             GRUP_End.second = gEnd;
             GRUPs.push_back(GRUP_End);
             UINT32 recordSize = 0;
+            FORMID formID;
+            UINT32 flags, flagsUnk;
 
-            curCELLRecord = orphans = new CELLRecord();
+            curCELLRecord = cell_orphans = new CELLRecord();
+            curWRLDRecord = world_orphans = new WRLDRecord();
             while(reader.tell() < gEnd){
                 while(reader.tell() >= GRUP_End.second)
                     {
@@ -930,183 +823,210 @@ class GRUPRecords<WRLDRecord>
                     GRUPs.pop_back();
                     GRUP_End = GRUPs.back();
                     };
+
                 reader.read(&recordType, 4);
                 reader.read(&recordSize, 4);
+                reader.read(&flags, 4);
+                reader.read(&formID, 4);
+                reader.read(&flagsUnk, 4);
+
+                if(recordType == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
+                    {
+                    GRUP_End.first = formID; //GRUP Type
+                    GRUP_End.second = reader.tell() + recordSize - 20;
+                    GRUPs.push_back(GRUP_End);
+                    continue;
+                    }
+
+                processor.expander.Accept(formID);
+
+                //Testing Messages
+                //if(curRecord->IsLoaded())
+                //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", curRecord->GetStrType(), curRecord->formID);
+                //if((curRecord->flags & 0x4000) != 0)
+                //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
+
+                if(processor.IsSkipNewRecords && processor.FormIDHandler.IsNewRecord(formID))
+                    {
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
+                //Make sure the formID is unique within the mod
+                if(processor.UsedFormIDs.insert(formID).second == false)
+                    {
+                    if(!processor.IsAddMasters) //Can cause any new records to be given a duplicate ID
+                        printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", formID);
+                    reader.skip(recordSize);
+                    continue;
+                    }
+
                 switch(recordType)
                     {
                     case REV32(WRLD):
-                        curWRLDRecord = new WRLDRecord(reader.tell() + 12);
-                        if(processor(curWRLDRecord))
-                            {
-                            indexer.Accept(curWRLDRecord);
-                            Records.push_back(curWRLDRecord);
-                            }
+                        ((WRLDRecord *)curWRLDRecord)->cell_pool.consolidate();
+                        curRecord = curWRLDRecord = pool.construct(reader.tell());
                         break;
                     case REV32(CELL):
-                        curCELLRecord = new CELLRecord(reader.tell() + 12);
-                        if(processor(curCELLRecord))
+                        switch(GRUP_End.first)
                             {
-                            ((CELLRecord *)curCELLRecord)->Parent = curWRLDRecord;
-                            switch(GRUP_End.first)
-                                {
-                                case eWorld:
-                                    if(curWRLDRecord == NULL)
-                                        {
-                                        printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", curCELLRecord->formID, reader.tell() - reader.start(), reader.getFileName());
-                                        delete curCELLRecord;
-                                        #ifdef CBASH_DEBUG_CHUNK
-                                            reader.peek_around(PEEK_SIZE);
-                                        #endif
-                                        }
-                                    else if(((WRLDRecord *)curWRLDRecord)->CELL != NULL)
-                                        {
-                                        printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", curCELLRecord->formID, reader.tell() - reader.start(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
-                                        delete curCELLRecord;
-                                        #ifdef CBASH_DEBUG_CHUNK
-                                            reader.peek_around(PEEK_SIZE);
-                                        #endif
-                                        }
-                                    else
-                                        {
-                                        indexer.Accept(curCELLRecord);
-                                        ((WRLDRecord *)curWRLDRecord)->CELL = curCELLRecord;
-                                        }
+                            case eWorld:
+                                if(curWRLDRecord == world_orphans)
+                                    {
+                                    printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", formID, reader.tell() - reader.start(), reader.getFileName());
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
+                                    reader.skip(recordSize);
+                                    continue;
                                     break;
-                                default:
-                                    indexer.Accept(curCELLRecord);
-                                    ((WRLDRecord *)curWRLDRecord)->CELLS.push_back(curCELLRecord);
+                                    }
+                                else if(((WRLDRecord *)curWRLDRecord)->CELL != NULL)
+                                    {
+                                    printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", formID, reader.tell() - reader.start(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->CELL->formID);
+                                    #ifdef CBASH_DEBUG_CHUNK
+                                        reader.peek_around(PEEK_SIZE);
+                                    #endif
+                                    reader.skip(recordSize);
+                                    continue;
                                     break;
-                                }
+                                    }
+                                else
+                                    {
+                                    ((CELLRecord *)curCELLRecord)->achr_pool.consolidate();
+                                    ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
+                                    ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
+                                    curRecord = curCELLRecord = ((WRLDRecord *)curWRLDRecord)->CELL = cell_pool.construct(reader.tell());
+                                    }
+                                break;
+                            default:
+                                ((CELLRecord *)curCELLRecord)->achr_pool.consolidate();
+                                ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
+                                ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
+                                curRecord = curCELLRecord = ((WRLDRecord *)curWRLDRecord)->cell_pool.construct(reader.tell());
+                                break;
                             }
+                        ((CELLRecord *)curCELLRecord)->Parent = curWRLDRecord;
                         break;
-                    case REV32(GRUP): //All GRUPs will be recreated from scratch on write (saves memory)
-                        reader.skip(4);
-                        reader.read(&GRUP_End.first, 4);
-                        reader.skip(4);
-                        GRUP_End.second = reader.tell() + recordSize - 20;
-                        GRUPs.push_back(GRUP_End);
-                        continue;
                     case REV32(ROAD):
-                        curRecord = new ROADRecord(reader.tell() + 12);
-                        if(processor(curRecord))
+                        if(curWRLDRecord == world_orphans)
                             {
-                            if(curWRLDRecord == NULL)
-                                {
-                                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName());
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else if(((WRLDRecord *)curWRLDRecord)->ROAD != NULL)
-                                {
-                                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else
-                                {
-                                indexer.Accept(curRecord);
-                                ((WRLDRecord *)curWRLDRecord)->ROAD = curRecord;
-                                }
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", formID, reader.tell() - reader.start(), reader.getFileName());
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
                             }
+                        else if(((WRLDRecord *)curWRLDRecord)->ROAD != NULL)
+                            {
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has ROAD (%08X)\n", formID, reader.tell() - reader.start(), reader.getFileName(), curWRLDRecord->formID, ((WRLDRecord *)curWRLDRecord)->ROAD->formID);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
+                            }
+                        else
+                            curRecord = ((WRLDRecord *)curWRLDRecord)->ROAD = road_pool.construct(reader.tell());
                         break;
                     case REV32(LAND):
-                        curRecord = new LANDRecord(reader.tell() + 12);
-                        if(processor(curRecord))
+                        if(curCELLRecord == cell_orphans)
                             {
-                            if(curCELLRecord == orphans)
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", formID, reader.tell() - reader.start(), reader.getFileName());
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
+                            }
+                        else if(((CELLRecord *)curCELLRecord)->LAND != NULL)
+                            {
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
+                            }
+                        else
+                            {
+                            curRecord = ((CELLRecord *)curCELLRecord)->LAND = land_pool.construct(reader.tell());
+                            if(processor.Flags.IsIndexLANDs)
                                 {
-                                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName());
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else if(((CELLRecord *)curCELLRecord)->LAND != NULL)
-                                {
-                                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has LAND (%08X)\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->LAND->formID);
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else
-                                {
-                                indexer.Accept(curRecord);
-                                ((CELLRecord *)curCELLRecord)->LAND = curRecord;
-                                if(processor.Flags.IsIndexLANDs)
-                                    {
-                                    fullReader.Accept(curCELLRecord); //may already be loaded, but just to be sure.
-                                    //CELL will be unloaded if needed after a second round of indexing when all records are loaded
-                                    ((CELLRecord *)curCELLRecord)->XCLC.Load();
-                                    GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curRecord;
-                                    }
+                                fullReader.Accept(curCELLRecord); //may already be loaded, but just to be sure.
+                                //CELL will be unloaded if needed after a second round of indexing when all records are loaded
+                                ((CELLRecord *)curCELLRecord)->XCLC.Load();
+                                GridXY_LAND[((CELLRecord *)curCELLRecord)->XCLC->posX][((CELLRecord *)curCELLRecord)->XCLC->posY] = (LANDRecord *)curRecord;
                                 }
                             }
                         break;
                     case REV32(PGRD):
-                        curRecord = new PGRDRecord(reader.tell() + 12);
-                        if(processor(curRecord))
+                        if(curCELLRecord == cell_orphans)
                             {
-                            if(curCELLRecord == orphans)
-                                {
-                                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName());
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else if(((CELLRecord *)curCELLRecord)->PGRD != NULL)
-                                {
-                                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", curRecord->formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
-                                delete curRecord;
-                                #ifdef CBASH_DEBUG_CHUNK
-                                    reader.peek_around(PEEK_SIZE);
-                                #endif
-                                }
-                            else
-                                {
-                                indexer.Accept(curRecord);
-                                ((CELLRecord *)curCELLRecord)->PGRD = curRecord;
-                                }
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", formID, reader.tell() - reader.start(), reader.getFileName());
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
                             }
+                        else if(((CELLRecord *)curCELLRecord)->PGRD != NULL)
+                            {
+                            printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", formID, reader.tell() - reader.start(), reader.getFileName(), curCELLRecord->formID, ((CELLRecord *)curCELLRecord)->PGRD->formID);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                reader.peek_around(PEEK_SIZE);
+                            #endif
+                            reader.skip(recordSize);
+                            continue;
+                            break;
+                            }
+                        else
+                            curRecord = ((CELLRecord *)curCELLRecord)->PGRD = pgrd_pool.construct(reader.tell());
                         break;
                     case REV32(ACHR):
-                        curRecord = new ACHRRecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->ACHR.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->achr_pool.construct(reader.tell());
                         break;
                     case REV32(ACRE):
-                        curRecord = new ACRERecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->ACRE.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->acre_pool.construct(reader.tell());
                         break;
                     case REV32(REFR):
-                        curRecord = new REFRRecord(reader.tell() + 12);
-                        if(processor(curRecord))
-                            {
-                            indexer.Accept(curRecord);
-                            ((CELLRecord *)curCELLRecord)->REFR.push_back(curRecord);
-                            }
+                        curRecord = ((CELLRecord *)curCELLRecord)->refr_pool.construct(reader.tell());
                         break;
                     default:
                         printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&recordType)[0], ((STRING)&recordType)[1], ((STRING)&recordType)[2], ((STRING)&recordType)[3], reader.getFileName());
                         #ifdef CBASH_DEBUG_CHUNK
                             reader.peek_around(PEEK_SIZE);
                         #endif
+                        reader.skip(recordSize);
+                        continue;
                         break;
                     }
+
+                curRecord->flags = flags;
+                curRecord->formID = formID;
+                curRecord->flagsUnk = flagsUnk;
+
+                curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
+
+                processor.parser.Accept(curRecord);
+                if(curRecord->IsDeleted())
+                    processor.DeletedRecords.push_back(curRecord);
+                //Threads.schedule(boost::bind(&RecordReader::Accept, reader, (Record **)&curRecord));
+                if(processor.IsTrackNewTypes && !curRecord->IsKeyedByEditorID() && processor.FormIDHandler.IsNewRecord(curRecord->formID))
+                    processor.FormIDHandler.NewTypes.insert(curRecord->GetType());
+                indexer.Accept(curRecord);
                 reader.skip(recordSize);
                 };
+            ((WRLDRecord *)curWRLDRecord)->cell_pool.consolidate();
+            ((CELLRecord *)curCELLRecord)->achr_pool.consolidate();
+            ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
+            ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
 
             //Index LAND records by grid
             //There might be ACHR, ACRE, or REFR records in the World CELL
@@ -1117,24 +1037,30 @@ class GRUPRecords<WRLDRecord>
                 WRLDRecord *curWRLD = NULL;
                 CELLRecord *curCELL = NULL, *curWRLDCELL = NULL;
                 LANDRecord *curLAND = NULL;
+                std::vector<Record *> Records;
+                pool.MakeRecordsVector(Records);
                 for(UINT32 x = 0; x < Records.size(); ++x)
                     {
                     curWRLD = (WRLDRecord *)Records[x];
-                    for(UINT32 y = 0; y < curWRLD->CELLS.size(); ++y)
+                    curWRLDCELL = (CELLRecord *)curWRLD->CELL;
+                    std::vector<Record *> CELLRecords;
+                    curWRLD->cell_pool.MakeRecordsVector(CELLRecords);
+                    for(UINT32 y = 0; y < CELLRecords.size(); ++y)
                         {
-                        curCELL = (CELLRecord *)curWRLD->CELLS[y];
+                        curCELL = (CELLRecord *)CELLRecords[y];
                         //reader.Accept((Record **)&curCELL); //already read when loaded
                         //curCELLRecord->XCLC.Load();  //already loaded when CELL loaded
                         posX = curCELL->XCLC->posX;
                         posY = curCELL->XCLC->posY;
 
-                        curWRLDCELL = (CELLRecord *)curWRLD->CELL;
                         if(processor.Flags.IsFixupPlaceables && curWRLDCELL != NULL)
                             {
-                            for(UINT32 x = 0; x < curWRLDCELL->ACHR.size();)
+                            std::vector<Record *> ChildRecords;
+                            curWRLDCELL->achr_pool.MakeRecordsVector(ChildRecords);
+                            for(UINT32 x = 0; x < ChildRecords.size();++x)
                                 {
                                 //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
-                                curRecord = curWRLDCELL->ACHR[x];
+                                curRecord = ChildRecords[x];
                                 fullReader.Accept(curRecord);
 
                                 gridX = (SINT32)floor(((ACHRRecord *)curRecord)->DATA.value.posX / 4096.0);
@@ -1147,15 +1073,17 @@ class GRUPRecords<WRLDRecord>
                                     {
                                     //For easier use later on, go ahead and move it to the parent cell.
                                     //It will get moved back later during the save process if need be.
-                                    curCELL->ACHR.push_back(curRecord);
-                                    curWRLDCELL->ACHR.erase(curWRLDCELL->ACHR.begin() + x);
+                                    curCELL->achr_pool.construct(curRecord);
+                                    curWRLDCELL->achr_pool.destroy(curRecord);
                                     }
-                                else ++x;
                                 }
 
-                            for(UINT32 x = 0; x < curWRLDCELL->ACRE.size();)
+                            ChildRecords.clear();
+                            curWRLDCELL->acre_pool.MakeRecordsVector(ChildRecords);
+                            for(UINT32 x = 0; x < ChildRecords.size();++x)
                                 {
-                                curRecord = curWRLDCELL->ACRE[x];
+                                //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
+                                curRecord = ChildRecords[x];
                                 fullReader.Accept(curRecord);
 
                                 gridX = (SINT32)floor(((ACRERecord *)curRecord)->DATA.value.posX / 4096.0);
@@ -1166,17 +1094,22 @@ class GRUPRecords<WRLDRecord>
 
                                 if(gridX == posX && gridY == posY)
                                     {
-                                    curCELL->ACRE.push_back(curRecord);
-                                    curWRLDCELL->ACRE.erase(curWRLDCELL->ACRE.begin() + x);
+                                    //For easier use later on, go ahead and move it to the parent cell.
+                                    //It will get moved back later during the save process if need be.
+                                    curCELL->acre_pool.construct(curRecord);
+                                    curWRLDCELL->acre_pool.destroy(curRecord);
                                     }
-                                else ++x;
                                 }
 
-                            for(UINT32 x = 0; x < curWRLDCELL->REFR.size();)
+                            ChildRecords.clear();
+                            curWRLDCELL->refr_pool.MakeRecordsVector(ChildRecords);
+                            for(UINT32 x = 0; x < ChildRecords.size();++x)
                                 {
-                                curRecord = curWRLDCELL->REFR[x];
+                                //Have to test each record to see if it belongs to the cell. This is determined by its positioning.
+                                curRecord = ChildRecords[x];
                                 fullReader.Accept(curRecord);
 
+                                ((REFRRecord *)curRecord)->Data.Load();
                                 gridX = (SINT32)floor(((REFRRecord *)curRecord)->Data->DATA.value.posX / 4096.0);
                                 gridY = (SINT32)floor(((REFRRecord *)curRecord)->Data->DATA.value.posY / 4096.0);
 
@@ -1185,10 +1118,11 @@ class GRUPRecords<WRLDRecord>
 
                                 if(gridX == posX && gridY == posY)
                                     {
-                                    curCELL->REFR.push_back(curRecord);
-                                    curWRLDCELL->REFR.erase(curWRLDCELL->REFR.begin() + x);
+                                    //For easier use later on, go ahead and move it to the parent cell.
+                                    //It will get moved back later during the save process if need be.
+                                    curCELL->refr_pool.construct(curRecord);
+                                    curWRLDCELL->refr_pool.destroy(curRecord);
                                     }
-                                else ++x;
                                 }
                             }
 
@@ -1206,86 +1140,64 @@ class GRUPRecords<WRLDRecord>
 
                         if(processor.Flags.IsMinLoad)
                             curCELL->Unload();
+                        curCELL->achr_pool.consolidate();
+                        curCELL->acre_pool.consolidate();
+                        curCELL->refr_pool.consolidate();
                         }
+                    curWRLD->cell_pool.consolidate();
+                    curWRLDCELL->achr_pool.consolidate();
+                    curWRLDCELL->acre_pool.consolidate();
+                    curWRLDCELL->refr_pool.consolidate();
                     }
                 }
 
-            if(Records.size())
+            if(pool.GetSize())
                 processor.IsEmpty(false);
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->ACHR.size(); ++x)
+            std::vector<Record *> orphaned;
+            ((CELLRecord *)cell_orphans)->achr_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->ACHR[x]->formID, ((CELLRecord *)orphans)->ACHR[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->ACHR[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->ACRE.size(); ++x)
+            orphaned.clear();
+            ((CELLRecord *)cell_orphans)->acre_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->ACRE[x]->formID, ((CELLRecord *)orphans)->ACRE[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->ACRE[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
 
-            for(UINT32 x = 0; x < ((CELLRecord *)orphans)->REFR.size(); ++x)
+            orphaned.clear();
+            ((CELLRecord *)cell_orphans)->refr_pool.MakeRecordsVector(orphaned);
+            for(UINT32 x = 0; x < orphaned.size(); ++x)
                 {
-                printer("GRUPRecords<WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", ((CELLRecord *)orphans)->REFR[x]->formID, ((CELLRecord *)orphans)->REFR[x]->recData - reader.start(), reader.getFileName());
+                printer("GRUPRecords<CELLRecord>::Skim: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", orphaned[x]->formID, orphaned[x]->recData - reader.start(), reader.getFileName());
                 #ifdef CBASH_DEBUG_CHUNK
-                    reader.peek_around(PEEK_SIZE, ((CELLRecord *)orphans)->REFR[x]->recData);
+                    reader.peek_around(PEEK_SIZE, orphaned[x]->recData);
                 #endif
                 }
-            delete orphans;
-
+            delete cell_orphans;
+            delete world_orphans;
             return true;
             }
-        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+
+        UINT32 WriteGRUP(FileWriter &writer, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod, FormIDHandlerClass &FormIDHandler)
             {
-            Record *curRecord = NULL;
-            bool stop = false;
-
-            if(RecordType != NULL && RecordType != REV32(WRLD) &&
-                RecordType != REV32(ROAD) && RecordType != REV32(CELL) &&
-                RecordType != REV32(PGRD) && RecordType != REV32(LAND) &&
-                RecordType != REV32(REFR) && RecordType != REV32(ACHR) &&
-                RecordType != REV32(ACRE))
-                {
-                return false;
-                }
-
-            for(UINT32 p = 0; p < Records.size(); p++)
-                {
-                curRecord = Records[p];
-                if(RecordType == NULL || RecordType == curRecord->GetType())
-                    {
-                    stop = op.Accept(curRecord);
-                    if(curRecord == NULL)
-                        {
-                        Records.erase(Records.begin() + p);
-                        --p;
-                        }
-                    if(stop)
-                        return stop;
-                    }
-
-                if(DeepVisit)
-                    {
-                    stop = curRecord->VisitSubRecords(RecordType, op);
-                    if(stop)
-                        return stop;
-                    }
-                }
-            return stop;
-            }
-        UINT32 WriteGRUP(FileWriter &writer, FormIDHandlerClass &FormIDHandler, std::vector<FormIDResolver *> &Expanders, FormIDResolver &expander, FormIDResolver &collapser, const bool &bMastersChanged, bool CloseMod)
-            {
+            std::vector<Record *> Records;
+            pool.MakeRecordsVector(Records);
             UINT32 numWrldRecords = (UINT32)Records.size();
             if(numWrldRecords == 0)
                 return 0;
             UINT32 type = REV32(GRUP);
             UINT32 gType = eTop;
-            UINT32 gLabel = REV32(WRLD);
+            UINT32 gLabel = RecType;
             UINT32 TopSize = 0;
             UINT32 TopSizePos = 0;
             UINT32 worldSize = 0;
@@ -1340,23 +1252,32 @@ class GRUPRecords<WRLDRecord>
 
                 curWorldCell = (CELLRecord *)curWorld->CELL;
 
-                numCellRecords = (UINT32)curWorld->CELLS.size();
+                std::vector<Record *> CELLRecords;
+                curWorld->cell_pool.MakeRecordsVector(CELLRecords);
+                numCellRecords = (UINT32)CELLRecords.size();
+                formCount += numCellRecords;
                 for(UINT32 p = 0; p < numCellRecords; ++p)
                     {
-                    curCell = (CELLRecord *)curWorld->CELLS[p];
+                    curCell = (CELLRecord *)CELLRecords[p];
 
                     //All persistent references must be moved to the world cell
-                    for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
-                        if(curCell->ACRE[y]->IsPersistent())
-                            FixedPersistent.push_back(curCell->ACRE[y]);
+                    std::vector<Record *> ChildRecords;
+                    curCell->acre_pool.MakeRecordsVector(ChildRecords);
+                    for(UINT32 y = 0; y < ChildRecords.size(); ++y)
+                        if(ChildRecords[y]->IsPersistent())
+                            FixedPersistent.push_back(ChildRecords[y]);
 
-                    for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
-                        if(curCell->ACHR[y]->IsPersistent())
-                            FixedPersistent.push_back(curCell->ACHR[y]);
+                    ChildRecords.clear();
+                    curCell->achr_pool.MakeRecordsVector(ChildRecords);
+                    for(UINT32 y = 0; y < ChildRecords.size(); ++y)
+                        if(ChildRecords[y]->IsPersistent())
+                            FixedPersistent.push_back(ChildRecords[y]);
 
-                    for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
-                        if(curCell->REFR[y]->IsPersistent())
-                            FixedPersistent.push_back(curCell->REFR[y]);
+                    ChildRecords.clear();
+                    curCell->refr_pool.MakeRecordsVector(ChildRecords);
+                    for(UINT32 y = 0; y < ChildRecords.size(); ++y)
+                        if(ChildRecords[y]->IsPersistent())
+                            FixedPersistent.push_back(ChildRecords[y]);
 
                     if(curCell->Read())
                         curCell->VisitFormIDs(expander);
@@ -1372,10 +1293,11 @@ class GRUPRecords<WRLDRecord>
 
                     BlockedRecords[BlockIndex][SubBlockIndex].push_back(curCell);
                     }
+                CELLRecords.clear();
 
                 if(curWorldCell == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
-                    curWorldCell = new CELLRecord();
+                    curWorldCell = (CELLRecord *)cell_pool.construct((unsigned char *)NULL);
                     curWorldCell->formID = FormIDHandler.NextExpandedFormID();
                     curWorldCell->Parent = curWorld;
                     curWorldCell->IsHasWater(true);
@@ -1383,7 +1305,7 @@ class GRUPRecords<WRLDRecord>
                     curWorldCell->XCLC.Load();
                     }
 
-                if(curWorld->ROAD != NULL || curWorldCell != NULL || curWorld->CELLS.size() > 0)
+                if(curWorld->ROAD != NULL || curWorldCell != NULL || numCellRecords > 0)
                     {
                     gType = eWorld;
                     writer.file_write(&type, 4);
@@ -1399,11 +1321,6 @@ class GRUPRecords<WRLDRecord>
                         {
                         worldSize += curWorld->ROAD->Write(writer, bMastersChanged, expander, collapser, Expanders);
                         ++formCount;
-                        if(CloseMod)
-                            {
-                            delete curWorld->ROAD;
-                            curWorld->ROAD = NULL;
-                            }
                         }
 
                     if(curWorldCell != NULL)
@@ -1416,73 +1333,43 @@ class GRUPRecords<WRLDRecord>
 
                         if(curCell->LAND != NULL)
                             Temporary.push_back(curCell->LAND);
-                        if(CloseMod)
-                            curCell->LAND = NULL;
 
                         if(curCell->PGRD != NULL)
                             Temporary.push_back(curCell->PGRD);
-                        if(CloseMod)
-                            curCell->PGRD = NULL;
 
-                        for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
+                        UINT32 ignored_count = 0;
+                        std::vector<Record *> ChildRecords;
+                        curCell->acre_pool.MakeRecordsVector(ChildRecords);
+                        for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                             {
-                            if(curCell->ACHR[y]->IsPersistent())
-                                Persistent.push_back(curCell->ACHR[y]);
-                            else if(curCell->ACHR[y]->IsVWD())
-                                {
-                                VWD.push_back(curCell->ACHR[y]);
-                                delete curCell->ACHR[y];
-                                }
+                            if(ChildRecords[y]->IsPersistent())
+                                Persistent.push_back(ChildRecords[y]);
                             else
-                                {
-                                Temporary.push_back(curCell->ACHR[y]);
-                                delete curCell->ACHR[y];
-                                }
+                                ignored_count++;
                             }
-                        if(CloseMod)
-                            curCell->ACHR.clear();
 
-                        for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
+                        ChildRecords.clear();
+                        curCell->achr_pool.MakeRecordsVector(ChildRecords);
+                        for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                             {
-                            if(curCell->ACRE[y]->IsPersistent())
-                                Persistent.push_back(curCell->ACRE[y]);
-                            else if(curCell->ACRE[y]->IsVWD())
-                                {
-                                VWD.push_back(curCell->ACRE[y]);
-                                delete curCell->ACRE[y];
-                                }
+                            if(ChildRecords[y]->IsPersistent())
+                                Persistent.push_back(ChildRecords[y]);
                             else
-                                {
-                                Temporary.push_back(curCell->ACRE[y]);
-                                delete curCell->ACRE[y];
-                                }
+                                ignored_count++;
                             }
-                        if(CloseMod)
-                            curCell->ACRE.clear();
 
-                        for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
+                        ChildRecords.clear();
+                        curCell->refr_pool.MakeRecordsVector(ChildRecords);
+                        for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                             {
-                            if(curCell->REFR[y]->IsPersistent())
-                                Persistent.push_back(curCell->REFR[y]);
-                            else if(curCell->REFR[y]->IsVWD())
-                                {
-                                VWD.push_back(curCell->REFR[y]);
-                                delete curCell->REFR[y];
-                                }
+                            if(ChildRecords[y]->IsPersistent())
+                                Persistent.push_back(ChildRecords[y]);
                             else
-                                {
-                                Temporary.push_back(curCell->REFR[y]);
-                                delete curCell->REFR[y];
-                                }
+                                ignored_count++;
                             }
-                        if(CloseMod)
-                            curCell->REFR.clear();
 
-                        if(VWD.size() || Temporary.size())
-                            printer("GRUPRecords<WRLDRecord>::WriteGRUP: Warning - Information lost. Ignored %u VWD or Temporary records in the world cell: %08X", VWD.size() + Temporary.size(), worldFormID);
-
-                        VWD.clear();
-                        Temporary.clear();
+                        if(ignored_count)
+                            printer("GRUPRecords<WRLDRecord>::WriteGRUP: Warning - Information lost. Ignored %u VWD and Temporary records in the world cell: %08X", ignored_count, worldFormID);
 
                         numChildren = (UINT32)Persistent.size() + (UINT32)FixedPersistent.size();
                         if(numChildren)
@@ -1511,13 +1398,8 @@ class GRUPRecords<WRLDRecord>
 
                             numChild = (UINT32)Persistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
-                                {
                                 childSize += Persistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                if(CloseMod)
-                                    delete Persistent[y];
-                                }
 
-                            //The moved persistents will be deleted by their owning cell when its indexed
                             numChild = (UINT32)FixedPersistent.size();
                             for(UINT32 y = 0; y < numChild; ++y)
                                 childSize += FixedPersistent[y]->Write(writer, bMastersChanged, expander, collapser, Expanders);
@@ -1530,10 +1412,9 @@ class GRUPRecords<WRLDRecord>
                             writer.file_write(childrenSizePos, &childrenSize, 4);
                             }
                         if(CloseMod)
-                            delete curCell;
+                            cell_pool.destroy(curCell);
                         }
 
-                    formCount += (UINT32)curWorld->CELLS.size();
                     for(std::map<UINT32, std::map<UINT32, std::vector<CELLRecord *> > >::iterator curBlock = BlockedRecords.begin(); curBlock != BlockedRecords.end(); ++curBlock)
                         {
                         gType = eExteriorBlock;
@@ -1569,58 +1450,39 @@ class GRUPRecords<WRLDRecord>
 
                                 if(curCell->LAND != NULL)
                                     Temporary.push_back(curCell->LAND);
-                                if(CloseMod)
-                                    curCell->LAND = NULL;
 
                                 if(curCell->PGRD != NULL)
                                     Temporary.push_back(curCell->PGRD);
-                                if(CloseMod)
-                                    curCell->PGRD = NULL;
 
-                                for(UINT32 y = 0; y < curCell->ACHR.size(); ++y)
+                                std::vector<Record *> ChildRecords;
+                                curCell->acre_pool.MakeRecordsVector(ChildRecords);
+                                for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                                     {
-                                    if(curCell->ACHR[y]->IsPersistent())
-                                        {
-                                        if(CloseMod)
-                                            delete curCell->ACHR[y];
-                                        }
-                                    else if(curCell->ACHR[y]->IsVWD())
-                                        VWD.push_back(curCell->ACHR[y]);
-                                    else
-                                        Temporary.push_back(curCell->ACHR[y]);
+                                    if(ChildRecords[y]->IsVWD())
+                                        VWD.push_back(ChildRecords[y]);
+                                    else if(!ChildRecords[y]->IsPersistent())
+                                        Temporary.push_back(ChildRecords[y]);
                                     }
-                                if(CloseMod)
-                                    curCell->ACHR.clear();
 
-                                for(UINT32 y = 0; y < curCell->ACRE.size(); ++y)
+                                ChildRecords.clear();
+                                curCell->achr_pool.MakeRecordsVector(ChildRecords);
+                                for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                                     {
-                                    if(curCell->ACRE[y]->IsPersistent())
-                                        {
-                                        if(CloseMod)
-                                            delete curCell->ACRE[y];
-                                        }
-                                    else if(curCell->ACRE[y]->IsVWD())
-                                        VWD.push_back(curCell->ACRE[y]);
-                                    else
-                                        Temporary.push_back(curCell->ACRE[y]);
+                                    if(ChildRecords[y]->IsVWD())
+                                        VWD.push_back(ChildRecords[y]);
+                                    else if(!ChildRecords[y]->IsPersistent())
+                                        Temporary.push_back(ChildRecords[y]);
                                     }
-                                if(CloseMod)
-                                    curCell->ACRE.clear();
 
-                                for(UINT32 y = 0; y < curCell->REFR.size(); ++y)
+                                ChildRecords.clear();
+                                curCell->refr_pool.MakeRecordsVector(ChildRecords);
+                                for(UINT32 y = 0; y < ChildRecords.size(); ++y)
                                     {
-                                    if(curCell->REFR[y]->IsPersistent())
-                                        {
-                                        if(CloseMod)
-                                            delete curCell->REFR[y];
-                                        }
-                                    else if(curCell->REFR[y]->IsVWD())
-                                        VWD.push_back(curCell->REFR[y]);
-                                    else
-                                        Temporary.push_back(curCell->REFR[y]);
+                                    if(ChildRecords[y]->IsVWD())
+                                        VWD.push_back(ChildRecords[y]);
+                                    else if(!ChildRecords[y]->IsPersistent())
+                                        Temporary.push_back(ChildRecords[y]);
                                     }
-                                if(CloseMod)
-                                    curCell->REFR.clear();
 
                                 numChildren = (UINT32)VWD.size() + (UINT32)Temporary.size();
                                 if(numChildren)
@@ -1650,11 +1512,8 @@ class GRUPRecords<WRLDRecord>
                                         childSize = 20;
 
                                         for(UINT32 x = 0; x < numChild; ++x)
-                                            {
                                             childSize += VWD[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                            if(CloseMod)
-                                                delete VWD[x];
-                                            }
+
                                         childrenSize += childSize;
                                         writer.file_write(childSizePos, &childSize, 4);
                                         VWD.clear();
@@ -1674,11 +1533,8 @@ class GRUPRecords<WRLDRecord>
                                         childSize = 20;
 
                                         for(UINT32 x = 0; x < numChild; ++x)
-                                            {
                                             childSize += Temporary[x]->Write(writer, bMastersChanged, expander, collapser, Expanders);
-                                            if(CloseMod)
-                                                delete Temporary[x];
-                                            }
+
                                         childrenSize += childSize;
                                         writer.file_write(childSizePos, &childSize, 4);
                                         Temporary.clear();
@@ -1687,7 +1543,7 @@ class GRUPRecords<WRLDRecord>
                                     writer.file_write(childrenSizePos, &childrenSize, 4);
                                     }
                                 if(CloseMod)
-                                    delete curCell;
+                                    curWorld->cell_pool.destroy(curCell);
                                 }
                             blockSize += subBlockSize;
                             writer.file_write(subBlockSizePos, &subBlockSize, 4);
@@ -1701,9 +1557,19 @@ class GRUPRecords<WRLDRecord>
                     writer.file_write(worldSizePos, &worldSize, 4);
                     }
                 BlockedRecords.clear();
+
+                if(CloseMod)
+                    {
+                    cell_pool.destroy(curWorldCell);
+                    pool.destroy(curWorld);
+                    }
                 }
             if(CloseMod)
-                Records.clear();
+                {
+                //All destructors ran earlier, pools are entirely free
+                cell_pool.purge_no_destructors();
+                pool.purge_no_destructors();
+                }
             writer.file_write(TopSizePos, &TopSize, 4);
 
             return formCount;

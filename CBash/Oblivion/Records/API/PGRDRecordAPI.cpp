@@ -170,7 +170,7 @@ UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             return UINT32_ARRAY_FIELD;
                         case 1: //fieldSize
                             //The first entry in the points array is actually the reference
-                            return PGRL[ListIndex]->points.size() - 1;
+                            return (UINT32)PGRL[ListIndex]->points.size() - 1;
                         default:
                             return UNKNOWN_FIELD;
                         }

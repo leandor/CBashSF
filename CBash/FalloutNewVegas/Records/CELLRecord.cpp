@@ -126,11 +126,6 @@ CELLRecord::~CELLRecord()
     delete LAND;
     }
 
-bool CELLRecord::HasSubRecords()
-    {
-    return true;
-    }
-
 bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
     {
     bool stop;

@@ -83,7 +83,6 @@ class WRLDRecord : public FNVRecord //Worldspace
         WRLDRecord(WRLDRecord *srcRecord);
         ~WRLDRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

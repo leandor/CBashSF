@@ -241,6 +241,7 @@ class FNVFile : public ModFile
         UINT32   GetNumRecords(const UINT32 &RecordType);
         STRING   GetMasterName(UINT8 &CollapsedIndex);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
+        SINT32   DeleteRecord(Record *&curRecord, Record *&ParentRecord);
         SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders);
         SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod);
 

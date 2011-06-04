@@ -1049,7 +1049,7 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     WRITE(TCLT);
     WRITE(TCLF);
     WRITE(TCFU);
-    BeginSCHR.value.numRefs = BeginSCR_.value.size(); //Just to ensure that the value is correct
+    BeginSCHR.value.numRefs = (UINT32)BeginSCR_.value.size(); //Just to ensure that the value is correct
     BeginSCHR.value.compiledSize = BeginSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < BeginVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    BeginSCHR.value.lastIndex = (BeginSCHR.value.lastIndex > BeginVARS.value[x]->SLSD.value.index) ? BeginSCHR.value.lastIndex : BeginVARS.value[x]->SLSD.value.index;
@@ -1059,7 +1059,7 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     BeginVARS.Write(writer);
     BeginSCR_.Write(writer, true);
     WRITEEMPTY(NEXT);
-    EndSCHR.value.numRefs = EndSCR_.value.size(); //Just to ensure that the value is correct
+    EndSCHR.value.numRefs = (UINT32)EndSCR_.value.size(); //Just to ensure that the value is correct
     EndSCHR.value.compiledSize = EndSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < EndVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    EndSCHR.value.lastIndex = (EndSCHR.value.lastIndex > EndVARS.value[x]->SLSD.value.index) ? EndSCHR.value.lastIndex : EndVARS.value[x]->SLSD.value.index;

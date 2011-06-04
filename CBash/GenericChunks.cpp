@@ -2129,7 +2129,7 @@ void GENPATROL::Write(FileWriter &writer)
     WRITE(XPRD);
     WRITEEMPTY(XPPA);
     WRITE(INAM);
-    SCHR.value.numRefs = SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
     SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
     //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
@@ -2303,7 +2303,7 @@ void FNVAlternateTextures::Unload()
 void FNVAlternateTextures::resize(UINT32 newSize)
     {
     //Shrink
-    UINT32 size = MODS.size();
+    UINT32 size = (UINT32)MODS.size();
     for(; size > newSize;)
         delete MODS[--size];
     MODS.resize(newSize);
@@ -2345,7 +2345,7 @@ bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
 
 void FNVAlternateTextures::Write(FileWriter &writer)
     {
-    UINT32 cSize = MODS.size();
+    UINT32 cSize = (UINT32)MODS.size();
     if(cSize)
         {
         writer.record_write_subheader(REV32(MODS), GetSize());
@@ -2366,7 +2366,7 @@ void FNVAlternateTextures::Write(FileWriter &writer)
 
 void FNVAlternateTextures::Write(UINT32 _Type, FileWriter &writer)
     {
-    UINT32 cSize = MODS.size();
+    UINT32 cSize = (UINT32)MODS.size();
     if(cSize)
         {
         writer.record_write_subheader(_Type, GetSize());

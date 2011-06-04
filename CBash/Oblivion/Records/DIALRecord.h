@@ -22,6 +22,8 @@ GPL License and Copyright Notice ============================================
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
+#include "..\..\Allocator.h"
+#include "INFORecord.h"
 #include <vector>
 
 class DIALRecord : public Record
@@ -44,13 +46,13 @@ class DIALRecord : public Record
         std::vector<FORMID> QSTR;
         StringRecord FULL;
         ReqSimpleSubRecord<UINT8> DATA;
-        std::vector<Record *> INFO;
+
+        RecordPoolAllocator<INFORecord, REV32(INFO), 5> info_pool;
 
         DIALRecord(unsigned char *_recData=NULL);
         DIALRecord(DIALRecord *srcRecord);
         ~DIALRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

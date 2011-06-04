@@ -239,7 +239,6 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
         return;
         }
 
-
     DATA = srcRecord->DATA;
     VNML = srcRecord->VNML;
     VHGT = srcRecord->VHGT;

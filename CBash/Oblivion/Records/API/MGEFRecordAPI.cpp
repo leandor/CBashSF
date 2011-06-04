@@ -186,7 +186,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 2: //WhichType
                     if(OBME.IsLoaded())
                         {
-                        if((MGEFCODE)OBME->EDDX.value.mgefCode >= 0x80000000)
+                        if(*(MGEFCODE *)&OBME->EDDX.value.mgefCode[0] >= 0x80000000)
                             return RESOLVED_MGEFCODE_FIELD;
                         return STATIC_MGEFCODE_FIELD;
                         }

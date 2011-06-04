@@ -22,7 +22,8 @@ GPL License and Copyright Notice ============================================
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-//#include "CELLRecord.h"
+#include "..\..\Allocator.h"
+#include "CELLRecord.h"
 //#include "ROADRecord.h"
 #include <vector>
 
@@ -60,13 +61,12 @@ class WRLDRecord : public Record
 
         Record *ROAD;
         Record *CELL;
-        std::vector<Record *> CELLS;
+        RecordPoolAllocator<CELLRecord, REV32(CELL), 20> cell_pool;
 
         WRLDRecord(unsigned char *_recData=NULL);
         WRLDRecord(WRLDRecord *srcRecord);
         ~WRLDRecord();
 
-        bool   HasSubRecords();
         bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 

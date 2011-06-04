@@ -730,7 +730,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 32: //concSolid
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -740,7 +740,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 33: //concBroken
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -750,7 +750,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 34: //metalSolid
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -760,7 +760,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 35: //metalHollow
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -770,7 +770,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 36: //metalSheet
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -780,7 +780,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 37: //wood
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -790,7 +790,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 38: //sand
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -800,7 +800,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 39: //dirt
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -810,7 +810,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 40: //grass
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();
@@ -820,7 +820,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 41: //water
             if(FieldValue == NULL)
                 break;
-            ArraySize = strlen((STRING)FieldValue);
+            ArraySize = (UINT32)strlen((STRING)FieldValue);
             if(ArraySize > 29)
                 break;
             IMPF.Load();

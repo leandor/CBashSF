@@ -102,4 +102,14 @@ class WATRRecord : public Record
 
         bool operator ==(const WATRRecord &other) const;
         bool operator !=(const WATRRecord &other) const;
+        //void *operator new(size_t size)
+        //    {
+        //    printer("WATR Allocated with size %u\n", size);
+        //    return malloc(size);
+        //    }
+        //void operator delete(void* p)
+        //    {
+        //    printer("WATR deleted\n");
+        //    free(p);
+        //    }
     };
