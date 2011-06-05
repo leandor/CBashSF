@@ -96,6 +96,7 @@ def regressionTests():
     assertHAIR(Current, newMod)
     assertEYES(Current, newMod)
     assertRACE(Current, newMod)
+    
 ##    assertSOUN(Current, newMod)
 ##    assertSKIL(Current, newMod)
 
@@ -187,7 +188,7 @@ def assertTES4(Current, newMod):
 
 def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
-
+    
     assert record.fid == ('Oblivion.esm', 0x045D2F)
     assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
     assert record.flags2 == 1583621
@@ -10411,16 +10412,16 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-phonenumber = raw_input(">")
-Current = ObCollection()
-Current.addMod("Oblivion.esm")
-print "MinLoad"
+##phonenumber = raw_input(">")
+##Current = ObCollection()
+####Current.addMod("Oblivion.esm")
+####print "MinLoad"
 ##Current.addMod("Oblivion.esm", MinLoad=False)
 ##print "FullLoad"
-Current.load()
-phonenumber = raw_input(">")
-del Current
-phonenumber = raw_input("!")
+##Current.load()
+##phonenumber = raw_input(">")
+##del Current
+##phonenumber = raw_input("!")
 
 regressionTests()
 

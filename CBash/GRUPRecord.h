@@ -134,7 +134,7 @@ class GRUPRecords
                 //Records.push_back(curRecord);
                 reader.skip(recordSize);
                 };
-            if(pool.GetSize())
+            if(pool.used_object_capacity())
                 processor.IsEmpty(false);
             return true;
             }
@@ -277,7 +277,7 @@ class GRUPRecords<DIALRecord, RecType, InitAlloc>
                 reader.skip(recordSize);
                 };
             ((DIALRecord *)curDIALRecord)->info_pool.consolidate();
-            if(pool.GetSize())
+            if(pool.used_object_capacity())
                 processor.IsEmpty(false);
             std::vector<Record *> orphaned;
             ((DIALRecord *)orphans)->info_pool.MakeRecordsVector(orphaned);
@@ -497,7 +497,7 @@ class GRUPRecords<CELLRecord, RecType, InitAlloc>
             ((CELLRecord *)curCELLRecord)->acre_pool.consolidate();
             ((CELLRecord *)curCELLRecord)->refr_pool.consolidate();
 
-            if(pool.GetSize())
+            if(pool.used_object_capacity())
                 processor.IsEmpty(false);
 
             std::vector<Record *> orphaned;
@@ -1150,8 +1150,7 @@ class GRUPRecords<WRLDRecord, RecType, InitAlloc>
                     curWRLDCELL->refr_pool.consolidate();
                     }
                 }
-
-            if(pool.GetSize())
+            if(pool.used_object_capacity())
                 processor.IsEmpty(false);
 
             std::vector<Record *> orphaned;

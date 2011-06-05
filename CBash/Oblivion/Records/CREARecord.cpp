@@ -260,9 +260,7 @@ CREARecord::CREARecord(CREARecord *srcRecord):
     for(UINT32 x = 0; x < srcRecord->SPLO.size(); x++)
         SPLO[x] = srcRecord->SPLO[x];
 
-    NIFZ.resize(srcRecord->NIFZ.size());
-    for(UINT32 x = 0; x < srcRecord->NIFZ.size(); x++)
-        NIFZ[x].Copy(srcRecord->NIFZ[x]);
+    NIFZ = srcRecord->NIFZ;
     NIFT = srcRecord->NIFT;
     ACBS = srcRecord->ACBS;
 
@@ -286,10 +284,7 @@ CREARecord::CREARecord(CREARecord *srcRecord):
     for(UINT32 x = 0; x < srcRecord->PKID.size(); x++)
         PKID[x] = srcRecord->PKID[x];
 
-    KFFZ.resize(srcRecord->KFFZ.size());
-    for(UINT32 x = 0; x < srcRecord->KFFZ.size(); x++)
-        KFFZ[x].Copy(srcRecord->KFFZ[x]);
-
+    KFFZ = srcRecord->KFFZ;
     DATA = srcRecord->DATA;
     RNAM = srcRecord->RNAM;
     ZNAM = srcRecord->ZNAM;
@@ -1004,9 +999,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 SPLO.push_back(curFormID);
                 break;
             case REV32(NIFZ):
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
-                    NIFZ.push_back(StringRecord((STRING)&buffer[curPos]));
-                curPos++;
+                NIFZ.Read(buffer, subSize, curPos);
                 break;
             case REV32(NIFT):
                 NIFT.Read(buffer, subSize, curPos);
@@ -1044,9 +1037,7 @@ SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 PKID.push_back(curFormID);
                 break;
             case REV32(KFFZ):
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
-                    KFFZ.push_back(StringRecord((STRING)&buffer[curPos]));
-                curPos++;
+                KFFZ.Read(buffer, subSize, curPos);
                 break;
             case REV32(DATA):
                 DATA.Read(buffer, subSize, curPos);
@@ -1118,7 +1109,7 @@ SINT32 CREARecord::Unload()
     MODL.Unload();
 
     SPLO.clear();
-    NIFZ.clear();
+    NIFZ.Unload();
 
     NIFT.Unload();
     ACBS.Unload();
@@ -1137,8 +1128,8 @@ SINT32 CREARecord::Unload()
     AIDT.Unload();
 
     PKID.clear();
-    KFFZ.clear();
 
+    KFFZ.Unload();
     DATA.Unload();
     RNAM.Unload();
     ZNAM.Unload();
@@ -1177,21 +1168,7 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
     for(UINT32 p = 0; p < SPLO.size(); p++)
         writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(UINT32));
 
-    if(NIFZ.size())
-        {
-        cSize = 1; //final null terminator
-        for(UINT32 p = 0; p < NIFZ.size(); p++)
-            if(NIFZ[p].IsLoaded())
-                cSize += NIFZ[p].GetSize();
-        if(cSize > 65535) cSize += 10;
-        writer.record_write_subheader(REV32(NIFZ), cSize);
-        for(UINT32 p = 0; p < NIFZ.size(); p++)
-            if(NIFZ[p].IsLoaded())
-                writer.record_write(NIFZ[p].value, NIFZ[p].GetSize());
-        cSize = 0;
-        //write final null terminator
-        writer.record_write(&cSize, 1);
-        }
+    WRITE(NIFZ);
 
     if(NIFT.IsLoaded())
         writer.record_write_subrecord(REV32(NIFT), NIFT.value, NIFT.GetSize());
@@ -1219,20 +1196,7 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
     for(UINT32 p = 0; p < PKID.size(); p++)
         writer.record_write_subrecord(REV32(PKID), &PKID[p], sizeof(UINT32));
 
-    if(KFFZ.size())
-        {
-        cSize = 1; //final null terminator
-        for(UINT32 p = 0; p < KFFZ.size(); p++)
-            if(KFFZ[p].IsLoaded())
-                cSize += KFFZ[p].GetSize();
-        writer.record_write_subheader(REV32(KFFZ), cSize);
-        for(UINT32 p = 0; p < KFFZ.size(); p++)
-            if(KFFZ[p].IsLoaded())
-                writer.record_write(KFFZ[p].value, KFFZ[p].GetSize());
-        cSize = 0;
-        //write final null terminator
-        writer.record_write(&cSize, 1);
-        }
+    WRITE(KFFZ);
 
     if(DATA.IsLoaded())
         writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
@@ -1295,12 +1259,12 @@ bool CREARecord::operator ==(const CREARecord &other) const
         NAM0.equalsi(other.NAM0) &&
         NAM1.equalsi(other.NAM1) &&
         SPLO.size() == other.SPLO.size() &&
-        NIFZ.size() == other.NIFZ.size() &&
         SNAM.size() == other.SNAM.size() &&
         CNTO.size() == other.CNTO.size() &&
         PKID.size() == other.PKID.size() &&
-        KFFZ.size() == other.KFFZ.size() &&
-        Sounds.size() == other.Sounds.size())
+        Sounds.size() == other.Sounds.size() &&
+        NIFZ.equalsi(other.NIFZ) &&
+        KFFZ.equalsi(other.KFFZ))
         {
         //Record order doesn't matter on spells, so equality testing isn't easy
         //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
@@ -1308,12 +1272,6 @@ bool CREARecord::operator ==(const CREARecord &other) const
         //Fix-up later
         for(UINT32 x = 0; x < SPLO.size(); ++x)
             if(SPLO[x] != other.SPLO[x])
-                return false;
-
-        //Not sure if record order matters on body parts, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < NIFZ.size(); ++x)
-            if(NIFZ[x].equalsi(other.NIFZ[x]))
                 return false;
 
         //Not sure if record order matters on factions, so equality testing is a guess
@@ -1332,12 +1290,6 @@ bool CREARecord::operator ==(const CREARecord &other) const
         //Record order matters on ai packages, so equality testing is easy
         for(UINT32 x = 0; x < PKID.size(); ++x)
             if(PKID[x] != other.PKID[x])
-                return false;
-
-        //Not sure if record order matters on animations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < KFFZ.size(); ++x)
-            if(KFFZ[x].equalsi(other.KFFZ[x]))
                 return false;
 
         //Not sure if record order matters on sounds, so equality testing is a guess

@@ -154,7 +154,7 @@ class CREARecord : public Record
         StringRecord FULL;
         OptSubRecord<GENMODEL> MODL;
         std::vector<FORMID> SPLO;
-        std::vector<StringRecord> NIFZ;
+        UnorderedPackedStrings NIFZ;
         RawRecord NIFT;
         ReqSubRecord<GENACBS> ACBS;
         std::vector<ReqSubRecord<GENSNAM> *> SNAM;
@@ -163,7 +163,7 @@ class CREARecord : public Record
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
         std::vector<FORMID> PKID;
-        std::vector<StringRecord> KFFZ;
+        UnorderedPackedStrings KFFZ;
         ReqSubRecord<CREADATA> DATA;
         ReqSimpleSubRecord<UINT8> RNAM;
         OptSimpleSubRecord<FORMID> ZNAM;

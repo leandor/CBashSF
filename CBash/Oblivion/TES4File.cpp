@@ -37,8 +37,6 @@ TES4File::~TES4File()
 
 SINT32 TES4File::LoadTES4()
     {
-    PROFILE_FUNC
-
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
@@ -70,8 +68,6 @@ SINT32 TES4File::LoadTES4()
 
 SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
     {
-    PROFILE_FUNC
-
     enum IgTopRecords {
         eIgGMST = REV32(GMST) | 0x00001000, //Record::fIsIgnored
         eIgGLOB = REV32(GLOB) | 0x00001000,
@@ -163,131 +159,133 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
     if(TES4.HEDR.value.numRecords == 1252095 && icmps(reader.getModName(), "Oblivion.esm") == 0)
         {
         //Override the default pool allocations with those tailored for Oblivion.esm
-        //ACHR.pool.purge_no_destructors(false);
+        //ACHR.pool.purge_no_destructors();
         //ACHR.pool.reserve(2190);
-        //ACRE.pool.purge_no_destructors(false);
+        //ACRE.pool.purge_no_destructors();
         //ACRE.pool.reserve(1473);
-        ACTI.pool.purge_no_destructors(false);
+        ACTI.pool.purge_no_destructors();
         ACTI.pool.reserve(1252);
-        ALCH.pool.purge_no_destructors(false);
+        ALCH.pool.purge_no_destructors();
         ALCH.pool.reserve(253);
-        AMMO.pool.purge_no_destructors(false);
+        AMMO.pool.purge_no_destructors();
         AMMO.pool.reserve(128);
-        ANIO.pool.purge_no_destructors(false);
+        ANIO.pool.purge_no_destructors();
         ANIO.pool.reserve(34);
-        APPA.pool.purge_no_destructors(false);
+        APPA.pool.purge_no_destructors();
         APPA.pool.reserve(23);
-        ARMO.pool.purge_no_destructors(false);
+        ARMO.pool.purge_no_destructors();
         ARMO.pool.reserve(996);
-        BOOK.pool.purge_no_destructors(false);
+        BOOK.pool.purge_no_destructors();
         BOOK.pool.reserve(887);
-        BSGN.pool.purge_no_destructors(false);
+        BSGN.pool.purge_no_destructors();
         BSGN.pool.reserve(13);
-        CELL.pool.purge_no_destructors(false);
-        CELL.pool.reserve(33639);
-        CELL.pgrd_pool.purge_no_destructors(false);
+        CELL.pool.purge_no_destructors();
+        CELL.pool.reserve(1855);
+        CELL.pgrd_pool.purge_no_destructors();
         CELL.pgrd_pool.reserve(8228);
-        CLAS.pool.purge_no_destructors(false);
+        CLAS.pool.purge_no_destructors();
         CLAS.pool.reserve(111);
-        CLMT.pool.purge_no_destructors(false);
+        CLMT.pool.purge_no_destructors();
         CLMT.pool.reserve(19);
-        CLOT.pool.purge_no_destructors(false);
+        CLOT.pool.purge_no_destructors();
         CLOT.pool.reserve(604);
-        CONT.pool.purge_no_destructors(false);
+        CONT.pool.purge_no_destructors();
         CONT.pool.reserve(873);
-        CREA.pool.purge_no_destructors(false);
+        CREA.pool.purge_no_destructors();
         CREA.pool.reserve(914);
-        CSTY.pool.purge_no_destructors(false);
+        CSTY.pool.purge_no_destructors();
         CSTY.pool.reserve(126);
-        DIAL.pool.purge_no_destructors(false);
+        DIAL.pool.purge_no_destructors();
         DIAL.pool.reserve(3817);
-        DOOR.pool.purge_no_destructors(false);
+        DOOR.pool.purge_no_destructors();
         DOOR.pool.reserve(501);
-        EFSH.pool.purge_no_destructors(false);
+        EFSH.pool.purge_no_destructors();
         EFSH.pool.reserve(102);
-        ENCH.pool.purge_no_destructors(false);
+        ENCH.pool.purge_no_destructors();
         ENCH.pool.reserve(1542);
-        EYES.pool.purge_no_destructors(false);
+        EYES.pool.purge_no_destructors();
         EYES.pool.reserve(13);
-        FACT.pool.purge_no_destructors(false);
+        FACT.pool.purge_no_destructors();
         FACT.pool.reserve(476);
-        FLOR.pool.purge_no_destructors(false);
+        FLOR.pool.purge_no_destructors();
         FLOR.pool.reserve(155);
-        FURN.pool.purge_no_destructors(false);
+        FURN.pool.purge_no_destructors();
         FURN.pool.reserve(186);
-        GLOB.pool.purge_no_destructors(false);
+        GLOB.pool.purge_no_destructors();
         GLOB.pool.reserve(94);
-        GMST.pool.purge_no_destructors(false);
+        GMST.pool.purge_no_destructors();
         GMST.pool.reserve(382);
-        GRAS.pool.purge_no_destructors(false);
+        GRAS.pool.purge_no_destructors();
         GRAS.pool.reserve(108);
-        HAIR.pool.purge_no_destructors(false);
+        HAIR.pool.purge_no_destructors();
         HAIR.pool.reserve(57);
-        IDLE.pool.purge_no_destructors(false);
+        IDLE.pool.purge_no_destructors();
         IDLE.pool.reserve(650);
-        //INFO.pool.purge_no_destructors(false);
+        //INFO.pool.purge_no_destructors();
         //INFO.pool.reserve(19278);
-        INGR.pool.purge_no_destructors(false);
+        INGR.pool.purge_no_destructors();
         INGR.pool.reserve(173);
-        KEYM.pool.purge_no_destructors(false);
+        KEYM.pool.purge_no_destructors();
         KEYM.pool.reserve(464);
-        LIGH.pool.purge_no_destructors(false);
+        LIGH.pool.purge_no_destructors();
         LIGH.pool.reserve(1625);
-        LSCR.pool.purge_no_destructors(false);
+        LSCR.pool.purge_no_destructors();
         LSCR.pool.reserve(337);
-        LTEX.pool.purge_no_destructors(false);
+        LTEX.pool.purge_no_destructors();
         LTEX.pool.reserve(229);
-        LVLC.pool.purge_no_destructors(false);
+        LVLC.pool.purge_no_destructors();
         LVLC.pool.reserve(682);
-        LVLI.pool.purge_no_destructors(false);
+        LVLI.pool.purge_no_destructors();
         LVLI.pool.reserve(1398);
-        LVSP.pool.purge_no_destructors(false);
+        LVSP.pool.purge_no_destructors();
         LVSP.pool.reserve(306);
-        MGEF.pool.purge_no_destructors(false);
+        MGEF.pool.purge_no_destructors();
         MGEF.pool.reserve(145);
-        MISC.pool.purge_no_destructors(false);
+        MISC.pool.purge_no_destructors();
         MISC.pool.reserve(407);
-        NPC_.pool.purge_no_destructors(false);
+        NPC_.pool.purge_no_destructors();
         NPC_.pool.reserve(2482);
-        PACK.pool.purge_no_destructors(false);
+        PACK.pool.purge_no_destructors();
         PACK.pool.reserve(7209);
-        QUST.pool.purge_no_destructors(false);
+        QUST.pool.purge_no_destructors();
         QUST.pool.reserve(390);
-        RACE.pool.purge_no_destructors(false);
+        RACE.pool.purge_no_destructors();
         RACE.pool.reserve(15);
-        //REFR.pool.purge_no_destructors(false);
+        //REFR.pool.purge_no_destructors();
         //REFR.pool.reserve(1025617);
-        REGN.pool.purge_no_destructors(false);
+        REGN.pool.purge_no_destructors();
         REGN.pool.reserve(211);
-        SBSP.pool.purge_no_destructors(false);
+        SBSP.pool.purge_no_destructors();
         SBSP.pool.reserve(33);
-        SCPT.pool.purge_no_destructors(false);
+        SCPT.pool.purge_no_destructors();
         SCPT.pool.reserve(2393);
-        SGST.pool.purge_no_destructors(false);
+        SGST.pool.purge_no_destructors();
         SGST.pool.reserve(150);
-        SKIL.pool.purge_no_destructors(false);
+        SKIL.pool.purge_no_destructors();
         SKIL.pool.reserve(21);
-        SLGM.pool.purge_no_destructors(false);
+        SLGM.pool.purge_no_destructors();
         SLGM.pool.reserve(29);
-        SOUN.pool.purge_no_destructors(false);
+        SOUN.pool.purge_no_destructors();
         SOUN.pool.reserve(1140);
-        SPEL.pool.purge_no_destructors(false);
+        SPEL.pool.purge_no_destructors();
         SPEL.pool.reserve(1137);
-        STAT.pool.purge_no_destructors(false);
+        STAT.pool.purge_no_destructors();
         STAT.pool.reserve(6014);
-        TREE.pool.purge_no_destructors(false);
+        TREE.pool.purge_no_destructors();
         TREE.pool.reserve(142);
-        WATR.pool.purge_no_destructors(false);
+        WATR.pool.purge_no_destructors();
         WATR.pool.reserve(23);
-        WEAP.pool.purge_no_destructors(false);
+        WEAP.pool.purge_no_destructors();
         WEAP.pool.reserve(1319);
-        WRLD.pool.purge_no_destructors(false);
+        WRLD.pool.purge_no_destructors();
         WRLD.pool.reserve(84);
-        WRLD.land_pool.purge_no_destructors(false);
+        WRLD.land_pool.purge_no_destructors();
         WRLD.land_pool.reserve(31823);
-        WRLD.cell_pool.purge_no_destructors(false);
-        WRLD.cell_pool.reserve(1855);
-        WTHR.pool.purge_no_destructors(false);
+        WRLD.cell_pool.purge_no_destructors();
+        WRLD.cell_pool.reserve(69);
+        WRLD.road_pool.purge_no_destructors();
+        WRLD.road_pool.reserve(2);
+        WTHR.pool.purge_no_destructors();
         WTHR.pool.reserve(37);
         }
 
@@ -673,104 +671,102 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
 
 UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
     {
-    PROFILE_FUNC
-
     switch(RecordType)
         {
         case REV32(GMST):
-            return (UINT32)GMST.pool.GetSize();
+            return (UINT32)GMST.pool.used_object_capacity();
         case REV32(GLOB):
-            return (UINT32)GLOB.pool.GetSize();
+            return (UINT32)GLOB.pool.used_object_capacity();
         case REV32(CLAS):
-            return (UINT32)CLAS.pool.GetSize();
+            return (UINT32)CLAS.pool.used_object_capacity();
         case REV32(FACT):
-            return (UINT32)FACT.pool.GetSize();
+            return (UINT32)FACT.pool.used_object_capacity();
         case REV32(HAIR):
-            return (UINT32)HAIR.pool.GetSize();
+            return (UINT32)HAIR.pool.used_object_capacity();
         case REV32(EYES):
-            return (UINT32)EYES.pool.GetSize();
+            return (UINT32)EYES.pool.used_object_capacity();
         case REV32(RACE):
-            return (UINT32)RACE.pool.GetSize();
+            return (UINT32)RACE.pool.used_object_capacity();
         case REV32(SOUN):
-            return (UINT32)SOUN.pool.GetSize();
+            return (UINT32)SOUN.pool.used_object_capacity();
         case REV32(SKIL):
-            return (UINT32)SKIL.pool.GetSize();
+            return (UINT32)SKIL.pool.used_object_capacity();
         case REV32(MGEF):
-            return (UINT32)MGEF.pool.GetSize();
+            return (UINT32)MGEF.pool.used_object_capacity();
         case REV32(SCPT):
-            return (UINT32)SCPT.pool.GetSize();
+            return (UINT32)SCPT.pool.used_object_capacity();
         case REV32(LTEX):
-            return (UINT32)LTEX.pool.GetSize();
+            return (UINT32)LTEX.pool.used_object_capacity();
         case REV32(ENCH):
-            return (UINT32)ENCH.pool.GetSize();
+            return (UINT32)ENCH.pool.used_object_capacity();
         case REV32(SPEL):
-            return (UINT32)SPEL.pool.GetSize();
+            return (UINT32)SPEL.pool.used_object_capacity();
         case REV32(BSGN):
-            return (UINT32)BSGN.pool.GetSize();
+            return (UINT32)BSGN.pool.used_object_capacity();
         case REV32(ACTI):
-            return (UINT32)ACTI.pool.GetSize();
+            return (UINT32)ACTI.pool.used_object_capacity();
         case REV32(APPA):
-            return (UINT32)APPA.pool.GetSize();
+            return (UINT32)APPA.pool.used_object_capacity();
         case REV32(ARMO):
-            return (UINT32)ARMO.pool.GetSize();
+            return (UINT32)ARMO.pool.used_object_capacity();
         case REV32(BOOK):
-            return (UINT32)BOOK.pool.GetSize();
+            return (UINT32)BOOK.pool.used_object_capacity();
         case REV32(CLOT):
-            return (UINT32)CLOT.pool.GetSize();
+            return (UINT32)CLOT.pool.used_object_capacity();
         case REV32(CONT):
-            return (UINT32)CONT.pool.GetSize();
+            return (UINT32)CONT.pool.used_object_capacity();
         case REV32(DOOR):
-            return (UINT32)DOOR.pool.GetSize();
+            return (UINT32)DOOR.pool.used_object_capacity();
         case REV32(INGR):
-            return (UINT32)INGR.pool.GetSize();
+            return (UINT32)INGR.pool.used_object_capacity();
         case REV32(LIGH):
-            return (UINT32)LIGH.pool.GetSize();
+            return (UINT32)LIGH.pool.used_object_capacity();
         case REV32(MISC):
-            return (UINT32)MISC.pool.GetSize();
+            return (UINT32)MISC.pool.used_object_capacity();
         case REV32(STAT):
-            return (UINT32)STAT.pool.GetSize();
+            return (UINT32)STAT.pool.used_object_capacity();
         case REV32(GRAS):
-            return (UINT32)GRAS.pool.GetSize();
+            return (UINT32)GRAS.pool.used_object_capacity();
         case REV32(TREE):
-            return (UINT32)TREE.pool.GetSize();
+            return (UINT32)TREE.pool.used_object_capacity();
         case REV32(FLOR):
-            return (UINT32)FLOR.pool.GetSize();
+            return (UINT32)FLOR.pool.used_object_capacity();
         case REV32(FURN):
-            return (UINT32)FURN.pool.GetSize();
+            return (UINT32)FURN.pool.used_object_capacity();
         case REV32(WEAP):
-            return (UINT32)WEAP.pool.GetSize();
+            return (UINT32)WEAP.pool.used_object_capacity();
         case REV32(AMMO):
-            return (UINT32)AMMO.pool.GetSize();
+            return (UINT32)AMMO.pool.used_object_capacity();
         case REV32(NPC_):
-            return (UINT32)NPC_.pool.GetSize();
+            return (UINT32)NPC_.pool.used_object_capacity();
         case REV32(CREA):
-            return (UINT32)CREA.pool.GetSize();
+            return (UINT32)CREA.pool.used_object_capacity();
         case REV32(LVLC):
-            return (UINT32)LVLC.pool.GetSize();
+            return (UINT32)LVLC.pool.used_object_capacity();
         case REV32(SLGM):
-            return (UINT32)SLGM.pool.GetSize();
+            return (UINT32)SLGM.pool.used_object_capacity();
         case REV32(KEYM):
-            return (UINT32)KEYM.pool.GetSize();
+            return (UINT32)KEYM.pool.used_object_capacity();
         case REV32(ALCH):
-            return (UINT32)ALCH.pool.GetSize();
+            return (UINT32)ALCH.pool.used_object_capacity();
         case REV32(SBSP):
-            return (UINT32)SBSP.pool.GetSize();
+            return (UINT32)SBSP.pool.used_object_capacity();
         case REV32(SGST):
-            return (UINT32)SGST.pool.GetSize();
+            return (UINT32)SGST.pool.used_object_capacity();
         case REV32(LVLI):
-            return (UINT32)LVLI.pool.GetSize();
+            return (UINT32)LVLI.pool.used_object_capacity();
         case REV32(WTHR):
-            return (UINT32)WTHR.pool.GetSize();
+            return (UINT32)WTHR.pool.used_object_capacity();
         case REV32(CLMT):
-            return (UINT32)CLMT.pool.GetSize();
+            return (UINT32)CLMT.pool.used_object_capacity();
         case REV32(REGN):
-            return (UINT32)REGN.pool.GetSize();
+            return (UINT32)REGN.pool.used_object_capacity();
         case REV32(CELL):
-            return (UINT32)CELL.pool.GetSize();
+            return (UINT32)CELL.pool.used_object_capacity();
         case REV32(WRLD):
-            return (UINT32)WRLD.pool.GetSize();
+            return (UINT32)WRLD.pool.used_object_capacity();
         case REV32(DIAL):
-            return (UINT32)DIAL.pool.GetSize();
+            return (UINT32)DIAL.pool.used_object_capacity();
         ///////////////////////////////////////////////
         //SubRecords are counted via GetFieldAttribute API function
         //Fallthroughs are intentional
@@ -785,23 +781,23 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
             break;
         ///////////////////////////////////////////////
         case REV32(QUST):
-            return (UINT32)QUST.pool.GetSize();
+            return (UINT32)QUST.pool.used_object_capacity();
         case REV32(IDLE):
-            return (UINT32)IDLE.pool.GetSize();
+            return (UINT32)IDLE.pool.used_object_capacity();
         case REV32(PACK):
-            return (UINT32)PACK.pool.GetSize();
+            return (UINT32)PACK.pool.used_object_capacity();
         case REV32(CSTY):
-            return (UINT32)CSTY.pool.GetSize();
+            return (UINT32)CSTY.pool.used_object_capacity();
         case REV32(LSCR):
-            return (UINT32)LSCR.pool.GetSize();
+            return (UINT32)LSCR.pool.used_object_capacity();
         case REV32(LVSP):
-            return (UINT32)LVSP.pool.GetSize();
+            return (UINT32)LVSP.pool.used_object_capacity();
         case REV32(ANIO):
-            return (UINT32)ANIO.pool.GetSize();
+            return (UINT32)ANIO.pool.used_object_capacity();
         case REV32(WATR):
-            return (UINT32)WATR.pool.GetSize();
+            return (UINT32)WATR.pool.used_object_capacity();
         case REV32(EFSH):
-            return (UINT32)EFSH.pool.GetSize();
+            return (UINT32)EFSH.pool.used_object_capacity();
         default:
             printer("TES4File::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
             break;
@@ -811,8 +807,6 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
 
 Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("TES4File::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -863,15 +857,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
             newRecord = MGEF.pool.construct(SourceRecord);
 
             if(RecordEditorID != NULL)
-                {
-                if(((MGEFRecord *)newRecord)->OBME.IsLoaded())
-                    {
-                    memcpy(&(((MGEFRecord *)newRecord)->OBME->EDDX.value.mgefCode)[0], RecordEditorID, 4);
-                    ((MGEFRecord *)newRecord)->OBME->EDDX.value.mgefCode[4] = 0x00;
-                    }
-                else
-                    ((MGEFRecord *)newRecord)->EDID.Copy(RecordEditorID);
-                }
+                ((MGEFRecord *)newRecord)->EDID.Copy(RecordEditorID);
             return newRecord;
         case REV32(SCPT):
             return SCPT.pool.construct(SourceRecord);
@@ -1357,8 +1343,6 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, Record *&ParentRecord)
 
 SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("TES4File::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -1450,8 +1434,6 @@ SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
 SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
-    PROFILE_FUNC
-
     if(!Flags.IsSaveable)
         {
         printer("TES4File::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
@@ -1538,8 +1520,6 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
 
 void TES4File::VisitAllRecords(RecordOp &op)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("TES4File::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -1611,8 +1591,6 @@ void TES4File::VisitAllRecords(RecordOp &op)
 
 void TES4File::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("TES4File::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());

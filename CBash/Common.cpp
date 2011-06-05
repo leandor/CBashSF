@@ -27,6 +27,18 @@ int (*printer)(const char * _Format, ...) = &printf;
 SINT32 (*LoggingCallback)(const STRING) = NULL;
 void (*RaiseCallback)() = NULL;
 
+#ifdef CBASH_DEBUG_VARS
+    std::map<unsigned long, unsigned long> uint32_uint32_map1;
+    std::map<unsigned long, unsigned long> uint32_uint32_map2;
+    std::map<unsigned long, unsigned long> uint32_uint32_map3;
+    std::map<char *, unsigned long> string_uint32_map;
+    std::map<unsigned long, char *> uint32_string_map;
+    unsigned long debug_temp1 = 0;
+    unsigned long debug_temp2 = 0;
+    unsigned long debug_temp3 = 0;
+    unsigned long debug_temp4 = 0;
+#endif
+
 #ifdef CBASH_CALLTIMING
     std::map<char *, double> CallTime;
 #endif
@@ -653,7 +665,8 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
 
 void FormIDHandlerClass::AddMaster(STRING const curMaster)
     {
-    MAST.push_back(StringRecord(curMaster));
+    MAST.push_back(StringRecord());
+    MAST.back().Copy(curMaster);
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
@@ -808,39 +821,41 @@ UINT32 ModFlags::GetFlags()
     }
 
 StringRecord::StringRecord():
-    value(NULL)
+    value(NULL),
+    IsOnDisk(false)
     {
     //
     }
 
 StringRecord::StringRecord(const StringRecord &p):
-    value(NULL)
+    value(NULL),
+    IsOnDisk(false)
     {
     if(!p.IsLoaded())
         return;
-    UINT32 size = p.GetSize();
-    value = new char[size];
-    memcpy(value, p.value, size);
-    }
 
-StringRecord::StringRecord(const STRING p):
-    value(NULL)
-    {
-    if(p == NULL)
-        return;
-    UINT32 size = (UINT32)strlen(p) + 1;
-    value = new char[size];
-    strcpy_s(value, size, p);
+    if(p.IsOnDisk)
+        {
+        value = p.value;
+        IsOnDisk = true;
+        }
+    else
+        {
+        UINT32 size = p.GetSize();
+        value = new char[size];
+        memcpy(value, p.value, size);
+        }
     }
 
 StringRecord::~StringRecord()
     {
-    delete []value;
+    if(!IsOnDisk)
+        delete []value;
     }
 
 UINT32 StringRecord::GetSize() const
     {
-    return (UINT32)strlen(value) + 1;
+    return value != NULL ? (UINT32)strlen(value) + 1 : 0;
     }
 
 bool StringRecord::IsLoaded() const
@@ -855,8 +870,11 @@ void StringRecord::Load()
 
 void StringRecord::Unload()
     {
-    delete []value;
-    value = NULL;
+    if(!IsOnDisk)
+        {
+        delete []value;
+        value = NULL;
+        }
     }
 
 bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
@@ -866,8 +884,10 @@ bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &cu
         curPos += subSize;
         return false;
         }
-    value = new char[subSize];
-    memcpy(value, buffer + curPos, subSize);
+    IsOnDisk = true;
+    value = (char *)buffer + curPos;
+    //value = new char[subSize];
+    //memcpy(value, buffer + curPos, subSize);
     curPos += subSize;
     return true;
     }
@@ -889,19 +909,15 @@ void StringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
         }
     }
 
-void StringRecord::Copy(const StringRecord &FieldValue)
-    {
-    Copy(FieldValue.value);
-    }
-
 void StringRecord::Copy(STRING FieldValue)
     {
     Unload();
     if(FieldValue != NULL)
         {
+        IsOnDisk = false;
         UINT32 size = (UINT32)strlen(FieldValue) + 1;
         value = new char[size];
-        strcpy_s(value, size, FieldValue);
+        memcpy(value, FieldValue, size);
         }
     }
 
@@ -918,30 +934,54 @@ bool StringRecord::equalsi(const StringRecord &other) const
 StringRecord& StringRecord::operator = (const StringRecord &rhs)
     {
     if(this != &rhs)
-        Copy(rhs);
+        {
+        if(rhs.IsOnDisk)
+            {
+            value = rhs.value;
+            IsOnDisk = true;
+            }
+        else
+            Copy(rhs.value);
+        }
     return *this;
     }
 
 NonNullStringRecord::NonNullStringRecord():
-    value(NULL)
+    value(NULL),
+    DiskSize(0)
     {
     //
     }
 
 NonNullStringRecord::NonNullStringRecord(const NonNullStringRecord &p):
-    value(NULL)
+    value(NULL),
+    DiskSize(0)
     {
-    Copy(p.value);
+    if(!p.IsLoaded())
+        return;
+
+    if(p.DiskSize)
+        {
+        value = p.value;
+        DiskSize = p.DiskSize;
+        }
+    else
+        {
+        UINT32 size = p.GetSize();
+        value = new char[size];
+        memcpy(value, p.value, size);
+        }
     }
 
 NonNullStringRecord::~NonNullStringRecord()
     {
-    delete []value;
+    if(DiskSize == 0)
+        delete []value;
     }
 
 UINT32 NonNullStringRecord::GetSize() const
     {
-    return (UINT32)strlen(value);
+    return value != NULL ? (DiskSize ? DiskSize : (UINT32)strlen(value)) : 0;
     }
 
 bool NonNullStringRecord::IsLoaded() const
@@ -956,8 +996,11 @@ void NonNullStringRecord::Load()
 
 void NonNullStringRecord::Unload()
     {
-    delete []value;
-    value = NULL;
+    if(DiskSize == 0)
+        {
+        delete []value;
+        value = NULL;
+        }
     }
 
 bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
@@ -967,9 +1010,11 @@ bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UIN
         curPos += subSize;
         return false;
         }
-    value = new char[subSize + 1];
-    value[subSize] = 0x00;
-    memcpy(value, buffer + curPos, subSize);
+    DiskSize = subSize;
+    value = (char *)buffer + curPos;
+    //value = new char[subSize + 1];
+    //value[subSize] = 0x00;
+    //memcpy(value, buffer + curPos, subSize);
     curPos += subSize;
     return true;
     }
@@ -977,13 +1022,13 @@ bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UIN
 void NonNullStringRecord::Write(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
-        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value));
+        writer.record_write_subrecord(_Type, value, DiskSize ? DiskSize : (UINT32)strlen(value));
     }
 
 void NonNullStringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
-        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value));
+        writer.record_write_subrecord(_Type, value, DiskSize ? DiskSize : (UINT32)strlen(value));
     else
         {
         char null = 0x00;
@@ -991,19 +1036,15 @@ void NonNullStringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
         }
     }
 
-void NonNullStringRecord::Copy(const NonNullStringRecord &FieldValue)
-    {
-    Copy(FieldValue.value);
-    }
-
 void NonNullStringRecord::Copy(STRING FieldValue)
     {
     Unload();
     if(FieldValue != NULL)
         {
+        DiskSize = 0;
         UINT32 size = (UINT32)strlen(FieldValue) + 1;
         value = new char[size];
-        strcpy_s(value, size, FieldValue);
+        memcpy(value, FieldValue, size);
         }
     }
 
@@ -1020,7 +1061,15 @@ bool NonNullStringRecord::equalsi(const NonNullStringRecord &other) const
 NonNullStringRecord& NonNullStringRecord::operator = (const NonNullStringRecord &rhs)
     {
     if(this != &rhs)
-        Copy(rhs);
+        {
+        if(rhs.DiskSize)
+            {
+            value = rhs.value;
+            DiskSize = rhs.DiskSize;
+            }
+        else
+            Copy(rhs.value);
+        }
     return *this;
     }
 
@@ -1113,6 +1162,20 @@ void UnorderedPackedStrings::Write(UINT32 _Type, FileWriter &writer)
         }
     }
 
+void UnorderedPackedStrings::Copy(STRINGARRAY FieldValue, UINT32 ArraySize)
+    {
+    resize(ArraySize);
+    for(UINT32 x = 0; x < ArraySize; x++)
+        {
+        if(((STRINGARRAY)FieldValue)[x] != NULL)
+            {
+            UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+            value[x] = new char[size];
+            memcpy(value[x], ((STRINGARRAY)FieldValue)[x], size);
+            }
+        }
+    }
+
 UnorderedPackedStrings& UnorderedPackedStrings::operator = (const UnorderedPackedStrings &rhs)
     {
     if(this != &rhs)
@@ -1168,24 +1231,35 @@ bool UnorderedPackedStrings::equalsi(const UnorderedPackedStrings &other) const
 
 RawRecord::RawRecord():
     size(0),
-    value(NULL)
+    value(NULL),
+    IsOnDisk(false)
     {
     //
     }
 
 RawRecord::RawRecord(const RawRecord &p):
-    value(NULL)
+    value(NULL),
+    IsOnDisk(false)
     {
     if(!p.IsLoaded())
         return;
     size = p.size;
-    value = new unsigned char[size];
-    memcpy(value,p.value,size);
+    if(p.IsOnDisk)
+        {
+        IsOnDisk = true;
+        value = p.value;
+        }
+    else
+        {
+        value = new unsigned char[size];
+        memcpy(value,p.value,size);
+        }
     }
 
 RawRecord::~RawRecord()
     {
-    Unload();
+    if(!IsOnDisk)
+        delete []value;
     }
 
 UINT32 RawRecord::GetSize() const
@@ -1205,9 +1279,12 @@ void RawRecord::Load()
 
 void RawRecord::Unload()
     {
-    size = 0;
-    delete []value;
-    value = NULL;
+    if(!IsOnDisk)
+        {
+        size = 0;
+        delete []value;
+        value = NULL;
+        }
     }
 
 bool RawRecord::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
@@ -1217,9 +1294,11 @@ bool RawRecord::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
         curPos += subSize;
         return false;
         }
+    IsOnDisk = true;
+    value = buffer + curPos;
     size = subSize;
-    value = new unsigned char[size];
-    memcpy(value, buffer + curPos, size);
+    //value = new unsigned char[size];
+    //memcpy(value, buffer + curPos, size);
     curPos += subSize;
     return true;
     }
@@ -1243,20 +1322,28 @@ void RawRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
 
 void RawRecord::Copy(unsigned char *FieldValue, UINT32 nSize)
     {
-    delete []value;
-    size = nSize;
-    value = new unsigned char[size];
-    memcpy(value, FieldValue, size);
+    Unload();
+    if(FieldValue != NULL)
+        {
+        IsOnDisk = false;
+        size = nSize;
+        value = new unsigned char[size];
+        memcpy(value, FieldValue, size);
+        }
     }
 
 RawRecord& RawRecord::operator = (const RawRecord &rhs)
     {
     if(this != &rhs)
         {
-        if(rhs.IsLoaded())
-            Copy(rhs.value, rhs.size);
+        if(rhs.IsOnDisk)
+            {
+            value = rhs.value;
+            size = rhs.size;
+            IsOnDisk = true;
+            }
         else
-            Unload();
+            Copy(rhs.value, rhs.size);
         }
     return *this;
     }

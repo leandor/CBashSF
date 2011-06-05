@@ -37,8 +37,6 @@ FNVFile::~FNVFile()
 
 SINT32 FNVFile::LoadTES4()
     {
-    PROFILE_FUNC
-
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
@@ -72,8 +70,6 @@ SINT32 FNVFile::LoadTES4()
 
 SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
     {
-    PROFILE_FUNC
-
     enum IgTopRecords {
         eIgGMST = REV32(GMST) | 0x00001000, //Record::fIsIgnored
         eIgTXST = REV32(TXST) | 0x00001000,
@@ -851,8 +847,6 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
 
 UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     {
-    PROFILE_FUNC
-
     switch(RecordType)
         {
         case REV32(GMST):
@@ -1083,8 +1077,6 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
 
 Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -1683,8 +1675,6 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, Record *&ParentRecord)
 
 SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -1822,8 +1812,6 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
 SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
     {
-    PROFILE_FUNC
-
     if(!Flags.IsSaveable)
         {
         printer("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
@@ -1955,8 +1943,6 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
 void FNVFile::VisitAllRecords(RecordOp &op)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
@@ -2073,8 +2059,6 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 
 void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
     {
-    PROFILE_FUNC
-
     if(Flags.IsNoLoad)
         {
         printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());

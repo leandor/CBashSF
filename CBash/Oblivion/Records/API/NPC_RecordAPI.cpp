@@ -190,7 +190,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return ISTRING_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)KFFZ.size();
+                    return (UINT32)KFFZ.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -430,8 +430,8 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = PKID.size() ? &PKID[0] : NULL;
             return NULL;
         case 31: //animations
-            for(UINT32 p = 0;p < KFFZ.size();p++)
-                FieldValues[p] = KFFZ[p].value;
+            for(UINT32 p = 0;p < KFFZ.value.size();p++)
+                FieldValues[p] = KFFZ.value[p];
             return NULL;
         case 32: //iclass
             return &CNAM.value;
@@ -701,10 +701,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 PKID[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 31: //animations
-            KFFZ.resize(ArraySize);
-            if(ArraySize)
-                for(UINT32 x = 0; x < ArraySize; x++)
-                    KFFZ[x].Copy((STRING)((STRINGARRAY)FieldValue)[x]);
+            KFFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
             break;
         case 32: //iclass
             CNAM.value = *(FORMID *)FieldValue;
@@ -1007,7 +1004,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             PKID.clear();
             return;
         case 31: //animations
-            KFFZ.clear();
+            KFFZ.Unload();
             return;
         case 32: //iclass
             CNAM.Unload();

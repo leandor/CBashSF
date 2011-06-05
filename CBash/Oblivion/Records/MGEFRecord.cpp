@@ -161,6 +161,7 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
     flags = srcRecord->flags;
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
+    EDID = srcRecord->EDID;
 
     if(!srcRecord->IsChanged())
         {
@@ -169,7 +170,6 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
         return;
         }
 
-    EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;
     ICON = srcRecord->ICON;

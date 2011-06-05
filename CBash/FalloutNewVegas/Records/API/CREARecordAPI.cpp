@@ -920,16 +920,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SetAttackAnimType(*(UINT16 *)FieldValue);
             break;
         case 22: //bodyParts
-            NIFZ.resize(ArraySize);
-            for(UINT32 x = 0; x < ArraySize; x++)
-                {
-                if(((STRINGARRAY)FieldValue)[x] != NULL)
-                    {
-                    UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
-                    NIFZ.value[x] = new char[size];
-                    strcpy_s(NIFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
-                    }
-                }
+            NIFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
             break;
         case 23: //nift_p
             NIFT.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -1151,16 +1142,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 PKID.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 58: //animations
-            KFFZ.resize(ArraySize);
-            for(UINT32 x = 0; x < ArraySize; x++)
-                {
-                if(((STRINGARRAY)FieldValue)[x] != NULL)
-                    {
-                    UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
-                    KFFZ.value[x] = new char[size];
-                    strcpy_s(KFFZ.value[x], size, ((STRINGARRAY)FieldValue)[x]);
-                    }
-                }
+            KFFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
             break;
         case 59: //creatureType
             SetType(*(UINT8 *)FieldValue);

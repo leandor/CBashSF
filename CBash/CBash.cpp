@@ -214,6 +214,7 @@ int handle_program_memory_depletion(size_t size)
 CPPDLLEXTERN Collection * CreateCollection(STRING const ModsPath, const UINT32 CollectionType)
     {
     PROFILE_FUNC
+
     try
         {
         _set_new_handler(handle_program_memory_depletion);
@@ -276,8 +277,9 @@ CPPDLLEXTERN SINT32 DeleteCollection(Collection *CollectionID)
                 return 0;
             }
         Collections.clear();
-
+        
         #ifdef CBASH_CALLCOUNT
+            cbcounter.end();
             printer("counts = [");
             for(std::map<char *, unsigned long>::iterator it = CallCount.begin(); it != CallCount.end(); ++it)
                 printer("(%d, '%s'),", it->second, it->first);
@@ -287,6 +289,7 @@ CPPDLLEXTERN SINT32 DeleteCollection(Collection *CollectionID)
             #endif
         #endif
         #ifdef CBASH_CALLTIMING
+            cbtimer.end();
             double TotTime = 0.0f;
             printer("times = [");
             for(std::map<char *, double>::iterator it = CallTime.begin(); it != CallTime.end(); ++it)

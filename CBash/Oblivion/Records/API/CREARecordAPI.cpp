@@ -70,7 +70,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return ISTRING_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)NIFZ.size();
+                    return (UINT32)NIFZ.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -210,7 +210,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return ISTRING_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)KFFZ.size();
+                    return (UINT32)KFFZ.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -342,8 +342,8 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
             return NULL;
         case 10: //bodyParts
-            for(UINT32 p = 0;p < NIFZ.size();p++)
-                FieldValues[p] = NIFZ[p].value;
+            for(UINT32 p = 0;p < NIFZ.value.size();p++)
+                FieldValues[p] = NIFZ.value[p];
             return NULL;
         case 11: //nift_p
             *FieldValues = NIFT.value;
@@ -418,8 +418,8 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = PKID.size() ? &PKID[0] : NULL;
             return NULL;
         case 32: //animations
-            for(UINT32 p = 0;p < KFFZ.size();p++)
-                FieldValues[p] = KFFZ[p].value;
+            for(UINT32 p = 0;p < KFFZ.value.size();p++)
+                FieldValues[p] = KFFZ.value[p];
             return NULL;
         case 33: //creatureType
             return &DATA.value.creatureType;
@@ -529,9 +529,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 10: //bodyParts
-            NIFZ.resize(ArraySize);
-            for(UINT32 x = 0; x < ArraySize; x++)
-                NIFZ[x] = StringRecord(((STRINGARRAY)FieldValue)[x]);
+            NIFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
             break;
         case 11: //nift_p
             NIFT.Copy((UINT8ARRAY)FieldValue, ArraySize);
@@ -669,9 +667,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 PKID[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 32: //animations
-            KFFZ.resize(ArraySize);
-            for(UINT32 x = 0; x < ArraySize; x++)
-                KFFZ[x] = StringRecord(((STRINGARRAY)FieldValue)[x]);
+            KFFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
             break;
         case 33: //creatureType
             SetType(*(UINT8 *)FieldValue);
@@ -833,7 +829,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             SPLO.clear();
             return;
         case 10: //bodyParts
-            NIFZ.clear();
+            NIFZ.Unload();
             return;
         case 11: //nift_p
             NIFT.Unload();
@@ -947,7 +943,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             PKID.clear();
             return;
         case 32: //animations
-            KFFZ.clear();
+            KFFZ.Unload();
             return;
         case 33: //creatureType
             DATA.value.creatureType = defaultDATA.creatureType;

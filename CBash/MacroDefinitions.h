@@ -1,9 +1,31 @@
+/*
+GPL License and Copyright Notice ============================================
+ This file is part of CBash.
+
+ CBash is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ CBash is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with CBash; if not, write to the Free Software Foundation,
+ Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+ CBash copyright (C) 2010 Waruddar
+=============================================================================
+*/
 #pragma once
 
 //define or undef as desired
 #undef CBASH_PROFILING
 #undef CBASH_CHUNK_WARN
 #undef CBASH_CHUNK_LCHECK
+#define CBASH_DEBUG_VARS
 
 #define CBASH_DEBUG_CHUNK
 
@@ -71,9 +93,12 @@
             stopWatch timer;
             LARGE_INTEGER frequency;
             char *FunctionName;
+            bool did_end;
 
         public:
-            CStopWatch(char *FName):FunctionName(FName)
+            CStopWatch(char *FName):
+                FunctionName(FName),
+                did_end(false)
                 {
                 timer.start.QuadPart=0;
                 timer.stop.QuadPart=0;
@@ -83,10 +108,17 @@
 
             ~CStopWatch()
                 {
+                end();
+                }
+            void end()
+                {
+                if(did_end) 
+                    return;
                 QueryPerformanceCounter(&timer.stop);
                 LARGE_INTEGER time;
                 time.QuadPart = timer.stop.QuadPart - timer.start.QuadPart;
                 CallTime[FunctionName] = CallTime[FunctionName] + ((double)time.QuadPart / (double)frequency.QuadPart);
+                did_end = true;
                 }
         };
     #define TIME_FUNC CStopWatch cbtimer(__FUNCTION__)
@@ -100,16 +132,42 @@
 
     class CCounter
         {
+        private:
+            char *FunctionName;
+            bool did_end;
+
         public:
-            CCounter(char *FName)
+            CCounter(char *FName):
+                FunctionName(FName),
+                did_end(false)
                 {
-                CallCount[FName] = ++CallCount[FName];
+                end();
+                }
+            void end()
+                {
+                if(did_end) 
+                    return;
+                CallCount[FunctionName] = ++CallCount[FunctionName];
+                did_end = true;
                 }
         };
 
     #define COUNT_FUNC CCounter cbcounter(__FUNCTION__)
 #else
     #define COUNT_FUNC
+#endif
+
+#ifdef CBASH_DEBUG_VARS
+    #include <map>
+    extern std::map<unsigned long, unsigned long> uint32_uint32_map1;
+    extern std::map<unsigned long, unsigned long> uint32_uint32_map2;
+    extern std::map<unsigned long, unsigned long> uint32_uint32_map3;
+    extern std::map<char *, unsigned long> string_uint32_map;
+    extern std::map<unsigned long, char *> uint32_string_map;
+    extern unsigned long debug_temp1;
+    extern unsigned long debug_temp2;
+    extern unsigned long debug_temp3;
+    extern unsigned long debug_temp4;
 #endif
 
 #ifndef MAJOR_VERSION

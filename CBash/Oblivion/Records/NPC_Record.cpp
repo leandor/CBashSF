@@ -161,10 +161,8 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
     PKID.resize(srcRecord->PKID.size());
     for(UINT32 x = 0; x < srcRecord->PKID.size(); x++)
         PKID[x] = srcRecord->PKID[x];
-    KFFZ.clear();
-    KFFZ.resize(srcRecord->KFFZ.size());
-    for(UINT32 x = 0; x < srcRecord->KFFZ.size(); x++)
-        KFFZ[x].Copy(srcRecord->KFFZ[x]);
+
+    KFFZ = srcRecord->KFFZ;
     CNAM = srcRecord->CNAM;
     DATA = srcRecord->DATA;
     HNAM = srcRecord->HNAM;
@@ -615,9 +613,7 @@ SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 PKID.push_back(curFormID);
                 break;
             case REV32(KFFZ):
-                for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
-                    KFFZ.push_back(StringRecord((STRING)&buffer[curPos]));
-                curPos++;
+                KFFZ.Read(buffer, subSize, curPos);
                 break;
             case REV32(CNAM):
                 CNAM.Read(buffer, subSize, curPos);
@@ -694,8 +690,7 @@ SINT32 NPC_Record::Unload()
 
     PKID.clear();
 
-    KFFZ.clear();
-
+    KFFZ.Unload();
     CNAM.Unload();
     DATA.Unload();
     HNAM.Unload();
@@ -746,20 +741,9 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
         writer.record_write_subrecord(REV32(AIDT), &AIDT.value, AIDT.GetSize());
     for(UINT32 p = 0; p < PKID.size(); p++)
         writer.record_write_subrecord(REV32(PKID), &PKID[p], sizeof(UINT32));
-    if(KFFZ.size())
-        {
-        cSize = 1; //final null terminator
-        for(UINT32 p = 0; p < KFFZ.size(); p++)
-            if(KFFZ[p].IsLoaded())
-                cSize += KFFZ[p].GetSize();
-        writer.record_write_subheader(REV32(KFFZ), cSize);
-        for(UINT32 p = 0; p < KFFZ.size(); p++)
-            if(KFFZ[p].IsLoaded())
-                writer.record_write(KFFZ[p].value, KFFZ[p].GetSize());
-        cSize = 0;
-        //write final null terminator
-        writer.record_write(&cSize, 1);
-        }
+
+    WRITE(KFFZ);
+
     if(CNAM.IsLoaded())
         writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
     if(DATA.IsLoaded())
@@ -810,7 +794,7 @@ bool NPC_Record::operator ==(const NPC_Record &other) const
         SPLO.size() == other.SPLO.size() &&
         CNTO.size() == other.CNTO.size() &&
         PKID.size() == other.PKID.size() &&
-        KFFZ.size() == other.KFFZ.size())
+        KFFZ.equalsi(other.KFFZ))
         {
         //Not sure if record order matters on factions, so equality testing is a guess
         //Fix-up later
@@ -836,12 +820,6 @@ bool NPC_Record::operator ==(const NPC_Record &other) const
         //Record order matters on ai packages, so equality testing is easy
         for(UINT32 x = 0; x < PKID.size(); ++x)
             if(PKID[x] != other.PKID[x])
-                return false;
-
-        //Not sure if record order matters on animations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < KFFZ.size(); ++x)
-            if(KFFZ[x].equalsi(other.KFFZ[x]))
                 return false;
 
         return true;

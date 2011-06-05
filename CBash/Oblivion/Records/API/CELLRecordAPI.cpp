@@ -160,7 +160,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)achr_pool.GetSize();
+                    return (UINT32)achr_pool.used_object_capacity();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -171,7 +171,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)acre_pool.GetSize();
+                    return (UINT32)acre_pool.used_object_capacity();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -182,7 +182,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)refr_pool.GetSize();
+                    return (UINT32)refr_pool.used_object_capacity();
                 default:
                     return UNKNOWN_FIELD;
                 }

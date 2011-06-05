@@ -95,7 +95,7 @@ class NPC_Record : public Record
         std::vector<ReqSubRecord<GENCNTO> *> CNTO;
         ReqSubRecord<GENAIDT> AIDT;
         std::vector<FORMID> PKID;
-        std::vector<StringRecord> KFFZ;
+        UnorderedPackedStrings KFFZ;
         ReqSimpleSubRecord<FORMID> CNAM;
         ReqSubRecord<NPC_DATA> DATA;
         OptSimpleSubRecord<FORMID> HNAM;

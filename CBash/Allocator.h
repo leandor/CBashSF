@@ -23,99 +23,272 @@ GPL License and Copyright Notice ============================================
 #include "Common.h"
 #include "GenericRecord.h"
 #include <vector>
+#include <malloc.h>
 
-struct MemoryBuffer
-    {
-    unsigned char *buffer_start, *buffer_position, *buffer_end;
-
-    MemoryBuffer():
-      buffer_start(NULL),
-      buffer_position(NULL),
-      buffer_end(NULL)
-      {
-      //
-      }
-
-    ~MemoryBuffer()
-        {
-        //
-        }
-    };
-
-template<class T, UINT32 RecType, UINT32 InitAlloc>
+template<class T, UINT32 RecType, UINT32 AllocUnit>
 class RecordPoolAllocator
     {
     private:
         unsigned char *freed_position;
-        std::vector<MemoryBuffer> buffers;
-        UINT32 curBuffer;
+        std::vector<unsigned char *> buffers;
 
     public:
         RecordPoolAllocator():
-            freed_position(NULL),
-            curBuffer(0)
+            freed_position(NULL)
             {
-            reserve(InitAlloc);
+            //reserve(AllocUnit);
             }
 
         ~RecordPoolAllocator()
             {
-            purge_with_destructors(false);
+            purge_with_destructors();
             }
 
-        void purge_no_destructors(bool reserve_one=true)
+        void purge_no_destructors()
             {
             for(UINT32 p = 0;p < buffers.size(); p++)
-                delete []buffers[p].buffer_start;
+                free(buffers[p]);
             buffers.clear();
+            //_heapmin();
             freed_position = NULL;
-            if(reserve_one)
-                reserve(1);
             }
 
-        void purge_with_destructors(bool reserve_one=true)
+        void purge_with_destructors()
             {
             boost::unordered_set<unsigned char *> free_set;
             MakeFreeSet(free_set);
             for(UINT32 p = 0;p < buffers.size(); p++)
                 {
-            //if(RecType == REV32(REFR)) QDPRINT;
-                for(unsigned char *last_position = buffers[p].buffer_start;last_position < buffers[p].buffer_position; last_position += sizeof(T))
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                unsigned char *end_of_buffer = buffers[p] + buffer_size;
+                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
                     {
-            //if(RecType == REV32(REFR)) QDPRINT;
                     if(free_set.find(last_position) == free_set.end())
+                        {
+                        //printer("Destroying: %08X\n", ((Record *)last_position)->formID);
                         ((Record *)last_position)->~Record();
-            //if(RecType == REV32(REFR)) QDPRINT;
+                        }
                     }
-            //if(RecType == REV32(REFR)) QDPRINT;
                 }
-            //if(RecType == REV32(REFR)) QDPRINT;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                delete []buffers[p].buffer_start;
-            buffers.clear();
-            freed_position = NULL;
-            if(reserve_one)
-                reserve(1);
+            purge_no_destructors();
             }
 
-        UINT32 GetSize()
+        void reserve(UINT32 elements)
             {
-            UINT32 size = 0;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                size += (UINT32)(buffers[p].buffer_position - buffers[p].buffer_start) / sizeof(T);
+            //Allocate memory
+            UINT32 buffer_size = sizeof(T) * elements;
+            unsigned char *buffer = (unsigned char *)malloc(buffer_size);
+            if(buffer == 0)
+                throw std::bad_alloc();
+            //memset(buffer, 0x00, buffer_size);
 
+            //Populate the free linked list in reverse so that the first freed_position is at the beginning of the buffer
+            //unsigned char *end_of_buffer = buffer + buffer_size;
+            for(unsigned char *last_position = buffer + buffer_size - sizeof(T);last_position >= buffer; last_position -= sizeof(T))
+                {
+                *(unsigned char **)last_position = freed_position;
+                freed_position = last_position;
+                }
+
+            //Save the buffer so it can be deallocated later
+            buffers.push_back(buffer);
+            }
+
+        void consolidate()
+            {
+            //consolidates all memory pools into one large pool, removing any freed positions and unused memory
+            //invalidates any python records, so it can only be safely done after loading and
+            //before control is returned to python
+            //this improves locality of records, so iterating through them should be faster
+            //consolidate never leaves the pool completely empty (tries to leave AllocUnit amount available)
+            //return;
+            if(buffers.size() == 0)
+                {
+                //buffer is unused
+                return;
+                }
+
+            if(buffers.size() == 1 && freed_position == NULL)
+                {
+                //buffer is already consolidated
+                return;
+                }
+
+            boost::unordered_set<unsigned char *> free_set;
+            MakeFreeSet(free_set);
+
+            UINT32 total_bytes = bytes_capacity();
+            UINT32 free_bytes = free_set.size() * sizeof(T);
+            //assert(free_bytes <= total_bytes);
+            UINT32 used_bytes = total_bytes - free_bytes;
+            //assert(used_bytes % sizeof(T) == 0);
+            //assert(free_bytes % sizeof(T) == 0);
+            //DPRINT("Saved %u bytes (%u objects out of %u allocated)", free_bytes, free_bytes / sizeof(T), used_bytes / sizeof(T));
+            if(used_bytes == 0)
+                {
+                //no memory is currently allocated
+                purge_no_destructors();
+                return;
+                }
+
+            unsigned char *buffer = (unsigned char *)malloc(used_bytes);
+            if(buffer == 0)
+                throw std::bad_alloc();
+            unsigned char *buffer_position = buffer;
+
+            for(UINT32 p = 0;p < buffers.size(); p++)
+                {
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                unsigned char *end_of_buffer = buffers[p] + buffer_size;
+                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
+                    {
+                    if(free_set.find(last_position) == free_set.end())
+                        {
+                        new(buffer_position) T((T *)last_position);
+                        ((Record *)last_position)->~Record();
+                        //memcpy(buffer_position, last_position, sizeof(T));
+                        buffer_position += sizeof(T);
+                        }
+                    }
+                }
+            assert(buffer_position == buffer + used_bytes);
+            purge_no_destructors(); //destructors run in loop above
+            buffers.push_back(buffer);
+            }
+
+        Record *construct(unsigned char *recData)
+            {
+            //See if any memory is free
             if(freed_position)
                 {
                 unsigned char *next_position = *(unsigned char **)freed_position;
-                size--;
+                Record * curRecord = new (freed_position) T(recData);
+                freed_position = next_position;
+                return curRecord;
+                }
+            //Otherwise, allocate more memory
+            else
+                {
+                reserve(AllocUnit);
+                return construct(recData);
+                }
+            throw std::bad_alloc();
+            return NULL;
+            }
+
+        Record *construct(Record *SourceRecord)
+            {
+            //See if any memory is free
+            if(freed_position)
+                {
+                unsigned char *next_position = *(unsigned char **)freed_position;
+                Record * curRecord = new (freed_position) T((T *)SourceRecord);
+                freed_position = next_position;
+                return curRecord;
+                }
+            //Otherwise, allocate more memory
+            else
+                {
+                reserve(AllocUnit);
+                return construct(SourceRecord);
+                }
+            throw std::bad_alloc();
+            return NULL;
+            }
+
+        void destroy(Record *curRecord)
+            {
+            if(curRecord == NULL)
+                return;
+            curRecord->~Record();
+            *(unsigned char **)curRecord = freed_position;
+            freed_position = (unsigned char *)curRecord;
+            }
+
+        void deallocate(Record *curRecord)
+            {
+            if(curRecord == NULL)
+                return;
+            *(unsigned char **)curRecord = freed_position;
+            freed_position = (unsigned char *)curRecord;
+            }
+
+        UINT32 object_capacity()
+            {
+            UINT32 size = 0;
+            for(UINT32 p = 0;p < buffers.size(); p++)
+                {
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                size += buffer_size / sizeof(T);
+                }
+
+            return size;
+            }
+
+        UINT32 free_object_capacity()
+            {
+            UINT32 size = 0;
+
+            if(freed_position)
+                {
+                size++;
+                unsigned char *next_position = *(unsigned char **)freed_position;
                 while(next_position != NULL)
                     {
-                    size--;
+                    size++;
                     next_position = *(unsigned char **)next_position;
                     };
                 }
 
             return size;
+            }
+
+        UINT32 used_object_capacity()
+            {
+            return object_capacity() - free_object_capacity();
+            }
+
+        UINT32 bytes_capacity()
+            {
+            UINT32 size = 0;
+            for(UINT32 p = 0;p < buffers.size(); p++)
+                {
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                size += buffer_size;
+                }
+
+            return size;
+            }
+
+        UINT32 free_bytes_capacity()
+            {
+            UINT32 size = 0;
+
+            if(freed_position)
+                {
+                size++;
+                unsigned char *next_position = *(unsigned char **)freed_position;
+                while(next_position != NULL)
+                    {
+                    size++;
+                    next_position = *(unsigned char **)next_position;
+                    };
+                }
+
+            return size * sizeof(T);
+            }
+
+        UINT32 used_bytes_capacity()
+            {
+            return bytes_capacity() - free_bytes_capacity();
             }
 
         bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
@@ -126,7 +299,12 @@ class RecordPoolAllocator
 
             MakeFreeSet(free_set);
             for(UINT32 p = 0;p < buffers.size(); p++)
-                for(unsigned char *last_position = buffers[p].buffer_start;last_position < buffers[p].buffer_position; last_position += sizeof(T))
+                {
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                unsigned char *end_of_buffer = buffers[p] + buffer_size;
+                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
                     {
                     if(free_set.find(last_position) == free_set.end())
                         {
@@ -153,6 +331,7 @@ class RecordPoolAllocator
                             }
                         }
                     }
+                }
             return stop;
             }
 
@@ -191,8 +370,12 @@ class RecordPoolAllocator
             MakeFreeSet(free_set);
             for(UINT32 p = 0;p < buffers.size(); p++)
                 {
-                Records.reserve(Records.size() + (((buffers[p].buffer_position - buffers[p].buffer_start) / sizeof(T)) - ((UINT32)free_set.size() * sizeof(T))));
-                for(unsigned char *last_position = buffers[p].buffer_start;last_position < buffers[p].buffer_position; last_position += sizeof(T))
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                unsigned char *end_of_buffer = buffers[p] + buffer_size;
+                Records.reserve(Records.size() + (buffer_size / sizeof(T)) - (UINT32)free_set.size());
+                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
                     {
                     if(free_set.find(last_position) == free_set.end())
                         Records.push_back((Record *)last_position);
@@ -207,205 +390,318 @@ class RecordPoolAllocator
             UINT32 pos = 0;
             for(UINT32 p = 0;p < buffers.size(); p++)
                 {
-                //Records.reserve(Records.size() + (((buffers[p].buffer_position - buffers[p].buffer_start) / sizeof(T)) - ((UINT32)free_set.size() * sizeof(T))));
-                for(unsigned char *last_position = buffers[p].buffer_start;last_position < buffers[p].buffer_position; last_position += sizeof(T))
+                UINT32 buffer_size = _msize(buffers[p]);
+                //in case malloc returned more than the requested amount
+                buffer_size -= buffer_size % sizeof(T);
+                unsigned char *end_of_buffer = buffers[p] + buffer_size;
+                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
                     {
                     if(free_set.find(last_position) == free_set.end())
                         ((RECORDIDARRAY)Records)[pos++] = (Record *)last_position;
                     }
                 }
             }
-
-        void reserve(UINT32 elements)
-            {
-            buffers.push_back(MemoryBuffer());
-            buffers.back().buffer_position = buffers.back().buffer_start = new unsigned char[(sizeof(T) * elements)];
-            buffers.back().buffer_end = buffers.back().buffer_start + sizeof(T) * elements;
-            //memset(buffers.back().buffer_start, 0x00, sizeof(T) * elements);
-            }
-
-        void consolidate()
-            {
-            //consolidates all memory pools into one large pool, removing any freed positions and unused memory
-            //invalidates any python records, so it can only be safely done after loading and
-            //before control is returned to python
-            //this improves locality of records, so iterating through them should be faster
-            //consolidate never leaves the pool completely empty (tries to leave InitAlloc amount available)
-
-            if(buffers.size() == 1 && buffers[0].buffer_end == buffers[0].buffer_position && freed_position == NULL)
-                return;
-            if(buffers.size() == 1 && buffers[0].buffer_start == buffers[0].buffer_position && freed_position == NULL)
-                {
-                //no memory was ever allocated
-                //reset the pool to a minimal amount
-                purge_no_destructors(false);
-                reserve(1);
-                return;
-                }
-            if(buffers.size() == 0)
-                {
-                //Should never hit size == 0
-                //reset the pool to a minimal amount
-                freed_position = NULL;
-                reserve(1);
-                return;
-                }
-
-            SINT32 size = 0;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                size += (UINT32)(buffers[p].buffer_position - buffers[p].buffer_start);
-            if(size == 0)
-                {
-                //no memory was ever allocated
-                //reset the pool to a minimal amount
-                purge_no_destructors(false);
-                reserve(1);
-                return;
-                }
-
-            std::vector<unsigned char *> free_vector;
-            MakeFreeVector(free_vector);
-            size -= sizeof(T) * (UINT32)free_vector.size();
-            if(size <= 0)
-                {
-                //memory was allocated, but later all freed
-                //reset the pool to a minimal amount
-                purge_no_destructors(false);
-                reserve(1);
-                return;
-                }
-            unsigned char *buffer_start, *buffer_position, *buffer_end, *last_position;
-            buffer_position = buffer_start = new unsigned char[size];
-            buffer_end = buffer_start + size;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                {
-                last_position = buffers[p].buffer_start;
-                for(UINT32 x = 0;x < free_vector.size(); x++)
-                    {
-                    //Gotta copy it piecemeal to skip the freed positions
-                    if(last_position <= free_vector[x] && free_vector[x] < buffers[p].buffer_end)
-                        {
-                        memcpy(buffer_position, last_position, free_vector[x] - last_position);
-                        buffer_position += free_vector[x] - last_position;
-                        last_position = free_vector[x] + sizeof(T); //skip the freed section
-                        free_vector.erase(free_vector.begin() + x--);
-                        }
-                    }
-                if(last_position < buffers[p].buffer_position)
-                    {
-                    memcpy(buffer_position, last_position, buffers[p].buffer_position - last_position);
-                    buffer_position += buffers[p].buffer_position - last_position;
-                    }
-                }
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                delete []buffers[p].buffer_start;
-            buffers.clear();
-            freed_position = NULL;
-            buffers.push_back(MemoryBuffer());
-            curBuffer = 0;
-            buffers[curBuffer].buffer_start = buffer_start;
-            buffers[curBuffer].buffer_position = buffer_position;
-            buffers[curBuffer].buffer_end = buffer_end;
-            }
-
-        Record *construct(unsigned char *recData)
-            {
-            //Check the current pool first, and use up all preallocated memory
-            if(buffers[curBuffer].buffer_position < buffers[curBuffer].buffer_end)
-                {
-                Record * curRecord = new (buffers[curBuffer].buffer_position) T(recData);
-                buffers[curBuffer].buffer_position += sizeof(T);
-                return curRecord;
-                }
-            //If all preallocated memory has been used, see if any memory was freed and can be reused
-            else if(freed_position)
-                {
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                Record * curRecord = new (freed_position) T(recData);
-                freed_position = next_position;
-                return curRecord;
-                }
-            //All else fails, allocate more memory
-            else
-                {
-                ++curBuffer;
-                if(curBuffer >= (UINT32)buffers.size())
-                    {
-                    //No buffers were reserved, so add a new one
-                    curBuffer = (UINT32)buffers.size();
-                    reserve(InitAlloc);
-                    }
-                return construct(recData);
-                }
-            throw std::bad_alloc();
-            return NULL;
-            }
-
-        Record *construct(Record *SourceRecord)
-            {
-            //Check the current pool first, and use up all preallocated memory
-            if(buffers[curBuffer].buffer_position < buffers[curBuffer].buffer_end)
-                {
-                Record * curRecord = new (buffers[curBuffer].buffer_position) T((T *)SourceRecord);
-                buffers[curBuffer].buffer_position += sizeof(T);
-                return curRecord;
-                }
-            //If all preallocated memory has been used, see if any memory was freed and can be reused
-            else if(freed_position)
-                {
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                Record * curRecord = new (freed_position) T((T *)SourceRecord);
-                freed_position = next_position;
-                return curRecord;
-                }
-            //All else fails, allocate more memory
-            else
-                {
-                ++curBuffer;
-                if(curBuffer >= (UINT32)buffers.size())
-                    {
-                    //No buffers were reserved, so add a new one
-                    curBuffer = (UINT32)buffers.size();
-                    reserve(InitAlloc);
-                    }
-                return construct(SourceRecord);
-                }
-            throw std::bad_alloc();
-            return NULL;
-            }
-
-        void destroy(Record *curRecord)
-            {
-            if(curRecord == NULL)
-                return;
-            curRecord->~Record();
-            *(unsigned char **)curRecord = freed_position;
-            freed_position = (unsigned char *)curRecord;
-            }
-        void deallocate(Record *curRecord)
-            {
-            if(curRecord == NULL)
-                return;
-            *(unsigned char **)curRecord = freed_position;
-            freed_position = (unsigned char *)curRecord;
-            }
-        UINT32 free_capacity()
-            {
-            UINT32 size = 0;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                size += (buffers[p].buffer_end - buffers[p].buffer_position) / sizeof(T);
-
-            if(freed_position)
-                {
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                size++;
-                while(next_position != NULL)
-                    {
-                    size++;
-                    next_position = *(unsigned char **)next_position;
-                    };
-                }
-
-            return size;
-            }
     };
+
+//template<class T, UINT32 AllocUnit>
+//class PODPoolAllocator
+//    {
+//    private:
+//        unsigned char *freed_position;
+//        std::vector<unsigned char *> buffers;
+//
+//    public:
+//        PODPoolAllocator():
+//            freed_position(NULL)
+//            {
+//            //reserve(AllocUnit);
+//            }
+//
+//        ~PODPoolAllocator()
+//            {
+//            purge_no_destructors();
+//            }
+//
+//        void purge_no_destructors()
+//            {
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                free(buffers[p]);
+//            buffers.clear();
+//            //_heapmin();
+//            freed_position = NULL;
+//            }
+//
+//        void reserve(UINT32 elements)
+//            {
+//            //Allocate memory
+//            UINT32 buffer_size = sizeof(T) * elements;
+//            unsigned char *buffer = (unsigned char *)malloc(buffer_size);
+//            if(buffer == 0)
+//                throw std::bad_alloc();
+//            //memset(buffer, 0x00, buffer_size);
+//
+//            //Populate the free linked list in reverse so that the first freed_position is at the beginning of the buffer
+//            //unsigned char *end_of_buffer = buffer + buffer_size;
+//            for(unsigned char *last_position = buffer + buffer_size - sizeof(T);last_position >= buffer; last_position -= sizeof(T))
+//                {
+//                *(unsigned char **)last_position = freed_position;
+//                freed_position = last_position;
+//                }
+//
+//            //Save the buffer so it can be deallocated later
+//            buffers.push_back(buffer);
+//            }
+//
+//        Record *construct()
+//            {
+//            //See if any memory is free
+//            if(freed_position)
+//                {
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                Record * curRecord = new (freed_position) T();
+//                freed_position = next_position;
+//                return curRecord;
+//                }
+//            //Otherwise, allocate more memory
+//            else
+//                {
+//                reserve(AllocUnit);
+//                return construct(recData);
+//                }
+//            throw std::bad_alloc();
+//            return NULL;
+//            }
+//
+//        void deallocate(T *curPOD)
+//            {
+//            if(curPOD == NULL)
+//                return;
+//            *(unsigned char **)curPOD = freed_position;
+//            freed_position = (unsigned char *)curPOD;
+//            }
+//
+//        UINT32 object_capacity()
+//            {
+//            UINT32 size = 0;
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                {
+//                UINT32 buffer_size = _msize(buffers[p]);
+//                //in case malloc returned more than the requested amount
+//                buffer_size -= buffer_size % sizeof(T);
+//                size += buffer_size / sizeof(T);
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 free_object_capacity()
+//            {
+//            UINT32 size = 0;
+//
+//            if(freed_position)
+//                {
+//                size++;
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                while(next_position != NULL)
+//                    {
+//                    size++;
+//                    next_position = *(unsigned char **)next_position;
+//                    };
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 used_object_capacity()
+//            {
+//            return object_capacity() - free_object_capacity();
+//            }
+//
+//        UINT32 bytes_capacity()
+//            {
+//            UINT32 size = 0;
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                {
+//                UINT32 buffer_size = _msize(buffers[p]);
+//                //in case malloc returned more than the requested amount
+//                buffer_size -= buffer_size % sizeof(T);
+//                size += buffer_size;
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 free_bytes_capacity()
+//            {
+//            UINT32 size = 0;
+//
+//            if(freed_position)
+//                {
+//                size++;
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                while(next_position != NULL)
+//                    {
+//                    size++;
+//                    next_position = *(unsigned char **)next_position;
+//                    };
+//                }
+//
+//            return size * sizeof(T);
+//            }
+//
+//        UINT32 used_bytes_capacity()
+//            {
+//            return bytes_capacity() - free_bytes_capacity();
+//            }
+//    };
+//
+//class StringPoolAllocator
+//    {
+//    private:
+//        unsigned char *freed_position;
+//        std::vector<char *> buffers;
+//
+//    public:
+//        StringPoolAllocator():
+//            freed_position(NULL)
+//            {
+//            //reserve(AllocUnit);
+//            }
+//
+//        ~StringPoolAllocator()
+//            {
+//            purge_no_destructors();
+//            }
+//
+//        void purge_no_destructors()
+//            {
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                free(buffers[p]);
+//            buffers.clear();
+//            //_heapmin();
+//            freed_position = NULL;
+//            }
+//
+//        void reserve(UINT32 elements)
+//            {
+//            //Allocate memory
+//            UINT32 buffer_size = sizeof(T) * elements;
+//            unsigned char *buffer = (unsigned char *)malloc(buffer_size);
+//            if(buffer == 0)
+//                throw std::bad_alloc();
+//            //memset(buffer, 0x00, buffer_size);
+//
+//            //Populate the free linked list in reverse so that the first freed_position is at the beginning of the buffer
+//            //unsigned char *end_of_buffer = buffer + buffer_size;
+//            for(unsigned char *last_position = buffer + buffer_size - sizeof(T);last_position >= buffer; last_position -= sizeof(T))
+//                {
+//                *(unsigned char **)last_position = freed_position;
+//                freed_position = last_position;
+//                }
+//
+//            //Save the buffer so it can be deallocated later
+//            buffers.push_back(buffer);
+//            }
+//
+//        Record *construct()
+//            {
+//            //See if any memory is free
+//            if(freed_position)
+//                {
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                Record * curRecord = new (freed_position) T();
+//                freed_position = next_position;
+//                return curRecord;
+//                }
+//            //Otherwise, allocate more memory
+//            else
+//                {
+//                reserve(AllocUnit);
+//                return construct(recData);
+//                }
+//            throw std::bad_alloc();
+//            return NULL;
+//            }
+//
+//        void deallocate(T *curPOD)
+//            {
+//            if(curPOD == NULL)
+//                return;
+//            *(unsigned char **)curPOD = freed_position;
+//            freed_position = (unsigned char *)curPOD;
+//            }
+//
+//        UINT32 object_capacity()
+//            {
+//            UINT32 size = 0;
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                {
+//                UINT32 buffer_size = _msize(buffers[p]);
+//                //in case malloc returned more than the requested amount
+//                buffer_size -= buffer_size % sizeof(T);
+//                size += buffer_size / sizeof(T);
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 free_object_capacity()
+//            {
+//            UINT32 size = 0;
+//
+//            if(freed_position)
+//                {
+//                size++;
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                while(next_position != NULL)
+//                    {
+//                    size++;
+//                    next_position = *(unsigned char **)next_position;
+//                    };
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 used_object_capacity()
+//            {
+//            return object_capacity() - free_object_capacity();
+//            }
+//
+//        UINT32 bytes_capacity()
+//            {
+//            UINT32 size = 0;
+//            for(UINT32 p = 0;p < buffers.size(); p++)
+//                {
+//                UINT32 buffer_size = _msize(buffers[p]);
+//                //in case malloc returned more than the requested amount
+//                buffer_size -= buffer_size % sizeof(T);
+//                size += buffer_size;
+//                }
+//
+//            return size;
+//            }
+//
+//        UINT32 free_bytes_capacity()
+//            {
+//            UINT32 size = 0;
+//
+//            if(freed_position)
+//                {
+//                size++;
+//                unsigned char *next_position = *(unsigned char **)freed_position;
+//                while(next_position != NULL)
+//                    {
+//                    size++;
+//                    next_position = *(unsigned char **)next_position;
+//                    };
+//                }
+//
+//            return size * sizeof(T);
+//            }
+//
+//        UINT32 used_bytes_capacity()
+//            {
+//            return bytes_capacity() - free_bytes_capacity();
+//            }
+//    };

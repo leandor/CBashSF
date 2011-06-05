@@ -970,7 +970,7 @@ Record * Collection::CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFil
         }
 
     //Create the record copy
-    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID ? DestRecordEditorID : curRecord->GetEditorIDKey(), curRecord, ParentRecord, options);
+    RecordCopy = DestModFile->CreateRecord(curRecord->GetType(), DestRecordEditorID, curRecord, ParentRecord, options);
     if(RecordCopy == NULL)
         {
         printer("CopyRecord: Error - Unable to create the copied record (%08X). An unknown error occurred when copying the record from \"%s\" to \"%s\".\n", curRecord->formID, DestModFile->reader.getModName(), curModFile->reader.getModName());

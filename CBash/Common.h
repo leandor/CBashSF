@@ -587,12 +587,14 @@ class ModFlags
 
 class StringRecord
     {
+    private:
+        bool IsOnDisk;
+
     public:
         STRING value;
 
         StringRecord();
         StringRecord(const StringRecord &p);
-        StringRecord(const STRING p);
         ~StringRecord();
 
         UINT32 GetSize() const;
@@ -605,7 +607,6 @@ class StringRecord
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
-        void Copy(const StringRecord &FieldValue);
         void Copy(STRING FieldValue);
 
         bool equals(const StringRecord &other) const;
@@ -615,6 +616,9 @@ class StringRecord
 
 class NonNullStringRecord
     {
+    private:
+        UINT32 DiskSize;
+
     public:
         STRING value;
 
@@ -632,7 +636,6 @@ class NonNullStringRecord
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
-        void Copy(const NonNullStringRecord &FieldValue);
         void Copy(STRING FieldValue);
 
         bool equals(const NonNullStringRecord &other) const;
@@ -658,6 +661,8 @@ struct UnorderedPackedStrings
     bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
     void Write(UINT32 _Type, FileWriter &writer);
 
+    void Copy(STRINGARRAY FieldValue, UINT32 ArraySize);
+
     UnorderedPackedStrings& operator = (const UnorderedPackedStrings &rhs);
     bool equals(const UnorderedPackedStrings &other) const;
     bool equalsi(const UnorderedPackedStrings &other) const;
@@ -665,6 +670,9 @@ struct UnorderedPackedStrings
 
 class RawRecord
     {
+    private:
+        bool IsOnDisk;
+
     public:
         UINT32 size;
         unsigned char *value;
