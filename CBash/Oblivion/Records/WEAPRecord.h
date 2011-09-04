@@ -16,13 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
+namespace Ob
+{
 class WEAPRecord : public Record
     {
     private:
@@ -60,14 +62,14 @@ class WEAPRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        StringRecord ICON;
-        OptSimpleSubRecord<FORMID> SCRI;
-        OptSimpleSubRecord<FORMID> ENAM;
-        OptSimpleSubRecord<UINT16> ANAM;
-        ReqSubRecord<WEAPDATA> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        StringRecord ICON; //Large Icon Filename
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> ENAM; //Enchantment
+        OptSimpleSubRecord<UINT16> ANAM; //Enchantment Points
+        ReqSubRecord<WEAPDATA> DATA; //Weapon Data
 
         WEAPRecord(unsigned char *_recData=NULL);
         WEAPRecord(WEAPRecord *srcRecord);
@@ -109,10 +111,12 @@ class WEAPRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WEAPRecord &other) const;
         bool operator !=(const WEAPRecord &other) const;
+        bool equals(Record *other);
     };
+}

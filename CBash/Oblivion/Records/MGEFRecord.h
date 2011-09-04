@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class MGEFRecord : public Record
+namespace Ob
+{
+class MGEFRecord : public Record //Base Effect
     {
     private:
         struct MGEFDATA
@@ -149,14 +150,14 @@ class MGEFRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        StringRecord DESC;
-        StringRecord ICON;
-        OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<MGEFDATA> DATA;
-        std::vector<MGEFCODE_OR_UINT32> ESCE;
-        OptSubRecord<OBMEMGEF> OBME;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        StringRecord ICON; //Large Icon Filename
+        OptSubRecord<GENMODEL> MODL; //Model
+        ReqSubRecord<MGEFDATA> DATA; //Data
+        UnorderedPackedArray<MGEFCODE_OR_UINT32> ESCE; //Counter Effects
+        OptSubRecord<OBMEMGEF> OBME; //OBME Extended Data
 
         MGEFRecord(unsigned char *_recData=NULL);
         MGEFRecord(MGEFRecord *srcRecord);
@@ -269,10 +270,12 @@ class MGEFRecord : public Record
         bool   IsKeyedByEditorID();
         STRING GetEditorIDKey();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const MGEFRecord &other) const;
         bool operator !=(const MGEFRecord &other) const;
+        bool equals(Record *other);
     };
+}

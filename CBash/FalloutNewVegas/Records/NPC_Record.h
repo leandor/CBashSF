@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -30,13 +30,13 @@ class NPC_Record : public FNVRecord //Non-Player Character
     private:
         #pragma pack(push)
         #pragma pack(1)
-        struct NPC_DATA // Data
+        struct NPC_DATA //Data
             {
-            SINT32  baseHealth; // Base Health
+            SINT32  baseHealth; //Base Health
             UINT8   strength, perception, endurance,
                     charisma, intelligence,
                     agility, luck;
-            //UINT8 unused1; // only present in old record versions
+            //UINT8 unused1; //only present in old record versions
 
             NPC_DATA();
             ~NPC_DATA();
@@ -46,16 +46,16 @@ class NPC_Record : public FNVRecord //Non-Player Character
             };
         #pragma pack(pop)
 
-        struct NPC_DNAM // Skill Data
+        struct NPC_DNAM //Skill Data
             {
             UINT8   barter, bigGuns, energy, explosives,
                     lockpick, medicine, melee, repair,
                     science, guns, sneak, speech,
-                    survival, unarmed; // Big Guns is obsolete for FNV
+                    survival, unarmed; //Big Guns is obsolete for FNV
             UINT8   barterBoost, bigGunsBoost, energyBoost, explosivesBoost,
                     lockpickBoost, medicineBoost, meleeBoost, repairBoost,
                     scienceBoost, gunsBoost, sneakBoost, speechBoost,
-                    survivalBoost, unarmedBoost; // Big Guns is obsolete for FNV
+                    survivalBoost, unarmedBoost; //Big Guns is obsolete for FNV
 
             NPC_DNAM();
             ~NPC_DNAM();
@@ -407,11 +407,12 @@ class NPC_Record : public FNVRecord //Non-Player Character
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const NPC_Record &other) const;
         bool operator !=(const NPC_Record &other) const;
+        bool equals(Record *other);
     };
 }

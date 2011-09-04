@@ -16,18 +16,19 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class REGNRecord : public Record
+namespace Ob
+{
+class REGNRecord : public Record //Region
     {
     private:
-        struct REGNRPLD
+        struct REGNRPLD //Point
             {
             FLOAT32 posX, posY;
 
@@ -40,14 +41,16 @@ class REGNRecord : public Record
 
         struct REGNArea
             {
-            ReqSimpleSubRecord<UINT32> RPLI;
-            std::vector<REGNRPLD> RPLD;
+            ReqSimpleSubRecord<UINT32> RPLI; //Edge Fall-off
+            UnorderedPackedArray<REGNRPLD> RPLD; //Region Point List Data
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const REGNArea &other) const;
             bool operator !=(const REGNArea &other) const;
             };
 
-        struct REGNRDWT
+        struct REGNRDWT //Weather Type
             {
             FORMID  weather;
             UINT32  chance;
@@ -59,7 +62,7 @@ class REGNRecord : public Record
             bool operator !=(const REGNRDWT &other) const;
             };
 
-        struct REGNRDSD
+        struct REGNRDSD //Sound
             {
             FORMID  sound;
             UINT32  flags, chance;
@@ -90,7 +93,7 @@ class REGNRecord : public Record
             bool operator !=(const REGNRDSD &other) const;
             };
 
-        struct REGNRDGS
+        struct REGNRDGS //Grass
             {
             FORMID  grass;
             UINT8   unk1[4];
@@ -102,7 +105,7 @@ class REGNRecord : public Record
             bool operator !=(const REGNRDGS &other) const;
             };
 
-        struct REGNRDOT
+        struct REGNRDOT //Object
             {
             FORMID  objectId;
             UINT16  parentIndex;
@@ -153,7 +156,7 @@ class REGNRecord : public Record
             bool operator !=(const REGNRDOT &other) const;
             };
 
-        struct REGNRDAT
+        struct REGNRDAT //Data Header
             {
             UINT32  entryType;
             UINT8   flags, priority, unused1[2];
@@ -165,16 +168,16 @@ class REGNRecord : public Record
             bool operator !=(const REGNRDAT &other) const;
             };
 
-        struct REGNEntry
+        struct REGNEntry //Region Data Entry
             {
-            ReqSubRecord<REGNRDAT> RDAT;
-            std::vector<REGNRDOT> RDOT;
-            StringRecord RDMP;
-            StringRecord ICON;
-            std::vector<REGNRDGS> RDGS;
-            SemiOptSimpleSubRecord<UINT32> RDMD;
-            std::vector<REGNRDSD> RDSD;
-            std::vector<REGNRDWT> RDWT;
+            ReqSubRecord<REGNRDAT> RDAT; //Data Header
+            UnorderedPackedArray<REGNRDOT> RDOT; //Objects
+            StringRecord RDMP; //Map Name
+            StringRecord ICON; //Unknown
+            UnorderedPackedArray<REGNRDGS> RDGS; //Grasses
+            SemiOptSimpleSubRecord<UINT32> RDMD; //Music Type
+            UnorderedPackedArray<REGNRDSD> RDSD; //Sounds
+            UnorderedPackedArray<REGNRDWT> RDWT; //Weather Types
 
             enum RDATFlags
                 {
@@ -193,7 +196,7 @@ class REGNRecord : public Record
 
             enum eRDMDType
                 {
-                eDefault,
+                eDefault = 0,
                 ePublic,
                 eDungeon
                 };
@@ -227,27 +230,19 @@ class REGNRecord : public Record
             bool IsMusicType(UINT32 Type);
             void SetMusicType(UINT32 Type);
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const REGNEntry &other) const;
             bool operator !=(const REGNEntry &other) const;
             };
 
-        enum eREGNType
-            {
-            eREGNObjects  = 2,
-            eREGNWeathers = 3,
-            eREGNMap      = 4,
-            eREGNIcon     = 5,
-            eREGNGrasses  = 6,
-            eREGNSounds   = 7
-            };
-
     public:
-        StringRecord EDID;
-        StringRecord ICON;
-        ReqSubRecord<GENCLR> RCLR;
-        SimpleSubRecord<FORMID> WNAM;
-        std::vector<REGNArea *> Areas;
-        std::vector<REGNEntry *> Entries;
+        StringRecord EDID; //Editor ID
+        StringRecord ICON; //Large Icon Filename
+        ReqSubRecord<GENCLR> RCLR; //Map Color
+        OptSimpleSubRecord<FORMID> WNAM; //Worldspace
+        UnorderedSparseArray<REGNArea *> Areas; //Areas
+        UnorderedSparseArray<REGNEntry *> Entries; //Region Data Entries
 
         REGNRecord(unsigned char *_recData=NULL);
         REGNRecord(REGNRecord *srcRecord);
@@ -263,10 +258,12 @@ class REGNRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const REGNRecord &other) const;
         bool operator !=(const REGNRecord &other) const;
+        bool equals(Record *other);
     };
+}

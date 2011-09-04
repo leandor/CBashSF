@@ -16,15 +16,25 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "FACTRecord.h"
 
-bool sortRNAM(FACTRecord::FACTRNAM *lhs, FACTRecord::FACTRNAM *rhs)
+namespace Ob
+{
+bool sortRNAM::operator()(const FACTRecord::FACTRNAM *lhs, const FACTRecord::FACTRNAM *rhs) const
     {
     return lhs->RNAM.value < rhs->RNAM.value;
+    }
+
+void FACTRecord::FACTRNAM::Write(FileWriter &writer)
+    {
+    WRITE(RNAM);
+    WRITE(MNAM);
+    WRITE(FNAM);
+    WRITE(INAM);
     }
 
 bool FACTRecord::FACTRNAM::operator ==(const FACTRNAM &other) const
@@ -56,42 +66,24 @@ FACTRecord::FACTRecord(FACTRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-
-    XNAM.clear();
-    XNAM.resize(srcRecord->XNAM.size());
-    for(UINT32 x = 0; x < srcRecord->XNAM.size(); x++)
-        {
-        XNAM[x] = new ReqSubRecord<GENXNAM>;
-        *XNAM[x] = *srcRecord->XNAM[x];
-        }
-
+    XNAM = srcRecord->XNAM;
     DATA = srcRecord->DATA;
     CNAM = srcRecord->CNAM;
-
-    RNAM.clear();
-    RNAM.resize(srcRecord->RNAM.size());
-    for(UINT32 x = 0; x < srcRecord->RNAM.size(); x++)
-        {
-        RNAM[x] = new FACTRNAM;
-        *RNAM[x] = *srcRecord->RNAM[x];
-        }
+    RNAM = srcRecord->RNAM;
     }
 
 FACTRecord::~FACTRecord()
     {
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        delete XNAM[x];
-    for(UINT32 x = 0; x < RNAM.size(); x++)
-        delete RNAM[x];
+    //
     }
 
 bool FACTRecord::VisitFormIDs(FormIDOp &op)
@@ -99,8 +91,8 @@ bool FACTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        op.Accept(XNAM[x]->value.faction);
+    for(UINT32 ListIndex = 0; ListIndex < XNAM.value.size(); ListIndex++)
+        op.Accept(XNAM.value[ListIndex]->faction);
 
     return op.Stop();
     }
@@ -155,69 +147,69 @@ STRING FACTRecord::GetStrType()
     return "FACT";
     }
 
-SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 FACTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XNAM):
-                XNAM.push_back(new ReqSubRecord<GENXNAM>);
-                XNAM.back()->Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.push_back(new FACTRNAM);
-                RNAM.back()->RNAM.Read(buffer, subSize, curPos);
+                RNAM.value.push_back(new FACTRNAM);
+                RNAM.value.back()->RNAM.Read(buffer, subSize);
                 break;
             case REV32(MNAM):
-                if(RNAM.size() == 0)
-                    RNAM.push_back(new FACTRNAM);
-                RNAM.back()->MNAM.Read(buffer, subSize, curPos);
+                if(RNAM.value.size() == 0)
+                    RNAM.value.push_back(new FACTRNAM);
+                RNAM.value.back()->MNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FNAM):
-                if(RNAM.size() == 0)
-                    RNAM.push_back(new FACTRNAM);
-                RNAM.back()->FNAM.Read(buffer, subSize, curPos);
+                if(RNAM.value.size() == 0)
+                    RNAM.value.push_back(new FACTRNAM);
+                RNAM.value.back()->FNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(INAM):
-                if(RNAM.size() == 0)
-                    RNAM.push_back(new FACTRNAM);
-                RNAM.back()->INAM.Read(buffer, subSize, curPos);
+                if(RNAM.value.size() == 0)
+                    RNAM.value.push_back(new FACTRNAM);
+                RNAM.value.back()->INAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  FACT: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -230,78 +222,41 @@ SINT32 FACTRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();
-
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        delete XNAM[x];
-    XNAM.clear();
-
+    XNAM.Unload();
     DATA.Unload();
     CNAM.Unload();
-
-    for(UINT32 x = 0; x < RNAM.size(); x++)
-        delete RNAM[x];
-    RNAM.clear();
+    RNAM.Unload();
     return 1;
     }
 
 SINT32 FACTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    for(UINT32 p = 0; p < XNAM.size(); p++)
-        if(XNAM[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(XNAM), &XNAM[p]->value, XNAM[p]->GetSize());
-
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(CNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
-
-    std::sort(RNAM.begin(), RNAM.end(), sortRNAM);
-    for(UINT32 p = 0; p < RNAM.size(); p++)
-        {
-        writer.record_write_subrecord(REV32(RNAM), &RNAM[p]->RNAM.value, RNAM[p]->RNAM.GetSize());
-        if(RNAM[p]->MNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(MNAM), RNAM[p]->MNAM.value, RNAM[p]->MNAM.GetSize());
-        if(RNAM[p]->FNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(FNAM), RNAM[p]->FNAM.value, RNAM[p]->FNAM.GetSize());
-        if(RNAM[p]->INAM.IsLoaded())
-            writer.record_write_subrecord(REV32(INAM), RNAM[p]->INAM.value, RNAM[p]->INAM.GetSize());
-        }
+    WRITE(EDID);
+    WRITE(FULL);
+    XNAM.Write(REV32(XNAM), writer, true);
+    WRITE(DATA);
+    WRITE(CNAM);
+    RNAM.Write(writer);
     return -1;
     }
 
 bool FACTRecord::operator ==(const FACTRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DATA == other.DATA &&
-        CNAM == other.CNAM &&
-        XNAM.size() == other.XNAM.size() &&
-        RNAM.size() == other.RNAM.size())
-        {
-        //Not sure if record order matters on relations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < XNAM.size(); ++x)
-            if(*XNAM[x] != *other.XNAM[x])
-                return false;
-
-        //Record order doesn't matter on faction ranks, so equality testing isn't easy
-        //Instead, they're keyed by faction rank (RNAM.value.RNAM)
-        //The proper solution would be to see if each rank matches the other
-        //But they're usually ordered, so the lazy approach is to not bother
-        //Fix-up later
-        for(UINT32 x = 0; x < RNAM.size(); ++x)
-            if(*RNAM[x] != *other.RNAM[x])
-                return false;
-        return true;
-        }
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            DATA == other.DATA &&
+            CNAM == other.CNAM &&
+            XNAM == other.XNAM &&
+            RNAM == other.RNAM);
     }
 
 bool FACTRecord::operator !=(const FACTRecord &other) const
     {
     return !(*this == other);
     }
+
+bool FACTRecord::equals(Record *other)
+    {
+    return *this == *(FACTRecord *)other;
+    }
+}

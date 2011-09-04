@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -30,12 +30,12 @@ class PACKRecord : public FNVRecord //Package
     private:
         struct PACKPKDT //General
             {
-            UINT32  flags; // General Flags
-            UINT8   aiType, unused1; // Type, Unused
-            UINT16  behaviorFlags; // Fallout Behavior Flags
+            UINT32  flags; //General Flags
+            UINT8   aiType, unused1; //Type, Unused
+            UINT16  behaviorFlags; //Fallout Behavior Flags
             //Below are not always present in chunk...
-            UINT16  specificFlags; // Type Specific Flags
-            UINT8   unused2[2]; // Unused
+            UINT16  specificFlags; //Type Specific Flags
+            UINT8   unused2[2]; //Unused
 
             PACKPKDT();
             ~PACKPKDT();
@@ -57,7 +57,7 @@ class PACKRecord : public FNVRecord //Package
             bool operator !=(const PACKPLDT &other) const;
             };
 
-        struct PACKPSDT // Schedule
+        struct PACKPSDT //Schedule
             {
             SINT8   month, day;
             UINT8   date;
@@ -71,12 +71,12 @@ class PACKRecord : public FNVRecord //Package
             bool operator !=(const PACKPSDT &other) const;
             };
 
-        struct PACKPTDT // Target
+        struct PACKPTDT //Target
             {
-            SINT32  targetType; // Type
-            FORMID_OR_UINT32 targetId; // Reference
-            SINT32  targetCountOrDistance; // Count / Distance
-            FLOAT32 unknown; // Unknown
+            SINT32  targetType; //Type
+            FORMID_OR_UINT32 targetId; //Reference
+            SINT32  targetCountOrDistance; //Count / Distance
+            FLOAT32 unknown; //Unknown
 
             PACKPTDT();
             ~PACKPTDT();
@@ -85,13 +85,13 @@ class PACKRecord : public FNVRecord //Package
             bool operator !=(const PACKPTDT &other) const;
             };
 
-        struct PACKPKW3 // Use Weapon Data
+        struct PACKPKW3 //Use Weapon Data
             {
-            UINT32  flags; // Flags
-            UINT8   fireRate, fireType; // Fire Rate, Fire Count
-            UINT16  burstNum, minShots, maxShots; // Number of Bursts, Shoots Per Volleys (Min, Max)
-            FLOAT32 minPause, maxPause; // Pause Between Volleys (Min, Max)
-            UINT8   unused[4]; // Unused
+            UINT32  flags; //Flags
+            UINT8   fireRate, fireType; //Fire Rate, Fire Count
+            UINT16  burstNum, minShots, maxShots; //Number of Bursts, Shoots Per Volleys (Min, Max)
+            FLOAT32 minPause, maxPause; //Pause Between Volleys (Min, Max)
+            UINT8   unused[4]; //Unused
 
             PACKPKW3();
             ~PACKPKW3();
@@ -100,11 +100,11 @@ class PACKRecord : public FNVRecord //Package
             bool operator !=(const PACKPKW3 &other) const;
             };
 
-        struct PACKPKDD // Dialogue Data
+        struct PACKPKDD //Dialogue Data
             {
-            FLOAT32 FOV; // FOV
-            FORMID  topic; // Topic
-            UINT32  flags; // Flags
+            FLOAT32 FOV; //FOV
+            FORMID  topic; //Topic
+            UINT32  flags; //Flags
             UINT8   unused1[4];
             UINT32  dialType;
             UINT8   unknown[4];
@@ -670,11 +670,12 @@ class PACKRecord : public FNVRecord //Package
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const PACKRecord &other) const;
         bool operator !=(const PACKRecord &other) const;
+        bool equals(Record *other);
     };
 }

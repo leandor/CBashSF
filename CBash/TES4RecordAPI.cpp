@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "Common.h"
@@ -129,13 +129,13 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 3: //flags2
             if(whichGame == eIsOblivion)
-                return &flagsUnk;
+                return cleaned_flag2();
             else
                 {
-                *FieldValues = &flagsUnk;
+                *FieldValues = cleaned_flag2();
                 return NULL;
                 }
         case 5: //version
@@ -156,7 +156,7 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return SNAM.value;
         case 12: //masters
             for(UINT32 p = 0;p < MAST.size();p++)
-                FieldValues[p] = MAST[p].value;
+                FieldValues[p] = MAST[p];
             return NULL;
         case 13: //DATA
             return NULL;
@@ -209,9 +209,16 @@ bool TES4Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SNAM.Copy((STRING)FieldValue);
             break;
         case 12: //masters
+            for(UINT32 x = 0; x < MAST.size(); x++)
+                delete []MAST[x];
+
             MAST.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                MAST[x].Copy((STRING)((STRINGARRAY)FieldValue)[x]);
+                {
+                UINT32 size = (UINT32)strlen(((STRINGARRAY)FieldValue)[x]) + 1;
+                MAST[x] = new char[size];
+                memcpy(MAST[x], ((STRINGARRAY)FieldValue)[x], size);
+                }
             break;
         //FNV Specific
         case 14: //formVersion
@@ -273,6 +280,8 @@ void TES4Record::DeleteField(FIELD_IDENTIFIERS)
         case 12: //masters
             //Good chance of breaking the plugin if called. Might be better to disallow.
             //Or atleast try and fix things up on this side.
+            for(UINT32 x = 0; x < MAST.size(); x++)
+                delete []MAST[x];
             MAST.clear();
             return;
         //FNV Specific

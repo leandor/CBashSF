@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "Common.h"
@@ -68,10 +68,10 @@ TES4Record::TES4Record(TES4Record *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -81,7 +81,13 @@ TES4Record::TES4Record(TES4Record *srcRecord):
     DELE = srcRecord->DELE;
     CNAM = srcRecord->CNAM;
     SNAM = srcRecord->SNAM;
-    MAST = srcRecord->MAST;
+    MAST.resize(srcRecord->MAST.size());
+    for(UINT32 x = 0; x < srcRecord->MAST.size();++x)
+        {
+        UINT32 size = (UINT32)strlen(srcRecord->MAST[x]) + 1;
+        MAST[x] = new char[size];
+        memcpy(MAST[x], srcRecord->MAST[x], size);
+        }
     ONAM = srcRecord->ONAM;
     SCRN = srcRecord->SCRN;
     return;
@@ -125,64 +131,64 @@ STRING TES4Record::GetStrType()
     return "TES4";
     }
 
-SINT32 TES4Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TES4Record::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    StringRecord curMAST;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(HEDR):
-                HEDR.Read(buffer, subSize, curPos);
+                HEDR.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MAST):
-                curMAST.Read(buffer, subSize, curPos);
-                MAST.push_back(curMAST);
-                curMAST.Unload();
+                MAST.push_back(new char[subSize]);
+                memcpy(MAST.back(), buffer, subSize);
+                buffer += subSize;
                 break;
             case REV32(DATA):
-                curPos += subSize;
+                buffer += subSize;
                 break;
             case REV32(OFST):
-                OFST.Read(buffer, subSize, curPos);
+                OFST.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DELE):
-                DELE.Read(buffer, subSize, curPos);
+                DELE.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ONAM):
-                ONAM.Read(buffer, subSize, curPos);
+                ONAM.Read(buffer, subSize);
                 break;
             case REV32(SCRN):
-                SCRN.Read(buffer, subSize, curPos);
+                SCRN.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  TES4: %08X - Unknown subType = %04x\n", formID, subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -201,18 +207,14 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
     switch(whichGame)
         {
         case eIsOblivion:
-            writer.record_write_subrecord(REV32(HEDR), &HEDR.value, sizeof(TES4HEDR));
-            if(OFST.IsLoaded())
-                writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
-            if(DELE.IsLoaded())
-                writer.record_write_subrecord(REV32(DELE), DELE.value, DELE.GetSize());
-            if(CNAM.IsLoaded())
-                writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
-            if(SNAM.IsLoaded())
-                writer.record_write_subrecord(REV32(SNAM), SNAM.value, SNAM.GetSize());
+            WRITE(HEDR);
+            WRITE(OFST);
+            WRITE(DELE);
+            WRITE(CNAM);
+            WRITE(SNAM);
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                writer.record_write_subrecord(REV32(MAST), MAST[p].value, MAST[p].GetSize());
+                writer.record_write_subrecord(REV32(MAST), MAST[p], (UINT32)strlen(MAST[p]) + 1);
                 writer.record_write_subrecord(REV32(DATA), &DATA[0], sizeof(DATA));
                 }
             break;
@@ -227,7 +229,7 @@ SINT32 TES4Record::WriteRecord(FileWriter &writer)
             WRITE(SNAM);
             for(UINT32 p = 0; p < MAST.size(); p++)
                 {
-                WRITEAS(MAST[p], MAST);
+                writer.record_write_subrecord(REV32(MAST), MAST[p], (UINT32)strlen(MAST[p]) + 1);
                 writer.record_write_subrecord(REV32(DATA), &DATA[0], sizeof(DATA));
                 }
             WRITE(ONAM);
@@ -264,7 +266,7 @@ UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormID
     writer.file_write(&recSize, 4);
     writer.file_write(&cleanFlags, 4);
     writer.file_write(&formID, 4);
-    writer.file_write(&flagsUnk, 4);
+    writer.file_write(cleaned_flag2(), 4);
     if(whichGame == eIsFalloutNewVegas)
         {
         writer.file_write(&formVersion, 2);
@@ -302,7 +304,7 @@ bool TES4Record::operator ==(const TES4Record &other) const
         //If both records have the same masters in different orders, the formIDs will have different indexing but be logically equivalent
         //The ordering has no effect on load order in game or in the editor
         for(UINT32 x = 0; x < MAST.size(); ++x)
-            if(!(MAST[x].equalsi(other.MAST[x])))
+            if(icmps(MAST[x], other.MAST[x]) != 0)
                 return false;
         return true;
         }
@@ -313,4 +315,9 @@ bool TES4Record::operator ==(const TES4Record &other) const
 bool TES4Record::operator !=(const TES4Record &other) const
     {
     return !(*this == other);
+    }
+
+bool TES4Record::equals(Record *other)
+    {
+    return *this == *(TES4Record *)other;
     }

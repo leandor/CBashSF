@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class SGSTRecord : public Record
+namespace Ob
+{
+class SGSTRecord : public Record //Sigil Stone
     {
     private:
         #pragma pack(push)
@@ -44,14 +45,14 @@ class SGSTRecord : public Record
         #pragma pack(pop)
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        StringRecord ICON;
-        OptSimpleSubRecord<FORMID> SCRI;
-        std::vector<GENEffect *> Effects;
-        ReqSubRecord<SGSTDATA> DATA;
-        OptSubRecord<OBMEMAGIC> OBME;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        StringRecord ICON; //Icon filename
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        UnorderedSparseArray<GENEffect *> Effects; //Effects
+        ReqSubRecord<SGSTDATA> DATA; //Data
+        OptSubRecord<OBMEMAGIC> OBME; //OBME Extended Data
 
         SGSTRecord(unsigned char *_recData=NULL);
         SGSTRecord(SGSTRecord *srcRecord);
@@ -67,10 +68,12 @@ class SGSTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const SGSTRecord &other) const;
         bool operator !=(const SGSTRecord &other) const;
+        bool equals(Record *other);
     };
+}

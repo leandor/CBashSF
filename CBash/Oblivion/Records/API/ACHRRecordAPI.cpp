@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\ACHRRecord.h"
 
+namespace Ob
+{
 UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -92,6 +94,8 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return RADIAN_FIELD;
         case 23: //rotZ
             return RADIAN_FIELD;
+        case 24: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -103,11 +107,11 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //base
@@ -150,6 +154,8 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &DATA.value.rotY;
         case 23: //rotZ
             return &DATA.value.rotZ;
+        case 24: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -336,3 +342,4 @@ void ACHRRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

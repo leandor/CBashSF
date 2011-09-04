@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "QUSTRecord.h"
-#include <vector>
 
+namespace Ob
+{
 QUSTRecord::QUSTDATA::QUSTDATA():
     flags(0),
     priority(0)
@@ -46,19 +47,6 @@ bool QUSTRecord::QUSTDATA::operator !=(const QUSTDATA &other) const
     return !(*this == other);
     }
 
-QUSTRecord::QUSTEntry::QUSTEntry()
-    {
-    //
-    }
-
-QUSTRecord::QUSTEntry::~QUSTEntry()
-    {
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    }
-
 bool QUSTRecord::QUSTEntry::IsCompletes()
     {
     return (QSDT.value & fIsCompletes) != 0;
@@ -79,30 +67,70 @@ void QUSTRecord::QUSTEntry::SetFlagMask(UINT8 Mask)
     QSDT.value = Mask;
     }
 
+bool QUSTRecord::QUSTEntry::IsObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void QUSTRecord::QUSTEntry::IsObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool QUSTRecord::QUSTEntry::IsQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void QUSTRecord::QUSTEntry::IsQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool QUSTRecord::QUSTEntry::IsEffect()
+    {
+    return SCHR.value.scriptType == eEffect;
+    }
+
+void QUSTRecord::QUSTEntry::IsEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eEffect : eObject;
+    }
+
+bool QUSTRecord::QUSTEntry::IsType(UINT16 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void QUSTRecord::QUSTEntry::SetType(UINT16 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
+void QUSTRecord::QUSTEntry::Write(FileWriter &writer)
+    {
+    WRITE(QSDT);
+    CTDA.Write(writer, true);
+    WRITE(CNAM);
+    SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    SCR_.Write(writer, true);
+    }
+
 bool QUSTRecord::QUSTEntry::operator ==(const QUSTEntry &other) const
     {
-    if(QSDT == other.QSDT &&
-        CNAM.equals(other.CNAM) &&
-        SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        CTDA.size() == other.CTDA.size() &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (QSDT == other.QSDT &&
+            CNAM.equals(other.CNAM) &&
+            SCHR == other.SCHR &&
+            SCDA == other.SCDA &&
+            SCTX.equalsi(other.SCTX) &&
+            SCR_ == other.SCR_ &&
+            CTDA == other.CTDA);
     }
 
 bool QUSTRecord::QUSTEntry::operator !=(const QUSTEntry &other) const
@@ -110,32 +138,16 @@ bool QUSTRecord::QUSTEntry::operator !=(const QUSTEntry &other) const
     return !(*this == other);
     }
 
-QUSTRecord::QUSTStage::QUSTStage()
+void QUSTRecord::QUSTStage::Write(FileWriter &writer)
     {
-    //
-    }
-
-QUSTRecord::QUSTStage::~QUSTStage()
-    {
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        delete Entries[x];
+    WRITE(INDX);
+    Entries.Write(writer);
     }
 
 bool QUSTRecord::QUSTStage::operator ==(const QUSTStage &other) const
     {
-    if(INDX == other.INDX &&
-        Entries.size() == other.Entries.size())
-        {
-        //Not sure if record order matters on entries, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Entries.size(); ++x)
-            if(*Entries[x] != *other.Entries[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (INDX == other.INDX &&
+            Entries == other.Entries);
     }
 
 bool QUSTRecord::QUSTStage::operator !=(const QUSTStage &other) const
@@ -147,7 +159,7 @@ QUSTRecord::QUSTQSTA::QUSTQSTA():
     targetId(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 QUSTRecord::QUSTQSTA::~QUSTQSTA()
@@ -164,17 +176,6 @@ bool QUSTRecord::QUSTQSTA::operator ==(const QUSTQSTA &other) const
 bool QUSTRecord::QUSTQSTA::operator !=(const QUSTQSTA &other) const
     {
     return !(*this == other);
-    }
-
-QUSTRecord::QUSTTarget::QUSTTarget()
-    {
-    //
-    }
-
-QUSTRecord::QUSTTarget::~QUSTTarget()
-    {
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
     }
 
 bool QUSTRecord::QUSTTarget::IsIgnoresLocks()
@@ -197,20 +198,16 @@ void QUSTRecord::QUSTTarget::SetFlagMask(UINT8 Mask)
     QSTA.value.flags = Mask;
     }
 
+void QUSTRecord::QUSTTarget::Write(FileWriter &writer)
+    {
+    WRITE(QSTA);
+    CTDA.Write(writer, true);
+    }
+
 bool QUSTRecord::QUSTTarget::operator ==(const QUSTTarget &other) const
     {
-    if(QSTA == other.QSTA &&
-        CTDA.size() == other.CTDA.size())
-        {
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (QSTA == other.QSTA &&
+            CTDA == other.CTDA);
     }
 
 bool QUSTRecord::QUSTTarget::operator !=(const QUSTTarget &other) const
@@ -234,10 +231,10 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -246,64 +243,15 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
     FULL = srcRecord->FULL;
     ICON = srcRecord->ICON;
     DATA = srcRecord->DATA;
-
-    CTDA.resize(srcRecord->CTDA.size());
-    for(UINT32 x = 0; x < srcRecord->CTDA.size(); x++)
-        {
-        CTDA[x] = new ReqSubRecord<GENCTDA>;
-        *CTDA[x] = *srcRecord->CTDA[x];
-        }
-    Stages.resize(srcRecord->Stages.size());
-    for(UINT32 x = 0; x < srcRecord->Stages.size(); x++)
-        {
-        Stages[x] = new QUSTStage;
-        Stages[x]->INDX = srcRecord->Stages[x]->INDX;
-        Stages[x]->Entries.resize(srcRecord->Stages[x]->Entries.size());
-        for(UINT32 y = 0; y < srcRecord->Stages[x]->Entries.size(); y++)
-            {
-            Stages[x]->Entries[y] = new QUSTEntry;
-            Stages[x]->Entries[y]->QSDT = srcRecord->Stages[x]->Entries[y]->QSDT;
-            Stages[x]->Entries[y]->CTDA.resize(srcRecord->Stages[x]->Entries[y]->CTDA.size());
-            for(UINT32 p = 0; p < srcRecord->Stages[x]->Entries[y]->CTDA.size(); p++)
-                {
-                Stages[x]->Entries[y]->CTDA[p] = new ReqSubRecord<GENCTDA>;
-                *Stages[x]->Entries[y]->CTDA[p] = *srcRecord->Stages[x]->Entries[y]->CTDA[p];
-                }
-            Stages[x]->Entries[y]->CNAM = srcRecord->Stages[x]->Entries[y]->CNAM;
-            Stages[x]->Entries[y]->SCHR = srcRecord->Stages[x]->Entries[y]->SCHR;
-            Stages[x]->Entries[y]->SCDA = srcRecord->Stages[x]->Entries[y]->SCDA;
-            Stages[x]->Entries[y]->SCTX = srcRecord->Stages[x]->Entries[y]->SCTX;
-            Stages[x]->Entries[y]->SCR_.resize(srcRecord->Stages[x]->Entries[y]->SCR_.size());
-            for(UINT32 p = 0; p < srcRecord->Stages[x]->Entries[y]->SCR_.size(); p++)
-                {
-                Stages[x]->Entries[y]->SCR_[p] = new ReqSubRecord<GENSCR_>;
-                *Stages[x]->Entries[y]->SCR_[p] = *srcRecord->Stages[x]->Entries[y]->SCR_[p];
-                }
-            }
-        }
-    Targets.resize(srcRecord->Targets.size());
-    for(UINT32 x = 0; x < srcRecord->Targets.size(); x++)
-        {
-        Targets[x] = new QUSTTarget;
-        Targets[x]->QSTA = srcRecord->Targets[x]->QSTA;
-        Targets[x]->CTDA.resize(srcRecord->Targets[x]->CTDA.size());
-        for(UINT32 y = 0; y < srcRecord->Targets[x]->CTDA.size(); y++)
-            {
-            Targets[x]->CTDA[y] = new ReqSubRecord<GENCTDA>;
-            *Targets[x]->CTDA[y] = *srcRecord->Targets[x]->CTDA[y];
-            }
-        }
+    CTDA = srcRecord->CTDA;
+    Stages = srcRecord->Stages;
+    Targets = srcRecord->Targets;
     return;
     }
 
 QUSTRecord::~QUSTRecord()
     {
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    for(UINT32 x = 0; x < Stages.size(); x++)
-        delete Stages[x];
-    for(UINT32 x = 0; x < Targets.size(); x++)
-        delete Targets[x];
+    //
     }
 
 bool QUSTRecord::VisitFormIDs(FormIDOp &op)
@@ -311,71 +259,28 @@ bool QUSTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
     if(SCRI.IsLoaded())
         op.Accept(SCRI.value);
-    for(UINT32 x = 0; x < CTDA.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < CTDA.value.size(); ListIndex++)
+        CTDA.value[ListIndex]->VisitFormIDs(op);
+    for(UINT32 ListIndex = 0; ListIndex < Stages.value.size(); ListIndex++)
         {
-        //if(CTDA[x]->value.ifunc == 214)
-        //    printer("%08X uses HasMagicEffect\n", formID);
-        curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
+        for(UINT32 ListX2Index = 0; ListX2Index < Stages.value[ListIndex]->Entries.value.size(); ListX2Index++)
             {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eFORMID)
-                op.Accept(CTDA[x]->value.param1);
-            if(CTDAFunction.second == eFORMID)
-                op.Accept(CTDA[x]->value.param2);
-            }
-        else
-            printer("Warning: QUSTRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
-        }
-    for(UINT32 x = 0; x < Stages.size(); x++)
-        {
-        for(UINT32 y = 0; y < Stages[x]->Entries.size(); y++)
-            {
-            for(UINT32 p = 0; p < Stages[x]->Entries[y]->CTDA.size(); p++)
+            for(UINT32 ListX3Index = 0; ListX3Index < Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value.size(); ListX3Index++)
+                Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->VisitFormIDs(op);
+            for(UINT32 ListX3Index = 0; ListX3Index < Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value.size(); ListX3Index++)
                 {
-                //if(Stages[x]->Entries[y]->CTDA[p]->value.ifunc == 214)
-                //    printer("%08X uses HasMagicEffect\n", formID);
-                curCTDAFunction = Function_Arguments.find(Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
-                if(curCTDAFunction != Function_Arguments.end())
-                    {
-                    CTDAFunction = curCTDAFunction->second;
-                    if(CTDAFunction.first == eFORMID)
-                        op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param1);
-                    if(CTDAFunction.second == eFORMID)
-                        op.Accept(Stages[x]->Entries[y]->CTDA[p]->value.param2);
-                    }
-                else
-                    printer("Warning: QUSTRecord Stage %08X uses an unknown function (%d)!\n", formID, Stages[x]->Entries[y]->CTDA[p]->value.ifunc);
+                if(Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->isSCRO)
+                    op.Accept(Stages.value[ListIndex]->Entries.value[ListX2Index]->SCR_.value[ListX3Index]->reference);
                 }
-            for(UINT32 p = 0; p < Stages[x]->Entries[y]->SCR_.size(); p++)
-                if(Stages[x]->Entries[y]->SCR_[p]->value.isSCRO)
-                    op.Accept(Stages[x]->Entries[y]->SCR_[p]->value.reference);
             }
         }
-
-    for(UINT32 x = 0; x < Targets.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < Targets.value.size(); ListIndex++)
         {
-        op.Accept(Targets[x]->QSTA.value.targetId);
-        for(UINT32 y = 0; y < Targets[x]->CTDA.size(); y++)
-            {
-            //if(Targets[x]->CTDA[y]->value.ifunc == 214)
-            //    printer("%08X uses HasMagicEffect\n", formID);
-            curCTDAFunction = Function_Arguments.find(Targets[x]->CTDA[y]->value.ifunc);
-            if(curCTDAFunction != Function_Arguments.end())
-                {
-                CTDAFunction = curCTDAFunction->second;
-                if(CTDAFunction.first == eFORMID)
-                    op.Accept(Targets[x]->CTDA[y]->value.param1);
-                if(CTDAFunction.second == eFORMID)
-                    op.Accept(Targets[x]->CTDA[y]->value.param2);
-                }
-            else
-                printer("Warning: QUSTRecord Target %08X uses an unknown function (%d)!\n", formID, Targets[x]->CTDA[y]->value.ifunc);
-            }
+        op.Accept(Targets.value[ListIndex]->QSTA.value.targetId);
+        for(UINT32 ListX2Index = 0; ListX2Index < Targets.value[ListIndex]->CTDA.value.size(); ListX2Index++)
+            Targets.value[ListIndex]->CTDA.value[ListX2Index]->VisitFormIDs(op);
         }
 
     return op.Stop();
@@ -431,151 +336,140 @@ STRING QUSTRecord::GetStrType()
     return "QUST";
     }
 
-SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    int whichCTDA = 0;
-    ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    QUSTStage *newStage = NULL;
-    QUSTEntry *newEntry = NULL;
-    QUSTTarget *newTarget = NULL;
-    ReqSubRecord<GENSCR_> *newSCR_ = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    UINT32 lastChunk = REV32(NONE);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(CTDT):
                 //fallthrough is intentional
             case REV32(CTDA):
-                switch(whichCTDA)
+                switch(lastChunk)
                     {
-                    case 1:
-                        if(Stages.size() == 0)
-                            Stages.push_back(new QUSTStage);
-
-                        if(Stages.back()->Entries.size() == 0)
-                            Stages.back()->Entries.push_back(new QUSTEntry);
-
-                        Stages.back()->Entries.back()->CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                        Stages.back()->Entries.back()->CTDA.back()->Read(buffer, subSize, curPos);
+                    case REV32(NONE):
+                        CTDA.Read(buffer, subSize);
                         break;
-                    case 2:
-                        if(Targets.size() == 0)
-                            Targets.push_back(new QUSTTarget);
-                        Targets.back()->CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                        Targets.back()->CTDA.back()->Read(buffer, subSize, curPos);
+                    case REV32(INDX):
+                        if(Stages.value.size() == 0)
+                            Stages.value.push_back(new QUSTStage);
+                        if(Stages.value.back()->Entries.value.size() == 0)
+                            Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                        Stages.value.back()->Entries.value.back()->CTDA.Read(buffer, subSize);
+                        break;
+                    case REV32(QSTA):
+                        if(Targets.value.size() == 0)
+                            Targets.value.push_back(new QUSTTarget);
+                        Targets.value.back()->CTDA.Read(buffer, subSize);
                         break;
                     default:
-                        CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                        CTDA.back()->Read(buffer, subSize, curPos);
+                        printer("  QUST: %08X - Unexpected CTDA chunk\n", formID);
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(INDX):
-                Stages.push_back(new QUSTStage);
-                Stages.back()->INDX.Read(buffer, subSize, curPos);
-                whichCTDA = 1;
+                Stages.value.push_back(new QUSTStage);
+                Stages.value.back()->INDX.Read(buffer, subSize);
+                lastChunk = REV32(INDX);
                 break;
             case REV32(QSDT):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-                Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->QSDT.Read(buffer, subSize, curPos);
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->QSDT.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->CNAM.Read(buffer, subSize, curPos);
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->CNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCHR):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->SCHR.Read(buffer, subSize, curPos);
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->SCDA.Read(buffer, subSize, curPos);
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->SCTX.Read(buffer, subSize, curPos);
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRV):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
-                Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = false;
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize);
+                Stages.value.back()->Entries.value.back()->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(SCRO):
-                if(Stages.size() == 0)
-                    Stages.push_back(new QUSTStage);
-
-                if(Stages.back()->Entries.size() == 0)
-                    Stages.back()->Entries.push_back(new QUSTEntry);
-                Stages.back()->Entries.back()->SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                Stages.back()->Entries.back()->SCR_.back()->Read(buffer, subSize, curPos);
-                Stages.back()->Entries.back()->SCR_.back()->value.isSCRO = true;
+                if(Stages.value.size() == 0)
+                    Stages.value.push_back(new QUSTStage);
+                if(Stages.value.back()->Entries.value.size() == 0)
+                    Stages.value.back()->Entries.value.push_back(new QUSTEntry);
+                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize);
+                Stages.value.back()->Entries.value.back()->SCR_.value.back()->isSCRO = true;
                 break;
             case REV32(QSTA):
-                Targets.push_back(new QUSTTarget);
-                Targets.back()->QSTA.Read(buffer, subSize, curPos);
-                whichCTDA = 2;
+                Targets.value.push_back(new QUSTTarget);
+                Targets.value.back()->QSTA.Read(buffer, subSize);
+                lastChunk = REV32(QSTA);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  QUST: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -586,153 +480,50 @@ SINT32 QUSTRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
+
     EDID.Unload();
     SCRI.Unload();
     FULL.Unload();
     ICON.Unload();
     DATA.Unload();
-
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    CTDA.clear();
-
-    for(UINT32 x = 0; x < Stages.size(); x++)
-        delete Stages[x];
-    Stages.clear();
-
-    for(UINT32 x = 0; x < Targets.size(); x++)
-        delete Targets[x];
-    Targets.clear();
+    CTDA.Unload();
+    Stages.Unload();
+    Targets.Unload();
     return 1;
     }
 
 SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     {
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        {
-        curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eNONE)
-                CTDA[p]->value.param1 = 0;
-            if(CTDAFunction.second == eNONE)
-                CTDA[p]->value.param2 = 0;
-            }
-        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
-        }
-    if(Stages.size())
-        for(UINT32 p = 0; p < Stages.size(); p++)
-            {
-            if(Stages[p]->INDX.IsLoaded())
-                writer.record_write_subrecord(REV32(INDX), &Stages[p]->INDX.value, Stages[p]->INDX.GetSize());
-            if(Stages[p]->Entries.size())
-                for(UINT32 x = 0; x < Stages[p]->Entries.size(); x++)
-                    {
-                    if(Stages[p]->Entries[x]->QSDT.IsLoaded())
-                        writer.record_write_subrecord(REV32(QSDT), &Stages[p]->Entries[x]->QSDT.value, Stages[p]->Entries[x]->QSDT.GetSize());
-                    for(UINT32 y = 0; y < Stages[p]->Entries[x]->CTDA.size(); y++)
-                        {
-                        curCTDAFunction = Function_Arguments.find(Stages[p]->Entries[x]->CTDA[y]->value.ifunc);
-                        if(curCTDAFunction != Function_Arguments.end())
-                            {
-                            CTDAFunction = curCTDAFunction->second;
-                            if(CTDAFunction.first == eNONE)
-                                Stages[p]->Entries[x]->CTDA[y]->value.param1 = 0;
-                            if(CTDAFunction.second == eNONE)
-                                Stages[p]->Entries[x]->CTDA[y]->value.param2 = 0;
-                            }
-                        writer.record_write_subrecord(REV32(CTDA), &Stages[p]->Entries[x]->CTDA[y]->value, Stages[p]->Entries[x]->CTDA[y]->GetSize());
-                        }
-                    if(Stages[p]->Entries[x]->CNAM.IsLoaded())
-                        writer.record_write_subrecord(REV32(CNAM), Stages[p]->Entries[x]->CNAM.value, Stages[p]->Entries[x]->CNAM.GetSize());
-                    if(Stages[p]->Entries[x]->SCHR.IsLoaded())
-                        writer.record_write_subrecord(REV32(SCHR), &Stages[p]->Entries[x]->SCHR.value, Stages[p]->Entries[x]->SCHR.GetSize());
-                    if(Stages[p]->Entries[x]->SCDA.IsLoaded())
-                        writer.record_write_subrecord(REV32(SCDA), Stages[p]->Entries[x]->SCDA.value, Stages[p]->Entries[x]->SCDA.GetSize());
-                    if(Stages[p]->Entries[x]->SCTX.IsLoaded())
-                        writer.record_write_subrecord(REV32(SCTX), Stages[p]->Entries[x]->SCTX.value, Stages[p]->Entries[x]->SCTX.GetSize());
-                    if(Stages[p]->Entries[x]->SCR_.size())
-                        for(UINT32 y = 0; y < Stages[p]->Entries[x]->SCR_.size(); y++)
-                            if(Stages[p]->Entries[x]->SCR_[y]->IsLoaded())
-                                if(Stages[p]->Entries[x]->SCR_[y]->value.isSCRO)
-                                    writer.record_write_subrecord(REV32(SCRO), &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
-                                else
-                                    writer.record_write_subrecord(REV32(SCRV), &Stages[p]->Entries[x]->SCR_[y]->value.reference, sizeof(UINT32));
-                    }
-            }
-    if(Targets.size())
-        for(UINT32 p = 0; p < Targets.size(); p++)
-            {
-            if(Targets[p]->QSTA.IsLoaded())
-                writer.record_write_subrecord(REV32(QSTA), &Targets[p]->QSTA.value, Targets[p]->QSTA.GetSize());
-            for(UINT32 y = 0; y < Targets[p]->CTDA.size(); y++)
-                {
-                curCTDAFunction = Function_Arguments.find(Targets[p]->CTDA[y]->value.ifunc);
-                if(curCTDAFunction != Function_Arguments.end())
-                    {
-                    CTDAFunction = curCTDAFunction->second;
-                    if(CTDAFunction.first == eNONE)
-                        Targets[p]->CTDA[y]->value.param1 = 0;
-                    if(CTDAFunction.second == eNONE)
-                        Targets[p]->CTDA[y]->value.param2 = 0;
-                    }
-                writer.record_write_subrecord(REV32(CTDA), &Targets[p]->CTDA[y]->value, Targets[p]->CTDA[y]->GetSize());
-                }
-            }
+    WRITE(EDID);
+    WRITE(SCRI);
+    WRITE(FULL);
+    WRITE(ICON);
+    WRITE(DATA);
+    CTDA.Write(writer, true);
+    Stages.Write(writer);
+    Targets.Write(writer);
     return -1;
     }
 
 bool QUSTRecord::operator ==(const QUSTRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        SCRI == other.SCRI &&
-        FULL.equals(other.FULL) &&
-        ICON.equalsi(other.ICON) &&
-        DATA == other.DATA &&
-        CTDA.size() == other.CTDA.size() &&
-        Stages.size() == other.Stages.size() &&
-        Targets.size() == other.Targets.size())
-        {
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-
-        //Record order doesn't matter on stages, so equality testing isn't easy
-        //Instead, they're keyed by stage index (QUSTStage.value.GENU16.value.stage)
-        //The proper solution would be to see if each stage index matches the other
-        //Fix-up later
-        for(UINT32 x = 0; x < Stages.size(); ++x)
-            if(*Stages[x] != *other.Stages[x])
-                return false;
-
-        //Not sure if record order matters on targets, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Targets.size(); ++x)
-            if(*Targets[x] != *other.Targets[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (SCRI == other.SCRI &&
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            CTDA == other.CTDA &&
+            Stages == other.Stages &&
+            Targets == other.Targets);
     }
 
 bool QUSTRecord::operator !=(const QUSTRecord &other) const
     {
     return !(*this == other);
     }
+
+bool QUSTRecord::equals(Record *other)
+    {
+    return *this == *(QUSTRecord *)other;
+    }
+}

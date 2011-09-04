@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -29,7 +29,7 @@ ARMORecord::FNVSNAM::FNVSNAM():
     chance(0),
     type(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 ARMORecord::FNVSNAM::~FNVSNAM()
@@ -138,10 +138,10 @@ ARMORecord::ARMORecord(ARMORecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -743,154 +743,155 @@ STRING ARMORecord::GetStrType()
     return "ARMO";
     }
 
-SINT32 ARMORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ARMORecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(EITM):
-                EITM.Read(buffer, subSize, curPos);
+                EITM.Read(buffer, subSize);
                 break;
             case REV32(BMDT):
-                BMDT.Read(buffer, subSize, curPos);
+                BMDT.Read(buffer, subSize);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(MOD2):
                 MOD2.Load();
-                MOD2->MODL.Read(buffer, subSize, curPos);
+                MOD2->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO2T):
                 MOD2.Load();
-                MOD2->MODT.Read(buffer, subSize, curPos);
+                MOD2->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO2S):
                 MOD2.Load();
-                MOD2->Textures.Read(buffer, subSize, curPos);
+                MOD2->Textures.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MOD3):
                 MOD3.Load();
-                MOD3->MODL.Read(buffer, subSize, curPos);
+                MOD3->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO3T):
                 MOD3.Load();
-                MOD3->MODT.Read(buffer, subSize, curPos);
+                MOD3->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO3S):
                 MOD3.Load();
-                MOD3->Textures.Read(buffer, subSize, curPos);
+                MOD3->Textures.Read(buffer, subSize);
                 break;
             case REV32(MOSD):
                 MOD3.Load();
-                MOD3->MODD.Read(buffer, subSize, curPos);
+                MOD3->MODD.Read(buffer, subSize);
                 break;
             case REV32(MOD4):
                 MOD4.Load();
-                MOD4->MODL.Read(buffer, subSize, curPos);
+                MOD4->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO4T):
                 MOD4.Load();
-                MOD4->MODT.Read(buffer, subSize, curPos);
+                MOD4->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO4S):
                 MOD4.Load();
-                MOD4->Textures.Read(buffer, subSize, curPos);
+                MOD4->Textures.Read(buffer, subSize);
                 break;
             case REV32(ICO2):
-                ICO2.Read(buffer, subSize, curPos);
+                ICO2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MIC2):
-                MIC2.Read(buffer, subSize, curPos);
+                MIC2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(BMCT):
-                BMCT.Read(buffer, subSize, curPos);
+                BMCT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(REPL):
-                REPL.Read(buffer, subSize, curPos);
+                REPL.Read(buffer, subSize);
                 break;
             case REV32(BIPL):
-                BIPL.Read(buffer, subSize, curPos);
+                BIPL.Read(buffer, subSize);
                 break;
             case REV32(ETYP):
-                ETYP.Read(buffer, subSize, curPos);
+                ETYP.Read(buffer, subSize);
                 break;
             case REV32(YNAM):
-                YNAM.Read(buffer, subSize, curPos);
+                YNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(BNAM):
-                BNAM.Read(buffer, subSize, curPos);
+                BNAM.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                Sounds.Read(buffer, subSize, curPos);
+                Sounds.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ARMO: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -940,24 +941,24 @@ SINT32 ARMORecord::WriteRecord(FileWriter &writer)
     MODL.Write(writer);
     if(MOD2.IsLoaded())
         {
-        MOD2->WRITEAS(MODL, MOD2);
-        MOD2->WRITEAS(MODT, MO2T);
-        MOD2->WRITEAS(Textures, MO2S);
+        MOD2->WRITEAS(MODL,MOD2);
+        MOD2->WRITEAS(MODT,MO2T);
+        MOD2->WRITEAS(Textures,MO2S);
         }
     WRITE(ICON);
     WRITE(MICO);
     if(MOD3.IsLoaded())
         {
-        MOD3->WRITEAS(MODL, MOD3);
-        MOD3->WRITEAS(MODT, MO3T);
-        MOD3->WRITEAS(Textures, MO3S);
-        MOD3->WRITEAS(MODD, MOSD);
+        MOD3->WRITEAS(MODL,MOD3);
+        MOD3->WRITEAS(MODT,MO3T);
+        MOD3->WRITEAS(Textures,MO3S);
+        MOD3->WRITEAS(MODD,MOSD);
         }
     if(MOD4.IsLoaded())
         {
-        MOD4->WRITEAS(MODL, MOD4);
-        MOD4->WRITEAS(MODT, MO4T);
-        MOD4->WRITEAS(Textures, MO4S);
+        MOD4->WRITEAS(MODL,MOD4);
+        MOD4->WRITEAS(MODT,MO4T);
+        MOD4->WRITEAS(Textures,MO4S);
         }
     WRITE(ICO2);
     WRITE(MIC2);
@@ -970,7 +971,7 @@ SINT32 ARMORecord::WriteRecord(FileWriter &writer)
     WRITE(DATA);
     WRITE(DNAM);
     WRITE(BNAM);
-    WRITEAS(Sounds, SNAM);
+    WRITEAS(Sounds,SNAM);
     WRITE(TNAM);
     return -1;
     }
@@ -1007,5 +1008,10 @@ bool ARMORecord::operator ==(const ARMORecord &other) const
 bool ARMORecord::operator !=(const ARMORecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ARMORecord::equals(Record *other)
+    {
+    return *this == *(ARMORecord *)other;
     }
 }

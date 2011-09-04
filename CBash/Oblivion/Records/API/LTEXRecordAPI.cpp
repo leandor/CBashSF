@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\LTEXRecord.h"
 
+namespace Ob
+{
 UINT32 LTEXRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -52,7 +54,7 @@ UINT32 LTEXRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)GNAM.size();
+                    return (UINT32)GNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -67,25 +69,25 @@ void * LTEXRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //iconPath
             return ICON.value;
         case 6: //types
-            return &HNAM.value.types;
+            return HNAM.IsLoaded() ? &HNAM->types : NULL;
         case 7: //friction
-            return &HNAM.value.friction;
+            return HNAM.IsLoaded() ? &HNAM->friction : NULL;
         case 8: //restitution
-            return &HNAM.value.restitution;
+            return HNAM.IsLoaded() ? &HNAM->restitution : NULL;
         case 9: //specular
-            return SNAM.IsLoaded() ? &SNAM.value : NULL;
+            return SNAM.IsLoaded() ? SNAM.value : NULL;
         case 10: //grass
-            *FieldValues = GNAM.size() ? &GNAM[0] : NULL;
+            *FieldValues = GNAM.value.size() ? &GNAM.value[0] : NULL;
             return NULL;
         default:
             return NULL;
@@ -114,20 +116,20 @@ bool LTEXRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             break;
         case 7: //friction
             HNAM.Load();
-            HNAM.value.friction = *(UINT8 *)FieldValue;
+            HNAM->friction = *(UINT8 *)FieldValue;
             break;
         case 8: //restitution
             HNAM.Load();
-            HNAM.value.restitution = *(UINT8 *)FieldValue;
+            HNAM->restitution = *(UINT8 *)FieldValue;
             break;
         case 9: //specular
             SNAM.Load();
-            SNAM.value = *(UINT8 *)FieldValue;
+            *SNAM.value = *(UINT8 *)FieldValue;
             break;
         case 10: //grass
             GNAM.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                GNAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                GNAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         default:
             break;
@@ -154,22 +156,26 @@ void LTEXRecord::DeleteField(FIELD_IDENTIFIERS)
             ICON.Unload();
             return;
         case 6: //types
-            HNAM.value.types = defaultHNAM.types;
+            if(HNAM.IsLoaded())
+                HNAM->types = defaultHNAM.types;
             return;
         case 7: //friction
-            HNAM.value.friction = defaultHNAM.friction;
+            if(HNAM.IsLoaded())
+                HNAM->friction = defaultHNAM.friction;
             return;
         case 8: //restitution
-            HNAM.value.restitution = defaultHNAM.restitution;
+            if(HNAM.IsLoaded())
+                HNAM->restitution = defaultHNAM.restitution;
             return;
         case 9: //specular
             SNAM.Unload();
             return;
         case 10: //grass
-            GNAM.clear();
+            GNAM.Unload();
             return;
         default:
             return;
         }
     return;
     }
+}

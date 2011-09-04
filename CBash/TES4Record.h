@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -47,7 +47,7 @@ class TES4Record : public Record
         RawRecord DELE; //Unknown
         StringRecord CNAM; //Author
         StringRecord SNAM; //Description
-        std::vector<StringRecord> MAST; //Master Files
+        std::vector<STRING> MAST; //Master Files
 
         //FNV Specific
         UnorderedPackedArray<FORMID> ONAM; //Overridden Forms
@@ -73,11 +73,12 @@ class TES4Record : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
         UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
 
         bool operator ==(const TES4Record &other) const;
         bool operator !=(const TES4Record &other) const;
+        bool equals(Record *other);
     };

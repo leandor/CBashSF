@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "INFORecord.h"
-#include <vector>
 
+namespace Ob
+{
 INFORecord::INFODATA::INFODATA():
     dialType(0),
     flags(0)
@@ -51,8 +52,8 @@ INFORecord::INFOTRDT::INFOTRDT():
     emotionValue(0),
     responseNum(0)
     {
-    memset(&unused1, 0x00, 4);
-    memset(&unused2, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
     }
 
 INFORecord::INFOTRDT::~INFOTRDT()
@@ -173,6 +174,13 @@ void INFORecord::INFOResponse::SetType(UINT32 Type)
     TRDT.value.emotionType = Type;
     }
 
+void INFORecord::INFOResponse::Write(FileWriter &writer)
+    {
+    WRITE(TRDT);
+    WRITE(NAM1);
+    WRITE(NAM2);
+    }
+
 bool INFORecord::INFOResponse::operator ==(const INFOResponse &other) const
     {
     return (TRDT == other.TRDT &&
@@ -186,13 +194,15 @@ bool INFORecord::INFOResponse::operator !=(const INFOResponse &other) const
     }
 
 INFORecord::INFORecord(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //
     }
 
 INFORecord::INFORecord(INFORecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -201,10 +211,10 @@ INFORecord::INFORecord(INFORecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -212,53 +222,21 @@ INFORecord::INFORecord(INFORecord *srcRecord):
     QSTI = srcRecord->QSTI;
     TPIC = srcRecord->TPIC;
     PNAM = srcRecord->PNAM;
-    NAME.resize(srcRecord->NAME.size());
-    for(UINT32 x = 0; x < srcRecord->NAME.size(); x++)
-        NAME[x] = srcRecord->NAME[x];
-    Responses.clear();
-    Responses.resize(srcRecord->Responses.size());
-    for(UINT32 x = 0; x < srcRecord->Responses.size(); x++)
-        {
-        Responses[x] = new INFOResponse;
-        Responses[x]->TRDT = srcRecord->Responses[x]->TRDT;
-        Responses[x]->NAM1 = srcRecord->Responses[x]->NAM1;
-        Responses[x]->NAM2 = srcRecord->Responses[x]->NAM2;
-        }
-    CTDA.clear();
-    CTDA.resize(srcRecord->CTDA.size());
-    for(UINT32 x = 0; x < srcRecord->CTDA.size(); x++)
-        {
-        CTDA[x] = new ReqSubRecord<GENCTDA>;
-        *CTDA[x] = *srcRecord->CTDA[x];
-        }
-    TCLT.resize(srcRecord->TCLT.size());
-    for(UINT32 x = 0; x < srcRecord->TCLT.size(); x++)
-        TCLT[x] = srcRecord->TCLT[x];
-    TCLF.resize(srcRecord->TCLF.size());
-    for(UINT32 x = 0; x < srcRecord->TCLF.size(); x++)
-        TCLF[x] = srcRecord->TCLF[x];
-    //SCHD = srcRecord->SCHD;
+    NAME = srcRecord->NAME;
+    Responses = srcRecord->Responses;
+    CTDA = srcRecord->CTDA;
+    TCLT = srcRecord->TCLT;
+    TCLF = srcRecord->TCLF;
     SCHR = srcRecord->SCHR;
     SCDA = srcRecord->SCDA;
     SCTX = srcRecord->SCTX;
-    SCR_.clear();
-    SCR_.resize(srcRecord->SCR_.size());
-    for(UINT32 x = 0; x < srcRecord->SCR_.size(); x++)
-        {
-        SCR_[x] = new ReqSubRecord<GENSCR_>;
-        *SCR_[x] = *srcRecord->SCR_[x];
-        }
+    SCR_ = srcRecord->SCR_;
     return;
     }
 
 INFORecord::~INFORecord()
     {
-    for(UINT32 x = 0; x < Responses.size(); x++)
-        delete Responses[x];
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
+    //Parent is a shared pointer that's deleted when the DIAL group is deleted
     }
 
 bool INFORecord::VisitFormIDs(FormIDOp &op)
@@ -266,38 +244,24 @@ bool INFORecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
     op.Accept(QSTI.value);
     if(TPIC.IsLoaded())
         op.Accept(TPIC.value);
     if(PNAM.IsLoaded())
         op.Accept(*PNAM.value);
-    for(UINT32 x = 0; x < NAME.size(); x++)
-        op.Accept(NAME[x]);
-    for(UINT32 x = 0; x < CTDA.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < NAME.value.size(); ListIndex++)
+        op.Accept(NAME.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < CTDA.value.size(); ListIndex++)
+        CTDA.value[ListIndex]->VisitFormIDs(op);
+    for(UINT32 ListIndex = 0; ListIndex < TCLT.value.size(); ListIndex++)
+        op.Accept(TCLT.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < TCLF.value.size(); ListIndex++)
+        op.Accept(TCLF.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < SCR_.value.size(); ListIndex++)
         {
-        //if(CTDA[x]->value.ifunc == 214)
-        //    printer("%08X uses HasMagicEffect\n", formID);
-        curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eFORMID)
-                op.Accept(CTDA[x]->value.param1);
-            if(CTDAFunction.second == eFORMID)
-                op.Accept(CTDA[x]->value.param2);
-            }
-        else
-            printer("Warning: INFORecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
+        if(SCR_.value[ListIndex]->isSCRO)
+            op.Accept(SCR_.value[ListIndex]->reference);
         }
-    for(UINT32 x = 0; x < TCLT.size(); x++)
-        op.Accept(TCLT[x]);
-    for(UINT32 x = 0; x < TCLF.size(); x++)
-        op.Accept(TCLF[x]);
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        if(SCR_[x]->value.isSCRO)
-            op.Accept(SCR_[x]->value.reference);
 
     return op.Stop();
     }
@@ -483,6 +447,46 @@ void INFORecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
+bool INFORecord::IsScriptObject()
+    {
+    return SCHR.value.scriptType == eObject;
+    }
+
+void INFORecord::IsScriptObject(bool value)
+    {
+    SCHR.value.scriptType = value ? eObject : eQuest;
+    }
+
+bool INFORecord::IsScriptQuest()
+    {
+    return SCHR.value.scriptType == eQuest;
+    }
+
+void INFORecord::IsScriptQuest(bool value)
+    {
+    SCHR.value.scriptType = value ? eQuest : eObject;
+    }
+
+bool INFORecord::IsScriptEffect()
+    {
+    return SCHR.value.scriptType == eEffect;
+    }
+
+void INFORecord::IsScriptEffect(bool value)
+    {
+    SCHR.value.scriptType = value ? eEffect : eObject;
+    }
+
+bool INFORecord::IsScriptType(UINT32 Type)
+    {
+    return SCHR.value.scriptType == Type;
+    }
+
+void INFORecord::SetScriptType(UINT32 Type)
+    {
+    SCHR.value.scriptType = Type;
+    }
+
 UINT32 INFORecord::GetType()
     {
     return REV32(INFO);
@@ -493,106 +497,100 @@ STRING INFORecord::GetStrType()
     return "INFO";
     }
 
-UINT32 INFORecord::GetParentType()
+Record * INFORecord::GetParent()
     {
-    return REV32(DIAL);
+    return Parent;
     }
 
-SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 INFORecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(QSTI):
-                QSTI.Read(buffer, subSize, curPos);
+                QSTI.Read(buffer, subSize);
                 break;
             case REV32(TPIC):
-                TPIC.Read(buffer, subSize, curPos);
+                TPIC.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(NAME):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                NAME.push_back(curFormID);
+                NAME.Read(buffer, subSize);
                 break;
             case REV32(TRDT):
-                Responses.push_back(new INFOResponse);
-                Responses.back()->TRDT.Read(buffer, subSize, curPos);
+                Responses.value.push_back(new INFOResponse);
+                Responses.value.back()->TRDT.Read(buffer, subSize);
                 break;
             case REV32(NAM1):
-                if(Responses.size() == 0)
-                    Responses.push_back(new INFOResponse);
-                Responses.back()->NAM1.Read(buffer, subSize, curPos);
+                if(Responses.value.size() == 0)
+                    Responses.value.push_back(new INFOResponse);
+                Responses.value.back()->NAM1.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM2):
-                if(Responses.size() == 0)
-                    Responses.push_back(new INFOResponse);
-                Responses.back()->NAM2.Read(buffer, subSize, curPos);
+                if(Responses.value.size() == 0)
+                    Responses.value.push_back(new INFOResponse);
+                Responses.value.back()->NAM2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CTDT):
             case REV32(CTDA):
-                CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                CTDA.back()->Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(TCLT):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                TCLT.push_back(curFormID);
+                TCLT.Read(buffer, subSize);
                 break;
             case REV32(TCLF):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                TCLF.push_back(curFormID);
+                TCLF.Read(buffer, subSize);
                 break;
             case REV32(SCHD): //replace it with SCHR. SCHDs are always zero filled in oblivion.esm...
-                curPos += subSize;
+                buffer += subSize;
                 break;
             case REV32(SCHR): //SCHDs are also larger than SCHRs, so the end will be truncated.
-                SCHR.Read(buffer, subSize, curPos);
+                SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
-                SCDA.Read(buffer, subSize, curPos);
+                SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
-                SCTX.Read(buffer, subSize, curPos);
+                SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRV):
-                SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                SCR_.back()->Read(buffer, subSize, curPos);
-                SCR_.back()->value.isSCRO = false;
+                SCR_.Read(buffer, subSize);
+                SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(SCRO):
-                SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                SCR_.back()->Read(buffer, subSize, curPos);
-                SCR_.back()->value.isSCRO = true;
+                SCR_.Read(buffer, subSize);
+                SCR_.value.back()->isSCRO = true;
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  INFO: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -607,148 +605,73 @@ SINT32 INFORecord::Unload()
     QSTI.Unload();
     TPIC.Unload();
     PNAM.Unload();
-
-    NAME.clear();
-
-    for(UINT32 x = 0; x < Responses.size(); x++)
-        delete Responses[x];
-    Responses.clear();
-
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    CTDA.clear();
-
-    TCLT.clear();
-    TCLF.clear();
-
-    //SCHD.Unload();
+    NAME.Unload();
+    Responses.Unload();
+    CTDA.Unload();
+    TCLT.Unload();
+    TCLF.Unload();
     SCHR.Unload();
     SCDA.Unload();
     SCTX.Unload();
-
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    SCR_.clear();
+    SCR_.Unload();
     return 1;
     }
 
 SINT32 INFORecord::WriteRecord(FileWriter &writer)
     {
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
+    WRITE(DATA);
+    WRITE(QSTI);
+    WRITE(TPIC);
+    WRITE(PNAM);
+    WRITE(NAME);
+    Responses.Write(writer);
+    CTDA.Write(writer, true);
+    WRITE(TCLT);
+    WRITE(TCLF);
+    SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    SCR_.Write(writer, true);
 
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(QSTI.IsLoaded())
-        writer.record_write_subrecord(REV32(QSTI), &QSTI.value, QSTI.GetSize());
-    if(TPIC.IsLoaded())
-        writer.record_write_subrecord(REV32(TPIC), &TPIC.value, TPIC.GetSize());
-    if(PNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(PNAM), PNAM.value, PNAM.GetSize());
-    for(UINT32 p = 0; p < NAME.size(); p++)
-        writer.record_write_subrecord(REV32(NAME), &NAME[p], sizeof(UINT32));
-    if(Responses.size())
-        {
-        for(UINT32 p = 0; p < Responses.size(); p++)
-            {
-            if(Responses[p]->TRDT.IsLoaded())
-                writer.record_write_subrecord(REV32(TRDT), &Responses[p]->TRDT.value, Responses[p]->TRDT.GetSize());
-            if(Responses[p]->NAM1.IsLoaded())
-                writer.record_write_subrecord(REV32(NAM1), Responses[p]->NAM1.value, Responses[p]->NAM1.GetSize());
-            if(Responses[p]->NAM2.IsLoaded())
-                writer.record_write_subrecord(REV32(NAM2), Responses[p]->NAM2.value, Responses[p]->NAM2.GetSize());
-            }
-        }
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        {
-        curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eNONE)
-                CTDA[p]->value.param1 = 0;
-            if(CTDAFunction.second == eNONE)
-                CTDA[p]->value.param2 = 0;
-            }
-        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
-        }
-    for(UINT32 p = 0; p < TCLT.size(); p++)
-        writer.record_write_subrecord(REV32(TCLT), &TCLT[p], sizeof(UINT32));
-    for(UINT32 p = 0; p < TCLF.size(); p++)
-        writer.record_write_subrecord(REV32(TCLF), &TCLF[p], sizeof(UINT32));
-    //if(SCHD.IsLoaded())
-    //    writer.record_write_subrecord(REV32(SCHD), SCHD.value, SCHD.GetSize());
-    if(SCHR.IsLoaded())
-        writer.record_write_subrecord(REV32(SCHR), &SCHR.value, SCHR.GetSize());
-    if(SCDA.IsLoaded())
-        writer.record_write_subrecord(REV32(SCDA), SCDA.value, SCDA.GetSize());
-    if(SCTX.IsLoaded())
-        writer.record_write_subrecord(REV32(SCTX), SCTX.value, SCTX.GetSize());
-    for(UINT32 p = 0; p < SCR_.size(); p++)
-        if(SCR_[p]->IsLoaded())
-            if(SCR_[p]->value.isSCRO)
-                writer.record_write_subrecord(REV32(SCRO), &SCR_[p]->value.reference, sizeof(UINT32));
-            else
-                writer.record_write_subrecord(REV32(SCRV), &SCR_[p]->value.reference, sizeof(UINT32));
     return -1;
     }
 
 bool INFORecord::operator ==(const INFORecord &other) const
     {
-    if(DATA == other.DATA &&
-        QSTI == other.QSTI &&
-        TPIC == other.TPIC &&
-        PNAM == other.PNAM &&
-        SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        NAME.size() == other.NAME.size() &&
-        Responses.size() == other.Responses.size() &&
-        CTDA.size() == other.CTDA.size() &&
-        TCLT.size() == other.TCLT.size() &&
-        TCLF.size() == other.TCLF.size() &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Not sure if record order matters on add topics, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < NAME.size(); ++x)
-            if(NAME[x] != other.NAME[x])
-                return false;
-
-        //Not sure if record order matters on responses, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Responses.size(); ++x)
-            if(*Responses[x] != *other.Responses[x])
-                return false;
-
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-
-        //Not sure if record order matters on choices, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < TCLT.size(); ++x)
-            if(TCLT[x] != other.TCLT[x])
-                return false;
-
-        //Not sure if record order matters on links from, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < TCLF.size(); ++x)
-            if(TCLF[x] != other.TCLF[x])
-                return false;
-
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            QSTI == other.QSTI &&
+            TPIC == other.TPIC &&
+            PNAM == other.PNAM &&
+            SCHR == other.SCHR &&
+            SCDA == other.SCDA &&
+            SCTX.equalsi(other.SCTX) &&
+            NAME == other.NAME &&
+            Responses == other.Responses &&
+            CTDA == other.CTDA &&
+            TCLT == other.TCLT &&
+            TCLF == other.TCLF &&
+            SCR_ == other.SCR_);
     }
 
 bool INFORecord::operator !=(const INFORecord &other) const
     {
     return !(*this == other);
     }
+
+bool INFORecord::equals(Record *other)
+    {
+    return *this == *(INFORecord *)other;
+    }
+
+bool INFORecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    const INFORecord *master_info = (INFORecord *)master;
+    //Check to make sure the info is attached at the same spot
+    if(Parent->formID != master_info->Parent->formID)
+        return false;
+    return true;
+    }
+}

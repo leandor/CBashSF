@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class GRASRecord : public Record
+namespace Ob
+{
+class GRASRecord : public Record //Grass
     {
     private:
         struct GRASDATA
@@ -50,9 +52,9 @@ class GRASRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<GRASDATA> DATA;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model
+        ReqSubRecord<GRASDATA> DATA; //Data
 
         GRASRecord(unsigned char *_recData=NULL);
         GRASRecord(GRASRecord *srcRecord);
@@ -75,10 +77,12 @@ class GRASRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const GRASRecord &other) const;
         bool operator !=(const GRASRecord &other) const;
+        bool equals(Record *other);
     };
+}

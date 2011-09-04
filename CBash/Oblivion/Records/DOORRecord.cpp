@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "DOORRecord.h"
-#include <vector>
 
+namespace Ob
+{
 DOORRecord::DOORRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -39,30 +40,22 @@ DOORRecord::DOORRecord(DOORRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     SCRI = srcRecord->SCRI;
     SNAM = srcRecord->SNAM;
     ANAM = srcRecord->ANAM;
     BNAM = srcRecord->BNAM;
     FNAM = srcRecord->FNAM;
-    TNAM.resize(srcRecord->TNAM.size());
-    for(UINT32 x = 0; x < srcRecord->TNAM.size(); x++)
-        TNAM[x] = srcRecord->TNAM[x];
+    TNAM = srcRecord->TNAM;
     return;
     }
 
@@ -84,8 +77,8 @@ bool DOORRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(ANAM.value);
     if(BNAM.IsLoaded())
         op.Accept(BNAM.value);
-    for(UINT32 x = 0; x < TNAM.size(); x++)
-        op.Accept(TNAM[x]);
+    for(UINT32 ListIndex = 0; ListIndex < TNAM.value.size(); ListIndex++)
+        op.Accept(TNAM.value[ListIndex]);
 
     return op.Stop();
     }
@@ -150,73 +143,72 @@ STRING DOORRecord::GetStrType()
     return "DOOR";
     }
 
-SINT32 DOORRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DOORRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(BNAM):
-                BNAM.Read(buffer, subSize, curPos);
+                BNAM.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                _readBuffer(&curFormID, buffer, subSize, curPos);
-                TNAM.push_back(curFormID);
+                TNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  DOOR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -235,63 +227,44 @@ SINT32 DOORRecord::Unload()
     ANAM.Unload();
     BNAM.Unload();
     FNAM.Unload();
-    TNAM.clear();
+    TNAM.Unload();
     return 1;
     }
 
 SINT32 DOORRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-    if(SNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
-    if(ANAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
-    if(BNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(BNAM), &BNAM.value, BNAM.GetSize());
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
-    for(UINT32 p = 0; p < TNAM.size(); p++)
-        writer.record_write_subrecord(REV32(TNAM), &TNAM[p], sizeof(UINT32));
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(SCRI);
+    WRITE(SNAM);
+    WRITE(ANAM);
+    WRITE(BNAM);
+    WRITE(FNAM);
+    WRITE(TNAM);
     return -1;
     }
 
 bool DOORRecord::operator ==(const DOORRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        MODL == other.MODL &&
-        SCRI == other.SCRI &&
-        SNAM == other.SNAM &&
-        ANAM == other.ANAM &&
-        BNAM == other.BNAM &&
-        FNAM == other.FNAM &&
-        TNAM.size() == other.TNAM.size())
-        {
-        //Not sure if record order matters on destinations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < TNAM.size(); ++x)
-            if(TNAM[x] != other.TNAM[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (SCRI == other.SCRI &&
+            SNAM == other.SNAM &&
+            ANAM == other.ANAM &&
+            BNAM == other.BNAM &&
+            FNAM == other.FNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            TNAM == other.TNAM);
     }
 
 bool DOORRecord::operator !=(const DOORRecord &other) const
     {
     return !(*this == other);
     }
+
+bool DOORRecord::equals(Record *other)
+    {
+    return *this == *(DOORRecord *)other;
+    }
+}

@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "LVLCRecord.h"
-#include <vector>
 
+namespace Ob
+{
 LVLCRecord::LVLCRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -39,10 +40,10 @@ LVLCRecord::LVLCRecord(LVLCRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -51,20 +52,13 @@ LVLCRecord::LVLCRecord(LVLCRecord *srcRecord):
     LVLF = srcRecord->LVLF;
     SCRI = srcRecord->SCRI;
     TNAM = srcRecord->TNAM;
-    Entries.clear();
-    Entries.resize(srcRecord->Entries.size());
-    for(UINT32 x = 0; x < srcRecord->Entries.size(); x++)
-        {
-        Entries[x] = new ReqSubRecord<LVLLVLO>;
-        *Entries[x] = *srcRecord->Entries[x];
-        }
+    Entries = srcRecord->Entries;
     return;
     }
 
 LVLCRecord::~LVLCRecord()
     {
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        delete Entries[x];
+    //
     }
 
 bool LVLCRecord::VisitFormIDs(FormIDOp &op)
@@ -76,8 +70,8 @@ bool LVLCRecord::VisitFormIDs(FormIDOp &op)
         op.Accept(SCRI.value);
     if(TNAM.IsLoaded())
         op.Accept(TNAM.value);
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        op.Accept(Entries[x]->value.listId);
+    for(UINT32 ListIndex = 0; ListIndex < Entries.value.size(); ListIndex++)
+        op.Accept(Entries.value[ListIndex]->listId);
 
     return op.Stop();
     }
@@ -123,13 +117,8 @@ bool LVLCRecord::IsFlagMask(UINT8 Mask, bool Exact)
 
 void LVLCRecord::SetFlagMask(UINT8 Mask)
     {
-    if(Mask)
-        {
-        LVLF.Load();
-        *LVLF.value = Mask;
-        }
-    else
-        LVLF.Unload();
+    LVLF.Load();
+    *LVLF.value = Mask;
     }
 
 UINT32 LVLCRecord::GetType()
@@ -142,34 +131,34 @@ STRING LVLCRecord::GetStrType()
     return "LVLC";
     }
 
-SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    ReqSubRecord<LVLLVLO> *newEntry = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(LVLD):
-                LVLD.Read(buffer, subSize, curPos);
+                LVLD.Read(buffer, subSize);
                 if((LVLD.value & fAltCalcFromAllLevels) != 0)
                     {
                     LVLD.value &= ~fAltCalcFromAllLevels;
@@ -177,26 +166,24 @@ SINT32 LVLCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 break;
             case REV32(LVLF):
-                LVLF.Read(buffer, subSize, curPos);
+                LVLF.Read(buffer, subSize);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             case REV32(LVLO):
-                newEntry = new ReqSubRecord<LVLLVLO>;
-                newEntry->Read(buffer, subSize, curPos);
-                Entries.push_back(newEntry);
+                Entries.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  LVLC: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -212,52 +199,38 @@ SINT32 LVLCRecord::Unload()
     LVLF.Unload();
     SCRI.Unload();
     TNAM.Unload();
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        delete Entries[x];
-    Entries.clear();
+    Entries.Unload();
     return 1;
     }
 
 SINT32 LVLCRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(LVLD.IsLoaded())
-        writer.record_write_subrecord(REV32(LVLD), &LVLD.value, LVLD.GetSize());
-    if(LVLF.IsLoaded())
-        writer.record_write_subrecord(REV32(LVLF), LVLF.value, LVLF.GetSize());
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-    if(TNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(TNAM), &TNAM.value, TNAM.GetSize());
-    for(UINT32 p = 0; p < Entries.size(); p++)
-        if(Entries[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(LVLO), &Entries[p]->value, Entries[p]->GetSize());
+    WRITE(EDID);
+    WRITE(LVLD);
+    WRITE(LVLF);
+    WRITE(SCRI);
+    WRITE(TNAM);
+    WRITEAS(Entries,LVLO);
     return -1;
     }
 
 bool LVLCRecord::operator ==(const LVLCRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        LVLD == other.LVLD &&
-        LVLF == other.LVLF &&
-        SCRI == other.SCRI &&
-        TNAM == other.TNAM &&
-        Entries.size() == other.Entries.size())
-        {
-        //Not sure if record order matters on entries, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Entries.size(); ++x)
-            if(*Entries[x] != *other.Entries[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (LVLD == other.LVLD &&
+            LVLF == other.LVLF &&
+            SCRI == other.SCRI &&
+            TNAM == other.TNAM &&
+            EDID.equalsi(other.EDID) &&
+            Entries == other.Entries);
     }
 
 bool LVLCRecord::operator !=(const LVLCRecord &other) const
     {
     return !(*this == other);
     }
+
+bool LVLCRecord::equals(Record *other)
+    {
+    return *this == *(LVLCRecord *)other;
+    }
+}

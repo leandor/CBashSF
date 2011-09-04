@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "IDLERecord.h"
-#include <vector>
 
+namespace Ob
+{
 IDLERecord::IDLEDATA::IDLEDATA():
     parent(0),
     prevId(0)
@@ -61,28 +62,16 @@ IDLERecord::IDLERecord(IDLERecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
-    CTDA.clear();
-    CTDA.resize(srcRecord->CTDA.size());
-    for(UINT32 x = 0; x < srcRecord->CTDA.size(); x++)
-        {
-        CTDA[x] = new ReqSubRecord<GENCTDA>;
-        *CTDA[x] = *srcRecord->CTDA[x];
-        }
+    MODL = srcRecord->MODL;
+    CTDA = srcRecord->CTDA;
     ANAM = srcRecord->ANAM;
     DATA = srcRecord->DATA;
     return;
@@ -90,8 +79,7 @@ IDLERecord::IDLERecord(IDLERecord *srcRecord):
 
 IDLERecord::~IDLERecord()
     {
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
+    //
     }
 
 bool IDLERecord::VisitFormIDs(FormIDOp &op)
@@ -99,30 +87,11 @@ bool IDLERecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        {
-        //if(CTDA[x]->value.ifunc == 214)
-        //    printer("%08X uses HasMagicEffect\n", formID);
-        curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eFORMID)
-                op.Accept(CTDA[x]->value.param1);
-            if(CTDAFunction.second == eFORMID)
-                op.Accept(CTDA[x]->value.param2);
-            }
-        else
-            printer("Warning: IDLERecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
-        }
+    for(UINT32 ListIndex = 0; ListIndex < CTDA.value.size(); ListIndex++)
+        CTDA.value[ListIndex]->VisitFormIDs(op);
 
-    if(DATA.IsLoaded())
-        {
-        op.Accept(DATA.value.parent);
-        op.Accept(DATA.value.prevId);
-        }
+    op.Accept(DATA.value.parent);
+    op.Accept(DATA.value.prevId);
 
     return op.Stop();
     }
@@ -268,63 +237,61 @@ STRING IDLERecord::GetStrType()
     return "IDLE";
     }
 
-SINT32 IDLERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 IDLERecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CTDT):
             case REV32(CTDA):
-                newCTDA = new ReqSubRecord<GENCTDA>;
-                newCTDA->Read(buffer, subSize, curPos);
-                CTDA.push_back(newCTDA);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  IDLE: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -337,9 +304,7 @@ SINT32 IDLERecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     MODL.Unload();
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    CTDA.clear();
+    CTDA.Unload();
     ANAM.Unload();
     DATA.Unload();
     return 1;
@@ -347,58 +312,30 @@ SINT32 IDLERecord::Unload()
 
 SINT32 IDLERecord::WriteRecord(FileWriter &writer)
     {
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        {
-        curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eNONE)
-                CTDA[p]->value.param1 = 0;
-            if(CTDAFunction.second == eNONE)
-                CTDA[p]->value.param2 = 0;
-            }
-        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
-        }
-    if(ANAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    MODL.Write(writer);
+    CTDA.Write(writer, true);
+    WRITE(ANAM);
+    WRITE(DATA);
     return -1;
     }
 
 bool IDLERecord::operator ==(const IDLERecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        MODL == other.MODL &&
-        ANAM == other.ANAM &&
-        DATA == other.DATA &&
-        CTDA.size() == other.CTDA.size())
-        {
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (ANAM == other.ANAM &&
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            MODL == other.MODL &&
+            CTDA == other.CTDA);
     }
 
 bool IDLERecord::operator !=(const IDLERecord &other) const
     {
     return !(*this == other);
     }
+
+bool IDLERecord::equals(Record *other)
+    {
+    return *this == *(IDLERecord *)other;
+    }
+}

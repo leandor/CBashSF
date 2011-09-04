@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -43,10 +43,10 @@ MICNRecord::MICNRecord(MICNRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -71,44 +71,45 @@ STRING MICNRecord::GetStrType()
     return "MICN";
     }
 
-SINT32 MICNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 MICNRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  MICN: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -143,5 +144,10 @@ bool MICNRecord::operator ==(const MICNRecord &other) const
 bool MICNRecord::operator !=(const MICNRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool MICNRecord::equals(Record *other)
+    {
+    return *this == *(MICNRecord *)other;
     }
 }

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "ROADRecord.h"
 
+namespace Ob
+{
 ROADRecord::ROADPGRR::ROADPGRR():
     x(0.0f),
     y(0.0f),
@@ -47,15 +49,16 @@ bool ROADRecord::ROADPGRR::operator !=(const ROADPGRR &other) const
     return !(*this == other);
     }
 
-
 ROADRecord::ROADRecord(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //
     }
 
 ROADRecord::ROADRecord(ROADRecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -64,10 +67,10 @@ ROADRecord::ROADRecord(ROADRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -78,7 +81,7 @@ ROADRecord::ROADRecord(ROADRecord *srcRecord):
 
 ROADRecord::~ROADRecord()
     {
-    //
+    //Parent is a shared pointer that's deleted when the WRLD group is deleted
     }
 
 UINT32 ROADRecord::GetType()
@@ -91,68 +94,47 @@ STRING ROADRecord::GetStrType()
     return "ROAD";
     }
 
-UINT32 ROADRecord::GetParentType()
+Record * ROADRecord::GetParent()
     {
-    return REV32(WRLD);
+    return Parent;
     }
 
-SINT32 ROADRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ROADRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(PGRP):
-                if(subSize % sizeof(GENPGRP) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    PGRP.resize(subSize / sizeof(GENPGRP));
-                    _readBuffer(&PGRP[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized PGRP size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                PGRP.Read(buffer, subSize);
                 break;
             case REV32(PGRR):
-                if(subSize % sizeof(ROADPGRR) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    PGRR.resize(subSize / sizeof(ROADPGRR));
-                    _readBuffer(&PGRR[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized ROADPGRR size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                PGRR.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ROADPGRR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -163,43 +145,41 @@ SINT32 ROADRecord::Unload()
     {
     IsChanged(false);
     IsLoaded(false);
-    PGRP.clear();
-    PGRR.clear();
+    PGRP.Unload();
+    PGRR.Unload();
     return 1;
     }
 
 SINT32 ROADRecord::WriteRecord(FileWriter &writer)
     {
-    if(PGRP.size())
-        writer.record_write_subrecord(REV32(PGRP), &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
-    if(PGRR.size())
-        writer.record_write_subrecord(REV32(PGRR), &PGRR[0], sizeof(ROADPGRR) * (UINT32)PGRR.size());
+    WRITE(PGRP);
+    WRITE(PGRR);
     return -1;
     }
 
 bool ROADRecord::operator ==(const ROADRecord &other) const
     {
-    if(PGRP.size() == other.PGRP.size() &&
-        PGRR.size() == other.PGRR.size())
-        {
-        //Not sure if record order matters on pgrp, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < PGRP.size(); ++x)
-            if(PGRP[x] != other.PGRP[x])
-                return false;
-
-        //Not sure if record order matters on pgrr, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < PGRR.size(); ++x)
-            if(PGRR[x] != other.PGRR[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (PGRP == other.PGRP &&
+            PGRP == other.PGRP);
     }
 
 bool ROADRecord::operator !=(const ROADRecord &other) const
     {
     return !(*this == other);
     }
+
+bool ROADRecord::equals(Record *other)
+    {
+    return *this == *(ROADRecord *)other;
+    }
+
+bool ROADRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    const ROADRecord *master_road = (ROADRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_road->Parent->formID)
+        return false;
+    return true;
+    }
+}

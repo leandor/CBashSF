@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class CONTRecord : public Record
+namespace Ob
+{
+class CONTRecord : public Record //Container
     {
     private:
         #pragma pack(push)
@@ -48,14 +49,14 @@ class CONTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        OptSimpleSubRecord<FORMID> SCRI;
-        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
-        ReqSubRecord<CONTDATA> DATA;
-        OptSimpleSubRecord<FORMID> SNAM;
-        OptSimpleSubRecord<FORMID> QNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        UnorderedSparseArray<GENCNTO *> CNTO;  //Items
+        ReqSubRecord<CONTDATA> DATA; //Data
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
+        OptSimpleSubRecord<FORMID> QNAM; //Sound - Close
 
         CONTRecord(unsigned char *_recData=NULL);
         CONTRecord(CONTRecord *srcRecord);
@@ -76,10 +77,12 @@ class CONTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CONTRecord &other) const;
         bool operator !=(const CONTRecord &other) const;
+        bool equals(Record *other);
     };
+}

@@ -96,7 +96,7 @@ def regressionTests():
     assertHAIR(Current, newMod)
     assertEYES(Current, newMod)
     assertRACE(Current, newMod)
-    
+
 ##    assertSOUN(Current, newMod)
 ##    assertSKIL(Current, newMod)
 
@@ -188,7 +188,7 @@ def assertTES4(Current, newMod):
 
 def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
-    
+
     assert record.fid == ('Oblivion.esm', 0x045D2F)
     assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
     assert record.flags2 == 1583621
@@ -1721,6 +1721,8 @@ def assertSOUN(Current, newMod):
 
     print "SOUN:Create Record Test"
     newRecord = newMod.create_SOUN()
+    d(newRecord)
+
     print "SOUN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -1796,6 +1798,8 @@ def assertSKIL(Current, newMod):
     return
     print "SKIL:Create Record Test"
     newRecord = newMod.create_SKIL()
+    d(newRecord)
+
     print "SKIL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2666,7 +2670,7 @@ def TestTES4():
     newMod.TES4.masters = ["Oblivion.esm"]
     print "TES4:Set Test Results"
     print "ModName   :", newMod.ModName
-    printRecord(newMod.TES4)
+    d(newMod.TES4)
 
     print "TES4:Save Test - TestTES4.esp"
     newMod.save()
@@ -2687,6 +2691,8 @@ def TestGMST():
 
     print "GMST:Create Record Test"
     newRecord = newMod.create_GMST("sWarString")
+    d(newRecord)
+
     print "GMST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2725,6 +2731,8 @@ def TestGLOB():
 
     print "GLOB:Create Record Test"
     newRecord = newMod.create_GLOB()
+    d(newRecord)
+
     print "GLOB:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2768,6 +2776,8 @@ def TestCLAS():
 
     print "CLAS:Create Record Test"
     newRecord = newMod.create_CLAS()
+    d(newRecord)
+
     print "CLAS:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2864,6 +2874,8 @@ def TestFACT():
 
     print "FACT:Create Record Test"
     newRecord = newMod.create_FACT()
+    d(newRecord)
+
     print "FACT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -2949,6 +2961,8 @@ def TestHAIR():
 
     print "HAIR:Create Record Test"
     newRecord = newMod.create_HAIR()
+    d(newRecord)
+
     print "HAIR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3016,6 +3030,8 @@ def TestEYES():
 
     print "EYES:Create Record Test"
     newRecord = newMod.create_EYES()
+    d(newRecord)
+
     print "EYES:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3066,6 +3082,8 @@ def TestRACE():
 
     print "RACE:Create Record Test"
     newRecord = newMod.create_RACE()
+    d(newRecord)
+
     print "RACE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3387,6 +3405,8 @@ def TestSOUN():
 
     print "SOUN:Create Record Test"
     newRecord = newMod.create_SOUN()
+    d(newRecord)
+
     print "SOUN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3451,6 +3471,8 @@ def TestSKIL():
 
     print "SKIL:Create Record Test"
     newRecord = newMod.create_SKIL()
+    d(newRecord)
+
     print "SKIL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3517,6 +3539,8 @@ def TestMGEF():
         break
     print "MGEF:Create Record Test"
     newRecord = newMod.create_MGEF("MGEFWarTest0")
+    d(newRecord)
+
     print "MGEF:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3578,6 +3602,8 @@ def TestSCPT():
 
     print "SCPT:Create Record Test"
     newRecord = newMod.create_SCPT()
+    d(newRecord)
+
     print "SCPT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3673,6 +3699,8 @@ def TestLTEX():
 
     print "LTEX:Create Record Test"
     newRecord = newMod.create_LTEX()
+    d(newRecord)
+
     print "LTEX:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3733,6 +3761,8 @@ def TestENCH():
 
     print "ENCH:Create Record Test"
     newRecord = newMod.create_ENCH()
+    d(newRecord)
+
     print "ENCH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3834,6 +3864,8 @@ def TestSPEL():
 
     print "SPEL:Create Record Test"
     newRecord = newMod.create_SPEL()
+    d(newRecord)
+
     print "SPEL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3933,6 +3965,8 @@ def TestBSGN():
 
     print "BSGN:Create Record Test"
     newRecord = newMod.create_BSGN()
+    d(newRecord)
+
     print "BSGN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -3987,6 +4021,8 @@ def TestACTI():
 
     print "ACTI:Create Record Test"
     newRecord = newMod.create_ACTI()
+    d(newRecord)
+
     print "ACTI:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4048,6 +4084,8 @@ def TestAPPA():
 
     print "APPA:Create Record Test"
     newRecord = newMod.create_APPA()
+    d(newRecord)
+
     print "APPA:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4118,6 +4156,8 @@ def TestARMO():
 
     print "ARMO:Create Record Test"
     newRecord = newMod.create_ARMO()
+    d(newRecord)
+
     print "ARMO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4208,6 +4248,8 @@ def TestBOOK():
 
     print "BOOK:Create Record Test"
     newRecord = newMod.create_BOOK()
+    d(newRecord)
+
     print "BOOK:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4286,6 +4328,8 @@ def TestCLOT():
 
     print "CLOT:Create Record Test"
     newRecord = newMod.create_CLOT()
+    d(newRecord)
+
     print "CLOT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4370,6 +4414,8 @@ def TestCONT():
 
     print "CONT:Create Record Test"
     newRecord = newMod.create_CONT()
+    d(newRecord)
+
     print "CONT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4462,6 +4508,8 @@ def TestDOOR():
 
     print "DOOR:Create Record Test"
     newRecord = newMod.create_DOOR()
+    d(newRecord)
+
     print "DOOR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4536,6 +4584,8 @@ def TestINGR():
 
     print "INGR:Create Record Test"
     newRecord = newMod.create_INGR()
+    d(newRecord)
+
     print "INGR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4657,6 +4707,8 @@ def TestLIGH():
 
     print "LIGH:Create Record Test"
     newRecord = newMod.create_LIGH()
+    d(newRecord)
+
     print "LIGH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4752,6 +4804,8 @@ def TestMISC():
 
     print "MISC:Create Record Test"
     newRecord = newMod.create_MISC()
+    d(newRecord)
+
     print "MISC:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4818,6 +4872,8 @@ def TestSTAT():
 
     print "STAT:Create Record Test"
     newRecord = newMod.create_STAT()
+    d(newRecord)
+
     print "STAT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4871,6 +4927,8 @@ def TestGRAS():
 
     print "GRAS:Create Record Test"
     newRecord = newMod.create_GRAS()
+    d(newRecord)
+
     print "GRAS:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -4949,6 +5007,8 @@ def TestTREE():
 
     print "TREE:Create Record Test"
     newRecord = newMod.create_TREE()
+    d(newRecord)
+
     print "TREE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5024,6 +5084,8 @@ def TestFLOR():
 
     print "FLOR:Create Record Test"
     newRecord = newMod.create_FLOR()
+    d(newRecord)
+
     print "FLOR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5088,6 +5150,8 @@ def TestFURN():
 
     print "FURN:Create Record Test"
     newRecord = newMod.create_FURN()
+    d(newRecord)
+
     print "FURN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5151,6 +5215,8 @@ def TestWEAP():
 
     print "WEAP:Create Record Test"
     newRecord = newMod.create_WEAP()
+    d(newRecord)
+
     print "WEAP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5235,6 +5301,8 @@ def TestAMMO():
 
     print "AMMO:Create Record Test"
     newRecord = newMod.create_AMMO()
+    d(newRecord)
+
     print "AMMO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5313,6 +5381,8 @@ def TestNPC_():
 
     print "NPC_:Create Record Test"
     newRecord = newMod.create_NPC_()
+    d(newRecord)
+
     print "NPC_:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5558,6 +5628,8 @@ def TestCREA():
 
     print "CREA:Create Record Test"
     newRecord = newMod.create_CREA()
+    d(newRecord)
+
     print "CREA:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5800,6 +5872,8 @@ def TestLVLC():
 
     print "LVLC:Create Record Test"
     newRecord = newMod.create_LVLC()
+    d(newRecord)
+
     print "LVLC:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5888,6 +5962,8 @@ def TestSLGM():
 
     print "SLGM:Create Record Test"
     newRecord = newMod.create_SLGM()
+    d(newRecord)
+
     print "SLGM:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -5962,6 +6038,8 @@ def TestKEYM():
 
     print "KEYM:Create Record Test"
     newRecord = newMod.create_KEYM()
+    d(newRecord)
+
     print "KEYM:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6028,6 +6106,8 @@ def TestALCH():
 
     print "ALCH:Create Record Test"
     newRecord = newMod.create_ALCH()
+    d(newRecord)
+
     print "ALCH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6148,6 +6228,8 @@ def TestSBSP():
 
     print "SBSP:Create Record Test"
     newRecord = newMod.create_SBSP()
+    d(newRecord)
+
     print "SBSP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6156,13 +6238,18 @@ def TestSBSP():
     print "eid..."
     newRecord.eid = "SBSPWarTest"
 
-
+    newRecord.sizeX = 1.0
+    newRecord.sizeY = 2.0
+    newRecord.sizeZ = 3.0
     print "SBSP:Set Test Results"
     print
     print "fid    :", PrintFormID(newRecord.fid)
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
+    print "sizeX  :", newRecord.sizeX
+    print "sizeY  :", newRecord.sizeY
+    print "sizeZ  :", newRecord.sizeZ
 
 
     print "SBSP:CopyAsOverride Test"
@@ -6193,6 +6280,8 @@ def TestSGST():
 
     print "SGST:Create Record Test"
     newRecord = newMod.create_SGST()
+    d(newRecord)
+
     print "SGST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6330,6 +6419,8 @@ def TestLVLI():
 
     print "LVLI:Create Record Test"
     newRecord = newMod.create_LVLI()
+    d(newRecord)
+
     print "LVLI:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6412,6 +6503,8 @@ def TestWTHR():
 
     print "WTHR:Create Record Test"
     newRecord = newMod.create_WTHR()
+    d(newRecord)
+
     print "WTHR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6893,6 +6986,8 @@ def TestCLMT():
 
     print "CLMT:Create Record Test"
     newRecord = newMod.create_CLMT()
+    d(newRecord)
+
     print "CLMT:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -6982,6 +7077,8 @@ def TestREGN():
 
     print "REGN:Create Record Test"
     newRecord = newMod.create_REGN()
+    d(newRecord)
+
     print "REGN:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -7339,6 +7436,8 @@ def TestCELL():
 
     print "CELL:Create Record Test"
     newRecord = newMod.create_CELL()
+    d(newRecord)
+
     print "CELL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -8082,6 +8181,8 @@ def TestWRLD():
 
     print "WRLD:Create Record Test"
     newRecord = newMod.create_WRLD()
+    d(newRecord)
+
     print "WRLD:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -8261,6 +8362,8 @@ def TestDIAL():
 
     print "DIAL:Create Record Test"
     newRecord = newMod.create_DIAL()
+    d(newRecord)
+
     print "DIAL:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -8654,6 +8757,8 @@ def TestQUST():
 
     print "QUST:Create Record Test"
     newRecord = newMod.create_QUST()
+    d(newRecord)
+
     print "QUST:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9427,6 +9532,8 @@ def TestIDLE():
 
     print "IDLE:Create Record Test"
     newRecord = newMod.create_IDLE()
+    d(newRecord)
+
     print "IDLE:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9538,6 +9645,8 @@ def TestPACK():
 
     print "PACK:Create Record Test"
     newRecord = newMod.create_PACK()
+    d(newRecord)
+
     print "PACK:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9669,6 +9778,8 @@ def TestCSTY():
 
     print "CSTY:Create Record Test"
     newRecord = newMod.create_CSTY()
+    d(newRecord)
+
     print "CSTY:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9842,6 +9953,8 @@ def TestLSCR():
 
     print "LSCR:Create Record Test"
     newRecord = newMod.create_LSCR()
+    d(newRecord)
+
     print "LSCR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -9923,6 +10036,8 @@ def TestLVSP():
 
     print "LVSP:Create Record Test"
     newRecord = newMod.create_LVSP()
+    d(newRecord)
+
     print "LVSP:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10006,6 +10121,8 @@ def TestANIO():
 
     print "ANIO:Create Record Test"
     newRecord = newMod.create_ANIO()
+    d(newRecord)
+
     print "ANIO:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10063,6 +10180,8 @@ def TestWATR():
 
     print "WATR:Create Record Test"
     newRecord = newMod.create_WATR()
+    d(newRecord)
+
     print "WATR:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10196,6 +10315,8 @@ def TestEFSH():
 
     print "EFSH:Create Record Test"
     newRecord = newMod.create_EFSH()
+    d(newRecord)
+
     print "EFSH:Set Test"
     print "flags1..."
     newRecord.flags1 = 0x0102
@@ -10373,6 +10494,35 @@ def TestEFSH():
     newMod.save()
     print "EFSH:Finished testing"
 
+def TestIdenticalToMaster():
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm")
+    Current.addMod("TestIdentical.esp")
+    Current.load()
+    newMod = Current.LookupModFile("TestIdentical.esp")
+    for block, records in Current.LoadOrderMods[0].aggregates.items():
+        for record in records:
+            over = record.CopyAsOverride(newMod)
+            if over.fid[1] % 10 == 0:
+                try:
+                    over.eid += 'Testt'
+                except:
+                    try:
+                        over.eid = 'Testt'
+                    except:
+                        continue
+            over.UnloadRecord()
+            record.CopyAsNew(newMod).UnloadRecord()
+            record.UnloadRecord()
+
+##    ident = newMod.GetRecordsIdenticalToMaster()
+##
+##    for record in ident:
+##        print PrintFormID(record.fid)
+##        record.DeleteRecord()
+##    newMod.CleanMasters()
+    newMod.save()
+
 from timeit import Timer
 
 ##print "1TestMinimalLoad"
@@ -10414,17 +10564,18 @@ from timeit import Timer
 
 ##phonenumber = raw_input(">")
 ##Current = ObCollection()
-####Current.addMod("Oblivion.esm")
-####print "MinLoad"
-##Current.addMod("Oblivion.esm", MinLoad=False)
-##print "FullLoad"
+##Current.addMod("Oblivion.esm")
+##print "MinLoad"
+####Current.addMod("Oblivion.esm", MinLoad=False)
+####print "FullLoad"
 ##Current.load()
 ##phonenumber = raw_input(">")
 ##del Current
 ##phonenumber = raw_input("!")
 
-regressionTests()
+##regressionTests()
 
+TestIdenticalToMaster()
 ##TestTemp()
 ##TestAttrReport()
 ##TestCopyAttrs()

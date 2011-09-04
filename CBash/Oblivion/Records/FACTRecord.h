@@ -16,21 +16,26 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
+
+namespace Ob
+{
+struct sortRNAM;
 
 class FACTRecord : public Record
     {
     private:
-        struct FACTRNAM
+        struct FACTRNAM //Rank
             {
             ReqSimpleSubRecord<SINT32> RNAM; //Rank#
-            StringRecord MNAM, FNAM, INAM;
+            StringRecord MNAM, FNAM, INAM; //Male, Female, Insignia
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const FACTRNAM &other) const;
             bool operator !=(const FACTRNAM &other) const;
@@ -43,15 +48,15 @@ class FACTRecord : public Record
             fIsSpecialCombat = 0x00000004
             };
 
-        friend bool sortRNAM(FACTRNAM *lhs, FACTRNAM *rhs);
+        friend sortRNAM;
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        std::vector<ReqSubRecord<GENXNAM> *> XNAM;
-        ReqSimpleSubRecord<UINT8> DATA;
-        SemiOptSimpleFloatSubRecord<flt_1> CNAM; // crimeGoldMultiplier
-        std::vector<FACTRNAM *> RNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OrderedSparseArray<GENXNAM *> XNAM; //Relations, not sure if record order matters
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
+        SemiOptSimpleFloatSubRecord<flt_1> CNAM; //Crime Gold Multiplier
+        OrderedSparseArray<FACTRNAM *, sortRNAM> RNAM; //Ranks
 
         FACTRecord(unsigned char *_recData=NULL);
         FACTRecord(FACTRecord *srcRecord);
@@ -76,10 +81,17 @@ class FACTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const FACTRecord &other) const;
         bool operator !=(const FACTRecord &other) const;
+        bool equals(Record *other);
     };
+
+struct sortRNAM
+    {
+    bool operator()(const FACTRecord::FACTRNAM *lhs, const FACTRecord::FACTRNAM *rhs) const;
+    };
+}

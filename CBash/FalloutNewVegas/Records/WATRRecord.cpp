@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -185,10 +185,10 @@ WATRRecord::WATRRecord(WATRRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -277,86 +277,87 @@ STRING WATRRecord::GetStrType()
     return "WATR";
     }
 
-SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WATRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NNAM):
-                NNAM.Read(buffer, subSize, curPos);
+                NNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(MNAM):
-                MNAM.Read(buffer, subSize, curPos);
+                MNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
                 switch(subSize)
                     {
                     case sizeof(DATA.value):
-                        DATA.Read(buffer, subSize, curPos);
+                        DATA.Read(buffer, subSize);
                         break;
                     case 186:
                         //last field of older DATA format is damage, and rest are congruent with DNAM
                         //last three fields of DNAM will be at their default value
-                        DNAM.Read(buffer, subSize - 2, curPos);
-                        DATA.Read(buffer, 2, curPos);
+                        DNAM.Read(buffer, subSize - 2);
+                        DATA.Read(buffer, 2);
                         break;
                     default:
                         printer("  WATR: %08X - Unexpected DATA size\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(GNAM):
-                GNAM.Read(buffer, subSize, curPos);
+                GNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WATR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -416,5 +417,10 @@ bool WATRRecord::operator ==(const WATRRecord &other) const
 bool WATRRecord::operator !=(const WATRRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool WATRRecord::equals(Record *other)
+    {
+    return *this == *(WATRRecord *)other;
     }
 }

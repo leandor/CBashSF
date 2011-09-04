@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -27,6 +27,8 @@ GPL License and Copyright Notice ============================================
 //#include "ROADRecord.h"
 #include <vector>
 
+namespace Ob
+{
 class WRLDRecord : public Record
     {
     private:
@@ -46,28 +48,27 @@ class WRLDRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSimpleSubRecord<FORMID> WNAM;
-        OptSimpleSubRecord<FORMID> CNAM;
-        OptSimpleSubRecord<FORMID> NAM2;
-        StringRecord ICON;
-        SemiOptSubRecord<GENMNAM> MNAM;
-        ReqSimpleSubRecord<UINT8> DATA;
-        ReqSubRecord<GENNAM0> NAM0;
-        ReqSubRecord<GENNAM9> NAM9;
-        OptSimpleSubRecord<UINT32> SNAM;
-        RawRecord OFST;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSimpleSubRecord<FORMID> WNAM; //Parent Worldspace
+        OptSimpleSubRecord<FORMID> CNAM; //Climate
+        OptSimpleSubRecord<FORMID/*, 0x18*/> NAM2; //Water
+        StringRecord ICON; //Large Icon Filename
+        SemiOptSubRecord<GENMNAM> MNAM; //Map Data
+        ReqSimpleSubRecord<UINT8, fSmallWorld> DATA; //Flags
+        ReqSubRecord<GENNAM0> NAM0; //Min Object Bounds
+        ReqSubRecord<GENNAM9> NAM9; //Max Object Bounds
+        OptSimpleSubRecord<UINT32> SNAM; //Sound Type
+        RawRecord OFST; //Unknown
 
         Record *ROAD;
         Record *CELL;
-        RecordPoolAllocator<CELLRecord, REV32(CELL), 20> cell_pool;
+        std::vector<Record *> CELLS;
 
         WRLDRecord(unsigned char *_recData=NULL);
         WRLDRecord(WRLDRecord *srcRecord);
         ~WRLDRecord();
 
-        bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsSmallWorld();
@@ -102,10 +103,13 @@ class WRLDRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WRLDRecord &other) const;
         bool operator !=(const WRLDRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

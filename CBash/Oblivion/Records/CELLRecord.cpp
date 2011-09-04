@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "CELLRecord.h"
-#include <vector>
 
+namespace Ob
+{
 CELLRecord::CELLXCLL::CELLXCLL():
     fogNear(0),
     fogFar(0),
@@ -102,10 +103,10 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -114,13 +115,7 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     DATA = srcRecord->DATA;
     XCLL = srcRecord->XCLL;
     XCMT = srcRecord->XCMT;
-    if(srcRecord->Ownership.IsLoaded())
-        {
-        Ownership.Load();
-        Ownership->XOWN = srcRecord->Ownership->XOWN;
-        Ownership->XRNK = srcRecord->Ownership->XRNK;
-        Ownership->XGLB = srcRecord->Ownership->XGLB;
-        }
+    Ownership = srcRecord->Ownership;
     XCCM = srcRecord->XCCM;
     XCLW = srcRecord->XCLW;
     XCLR = srcRecord->XCLR;
@@ -132,39 +127,12 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
 CELLRecord::~CELLRecord()
     {
     //
+    //ACHRs are owned at the mod level, so must be destroyed there
+    //ACREs are owned at the mod level, so must be destroyed there
+    //REFRs are owned at the mod level, so must be destroyed there
+    //PGRD is owned at the mod level, so must be destroyed there
+    //LAND is owned at the mod level, so must be destroyed there
     //Parent is a shared pointer that's deleted when the WRLD group is deleted
-    }
-
-bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-
-    if(RecordType == NULL || RecordType == REV32(ACHR))
-        stop = achr_pool.VisitRecords(RecordType, op, true);
-    if(stop)
-        return stop;
-
-    if(RecordType == NULL || RecordType == REV32(ACRE))
-        stop = achr_pool.VisitRecords(RecordType, op, true);
-    if(stop)
-        return stop;
-
-    if(RecordType == NULL || RecordType == REV32(REFR))
-        stop = refr_pool.VisitRecords(RecordType, op, true);
-    if(stop)
-        return stop;
-
-    if(PGRD != NULL && (RecordType == NULL || RecordType == REV32(PGRD)))
-        stop = op.Accept(PGRD);
-    if(stop)
-        return stop;
-
-    if(LAND != NULL && (RecordType == NULL || RecordType == REV32(LAND)))
-        stop = op.Accept(LAND);
-    if(stop)
-        return stop;
-
-    return op.Stop();
     }
 
 bool CELLRecord::VisitFormIDs(FormIDOp &op)
@@ -181,8 +149,8 @@ bool CELLRecord::VisitFormIDs(FormIDOp &op)
         }
     if(XCCM.IsLoaded())
         op.Accept(XCCM.value);
-    for(UINT32 x = 0; x < XCLR.size(); x++)
-        op.Accept(XCLR[x]);
+    for(UINT32 ListIndex = 0; ListIndex < XCLR.value.size(); ListIndex++)
+        op.Accept(XCLR.value[ListIndex]);
 
     if(XCWT.IsLoaded())
         op.Accept(XCWT.value);
@@ -337,95 +305,83 @@ STRING CELLRecord::GetStrType()
     return "CELL";
     }
 
-UINT32 CELLRecord::GetParentType()
+Record * CELLRecord::GetParent()
     {
-    if(Parent != NULL)
-        return Parent->GetType();
-    return 0;
+    return Parent;
     }
 
-SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CELLRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(XCLL):
-                XCLL.Read(buffer, subSize, curPos);
+                XCLL.Read(buffer, subSize);
                 break;
             case REV32(XCMT):
-                XCMT.Read(buffer, subSize, curPos);
+                XCMT.Read(buffer, subSize);
                 break;
             case REV32(XOWN):
                 Ownership.Load();
-                Ownership->XOWN.Read(buffer, subSize, curPos);
+                Ownership->XOWN.Read(buffer, subSize);
                 break;
             case REV32(XRNK):
                 Ownership.Load();
-                Ownership->XRNK.Read(buffer, subSize, curPos);
+                Ownership->XRNK.Read(buffer, subSize);
                 break;
             case REV32(XGLB):
                 Ownership.Load();
-                Ownership->XGLB.Read(buffer, subSize, curPos);
+                Ownership->XGLB.Read(buffer, subSize);
                 break;
             case REV32(XCCM):
-                XCCM.Read(buffer, subSize, curPos);
+                XCCM.Read(buffer, subSize);
                 break;
             case REV32(XCLW):
-                XCLW.Read(buffer, subSize, curPos);
+                XCLW.Read(buffer, subSize);
                 break;
             case REV32(XCLR):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    XCLR.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&XCLR[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized XCLR size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                XCLR.Read(buffer, subSize);
                 break;
             case REV32(XCLC):
-                XCLC.Read(buffer, subSize, curPos);
+                XCLC.Read(buffer, subSize);
                 break;
             case REV32(XCWT):
-                XCWT.Read(buffer, subSize, curPos);
+                XCWT.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CELL: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -438,13 +394,13 @@ SINT32 CELLRecord::Unload()
     IsLoaded(false);
     EDID.Unload();
     FULL.Unload();
-    DATA.Unload();
+    //DATA.Unload(); //need to keep IsInterior around
     XCLL.Unload();
     XCMT.Unload();
     Ownership.Unload();
     XCCM.Unload();
     XCLW.Unload();
-    XCLR.clear();
+    XCLR.Unload();
     XCLC.Unload();
     XCWT.Unload();
     return 1;
@@ -452,70 +408,114 @@ SINT32 CELLRecord::Unload()
 
 SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
+    WRITE(EDID);
 
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(XCLL.IsLoaded())
-        writer.record_write_subrecord(REV32(XCLL), XCLL.value, XCLL.GetSize());
-    if(XCMT.IsLoaded())
-        writer.record_write_subrecord(REV32(XCMT), &XCMT.value, XCMT.GetSize());
+    WRITE(FULL);
+    WRITE(DATA);
+    WRITE(XCLL);
+    WRITE(XCMT);
+    Ownership.Write(writer);
 
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(XOWN), &Ownership->XOWN.value, Ownership->XOWN.GetSize());
-        if(Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord(REV32(XRNK), Ownership->XRNK.value, Ownership->XRNK.GetSize());
-        if(Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord(REV32(XGLB), &Ownership->XGLB.value, Ownership->XGLB.GetSize());
-        }
-
-    if(XCCM.IsLoaded())
-        writer.record_write_subrecord(REV32(XCCM), &XCCM.value, XCCM.GetSize());
-    if(XCLW.IsLoaded())
-        writer.record_write_subrecord(REV32(XCLW), &XCLW.value, XCLW.GetSize());
-
-    if(XCLR.size())
-        writer.record_write_subrecord(REV32(XCLR), &XCLR[0], (UINT32)XCLR.size() * sizeof(UINT32));
-    //else
-    //    writer.record_write_subheader(REV32(XCLR), 0);
-
-    if(XCLC.IsLoaded() && !IsInterior())
-        writer.record_write_subrecord(REV32(XCLC), XCLC.value, XCLC.GetSize());
-    if(XCWT.IsLoaded())
-        writer.record_write_subrecord(REV32(XCWT), &XCWT.value, XCWT.GetSize());
+    WRITE(XCCM);
+    WRITE(XCLW);
+    WRITE(XCLR);
+    if(!IsInterior())
+        WRITE(XCLC);
+    WRITE(XCWT);
     return -1;
     }
 
 bool CELLRecord::operator ==(const CELLRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DATA == other.DATA &&
-        XCLL == other.XCLL &&
-        XCMT == other.XCMT &&
-        Ownership == other.Ownership &&
-        XCCM == other.XCCM &&
-        XCLW == other.XCLW &&
-        XCLC == other.XCLC &&
-        XCWT == other.XCWT &&
-        XCLR.size() == other.XCLR.size())
-        {
-        //Not sure if record order matters on regions, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < XCLR.size(); ++x)
-            if(XCLR[x] != other.XCLR[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            XCMT == other.XCMT &&
+            XCCM == other.XCCM &&
+            XCWT == other.XCWT &&
+            XCLL == other.XCLL &&
+            XCLC == other.XCLC &&
+            XCLW == other.XCLW &&
+            Ownership == other.Ownership &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            XCLR == other.XCLR);
     }
 
 bool CELLRecord::operator !=(const CELLRecord &other) const
     {
     return !(*this == other);
     }
+
+bool CELLRecord::equals(Record *other)
+    {
+    return *this == *(CELLRecord *)other;
+    }
+
+bool CELLRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+
+    const CELLRecord *master_cell = (CELLRecord *)master;
+    //Check to make sure the CELLs are attached at the same spot
+    if(!IsInterior())
+        if(Parent->formID != master_cell->Parent->formID)
+            return false;
+
+    if(ACHR.size() > master_cell->ACHR.size())
+        return false;
+    if(ACRE.size() > master_cell->ACRE.size())
+        return false;
+    if(REFR.size() > master_cell->REFR.size())
+        return false;
+
+    if(PGRD != NULL)
+        {
+        if(master_cell->PGRD != NULL)
+            {
+            if(identical_records.count(PGRD) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    if(LAND != NULL)
+        {
+        if(master_cell->LAND != NULL)
+            {
+            if(identical_records.count(LAND) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    for(UINT32 ListIndex = 0; ListIndex < ACHR.size(); ++ListIndex)
+        if(identical_records.count(ACHR[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < ACRE.size(); ++ListIndex)
+        if(identical_records.count(ACRE[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < REFR.size(); ++ListIndex)
+        if(identical_records.count(REFR[ListIndex]) == 0)
+                return false;
+
+    //The cell and all its contents are dupes, so remove the child records from identical_records
+    // This prevents Bash from trying to double delete records (first the cell, and later a child that was in the cell)
+    identical_records.erase(PGRD);
+    identical_records.erase(LAND);
+
+    for(UINT32 ListIndex = 0; ListIndex < ACHR.size(); ++ListIndex)
+        identical_records.erase(ACHR[ListIndex]);
+
+    for(UINT32 ListIndex = 0; ListIndex < ACRE.size(); ++ListIndex)
+        identical_records.erase(ACRE[ListIndex]);
+
+    for(UINT32 ListIndex = 0; ListIndex < REFR.size(); ++ListIndex)
+        identical_records.erase(REFR[ListIndex]);
+
+    return true;
+    }
+}

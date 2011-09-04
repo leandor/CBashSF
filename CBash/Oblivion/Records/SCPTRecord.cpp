@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "SCPTRecord.h"
-#include <vector>
 
+namespace Ob
+{
 SCPTRecord::SCPTRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -39,10 +40,10 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -50,29 +51,13 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
     SCHR = srcRecord->SCHR;
     SCDA = srcRecord->SCDA;
     SCTX = srcRecord->SCTX;
-
-    VARS.resize(srcRecord->VARS.size());
-    for(UINT32 x = 0; x < srcRecord->VARS.size(); x++)
-        {
-        VARS[x] = new GENVARS;
-        VARS[x]->SLSD = srcRecord->VARS[x]->SLSD;
-        VARS[x]->SCVR = srcRecord->VARS[x]->SCVR;
-        }
-
-    SCR_.resize(srcRecord->SCR_.size());
-    for(UINT32 x = 0; x < srcRecord->SCR_.size(); x++)
-        {
-        SCR_[x] = new ReqSubRecord<GENSCR_>;
-        *SCR_[x] = *srcRecord->SCR_[x];
-        }
+    VARS = srcRecord->VARS;
+    SCR_ = srcRecord->SCR_;
     }
 
 SCPTRecord::~SCPTRecord()
     {
-    for(UINT32 x = 0; x < VARS.size(); x++)
-        delete VARS[x];
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
+    //
     }
 
 bool SCPTRecord::VisitFormIDs(FormIDOp &op)
@@ -80,9 +65,9 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        if(SCR_[x]->value.isSCRO)
-            op.Accept(SCR_[x]->value.reference);
+    for(UINT32 ListIndex = 0; ListIndex < SCR_.value.size(); ListIndex++)
+        if(SCR_.value[ListIndex]->isSCRO)
+            op.Accept(SCR_.value[ListIndex]->reference);
 
     return op.Stop();
     }
@@ -137,67 +122,66 @@ STRING SCPTRecord::GetStrType()
     return "SCPT";
     }
 
-SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
 
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCHR):
-                SCHR.Read(buffer, subSize, curPos);
+                SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
-                SCDA.Read(buffer, subSize, curPos);
+                SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
-                SCTX.Read(buffer, subSize, curPos);
+                SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SLSD):
-                VARS.push_back(new GENVARS);
-                VARS.back()->SLSD.Read(buffer, subSize, curPos);
+                VARS.value.push_back(new GENVARS);
+                VARS.value.back()->SLSD.Read(buffer, subSize);
                 break;
             case REV32(SCVR):
-                if(VARS.size() == 0)
-                    VARS.push_back(new GENVARS);
-                VARS.back()->SCVR.Read(buffer, subSize, curPos);
+                if(VARS.value.size() == 0)
+                    VARS.value.push_back(new GENVARS);
+                VARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRV):
-                SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                SCR_.back()->Read(buffer, subSize, curPos);
-                SCR_.back()->value.isSCRO = false;
+                SCR_.Read(buffer, subSize);
+                SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(SCRO):
-                SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                SCR_.back()->Read(buffer, subSize, curPos);
-                SCR_.back()->value.isSCRO = true;
+                SCR_.Read(buffer, subSize);
+                SCR_.value.back()->isSCRO = true;
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  SCPT: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -212,74 +196,43 @@ SINT32 SCPTRecord::Unload()
     SCHR.Unload();
     SCDA.Unload();
     SCTX.Unload();
-    for(UINT32 x = 0; x < VARS.size(); x++)
-        delete VARS[x];
-    VARS.clear();
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    SCR_.clear();
+    VARS.Unload();
+    SCR_.Unload();
     return 1;
     }
 
 SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(SCHR.IsLoaded())
-        {
-        SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
-        writer.record_write_subrecord(REV32(SCHR), &SCHR.value, SCHR.GetSize());
-        }
-    if(SCDA.IsLoaded())
-        writer.record_write_subrecord(REV32(SCDA), SCDA.value, SCDA.GetSize());
-    if(SCTX.IsLoaded())
-        writer.record_write_subrecord(REV32(SCTX), SCTX.value, SCTX.GetSize());
-    for(UINT32 p = 0; p < VARS.size(); p++)
-        {
-        if(VARS[p]->SLSD.IsLoaded())
-            writer.record_write_subrecord(REV32(SLSD), &VARS[p]->SLSD.value, VARS[p]->SLSD.GetSize());
-        if(VARS[p]->SCVR.IsLoaded())
-            writer.record_write_subrecord(REV32(SCVR), VARS[p]->SCVR.value, VARS[p]->SCVR.GetSize());
-        }
-
-    for(UINT32 p = 0; p < SCR_.size(); p++)
-        if(SCR_[p]->IsLoaded())
-            if(SCR_[p]->value.isSCRO)
-                writer.record_write_subrecord(REV32(SCRO), &SCR_[p]->value.reference, sizeof(UINT32));
-            else
-                writer.record_write_subrecord(REV32(SCRV), &SCR_[p]->value.reference, sizeof(UINT32));
+    WRITE(EDID);
+    SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
+    SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
+    //for(UINT32 x = 0; x < VARS.value.size(); ++x) //Just to ensure that the value is correct
+    //    SCHR.value.lastIndex = (SCHR.value.lastIndex > VARS.value[x]->SLSD.value.index) ? SCHR.value.lastIndex : VARS.value[x]->SLSD.value.index;
+    WRITE(SCHR);
+    WRITE(SCDA);
+    WRITE(SCTX);
+    VARS.Write(writer);
+    SCR_.Write(writer, true);
     return -1;
     }
 
 bool SCPTRecord::operator ==(const SCPTRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        VARS.size() == other.VARS.size() &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Record order doesn't matter on vars, so equality testing isn't easy
-        //Instead, they're keyed by var index (SLSD.value.index)
-        //The proper solution would be to see if each indexed var matches the other
-        //But they're usually ordered, so the lazy approach is to not bother
-        //Fix-up later
-        for(UINT32 x = 0; x < VARS.size(); ++x)
-            if(*VARS[x] != *other.VARS[x])
-                return false;
-
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (SCHR == other.SCHR &&
+            EDID.equalsi(other.EDID) &&
+            SCDA == other.SCDA &&
+            VARS == other.VARS &&
+            SCR_ == other.SCR_ &&
+            SCTX.equalsi(other.SCTX));
     }
 
 bool SCPTRecord::operator !=(const SCPTRecord &other) const
     {
     return !(*this == other);
     }
+
+bool SCPTRecord::equals(Record *other)
+    {
+    return *this == *(SCPTRecord *)other;
+    }
+}

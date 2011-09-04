@@ -434,6 +434,8 @@ def assertTXST(Current, newMod):
     assert record.flags == 0
 
     nrecord = newMod.create_TXST()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -672,6 +674,8 @@ def assertMICN(Current, newMod):
     assert record.smallIconPath == None
 
     nrecord = newMod.create_MICN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -761,6 +765,8 @@ def assertGLOB(Current, newMod):
     assert record.value == 12000.0
 
     nrecord = newMod.create_GLOB()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -862,6 +868,8 @@ def assertCLAS(Current, newMod):
     assert record.luck == 7
 
     nrecord = newMod.create_CLAS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -1071,6 +1079,8 @@ def assertFACT(Current, newMod):
     assert record.reputation == ('FalloutNV.esm', 0x11E662)
 
     nrecord = newMod.create_FACT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -1243,6 +1253,8 @@ def assertHDPT(Current, newMod):
     assert record.parts == []
 
     nrecord = newMod.create_HDPT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -1412,6 +1424,8 @@ def assertHAIR(Current, newMod):
     assert record.flags == 0x2
 
     nrecord = newMod.create_HAIR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -1566,6 +1580,8 @@ def assertEYES(Current, newMod):
     assert record.flags == 0x0
 
     nrecord = newMod.create_EYES()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -2004,6 +2020,8 @@ def assertRACE(Current, newMod):
     assert record.femaleSnam_p == [149, 130]
 
     nrecord = newMod.create_RACE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -3147,6 +3165,8 @@ def assertSOUN(Current, newMod):
     assert record.y == 0
 
     nrecord = newMod.create_SOUN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -3361,6 +3381,8 @@ def assertASPC(Current, newMod):
     assert record.spaceType == 0
 
     nrecord = newMod.create_ASPC()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -3549,6 +3571,8 @@ def assertMGEF(Current, newMod):
     assert record.actorValue == -1
 
     nrecord = newMod.create_MGEF()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -3847,6 +3871,8 @@ def assertSCPT(Current, newMod):
                                  ('FalloutNV.esm', 0x000039), ('FalloutNV.esm', 0x17B7BA)]
 
     nrecord = newMod.create_SCPT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4075,6 +4101,8 @@ def assertLTEX(Current, newMod):
     assert record.grasses == []
 
     nrecord = newMod.create_LTEX()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4203,6 +4231,8 @@ def assertENCH(Current, newMod):
     assert record.effects_list == [(('FalloutNV.esm', 210325), 200L, 0L, 0L, 1L, 16, [(0, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 373062), 0L, 0L, 8L, 1L, -1, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0), (1, 1.0, 438L, 6, None, 0L, 0)]), (('FalloutNV.esm', 210325), 80L, 0L, 0L, 1L, 16, [(1, 1.0, 182L, ('FalloutNV.esm', 683895), None, 0L, 0), (1, 1.0, 182L, 0, None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 85523), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 479745), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 976525), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257830), None, 0L, 0), (1, 1.0, 182L, ('FalloutNV.esm', 1257832), None, 0L, 0)]), (('FalloutNV.esm', 1184088), 0L, 0L, 0L, 1L, -1, [])]
 
     nrecord = newMod.create_ENCH()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4328,6 +4358,8 @@ def assertSPEL(Current, newMod):
                                    (('FalloutNV.esm', 436234), 0L, 0L, 0L, 0L, -1, [])]
 
     nrecord = newMod.create_SPEL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4462,6 +4494,8 @@ def assertACTI(Current, newMod):
     assert record.prompt == None
 
     nrecord = newMod.create_ACTI()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4672,6 +4706,8 @@ def assertTACT(Current, newMod):
     assert record.radioTemplate == ('FalloutNV.esm', 0x172D24)
 
     nrecord = newMod.create_TACT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -4870,6 +4906,8 @@ def assertTERM(Current, newMod):
     assert record.menus_list == [('Parts', 'Opening Message...', 0, ('FalloutNV.esm', 1483307), 0, 0L, 0L, 0L, 0, 1, [], None, [], [], [])]
 
     nrecord = newMod.create_TERM()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -5112,6 +5150,8 @@ def assertARMO(Current, newMod):
     assert record.soundsTemplate == ('FalloutNV.esm', 0x13EB32)
 
     nrecord = newMod.create_ARMO()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -5424,6 +5464,8 @@ def assertBOOK(Current, newMod):
     assert record.weight == 2.0
 
     nrecord = newMod.create_BOOK()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -5659,6 +5701,8 @@ def assertCONT(Current, newMod):
     assert record.loopSound == None
 
     nrecord = newMod.create_CONT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -5879,6 +5923,8 @@ def assertDOOR(Current, newMod):
     assert record.flags == 0x0
 
     nrecord = newMod.create_DOOR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -6078,6 +6124,8 @@ def assertINGR(Current, newMod):
     assert record.effects_list == [(('FalloutNV.esm', 334), 1L, 0L, 0L, 0L, 16, [])]
 
     nrecord = newMod.create_INGR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -6302,6 +6350,8 @@ def assertLIGH(Current, newMod):
     assert record.sound == None
 
     nrecord = newMod.create_LIGH()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -6563,6 +6613,8 @@ def assertMISC(Current, newMod):
     assert record.loopSound == None
 
     nrecord = newMod.create_MISC()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -6786,6 +6838,8 @@ def assertSTAT(Current, newMod):
     assert record.loopSound == None
 
     nrecord = newMod.create_STAT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -6950,6 +7004,8 @@ def assertSCOL(Current, newMod):
     assert record.statics_list == [(('FalloutNV.esm', 1071217), [(-788.367188, -289.021484, -35.041992, -0.0, -0.0, 4.712389, 1.0), (1.726563, -289.444336, -35.317383, -0.0, -0.0, 3.141593, 1.0)]), (('FalloutNV.esm', 1071218), [(-785.609375, -5.044922,-35.024414, 0.0, -0.0, 1.570798, 1.0), (-785.320313, -96.266602, -34.506836, -0.0, -0.0, 1.570798, 1.0), (-694.289063, -288.489258, -35.354492, -0.0, -0.0, 2e-06, 1.0), (-281.320313, -288.266602, -34.506836, -0.0, -0.0, 2e-06, 1.0), (-186.414063, -288.860352, -35.354492, -0.0, -0.0, 2e-06, 1.0)]), (('FalloutNV.esm', 1071213), [(-785.320313, 183.733398, -34.506836, -0.0, -0.0, 1.570797, 1.0), (-470.140625, -288.132813, -33.999023, -0.0, -0.0, 2e-06, 1.0), (0.9375, -195.705078, -35.317383, -0.0, -0.0, 4.71239, 1.0)]), (('FalloutNV.esm', 1074779), [(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0)])]
 
     nrecord = newMod.create_SCOL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7179,6 +7235,8 @@ def assertMSTT(Current, newMod):
     assert record.sound == None
 
     nrecord = newMod.create_MSTT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7358,6 +7416,8 @@ def assertPWAT(Current, newMod):
     assert record.water == ('FalloutNV.esm', 0x176E40)
 
     nrecord = newMod.create_PWAT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7531,6 +7591,8 @@ def assertGRAS(Current, newMod):
     assert record.flags == 0x6
 
     nrecord = newMod.create_GRAS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7726,6 +7788,8 @@ def assertTREE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_TREE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7778,6 +7842,8 @@ def assertFURN(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_FURN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7830,6 +7896,8 @@ def assertWEAP(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_WEAP()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7882,6 +7950,8 @@ def assertAMMO(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_AMMO()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7934,6 +8004,8 @@ def assertNPC_(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_NPC_()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -7986,6 +8058,8 @@ def assertCREA(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CREA()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8038,6 +8112,8 @@ def assertLVLC(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LVLC()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8090,6 +8166,8 @@ def assertLVLN(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LVLN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8142,6 +8220,8 @@ def assertKEYM(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_KEYM()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8194,6 +8274,8 @@ def assertALCH(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ALCH()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8246,6 +8328,8 @@ def assertIDLM(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IDLM()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8298,6 +8382,8 @@ def assertNOTE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_NOTE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8349,6 +8435,8 @@ def assertCOBJ(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_COBJ()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8401,6 +8489,8 @@ def assertPROJ(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PROJ()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8453,6 +8543,8 @@ def assertLVLI(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LVLI()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8505,6 +8597,8 @@ def assertWTHR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_WTHR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8557,6 +8651,8 @@ def assertCLMT(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CLMT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8609,6 +8705,8 @@ def assertREGN(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_REGN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8661,6 +8759,8 @@ def assertNAVI(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_NAVI()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8713,6 +8813,8 @@ def assertCELL(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CELL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8765,6 +8867,8 @@ def assertACHR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ACHR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8822,6 +8926,8 @@ def assertACRE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ACRE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8879,6 +8985,8 @@ def assertREFR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_REFR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8931,6 +9039,8 @@ def assertPGRE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PGRE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -8984,6 +9094,8 @@ def assertPMIS(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PMIS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9037,6 +9149,8 @@ def assertPBEA(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PBEA()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9090,6 +9204,8 @@ def assertPFLA(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PFLA()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9143,6 +9259,8 @@ def assertPCBE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PCBE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9195,6 +9313,8 @@ def assertNAVM(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_NAVM()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9247,6 +9367,8 @@ def assertLAND(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LAND()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9299,6 +9421,8 @@ def assertWRLD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_WRLD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9351,6 +9475,8 @@ def assertDIAL(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_DIAL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9403,6 +9529,8 @@ def assertINFO(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_INFO()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9455,6 +9583,8 @@ def assertQUST(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_QUST()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9507,6 +9637,8 @@ def assertIDLE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IDLE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9559,6 +9691,8 @@ def assertPACK(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PACK()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9611,6 +9745,8 @@ def assertCSTY(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CSTY()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9663,6 +9799,8 @@ def assertLSCR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LSCR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9715,6 +9853,8 @@ def assertANIO(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ANIO()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9767,6 +9907,8 @@ def assertWATR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_WATR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9819,6 +9961,8 @@ def assertEFSH(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_EFSH()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9871,6 +10015,8 @@ def assertEXPL(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_EXPL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9923,6 +10069,8 @@ def assertDEBR(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_DEBR()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -9975,6 +10123,8 @@ def assertIMGS(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IMGS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10027,6 +10177,8 @@ def assertIMAD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IMAD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10079,6 +10231,8 @@ def assertFLST(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_FLST()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10131,6 +10285,8 @@ def assertPERK(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_PERK()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10183,6 +10339,8 @@ def assertBPTD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_BPTD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10235,6 +10393,8 @@ def assertADDN(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ADDN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10287,6 +10447,8 @@ def assertAVIF(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_AVIF()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10339,6 +10501,8 @@ def assertRADS(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_RADS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10391,6 +10555,8 @@ def assertCAMS(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CAMS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10443,6 +10609,8 @@ def assertCPTH(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CPTH()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10495,6 +10663,8 @@ def assertVTYP(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_VTYP()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10547,6 +10717,8 @@ def assertIPCT(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IPCT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10599,6 +10771,8 @@ def assertIPDS(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IPDS()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10651,6 +10825,8 @@ def assertARMA(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ARMA()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10703,6 +10879,8 @@ def assertECZN(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ECZN()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10755,6 +10933,8 @@ def assertMESG(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_MESG()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10807,6 +10987,8 @@ def assertRGDL(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_RGDL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10859,6 +11041,8 @@ def assertDOBJ(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_DOBJ()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10911,6 +11095,8 @@ def assertLGTM(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LGTM()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -10963,6 +11149,8 @@ def assertMUSC(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_MUSC()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11015,6 +11203,8 @@ def assertIMOD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_IMOD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11067,6 +11257,8 @@ def assertREPU(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_REPU()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11119,6 +11311,8 @@ def assertRCPE(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_RCPE()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11171,6 +11365,8 @@ def assertRCCT(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_RCCT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11223,6 +11419,8 @@ def assertCHIP(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CHIP()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11275,6 +11473,8 @@ def assertCSNO(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CSNO()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11327,6 +11527,8 @@ def assertLSCT(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_LSCT()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11379,6 +11581,8 @@ def assertMSET(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_MSET()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11431,6 +11635,8 @@ def assertALOC(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_ALOC()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11483,6 +11689,8 @@ def assertCHAL(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CHAL()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11535,6 +11743,8 @@ def assertAMEF(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_AMEF()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11587,6 +11797,8 @@ def assertCCRD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CCRD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11639,6 +11851,8 @@ def assertCMNY(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CMNY()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11691,6 +11905,8 @@ def assertCDCK(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_CDCK()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11743,6 +11959,8 @@ def assertDEHY(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_DEHY()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11795,6 +12013,8 @@ def assertHUNG(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_HUNG()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]
@@ -11847,6 +12067,8 @@ def assertSLPD(Current, newMod):
     assert record.fid == ('FalloutNV.esm', 0x0)#xx
 
     nrecord = newMod.create_SLPD()
+    d(nrecord)
+
 
     nrecord.flags1 = 10
     nrecord.versionControl1 = [1, 3, 2, 6]

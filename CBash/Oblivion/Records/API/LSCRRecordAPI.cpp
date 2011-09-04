@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\LSCRRecord.h"
 
+namespace Ob
+{
 UINT32 LSCRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -48,13 +50,13 @@ UINT32 LSCRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)LNAM.size();
+                        return (UINT32)LNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= LNAM.size())
+            if(ListIndex >= LNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -81,11 +83,11 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //iconPath
@@ -93,19 +95,19 @@ void * LSCRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //text
             return DESC.value;
         case 7: //locations
-            if(ListIndex >= LNAM.size())
+            if(ListIndex >= LNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //direct
-                    return &LNAM[ListIndex]->value.direct;
+                    return &LNAM.value[ListIndex]->direct;
                 case 2: //indirect
-                    return &LNAM[ListIndex]->value.indirect;
+                    return &LNAM.value[ListIndex]->indirect;
                 case 3: //gridY
-                    return &LNAM[ListIndex]->value.gridY;
+                    return &LNAM.value[ListIndex]->gridY;
                 case 4: //gridX
-                    return &LNAM[ListIndex]->value.gridX;
+                    return &LNAM.value[ListIndex]->gridX;
                 default:
                     return NULL;
                 }
@@ -138,37 +140,26 @@ bool LSCRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //locations
             if(ListFieldID == 0) //locationsSize
                 {
-                ArraySize -= (UINT32)LNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    LNAM.push_back(new ReqSubRecord<LSCRLNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete LNAM.back();
-                    LNAM.pop_back();
-                    ++ArraySize;
-                    }
+                LNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= LNAM.size())
+            if(ListIndex >= LNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //direct
-                    LNAM[ListIndex]->value.direct = *(FORMID *)FieldValue;
+                    LNAM.value[ListIndex]->direct = *(FORMID *)FieldValue;
                     return true;
                 case 2: //indirect
-                    LNAM[ListIndex]->value.indirect = *(FORMID *)FieldValue;
+                    LNAM.value[ListIndex]->indirect = *(FORMID *)FieldValue;
                     return true;
                 case 3: //gridY
-                    LNAM[ListIndex]->value.gridY = *(SINT16 *)FieldValue;
+                    LNAM.value[ListIndex]->gridY = *(SINT16 *)FieldValue;
                     break;
                 case 4: //gridX
-                    LNAM[ListIndex]->value.gridX = *(SINT16 *)FieldValue;
+                    LNAM.value[ListIndex]->gridX = *(SINT16 *)FieldValue;
                     break;
                 default:
                     break;
@@ -204,28 +195,26 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 7: //locations
             if(ListFieldID == 0) //locationsSize
                 {
-                for(UINT32 x = 0; x < (UINT32)LNAM.size(); x++)
-                    delete LNAM[x];
-                LNAM.clear();
+                LNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= LNAM.size())
+            if(ListIndex >= LNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //direct
-                    LNAM[ListIndex]->value.direct = defaultLNAM.direct;
+                    LNAM.value[ListIndex]->direct = defaultLNAM.direct;
                     return;
                 case 2: //indirect
-                    LNAM[ListIndex]->value.indirect = defaultLNAM.indirect;
+                    LNAM.value[ListIndex]->indirect = defaultLNAM.indirect;
                     return;
                 case 3: //gridY
-                    LNAM[ListIndex]->value.gridY = defaultLNAM.gridY;
+                    LNAM.value[ListIndex]->gridY = defaultLNAM.gridY;
                     return;
                 case 4: //gridX
-                    LNAM[ListIndex]->value.gridX = defaultLNAM.gridX;
+                    LNAM.value[ListIndex]->gridX = defaultLNAM.gridX;
                     return;
                 default:
                     return;
@@ -236,3 +225,4 @@ void LSCRRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

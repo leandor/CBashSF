@@ -16,13 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
+namespace Ob
+{
 class PGRDRecord : public Record
     {
     private:
@@ -61,22 +63,26 @@ class PGRDRecord : public Record
 
         struct PGRDPGRL
             {
-            std::vector<UINT32> points;
+            UnorderedPackedArray<UINT32> points;
 
             PGRDPGRL();
             ~PGRDPGRL();
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const PGRDPGRL &other) const;
             bool operator !=(const PGRDPGRL &other) const;
             };
 
     public:
-        ReqSimpleSubRecord<UINT16> DATA;
-        std::vector<GENPGRP> PGRP;
-        RawRecord PGAG;
-        RawRecord PGRR;
-        std::vector<PGRDPGRI> PGRI;
-        std::vector<PGRDPGRL *> PGRL;
+        ReqSimpleSubRecord<UINT16> DATA; //Point Count
+        UnorderedPackedArray<GENPGRP> PGRP; //Points
+        RawRecord PGAG; //Unknown
+        RawRecord PGRR; //UnorderedPackedArray<PGRDPGRR> ? //Point-to-Point Connections
+        UnorderedPackedArray<PGRDPGRI> PGRI; //Inter-cell Connections
+        UnorderedSparseArray<PGRDPGRL *> PGRL; //Point-to-Reference Mappings
+
+        Record *Parent;
 
         PGRDRecord(unsigned char *_recData=NULL);
         PGRDRecord(PGRDRecord *srcRecord);
@@ -91,12 +97,15 @@ class PGRDRecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const PGRDRecord &other) const;
         bool operator !=(const PGRDRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

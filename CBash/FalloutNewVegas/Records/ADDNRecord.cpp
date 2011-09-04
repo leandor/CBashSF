@@ -43,10 +43,10 @@ ADDNRecord::ADDNRecord(ADDNRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -96,65 +96,66 @@ SINT32 ADDNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  ADDN: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -201,5 +202,10 @@ bool ADDNRecord::operator ==(const ADDNRecord &other) const
 bool ADDNRecord::operator !=(const ADDNRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ADDNRecord::equals(const Record *other) const
+    {
+    return *this == *(ADDNRecord *)other;
     }
 }

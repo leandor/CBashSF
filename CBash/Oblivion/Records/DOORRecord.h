@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class DOORRecord : public Record
+namespace Ob
+{
+class DOORRecord : public Record //Door
     {
     private:
         enum flagsFlags
@@ -36,15 +37,15 @@ class DOORRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        OptSimpleSubRecord<FORMID> SCRI;
-        OptSimpleSubRecord<FORMID> SNAM;
-        OptSimpleSubRecord<FORMID> ANAM;
-        OptSimpleSubRecord<FORMID> BNAM;
-        ReqSimpleSubRecord<UINT8> FNAM;
-        std::vector<FORMID> TNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> SNAM; //Sound - Open
+        OptSimpleSubRecord<FORMID> ANAM; //Sound - Close
+        OptSimpleSubRecord<FORMID> BNAM; //Sound - Looping
+        ReqSimpleSubRecord<UINT8> FNAM; //Flags
+        UnorderedSparseArray<FORMID> TNAM; //destinations
 
         DOORRecord(unsigned char *_recData=NULL);
         DOORRecord(DOORRecord *srcRecord);
@@ -71,10 +72,12 @@ class DOORRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const DOORRecord &other) const;
         bool operator !=(const DOORRecord &other) const;
+        bool equals(Record *other);
     };
+}

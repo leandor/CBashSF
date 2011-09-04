@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 
@@ -258,69 +258,6 @@ bool FNVSCHR::operator !=(const FNVSCHR &other) const
     return !(*this == other);
     }
 
-FNVMINSCRIPT::FNVMINSCRIPT()
-    {
-    //
-    }
-
-FNVMINSCRIPT::~FNVMINSCRIPT()
-    {
-    for(UINT32 x = 0; x < SCR_.size(); x++)
-        delete SCR_[x];
-    }
-
-bool FNVMINSCRIPT::IsScriptEnabled()
-    {
-    return (SCHR.value.flags & fIsEnabled) != 0;
-    }
-
-void FNVMINSCRIPT::IsScriptEnabled(bool value)
-    {
-    SCHR.value.flags = value ? (SCHR.value.flags | fIsEnabled) : (SCHR.value.flags & ~fIsEnabled);
-    }
-
-bool FNVMINSCRIPT::IsScriptFlagMask(UINT16 Mask, bool Exact)
-    {
-    return Exact ? (SCHR.value.flags & Mask) == Mask : (SCHR.value.flags & Mask) != 0;
-    }
-
-void FNVMINSCRIPT::SetScriptFlagMask(UINT16 Mask)
-    {
-    SCHR.value.flags = Mask;
-    }
-
-bool FNVMINSCRIPT::IsType(UINT16 Type)
-    {
-    return SCHR.value.scriptType == Type;
-    }
-
-void FNVMINSCRIPT::SetType(UINT16 Type)
-    {
-    SCHR.value.scriptType = Type;
-    }
-
-bool FNVMINSCRIPT::operator ==(const FNVMINSCRIPT &other) const
-    {
-    if(SCHR == other.SCHR &&
-        SCDA == other.SCDA &&
-        SCTX.equalsi(other.SCTX) &&
-        SCR_.size() == other.SCR_.size())
-        {
-        //Record order matters on references, so equality testing is easy
-        for(UINT32 x = 0; x < SCR_.size(); ++x)
-            if(*SCR_[x] != *other.SCR_[x])
-                return false;
-        return true;
-        }
-
-    return false;
-    }
-
-bool FNVMINSCRIPT::operator !=(const FNVMINSCRIPT &other) const
-    {
-    return !(*this == other);
-    }
-
 GENEFIT::GENEFIT():
     name(0),
     magnitude(0),
@@ -471,20 +408,6 @@ bool OBMEEffect::operator ==(const OBMEEffect &other) const
     }
 
 bool OBMEEffect::operator !=(const OBMEEffect &other) const
-    {
-    return !(*this == other);
-    }
-
-bool GENEffect::operator ==(const GENEffect &other) const
-    {
-    return (EFID == other.EFID &&
-            EFIT == other.EFIT &&
-            SCIT == other.SCIT &&
-            FULL.equals(other.FULL) &&
-            OBME == other.OBME);
-    }
-
-bool GENEffect::operator !=(const GENEffect &other) const
     {
     return !(*this == other);
     }
@@ -1112,6 +1035,108 @@ void GENEffect::OBME_SetFlagMask(UINT32 Mask)
     OBME->EFIX->efixFlags = Mask;
     }
 
+bool GENEffect::VisitFormIDs(FormIDOp &op)
+    {
+    if(OBME.IsLoaded())
+        {
+        if(EFID.value >= 0x80000000)
+            op.AcceptMGEF(EFID.value);
+
+        if(EFIT.value.name >= 0x80000000)
+            op.AcceptMGEF(EFIT.value.name);
+
+        switch(OBME->EFME.value.efitParamInfo)
+            {
+            case 1: //It's a regular formID, so nothing fancy.
+                op.Accept(EFIT.value.actorValue);
+                break;
+            case 2: //It's a mgefCode, and not a formID at all.
+                //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                if(EFIT.value.actorValue >= 0x80000000)
+                    op.AcceptMGEF(EFIT.value.actorValue);
+                break;
+            case 3: //It's an actor value, and not a formID at all.
+                //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                //It's resolved just like a formID
+                if(EFIT.value.actorValue >= 0x800)
+                    op.Accept(EFIT.value.actorValue);
+                break;
+            default: //It's not a formID, mgefCode, or fancied up actor value
+                //so do nothing
+                break;
+            }
+
+        if(SCIT.IsLoaded())
+            {
+            if(SCIT->visual >= 0x80000000)
+                op.AcceptMGEF(SCIT->visual);
+
+            switch(OBME->EFME.value.efixParamInfo)
+                {
+                case 1: //It's a regular formID, so nothing fancy.
+                    op.Accept(SCIT->script);
+                    break;
+                case 2: //It's a mgefCode, and not a formID at all.
+                    //Conditional resolution of mgefCode's based on JRoush's OBME mod
+                    //It's resolved just like a formID, except it uses the lower byte instead of the upper
+                    if(SCIT->script >= 0x80000000)
+                        op.AcceptMGEF(SCIT->script);
+                    break;
+                case 3: //It's an actor value, and not a formID at all.
+                    //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
+                    //It's resolved just like a formID
+                    if(SCIT->script >= 0x800)
+                        op.Accept(SCIT->script);
+                    break;
+                default: //It's not a formID, mgefCode, or fancied up actor value
+                    //so do nothing
+                    break;
+                }
+            }
+
+        if(OBME->EFIX.IsLoaded())
+            if(OBME->EFIX->resistAV >= 0x800)
+                op.Accept(OBME->EFIX->resistAV);
+        }
+    else
+        {
+        if(SCIT.IsLoaded())
+            op.Accept(SCIT->script);
+        }
+    return op.Stop();
+    }
+
+void GENEffect::Write(FileWriter &writer)
+    {
+    if(OBME.IsLoaded())
+        OBME->WRITE(EFME);
+    WRITE(EFID);
+    WRITE(EFIT);
+    if(SCIT.IsLoaded() || FULL.IsLoaded())
+        writer.record_write_subrecord(REV32(SCIT), SCIT.value, sizeof(GENSCIT));
+    WRITE(FULL);
+    if(OBME.IsLoaded())
+        {
+        OBME->WRITE(EFII);
+        OBME->WRITE(EFIX);
+        }
+    }
+
+bool GENEffect::operator ==(const GENEffect &other) const
+    {
+    return (EFID == other.EFID &&
+            EFIT == other.EFIT &&
+            SCIT == other.SCIT &&
+            FULL.equals(other.FULL) &&
+            OBME == other.OBME);
+    }
+
+bool GENEffect::operator !=(const GENEffect &other) const
+    {
+    return !(*this == other);
+    }
+
 GENENIT::GENENIT():
     value(0),
     flags(0)
@@ -1183,8 +1208,8 @@ bool GENCNTO::operator !=(const GENCNTO &other) const
 
 GENACBS::GENACBS():
     flags(0),
-    baseSpell(0),
-    fatigue(0),
+    baseSpell(50),
+    fatigue(50),
     barterGold(0),
     level(1),
     calcMin(0),
@@ -1272,7 +1297,7 @@ bool GENAIDT::operator !=(const GENAIDT &other) const
 
 GENCTDA::GENCTDA():
     operType(0),
-    compValue(0.0f),
+    compValue(0),
     ifunc(0),
     param1(0),
     param2(0)
@@ -1284,20 +1309,6 @@ GENCTDA::GENCTDA():
 GENCTDA::~GENCTDA()
     {
     //
-    }
-
-bool GENCTDA::operator ==(const GENCTDA &other) const
-    {
-    return (operType == other.operType &&
-            AlmostEqual(compValue,other.compValue,2) &&
-            ifunc == other.ifunc &&
-            param1 == other.param1 &&
-            param2 == other.param2);
-    }
-
-bool GENCTDA::operator !=(const GENCTDA &other) const
-    {
-    return !(*this == other);
     }
 
 bool GENCTDA::IsEqual()
@@ -1457,7 +1468,7 @@ void GENCTDA::IsRunOnTarget(bool value)
     operType = value ? (operType | fIsRunOnTarget) : (operType & ~fIsRunOnTarget);
     }
 
-bool GENCTDA::IsUseGlobal()
+bool GENCTDA::IsUseGlobal() const
     {
     return ((operType & 0x0F) & fIsUseGlobal) != 0;
     }
@@ -1477,6 +1488,64 @@ void GENCTDA::SetFlagMask(UINT8 Mask)
     Mask &= 0x0F;
     operType &= 0xF0;
     operType |= Mask;
+    }
+
+bool GENCTDA::VisitFormIDs(FormIDOp &op)
+    {
+    //if(ifunc == 214)
+    //    printer("%08X uses HasMagicEffect\n", formID);
+
+    Function_Arguments_Iterator curCTDAFunction;
+
+    if(IsUseGlobal())
+        op.Accept(compValue);
+
+    curCTDAFunction = Function_Arguments.find(ifunc);
+    if(curCTDAFunction != Function_Arguments.end())
+        {
+        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+        if(CTDAFunction.first == eFORMID)
+            op.Accept(param1);
+        if(CTDAFunction.second == eFORMID)
+            op.Accept(param2);
+        }
+    else
+        printer("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
+
+    return op.Stop();
+    }
+
+void GENCTDA::Write(FileWriter &writer)
+    {
+    Function_Arguments_Iterator curCTDAFunction;
+    curCTDAFunction = Function_Arguments.find(ifunc);
+
+    if(curCTDAFunction != Function_Arguments.end())
+        {
+        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+        if(CTDAFunction.first == eNONE)
+            param1 = 0;
+        if(CTDAFunction.second == eNONE)
+            param2 = 0;
+        }
+    else
+        printer("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
+
+    writer.record_write_subrecord(REV32(CTDA), this, sizeof(GENCTDA));
+    }
+
+bool GENCTDA::operator ==(const GENCTDA &other) const
+    {
+    return (operType == other.operType &&
+            (IsUseGlobal() ? compValue == other.compValue : AlmostEqual(*(FLOAT32 *)&compValue,*(FLOAT32 *)&other.compValue,2)) &&
+            ifunc == other.ifunc &&
+            param1 == other.param1 &&
+            param2 == other.param2);
+    }
+
+bool GENCTDA::operator !=(const GENCTDA &other) const
+    {
+    return !(*this == other);
     }
 
 GENCLR::GENCLR(UINT8 _red, UINT8 _green, UINT8 _blue, UINT8 _unused1):
@@ -1505,6 +1574,16 @@ bool GENCLR::operator !=(const GENCLR &other) const
     return !(*this == other);
     }
 
+void GENMODEL::Write(FileWriter &writer)
+    {
+    if(MODL.IsLoaded())
+        {
+        WRITE(MODL);
+        WRITE(MODB);
+        WRITE(MODT);
+        }
+    }
+
 bool GENMODEL::operator ==(const GENMODEL &other) const
     {
     return (MODB == other.MODB &&
@@ -1517,6 +1596,16 @@ bool GENMODEL::operator !=(const GENMODEL &other) const
     return !(*this == other);
     }
 
+void GENXOWN::Write(FileWriter &writer)
+    {
+    if(XOWN.IsLoaded())
+        {
+        WRITE(XOWN);
+        WRITE(XRNK);
+        WRITE(XGLB);
+        }
+    }
+
 bool GENXOWN::operator ==(const GENXOWN &other) const
     {
     return (XOWN == other.XOWN &&
@@ -1527,6 +1616,15 @@ bool GENXOWN::operator ==(const GENXOWN &other) const
 bool GENXOWN::operator !=(const GENXOWN &other) const
     {
     return !(*this == other);
+    }
+
+void GENXPCI::Write(FileWriter &writer)
+    {
+    if(XPCI.IsLoaded())
+        {
+        WRITE(XPCI);
+        WRITEREQ(FULL);
+        }
     }
 
 bool GENXPCI::operator ==(const GENXPCI &other) const
@@ -1606,12 +1704,12 @@ GENPOSDATA::~GENPOSDATA()
 
 bool GENPOSDATA::operator ==(const GENPOSDATA &other) const
     {
-    return (AlmostEqual(posX,other.posX,2) &&
-            AlmostEqual(posY,other.posY,2) &&
-            AlmostEqual(posZ,other.posZ,2) &&
-            AlmostEqual(rotX,other.rotX,2) &&
-            AlmostEqual(rotY,other.rotY,2) &&
-            AlmostEqual(rotZ,other.rotZ,2));
+    return (AlmostEqual(posX,other.posX,0) &&
+            AlmostEqual(posY,other.posY,0) &&
+            AlmostEqual(posZ,other.posZ,0) &&
+            AlmostEqual(rotX,other.rotX,0) &&
+            AlmostEqual(rotY,other.rotY,0) &&
+            AlmostEqual(rotZ,other.rotZ,0));
     }
 
 bool GENPOSDATA::operator !=(const GENPOSDATA &other) const
@@ -2312,33 +2410,33 @@ void FNVAlternateTextures::resize(UINT32 newSize)
         MODS[size++] = new FNVMODS;
     }
 
-bool FNVAlternateTextures::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool FNVAlternateTextures::Read(unsigned char *&buffer, const UINT32 &subSize)
     {
     if(MODS.size() != 0)
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
     UINT32 numElements = 0;
     UINT32 sizeString = 0;
-    memcpy(&numElements, buffer + curPos, 4);
-    curPos += 4;
+    numElements = *(UINT32 *)buffer;
+    buffer += 4;
     for(UINT32 x = 0; x < numElements; ++x)
         {
         MODS.push_back(new FNVMODS);
-        memcpy(&sizeString, buffer + curPos, 4);
-        curPos += 4;
+        sizeString = *(UINT32 *)buffer;
+        buffer += 4;
         if(sizeString > 0)
             {
             MODS.back()->name = new char[sizeString + 1];
             MODS.back()->name[sizeString] = 0x00;
-            memcpy(MODS.back()->name, buffer + curPos, sizeString);
-            curPos += sizeString;
+            memcpy(MODS.back()->name, buffer, sizeString);
+            buffer += sizeString;
             }
-        memcpy(&MODS.back()->texture, buffer + curPos, 4);
-        curPos += 4;
-        memcpy(&MODS.back()->index, buffer + curPos, 4);
-        curPos += 4;
+        MODS.back()->texture = *(FORMID *)buffer;
+        buffer += 4;
+        MODS.back()->index = *(SINT32 *)buffer;
+        buffer += 4;
         }
     return true;
     }
@@ -2605,6 +2703,22 @@ bool FNVWORLDMODEL::operator !=(const FNVWORLDMODEL &other) const
     return !(*this == other);
     }
 
+FNVCTDA::FNVCTDA():
+    operType(0),
+    compValue(0),
+    ifunc(5), //GetLocked, for its eNone, eNone param types...so that new conditions don't try to resolve either param1 or param2 until ifunc is set
+    param1(0),
+    param2(0),
+    runOnType(0),
+    reference(0)
+    {
+    memset(&unused1, 0x00, 3);
+    }
+
+FNVCTDA::~FNVCTDA()
+    {
+    //
+    }
 
 bool FNVCTDA::VisitFormIDs(FormIDOp &op)
     {
@@ -2640,21 +2754,23 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
     return op.Stop();
     }
 
-FNVCTDA::FNVCTDA():
-    operType(0),
-    compValue(0),
-    ifunc(5), //GetLocked, for its eNone, eNone param types...so that new conditions don't try to resolve either param1 or param2 until ifunc is set
-    param1(0),
-    param2(0),
-    runOnType(0),
-    reference(0)
+void FNVCTDA::Write(FileWriter &writer)
     {
-    memset(&unused1, 0x00, 3);
-    }
+    Function_Arguments_Iterator curCTDAFunction;
+    curCTDAFunction = FNVFunction_Arguments.find(ifunc);
 
-FNVCTDA::~FNVCTDA()
-    {
-    //
+    if(curCTDAFunction != FNVFunction_Arguments.end())
+        {
+        const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+        if(CTDAFunction.first == eNONE)
+            param1 = 0;
+        if(CTDAFunction.second == eNONE)
+            param2 = 0;
+        }
+    else
+        printer("Warning: CTDA uses an unknown function (%d)!\n", ifunc);
+
+    writer.record_write_subrecord(REV32(CTDA), this, sizeof(FNVCTDA));
     }
 
 bool FNVCTDA::operator ==(const FNVCTDA &other) const
@@ -2953,7 +3069,7 @@ void FNVEffect::Write(FileWriter &writer)
     {
     WRITE(EFID);
     WRITE(EFIT);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     }
 
 bool FNVEffect::IsRangeSelf()
@@ -3878,15 +3994,15 @@ bool FNVXLOC::operator !=(const FNVXLOC &other) const
     }
 
 FNVAIDT::FNVAIDT():
-    aggression(0),
-    confidence(0),
-    energyLevel(0),
-    responsibility(0),
-    mood(0),
+    aggression(eUnaggressive),
+    confidence(eAverage),
+    energyLevel(50),
+    responsibility(50),
+    mood(eNeutral),
     flags(0),
     trainSkill(0),
     trainLevel(0),
-    assistance(0),
+    assistance(eHelpsNobody),
     aggroFlags(0),
     aggroRadius(0)
     {

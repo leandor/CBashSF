@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CREARecord : public Record
+namespace Ob
+{
+class CREARecord : public Record //Creature
     {
     private:
         struct CREADATA
@@ -42,11 +44,11 @@ class CREARecord : public Record
             bool operator !=(const CREADATA &other) const;
             };
 
-        struct CREASound
+        struct CREASound //Sound
             {
-            ReqSimpleSubRecord<UINT32> CSDT;
-            ReqSimpleSubRecord<FORMID> CSDI;
-            ReqSimpleSubRecord<UINT8> CSDC;
+            ReqSimpleSubRecord<UINT32> CSDT; //Sound Type
+            ReqSimpleSubRecord<FORMID> CSDI; //Sound
+            ReqSimpleSubRecord<UINT8>  CSDC; //Sound Chance
 
             enum eSoundType
                 {
@@ -84,6 +86,8 @@ class CREARecord : public Record
             void   IsWeapon(bool value);
             bool   IsType(UINT32 Type);
             void   SetType(UINT32 Type);
+
+            void   Write(FileWriter &writer);
 
             bool   operator ==(const CREASound &other) const;
             bool   operator !=(const CREASound &other) const;
@@ -150,30 +154,30 @@ class CREARecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        std::vector<FORMID> SPLO;
-        UnorderedPackedStrings NIFZ;
-        RawRecord NIFT;
-        ReqSubRecord<GENACBS> ACBS;
-        std::vector<ReqSubRecord<GENSNAM> *> SNAM;
-        OptSimpleSubRecord<FORMID> INAM;
-        OptSimpleSubRecord<FORMID> SCRI;
-        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
-        ReqSubRecord<GENAIDT> AIDT;
-        std::vector<FORMID> PKID;
-        UnorderedPackedStrings KFFZ;
-        ReqSubRecord<CREADATA> DATA;
-        ReqSimpleSubRecord<UINT8> RNAM;
-        OptSimpleSubRecord<FORMID> ZNAM;
-        ReqSimpleFloatSubRecord<flt_0> TNAM;
-        ReqSimpleFloatSubRecord<flt_0> BNAM;
-        ReqSimpleFloatSubRecord<flt_0> WNAM;
-        OptSimpleSubRecord<FORMID> CSCR;
-        StringRecord NAM0;
-        StringRecord NAM1;
-        std::vector<CREASound *> Sounds;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        UnorderedSparseArray<FORMID> SPLO; //Spells
+        UnorderedPackedStrings NIFZ; //Model List
+        RawRecord NIFT; //Texture Files Hashes
+        ReqSubRecord<GENACBS> ACBS; //Configuration
+        UnorderedSparseArray<GENSNAM *> SNAM; //Factions
+        OptSimpleSubRecord<FORMID> INAM; //Death item
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        UnorderedSparseArray<GENCNTO *> CNTO;  //Items
+        ReqSubRecord<GENAIDT> AIDT; //AI Data
+        UnorderedSparseArray<FORMID> PKID; //Packages
+        UnorderedPackedStrings KFFZ; //Animations
+        ReqSubRecord<CREADATA> DATA; //Data
+        ReqSimpleSubRecord<UINT8, 32> RNAM; //Attack reach
+        OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
+        ReqSimpleFloatSubRecord<flt_0> TNAM; //Turning Speed
+        ReqSimpleFloatSubRecord<flt_1> BNAM; //Base Scale
+        ReqSimpleFloatSubRecord<flt_3> WNAM; //Foot Weight
+        OptSimpleSubRecord<FORMID> CSCR; //Sound Template
+        StringRecord NAM0; //Blood Spray filename
+        StringRecord NAM1; //Blood Decal filename
+        UnorderedSparseArray<CREASound *> Sounds; //Sounds
 
         CREARecord(unsigned char *_recData=NULL);
         CREARecord(CREARecord *srcRecord);
@@ -305,10 +309,12 @@ class CREARecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CREARecord &other) const;
         bool operator !=(const CREARecord &other) const;
+        bool equals(Record *other);
     };
+}

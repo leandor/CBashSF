@@ -43,10 +43,10 @@ ALOCRecord::ALOCRecord(ALOCRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -112,81 +112,82 @@ SINT32 ALOCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM1):
-                NAM1.Read(buffer, subSize, curPos);
+                NAM1.Read(buffer, subSize);
                 break;
             case REV32(NAM2):
-                NAM2.Read(buffer, subSize, curPos);
+                NAM2.Read(buffer, subSize);
                 break;
             case REV32(NAM3):
-                NAM3.Read(buffer, subSize, curPos);
+                NAM3.Read(buffer, subSize);
                 break;
             case REV32(NAM4):
-                NAM4.Read(buffer, subSize, curPos);
+                NAM4.Read(buffer, subSize);
                 break;
             case REV32(NAM5):
-                NAM5.Read(buffer, subSize, curPos);
+                NAM5.Read(buffer, subSize);
                 break;
             case REV32(NAM6):
-                NAM6.Read(buffer, subSize, curPos);
+                NAM6.Read(buffer, subSize);
                 break;
             case REV32(NAM7):
-                NAM7.Read(buffer, subSize, curPos);
+                NAM7.Read(buffer, subSize);
                 break;
             case REV32(HNAM):
-                HNAM.Read(buffer, subSize, curPos);
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(YNAM):
-                YNAM.Read(buffer, subSize, curPos);
+                YNAM.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             case REV32(GNAM):
-                GNAM.Read(buffer, subSize, curPos);
+                GNAM.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  ALOC: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -264,5 +265,10 @@ bool ALOCRecord::operator ==(const ALOCRecord &other) const
 bool ALOCRecord::operator !=(const ALOCRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ALOCRecord::equals(const Record *other) const
+    {
+    return *this == *(ALOCRecord *)other;
     }
 }

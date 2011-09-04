@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -86,62 +86,62 @@ GPL License and Copyright Notice ============================================
 class TES4File : public ModFile
     {
     public:
-        GRUPRecords<GMSTRecord, REV32(GMST), 5> GMST;
-        GRUPRecords<GLOBRecord, REV32(GLOB), 5> GLOB;
-        GRUPRecords<CLASRecord, REV32(CLAS), 5> CLAS;
-        GRUPRecords<FACTRecord, REV32(FACT), 5> FACT;
-        GRUPRecords<HAIRRecord, REV32(HAIR), 5> HAIR;
-        GRUPRecords<EYESRecord, REV32(EYES), 5> EYES;
-        GRUPRecords<RACERecord, REV32(RACE), 5> RACE;
-        GRUPRecords<SOUNRecord, REV32(SOUN), 5> SOUN;
-        GRUPRecords<SKILRecord, REV32(SKIL), 5> SKIL;
-        GRUPRecords<MGEFRecord, REV32(MGEF), 5> MGEF;
-        GRUPRecords<SCPTRecord, REV32(SCPT), 5> SCPT;
-        GRUPRecords<LTEXRecord, REV32(LTEX), 5> LTEX;
-        GRUPRecords<ENCHRecord, REV32(ENCH), 5> ENCH;
-        GRUPRecords<SPELRecord, REV32(SPEL), 5> SPEL;
-        GRUPRecords<BSGNRecord, REV32(BSGN), 5> BSGN;
-        GRUPRecords<ACTIRecord, REV32(ACTI), 5> ACTI;
-        GRUPRecords<APPARecord, REV32(APPA), 5> APPA;
-        GRUPRecords<ARMORecord, REV32(ARMO), 5> ARMO;
-        GRUPRecords<BOOKRecord, REV32(BOOK), 5> BOOK;
-        GRUPRecords<CLOTRecord, REV32(CLOT), 5> CLOT;
-        GRUPRecords<CONTRecord, REV32(CONT), 5> CONT;
-        GRUPRecords<DOORRecord, REV32(DOOR), 5> DOOR;
-        GRUPRecords<INGRRecord, REV32(INGR), 5> INGR;
-        GRUPRecords<LIGHRecord, REV32(LIGH), 5> LIGH;
-        GRUPRecords<MISCRecord, REV32(MISC), 5> MISC;
-        GRUPRecords<STATRecord, REV32(STAT), 5> STAT;
-        GRUPRecords<GRASRecord, REV32(GRAS), 5> GRAS;
-        GRUPRecords<TREERecord, REV32(TREE), 5> TREE;
-        GRUPRecords<FLORRecord, REV32(FLOR), 5> FLOR;
-        GRUPRecords<FURNRecord, REV32(FURN), 5> FURN;
-        GRUPRecords<WEAPRecord, REV32(WEAP), 5> WEAP;
-        GRUPRecords<AMMORecord, REV32(AMMO), 5> AMMO;
-        GRUPRecords<NPC_Record, REV32(NPC_), 5> NPC_;
-        GRUPRecords<CREARecord, REV32(CREA), 5> CREA;
-        GRUPRecords<LVLCRecord, REV32(LVLC), 5> LVLC;
-        GRUPRecords<SLGMRecord, REV32(SLGM), 5> SLGM;
-        GRUPRecords<KEYMRecord, REV32(KEYM), 5> KEYM;
-        GRUPRecords<ALCHRecord, REV32(ALCH), 5> ALCH;
-        GRUPRecords<SBSPRecord, REV32(SBSP), 5> SBSP;
-        GRUPRecords<SGSTRecord, REV32(SGST), 5> SGST;
-        GRUPRecords<LVLIRecord, REV32(LVLI), 5> LVLI;
-        GRUPRecords<WTHRRecord, REV32(WTHR), 5> WTHR;
-        GRUPRecords<CLMTRecord, REV32(CLMT), 5> CLMT;
-        GRUPRecords<REGNRecord, REV32(REGN), 5> REGN;
-        GRUPRecords<CELLRecord, REV32(CELL), 5> CELL;
-        GRUPRecords<WRLDRecord, REV32(WRLD), 5> WRLD;
-        GRUPRecords<DIALRecord, REV32(DIAL), 5> DIAL;
-        GRUPRecords<QUSTRecord, REV32(QUST), 5> QUST;
-        GRUPRecords<IDLERecord, REV32(IDLE), 5> IDLE;
-        GRUPRecords<PACKRecord, REV32(PACK), 5> PACK;
-        GRUPRecords<CSTYRecord, REV32(CSTY), 5> CSTY;
-        GRUPRecords<LSCRRecord, REV32(LSCR), 5> LSCR;
-        GRUPRecords<LVSPRecord, REV32(LVSP), 5> LVSP;
-        GRUPRecords<ANIORecord, REV32(ANIO), 5> ANIO;
-        GRUPRecords<WATRRecord, REV32(WATR), 5> WATR;
-        GRUPRecords<EFSHRecord, REV32(EFSH), 5> EFSH;
+        GRUPRecords<Ob::GMSTRecord, REV32(GMST), 5, true> GMST;
+        GRUPRecords<Ob::GLOBRecord, REV32(GLOB), 5> GLOB;
+        GRUPRecords<Ob::CLASRecord, REV32(CLAS), 5> CLAS;
+        GRUPRecords<Ob::FACTRecord, REV32(FACT), 5> FACT;
+        GRUPRecords<Ob::HAIRRecord, REV32(HAIR), 5> HAIR;
+        GRUPRecords<Ob::EYESRecord, REV32(EYES), 5> EYES;
+        GRUPRecords<Ob::RACERecord, REV32(RACE), 5> RACE;
+        GRUPRecords<Ob::SOUNRecord, REV32(SOUN), 5> SOUN;
+        GRUPRecords<Ob::SKILRecord, REV32(SKIL), 5> SKIL;
+        GRUPRecords<Ob::MGEFRecord, REV32(MGEF), 5, true> MGEF;
+        GRUPRecords<Ob::SCPTRecord, REV32(SCPT), 5> SCPT;
+        GRUPRecords<Ob::LTEXRecord, REV32(LTEX), 5> LTEX;
+        GRUPRecords<Ob::ENCHRecord, REV32(ENCH), 5> ENCH;
+        GRUPRecords<Ob::SPELRecord, REV32(SPEL), 5> SPEL;
+        GRUPRecords<Ob::BSGNRecord, REV32(BSGN), 5> BSGN;
+        GRUPRecords<Ob::ACTIRecord, REV32(ACTI), 5> ACTI;
+        GRUPRecords<Ob::APPARecord, REV32(APPA), 5> APPA;
+        GRUPRecords<Ob::ARMORecord, REV32(ARMO), 5> ARMO;
+        GRUPRecords<Ob::BOOKRecord, REV32(BOOK), 5> BOOK;
+        GRUPRecords<Ob::CLOTRecord, REV32(CLOT), 5> CLOT;
+        GRUPRecords<Ob::CONTRecord, REV32(CONT), 5> CONT;
+        GRUPRecords<Ob::DOORRecord, REV32(DOOR), 5> DOOR;
+        GRUPRecords<Ob::INGRRecord, REV32(INGR), 5> INGR;
+        GRUPRecords<Ob::LIGHRecord, REV32(LIGH), 5> LIGH;
+        GRUPRecords<Ob::MISCRecord, REV32(MISC), 5> MISC;
+        GRUPRecords<Ob::STATRecord, REV32(STAT), 5> STAT;
+        GRUPRecords<Ob::GRASRecord, REV32(GRAS), 5> GRAS;
+        GRUPRecords<Ob::TREERecord, REV32(TREE), 5> TREE;
+        GRUPRecords<Ob::FLORRecord, REV32(FLOR), 5> FLOR;
+        GRUPRecords<Ob::FURNRecord, REV32(FURN), 5> FURN;
+        GRUPRecords<Ob::WEAPRecord, REV32(WEAP), 5> WEAP;
+        GRUPRecords<Ob::AMMORecord, REV32(AMMO), 5> AMMO;
+        GRUPRecords<Ob::NPC_Record, REV32(NPC_), 5> NPC_;
+        GRUPRecords<Ob::CREARecord, REV32(CREA), 5> CREA;
+        GRUPRecords<Ob::LVLCRecord, REV32(LVLC), 5> LVLC;
+        GRUPRecords<Ob::SLGMRecord, REV32(SLGM), 5> SLGM;
+        GRUPRecords<Ob::KEYMRecord, REV32(KEYM), 5> KEYM;
+        GRUPRecords<Ob::ALCHRecord, REV32(ALCH), 5> ALCH;
+        GRUPRecords<Ob::SBSPRecord, REV32(SBSP), 5> SBSP;
+        GRUPRecords<Ob::SGSTRecord, REV32(SGST), 5> SGST;
+        GRUPRecords<Ob::LVLIRecord, REV32(LVLI), 5> LVLI;
+        GRUPRecords<Ob::WTHRRecord, REV32(WTHR), 5> WTHR;
+        GRUPRecords<Ob::CLMTRecord, REV32(CLMT), 5> CLMT;
+        GRUPRecords<Ob::REGNRecord, REV32(REGN), 5> REGN;
+        GRUPRecords<Ob::CELLRecord, REV32(CELL), 5> CELL;
+        GRUPRecords<Ob::WRLDRecord, REV32(WRLD), 5> WRLD;
+        GRUPRecords<Ob::DIALRecord, REV32(DIAL), 5> DIAL;
+        GRUPRecords<Ob::QUSTRecord, REV32(QUST), 5> QUST;
+        GRUPRecords<Ob::IDLERecord, REV32(IDLE), 5> IDLE;
+        GRUPRecords<Ob::PACKRecord, REV32(PACK), 5> PACK;
+        GRUPRecords<Ob::CSTYRecord, REV32(CSTY), 5> CSTY;
+        GRUPRecords<Ob::LSCRRecord, REV32(LSCR), 5> LSCR;
+        GRUPRecords<Ob::LVSPRecord, REV32(LVSP), 5> LVSP;
+        GRUPRecords<Ob::ANIORecord, REV32(ANIO), 5> ANIO;
+        GRUPRecords<Ob::WATRRecord, REV32(WATR), 5> WATR;
+        GRUPRecords<Ob::EFSHRecord, REV32(EFSH), 5> EFSH;
 
         TES4File(STRING FileName, STRING ModName, const UINT32 _flags);
         ~TES4File();
@@ -150,10 +150,10 @@ class TES4File : public ModFile
         SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords);
         UINT32   GetNumRecords(const UINT32 &RecordType);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
-        SINT32   DeleteRecord(Record *&curRecord, Record *&ParentRecord);
+        SINT32   DeleteRecord(Record *&curRecord, RecordOp &deindexer);
         SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders);
-        SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod);
+        SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer);
 
         void     VisitAllRecords(RecordOp &op);
-        void     VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit=false);
+        void     VisitRecords(const UINT32 &RecordType, RecordOp &op);
     };

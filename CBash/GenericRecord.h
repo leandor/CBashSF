@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -58,52 +58,85 @@ class RecordReader : public RecordOp
         bool Accept(Record *&curRecord);
     };
 
+struct RecordHeader
+    {
+    UINT32 type;
+    UINT32 flags;
+    FORMID formID;
+    UINT32 flagsUnk;
+    unsigned char *data;
+    };
+
+struct FNVRecordHeader
+    {
+    UINT32 type;
+    UINT32 flags;
+    FORMID formID;
+    UINT32 flagsUnk;
+    UINT16 formVersion; //FNV
+    UINT8  versionControl2[2]; //FNV
+    unsigned char *data;
+    };
+
 class RecordProcessor
     {
     public:
-        FileReader &reader;
-        FormIDHandlerClass &FormIDHandler;
+        const ModFlags &Flags;
         boost::unordered_set<UINT32> &UsedFormIDs;
+        boost::unordered_set<UINT32> &NewTypes;
+        FormIDResolver expander;
 
+        UINT8 ExpandedIndex;
         bool IsSkipNewRecords;
         bool IsTrackNewTypes;
         bool IsAddMasters;
 
-        FormIDResolver expander;
-
-        RecordOp &parser;
-        std::vector<Record *> &DeletedRecords;
-        const ModFlags &Flags;
-
-        RecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords);
+        RecordProcessor(FormIDHandlerClass &_FormIDHandler, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs);
         ~RecordProcessor();
 
-        bool operator()(Record *&curRecord);
-        void IsEmpty(bool value);
-    };
+        template<bool IsKeyedByEditorID, typename U>
+        typename boost::enable_if_c<!IsKeyedByEditorID,bool>::type Accept(U &header)
+            {
+            expander.Accept(header.formID);
 
-class FNVRecordProcessor
-    {
-    public:
-        FileReader &reader;
-        FormIDHandlerClass &FormIDHandler;
-        boost::unordered_set<UINT32> &UsedFormIDs;
+            if(IsSkipNewRecords && ((header.formID >> 24) >= ExpandedIndex))
+                return false;
 
-        bool IsSkipNewRecords;
-        bool IsTrackNewTypes;
-        bool IsAddMasters;
+            //Make sure the formID is unique within the mod
+            if(UsedFormIDs.insert(header.formID).second == false)
+                {
+                if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
+                    printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", header.formID);
+                return false;
+                }
 
-        FormIDResolver expander;
+            if(IsTrackNewTypes && ((header.formID >> 24) >= ExpandedIndex))
+                NewTypes.insert(header.type);
+            return true;
+            }
 
-        RecordOp &parser;
-        std::vector<Record *> &DeletedRecords;
-        const ModFlags &Flags;
+        template<bool IsKeyedByEditorID, typename U>
+        typename boost::enable_if_c<IsKeyedByEditorID,bool>::type Accept(U &header)
+            {
+            expander.Accept(header.formID);
 
-        FNVRecordProcessor(FileReader &reader, FormIDHandlerClass &_FormIDHandler, RecordOp &parser, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs, std::vector<Record *> &DeletedRecords);
-        ~FNVRecordProcessor();
+            //EditorID keyed records (GMST, MGEF) don't use their formID, so there is little point in ensuring its uniqueness
+            //Make sure the formID is unique within the mod
+            //if(UsedFormIDs.insert(header.formID).second == false)
+            //    {
+            //    if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
+            //        printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", header.formID);
+            //    return false;
+            //    }
 
-        bool operator()(Record *&curRecord);
-        void IsEmpty(bool value);
+            //EditorID keyed records (GMST, MGEF) aren't normally createable, so they aren't really "new"
+            //The exception being that MGEF's can be created if JRoush's OBME plugin is used
+            //There's no good way to check for them with this available info (needs access to the MGEF's EDID chunk)
+            //if(IsSkipNewRecords && ((header.formID >> 24) >= ExpandedIndex))
+            //    return false;
+
+            return true;
+            }
     };
 
 class Record
@@ -129,12 +162,17 @@ class Record
 
         enum cBashRecordFlags
             {
-            _fIsLoaded = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
+            _fIsLoaded  = 0x80000000, //Not an actual flag. Used only by CBash internally. Won't be written.
+            _fIsChanged = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
             };
 
-    public:
+        #ifdef CBASH_X64_COMPATIBILITY
+            bool is_changed;
+        #endif
+
         unsigned char *recData;
 
+    public:
         UINT32 flags;
         FORMID formID;
         UINT32 flagsUnk; //Version Control Info 1, FNV
@@ -144,29 +182,35 @@ class Record
         Record(unsigned char *_recData=NULL);
         virtual ~Record();
 
+        unsigned char * GetData();
+        void SetData(unsigned char *_recData);
+
         virtual SINT32 Unload() abstract {};
         virtual UINT32 GetType() abstract {};
         virtual STRING GetStrType() abstract {};
         virtual SINT32 WriteRecord(FileWriter &writer) abstract {};
-        virtual SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize) abstract {};
+        virtual SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false) abstract {};
 
         virtual UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         virtual void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
         virtual bool SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
         virtual void DeleteField(DEFAULTED_FIELD_IDENTIFIERS);
 
-        virtual UINT32 GetParentType();
+        virtual Record * GetParent();
 
         virtual bool IsKeyedByEditorID();
         virtual STRING GetEditorIDKey();
         virtual bool SetEditorIDKey(STRING EditorID);
 
-        virtual bool VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         virtual bool VisitFormIDs(FormIDOp &op);
 
         virtual bool Read();
         bool IsValid(FormIDResolver &expander);
         virtual UINT32 Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders);
+        bool master_equality(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
+        bool shallow_equals(Record *other);
+		virtual bool equals(Record *other) abstract {};
+		virtual bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
 
         bool IsDeleted() const;
         void IsDeleted(bool value);
@@ -210,7 +254,12 @@ class Record
 
         bool IsLoaded();
         void IsLoaded(bool value);
-        bool IsChanged(bool value=false);
+
+        bool IsChanged();
+        void IsChanged(bool value);
+
+        UINT32* cleaned_flag1();
+        UINT32* cleaned_flag2();
     };
 
 class FNVRecord : public Record

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
@@ -577,6 +577,8 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return FORMID_FIELD;
         case 43: //challengeType
             return UINT32_TYPE_FIELD;
+        case 44: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -588,11 +590,11 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = &flagsUnk;
+            *FieldValues = cleaned_flag2();
             return NULL;
         case 5: //formVersion
             return &formVersion;
@@ -787,6 +789,8 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &KNAM.value;
         case 43: //challengeType
             return &DNAM.value;
+        case 44: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -836,7 +840,7 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             PNAM.value = *(FORMID *)FieldValue;
             return true;
         case 13: //addTopics
-            NAME.value.resize(ArraySize);
+            NAME.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 NAME.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
@@ -931,7 +935,7 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 3: //compValue
-                    CTDA.value[ListIndex]->compValue = *(FORMID *)FieldValue;
+                    CTDA.value[ListIndex]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
                     return true;
                 case 4: //ifunc
                     CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
@@ -953,17 +957,17 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 }
             break;
         case 16: //choices
-            TCLT.value.resize(ArraySize);
+            TCLT.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 TCLT.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 17: //linksFrom
-            TCLF.value.resize(ArraySize);
+            TCLF.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 TCLF.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 18: //unknown
-            TCFU.value.resize(ArraySize);
+            TCFU.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
                 TCFU.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;

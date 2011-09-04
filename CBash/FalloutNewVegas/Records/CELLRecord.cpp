@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -72,10 +72,10 @@ CELLRecord::CELLRecord(CELLRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -124,139 +124,6 @@ CELLRecord::~CELLRecord()
     for(UINT32 x = 0; x < NAVM.size(); ++x)
         delete NAVM[x];
     delete LAND;
-    }
-
-bool CELLRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-
-    if(RecordType == NULL || RecordType == REV32(ACHR))
-        for(UINT32 x = 0; x < ACHR.size();++x)
-            {
-            stop = op.Accept(ACHR[x]);
-            if(ACHR[x] == NULL)
-                {
-                ACHR.erase(ACHR.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(ACRE))
-        for(UINT32 x = 0; x < ACRE.size();++x)
-            {
-            stop = op.Accept(ACRE[x]);
-            if(ACRE[x] == NULL)
-                {
-                ACRE.erase(ACRE.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(REFR))
-        for(UINT32 x = 0; x < REFR.size();++x)
-            {
-            stop = op.Accept(REFR[x]);
-            if(REFR[x] == NULL)
-                {
-                REFR.erase(REFR.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(PGRE))
-        for(UINT32 x = 0; x < PGRE.size();++x)
-            {
-            stop = op.Accept(PGRE[x]);
-            if(PGRE[x] == NULL)
-                {
-                PGRE.erase(PGRE.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(PMIS))
-        for(UINT32 x = 0; x < PMIS.size();++x)
-            {
-            stop = op.Accept(PMIS[x]);
-            if(PMIS[x] == NULL)
-                {
-                PMIS.erase(PMIS.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(PBEA))
-        for(UINT32 x = 0; x < PBEA.size();++x)
-            {
-            stop = op.Accept(PBEA[x]);
-            if(PBEA[x] == NULL)
-                {
-                PBEA.erase(PBEA.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(PFLA))
-        for(UINT32 x = 0; x < PFLA.size();++x)
-            {
-            stop = op.Accept(PFLA[x]);
-            if(PFLA[x] == NULL)
-                {
-                PFLA.erase(PFLA.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(PCBE))
-        for(UINT32 x = 0; x < PCBE.size();++x)
-            {
-            stop = op.Accept(PCBE[x]);
-            if(PCBE[x] == NULL)
-                {
-                PCBE.erase(PCBE.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(NAVM))
-        for(UINT32 x = 0; x < NAVM.size();++x)
-            {
-            stop = op.Accept(NAVM[x]);
-            if(NAVM[x] == NULL)
-                {
-                NAVM.erase(NAVM.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    if(RecordType == NULL || RecordType == REV32(LAND))
-        {
-        if(LAND != NULL)
-            {
-            if(op.Accept(LAND))
-                return true;
-            }
-        }
-
-    return op.Stop();
     }
 
 bool CELLRecord::VisitFormIDs(FormIDOp &op)
@@ -553,110 +420,109 @@ STRING CELLRecord::GetStrType()
     return "CELL";
     }
 
-UINT32 CELLRecord::GetParentType()
+Record * CELLRecord::GetParent()
     {
-    if(Parent != NULL)
-        return Parent->GetType();
-    return 0;
+    return Parent;
     }
 
-SINT32 CELLRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CELLRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(XCLC):
-                XCLC.Read(buffer, subSize, curPos);
+                XCLC.Read(buffer, subSize);
                 break;
             case REV32(XCLL):
-                XCLL.Read(buffer, subSize, curPos);
+                XCLL.Read(buffer, subSize);
                 break;
             case REV32(IMPS):
-                IMPS.Read(buffer, subSize, curPos);
+                IMPS.Read(buffer, subSize);
                 break;
             case REV32(IMPF):
-                IMPF.Read(buffer, subSize, curPos);
+                IMPF.Read(buffer, subSize);
                 break;
             case REV32(LTMP):
-                LTMP.Read(buffer, subSize, curPos);
+                LTMP.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             case REV32(XCLW):
-                XCLW.Read(buffer, subSize, curPos);
+                XCLW.Read(buffer, subSize);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XCLR):
-                XCLR.Read(buffer, subSize, curPos);
+                XCLR.Read(buffer, subSize);
                 break;
             case REV32(XCIM):
-                XCIM.Read(buffer, subSize, curPos);
+                XCIM.Read(buffer, subSize);
                 break;
             case REV32(XCET):
-                XCET.Read(buffer, subSize, curPos);
+                XCET.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XEZN):
-                XEZN.Read(buffer, subSize, curPos);
+                XEZN.Read(buffer, subSize);
                 break;
             case REV32(XCCM):
-                XCCM.Read(buffer, subSize, curPos);
+                XCCM.Read(buffer, subSize);
                 break;
             case REV32(XCWT):
-                XCWT.Read(buffer, subSize, curPos);
+                XCWT.Read(buffer, subSize);
                 break;
             case REV32(XOWN):
                 Ownership.Load();
-                Ownership->XOWN.Read(buffer, subSize, curPos);
+                Ownership->XOWN.Read(buffer, subSize);
                 break;
             case REV32(XRNK):
                 Ownership.Load();
-                Ownership->XRNK.Read(buffer, subSize, curPos);
+                Ownership->XRNK.Read(buffer, subSize);
                 break;
             case REV32(XCAS):
-                XCAS.Read(buffer, subSize, curPos);
+                XCAS.Read(buffer, subSize);
                 break;
             case REV32(XCMT):
-                XCMT.Read(buffer, subSize, curPos);
+                XCMT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XCMO):
-                XCMO.Read(buffer, subSize, curPos);
+                XCMO.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CELL: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -695,7 +561,7 @@ SINT32 CELLRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(FULL);
-    WRITE(DATA);
+    //DATA.Unload(); //need to keep IsInterior around
     WRITE(XCLC);
     WRITE(XCLL);
     WRITE(IMPS);
@@ -751,5 +617,88 @@ bool CELLRecord::operator ==(const CELLRecord &other) const
 bool CELLRecord::operator !=(const CELLRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool CELLRecord::equals(Record *other)
+    {
+    return *this == *(CELLRecord *)other;
+    }
+
+bool CELLRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+    const CELLRecord *master_cell = (CELLRecord *)master;
+    //Check to make sure the CELLs are attached at the same spot
+    if(!IsInterior())
+        if(Parent->formID != master_cell->Parent->formID)
+            return false;
+
+    if(ACHR.size() > master_cell->ACHR.size())
+        return false;
+    if(ACRE.size() > master_cell->ACRE.size())
+        return false;
+    if(REFR.size() > master_cell->REFR.size())
+        return false;
+    if(PGRE.size() > master_cell->PGRE.size())
+        return false;
+    if(PMIS.size() > master_cell->PMIS.size())
+        return false;
+    if(PBEA.size() > master_cell->PBEA.size())
+        return false;
+    if(PFLA.size() > master_cell->PFLA.size())
+        return false;
+    if(PCBE.size() > master_cell->PCBE.size())
+        return false;
+    if(NAVM.size() > master_cell->NAVM.size())
+        return false;
+
+    if(LAND != NULL)
+        {
+        if(master_cell->LAND != NULL)
+            {
+            if(identical_records.count(LAND) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    for(UINT32 ListIndex = 0; ListIndex < ACHR.size(); ++ListIndex)
+        if(identical_records.count(ACHR[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < ACRE.size(); ++ListIndex)
+        if(identical_records.count(ACRE[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < REFR.size(); ++ListIndex)
+        if(identical_records.count(REFR[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < PGRE.size(); ++ListIndex)
+        if(identical_records.count(PGRE[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < PMIS.size(); ++ListIndex)
+        if(identical_records.count(PMIS[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < PBEA.size(); ++ListIndex)
+        if(identical_records.count(PBEA[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < PFLA.size(); ++ListIndex)
+        if(identical_records.count(PFLA[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < PCBE.size(); ++ListIndex)
+        if(identical_records.count(PCBE[ListIndex]) == 0)
+                return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < NAVM.size(); ++ListIndex)
+        if(identical_records.count(NAVM[ListIndex]) == 0)
+                return false;
+    return true;
     }
 }

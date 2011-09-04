@@ -16,15 +16,18 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "PGRDRecord.h"
+#include "CELLRecord.h"
 
+namespace Ob
+{
 PGRDRecord::PGRDPGRI::PGRDPGRI():point(0), x(0.0f), y(0.0f), z(0.0f)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 PGRDRecord::PGRDPGRI::~PGRDPGRI()
@@ -48,7 +51,7 @@ bool PGRDRecord::PGRDPGRI::operator !=(const PGRDPGRI &other) const
 PGRDRecord::PGRDPGRL::PGRDPGRL()
     {
     //First element must be allocated since it's where the reference is stored
-    points.push_back(0);
+    points.value.push_back(0);
     }
 
 PGRDRecord::PGRDPGRL::~PGRDPGRL()
@@ -56,19 +59,14 @@ PGRDRecord::PGRDPGRL::~PGRDPGRL()
     //
     }
 
+void PGRDRecord::PGRDPGRL::Write(FileWriter &writer)
+    {
+    WRITEAS(points,PGRL);
+    }
+
 bool PGRDRecord::PGRDPGRL::operator ==(const PGRDPGRL &other) const
     {
-    if(points.size() == other.points.size())
-        {
-        //Not sure if record order matters on points, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < points.size(); ++x)
-            if(points[x] != other.points[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return points == other.points;
     }
 
 bool PGRDRecord::PGRDPGRL::operator !=(const PGRDPGRL &other) const
@@ -77,7 +75,8 @@ bool PGRDRecord::PGRDPGRL::operator !=(const PGRDPGRL &other) const
     }
 
 PGRDRecord::PGRDRecord(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //PGRD records are normally compressed due to size
     if(_recData == NULL)
@@ -85,7 +84,8 @@ PGRDRecord::PGRDRecord(unsigned char *_recData):
     }
 
 PGRDRecord::PGRDRecord(PGRDRecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -94,32 +94,24 @@ PGRDRecord::PGRDRecord(PGRDRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
-
 
     DATA = srcRecord->DATA;
     PGRP = srcRecord->PGRP;
     PGAG = srcRecord->PGAG;
     PGRR = srcRecord->PGRR;
     PGRI = srcRecord->PGRI;
-
-    PGRL.resize(srcRecord->PGRL.size());
-    for(UINT32 x = 0; x < srcRecord->PGRL.size(); x++)
-        {
-        PGRL[x] = new PGRDPGRL;
-        *PGRL[x] = *srcRecord->PGRL[x];
-        }
+    PGRL = srcRecord->PGRL;
     }
 
 PGRDRecord::~PGRDRecord()
     {
-    for(UINT32 x = 0; x < PGRL.size(); x++)
-        delete PGRL[x];
+    //Parent is a shared pointer that's deleted when the CELL group is deleted
     }
 
 bool PGRDRecord::VisitFormIDs(FormIDOp &op)
@@ -127,8 +119,8 @@ bool PGRDRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < PGRL.size(); x++)
-        op.Accept(PGRL[x]->points[0]);
+    for(UINT32 x = 0; x < PGRL.value.size(); x++)
+        op.Accept(PGRL.value[x]->points.value[0]);
 
     return op.Stop();
     }
@@ -143,107 +135,60 @@ STRING PGRDRecord::GetStrType()
     return "PGRD";
     }
 
-UINT32 PGRDRecord::GetParentType()
+Record * PGRDRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PGRDRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    PGRDPGRL *curPGRL = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(PGRP):
-                if(subSize % sizeof(GENPGRP) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    PGRP.resize(subSize / sizeof(GENPGRP));
-                    _readBuffer(&PGRP[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized PGRP size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                PGRP.Read(buffer, subSize);
                 break;
             case REV32(PGAG):
-                PGAG.Read(buffer, subSize, curPos);
+                PGAG.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(PGRR):
-                PGRR.Read(buffer, subSize, curPos);
+                PGRR.Read(buffer, subSize, CompressedOnDisk);
                 break;
-                //if(subSize % sizeof(PGRDPGRR) == 0)
-                //    {
-                //    if(subSize == 0)
-                //        break;
-                //    PGRR.resize(subSize / sizeof(PGRDPGRR));
-                //    _readBuffer(&PGRR[0], buffer, subSize, curPos);
-                //    }
-                //else
-                //    {
-                //    printer("  Unrecognized PGRR size: %i\n", subSize);
-                //    curPos += subSize;
-                //    }
-                //break;
             case REV32(PGRI):
-                if(subSize % sizeof(PGRDPGRI) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    PGRI.resize(subSize / sizeof(PGRDPGRI));
-                    _readBuffer(&PGRI[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized PGRI size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                PGRI.Read(buffer, subSize);
                 break;
             case REV32(PGRL):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    curPGRL = new PGRDPGRL;
-                    curPGRL->points.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&curPGRL->points[0], buffer, subSize, curPos);
-                    PGRL.push_back(curPGRL);
-                    }
-                else
-                    {
-                    printer("  Unrecognized PGRL size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                PGRL.value.push_back(new PGRDPGRL);
+                PGRL.value.back()->points.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  PGRD: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -255,68 +200,64 @@ SINT32 PGRDRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     DATA.Unload();
-    PGRP.clear();
+    PGRP.Unload();
     PGAG.Unload();
     PGRR.Unload();
-    PGRI.clear();
-    for(UINT32 x = 0; x < PGRL.size(); x++)
-        delete PGRL[x];
-    PGRL.clear();
+    PGRI.Unload();
+    PGRL.Unload();
     return 1;
     }
 
 SINT32 PGRDRecord::WriteRecord(FileWriter &writer)
     {
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(PGRP.size())
-        writer.record_write_subrecord(REV32(PGRP), &PGRP[0], sizeof(GENPGRP) * (UINT32)PGRP.size());
-    if(PGAG.IsLoaded())
-        writer.record_write_subrecord(REV32(PGAG), PGAG.value, PGAG.GetSize());
-    if(PGRR.IsLoaded())
-        writer.record_write_subrecord(REV32(PGRR), PGRR.value, PGRR.GetSize());
-    //if(PGRR.size())
-    //    writer.record_write_subrecord(REV32(PGRR), &PGRR[0], sizeof(PGRDPGRR) * (UINT32)PGRR.size());
-    if(PGRI.size())
-        writer.record_write_subrecord(REV32(PGRI), &PGRI[0], sizeof(PGRDPGRI) * (UINT32)PGRI.size());
-    for(UINT32 x = 0; x < PGRL.size(); ++x)
-        writer.record_write_subrecord(REV32(PGRL), &PGRL[x]->points[0], (sizeof(UINT32) * (UINT32)PGRL[x]->points.size()));
+    WRITE(DATA);
+    WRITE(PGRP);
+    WRITE(PGAG);
+    WRITE(PGRR);
+    WRITE(PGRI);
+    PGRL.Write(writer);
     return -1;
     }
 
 bool PGRDRecord::operator ==(const PGRDRecord &other) const
     {
-    if(DATA == other.DATA &&
-        PGAG == other.PGAG &&
-        PGRR == other.PGRR &&
-        PGRP.size() == other.PGRP.size() &&
-        PGRI.size() == other.PGRI.size() &&
-        PGRL.size() == other.PGRL.size())
-        {
-        //Not sure if record order matters on pgrp, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < PGRP.size(); ++x)
-            if(PGRP[x] != other.PGRP[x])
-                return false;
-
-        //Not sure if record order matters on pgri, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < PGRI.size(); ++x)
-            if(PGRI[x] != other.PGRI[x])
-                return false;
-
-        //Not sure if record order matters on pgrl, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < PGRL.size(); ++x)
-            if(*PGRL[x] != *other.PGRL[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            PGAG == other.PGAG &&
+            PGRR == other.PGRR &&
+            PGRP == other.PGRP &&
+            PGRL == other.PGRL);
     }
 
 bool PGRDRecord::operator !=(const PGRDRecord &other) const
     {
     return !(*this == other);
     }
+
+bool PGRDRecord::equals(Record *other)
+    {
+    return *this == *(PGRDRecord *)other;
+    }
+
+bool PGRDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    PGRDRecord *master_pgrd = (PGRDRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_pgrd->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_pgrd->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_pgrd->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_pgrd->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_pgrd->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_pgrd->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
+    }
+}

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "GRASRecord.h"
 
+namespace Ob
+{
 GRASRecord::GRASDATA::GRASDATA():
     density(0),
     minSlope(0),
@@ -35,8 +37,8 @@ GRASRecord::GRASDATA::GRASDATA():
     wavePeriod(0.0f),
     flags(0)
     {
-    memset(&unused2, 0xCD, 2);
-    memset(&unused3, 0xCD, 3);
+    memset(&unused2[0], 0xCD, sizeof(unused2));
+    memset(&unused3[0], 0xCD, sizeof(unused3));
     }
 
 GRASRecord::GRASDATA::~GRASDATA()
@@ -79,21 +81,15 @@ GRASRecord::GRASRecord(GRASRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     DATA = srcRecord->DATA;
     return;
     }
@@ -153,53 +149,54 @@ STRING GRASRecord::GetStrType()
     return "GRAS";
     }
 
-SINT32 GRASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 GRASRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  GRAS: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -218,18 +215,9 @@ SINT32 GRASRecord::Unload()
 
 SINT32 GRASRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    MODL.Write(writer);
+    WRITE(DATA);
     return -1;
     }
 
@@ -244,3 +232,9 @@ bool GRASRecord::operator !=(const GRASRecord &other) const
     {
     return !(*this == other);
     }
+
+bool GRASRecord::equals(Record *other)
+    {
+    return *this == *(GRASRecord *)other;
+    }
+}

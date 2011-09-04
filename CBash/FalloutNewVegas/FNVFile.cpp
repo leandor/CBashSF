@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 // FNVFile.cpp
@@ -40,31 +40,40 @@ SINT32 FNVFile::LoadTES4()
     if(TES4.IsLoaded() || !Open())
         {
         if(!TES4.IsLoaded() && !Open())
-            printer("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", reader.getModName());
+            printer("FNVFile::LoadTES4: Error - Unable to load the TES4 record for mod \"%s\". The mod is not open for reading.\n", ModName);
         return 0;
         }
+    buffer_position = buffer_start + 4;
 
-    reader.skip(4);
     UINT32 recSize = 0;
-    reader.read(&recSize, 4);
-    reader.read(&TES4.flags, 4);
-    reader.read(&TES4.formID, 4);
-    reader.read(&TES4.flagsUnk, 4);
-    reader.read(&TES4.formVersion, 2);
-    reader.read(&TES4.versionControl2[0], 2);
+    recSize = *(UINT32 *)buffer_position;
+    buffer_position += 4;
+
+    TES4.flags = *(UINT32 *)buffer_position;
+    buffer_position += 4;
+
+    TES4.formID = *(FORMID *)buffer_position;
+    buffer_position += 4;
+
+    TES4.flagsUnk = *(UINT32 *)buffer_position;
+    buffer_position += 4;
+
+    TES4.formVersion = *(UINT16 *)buffer_position;
+    buffer_position += 2;
+
+    TES4.versionControl2[0] = *(UINT8 *)buffer_position;
+    buffer_position++;
+
+    TES4.versionControl2[1] = *(UINT8 *)buffer_position;
+    buffer_position++;
+
     if(TES4.IsLoaded())
         printer("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
 
-    //Normally would read the record with the read method
-    //However, that requires recData to be set on the record
-    // and that can only be set by the constructor
-    //TES4 is constructed when the modfile is created
-    // so the info isn't available then.
-    //Must make sure this mimics the read method as needed
-    TES4.ParseRecord(reader.tell(), recSize);
-    TES4.IsLoaded(true);
-    TES4.IsChanged(true);
-    reader.skip(recSize);
+    TES4.SetData(buffer_position);
+    TES4.Read();
+    TES4.IsChanged(true); //prevents the record from ever being unloaded
+    buffer_position += recSize;
     return 1;
     }
 
@@ -174,654 +183,453 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
         eIgSLPD = REV32(SLPD) | 0x00001000
         };
 
-    if(Flags.IsIgnoreExisting || !reader.IsOpen() || Flags.LoadedGRUPs)
+    if(Flags.IsIgnoreExisting || !file_map.is_open() || Flags.LoadedGRUPs)
         {
         if(!Flags.IsIgnoreExisting)
             {
-            if(!reader.IsOpen())
-                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", reader.getModName());
+            if(!file_map.is_open())
+                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ModName);
             else
-                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", reader.getModName());
+                printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is already loaded.\n", ModName);
             }
         return 0;
         }
 
     Flags.LoadedGRUPs = true;
+    unsigned char *group_buffer_end = NULL;
     UINT32 GRUPSize;
     UINT32 GRUPLabel;
     boost::unordered_set<UINT32> UsedFormIDs;
 
-    RecordReader fullReader(FormIDHandler, Expanders);
-    RecordOp skipReader;
+    RecordReader read_parser(FormIDHandler, Expanders);
+    RecordOp skip_parser;
+    RecordOp &parser = Flags.IsFullLoad ? read_parser : skip_parser;
 
-    FNVRecordProcessor processor_min(reader, FormIDHandler, skipReader, Flags, UsedFormIDs, DeletedRecords);
-    FNVRecordProcessor processor_full(reader, FormIDHandler, fullReader, Flags, UsedFormIDs, DeletedRecords);
+    RecordProcessor processor(FormIDHandler, Flags, UsedFormIDs);
 
-    FNVRecordProcessor &processor = Flags.IsFullLoad ? processor_full : processor_min;
+    while(buffer_position < buffer_end){
+        buffer_position += 4; //Skip "GRUP"
+        GRUPSize = *(UINT32 *)buffer_position;
+        group_buffer_end = buffer_position + GRUPSize - 4;
+        buffer_position += 4;
+        GRUPLabel = *(UINT32 *)buffer_position;
+        buffer_position += 8; //Skip type (tops will all == 0)
 
-    while(!reader.eof()){
-        reader.skip(4); //Skip "GRUP"
-        reader.read(&GRUPSize, 4);
-        reader.read(&GRUPLabel, 4);
-        reader.skip(4); //Skip type (tops will all == 0)
         //printer("%c%c%c%c\n", ((char *)&GRUPLabel)[0], ((char *)&GRUPLabel)[1], ((char *)&GRUPLabel)[2], ((char *)&GRUPLabel)[3]);
         switch(GRUPLabel)
             {
             case eIgGMST:
             case REV32(GMST):
-                reader.read(&GMST.stamp, 4);
-                reader.read(&GMST.unknown, 4);
-                GMST.Skim(reader, GRUPSize, processor_full, indexer);
+                GMST.Read(buffer_start, buffer_position, group_buffer_end, indexer, read_parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgTXST: //Same as normal
             case REV32(TXST):
-                reader.read(&TXST.stamp, 4);
-                reader.read(&TXST.unknown, 4);
-                TXST.Skim(reader, GRUPSize, processor, indexer);
+                TXST.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgMICN:
             case REV32(MICN):
-                reader.read(&MICN.stamp, 4);
-                reader.read(&MICN.unknown, 4);
-                MICN.Skim(reader, GRUPSize, processor, indexer);
+                MICN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgGLOB:
             case REV32(GLOB):
-                reader.read(&GLOB.stamp, 4);
-                reader.read(&GLOB.unknown, 4);
-                GLOB.Skim(reader, GRUPSize, processor, indexer);
+                GLOB.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgCLAS:
             case REV32(CLAS):
-                reader.read(&CLAS.stamp, 4);
-                reader.read(&CLAS.unknown, 4);
-                CLAS.Skim(reader, GRUPSize, processor, indexer);
+                CLAS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgFACT:
             case REV32(FACT):
-                reader.read(&FACT.stamp, 4);
-                reader.read(&FACT.unknown, 4);
-                FACT.Skim(reader, GRUPSize, processor, indexer);
+                FACT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgHDPT:
             case REV32(HDPT):
-                reader.read(&HDPT.stamp, 4);
-                reader.read(&HDPT.unknown, 4);
-                HDPT.Skim(reader, GRUPSize, processor, indexer);
+                HDPT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgHAIR:
             case REV32(HAIR):
-                reader.read(&HAIR.stamp, 4);
-                reader.read(&HAIR.unknown, 4);
-                HAIR.Skim(reader, GRUPSize, processor, indexer);
+                HAIR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgEYES: //Same as normal
             case REV32(EYES):
-                reader.read(&EYES.stamp, 4);
-                reader.read(&EYES.unknown, 4);
-                EYES.Skim(reader, GRUPSize, processor, indexer);
+                EYES.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgRACE:
             case REV32(RACE):
-                reader.read(&RACE.stamp, 4);
-                reader.read(&RACE.unknown, 4);
-                RACE.Skim(reader, GRUPSize, processor, indexer);
+                RACE.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgSOUN:
             case REV32(SOUN):
-                reader.read(&SOUN.stamp, 4);
-                reader.read(&SOUN.unknown, 4);
-                SOUN.Skim(reader, GRUPSize, processor, indexer);
+                SOUN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgASPC:  //Same as normal
             case REV32(ASPC):
-                reader.read(&ASPC.stamp, 4);
-                reader.read(&ASPC.unknown, 4);
-                ASPC.Skim(reader, GRUPSize, processor, indexer);
+                ASPC.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgMGEF:
             case REV32(MGEF):
-                reader.read(&MGEF.stamp, 4);
-                reader.read(&MGEF.unknown, 4);
-                MGEF.Skim(reader, GRUPSize, processor, indexer);
+                MGEF.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgSCPT:
             case REV32(SCPT):
-                reader.read(&SCPT.stamp, 4);
-                reader.read(&SCPT.unknown, 4);
-                SCPT.Skim(reader, GRUPSize, processor, indexer);
+                SCPT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgLTEX: //Same as normal
             case REV32(LTEX):
-                reader.read(&LTEX.stamp, 4);
-                reader.read(&LTEX.unknown, 4);
-                LTEX.Skim(reader, GRUPSize, processor, indexer);
+                LTEX.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgENCH:
             case REV32(ENCH):
-                reader.read(&ENCH.stamp, 4);
-                reader.read(&ENCH.unknown, 4);
-                ENCH.Skim(reader, GRUPSize, processor, indexer);
+                ENCH.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgSPEL: //Same as normal
             case REV32(SPEL):
-                reader.read(&SPEL.stamp, 4);
-                reader.read(&SPEL.unknown, 4);
-                SPEL.Skim(reader, GRUPSize, processor, indexer);
+                SPEL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgACTI:
             case REV32(ACTI):
-                reader.read(&ACTI.stamp, 4);
-                reader.read(&ACTI.unknown, 4);
-                ACTI.Skim(reader, GRUPSize, processor, indexer);
+                ACTI.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgTACT:
             case REV32(TACT):
-                reader.read(&TACT.stamp, 4);
-                reader.read(&TACT.unknown, 4);
-                TACT.Skim(reader, GRUPSize, processor, indexer);
+                TACT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgTERM:
             case REV32(TERM):
-                reader.read(&TERM.stamp, 4);
-                reader.read(&TERM.unknown, 4);
-                TERM.Skim(reader, GRUPSize, processor, indexer);
+                TERM.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgARMO: //Same as normal
             case REV32(ARMO):
-                reader.read(&ARMO.stamp, 4);
-                reader.read(&ARMO.unknown, 4);
-                ARMO.Skim(reader, GRUPSize, processor, indexer);
+                ARMO.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgBOOK:
             case REV32(BOOK):
-                reader.read(&BOOK.stamp, 4);
-                reader.read(&BOOK.unknown, 4);
-                BOOK.Skim(reader, GRUPSize, processor, indexer);
+                BOOK.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgCONT:
             case REV32(CONT):
-                reader.read(&CONT.stamp, 4);
-                reader.read(&CONT.unknown, 4);
-                CONT.Skim(reader, GRUPSize, processor, indexer);
+                CONT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgDOOR:
             case REV32(DOOR):
-                reader.read(&DOOR.stamp, 4);
-                reader.read(&DOOR.unknown, 4);
-                DOOR.Skim(reader, GRUPSize, processor, indexer);
+                DOOR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgINGR:
             case REV32(INGR):
-                reader.read(&INGR.stamp, 4);
-                reader.read(&INGR.unknown, 4);
-                INGR.Skim(reader, GRUPSize, processor, indexer);
+                INGR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgLIGH:
             case REV32(LIGH):
-                reader.read(&LIGH.stamp, 4);
-                reader.read(&LIGH.unknown, 4);
-                LIGH.Skim(reader, GRUPSize, processor, indexer);
+                LIGH.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgMISC:
             case REV32(MISC):
-                reader.read(&MISC.stamp, 4);
-                reader.read(&MISC.unknown, 4);
-                MISC.Skim(reader, GRUPSize, processor, indexer);
+                MISC.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgSTAT: //Same as normal
             case REV32(STAT):
-                reader.read(&STAT.stamp, 4);
-                reader.read(&STAT.unknown, 4);
-                STAT.Skim(reader, GRUPSize, processor, indexer);
+                STAT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgSCOL:
             case REV32(SCOL):
-                reader.read(&SCOL.stamp, 4);
-                reader.read(&SCOL.unknown, 4);
-                SCOL.Skim(reader, GRUPSize, processor, indexer);
+                SCOL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgMSTT: //Same as normal
             case REV32(MSTT):
-                reader.read(&MSTT.stamp, 4);
-                reader.read(&MSTT.unknown, 4);
-                MSTT.Skim(reader, GRUPSize, processor, indexer);
+                MSTT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgPWAT: //Same as normal
             case REV32(PWAT):
-                reader.read(&PWAT.stamp, 4);
-                reader.read(&PWAT.unknown, 4);
-                PWAT.Skim(reader, GRUPSize, processor, indexer);
+                PWAT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgGRAS: //Same as normal
             case REV32(GRAS):
-                reader.read(&GRAS.stamp, 4);
-                reader.read(&GRAS.unknown, 4);
-                GRAS.Skim(reader, GRUPSize, processor, indexer);
+                GRAS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgTREE: //Same as normal
             case REV32(TREE):
-                reader.read(&TREE.stamp, 4);
-                reader.read(&TREE.unknown, 4);
-                TREE.Skim(reader, GRUPSize, processor, indexer);
+                TREE.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgFURN: //Same as normal
             case REV32(FURN):
-                reader.read(&FURN.stamp, 4);
-                reader.read(&FURN.unknown, 4);
-                FURN.Skim(reader, GRUPSize, processor, indexer);
+                FURN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgWEAP:
             case REV32(WEAP):
-                reader.read(&WEAP.stamp, 4);
-                reader.read(&WEAP.unknown, 4);
-                WEAP.Skim(reader, GRUPSize, processor, indexer);
+                WEAP.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgAMMO:
             case REV32(AMMO):
-                reader.read(&AMMO.stamp, 4);
-                reader.read(&AMMO.unknown, 4);
-                AMMO.Skim(reader, GRUPSize, processor, indexer);
+                AMMO.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgNPC_: //Same as normal
             case REV32(NPC_):
-                reader.read(&NPC_.stamp, 4);
-                reader.read(&NPC_.unknown, 4);
-                NPC_.Skim(reader, GRUPSize, processor, indexer);
+                NPC_.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgCREA: //Same as normal
             case REV32(CREA):
-                reader.read(&CREA.stamp, 4);
-                reader.read(&CREA.unknown, 4);
-                CREA.Skim(reader, GRUPSize, processor, indexer);
+                CREA.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgLVLC: //Same as normal
             case REV32(LVLC):
-                reader.read(&LVLC.stamp, 4);
-                reader.read(&LVLC.unknown, 4);
-                LVLC.Skim(reader, GRUPSize, processor, indexer);
+                LVLC.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgLVLN: //Same as normal
             case REV32(LVLN):
-                reader.read(&LVLN.stamp, 4);
-                reader.read(&LVLN.unknown, 4);
-                LVLN.Skim(reader, GRUPSize, processor, indexer);
+                LVLN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgKEYM:
             case REV32(KEYM):
-                reader.read(&KEYM.stamp, 4);
-                reader.read(&KEYM.unknown, 4);
-                KEYM.Skim(reader, GRUPSize, processor, indexer);
+                KEYM.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgALCH:
             case REV32(ALCH):
-                reader.read(&ALCH.stamp, 4);
-                reader.read(&ALCH.unknown, 4);
-                ALCH.Skim(reader, GRUPSize, processor, indexer);
+                ALCH.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgIDLM:
             case REV32(IDLM):
-                reader.read(&IDLM.stamp, 4);
-                reader.read(&IDLM.unknown, 4);
-                IDLM.Skim(reader, GRUPSize, processor, indexer);
+                IDLM.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgNOTE:
             case REV32(NOTE):
-                reader.read(&NOTE.stamp, 4);
-                reader.read(&NOTE.unknown, 4);
-                NOTE.Skim(reader, GRUPSize, processor, indexer);
+                NOTE.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgCOBJ:
             case REV32(COBJ):
-                reader.read(&COBJ.stamp, 4);
-                reader.read(&COBJ.unknown, 4);
-                COBJ.Skim(reader, GRUPSize, processor, indexer);
+                COBJ.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgPROJ: //Same as normal
             case REV32(PROJ):
-                reader.read(&PROJ.stamp, 4);
-                reader.read(&PROJ.unknown, 4);
-                PROJ.Skim(reader, GRUPSize, processor, indexer);
+                PROJ.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgLVLI: //Same as normal
             case REV32(LVLI):
-                reader.read(&LVLI.stamp, 4);
-                reader.read(&LVLI.unknown, 4);
-                LVLI.Skim(reader, GRUPSize, processor, indexer);
+                LVLI.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgWTHR: //Same as normal
             case REV32(WTHR):
-                reader.read(&WTHR.stamp, 4);
-                reader.read(&WTHR.unknown, 4);
-                WTHR.Skim(reader, GRUPSize, processor, indexer);
+                WTHR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgCLMT:
             case REV32(CLMT):
-                reader.read(&CLMT.stamp, 4);
-                reader.read(&CLMT.unknown, 4);
-                CLMT.Skim(reader, GRUPSize, processor, indexer);
+                CLMT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgREGN:
             case REV32(REGN):
-                reader.read(&REGN.stamp, 4);
-                reader.read(&REGN.unknown, 4);
-                REGN.Skim(reader, GRUPSize, processor, indexer);
+                REGN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgNAVI:
             case REV32(NAVI):
-                reader.read(&NAVI.stamp, 4);
-                reader.read(&NAVI.unknown, 4);
-                NAVI.Skim(reader, GRUPSize, processor, indexer);
+                NAVI.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgCELL:
             case REV32(CELL):
-                reader.read(&CELL.stamp, 4);
-                reader.read(&CELL.unknown, 4);
-                CELL.Skim(reader, GRUPSize, processor, indexer);
+                CELL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgWRLD: //Same as normal
             case REV32(WRLD):
-                reader.read(&WRLD.stamp, 4);
-                reader.read(&WRLD.unknown, 4);
-                WRLD.Skim(reader, GRUPSize, processor, indexer, fullReader);
+                WRLD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName, read_parser, CELL);
                 break;
             case eIgDIAL:
             case REV32(DIAL):
-                reader.read(&DIAL.stamp, 4);
-                reader.read(&DIAL.unknown, 4);
-                DIAL.Skim(reader, GRUPSize, processor, indexer);
+                DIAL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgQUST: //Same as normal
             case REV32(QUST):
-                reader.read(&QUST.stamp, 4);
-                reader.read(&QUST.unknown, 4);
-                QUST.Skim(reader, GRUPSize, processor, indexer);
+                QUST.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgIDLE:
             case REV32(IDLE):
-                reader.read(&IDLE.stamp, 4);
-                reader.read(&IDLE.unknown, 4);
-                IDLE.Skim(reader, GRUPSize, processor, indexer);
+                IDLE.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgPACK:
             case REV32(PACK):
-                reader.read(&PACK.stamp, 4);
-                reader.read(&PACK.unknown, 4);
-                PACK.Skim(reader, GRUPSize, processor, indexer);
+                PACK.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgCSTY: //Same as normal
             case REV32(CSTY):
-                reader.read(&CSTY.stamp, 4);
-                reader.read(&CSTY.unknown, 4);
-                CSTY.Skim(reader, GRUPSize, processor, indexer);
+                CSTY.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgLSCR: //Same as normal
             case REV32(LSCR):
-                reader.read(&LSCR.stamp, 4);
-                reader.read(&LSCR.unknown, 4);
-                LSCR.Skim(reader, GRUPSize, processor, indexer);
+                LSCR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgANIO:
             case REV32(ANIO):
-                reader.read(&ANIO.stamp, 4);
-                reader.read(&ANIO.unknown, 4);
-                ANIO.Skim(reader, GRUPSize, processor, indexer);
+                ANIO.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgWATR:
             case REV32(WATR):
-                reader.read(&WATR.stamp, 4);
-                reader.read(&WATR.unknown, 4);
-                WATR.Skim(reader, GRUPSize, processor, indexer);
+                WATR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgEFSH:
             case REV32(EFSH):
-                reader.read(&EFSH.stamp, 4);
-                reader.read(&EFSH.unknown, 4);
-                EFSH.Skim(reader, GRUPSize, processor, indexer);
+                EFSH.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             //case eIgEXPL: //Same as normal
             case REV32(EXPL):
-                reader.read(&EXPL.stamp, 4);
-                reader.read(&EXPL.unknown, 4);
-                EXPL.Skim(reader, GRUPSize, processor, indexer);
+                EXPL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgDEBR:
             case REV32(DEBR):
-                reader.read(&DEBR.stamp, 4);
-                reader.read(&DEBR.unknown, 4);
-                DEBR.Skim(reader, GRUPSize, processor, indexer);
+                DEBR.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 break;
             case eIgIMGS:
             case REV32(IMGS):
-                //reader.read(&IMGS.stamp, 4);
-                //reader.read(&IMGS.unknown, 4);
-                //IMGS.Skim(reader, GRUPSize, processor, indexer);
+                //IMGS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgIMAD:
             case REV32(IMAD):
-                //reader.read(&IMAD.stamp, 4);
-                //reader.read(&IMAD.unknown, 4);
-                //IMAD.Skim(reader, GRUPSize, processor, indexer);
+                //IMAD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgFLST:
             case REV32(FLST):
-                //reader.read(&FLST.stamp, 4);
-                //reader.read(&FLST.unknown, 4);
-                //FLST.Skim(reader, GRUPSize, processor, indexer);
+                //FLST.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgPERK:
             case REV32(PERK):
-                //reader.read(&PERK.stamp, 4);
-                //reader.read(&PERK.unknown, 4);
-                //PERK.Skim(reader, GRUPSize, processor, indexer);
+                //PERK.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgBPTD: //Same as normal
             case REV32(BPTD):
-                //reader.read(&BPTD.stamp, 4);
-                //reader.read(&BPTD.unknown, 4);
-                //BPTD.Skim(reader, GRUPSize, processor, indexer);
+                //BPTD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgADDN:
             case REV32(ADDN):
-                //reader.read(&ADDN.stamp, 4);
-                //reader.read(&ADDN.unknown, 4);
-                //ADDN.Skim(reader, GRUPSize, processor, indexer);
+                //ADDN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgAVIF: //Same as normal
             case REV32(AVIF):
-                //reader.read(&AVIF.stamp, 4);
-                //reader.read(&AVIF.unknown, 4);
-                //AVIF.Skim(reader, GRUPSize, processor, indexer);
+                //AVIF.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgRADS:
             case REV32(RADS):
-                //reader.read(&RADS.stamp, 4);
-                //reader.read(&RADS.unknown, 4);
-                //RADS.Skim(reader, GRUPSize, processor, indexer);
+                //RADS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCAMS:
             case REV32(CAMS):
-                //reader.read(&CAMS.stamp, 4);
-                //reader.read(&CAMS.unknown, 4);
-                //CAMS.Skim(reader, GRUPSize, processor, indexer);
+                //CAMS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgCPTH: //Same as normal
             case REV32(CPTH):
-                //reader.read(&CPTH.stamp, 4);
-                //reader.read(&CPTH.unknown, 4);
-                //CPTH.Skim(reader, GRUPSize, processor, indexer);
+                //CPTH.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgVTYP: //Same as normal
             case REV32(VTYP):
-                //reader.read(&VTYP.stamp, 4);
-                //reader.read(&VTYP.unknown, 4);
-                //VTYP.Skim(reader, GRUPSize, processor, indexer);
+                //VTYP.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgIPCT: //Same as normal
             case REV32(IPCT):
-                //reader.read(&IPCT.stamp, 4);
-                //reader.read(&IPCT.unknown, 4);
-                //IPCT.Skim(reader, GRUPSize, processor, indexer);
+                //IPCT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgIPDS: //Same as normal
             case REV32(IPDS):
-                //reader.read(&IPDS.stamp, 4);
-                //reader.read(&IPDS.unknown, 4);
-                //IPDS.Skim(reader, GRUPSize, processor, indexer);
+                //IPDS.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgARMA: //Same as normal
             case REV32(ARMA):
-                //reader.read(&ARMA.stamp, 4);
-                //reader.read(&ARMA.unknown, 4);
-                //ARMA.Skim(reader, GRUPSize, processor, indexer);
+                //ARMA.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgECZN:
             case REV32(ECZN):
-                //reader.read(&ECZN.stamp, 4);
-                //reader.read(&ECZN.unknown, 4);
-                //ECZN.Skim(reader, GRUPSize, processor, indexer);
+                //ECZN.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgMESG:
             case REV32(MESG):
-                //reader.read(&MESG.stamp, 4);
-                //reader.read(&MESG.unknown, 4);
-                //MESG.Skim(reader, GRUPSize, processor, indexer);
+                //MESG.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgRGDL:
             case REV32(RGDL):
-                //reader.read(&RGDL.stamp, 4);
-                //reader.read(&RGDL.unknown, 4);
-                //RGDL.Skim(reader, GRUPSize, processor, indexer);
+                //RGDL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgDOBJ:
             case REV32(DOBJ):
-                //reader.read(&DOBJ.stamp, 4);
-                //reader.read(&DOBJ.unknown, 4);
-                //DOBJ.Skim(reader, GRUPSize, processor, indexer);
+                //DOBJ.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgLGTM:
             case REV32(LGTM):
-                //reader.read(&LGTM.stamp, 4);
-                //reader.read(&LGTM.unknown, 4);
-                //LGTM.Skim(reader, GRUPSize, processor, indexer);
+                //LGTM.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgMUSC: //Same as normal
             case REV32(MUSC):
-                //reader.read(&MUSC.stamp, 4);
-                //reader.read(&MUSC.unknown, 4);
-                //MUSC.Skim(reader, GRUPSize, processor, indexer);
+                //MUSC.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgIMOD:
             case REV32(IMOD):
-                //reader.read(&IMOD.stamp, 4);
-                //reader.read(&IMOD.unknown, 4);
-                //IMOD.Skim(reader, GRUPSize, processor, indexer);
+                //IMOD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgREPU:
             case REV32(REPU):
-                //reader.read(&REPU.stamp, 4);
-                //reader.read(&REPU.unknown, 4);
-                //REPU.Skim(reader, GRUPSize, processor, indexer);
+                //REPU.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgRCPE:
             case REV32(RCPE):
-                //reader.read(&RCPE.stamp, 4);
-                //reader.read(&RCPE.unknown, 4);
-                //RCPE.Skim(reader, GRUPSize, processor, indexer);
+                //RCPE.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgRCCT:
             case REV32(RCCT):
-                //reader.read(&RCCT.stamp, 4);
-                //reader.read(&RCCT.unknown, 4);
-                //RCCT.Skim(reader, GRUPSize, processor, indexer);
+                //RCCT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCHIP:
             case REV32(CHIP):
-                //reader.read(&CHIP.stamp, 4);
-                //reader.read(&CHIP.unknown, 4);
-                //CHIP.Skim(reader, GRUPSize, processor, indexer);
+                //CHIP.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgCSNO: //Same as normal
             case REV32(CSNO):
-                //reader.read(&CSNO.stamp, 4);
-                //reader.read(&CSNO.unknown, 4);
-                //CSNO.Skim(reader, GRUPSize, processor, indexer);
+                //CSNO.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgLSCT: //Same as normal
             case REV32(LSCT):
-                //reader.read(&LSCT.stamp, 4);
-                //reader.read(&LSCT.unknown, 4);
-                //LSCT.Skim(reader, GRUPSize, processor, indexer);
+                //LSCT.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgMSET: //Same as normal
             case REV32(MSET):
-                //reader.read(&MSET.stamp, 4);
-                //reader.read(&MSET.unknown, 4);
-                //MSET.Skim(reader, GRUPSize, processor, indexer);
+                //MSET.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgALOC:
             case REV32(ALOC):
-                //reader.read(&ALOC.stamp, 4);
-                //reader.read(&ALOC.unknown, 4);
-                //ALOC.Skim(reader, GRUPSize, processor, indexer);
+                //ALOC.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCHAL:
             case REV32(CHAL):
-                //reader.read(&CHAL.stamp, 4);
-                //reader.read(&CHAL.unknown, 4);
-                //CHAL.Skim(reader, GRUPSize, processor, indexer);
+                //CHAL.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgAMEF:
             case REV32(AMEF):
-                //reader.read(&AMEF.stamp, 4);
-                //reader.read(&AMEF.unknown, 4);
-                //AMEF.Skim(reader, GRUPSize, processor, indexer);
+                //AMEF.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCCRD:
             case REV32(CCRD):
-                //reader.read(&CCRD.stamp, 4);
-                //reader.read(&CCRD.unknown, 4);
-                //CCRD.Skim(reader, GRUPSize, processor, indexer);
+                //CCRD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCMNY:
             case REV32(CMNY):
-                //reader.read(&CMNY.stamp, 4);
-                //reader.read(&CMNY.unknown, 4);
-                //CMNY.Skim(reader, GRUPSize, processor, indexer);
+                //CMNY.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgCDCK:
             case REV32(CDCK):
-                //reader.read(&CDCK.stamp, 4);
-                //reader.read(&CDCK.unknown, 4);
-                //CDCK.Skim(reader, GRUPSize, processor, indexer);
+                //CDCK.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgDEHY:
             case REV32(DEHY):
-                //reader.read(&DEHY.stamp, 4);
-                //reader.read(&DEHY.unknown, 4);
-                //DEHY.Skim(reader, GRUPSize, processor, indexer);
+                //DEHY.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             //case eIgHUNG: //Same as normal
             case REV32(HUNG):
-                //reader.read(&HUNG.stamp, 4);
-                //reader.read(&HUNG.unknown, 4);
-                //HUNG.Skim(reader, GRUPSize, processor, indexer);
+                //HUNG.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
             case eIgSLPD:
             case REV32(SLPD):
-                //reader.read(&SLPD.stamp, 4);
-                //reader.read(&SLPD.unknown, 4);
-                //SLPD.Skim(reader, GRUPSize, processor, indexer);
+                //SLPD.Read(buffer_start, buffer_position, group_buffer_end, indexer, parser, DeletedRecords, processor, FileName);
                 //break;
-
             default:
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printer("FNVFile::Skim: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
+                    printer("FNVFile::Read: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ModName);
                     return 1;
                     }
                 //else
-                //    printer("FNVFile::Skim: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], reader.getModName());
+                //    printer("FNVFile::Read: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ModName);
 
                 if(GRUPSize == 0)
                     {
@@ -831,11 +639,13 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
                 else
                     {
                     //printer("Attempting to skip and continue loading.\n");
-                    reader.skip(GRUPSize - 16); //Skip type (tops will all == 0)
+                    buffer_position = group_buffer_end;
                     }
                 break;
             }
         };
+
+    FormIDHandler.IsEmpty = UsedFormIDs.empty();
     //Testing snippet
     //if(Flags.IsFullLoad)
     //    {
@@ -850,226 +660,240 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     switch(RecordType)
         {
         case REV32(GMST):
-            return (UINT32)GMST.Records.size();
+            return (UINT32)GMST.pool.used_object_capacity();
         case REV32(TXST):
-            return (UINT32)TXST.Records.size();
+            return (UINT32)TXST.pool.used_object_capacity();
         case REV32(MICN):
-            return (UINT32)MICN.Records.size();
+            return (UINT32)MICN.pool.used_object_capacity();
         case REV32(GLOB):
-            return (UINT32)GLOB.Records.size();
+            return (UINT32)GLOB.pool.used_object_capacity();
         case REV32(CLAS):
-            return (UINT32)CLAS.Records.size();
+            return (UINT32)CLAS.pool.used_object_capacity();
         case REV32(FACT):
-            return (UINT32)FACT.Records.size();
+            return (UINT32)FACT.pool.used_object_capacity();
         case REV32(HDPT):
-            return (UINT32)HDPT.Records.size();
+            return (UINT32)HDPT.pool.used_object_capacity();
         case REV32(HAIR):
-            return (UINT32)HAIR.Records.size();
+            return (UINT32)HAIR.pool.used_object_capacity();
         case REV32(EYES):
-            return (UINT32)EYES.Records.size();
+            return (UINT32)EYES.pool.used_object_capacity();
         case REV32(RACE):
-            return (UINT32)RACE.Records.size();
+            return (UINT32)RACE.pool.used_object_capacity();
         case REV32(SOUN):
-            return (UINT32)SOUN.Records.size();
+            return (UINT32)SOUN.pool.used_object_capacity();
         case REV32(ASPC):
-            return (UINT32)ASPC.Records.size();
+            return (UINT32)ASPC.pool.used_object_capacity();
         case REV32(MGEF):
-            return (UINT32)MGEF.Records.size();
+            return (UINT32)MGEF.pool.used_object_capacity();
         case REV32(SCPT):
-            return (UINT32)SCPT.Records.size();
+            return (UINT32)SCPT.pool.used_object_capacity();
         case REV32(LTEX):
-            return (UINT32)LTEX.Records.size();
+            return (UINT32)LTEX.pool.used_object_capacity();
         case REV32(ENCH):
-            return (UINT32)ENCH.Records.size();
+            return (UINT32)ENCH.pool.used_object_capacity();
         case REV32(SPEL):
-            return (UINT32)SPEL.Records.size();
+            return (UINT32)SPEL.pool.used_object_capacity();
         case REV32(ACTI):
-            return (UINT32)ACTI.Records.size();
+            return (UINT32)ACTI.pool.used_object_capacity();
         case REV32(TACT):
-            return (UINT32)TACT.Records.size();
+            return (UINT32)TACT.pool.used_object_capacity();
         case REV32(TERM):
-            return (UINT32)TERM.Records.size();
+            return (UINT32)TERM.pool.used_object_capacity();
         case REV32(ARMO):
-            return (UINT32)ARMO.Records.size();
+            return (UINT32)ARMO.pool.used_object_capacity();
         case REV32(BOOK):
-            return (UINT32)BOOK.Records.size();
+            return (UINT32)BOOK.pool.used_object_capacity();
         case REV32(CONT):
-            return (UINT32)CONT.Records.size();
+            return (UINT32)CONT.pool.used_object_capacity();
         case REV32(DOOR):
-            return (UINT32)DOOR.Records.size();
+            return (UINT32)DOOR.pool.used_object_capacity();
         case REV32(INGR):
-            return (UINT32)INGR.Records.size();
+            return (UINT32)INGR.pool.used_object_capacity();
         case REV32(LIGH):
-            return (UINT32)LIGH.Records.size();
+            return (UINT32)LIGH.pool.used_object_capacity();
         case REV32(MISC):
-            return (UINT32)MISC.Records.size();
+            return (UINT32)MISC.pool.used_object_capacity();
         case REV32(STAT):
-            return (UINT32)STAT.Records.size();
+            return (UINT32)STAT.pool.used_object_capacity();
         case REV32(SCOL):
-            return (UINT32)SCOL.Records.size();
+            return (UINT32)SCOL.pool.used_object_capacity();
         case REV32(MSTT):
-            return (UINT32)MSTT.Records.size();
+            return (UINT32)MSTT.pool.used_object_capacity();
         case REV32(PWAT):
-            return (UINT32)PWAT.Records.size();
+            return (UINT32)PWAT.pool.used_object_capacity();
         case REV32(GRAS):
-            return (UINT32)GRAS.Records.size();
+            return (UINT32)GRAS.pool.used_object_capacity();
         case REV32(TREE):
-            return (UINT32)TREE.Records.size();
+            return (UINT32)TREE.pool.used_object_capacity();
         case REV32(FURN):
-            return (UINT32)FURN.Records.size();
+            return (UINT32)FURN.pool.used_object_capacity();
         case REV32(WEAP):
-            return (UINT32)WEAP.Records.size();
+            return (UINT32)WEAP.pool.used_object_capacity();
         case REV32(AMMO):
-            return (UINT32)AMMO.Records.size();
+            return (UINT32)AMMO.pool.used_object_capacity();
         case REV32(NPC_):
-            return (UINT32)NPC_.Records.size();
+            return (UINT32)NPC_.pool.used_object_capacity();
         case REV32(CREA):
-            return (UINT32)CREA.Records.size();
+            return (UINT32)CREA.pool.used_object_capacity();
         case REV32(LVLC):
-            return (UINT32)LVLC.Records.size();
+            return (UINT32)LVLC.pool.used_object_capacity();
         case REV32(LVLN):
-            return (UINT32)LVLN.Records.size();
+            return (UINT32)LVLN.pool.used_object_capacity();
         case REV32(KEYM):
-            return (UINT32)KEYM.Records.size();
+            return (UINT32)KEYM.pool.used_object_capacity();
         case REV32(ALCH):
-            return (UINT32)ALCH.Records.size();
+            return (UINT32)ALCH.pool.used_object_capacity();
         case REV32(IDLM):
-            return (UINT32)IDLM.Records.size();
+            return (UINT32)IDLM.pool.used_object_capacity();
         case REV32(NOTE):
-            return (UINT32)NOTE.Records.size();
+            return (UINT32)NOTE.pool.used_object_capacity();
         case REV32(COBJ):
-            return (UINT32)COBJ.Records.size();
+            return (UINT32)COBJ.pool.used_object_capacity();
         case REV32(PROJ):
-            return (UINT32)PROJ.Records.size();
+            return (UINT32)PROJ.pool.used_object_capacity();
         case REV32(LVLI):
-            return (UINT32)LVLI.Records.size();
+            return (UINT32)LVLI.pool.used_object_capacity();
         case REV32(WTHR):
-            return (UINT32)WTHR.Records.size();
+            return (UINT32)WTHR.pool.used_object_capacity();
         case REV32(CLMT):
-            return (UINT32)CLMT.Records.size();
+            return (UINT32)CLMT.pool.used_object_capacity();
         case REV32(REGN):
-            return (UINT32)REGN.Records.size();
+            return (UINT32)REGN.pool.used_object_capacity();
         case REV32(NAVI):
-            return (UINT32)NAVI.Records.size();
+            return (UINT32)NAVI.pool.used_object_capacity();
         case REV32(CELL):
-            return (UINT32)CELL.Records.size();
+            return (UINT32)CELL.cell_pool.used_object_capacity();
         ///////////////////////////////////////////////
-        //SubRecords are counted via GetFieldAttribute API function
-        //Fallthroughs are intentional
+        //These return the absolute total number of these SubRecords
+        //Use the GetFieldAttribute API instead if you want the number
+        // of SubRecords associated with a specific parent record
         case REV32(INFO):
+            return (UINT32)DIAL.info_pool.used_object_capacity();
         case REV32(ACHR):
+            return (UINT32)CELL.achr_pool.used_object_capacity();
         case REV32(ACRE):
+            return (UINT32)CELL.acre_pool.used_object_capacity();
         case REV32(REFR):
+            return (UINT32)CELL.refr_pool.used_object_capacity();
         case REV32(PGRE):
+            return (UINT32)CELL.pgre_pool.used_object_capacity();
         case REV32(PMIS):
+            return (UINT32)CELL.pmis_pool.used_object_capacity();
         case REV32(PBEA):
+            return (UINT32)CELL.pbea_pool.used_object_capacity();
         case REV32(PFLA):
+            return (UINT32)CELL.pfla_pool.used_object_capacity();
         case REV32(PCBE):
+            return (UINT32)CELL.pcbe_pool.used_object_capacity();
         case REV32(NAVM):
+            return (UINT32)CELL.navm_pool.used_object_capacity();
         case REV32(LAND):
-            printer("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". SubRecords are counted via GetFieldAttribute API function.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
-            break;
+            return (UINT32)WRLD.land_pool.used_object_capacity();
+        case REV32(WCEL):
+            return (UINT32)WRLD.cell_pool.used_object_capacity();
+        case REV32(CLLS):
+            return (UINT32)CELL.cell_pool.used_object_capacity() + (UINT32)WRLD.cell_pool.used_object_capacity();
         ///////////////////////////////////////////////
         case REV32(WRLD):
-            return (UINT32)WRLD.Records.size();
+            return (UINT32)WRLD.wrld_pool.used_object_capacity();
         case REV32(DIAL):
-            return (UINT32)DIAL.Records.size();
+            return (UINT32)DIAL.dial_pool.used_object_capacity();
         case REV32(QUST):
-            return (UINT32)QUST.Records.size();
+            return (UINT32)QUST.pool.used_object_capacity();
         case REV32(IDLE):
-            return (UINT32)IDLE.Records.size();
+            return (UINT32)IDLE.pool.used_object_capacity();
         case REV32(PACK):
-            return (UINT32)PACK.Records.size();
+            return (UINT32)PACK.pool.used_object_capacity();
         case REV32(CSTY):
-            return (UINT32)CSTY.Records.size();
+            return (UINT32)CSTY.pool.used_object_capacity();
         case REV32(LSCR):
-            return (UINT32)LSCR.Records.size();
+            return (UINT32)LSCR.pool.used_object_capacity();
         case REV32(ANIO):
-            return (UINT32)ANIO.Records.size();
+            return (UINT32)ANIO.pool.used_object_capacity();
         case REV32(WATR):
-            return (UINT32)WATR.Records.size();
+            return (UINT32)WATR.pool.used_object_capacity();
         case REV32(EFSH):
-            return (UINT32)EFSH.Records.size();
+            return (UINT32)EFSH.pool.used_object_capacity();
         case REV32(EXPL):
-            return (UINT32)EXPL.Records.size();
+            return (UINT32)EXPL.pool.used_object_capacity();
         case REV32(DEBR):
-            return (UINT32)DEBR.Records.size();
+            return (UINT32)DEBR.pool.used_object_capacity();
         case REV32(IMGS):
-            //return (UINT32)IMGS.Records.size();
+            //return (UINT32)IMGS.pool.used_object_capacity();
         case REV32(IMAD):
-            //return (UINT32)IMAD.Records.size();
+            //return (UINT32)IMAD.pool.used_object_capacity();
         case REV32(FLST):
-            //return (UINT32)FLST.Records.size();
+            //return (UINT32)FLST.pool.used_object_capacity();
         case REV32(PERK):
-            //return (UINT32)PERK.Records.size();
+            //return (UINT32)PERK.pool.used_object_capacity();
         case REV32(BPTD):
-            //return (UINT32)BPTD.Records.size();
+            //return (UINT32)BPTD.pool.used_object_capacity();
         case REV32(ADDN):
-            //return (UINT32)ADDN.Records.size();
+            //return (UINT32)ADDN.pool.used_object_capacity();
         case REV32(AVIF):
-            //return (UINT32)AVIF.Records.size();
+            //return (UINT32)AVIF.pool.used_object_capacity();
         case REV32(RADS):
-            //return (UINT32)RADS.Records.size();
+            //return (UINT32)RADS.pool.used_object_capacity();
         case REV32(CAMS):
-            //return (UINT32)CAMS.Records.size();
+            //return (UINT32)CAMS.pool.used_object_capacity();
         case REV32(CPTH):
-            //return (UINT32)CPTH.Records.size();
+            //return (UINT32)CPTH.pool.used_object_capacity();
         case REV32(VTYP):
-            //return (UINT32)VTYP.Records.size();
+            //return (UINT32)VTYP.pool.used_object_capacity();
         case REV32(IPCT):
-            //return (UINT32)IPCT.Records.size();
+            //return (UINT32)IPCT.pool.used_object_capacity();
         case REV32(IPDS):
-            //return (UINT32)IPDS.Records.size();
+            //return (UINT32)IPDS.pool.used_object_capacity();
         case REV32(ARMA):
-            //return (UINT32)ARMA.Records.size();
+            //return (UINT32)ARMA.pool.used_object_capacity();
         case REV32(ECZN):
-            //return (UINT32)ECZN.Records.size();
+            //return (UINT32)ECZN.pool.used_object_capacity();
         case REV32(MESG):
-            //return (UINT32)MESG.Records.size();
+            //return (UINT32)MESG.pool.used_object_capacity();
         case REV32(RGDL):
-            //return (UINT32)RGDL.Records.size();
+            //return (UINT32)RGDL.pool.used_object_capacity();
         case REV32(DOBJ):
-            //return (UINT32)DOBJ.Records.size();
+            //return (UINT32)DOBJ.pool.used_object_capacity();
         case REV32(LGTM):
-            //return (UINT32)LGTM.Records.size();
+            //return (UINT32)LGTM.pool.used_object_capacity();
         case REV32(MUSC):
-            //return (UINT32)MUSC.Records.size();
+            //return (UINT32)MUSC.pool.used_object_capacity();
         case REV32(IMOD):
-            //return (UINT32)IMOD.Records.size();
+            //return (UINT32)IMOD.pool.used_object_capacity();
         case REV32(REPU):
-            //return (UINT32)REPU.Records.size();
+            //return (UINT32)REPU.pool.used_object_capacity();
         case REV32(RCPE):
-            //return (UINT32)RCPE.Records.size();
+            //return (UINT32)RCPE.pool.used_object_capacity();
         case REV32(RCCT):
-            //return (UINT32)RCCT.Records.size();
+            //return (UINT32)RCCT.pool.used_object_capacity();
         case REV32(CHIP):
-            //return (UINT32)CHIP.Records.size();
+            //return (UINT32)CHIP.pool.used_object_capacity();
         case REV32(CSNO):
-            //return (UINT32)CSNO.Records.size();
+            //return (UINT32)CSNO.pool.used_object_capacity();
         case REV32(LSCT):
-            //return (UINT32)LSCT.Records.size();
+            //return (UINT32)LSCT.pool.used_object_capacity();
         case REV32(MSET):
-            //return (UINT32)MSET.Records.size();
+            //return (UINT32)MSET.pool.used_object_capacity();
         case REV32(ALOC):
-            //return (UINT32)ALOC.Records.size();
+            //return (UINT32)ALOC.pool.used_object_capacity();
         case REV32(CHAL):
-            //return (UINT32)CHAL.Records.size();
+            //return (UINT32)CHAL.pool.used_object_capacity();
         case REV32(AMEF):
-            //return (UINT32)AMEF.Records.size();
+            //return (UINT32)AMEF.pool.used_object_capacity();
         case REV32(CCRD):
-            //return (UINT32)CCRD.Records.size();
+            //return (UINT32)CCRD.pool.used_object_capacity();
         case REV32(CMNY):
-            //return (UINT32)CMNY.Records.size();
+            //return (UINT32)CMNY.pool.used_object_capacity();
         case REV32(CDCK):
-            //return (UINT32)CDCK.Records.size();
+            //return (UINT32)CDCK.pool.used_object_capacity();
         case REV32(DEHY):
-            //return (UINT32)DEHY.Records.size();
+            //return (UINT32)DEHY.pool.used_object_capacity();
         case REV32(HUNG):
-            //return (UINT32)HUNG.Records.size();
+            //return (UINT32)HUNG.pool.used_object_capacity();
         case REV32(SLPD):
-            //return (UINT32)SLPD.Records.size();
+            //return (UINT32)SLPD.pool.used_object_capacity();
         default:
-            printer("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            printer("FNVFile::GetNumRecords: Warning - Unable to count records (%c%c%c%c) in mod \"%s\". Unrecognized record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ModName);
             break;
         }
     return 0;
@@ -1079,7 +903,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
     {
     if(Flags.IsNoLoad)
         {
-        printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
         return NULL;
         }
 
@@ -1090,12 +914,10 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
         case REV32(GMST):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", reader.getModName());
+                printer("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ModName);
                 return NULL;
                 }
-
-            GMST.Records.push_back(new FNV::GMSTRecord((FNV::GMSTRecord *)SourceRecord));
-            newRecord = GMST.Records.back();
+            newRecord = GMST.pool.construct(SourceRecord);
 
             if(RecordEditorID != NULL)
                 {
@@ -1104,230 +926,140 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 }
             break;
         case REV32(TXST):
-            TXST.Records.push_back(new FNV::TXSTRecord((FNV::TXSTRecord *)SourceRecord));
-            newRecord = TXST.Records.back();
-            break;
+            return TXST.pool.construct(SourceRecord);
         case REV32(MICN):
-            MICN.Records.push_back(new FNV::MICNRecord((FNV::MICNRecord *)SourceRecord));
-            newRecord = MICN.Records.back();
-            break;
+            return MICN.pool.construct(SourceRecord);
         case REV32(GLOB):
-            GLOB.Records.push_back(new FNV::GLOBRecord((FNV::GLOBRecord *)SourceRecord));
-            newRecord = GLOB.Records.back();
-            break;
+            return GLOB.pool.construct(SourceRecord);
         case REV32(CLAS):
-            CLAS.Records.push_back(new FNV::CLASRecord((FNV::CLASRecord *)SourceRecord));
-            newRecord = CLAS.Records.back();
-            break;
+            return CLAS.pool.construct(SourceRecord);
         case REV32(FACT):
-            FACT.Records.push_back(new FNV::FACTRecord((FNV::FACTRecord *)SourceRecord));
-            newRecord = FACT.Records.back();
-            break;
+            return FACT.pool.construct(SourceRecord);
         case REV32(HDPT):
-            HDPT.Records.push_back(new FNV::HDPTRecord((FNV::HDPTRecord *)SourceRecord));
-            newRecord = HDPT.Records.back();
-            break;
+            return HDPT.pool.construct(SourceRecord);
         case REV32(HAIR):
-            HAIR.Records.push_back(new FNV::HAIRRecord((FNV::HAIRRecord *)SourceRecord));
-            newRecord = HAIR.Records.back();
-            break;
+            return HAIR.pool.construct(SourceRecord);
         case REV32(EYES):
-            EYES.Records.push_back(new FNV::EYESRecord((FNV::EYESRecord *)SourceRecord));
-            newRecord = EYES.Records.back();
-            break;
+            return EYES.pool.construct(SourceRecord);
         case REV32(RACE):
-            RACE.Records.push_back(new FNV::RACERecord((FNV::RACERecord *)SourceRecord));
-            newRecord = RACE.Records.back();
-            break;
+            return RACE.pool.construct(SourceRecord);
         case REV32(SOUN):
-            SOUN.Records.push_back(new FNV::SOUNRecord((FNV::SOUNRecord *)SourceRecord));
-            newRecord = SOUN.Records.back();
-            break;
+            return SOUN.pool.construct(SourceRecord);
         case REV32(ASPC):
-            ASPC.Records.push_back(new FNV::ASPCRecord((FNV::ASPCRecord *)SourceRecord));
-            newRecord = ASPC.Records.back();
-            break;
+            return ASPC.pool.construct(SourceRecord);
         case REV32(MGEF):
-            MGEF.Records.push_back(new FNV::MGEFRecord((FNV::MGEFRecord *)SourceRecord));
-            newRecord = MGEF.Records.back();
-            break;
+            return MGEF.pool.construct(SourceRecord);
         case REV32(SCPT):
-            SCPT.Records.push_back(new FNV::SCPTRecord((FNV::SCPTRecord *)SourceRecord));
-            newRecord = SCPT.Records.back();
-            break;
+            return SCPT.pool.construct(SourceRecord);
         case REV32(LTEX):
-            LTEX.Records.push_back(new FNV::LTEXRecord((FNV::LTEXRecord *)SourceRecord));
-            newRecord = LTEX.Records.back();
-            break;
+            return LTEX.pool.construct(SourceRecord);
         case REV32(ENCH):
-            ENCH.Records.push_back(new FNV::ENCHRecord((FNV::ENCHRecord *)SourceRecord));
-            newRecord = ENCH.Records.back();
-            break;
+            return ENCH.pool.construct(SourceRecord);
         case REV32(SPEL):
-            SPEL.Records.push_back(new FNV::SPELRecord((FNV::SPELRecord *)SourceRecord));
-            newRecord = SPEL.Records.back();
-            break;
+            return SPEL.pool.construct(SourceRecord);
         case REV32(ACTI):
-            ACTI.Records.push_back(new FNV::ACTIRecord((FNV::ACTIRecord *)SourceRecord));
-            newRecord = ACTI.Records.back();
-            break;
+            return ACTI.pool.construct(SourceRecord);
         case REV32(TACT):
-            TACT.Records.push_back(new FNV::TACTRecord((FNV::TACTRecord *)SourceRecord));
-            newRecord = TACT.Records.back();
-            break;
+            return TACT.pool.construct(SourceRecord);
         case REV32(TERM):
-            TERM.Records.push_back(new FNV::TERMRecord((FNV::TERMRecord *)SourceRecord));
-            newRecord = TERM.Records.back();
-            break;
+            return TERM.pool.construct(SourceRecord);
         case REV32(ARMO):
-            ARMO.Records.push_back(new FNV::ARMORecord((FNV::ARMORecord *)SourceRecord));
-            newRecord = ARMO.Records.back();
-            break;
+            return ARMO.pool.construct(SourceRecord);
         case REV32(BOOK):
-            BOOK.Records.push_back(new FNV::BOOKRecord((FNV::BOOKRecord *)SourceRecord));
-            newRecord = BOOK.Records.back();
-            break;
+            return BOOK.pool.construct(SourceRecord);
         case REV32(CONT):
-            CONT.Records.push_back(new FNV::CONTRecord((FNV::CONTRecord *)SourceRecord));
-            newRecord = CONT.Records.back();
-            break;
+            return CONT.pool.construct(SourceRecord);
         case REV32(DOOR):
-            DOOR.Records.push_back(new FNV::DOORRecord((FNV::DOORRecord *)SourceRecord));
-            newRecord = DOOR.Records.back();
-            break;
+            return DOOR.pool.construct(SourceRecord);
         case REV32(INGR):
-            INGR.Records.push_back(new FNV::INGRRecord((FNV::INGRRecord *)SourceRecord));
-            newRecord = INGR.Records.back();
-            break;
+            return INGR.pool.construct(SourceRecord);
         case REV32(LIGH):
-            LIGH.Records.push_back(new FNV::LIGHRecord((FNV::LIGHRecord *)SourceRecord));
-            newRecord = LIGH.Records.back();
-            break;
+            return LIGH.pool.construct(SourceRecord);
         case REV32(MISC):
-            MISC.Records.push_back(new FNV::MISCRecord((FNV::MISCRecord *)SourceRecord));
-            newRecord = MISC.Records.back();
-            break;
+            return MISC.pool.construct(SourceRecord);
         case REV32(STAT):
-            STAT.Records.push_back(new FNV::STATRecord((FNV::STATRecord *)SourceRecord));
-            newRecord = STAT.Records.back();
-            break;
+            return STAT.pool.construct(SourceRecord);
         case REV32(SCOL):
-            SCOL.Records.push_back(new FNV::SCOLRecord((FNV::SCOLRecord *)SourceRecord));
-            newRecord = SCOL.Records.back();
-            break;
+            return SCOL.pool.construct(SourceRecord);
         case REV32(MSTT):
-            MSTT.Records.push_back(new FNV::MSTTRecord((FNV::MSTTRecord *)SourceRecord));
-            newRecord = MSTT.Records.back();
-            break;
+            return MSTT.pool.construct(SourceRecord);
         case REV32(PWAT):
-            PWAT.Records.push_back(new FNV::PWATRecord((FNV::PWATRecord *)SourceRecord));
-            newRecord = PWAT.Records.back();
-            break;
+            return PWAT.pool.construct(SourceRecord);
         case REV32(GRAS):
-            GRAS.Records.push_back(new FNV::GRASRecord((FNV::GRASRecord *)SourceRecord));
-            newRecord = GRAS.Records.back();
-            break;
+            return GRAS.pool.construct(SourceRecord);
         case REV32(TREE):
-            TREE.Records.push_back(new FNV::TREERecord((FNV::TREERecord *)SourceRecord));
-            newRecord = TREE.Records.back();
-            break;
+            return TREE.pool.construct(SourceRecord);
         case REV32(FURN):
-            FURN.Records.push_back(new FNV::FURNRecord((FNV::FURNRecord *)SourceRecord));
-            newRecord = FURN.Records.back();
-            break;
+            return FURN.pool.construct(SourceRecord);
         case REV32(WEAP):
-            WEAP.Records.push_back(new FNV::WEAPRecord((FNV::WEAPRecord *)SourceRecord));
-            newRecord = WEAP.Records.back();
-            break;
+            return WEAP.pool.construct(SourceRecord);
         case REV32(AMMO):
-            AMMO.Records.push_back(new FNV::AMMORecord((FNV::AMMORecord *)SourceRecord));
-            newRecord = AMMO.Records.back();
-            break;
+            return AMMO.pool.construct(SourceRecord);
         case REV32(NPC_):
-            NPC_.Records.push_back(new FNV::NPC_Record((FNV::NPC_Record *)SourceRecord));
-            newRecord = NPC_.Records.back();
-            break;
+            return NPC_.pool.construct(SourceRecord);
         case REV32(CREA):
-            CREA.Records.push_back(new FNV::CREARecord((FNV::CREARecord *)SourceRecord));
-            newRecord = CREA.Records.back();
-            break;
+            return CREA.pool.construct(SourceRecord);
         case REV32(LVLC):
-            LVLC.Records.push_back(new FNV::LVLCRecord((FNV::LVLCRecord *)SourceRecord));
-            newRecord = LVLC.Records.back();
-            break;
+            return LVLC.pool.construct(SourceRecord);
         case REV32(LVLN):
-            LVLN.Records.push_back(new FNV::LVLNRecord((FNV::LVLNRecord *)SourceRecord));
-            newRecord = LVLN.Records.back();
-            break;
+            return LVLN.pool.construct(SourceRecord);
         case REV32(KEYM):
-            KEYM.Records.push_back(new FNV::KEYMRecord((FNV::KEYMRecord *)SourceRecord));
-            newRecord = KEYM.Records.back();
-            break;
+            return KEYM.pool.construct(SourceRecord);
         case REV32(ALCH):
-            ALCH.Records.push_back(new FNV::ALCHRecord((FNV::ALCHRecord *)SourceRecord));
-            newRecord = ALCH.Records.back();
-            break;
+            return ALCH.pool.construct(SourceRecord);
         case REV32(IDLM):
-            IDLM.Records.push_back(new FNV::IDLMRecord((FNV::IDLMRecord *)SourceRecord));
-            newRecord = IDLM.Records.back();
-            break;
+            return IDLM.pool.construct(SourceRecord);
         case REV32(NOTE):
-            NOTE.Records.push_back(new FNV::NOTERecord((FNV::NOTERecord *)SourceRecord));
-            newRecord = NOTE.Records.back();
-            break;
+            return NOTE.pool.construct(SourceRecord);
         case REV32(COBJ):
-            COBJ.Records.push_back(new FNV::COBJRecord((FNV::COBJRecord *)SourceRecord));
-            newRecord = COBJ.Records.back();
-            break;
+            return COBJ.pool.construct(SourceRecord);
         case REV32(PROJ):
-            PROJ.Records.push_back(new FNV::PROJRecord((FNV::PROJRecord *)SourceRecord));
-            newRecord = PROJ.Records.back();
-            break;
+            return PROJ.pool.construct(SourceRecord);
         case REV32(LVLI):
-            LVLI.Records.push_back(new FNV::LVLIRecord((FNV::LVLIRecord *)SourceRecord));
-            newRecord = LVLI.Records.back();
-            break;
+            return LVLI.pool.construct(SourceRecord);
         case REV32(WTHR):
-            WTHR.Records.push_back(new FNV::WTHRRecord((FNV::WTHRRecord *)SourceRecord));
-            newRecord = WTHR.Records.back();
-            break;
+            return WTHR.pool.construct(SourceRecord);
         case REV32(CLMT):
-            CLMT.Records.push_back(new FNV::CLMTRecord((FNV::CLMTRecord *)SourceRecord));
-            newRecord = CLMT.Records.back();
-            break;
+            return CLMT.pool.construct(SourceRecord);
         case REV32(REGN):
-            REGN.Records.push_back(new FNV::REGNRecord((FNV::REGNRecord *)SourceRecord));
-            newRecord = REGN.Records.back();
-            break;
+            return REGN.pool.construct(SourceRecord);
         case REV32(NAVI):
-            NAVI.Records.push_back(new FNV::NAVIRecord((FNV::NAVIRecord *)SourceRecord));
-            newRecord = NAVI.Records.back();
-            break;
+            return NAVI.pool.construct(SourceRecord);
+        case REV32(WCEL):
+            if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
+                {
+                printer("FNVFile::CreateRecord: Error - Unable to create world CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be world CELL parents.\n", ModName, ParentRecord->GetStrType());
+                return NULL;
+                }
+
+            //If a world cell already exists, return it instead of making a new one
+            if(((FNV::WRLDRecord *)ParentRecord)->CELL != NULL)
+                {
+                options.ExistingReturned = true;
+                return ((FNV::WRLDRecord *)ParentRecord)->CELL;
+                }
+
+            ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
+            ((FNV::CELLRecord *)((FNV::WRLDRecord *)ParentRecord)->CELL)->IsInterior(false);
+            ((FNV::CELLRecord *)((FNV::WRLDRecord *)ParentRecord)->CELL)->Parent = ParentRecord;
+            return ((FNV::WRLDRecord *)ParentRecord)->CELL;
         case REV32(CELL):
             if(ParentRecord == NULL)
                 {
-                CELL.Records.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
-                newRecord = CELL.Records.back();
-
+                newRecord = CELL.cell_pool.construct(SourceRecord);
                 ((FNV::CELLRecord *)newRecord)->IsInterior(true);
+                return newRecord;
                 }
             else
                 {
                 if(ParentRecord->GetType() != REV32(WRLD))
                     {
-                    printer("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                    printer("FNVFile::CreateRecord: Error - Unable to create CELL record in mod \"%s\". Parent record type (%s) is invalid, only WRLD records can be CELL parents.\n", ModName, ParentRecord->GetStrType());
                     return NULL;
                     }
 
-                if(options.CopyWorldCellStatus)
-                    {
-                    if(((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->Parent)->CELL->formID == SourceRecord->formID)
-                        options.SetAsWorldCell = true;
-                    else
-                        options.SetAsWorldCell = false;
-                    }
-
-                if(options.SetAsWorldCell)
+                //If the SourceRecord is a world cell, then the copy will be a world cell
+                if(SourceRecord != NULL && ((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->Parent)->CELL == SourceRecord)
                     {
                     //If a world cell already exists, return it instead of making a new one
                     if(((FNV::WRLDRecord *)ParentRecord)->CELL != NULL)
@@ -1335,130 +1067,127 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                         options.ExistingReturned = true;
                         return ((FNV::WRLDRecord *)ParentRecord)->CELL;
                         }
-                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL = new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord);
+
+                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
                     }
                 else
                     {
-                    ((FNV::WRLDRecord *)ParentRecord)->CELLS.push_back(new FNV::CELLRecord((FNV::CELLRecord *)SourceRecord));
-                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELLS.back();
+                    newRecord = WRLD.cell_pool.construct(SourceRecord);
+                    ((FNV::WRLDRecord *)ParentRecord)->CELLS.push_back(newRecord);
                     }
 
                 ((FNV::CELLRecord *)newRecord)->IsInterior(false);
                 ((FNV::CELLRecord *)newRecord)->Parent = ParentRecord;
+                return newRecord;
                 }
-            break;
         case REV32(WRLD):
-            WRLD.Records.push_back(new FNV::WRLDRecord((FNV::WRLDRecord *)SourceRecord));
-            newRecord = WRLD.Records.back();
-            break;
+            return WRLD.wrld_pool.construct(SourceRecord);
         case REV32(DIAL):
-            DIAL.Records.push_back(new FNV::DIALRecord((FNV::DIALRecord *)SourceRecord));
-            newRecord = DIAL.Records.back();
-            break;
+            return DIAL.dial_pool.construct(SourceRecord);
         case REV32(INFO):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create INFO record in mod \"%s\". Parent record type (%s) is invalid, only DIAL records can be INFO parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::DIALRecord *)ParentRecord)->INFO.push_back(new FNV::INFORecord((FNV::INFORecord *)SourceRecord));
-            newRecord = ((FNV::DIALRecord *)ParentRecord)->INFO.back();
-            break;
+            ((FNV::DIALRecord *)ParentRecord)->INFO.push_back(DIAL.info_pool.construct(SourceRecord));
+            ((FNV::INFORecord *)((FNV::DIALRecord *)ParentRecord)->INFO.back())->Parent = ParentRecord;
+            return ((FNV::DIALRecord *)ParentRecord)->INFO.back();
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create ACHR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACHR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->ACHR.push_back(new FNV::ACHRRecord((FNV::ACHRRecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->ACHR.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->ACHR.push_back(CELL.achr_pool.construct(SourceRecord));
+            ((FNV::ACHRRecord *)((FNV::CELLRecord *)ParentRecord)->ACHR.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->ACHR.back();
         case REV32(ACRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create ACRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be ACRE parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->ACRE.push_back(new FNV::ACRERecord((FNV::ACRERecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->ACRE.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->ACRE.push_back(CELL.acre_pool.construct(SourceRecord));
+            ((FNV::ACRERecord *)((FNV::CELLRecord *)ParentRecord)->ACRE.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->ACRE.back();
         case REV32(REFR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create REFR record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->REFR.push_back(new FNV::REFRRecord((FNV::REFRRecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->REFR.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->REFR.push_back(CELL.refr_pool.construct(SourceRecord));
+            ((FNV::REFRRecord *)((FNV::CELLRecord *)ParentRecord)->REFR.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->REFR.back();
         case REV32(PGRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create PGRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PGRE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PGRE.push_back(new FNV::PGRERecord((FNV::PGRERecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->PGRE.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->PGRE.push_back(CELL.pgre_pool.construct(SourceRecord));
+            ((FNV::PGRERecord *)((FNV::CELLRecord *)ParentRecord)->PGRE.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->PGRE.back();
         case REV32(PMIS):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create PMIS record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PMIS record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PMIS.push_back(new FNV::PMISRecord((FNV::PMISRecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->PMIS.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->PMIS.push_back(CELL.pmis_pool.construct(SourceRecord));
+            ((FNV::PMISRecord *)((FNV::CELLRecord *)ParentRecord)->PMIS.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->PMIS.back();
         case REV32(PBEA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create PBEA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PBEA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PBEA.push_back(new FNV::PBEARecord((FNV::PBEARecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->PBEA.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->PBEA.push_back(CELL.pbea_pool.construct(SourceRecord));
+            ((FNV::PBEARecord *)((FNV::CELLRecord *)ParentRecord)->PBEA.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->PBEA.back();
         case REV32(PFLA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create PFLA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PFLA record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PFLA.push_back(new FNV::PFLARecord((FNV::PFLARecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->PFLA.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->PFLA.push_back(CELL.pfla_pool.construct(SourceRecord));
+            ((FNV::PFLARecord *)((FNV::CELLRecord *)ParentRecord)->PFLA.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->PFLA.back();
         case REV32(PCBE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create PCBE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create PCBE record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PCBE.push_back(new FNV::PCBERecord((FNV::PCBERecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->PCBE.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->PCBE.push_back(CELL.pcbe_pool.construct(SourceRecord));
+            ((FNV::PCBERecord *)((FNV::CELLRecord *)ParentRecord)->PCBE.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->PCBE.back();
         case REV32(NAVM):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create NAVM record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create NAVM record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be REFR parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->NAVM.push_back(new FNV::NAVMRecord((FNV::NAVMRecord *)SourceRecord));
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->NAVM.back();
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->NAVM.push_back(CELL.navm_pool.construct(SourceRecord));
+            ((FNV::NAVMRecord *)((FNV::CELLRecord *)ParentRecord)->NAVM.back())->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->NAVM.back();
         case REV32(LAND):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
                 {
-                printer("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", reader.getModName(), ParentRecord->GetStrType());
+                printer("FNVFile::CreateRecord: Error - Unable to create LAND record in mod \"%s\". Parent record type (%s) is invalid, only CELL records can be LAND parents.\n", ModName, ParentRecord->GetStrType());
                 return NULL;
                 }
 
@@ -1469,207 +1198,950 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return ((FNV::CELLRecord *)ParentRecord)->LAND;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->LAND = new FNV::LANDRecord((FNV::LANDRecord *)SourceRecord);
-            newRecord = ((FNV::CELLRecord *)ParentRecord)->LAND;
-            break;
+            ((FNV::CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord);
+            ((FNV::LANDRecord *)((FNV::CELLRecord *)ParentRecord)->LAND)->Parent = ParentRecord;
+            return ((FNV::CELLRecord *)ParentRecord)->LAND;
         case REV32(QUST):
-            QUST.Records.push_back(new FNV::QUSTRecord((FNV::QUSTRecord *)SourceRecord));
-            newRecord = QUST.Records.back();
-            break;
+            return QUST.pool.construct(SourceRecord);
         case REV32(IDLE):
-            IDLE.Records.push_back(new FNV::IDLERecord((FNV::IDLERecord *)SourceRecord));
-            newRecord = IDLE.Records.back();
-            break;
+            return IDLE.pool.construct(SourceRecord);
         case REV32(PACK):
-            PACK.Records.push_back(new FNV::PACKRecord((FNV::PACKRecord *)SourceRecord));
-            newRecord = PACK.Records.back();
-            break;
+            return PACK.pool.construct(SourceRecord);
         case REV32(CSTY):
-            CSTY.Records.push_back(new FNV::CSTYRecord((FNV::CSTYRecord *)SourceRecord));
-            newRecord = CSTY.Records.back();
-            break;
+            return CSTY.pool.construct(SourceRecord);
         case REV32(LSCR):
-            LSCR.Records.push_back(new FNV::LSCRRecord((FNV::LSCRRecord *)SourceRecord));
-            newRecord = LSCR.Records.back();
-            break;
+            return LSCR.pool.construct(SourceRecord);
         case REV32(ANIO):
-            ANIO.Records.push_back(new FNV::ANIORecord((FNV::ANIORecord *)SourceRecord));
-            newRecord = ANIO.Records.back();
-            break;
+            return ANIO.pool.construct(SourceRecord);
         case REV32(WATR):
-            WATR.Records.push_back(new FNV::WATRRecord((FNV::WATRRecord *)SourceRecord));
-            newRecord = WATR.Records.back();
-            break;
+            return WATR.pool.construct(SourceRecord);
         case REV32(EFSH):
-            EFSH.Records.push_back(new FNV::EFSHRecord((FNV::EFSHRecord *)SourceRecord));
-            newRecord = EFSH.Records.back();
-            break;
+            return EFSH.pool.construct(SourceRecord);
         case REV32(EXPL):
-            EXPL.Records.push_back(new FNV::EXPLRecord((FNV::EXPLRecord *)SourceRecord));
-            newRecord = EXPL.Records.back();
-            break;
+            return EXPL.pool.construct(SourceRecord);
         case REV32(DEBR):
-            DEBR.Records.push_back(new FNV::DEBRRecord((FNV::DEBRRecord *)SourceRecord));
-            newRecord = DEBR.Records.back();
-            break;
+            return DEBR.pool.construct(SourceRecord);
         case REV32(IMGS):
-            //IMGS.Records.push_back(new FNV::IMGSRecord((FNV::IMGSRecord *)SourceRecord));
-            //newRecord = IMGS.Records.back();
-            //break;
+            //return IMGS.pool.construct(SourceRecord);
         case REV32(IMAD):
-            //IMAD.Records.push_back(new FNV::IMADRecord((FNV::IMADRecord *)SourceRecord));
-            //newRecord = IMAD.Records.back();
-            //break;
+            //return IMAD.pool.construct(SourceRecord);
         case REV32(FLST):
-            //FLST.Records.push_back(new FNV::FLSTRecord((FNV::FLSTRecord *)SourceRecord));
-            //newRecord = FLST.Records.back();
-            //break;
+            //return FLST.pool.construct(SourceRecord);
         case REV32(PERK):
-            //PERK.Records.push_back(new FNV::PERKRecord((FNV::PERKRecord *)SourceRecord));
-            //newRecord = PERK.Records.back();
-            //break;
+            //return PERK.pool.construct(SourceRecord);
         case REV32(BPTD):
-            //BPTD.Records.push_back(new FNV::BPTDRecord((FNV::BPTDRecord *)SourceRecord));
-            //newRecord = BPTD.Records.back();
-            //break;
+            //return BPTD.pool.construct(SourceRecord);
         case REV32(ADDN):
-            //ADDN.Records.push_back(new FNV::ADDNRecord((FNV::ADDNRecord *)SourceRecord));
-            //newRecord = ADDN.Records.back();
-            //break;
+            //return ADDN.pool.construct(SourceRecord);
         case REV32(AVIF):
-            //AVIF.Records.push_back(new FNV::AVIFRecord((FNV::AVIFRecord *)SourceRecord));
-            //newRecord = AVIF.Records.back();
-            //break;
+            //return AVIF.pool.construct(SourceRecord);
         case REV32(RADS):
-            //RADS.Records.push_back(new FNV::RADSRecord((FNV::RADSRecord *)SourceRecord));
-            //newRecord = RADS.Records.back();
-            //break;
+            //return RADS.pool.construct(SourceRecord);
         case REV32(CAMS):
-            //CAMS.Records.push_back(new FNV::CAMSRecord((FNV::CAMSRecord *)SourceRecord));
-            //newRecord = CAMS.Records.back();
-            //break;
+            //return CAMS.pool.construct(SourceRecord);
         case REV32(CPTH):
-            //CPTH.Records.push_back(new FNV::CPTHRecord((FNV::CPTHRecord *)SourceRecord));
-            //newRecord = CPTH.Records.back();
-            //break;
+            //return CPTH.pool.construct(SourceRecord);
         case REV32(VTYP):
-            //VTYP.Records.push_back(new FNV::VTYPRecord((FNV::VTYPRecord *)SourceRecord));
-            //newRecord = VTYP.Records.back();
-            //break;
+            //return VTYP.pool.construct(SourceRecord);
         case REV32(IPCT):
-            //IPCT.Records.push_back(new FNV::IPCTRecord((FNV::IPCTRecord *)SourceRecord));
-            //newRecord = IPCT.Records.back();
-            //break;
+            //return IPCT.pool.construct(SourceRecord);
         case REV32(IPDS):
-            //IPDS.Records.push_back(new FNV::IPDSRecord((FNV::IPDSRecord *)SourceRecord));
-            //newRecord = IPDS.Records.back();
-            //break;
+            //return IPDS.pool.construct(SourceRecord);
         case REV32(ARMA):
-            //ARMA.Records.push_back(new FNV::ARMARecord((FNV::ARMARecord *)SourceRecord));
-            //newRecord = ARMA.Records.back();
-            //break;
+            //return ARMA.pool.construct(SourceRecord);
         case REV32(ECZN):
-            //ECZN.Records.push_back(new FNV::ECZNRecord((FNV::ECZNRecord *)SourceRecord));
-            //newRecord = ECZN.Records.back();
-            //break;
+            //return ECZN.pool.construct(SourceRecord);
         case REV32(MESG):
-            //MESG.Records.push_back(new FNV::MESGRecord((FNV::MESGRecord *)SourceRecord));
-            //newRecord = MESG.Records.back();
-            //break;
+            //return MESG.pool.construct(SourceRecord);
         case REV32(RGDL):
-            //RGDL.Records.push_back(new FNV::RGDLRecord((FNV::RGDLRecord *)SourceRecord));
-            //newRecord = RGDL.Records.back();
-            //break;
+            //return RGDL.pool.construct(SourceRecord);
         case REV32(DOBJ):
-            //DOBJ.Records.push_back(new FNV::DOBJRecord((FNV::DOBJRecord *)SourceRecord));
-            //newRecord = DOBJ.Records.back();
-            //break;
+            //return DOBJ.pool.construct(SourceRecord);
         case REV32(LGTM):
-            //LGTM.Records.push_back(new FNV::LGTMRecord((FNV::LGTMRecord *)SourceRecord));
-            //newRecord = LGTM.Records.back();
-            //break;
+            //return LGTM.pool.construct(SourceRecord);
         case REV32(MUSC):
-            //MUSC.Records.push_back(new FNV::MUSCRecord((FNV::MUSCRecord *)SourceRecord));
-            //newRecord = MUSC.Records.back();
-            //break;
+            //return MUSC.pool.construct(SourceRecord);
         case REV32(IMOD):
-            //IMOD.Records.push_back(new FNV::IMODRecord((FNV::IMODRecord *)SourceRecord));
-            //newRecord = IMOD.Records.back();
-            //break;
+            //return IMOD.pool.construct(SourceRecord);
         case REV32(REPU):
-            //REPU.Records.push_back(new FNV::REPURecord((FNV::REPURecord *)SourceRecord));
-            //newRecord = REPU.Records.back();
-            //break;
+            //return REPU.pool.construct(SourceRecord);
         case REV32(RCPE):
-            //RCPE.Records.push_back(new FNV::RCPERecord((FNV::RCPERecord *)SourceRecord));
-            //newRecord = RCPE.Records.back();
-            //break;
+            //return RCPE.pool.construct(SourceRecord);
         case REV32(RCCT):
-            //RCCT.Records.push_back(new FNV::RCCTRecord((FNV::RCCTRecord *)SourceRecord));
-            //newRecord = RCCT.Records.back();
-            //break;
+            //return RCCT.pool.construct(SourceRecord);
         case REV32(CHIP):
-            //CHIP.Records.push_back(new FNV::CHIPRecord((FNV::CHIPRecord *)SourceRecord));
-            //newRecord = CHIP.Records.back();
-            //break;
+            //return CHIP.pool.construct(SourceRecord);
         case REV32(CSNO):
-            //CSNO.Records.push_back(new FNV::CSNORecord((FNV::CSNORecord *)SourceRecord));
-            //newRecord = CSNO.Records.back();
-            //break;
+            //return CSNO.pool.construct(SourceRecord);
         case REV32(LSCT):
-            //LSCT.Records.push_back(new FNV::LSCTRecord((FNV::LSCTRecord *)SourceRecord));
-            //newRecord = LSCT.Records.back();
-            //break;
+            //return LSCT.pool.construct(SourceRecord);
         case REV32(MSET):
-            //MSET.Records.push_back(new FNV::MSETRecord((FNV::MSETRecord *)SourceRecord));
-            //newRecord = MSET.Records.back();
-            //break;
+            //return MSET.pool.construct(SourceRecord);
         case REV32(ALOC):
-            //ALOC.Records.push_back(new FNV::ALOCRecord((FNV::ALOCRecord *)SourceRecord));
-            //newRecord = ALOC.Records.back();
-            //break;
+            //return ALOC.pool.construct(SourceRecord);
         case REV32(CHAL):
-            //CHAL.Records.push_back(new FNV::CHALRecord((FNV::CHALRecord *)SourceRecord));
-            //newRecord = CHAL.Records.back();
-            //break;
+            //return CHAL.pool.construct(SourceRecord);
         case REV32(AMEF):
-            //AMEF.Records.push_back(new FNV::AMEFRecord((FNV::AMEFRecord *)SourceRecord));
-            //newRecord = AMEF.Records.back();
-            //break;
+            //return AMEF.pool.construct(SourceRecord);
         case REV32(CCRD):
-            //CCRD.Records.push_back(new FNV::CCRDRecord((FNV::CCRDRecord *)SourceRecord));
-            //newRecord = CCRD.Records.back();
-            //break;
+            //return CCRD.pool.construct(SourceRecord);
         case REV32(CMNY):
-            //CMNY.Records.push_back(new FNV::CMNYRecord((FNV::CMNYRecord *)SourceRecord));
-            //newRecord = CMNY.Records.back();
-            //break;
+            //return CMNY.pool.construct(SourceRecord);
         case REV32(CDCK):
-            //CDCK.Records.push_back(new FNV::CDCKRecord((FNV::CDCKRecord *)SourceRecord));
-            //newRecord = CDCK.Records.back();
-            //break;
+            //return CDCK.pool.construct(SourceRecord);
         case REV32(DEHY):
-            //DEHY.Records.push_back(new FNV::DEHYRecord((FNV::DEHYRecord *)SourceRecord));
-            //newRecord = DEHY.Records.back();
-            //break;
+            //return DEHY.pool.construct(SourceRecord);
         case REV32(HUNG):
-            //HUNG.Records.push_back(new FNV::HUNGRecord((FNV::HUNGRecord *)SourceRecord));
-            //newRecord = HUNG.Records.back();
-            //break;
+            //return HUNG.pool.construct(SourceRecord);
         case REV32(SLPD):
-            //SLPD.Records.push_back(new FNV::SLPDRecord((FNV::SLPDRecord *)SourceRecord));
-            //newRecord = SLPD.Records.back();
-            //break;
+            //return SLPD.pool.construct(SourceRecord);
         default:
-            printer("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], reader.getModName());
+            printer("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ModName);
             break;
         }
     return newRecord;
     }
 
-SINT32 FNVFile::DeleteRecord(Record *&curRecord, Record *&ParentRecord)
+SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
     {
-    //Unimplemented
+    switch(curRecord->GetType())
+        {
+        case REV32(GMST):
+            deindexer.Accept(curRecord);
+            GMST.pool.destroy(curRecord);
+            return 1;
+        case REV32(TXST):
+            deindexer.Accept(curRecord);
+            TXST.pool.destroy(curRecord);
+            return 1;
+        case REV32(MICN):
+            deindexer.Accept(curRecord);
+            MICN.pool.destroy(curRecord);
+            return 1;
+        case REV32(GLOB):
+            deindexer.Accept(curRecord);
+            GLOB.pool.destroy(curRecord);
+            return 1;
+        case REV32(CLAS):
+            deindexer.Accept(curRecord);
+            CLAS.pool.destroy(curRecord);
+            return 1;
+        case REV32(FACT):
+            deindexer.Accept(curRecord);
+            FACT.pool.destroy(curRecord);
+            return 1;
+        case REV32(HDPT):
+            deindexer.Accept(curRecord);
+            HDPT.pool.destroy(curRecord);
+            return 1;
+        case REV32(HAIR):
+            deindexer.Accept(curRecord);
+            HAIR.pool.destroy(curRecord);
+            return 1;
+        case REV32(EYES):
+            deindexer.Accept(curRecord);
+            EYES.pool.destroy(curRecord);
+            return 1;
+        case REV32(RACE):
+            deindexer.Accept(curRecord);
+            RACE.pool.destroy(curRecord);
+            return 1;
+        case REV32(SOUN):
+            deindexer.Accept(curRecord);
+            SOUN.pool.destroy(curRecord);
+            return 1;
+        case REV32(ASPC):
+            deindexer.Accept(curRecord);
+            ASPC.pool.destroy(curRecord);
+            return 1;
+        case REV32(MGEF):
+            deindexer.Accept(curRecord);
+            MGEF.pool.destroy(curRecord);
+            return 1;
+        case REV32(SCPT):
+            deindexer.Accept(curRecord);
+            SCPT.pool.destroy(curRecord);
+            return 1;
+        case REV32(LTEX):
+            deindexer.Accept(curRecord);
+            LTEX.pool.destroy(curRecord);
+            return 1;
+        case REV32(ENCH):
+            deindexer.Accept(curRecord);
+            ENCH.pool.destroy(curRecord);
+            return 1;
+        case REV32(SPEL):
+            deindexer.Accept(curRecord);
+            SPEL.pool.destroy(curRecord);
+            return 1;
+        case REV32(ACTI):
+            deindexer.Accept(curRecord);
+            ACTI.pool.destroy(curRecord);
+            return 1;
+        case REV32(TACT):
+            deindexer.Accept(curRecord);
+            TACT.pool.destroy(curRecord);
+            return 1;
+        case REV32(TERM):
+            deindexer.Accept(curRecord);
+            TERM.pool.destroy(curRecord);
+            return 1;
+        case REV32(ARMO):
+            deindexer.Accept(curRecord);
+            ARMO.pool.destroy(curRecord);
+            return 1;
+        case REV32(BOOK):
+            deindexer.Accept(curRecord);
+            BOOK.pool.destroy(curRecord);
+            return 1;
+        case REV32(CONT):
+            deindexer.Accept(curRecord);
+            CONT.pool.destroy(curRecord);
+            return 1;
+        case REV32(DOOR):
+            deindexer.Accept(curRecord);
+            DOOR.pool.destroy(curRecord);
+            return 1;
+        case REV32(INGR):
+            deindexer.Accept(curRecord);
+            INGR.pool.destroy(curRecord);
+            return 1;
+        case REV32(LIGH):
+            deindexer.Accept(curRecord);
+            LIGH.pool.destroy(curRecord);
+            return 1;
+        case REV32(MISC):
+            deindexer.Accept(curRecord);
+            MISC.pool.destroy(curRecord);
+            return 1;
+        case REV32(STAT):
+            deindexer.Accept(curRecord);
+            STAT.pool.destroy(curRecord);
+            return 1;
+        case REV32(SCOL):
+            deindexer.Accept(curRecord);
+            SCOL.pool.destroy(curRecord);
+            return 1;
+        case REV32(MSTT):
+            deindexer.Accept(curRecord);
+            MSTT.pool.destroy(curRecord);
+            return 1;
+        case REV32(PWAT):
+            deindexer.Accept(curRecord);
+            PWAT.pool.destroy(curRecord);
+            return 1;
+        case REV32(GRAS):
+            deindexer.Accept(curRecord);
+            GRAS.pool.destroy(curRecord);
+            return 1;
+        case REV32(TREE):
+            deindexer.Accept(curRecord);
+            TREE.pool.destroy(curRecord);
+            return 1;
+        case REV32(FURN):
+            deindexer.Accept(curRecord);
+            FURN.pool.destroy(curRecord);
+            return 1;
+        case REV32(WEAP):
+            deindexer.Accept(curRecord);
+            WEAP.pool.destroy(curRecord);
+            return 1;
+        case REV32(AMMO):
+            deindexer.Accept(curRecord);
+            AMMO.pool.destroy(curRecord);
+            return 1;
+        case REV32(NPC_):
+            deindexer.Accept(curRecord);
+            NPC_.pool.destroy(curRecord);
+            return 1;
+        case REV32(CREA):
+            deindexer.Accept(curRecord);
+            CREA.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVLC):
+            deindexer.Accept(curRecord);
+            LVLC.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVLN):
+            deindexer.Accept(curRecord);
+            LVLN.pool.destroy(curRecord);
+            return 1;
+        case REV32(KEYM):
+            deindexer.Accept(curRecord);
+            KEYM.pool.destroy(curRecord);
+            return 1;
+        case REV32(ALCH):
+            deindexer.Accept(curRecord);
+            ALCH.pool.destroy(curRecord);
+            return 1;
+        case REV32(IDLM):
+            deindexer.Accept(curRecord);
+            IDLM.pool.destroy(curRecord);
+            return 1;
+        case REV32(NOTE):
+            deindexer.Accept(curRecord);
+            NOTE.pool.destroy(curRecord);
+            return 1;
+        case REV32(COBJ):
+            deindexer.Accept(curRecord);
+            COBJ.pool.destroy(curRecord);
+            return 1;
+        case REV32(PROJ):
+            deindexer.Accept(curRecord);
+            PROJ.pool.destroy(curRecord);
+            return 1;
+        case REV32(LVLI):
+            deindexer.Accept(curRecord);
+            LVLI.pool.destroy(curRecord);
+            return 1;
+        case REV32(WTHR):
+            deindexer.Accept(curRecord);
+            WTHR.pool.destroy(curRecord);
+            return 1;
+        case REV32(CLMT):
+            deindexer.Accept(curRecord);
+            CLMT.pool.destroy(curRecord);
+            return 1;
+        case REV32(REGN):
+            deindexer.Accept(curRecord);
+            REGN.pool.destroy(curRecord);
+            return 1;
+        case REV32(NAVI):
+            deindexer.Accept(curRecord);
+            NAVI.pool.destroy(curRecord);
+            return 1;
+        case REV32(CELL):
+            {
+            FNV::WRLDRecord *wrld_record = (FNV::WRLDRecord *)curRecord->GetParent();
+            bool cell_found = false;
+            if(wrld_record != NULL)
+                {
+                if(wrld_record->CELL == curRecord)
+                    {
+                    wrld_record->CELL = NULL;
+                    cell_found = true;
+                    }
+                else
+                    {
+                    for(UINT32 ListIndex = 0; ListIndex < wrld_record->CELLS.size(); ++ListIndex)
+                        {
+                        if(wrld_record->CELLS[ListIndex] == curRecord)
+                            {
+                            wrld_record->CELLS.erase(wrld_record->CELLS.begin() + ListIndex);
+                            cell_found = true;
+                            break;
+                            }
+                        }
+                    }
+                if(!cell_found)
+                    {
+                    printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                    return 0;
+                    }
+                }
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->ACHR.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->ACHR[ListIndex]);
+                CELL.achr_pool.destroy(cell_record->ACHR[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->ACRE.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->ACRE[ListIndex]);
+                CELL.acre_pool.destroy(cell_record->ACRE[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->REFR.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->REFR[ListIndex]);
+                CELL.refr_pool.destroy(cell_record->REFR[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PGRE.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->PGRE[ListIndex]);
+                CELL.pgre_pool.destroy(cell_record->PGRE[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PMIS.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->PMIS[ListIndex]);
+                CELL.pmis_pool.destroy(cell_record->PMIS[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PBEA.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->PBEA[ListIndex]);
+                CELL.pbea_pool.destroy(cell_record->PBEA[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PFLA.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->PFLA[ListIndex]);
+                CELL.pfla_pool.destroy(cell_record->PFLA[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PCBE.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->PCBE[ListIndex]);
+                CELL.pcbe_pool.destroy(cell_record->PCBE[ListIndex]);
+                }
+
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->NAVM.size(); ++ListIndex)
+                {
+                deindexer.Accept(cell_record->NAVM[ListIndex]);
+                CELL.navm_pool.destroy(cell_record->NAVM[ListIndex]);
+                }
+
+            deindexer.Accept(cell_record->LAND);
+            WRLD.land_pool.destroy(cell_record->LAND);
+
+            deindexer.Accept(curRecord);
+            if(cell_found)
+                WRLD.cell_pool.destroy(curRecord);
+            else
+                CELL.cell_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(WRLD):
+            {
+            FNV::WRLDRecord *wrld_record = (FNV::WRLDRecord *)curRecord;
+
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)wrld_record->CELL;
+            if(cell_record != NULL) //Add it to list of cells to be deleted
+                wrld_record->CELLS.push_back(cell_record);
+
+            for(UINT32 ListIndex = 0; ListIndex < wrld_record->CELLS.size(); ++ListIndex)
+                {
+                cell_record = (FNV::CELLRecord *)wrld_record->CELLS[ListIndex];
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->ACHR.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->ACHR[ListX2Index]);
+                    CELL.achr_pool.destroy(cell_record->ACHR[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->ACRE.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->ACRE[ListX2Index]);
+                    CELL.acre_pool.destroy(cell_record->ACRE[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->REFR.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->REFR[ListX2Index]);
+                    CELL.refr_pool.destroy(cell_record->REFR[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->PGRE.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->PGRE[ListX2Index]);
+                    CELL.pgre_pool.destroy(cell_record->PGRE[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->PMIS.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->PMIS[ListX2Index]);
+                    CELL.pmis_pool.destroy(cell_record->PMIS[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->PBEA.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->PBEA[ListX2Index]);
+                    CELL.pbea_pool.destroy(cell_record->PBEA[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->PFLA.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->PFLA[ListX2Index]);
+                    CELL.pfla_pool.destroy(cell_record->PFLA[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->PCBE.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->PCBE[ListX2Index]);
+                    CELL.pcbe_pool.destroy(cell_record->PCBE[ListX2Index]);
+                    }
+
+                for(UINT32 ListX2Index = 0; ListX2Index < cell_record->NAVM.size(); ++ListX2Index)
+                    {
+                    deindexer.Accept(cell_record->NAVM[ListX2Index]);
+                    CELL.navm_pool.destroy(cell_record->NAVM[ListX2Index]);
+                    }
+
+                deindexer.Accept(cell_record->LAND);
+                WRLD.land_pool.destroy(cell_record->LAND);
+
+                deindexer.Accept((Record *&)cell_record);
+                WRLD.cell_pool.destroy(cell_record);
+                }
+
+            deindexer.Accept(curRecord);
+            WRLD.wrld_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(DIAL):
+            {
+            FNV::DIALRecord *dial_record = (FNV::DIALRecord *)curRecord;
+            for(UINT32 ListIndex = 0; ListIndex < dial_record->INFO.size(); ++ListIndex)
+                {
+                deindexer.Accept(dial_record->INFO[ListIndex]);
+                DIAL.info_pool.destroy(dial_record->INFO[ListIndex]);
+                }
+
+            deindexer.Accept(curRecord);
+            DIAL.dial_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(INFO):
+            {
+            FNV::DIALRecord *dial_record = (FNV::DIALRecord *)curRecord->GetParent();
+            bool info_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < dial_record->INFO.size(); ++ListIndex)
+                {
+                if(dial_record->INFO[ListIndex] == curRecord)
+                    {
+                    dial_record->INFO.erase(dial_record->INFO.begin() + ListIndex);
+                    info_found = true;
+                    break;
+                    }
+                }
+            if(!info_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            DIAL.info_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(ACHR):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool achr_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->ACHR.size(); ++ListIndex)
+                {
+                if(cell_record->ACHR[ListIndex] == curRecord)
+                    {
+                    cell_record->ACHR.erase(cell_record->ACHR.begin() + ListIndex);
+                    achr_found = true;
+                    break;
+                    }
+                }
+            if(!achr_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.achr_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(ACRE):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->ACRE.size(); ++ListIndex)
+                {
+                if(cell_record->ACRE[ListIndex] == curRecord)
+                    {
+                    cell_record->ACRE.erase(cell_record->ACRE.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.acre_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(REFR):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->REFR.size(); ++ListIndex)
+                {
+                if(cell_record->REFR[ListIndex] == curRecord)
+                    {
+                    cell_record->REFR.erase(cell_record->REFR.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.refr_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(PGRE):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PGRE.size(); ++ListIndex)
+                {
+                if(cell_record->PGRE[ListIndex] == curRecord)
+                    {
+                    cell_record->PGRE.erase(cell_record->PGRE.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.pgre_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(PMIS):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PMIS.size(); ++ListIndex)
+                {
+                if(cell_record->PMIS[ListIndex] == curRecord)
+                    {
+                    cell_record->PMIS.erase(cell_record->PMIS.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.pmis_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(PBEA):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PBEA.size(); ++ListIndex)
+                {
+                if(cell_record->PBEA[ListIndex] == curRecord)
+                    {
+                    cell_record->PBEA.erase(cell_record->PBEA.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.pbea_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(PFLA):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PFLA.size(); ++ListIndex)
+                {
+                if(cell_record->PFLA[ListIndex] == curRecord)
+                    {
+                    cell_record->PFLA.erase(cell_record->PFLA.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.pfla_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(PCBE):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->PCBE.size(); ++ListIndex)
+                {
+                if(cell_record->PCBE[ListIndex] == curRecord)
+                    {
+                    cell_record->PCBE.erase(cell_record->PCBE.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.pcbe_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(NAVM):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            bool child_found = false;
+            for(UINT32 ListIndex = 0; ListIndex < cell_record->NAVM.size(); ++ListIndex)
+                {
+                if(cell_record->NAVM[ListIndex] == curRecord)
+                    {
+                    cell_record->NAVM.erase(cell_record->NAVM.begin() + ListIndex);
+                    child_found = true;
+                    break;
+                    }
+                }
+            if(!child_found)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            deindexer.Accept(curRecord);
+            CELL.navm_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(LAND):
+            {
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+
+            if(cell_record->LAND != curRecord)
+                {
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                return 0;
+                }
+
+            cell_record->LAND = NULL;
+            deindexer.Accept(curRecord);
+            WRLD.land_pool.destroy(curRecord);
+            }
+            return 1;
+        case REV32(QUST):
+            deindexer.Accept(curRecord);
+            QUST.pool.destroy(curRecord);
+            return 1;
+        case REV32(IDLE):
+            deindexer.Accept(curRecord);
+            IDLE.pool.destroy(curRecord);
+            return 1;
+        case REV32(PACK):
+            deindexer.Accept(curRecord);
+            PACK.pool.destroy(curRecord);
+            return 1;
+        case REV32(CSTY):
+            deindexer.Accept(curRecord);
+            CSTY.pool.destroy(curRecord);
+            return 1;
+        case REV32(LSCR):
+            deindexer.Accept(curRecord);
+            LSCR.pool.destroy(curRecord);
+            return 1;
+        case REV32(ANIO):
+            deindexer.Accept(curRecord);
+            ANIO.pool.destroy(curRecord);
+            return 1;
+        case REV32(WATR):
+            deindexer.Accept(curRecord);
+            WATR.pool.destroy(curRecord);
+            return 1;
+        case REV32(EFSH):
+            deindexer.Accept(curRecord);
+            EFSH.pool.destroy(curRecord);
+            return 1;
+        case REV32(EXPL):
+            deindexer.Accept(curRecord);
+            EXPL.pool.destroy(curRecord);
+            return 1;
+        case REV32(DEBR):
+            deindexer.Accept(curRecord);
+            DEBR.pool.destroy(curRecord);
+            return 1;
+        //case REV32(IMGS):
+        //    deindexer.Accept(curRecord);
+        //    IMGS.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(IMAD):
+        //    deindexer.Accept(curRecord);
+        //    IMAD.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(FLST):
+        //    deindexer.Accept(curRecord);
+        //    FLST.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(PERK):
+        //    deindexer.Accept(curRecord);
+        //    PERK.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(BPTD):
+        //    deindexer.Accept(curRecord);
+        //    BPTD.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(ADDN):
+        //    deindexer.Accept(curRecord);
+        //    ADDN.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(AVIF):
+        //    deindexer.Accept(curRecord);
+        //    AVIF.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(RADS):
+        //    deindexer.Accept(curRecord);
+        //    RADS.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CAMS):
+        //    deindexer.Accept(curRecord);
+        //    CAMS.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CPTH):
+        //    deindexer.Accept(curRecord);
+        //    CPTH.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(VTYP):
+        //    deindexer.Accept(curRecord);
+        //    VTYP.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(IPCT):
+        //    deindexer.Accept(curRecord);
+        //    IPCT.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(IPDS):
+        //    deindexer.Accept(curRecord);
+        //    IPDS.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(ARMA):
+        //    deindexer.Accept(curRecord);
+        //    ARMA.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(ECZN):
+        //    deindexer.Accept(curRecord);
+        //    ECZN.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(MESG):
+        //    deindexer.Accept(curRecord);
+        //    MESG.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(RGDL):
+        //    deindexer.Accept(curRecord);
+        //    RGDL.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(DOBJ):
+        //    deindexer.Accept(curRecord);
+        //    DOBJ.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(LGTM):
+        //    deindexer.Accept(curRecord);
+        //    LGTM.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(MUSC):
+        //    deindexer.Accept(curRecord);
+        //    MUSC.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(IMOD):
+        //    deindexer.Accept(curRecord);
+        //    IMOD.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(REPU):
+        //    deindexer.Accept(curRecord);
+        //    REPU.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(RCPE):
+        //    deindexer.Accept(curRecord);
+        //    RCPE.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(RCCT):
+        //    deindexer.Accept(curRecord);
+        //    RCCT.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CHIP):
+        //    deindexer.Accept(curRecord);
+        //    CHIP.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CSNO):
+        //    deindexer.Accept(curRecord);
+        //    CSNO.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(LSCT):
+        //    deindexer.Accept(curRecord);
+        //    LSCT.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(MSET):
+        //    deindexer.Accept(curRecord);
+        //    MSET.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(ALOC):
+        //    deindexer.Accept(curRecord);
+        //    ALOC.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CHAL):
+        //    deindexer.Accept(curRecord);
+        //    CHAL.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(AMEF):
+        //    deindexer.Accept(curRecord);
+        //    AMEF.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CCRD):
+        //    deindexer.Accept(curRecord);
+        //    CCRD.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CMNY):
+        //    deindexer.Accept(curRecord);
+        //    CMNY.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(CDCK):
+        //    deindexer.Accept(curRecord);
+        //    CDCK.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(DEHY):
+        //    deindexer.Accept(curRecord);
+        //    DEHY.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(HUNG):
+        //    deindexer.Accept(curRecord);
+        //    HUNG.pool.destroy(curRecord);
+        //    return 1;
+        //case REV32(SLPD):
+        //    deindexer.Accept(curRecord);
+        //    SLPD.pool.destroy(curRecord);
+        //    return 1;
+        default:
+            {
+            Record *Parent = curRecord->GetParent();
+            if(Parent != NULL)
+                {
+                Record *TopParent = Parent->GetParent();
+                if(TopParent != NULL)
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in group (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), Parent->GetStrType(), TopParent->GetStrType(), ModName, Parent->formID, curRecord->formID);
+                else
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) in group (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), Parent->GetStrType(), ModName, Parent->formID, curRecord->formID);
+                }
+            else
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) in group (%s) in mod \"%s\". The group does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetStrType(), ModName, curRecord->formID);
+            }
+            return 0;
+        }
     return 0;
     }
 
@@ -1677,7 +2149,7 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     {
     if(Flags.IsNoLoad)
         {
-        printer("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
         return -1;
         }
 
@@ -1695,107 +2167,119 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
 
         //printer("Checking: %s\n", TES4.MAST[p].value);
         if(checker.Accept(topRecord)) continue;
-        if(GMST.VisitRecords(NULL, checker, false)) continue;
-        if(TXST.VisitRecords(NULL, checker, false)) continue;
-        if(MICN.VisitRecords(NULL, checker, false)) continue;
-        if(GLOB.VisitRecords(NULL, checker, false)) continue;
-        if(CLAS.VisitRecords(NULL, checker, false)) continue;
-        if(FACT.VisitRecords(NULL, checker, false)) continue;
-        if(HDPT.VisitRecords(NULL, checker, false)) continue;
-        if(HAIR.VisitRecords(NULL, checker, false)) continue;
-        if(EYES.VisitRecords(NULL, checker, false)) continue;
-        if(RACE.VisitRecords(NULL, checker, false)) continue;
-        if(SOUN.VisitRecords(NULL, checker, false)) continue;
-        if(ASPC.VisitRecords(NULL, checker, false)) continue;
-        if(MGEF.VisitRecords(NULL, checker, false)) continue;
-        if(SCPT.VisitRecords(NULL, checker, false)) continue;
-        if(LTEX.VisitRecords(NULL, checker, false)) continue;
-        if(ENCH.VisitRecords(NULL, checker, false)) continue;
-        if(SPEL.VisitRecords(NULL, checker, false)) continue;
-        if(ACTI.VisitRecords(NULL, checker, false)) continue;
-        if(TACT.VisitRecords(NULL, checker, false)) continue;
-        if(TERM.VisitRecords(NULL, checker, false)) continue;
-        if(ARMO.VisitRecords(NULL, checker, false)) continue;
-        if(BOOK.VisitRecords(NULL, checker, false)) continue;
-        if(CONT.VisitRecords(NULL, checker, false)) continue;
-        if(DOOR.VisitRecords(NULL, checker, false)) continue;
-        if(INGR.VisitRecords(NULL, checker, false)) continue;
-        if(LIGH.VisitRecords(NULL, checker, false)) continue;
-        if(MISC.VisitRecords(NULL, checker, false)) continue;
-        if(STAT.VisitRecords(NULL, checker, false)) continue;
-        if(SCOL.VisitRecords(NULL, checker, false)) continue;
-        if(MSTT.VisitRecords(NULL, checker, false)) continue;
-        if(PWAT.VisitRecords(NULL, checker, false)) continue;
-        if(GRAS.VisitRecords(NULL, checker, false)) continue;
-        if(TREE.VisitRecords(NULL, checker, false)) continue;
-        if(FURN.VisitRecords(NULL, checker, false)) continue;
-        if(WEAP.VisitRecords(NULL, checker, false)) continue;
-        if(AMMO.VisitRecords(NULL, checker, false)) continue;
-        if(NPC_.VisitRecords(NULL, checker, false)) continue;
-        if(CREA.VisitRecords(NULL, checker, false)) continue;
-        if(LVLC.VisitRecords(NULL, checker, false)) continue;
-        if(LVLN.VisitRecords(NULL, checker, false)) continue;
-        if(KEYM.VisitRecords(NULL, checker, false)) continue;
-        if(ALCH.VisitRecords(NULL, checker, false)) continue;
-        if(IDLM.VisitRecords(NULL, checker, false)) continue;
-        if(NOTE.VisitRecords(NULL, checker, false)) continue;
-        if(COBJ.VisitRecords(NULL, checker, false)) continue;
-        if(PROJ.VisitRecords(NULL, checker, false)) continue;
-        if(LVLI.VisitRecords(NULL, checker, false)) continue;
-        if(WTHR.VisitRecords(NULL, checker, false)) continue;
-        if(CLMT.VisitRecords(NULL, checker, false)) continue;
-        if(REGN.VisitRecords(NULL, checker, false)) continue;
-        if(NAVI.VisitRecords(NULL, checker, false)) continue;
-        if(CELL.VisitRecords(NULL, checker, true)) continue;
-        if(WRLD.VisitRecords(NULL, checker, true)) continue;
-        if(DIAL.VisitRecords(NULL, checker, true)) continue;
-        if(QUST.VisitRecords(NULL, checker, false)) continue;
-        if(IDLE.VisitRecords(NULL, checker, false)) continue;
-        if(PACK.VisitRecords(NULL, checker, false)) continue;
-        if(CSTY.VisitRecords(NULL, checker, false)) continue;
-        if(LSCR.VisitRecords(NULL, checker, false)) continue;
-        if(ANIO.VisitRecords(NULL, checker, false)) continue;
-        if(WATR.VisitRecords(NULL, checker, false)) continue;
-        if(EFSH.VisitRecords(NULL, checker, false)) continue;
-        if(EXPL.VisitRecords(NULL, checker, false)) continue;
-        if(DEBR.VisitRecords(NULL, checker, false)) continue;
-        //if(IMGS.VisitRecords(NULL, checker, false)) continue;
-        //if(IMAD.VisitRecords(NULL, checker, false)) continue;
-        //if(FLST.VisitRecords(NULL, checker, false)) continue;
-        //if(PERK.VisitRecords(NULL, checker, false)) continue;
-        //if(BPTD.VisitRecords(NULL, checker, false)) continue;
-        //if(ADDN.VisitRecords(NULL, checker, false)) continue;
-        //if(AVIF.VisitRecords(NULL, checker, false)) continue;
-        //if(RADS.VisitRecords(NULL, checker, false)) continue;
-        //if(CAMS.VisitRecords(NULL, checker, false)) continue;
-        //if(CPTH.VisitRecords(NULL, checker, false)) continue;
-        //if(VTYP.VisitRecords(NULL, checker, false)) continue;
-        //if(IPCT.VisitRecords(NULL, checker, false)) continue;
-        //if(IPDS.VisitRecords(NULL, checker, false)) continue;
-        //if(ARMA.VisitRecords(NULL, checker, false)) continue;
-        //if(ECZN.VisitRecords(NULL, checker, false)) continue;
-        //if(MESG.VisitRecords(NULL, checker, false)) continue;
-        //if(RGDL.VisitRecords(NULL, checker, false)) continue;
-        //if(DOBJ.VisitRecords(NULL, checker, false)) continue;
-        //if(LGTM.VisitRecords(NULL, checker, false)) continue;
-        //if(MUSC.VisitRecords(NULL, checker, false)) continue;
-        //if(IMOD.VisitRecords(NULL, checker, false)) continue;
-        //if(REPU.VisitRecords(NULL, checker, false)) continue;
-        //if(RCPE.VisitRecords(NULL, checker, false)) continue;
-        //if(RCCT.VisitRecords(NULL, checker, false)) continue;
-        //if(CHIP.VisitRecords(NULL, checker, false)) continue;
-        //if(CSNO.VisitRecords(NULL, checker, false)) continue;
-        //if(LSCT.VisitRecords(NULL, checker, false)) continue;
-        //if(MSET.VisitRecords(NULL, checker, false)) continue;
-        //if(ALOC.VisitRecords(NULL, checker, false)) continue;
-        //if(CHAL.VisitRecords(NULL, checker, false)) continue;
-        //if(AMEF.VisitRecords(NULL, checker, false)) continue;
-        //if(CCRD.VisitRecords(NULL, checker, false)) continue;
-        //if(CMNY.VisitRecords(NULL, checker, false)) continue;
-        //if(CDCK.VisitRecords(NULL, checker, false)) continue;
-        //if(DEHY.VisitRecords(NULL, checker, false)) continue;
-        //if(HUNG.VisitRecords(NULL, checker, false)) continue;
-        //if(SLPD.VisitRecords(NULL, checker, false)) continue;
+        if(GMST.pool.VisitRecords(checker)) continue;
+        if(TXST.pool.VisitRecords(checker)) continue;
+        if(MICN.pool.VisitRecords(checker)) continue;
+        if(GLOB.pool.VisitRecords(checker)) continue;
+        if(CLAS.pool.VisitRecords(checker)) continue;
+        if(FACT.pool.VisitRecords(checker)) continue;
+        if(HDPT.pool.VisitRecords(checker)) continue;
+        if(HAIR.pool.VisitRecords(checker)) continue;
+        if(EYES.pool.VisitRecords(checker)) continue;
+        if(RACE.pool.VisitRecords(checker)) continue;
+        if(SOUN.pool.VisitRecords(checker)) continue;
+        if(ASPC.pool.VisitRecords(checker)) continue;
+        if(MGEF.pool.VisitRecords(checker)) continue;
+        if(SCPT.pool.VisitRecords(checker)) continue;
+        if(LTEX.pool.VisitRecords(checker)) continue;
+        if(ENCH.pool.VisitRecords(checker)) continue;
+        if(SPEL.pool.VisitRecords(checker)) continue;
+        if(ACTI.pool.VisitRecords(checker)) continue;
+        if(TACT.pool.VisitRecords(checker)) continue;
+        if(TERM.pool.VisitRecords(checker)) continue;
+        if(ARMO.pool.VisitRecords(checker)) continue;
+        if(BOOK.pool.VisitRecords(checker)) continue;
+        if(CONT.pool.VisitRecords(checker)) continue;
+        if(DOOR.pool.VisitRecords(checker)) continue;
+        if(INGR.pool.VisitRecords(checker)) continue;
+        if(LIGH.pool.VisitRecords(checker)) continue;
+        if(MISC.pool.VisitRecords(checker)) continue;
+        if(STAT.pool.VisitRecords(checker)) continue;
+        if(SCOL.pool.VisitRecords(checker)) continue;
+        if(MSTT.pool.VisitRecords(checker)) continue;
+        if(PWAT.pool.VisitRecords(checker)) continue;
+        if(GRAS.pool.VisitRecords(checker)) continue;
+        if(TREE.pool.VisitRecords(checker)) continue;
+        if(FURN.pool.VisitRecords(checker)) continue;
+        if(WEAP.pool.VisitRecords(checker)) continue;
+        if(AMMO.pool.VisitRecords(checker)) continue;
+        if(NPC_.pool.VisitRecords(checker)) continue;
+        if(CREA.pool.VisitRecords(checker)) continue;
+        if(LVLC.pool.VisitRecords(checker)) continue;
+        if(LVLN.pool.VisitRecords(checker)) continue;
+        if(KEYM.pool.VisitRecords(checker)) continue;
+        if(ALCH.pool.VisitRecords(checker)) continue;
+        if(IDLM.pool.VisitRecords(checker)) continue;
+        if(NOTE.pool.VisitRecords(checker)) continue;
+        if(COBJ.pool.VisitRecords(checker)) continue;
+        if(PROJ.pool.VisitRecords(checker)) continue;
+        if(LVLI.pool.VisitRecords(checker)) continue;
+        if(WTHR.pool.VisitRecords(checker)) continue;
+        if(CLMT.pool.VisitRecords(checker)) continue;
+        if(REGN.pool.VisitRecords(checker)) continue;
+        if(NAVI.pool.VisitRecords(checker)) continue;
+        if(QUST.pool.VisitRecords(checker)) continue;
+        if(IDLE.pool.VisitRecords(checker)) continue;
+        if(PACK.pool.VisitRecords(checker)) continue;
+        if(CSTY.pool.VisitRecords(checker)) continue;
+        if(LSCR.pool.VisitRecords(checker)) continue;
+        if(ANIO.pool.VisitRecords(checker)) continue;
+        if(WATR.pool.VisitRecords(checker)) continue;
+        if(EFSH.pool.VisitRecords(checker)) continue;
+        if(EXPL.pool.VisitRecords(checker)) continue;
+        if(DEBR.pool.VisitRecords(checker)) continue;
+        //if(IMGS.pool.VisitRecords(checker)) continue;
+        //if(IMAD.pool.VisitRecords(checker)) continue;
+        //if(FLST.pool.VisitRecords(checker)) continue;
+        //if(PERK.pool.VisitRecords(checker)) continue;
+        //if(BPTD.pool.VisitRecords(checker)) continue;
+        //if(ADDN.pool.VisitRecords(checker)) continue;
+        //if(AVIF.pool.VisitRecords(checker)) continue;
+        //if(RADS.pool.VisitRecords(checker)) continue;
+        //if(CAMS.pool.VisitRecords(checker)) continue;
+        //if(CPTH.pool.VisitRecords(checker)) continue;
+        //if(VTYP.pool.VisitRecords(checker)) continue;
+        //if(IPCT.pool.VisitRecords(checker)) continue;
+        //if(IPDS.pool.VisitRecords(checker)) continue;
+        //if(ARMA.pool.VisitRecords(checker)) continue;
+        //if(ECZN.pool.VisitRecords(checker)) continue;
+        //if(MESG.pool.VisitRecords(checker)) continue;
+        //if(RGDL.pool.VisitRecords(checker)) continue;
+        //if(DOBJ.pool.VisitRecords(checker)) continue;
+        //if(LGTM.pool.VisitRecords(checker)) continue;
+        //if(MUSC.pool.VisitRecords(checker)) continue;
+        //if(IMOD.pool.VisitRecords(checker)) continue;
+        //if(REPU.pool.VisitRecords(checker)) continue;
+        //if(RCPE.pool.VisitRecords(checker)) continue;
+        //if(RCCT.pool.VisitRecords(checker)) continue;
+        //if(CHIP.pool.VisitRecords(checker)) continue;
+        //if(CSNO.pool.VisitRecords(checker)) continue;
+        //if(LSCT.pool.VisitRecords(checker)) continue;
+        //if(MSET.pool.VisitRecords(checker)) continue;
+        //if(ALOC.pool.VisitRecords(checker)) continue;
+        //if(CHAL.pool.VisitRecords(checker)) continue;
+        //if(AMEF.pool.VisitRecords(checker)) continue;
+        //if(CCRD.pool.VisitRecords(checker)) continue;
+        //if(CMNY.pool.VisitRecords(checker)) continue;
+        //if(CDCK.pool.VisitRecords(checker)) continue;
+        //if(DEHY.pool.VisitRecords(checker)) continue;
+        //if(HUNG.pool.VisitRecords(checker)) continue;
+        //if(SLPD.pool.VisitRecords(checker)) continue;
+        if(CELL.cell_pool.VisitRecords(checker)) continue;
+        if(WRLD.wrld_pool.VisitRecords(checker)) continue;
+        if(WRLD.cell_pool.VisitRecords(checker)) continue;
+        if(WRLD.land_pool.VisitRecords(checker)) continue;
+        if(DIAL.dial_pool.VisitRecords(checker)) continue;
+        if(DIAL.info_pool.VisitRecords(checker)) continue;
+        if(CELL.pgre_pool.VisitRecords(checker)) continue;
+        if(CELL.pmis_pool.VisitRecords(checker)) continue;
+        if(CELL.pbea_pool.VisitRecords(checker)) continue;
+        if(CELL.pfla_pool.VisitRecords(checker)) continue;
+        if(CELL.pcbe_pool.VisitRecords(checker)) continue;
+        if(CELL.navm_pool.VisitRecords(checker)) continue;
+        if(CELL.achr_pool.VisitRecords(checker)) continue;
+        if(CELL.acre_pool.VisitRecords(checker)) continue;
+        if(CELL.refr_pool.VisitRecords(checker)) continue;
 
         //printer("ToRemove: %s\n", TES4.MAST[p].value);
         ToRemove.push_back(p);
@@ -1804,17 +2288,20 @@ SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
     if(cleaned)
         {
         for(SINT32 p = (SINT32)ToRemove.size() - 1; p >= 0; --p)
+            {
+            delete []TES4.MAST[ToRemove[p]];
             TES4.MAST.erase(TES4.MAST.begin() + ToRemove[p]);
+            }
         FormIDHandler.UpdateFormIDLookup();
         }
     return cleaned;
     }
 
-SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod)
+SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer)
     {
     if(!Flags.IsSaveable)
         {
-        printer("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", reader.getModName());
+        printer("FNVFile::Save: Error - Unable to save mod \"%s\". It is flagged as being non-saveable.\n", ModName);
         return -1;
         }
 
@@ -1831,107 +2318,107 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     TES4.Write(writer, bMastersChanged, expander, collapser, Expanders);
 
     //ADD DEFINITIONS HERE
-    formCount += GMST.WriteGRUP(REV32(GMST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TXST.WriteGRUP(REV32(TXST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MICN.WriteGRUP(REV32(MICN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GLOB.WriteGRUP(REV32(GLOB), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLAS.WriteGRUP(REV32(CLAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FACT.WriteGRUP(REV32(FACT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HDPT.WriteGRUP(REV32(HDPT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += HAIR.WriteGRUP(REV32(HAIR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EYES.WriteGRUP(REV32(EYES), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += RACE.WriteGRUP(REV32(RACE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SOUN.WriteGRUP(REV32(SOUN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ASPC.WriteGRUP(REV32(ASPC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MGEF.WriteGRUP(REV32(MGEF), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SCPT.WriteGRUP(REV32(SCPT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LTEX.WriteGRUP(REV32(LTEX), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ENCH.WriteGRUP(REV32(ENCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SPEL.WriteGRUP(REV32(SPEL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ACTI.WriteGRUP(REV32(ACTI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TACT.WriteGRUP(REV32(TACT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TERM.WriteGRUP(REV32(TERM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ARMO.WriteGRUP(REV32(ARMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += BOOK.WriteGRUP(REV32(BOOK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CONT.WriteGRUP(REV32(CONT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += DOOR.WriteGRUP(REV32(DOOR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += INGR.WriteGRUP(REV32(INGR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LIGH.WriteGRUP(REV32(LIGH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MISC.WriteGRUP(REV32(MISC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += STAT.WriteGRUP(REV32(STAT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += SCOL.WriteGRUP(REV32(SCOL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += MSTT.WriteGRUP(REV32(MSTT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += PWAT.WriteGRUP(REV32(PWAT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += GRAS.WriteGRUP(REV32(GRAS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += TREE.WriteGRUP(REV32(TREE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += FURN.WriteGRUP(REV32(FURN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WEAP.WriteGRUP(REV32(WEAP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += AMMO.WriteGRUP(REV32(AMMO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += NPC_.WriteGRUP(REV32(NPC_), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CREA.WriteGRUP(REV32(CREA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLC.WriteGRUP(REV32(LVLC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLN.WriteGRUP(REV32(LVLN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += KEYM.WriteGRUP(REV32(KEYM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ALCH.WriteGRUP(REV32(ALCH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += IDLM.WriteGRUP(REV32(IDLM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += NOTE.WriteGRUP(REV32(NOTE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += COBJ.WriteGRUP(REV32(COBJ), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += PROJ.WriteGRUP(REV32(PROJ), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LVLI.WriteGRUP(REV32(LVLI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WTHR.WriteGRUP(REV32(WTHR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CLMT.WriteGRUP(REV32(CLMT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += REGN.WriteGRUP(REV32(REGN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += NAVI.WriteGRUP(REV32(NAVI), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CELL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WRLD.WriteGRUP(writer, FormIDHandler, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += DIAL.WriteGRUP(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += QUST.WriteGRUP(REV32(QUST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += IDLE.WriteGRUP(REV32(IDLE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += PACK.WriteGRUP(REV32(PACK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += CSTY.WriteGRUP(REV32(CSTY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += LSCR.WriteGRUP(REV32(LSCR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += ANIO.WriteGRUP(REV32(ANIO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += WATR.WriteGRUP(REV32(WATR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EFSH.WriteGRUP(REV32(EFSH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += EXPL.WriteGRUP(REV32(EXPL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    formCount += DEBR.WriteGRUP(REV32(DEBR), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMGS.WriteGRUP(REV32(IMGS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMAD.WriteGRUP(REV32(IMAD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += FLST.WriteGRUP(REV32(FLST), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += PERK.WriteGRUP(REV32(PERK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += BPTD.WriteGRUP(REV32(BPTD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ADDN.WriteGRUP(REV32(ADDN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AVIF.WriteGRUP(REV32(AVIF), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RADS.WriteGRUP(REV32(RADS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CAMS.WriteGRUP(REV32(CAMS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CPTH.WriteGRUP(REV32(CPTH), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += VTYP.WriteGRUP(REV32(VTYP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IPCT.WriteGRUP(REV32(IPCT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IPDS.WriteGRUP(REV32(IPDS), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ARMA.WriteGRUP(REV32(ARMA), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ECZN.WriteGRUP(REV32(ECZN), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MESG.WriteGRUP(REV32(MESG), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RGDL.WriteGRUP(REV32(RGDL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DOBJ.WriteGRUP(REV32(DOBJ), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LGTM.WriteGRUP(REV32(LGTM), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MUSC.WriteGRUP(REV32(MUSC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += IMOD.WriteGRUP(REV32(IMOD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += REPU.WriteGRUP(REV32(REPU), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RCPE.WriteGRUP(REV32(RCPE), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += RCCT.WriteGRUP(REV32(RCCT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CHIP.WriteGRUP(REV32(CHIP), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CSNO.WriteGRUP(REV32(CSNO), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += LSCT.WriteGRUP(REV32(LSCT), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += MSET.WriteGRUP(REV32(MSET), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += ALOC.WriteGRUP(REV32(ALOC), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CHAL.WriteGRUP(REV32(CHAL), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += AMEF.WriteGRUP(REV32(AMEF), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CCRD.WriteGRUP(REV32(CCRD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CMNY.WriteGRUP(REV32(CMNY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += CDCK.WriteGRUP(REV32(CDCK), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += DEHY.WriteGRUP(REV32(DEHY), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += HUNG.WriteGRUP(REV32(HUNG), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
-    //formCount += SLPD.WriteGRUP(REV32(SLPD), writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GMST.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TXST.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MICN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GLOB.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLAS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FACT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HDPT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += HAIR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EYES.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += RACE.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SOUN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ASPC.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MGEF.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCPT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LTEX.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ENCH.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SPEL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ACTI.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TACT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TERM.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ARMO.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += BOOK.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CONT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DOOR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += INGR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LIGH.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MISC.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += STAT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += SCOL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += MSTT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PWAT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += GRAS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += TREE.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += FURN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WEAP.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += AMMO.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NPC_.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CREA.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLC.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += KEYM.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ALCH.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLM.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NOTE.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += COBJ.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PROJ.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LVLI.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WTHR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CLMT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += REGN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += NAVI.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CELL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WRLD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod, FormIDHandler, CELL, indexer);
+    formCount += DIAL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += QUST.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += IDLE.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += PACK.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += CSTY.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += LSCR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += ANIO.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += WATR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EFSH.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += EXPL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    formCount += DEBR.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMGS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMAD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += FLST.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += PERK.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += BPTD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ADDN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += AVIF.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RADS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CAMS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CPTH.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += VTYP.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IPCT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IPDS.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ARMA.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ECZN.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MESG.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RGDL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DOBJ.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LGTM.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MUSC.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += IMOD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += REPU.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RCPE.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += RCCT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CHIP.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CSNO.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += LSCT.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += MSET.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += ALOC.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CHAL.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += AMEF.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CCRD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CMNY.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += CDCK.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += DEHY.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += HUNG.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
+    //formCount += SLPD.Write(writer, Expanders, expander, collapser, bMastersChanged, CloseMod);
 
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(34, &formCount, 4);
@@ -1945,441 +2432,495 @@ void FNVFile::VisitAllRecords(RecordOp &op)
     {
     if(Flags.IsNoLoad)
         {
-        printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
         return;
         }
 
     //This visits every record and subrecord
-    Record * topRecord = &TES4;
-    op.Accept(topRecord);
-    GMST.VisitRecords(NULL, op, true);
-    TXST.VisitRecords(NULL, op, true);
-    MICN.VisitRecords(NULL, op, true);
-    GLOB.VisitRecords(NULL, op, true);
-    CLAS.VisitRecords(NULL, op, true);
-    FACT.VisitRecords(NULL, op, true);
-    HDPT.VisitRecords(NULL, op, true);
-    HAIR.VisitRecords(NULL, op, true);
-    EYES.VisitRecords(NULL, op, true);
-    RACE.VisitRecords(NULL, op, true);
-    SOUN.VisitRecords(NULL, op, true);
-    ASPC.VisitRecords(NULL, op, true);
-    MGEF.VisitRecords(NULL, op, true);
-    SCPT.VisitRecords(NULL, op, true);
-    LTEX.VisitRecords(NULL, op, true);
-    ENCH.VisitRecords(NULL, op, true);
-    SPEL.VisitRecords(NULL, op, true);
-    ACTI.VisitRecords(NULL, op, true);
-    TACT.VisitRecords(NULL, op, true);
-    TERM.VisitRecords(NULL, op, true);
-    ARMO.VisitRecords(NULL, op, true);
-    BOOK.VisitRecords(NULL, op, true);
-    CONT.VisitRecords(NULL, op, true);
-    DOOR.VisitRecords(NULL, op, true);
-    INGR.VisitRecords(NULL, op, true);
-    LIGH.VisitRecords(NULL, op, true);
-    MISC.VisitRecords(NULL, op, true);
-    STAT.VisitRecords(NULL, op, true);
-    SCOL.VisitRecords(NULL, op, true);
-    MSTT.VisitRecords(NULL, op, true);
-    PWAT.VisitRecords(NULL, op, true);
-    GRAS.VisitRecords(NULL, op, true);
-    TREE.VisitRecords(NULL, op, true);
-    FURN.VisitRecords(NULL, op, true);
-    WEAP.VisitRecords(NULL, op, true);
-    AMMO.VisitRecords(NULL, op, true);
-    NPC_.VisitRecords(NULL, op, true);
-    CREA.VisitRecords(NULL, op, true);
-    LVLC.VisitRecords(NULL, op, true);
-    LVLN.VisitRecords(NULL, op, true);
-    KEYM.VisitRecords(NULL, op, true);
-    ALCH.VisitRecords(NULL, op, true);
-    IDLM.VisitRecords(NULL, op, true);
-    NOTE.VisitRecords(NULL, op, true);
-    COBJ.VisitRecords(NULL, op, true);
-    PROJ.VisitRecords(NULL, op, true);
-    LVLI.VisitRecords(NULL, op, true);
-    WTHR.VisitRecords(NULL, op, true);
-    CLMT.VisitRecords(NULL, op, true);
-    REGN.VisitRecords(NULL, op, true);
-    NAVI.VisitRecords(NULL, op, true);
-    CELL.VisitRecords(NULL, op, true);
-    WRLD.VisitRecords(NULL, op, true);
-    DIAL.VisitRecords(NULL, op, true);
-    QUST.VisitRecords(NULL, op, true);
-    IDLE.VisitRecords(NULL, op, true);
-    PACK.VisitRecords(NULL, op, true);
-    CSTY.VisitRecords(NULL, op, true);
-    LSCR.VisitRecords(NULL, op, true);
-    ANIO.VisitRecords(NULL, op, true);
-    WATR.VisitRecords(NULL, op, true);
-    EFSH.VisitRecords(NULL, op, true);
-    EXPL.VisitRecords(NULL, op, true);
-    DEBR.VisitRecords(NULL, op, true);
-    //IMGS.VisitRecords(NULL, op, true);
-    //IMAD.VisitRecords(NULL, op, true);
-    //FLST.VisitRecords(NULL, op, true);
-    //PERK.VisitRecords(NULL, op, true);
-    //BPTD.VisitRecords(NULL, op, true);
-    //ADDN.VisitRecords(NULL, op, true);
-    //AVIF.VisitRecords(NULL, op, true);
-    //RADS.VisitRecords(NULL, op, true);
-    //CAMS.VisitRecords(NULL, op, true);
-    //CPTH.VisitRecords(NULL, op, true);
-    //VTYP.VisitRecords(NULL, op, true);
-    //IPCT.VisitRecords(NULL, op, true);
-    //IPDS.VisitRecords(NULL, op, true);
-    //ARMA.VisitRecords(NULL, op, true);
-    //ECZN.VisitRecords(NULL, op, true);
-    //MESG.VisitRecords(NULL, op, true);
-    //RGDL.VisitRecords(NULL, op, true);
-    //DOBJ.VisitRecords(NULL, op, true);
-    //LGTM.VisitRecords(NULL, op, true);
-    //MUSC.VisitRecords(NULL, op, true);
-    //IMOD.VisitRecords(NULL, op, true);
-    //REPU.VisitRecords(NULL, op, true);
-    //RCPE.VisitRecords(NULL, op, true);
-    //RCCT.VisitRecords(NULL, op, true);
-    //CHIP.VisitRecords(NULL, op, true);
-    //CSNO.VisitRecords(NULL, op, true);
-    //LSCT.VisitRecords(NULL, op, true);
-    //MSET.VisitRecords(NULL, op, true);
-    //ALOC.VisitRecords(NULL, op, true);
-    //CHAL.VisitRecords(NULL, op, true);
-    //AMEF.VisitRecords(NULL, op, true);
-    //CCRD.VisitRecords(NULL, op, true);
-    //CMNY.VisitRecords(NULL, op, true);
-    //CDCK.VisitRecords(NULL, op, true);
-    //DEHY.VisitRecords(NULL, op, true);
-    //HUNG.VisitRecords(NULL, op, true);
-    //SLPD.VisitRecords(NULL, op, true);
+    {
+    Record *temp = &TES4;
+    op.Accept(temp);
+    }
+    GMST.pool.VisitRecords(op);
+    TXST.pool.VisitRecords(op);
+    MICN.pool.VisitRecords(op);
+    GLOB.pool.VisitRecords(op);
+    CLAS.pool.VisitRecords(op);
+    FACT.pool.VisitRecords(op);
+    HDPT.pool.VisitRecords(op);
+    HAIR.pool.VisitRecords(op);
+    EYES.pool.VisitRecords(op);
+    RACE.pool.VisitRecords(op);
+    SOUN.pool.VisitRecords(op);
+    ASPC.pool.VisitRecords(op);
+    MGEF.pool.VisitRecords(op);
+    SCPT.pool.VisitRecords(op);
+    LTEX.pool.VisitRecords(op);
+    ENCH.pool.VisitRecords(op);
+    SPEL.pool.VisitRecords(op);
+    ACTI.pool.VisitRecords(op);
+    TACT.pool.VisitRecords(op);
+    TERM.pool.VisitRecords(op);
+    ARMO.pool.VisitRecords(op);
+    BOOK.pool.VisitRecords(op);
+    CONT.pool.VisitRecords(op);
+    DOOR.pool.VisitRecords(op);
+    INGR.pool.VisitRecords(op);
+    LIGH.pool.VisitRecords(op);
+    MISC.pool.VisitRecords(op);
+    STAT.pool.VisitRecords(op);
+    SCOL.pool.VisitRecords(op);
+    MSTT.pool.VisitRecords(op);
+    PWAT.pool.VisitRecords(op);
+    GRAS.pool.VisitRecords(op);
+    TREE.pool.VisitRecords(op);
+    FURN.pool.VisitRecords(op);
+    WEAP.pool.VisitRecords(op);
+    AMMO.pool.VisitRecords(op);
+    NPC_.pool.VisitRecords(op);
+    CREA.pool.VisitRecords(op);
+    LVLC.pool.VisitRecords(op);
+    LVLN.pool.VisitRecords(op);
+    KEYM.pool.VisitRecords(op);
+    ALCH.pool.VisitRecords(op);
+    IDLM.pool.VisitRecords(op);
+    NOTE.pool.VisitRecords(op);
+    COBJ.pool.VisitRecords(op);
+    PROJ.pool.VisitRecords(op);
+    LVLI.pool.VisitRecords(op);
+    WTHR.pool.VisitRecords(op);
+    CLMT.pool.VisitRecords(op);
+    REGN.pool.VisitRecords(op);
+    NAVI.pool.VisitRecords(op);
+    //Child records need to be visited prior to the parent in order for identical to master cleaning to work nicely
+    CELL.achr_pool.VisitRecords(op);
+    CELL.acre_pool.VisitRecords(op);
+    CELL.refr_pool.VisitRecords(op);
+    CELL.pgre_pool.VisitRecords(op);
+    CELL.pmis_pool.VisitRecords(op);
+    CELL.pbea_pool.VisitRecords(op);
+    CELL.pfla_pool.VisitRecords(op);
+    CELL.pcbe_pool.VisitRecords(op);
+    CELL.navm_pool.VisitRecords(op);
+    WRLD.land_pool.VisitRecords(op);
+    DIAL.info_pool.VisitRecords(op);
+
+    CELL.cell_pool.VisitRecords(op);
+    WRLD.cell_pool.VisitRecords(op);
+    WRLD.wrld_pool.VisitRecords(op);
+    DIAL.dial_pool.VisitRecords(op);
+    QUST.pool.VisitRecords(op);
+    IDLE.pool.VisitRecords(op);
+    PACK.pool.VisitRecords(op);
+    CSTY.pool.VisitRecords(op);
+    LSCR.pool.VisitRecords(op);
+    ANIO.pool.VisitRecords(op);
+    WATR.pool.VisitRecords(op);
+    EFSH.pool.VisitRecords(op);
+    EXPL.pool.VisitRecords(op);
+    DEBR.pool.VisitRecords(op);
+    //IMGS.pool.VisitRecords(op);
+    //IMAD.pool.VisitRecords(op);
+    //FLST.pool.VisitRecords(op);
+    //PERK.pool.VisitRecords(op);
+    //BPTD.pool.VisitRecords(op);
+    //ADDN.pool.VisitRecords(op);
+    //AVIF.pool.VisitRecords(op);
+    //RADS.pool.VisitRecords(op);
+    //CAMS.pool.VisitRecords(op);
+    //CPTH.pool.VisitRecords(op);
+    //VTYP.pool.VisitRecords(op);
+    //IPCT.pool.VisitRecords(op);
+    //IPDS.pool.VisitRecords(op);
+    //ARMA.pool.VisitRecords(op);
+    //ECZN.pool.VisitRecords(op);
+    //MESG.pool.VisitRecords(op);
+    //RGDL.pool.VisitRecords(op);
+    //DOBJ.pool.VisitRecords(op);
+    //LGTM.pool.VisitRecords(op);
+    //MUSC.pool.VisitRecords(op);
+    //IMOD.pool.VisitRecords(op);
+    //REPU.pool.VisitRecords(op);
+    //RCPE.pool.VisitRecords(op);
+    //RCCT.pool.VisitRecords(op);
+    //CHIP.pool.VisitRecords(op);
+    //CSNO.pool.VisitRecords(op);
+    //LSCT.pool.VisitRecords(op);
+    //MSET.pool.VisitRecords(op);
+    //ALOC.pool.VisitRecords(op);
+    //CHAL.pool.VisitRecords(op);
+    //AMEF.pool.VisitRecords(op);
+    //CCRD.pool.VisitRecords(op);
+    //CMNY.pool.VisitRecords(op);
+    //CDCK.pool.VisitRecords(op);
+    //DEHY.pool.VisitRecords(op);
+    //HUNG.pool.VisitRecords(op);
+    //SLPD.pool.VisitRecords(op);
 
     return;
     }
 
-void FNVFile::VisitRecords(const UINT32 &TopRecordType, const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+void FNVFile::VisitRecords(const UINT32 &RecordType, RecordOp &op)
     {
     if(Flags.IsNoLoad)
         {
-        printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", reader.getModName());
+        printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
         return;
         }
 
-    //This visits only the top records specified.
-    Record * topRecord = &TES4;
-    switch(TopRecordType)
+    switch(RecordType)
         {
         case REV32(TES4):
-            op.Accept(topRecord);
+            {
+            Record *temp = &TES4;
+            op.Accept(temp);
+            }
             break;
         case REV32(GMST):
-            GMST.VisitRecords(RecordType, op, DeepVisit);
+            GMST.pool.VisitRecords(op);
             break;
         case REV32(TXST):
-            TXST.VisitRecords(RecordType, op, DeepVisit);
+            TXST.pool.VisitRecords(op);
             break;
         case REV32(MICN):
-            MICN.VisitRecords(RecordType, op, DeepVisit);
+            MICN.pool.VisitRecords(op);
             break;
         case REV32(GLOB):
-            GLOB.VisitRecords(RecordType, op, DeepVisit);
+            GLOB.pool.VisitRecords(op);
             break;
         case REV32(CLAS):
-            CLAS.VisitRecords(RecordType, op, DeepVisit);
+            CLAS.pool.VisitRecords(op);
             break;
         case REV32(FACT):
-            FACT.VisitRecords(RecordType, op, DeepVisit);
+            FACT.pool.VisitRecords(op);
             break;
         case REV32(HDPT):
-            HDPT.VisitRecords(RecordType, op, DeepVisit);
+            HDPT.pool.VisitRecords(op);
             break;
         case REV32(HAIR):
-            HAIR.VisitRecords(RecordType, op, DeepVisit);
+            HAIR.pool.VisitRecords(op);
             break;
         case REV32(EYES):
-            EYES.VisitRecords(RecordType, op, DeepVisit);
+            EYES.pool.VisitRecords(op);
             break;
         case REV32(RACE):
-            RACE.VisitRecords(RecordType, op, DeepVisit);
+            RACE.pool.VisitRecords(op);
             break;
         case REV32(SOUN):
-            SOUN.VisitRecords(RecordType, op, DeepVisit);
+            SOUN.pool.VisitRecords(op);
             break;
         case REV32(ASPC):
-            ASPC.VisitRecords(RecordType, op, DeepVisit);
+            ASPC.pool.VisitRecords(op);
             break;
         case REV32(MGEF):
-            MGEF.VisitRecords(RecordType, op, DeepVisit);
+            MGEF.pool.VisitRecords(op);
             break;
         case REV32(SCPT):
-            SCPT.VisitRecords(RecordType, op, DeepVisit);
+            SCPT.pool.VisitRecords(op);
             break;
         case REV32(LTEX):
-            LTEX.VisitRecords(RecordType, op, DeepVisit);
+            LTEX.pool.VisitRecords(op);
             break;
         case REV32(ENCH):
-            ENCH.VisitRecords(RecordType, op, DeepVisit);
+            ENCH.pool.VisitRecords(op);
             break;
         case REV32(SPEL):
-            SPEL.VisitRecords(RecordType, op, DeepVisit);
+            SPEL.pool.VisitRecords(op);
             break;
         case REV32(ACTI):
-            ACTI.VisitRecords(RecordType, op, DeepVisit);
+            ACTI.pool.VisitRecords(op);
             break;
         case REV32(TACT):
-            TACT.VisitRecords(RecordType, op, DeepVisit);
+            TACT.pool.VisitRecords(op);
             break;
         case REV32(TERM):
-            TERM.VisitRecords(RecordType, op, DeepVisit);
+            TERM.pool.VisitRecords(op);
             break;
         case REV32(ARMO):
-            ARMO.VisitRecords(RecordType, op, DeepVisit);
+            ARMO.pool.VisitRecords(op);
             break;
         case REV32(BOOK):
-            BOOK.VisitRecords(RecordType, op, DeepVisit);
+            BOOK.pool.VisitRecords(op);
             break;
         case REV32(CONT):
-            CONT.VisitRecords(RecordType, op, DeepVisit);
+            CONT.pool.VisitRecords(op);
             break;
         case REV32(DOOR):
-            DOOR.VisitRecords(RecordType, op, DeepVisit);
+            DOOR.pool.VisitRecords(op);
             break;
         case REV32(INGR):
-            INGR.VisitRecords(RecordType, op, DeepVisit);
+            INGR.pool.VisitRecords(op);
             break;
         case REV32(LIGH):
-            LIGH.VisitRecords(RecordType, op, DeepVisit);
+            LIGH.pool.VisitRecords(op);
             break;
         case REV32(MISC):
-            MISC.VisitRecords(RecordType, op, DeepVisit);
+            MISC.pool.VisitRecords(op);
             break;
         case REV32(STAT):
-            STAT.VisitRecords(RecordType, op, DeepVisit);
+            STAT.pool.VisitRecords(op);
             break;
         case REV32(SCOL):
-            SCOL.VisitRecords(RecordType, op, DeepVisit);
+            SCOL.pool.VisitRecords(op);
             break;
         case REV32(MSTT):
-            MSTT.VisitRecords(RecordType, op, DeepVisit);
+            MSTT.pool.VisitRecords(op);
             break;
         case REV32(PWAT):
-            PWAT.VisitRecords(RecordType, op, DeepVisit);
+            PWAT.pool.VisitRecords(op);
             break;
         case REV32(GRAS):
-            GRAS.VisitRecords(RecordType, op, DeepVisit);
+            GRAS.pool.VisitRecords(op);
             break;
         case REV32(TREE):
-            TREE.VisitRecords(RecordType, op, DeepVisit);
+            TREE.pool.VisitRecords(op);
             break;
         case REV32(FURN):
-            FURN.VisitRecords(RecordType, op, DeepVisit);
+            FURN.pool.VisitRecords(op);
             break;
         case REV32(WEAP):
-            WEAP.VisitRecords(RecordType, op, DeepVisit);
+            WEAP.pool.VisitRecords(op);
             break;
         case REV32(AMMO):
-            AMMO.VisitRecords(RecordType, op, DeepVisit);
+            AMMO.pool.VisitRecords(op);
             break;
         case REV32(NPC_):
-            NPC_.VisitRecords(RecordType, op, DeepVisit);
+            NPC_.pool.VisitRecords(op);
             break;
         case REV32(CREA):
-            CREA.VisitRecords(RecordType, op, DeepVisit);
+            CREA.pool.VisitRecords(op);
             break;
         case REV32(LVLC):
-            LVLC.VisitRecords(RecordType, op, DeepVisit);
+            LVLC.pool.VisitRecords(op);
             break;
         case REV32(LVLN):
-            LVLN.VisitRecords(RecordType, op, DeepVisit);
+            LVLN.pool.VisitRecords(op);
             break;
         case REV32(KEYM):
-            KEYM.VisitRecords(RecordType, op, DeepVisit);
+            KEYM.pool.VisitRecords(op);
             break;
         case REV32(ALCH):
-            ALCH.VisitRecords(RecordType, op, DeepVisit);
+            ALCH.pool.VisitRecords(op);
             break;
         case REV32(IDLM):
-            IDLM.VisitRecords(RecordType, op, DeepVisit);
+            IDLM.pool.VisitRecords(op);
             break;
         case REV32(NOTE):
-            NOTE.VisitRecords(RecordType, op, DeepVisit);
+            NOTE.pool.VisitRecords(op);
             break;
         case REV32(COBJ):
-            COBJ.VisitRecords(RecordType, op, DeepVisit);
+            COBJ.pool.VisitRecords(op);
             break;
         case REV32(PROJ):
-            PROJ.VisitRecords(RecordType, op, DeepVisit);
+            PROJ.pool.VisitRecords(op);
             break;
         case REV32(LVLI):
-            LVLI.VisitRecords(RecordType, op, DeepVisit);
+            LVLI.pool.VisitRecords(op);
             break;
         case REV32(WTHR):
-            WTHR.VisitRecords(RecordType, op, DeepVisit);
+            WTHR.pool.VisitRecords(op);
             break;
         case REV32(CLMT):
-            CLMT.VisitRecords(RecordType, op, DeepVisit);
+            CLMT.pool.VisitRecords(op);
             break;
         case REV32(REGN):
-            REGN.VisitRecords(RecordType, op, DeepVisit);
+            REGN.pool.VisitRecords(op);
             break;
         case REV32(NAVI):
-            NAVI.VisitRecords(RecordType, op, DeepVisit);
+            NAVI.pool.VisitRecords(op);
             break;
         case REV32(CELL):
-            CELL.VisitRecords(RecordType, op, DeepVisit);
+            CELL.cell_pool.VisitRecords(op);
+            break;
+        case REV32(ACHR):
+            CELL.achr_pool.VisitRecords(op);
+            break;
+        case REV32(ACRE):
+            CELL.acre_pool.VisitRecords(op);
+            break;
+        case REV32(REFR):
+            CELL.refr_pool.VisitRecords(op);
+            break;
+        case REV32(PGRE):
+            CELL.pgre_pool.VisitRecords(op);
+            break;
+        case REV32(PMIS):
+            CELL.pmis_pool.VisitRecords(op);
+            break;
+        case REV32(PBEA):
+            CELL.pbea_pool.VisitRecords(op);
+            break;
+        case REV32(PFLA):
+            CELL.pfla_pool.VisitRecords(op);
+            break;
+        case REV32(PCBE):
+            CELL.pcbe_pool.VisitRecords(op);
+            break;
+        case REV32(NAVM):
+            CELL.navm_pool.VisitRecords(op);
             break;
         case REV32(WRLD):
-            WRLD.VisitRecords(RecordType, op, DeepVisit);
+            WRLD.wrld_pool.VisitRecords(op);
+            break;
+        case REV32(LAND):
+            WRLD.land_pool.VisitRecords(op);
+            break;
+        case REV32(WCEL):
+            WRLD.cell_pool.VisitRecords(op);
+            break;
+        case REV32(CLLS):
+            CELL.cell_pool.VisitRecords(op);
+            WRLD.cell_pool.VisitRecords(op);
             break;
         case REV32(DIAL):
-            DIAL.VisitRecords(RecordType, op, DeepVisit);
+            DIAL.dial_pool.VisitRecords(op);
+            break;
+        case REV32(INFO):
+            DIAL.info_pool.VisitRecords(op);
             break;
         case REV32(QUST):
-            QUST.VisitRecords(RecordType, op, DeepVisit);
+            QUST.pool.VisitRecords(op);
             break;
         case REV32(IDLE):
-            IDLE.VisitRecords(RecordType, op, DeepVisit);
+            IDLE.pool.VisitRecords(op);
             break;
         case REV32(PACK):
-            PACK.VisitRecords(RecordType, op, DeepVisit);
+            PACK.pool.VisitRecords(op);
             break;
         case REV32(CSTY):
-            CSTY.VisitRecords(RecordType, op, DeepVisit);
+            CSTY.pool.VisitRecords(op);
             break;
         case REV32(LSCR):
-            LSCR.VisitRecords(RecordType, op, DeepVisit);
+            LSCR.pool.VisitRecords(op);
             break;
         case REV32(ANIO):
-            ANIO.VisitRecords(RecordType, op, DeepVisit);
+            ANIO.pool.VisitRecords(op);
             break;
         case REV32(WATR):
-            WATR.VisitRecords(RecordType, op, DeepVisit);
+            WATR.pool.VisitRecords(op);
             break;
         case REV32(EFSH):
-            EFSH.VisitRecords(RecordType, op, DeepVisit);
+            EFSH.pool.VisitRecords(op);
             break;
         case REV32(EXPL):
-            EXPL.VisitRecords(RecordType, op, DeepVisit);
+            EXPL.pool.VisitRecords(op);
             break;
         case REV32(DEBR):
-            DEBR.VisitRecords(RecordType, op, DeepVisit);
+            DEBR.pool.VisitRecords(op);
             break;
         case REV32(IMGS):
-            //IMGS.VisitRecords(RecordType, op, DeepVisit);
+            //IMGS.pool.VisitRecords(op);
             //break;
         case REV32(IMAD):
-            //IMAD.VisitRecords(RecordType, op, DeepVisit);
+            //IMAD.pool.VisitRecords(op);
             //break;
         case REV32(FLST):
-            //FLST.VisitRecords(RecordType, op, DeepVisit);
+            //FLST.pool.VisitRecords(op);
             //break;
         case REV32(PERK):
-            //PERK.VisitRecords(RecordType, op, DeepVisit);
+            //PERK.pool.VisitRecords(op);
             //break;
         case REV32(BPTD):
-            //BPTD.VisitRecords(RecordType, op, DeepVisit);
+            //BPTD.pool.VisitRecords(op);
             //break;
         case REV32(ADDN):
-            //ADDN.VisitRecords(RecordType, op, DeepVisit);
+            //ADDN.pool.VisitRecords(op);
             //break;
         case REV32(AVIF):
-            //AVIF.VisitRecords(RecordType, op, DeepVisit);
+            //AVIF.pool.VisitRecords(op);
             //break;
         case REV32(RADS):
-            //RADS.VisitRecords(RecordType, op, DeepVisit);
+            //RADS.pool.VisitRecords(op);
             //break;
         case REV32(CAMS):
-            //CAMS.VisitRecords(RecordType, op, DeepVisit);
+            //CAMS.pool.VisitRecords(op);
             //break;
         case REV32(CPTH):
-            //CPTH.VisitRecords(RecordType, op, DeepVisit);
+            //CPTH.pool.VisitRecords(op);
             //break;
         case REV32(VTYP):
-            //VTYP.VisitRecords(RecordType, op, DeepVisit);
+            //VTYP.pool.VisitRecords(op);
             //break;
         case REV32(IPCT):
-            //IPCT.VisitRecords(RecordType, op, DeepVisit);
+            //IPCT.pool.VisitRecords(op);
             //break;
         case REV32(IPDS):
-            //IPDS.VisitRecords(RecordType, op, DeepVisit);
+            //IPDS.pool.VisitRecords(op);
             //break;
         case REV32(ARMA):
-            //ARMA.VisitRecords(RecordType, op, DeepVisit);
+            //ARMA.pool.VisitRecords(op);
             //break;
         case REV32(ECZN):
-            //ECZN.VisitRecords(RecordType, op, DeepVisit);
+            //ECZN.pool.VisitRecords(op);
             //break;
         case REV32(MESG):
-            //MESG.VisitRecords(RecordType, op, DeepVisit);
+            //MESG.pool.VisitRecords(op);
             //break;
         case REV32(RGDL):
-            //RGDL.VisitRecords(RecordType, op, DeepVisit);
+            //RGDL.pool.VisitRecords(op);
             //break;
         case REV32(DOBJ):
-            //DOBJ.VisitRecords(RecordType, op, DeepVisit);
+            //DOBJ.pool.VisitRecords(op);
             //break;
         case REV32(LGTM):
-            //LGTM.VisitRecords(RecordType, op, DeepVisit);
+            //LGTM.pool.VisitRecords(op);
             //break;
         case REV32(MUSC):
-            //MUSC.VisitRecords(RecordType, op, DeepVisit);
+            //MUSC.pool.VisitRecords(op);
             //break;
         case REV32(IMOD):
-            //IMOD.VisitRecords(RecordType, op, DeepVisit);
+            //IMOD.pool.VisitRecords(op);
             //break;
         case REV32(REPU):
-            //REPU.VisitRecords(RecordType, op, DeepVisit);
+            //REPU.pool.VisitRecords(op);
             //break;
         case REV32(RCPE):
-            //RCPE.VisitRecords(RecordType, op, DeepVisit);
+            //RCPE.pool.VisitRecords(op);
             //break;
         case REV32(RCCT):
-            //RCCT.VisitRecords(RecordType, op, DeepVisit);
+            //RCCT.pool.VisitRecords(op);
             //break;
         case REV32(CHIP):
-            //CHIP.VisitRecords(RecordType, op, DeepVisit);
+            //CHIP.pool.VisitRecords(op);
             //break;
         case REV32(CSNO):
-            //CSNO.VisitRecords(RecordType, op, DeepVisit);
+            //CSNO.pool.VisitRecords(op);
             //break;
         case REV32(LSCT):
-            //LSCT.VisitRecords(RecordType, op, DeepVisit);
+            //LSCT.pool.VisitRecords(op);
             //break;
         case REV32(MSET):
-            //MSET.VisitRecords(RecordType, op, DeepVisit);
+            //MSET.pool.VisitRecords(op);
             //break;
         case REV32(ALOC):
-            //ALOC.VisitRecords(RecordType, op, DeepVisit);
+            //ALOC.pool.VisitRecords(op);
             //break;
         case REV32(CHAL):
-            //CHAL.VisitRecords(RecordType, op, DeepVisit);
+            //CHAL.pool.VisitRecords(op);
             //break;
         case REV32(AMEF):
-            //AMEF.VisitRecords(RecordType, op, DeepVisit);
+            //AMEF.pool.VisitRecords(op);
             //break;
         case REV32(CCRD):
-            //CCRD.VisitRecords(RecordType, op, DeepVisit);
+            //CCRD.pool.VisitRecords(op);
             //break;
         case REV32(CMNY):
-            //CMNY.VisitRecords(RecordType, op, DeepVisit);
+            //CMNY.pool.VisitRecords(op);
             //break;
         case REV32(CDCK):
-            //CDCK.VisitRecords(RecordType, op, DeepVisit);
+            //CDCK.pool.VisitRecords(op);
             //break;
         case REV32(DEHY):
-            //DEHY.VisitRecords(RecordType, op, DeepVisit);
+            //DEHY.pool.VisitRecords(op);
             //break;
         case REV32(HUNG):
-            //HUNG.VisitRecords(RecordType, op, DeepVisit);
+            //HUNG.pool.VisitRecords(op);
             //break;
         case REV32(SLPD):
-            //SLPD.VisitRecords(RecordType, op, DeepVisit);
+            //SLPD.pool.VisitRecords(op);
             //break;
         default:
-            if(RecordType)
-                printer("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) under top level type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
-            else
-                printer("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&TopRecordType)[0], ((STRING)&TopRecordType)[1], ((STRING)&TopRecordType)[2], ((STRING)&TopRecordType)[3], reader.getModName());
+            printer("FNVFile::VisitRecords: Error - Unable to visit record type (%c%c%c%c) in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ModName);
             break;
         }
     return;

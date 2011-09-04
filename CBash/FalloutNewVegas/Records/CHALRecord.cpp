@@ -43,10 +43,10 @@ CHALRecord::CHALRecord(CHALRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -298,51 +298,52 @@ SINT32 CHALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CHAL: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -390,5 +391,10 @@ bool CHALRecord::operator ==(const CHALRecord &other) const
 bool CHALRecord::operator !=(const CHALRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool CHALRecord::equals(const Record *other) const
+    {
+    return *this == *(CHALRecord *)other;
     }
 }

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -46,19 +46,21 @@ class CREARecord : public FNVRecord //Creature
             };
         #pragma pack(pop)
 
-        struct CREASound // Sound
+        struct CREASound //Sound
             {
-            ReqSimpleSubRecord<FORMID> CSDI; // Sound
-            ReqSimpleSubRecord<UINT8> CSDC; // Sound Chance
+            ReqSimpleSubRecord<FORMID> CSDI; //Sound
+            ReqSimpleSubRecord<UINT8>  CSDC; //Sound Chance
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const CREASound &other) const;
             bool operator !=(const CREASound &other) const;
             };
 
-        struct CREASoundType // Sound Type
+        struct CREASoundType //Sound Type
             {
             ReqSimpleSubRecord<UINT32> CSDT; //Type
-            UnorderedSparseArray<CREASound *> Sounds; // Sounds
+            UnorderedSparseArray<CREASound *> Sounds; //Sounds
 
             enum eSoundType
                 {
@@ -410,7 +412,7 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<UINT16> EAMT; //Unarmed Attack Animation
         UnorderedPackedStrings NIFZ; //Model List
         RawRecord NIFT; //Texture Files Hashes
-        ReqSubRecord<FNVACBS> ACBS; // Configuration
+        ReqSubRecord<FNVACBS> ACBS; //Configuration
         UnorderedSparseArray<GENSNAM *> SNAM; //Factions
         OptSimpleSubRecord<FORMID> INAM; //Death item
         OptSimpleSubRecord<FORMID> VTCK; //Voice
@@ -422,12 +424,12 @@ class CREARecord : public FNVRecord //Creature
         UnorderedSparseArray<FORMID> PKID; //Packages
         UnorderedPackedStrings KFFZ; //Animations
         ReqSubRecord<CREADATA> DATA; //Data
-        OptSimpleSubRecord<UINT8> RNAM; //Attack reach
+        OptSimpleSubRecord<UINT8, 32> RNAM; //Attack reach
         OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         OptSimpleSubRecord<FORMID> PNAM; //Body Part Data
         SemiOptSimpleFloatSubRecord<flt_0> TNAM; //Turning Speed
         SemiOptSimpleFloatSubRecord<flt_1> BNAM; //Base Scale
-        OptSimpleFloatSubRecord<flt_0> WNAM; //Foot Weight
+        OptSimpleFloatSubRecord<flt_3> WNAM; //Foot Weight
         OptSimpleSubRecord<UINT32> NAM4; //Impact Material Type
         OptSimpleSubRecord<UINT32> NAM5; //Sound Level
         OptSimpleSubRecord<FORMID> CSCR; //Inherits Sounds from
@@ -909,11 +911,12 @@ class CREARecord : public FNVRecord //Creature
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CREARecord &other) const;
         bool operator !=(const CREARecord &other) const;
+        bool equals(Record *other);
     };
 }

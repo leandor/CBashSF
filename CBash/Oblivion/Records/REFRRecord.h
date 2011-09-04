@@ -16,13 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
+namespace Ob
+{
 class REFRRecord : public Record
     {
     private:
@@ -63,6 +65,8 @@ class REFRRecord : public Record
             REFRXSED();
             ~REFRXSED();
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const REFRXSED &other) const;
             bool operator !=(const REFRXSED &other) const;
             };
@@ -72,6 +76,8 @@ class REFRRecord : public Record
             StringRecord FULL;
             ReqSubRecord<GENTNAM> TNAM;
             ReqSimpleSubRecord<UINT8> FNAM;
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const REFRMAPMARKER &other) const;
             bool operator !=(const REFRMAPMARKER &other) const;
@@ -130,33 +136,39 @@ class REFRRecord : public Record
 
         struct REFRData
             {
-            StringRecord EDID;
-            ReqSimpleSubRecord<FORMID> NAME;
-            OptSubRecord<REFRXTEL> XTEL;
-            SemiOptSubRecord<REFRXLOC> XLOC;
-            OptSubRecord<GENXOWN> Ownership;
-            OptSubRecord<GENXESP> XESP;
-            OptSimpleSubRecord<FORMID> XTRG;
-            SemiOptSubRecord<REFRXSED> XSED;
-            OptSubRecord<GENXLOD> XLOD;
-            OptSimpleFloatSubRecord<flt_0> XCHG;
-            OptSimpleSubRecord<SINT32> XHLT;
-            OptSubRecord<GENXPCI> XPCI;
-            OptSimpleSubRecord<SINT32> XLCM;
-            OptSimpleSubRecord<FORMID> XRTM;
-            OptSimpleSubRecord<UINT32> XACT;
-            OptSimpleSubRecord<SINT32> XCNT;
-            OptSubRecord<REFRMAPMARKER> Marker;
+            StringRecord EDID; //Editor ID
+            ReqSimpleSubRecord<FORMID> NAME; //Base
+            OptSubRecord<REFRXTEL> XTEL; //Teleport Destination
+            SemiOptSubRecord<REFRXLOC> XLOC; //Lock Data
+            OptSubRecord<GENXOWN> Ownership; //Owner
+            OptSubRecord<GENXESP> XESP; //Enable Parent
+            OptSimpleSubRecord<FORMID> XTRG; //Target
+            SemiOptSubRecord<REFRXSED> XSED; //SpeedTree Seed
+            OptSubRecord<GENXLOD> XLOD; //Distant LOD Data
+            OptSimpleFloatSubRecord<flt_0> XCHG; //Charge
+            OptSimpleSubRecord<SINT32> XHLT; //Health
+            OptSubRecord<GENXPCI> XPCI; //Unknown
+            OptSimpleSubRecord<SINT32> XLCM; //Level Modifier
+            OptSimpleSubRecord<FORMID> XRTM; //Unknown
+            OptSimpleSubRecord<UINT32> XACT; //Action Flag
+            OptSimpleSubRecord<SINT32> XCNT; //Count
+            OptSubRecord<REFRMAPMARKER> Marker; //Map Marker Data
             //bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
-            OptSimpleFloatSubRecord<flt_1> XSCL; // scale
-            OptSimpleSubRecord<UINT8> XSOL;
-            ReqSubRecord<GENPOSDATA> DATA;
+            OptSimpleFloatSubRecord<flt_1> XSCL; //scale
+            OptSimpleSubRecord<UINT8> XSOL; //Soul
+            ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
+
+            bool IsOpenByDefault();
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const REFRData &other) const;
             bool operator !=(const REFRData &other) const;
             };
     public:
         SemiOptSubRecord<REFRData> Data;
+
+        Record *Parent;
 
         REFRRecord(unsigned char *_recData=NULL);
         REFRRecord(REFRRecord *srcRecord);
@@ -243,12 +255,15 @@ class REFRRecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const REFRRecord &other) const;
         bool operator !=(const REFRRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

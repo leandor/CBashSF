@@ -16,46 +16,47 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "NPC_Record.h"
-#include <vector>
 
+namespace Ob
+{
 NPC_Record::NPC_DATA::NPC_DATA():
-    armorer(0),
-    athletics(0),
-    blade(0),
-    block(0),
-    blunt(0),
-    h2h(0),
-    heavyArmor(0),
-    alchemy(0),
-    alteration(0),
-    conjuration(0),
-    destruction(0),
-    illusion(0),
-    mysticism(0),
-    restoration(0),
-    acrobatics(0),
-    lightArmor(0),
-    marksman(0),
-    mercantile(0),
-    security(0),
-    sneak(0),
-    speechcraft(0),
-    health(0),
-    strength(0),
-    intelligence(0),
-    willpower(0),
-    agility(0),
-    speed(0),
-    endurance(0),
-    personality(0),
-    luck(0)
+    armorer(5),
+    athletics(5),
+    blade(5),
+    block(5),
+    blunt(5),
+    h2h(5),
+    heavyArmor(5),
+    alchemy(5),
+    alteration(5),
+    conjuration(5),
+    destruction(5),
+    illusion(5),
+    mysticism(5),
+    restoration(5),
+    acrobatics(5),
+    lightArmor(5),
+    marksman(5),
+    mercantile(5),
+    security(5),
+    sneak(5),
+    speechcraft(5),
+    health(50),
+    strength(50),
+    intelligence(50),
+    willpower(50),
+    agility(50),
+    speed(50),
+    endurance(50),
+    personality(50),
+    luck(50)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 NPC_Record::NPC_DATA::~NPC_DATA()
@@ -108,6 +109,9 @@ NPC_Record::NPC_Record(unsigned char *_recData):
     //NPC_ records are normally compressed
     if(_recData == NULL)
         IsCompressed(true);
+    HCLR.value.red = 75;
+    HCLR.value.green = 50;
+    HCLR.value.blue = 25;
     }
 
 NPC_Record::NPC_Record(NPC_Record *srcRecord):
@@ -120,48 +124,25 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     ACBS = srcRecord->ACBS;
-    SNAM.clear();
-    SNAM.resize(srcRecord->SNAM.size());
-    for(UINT32 x = 0; x < srcRecord->SNAM.size(); x++)
-        {
-        SNAM[x] = new ReqSubRecord<GENSNAM>;
-        *SNAM[x] = *srcRecord->SNAM[x];
-        }
+    SNAM = srcRecord->SNAM;
     INAM = srcRecord->INAM;
     RNAM = srcRecord->RNAM;
-    SPLO.resize(srcRecord->SPLO.size());
-    for(UINT32 x = 0; x < srcRecord->SPLO.size(); x++)
-        SPLO[x] = srcRecord->SPLO[x];
+    SPLO = srcRecord->SPLO;
     SCRI = srcRecord->SCRI;
-    CNTO.clear();
-    CNTO.resize(srcRecord->CNTO.size());
-    for(UINT32 x = 0; x < srcRecord->CNTO.size(); x++)
-        {
-        CNTO[x] = new ReqSubRecord<GENCNTO>;
-        *CNTO[x] = *srcRecord->CNTO[x];
-        }
+    CNTO = srcRecord->CNTO;
     AIDT = srcRecord->AIDT;
-    PKID.resize(srcRecord->PKID.size());
-    for(UINT32 x = 0; x < srcRecord->PKID.size(); x++)
-        PKID[x] = srcRecord->PKID[x];
-
+    PKID = srcRecord->PKID;
     KFFZ = srcRecord->KFFZ;
     CNAM = srcRecord->CNAM;
     DATA = srcRecord->DATA;
@@ -178,10 +159,7 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
 
 NPC_Record::~NPC_Record()
     {
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        delete SNAM[x];
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        delete CNTO[x];
+    //
     }
 
 bool NPC_Record::VisitFormIDs(FormIDOp &op)
@@ -189,8 +167,8 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        op.Accept(SNAM[x]->value.faction);
+    for(UINT32 ListIndex = 0; ListIndex < SNAM.value.size(); ListIndex++)
+        op.Accept(SNAM.value[ListIndex]->faction);
 
     if(INAM.IsLoaded())
         op.Accept(INAM.value);
@@ -198,17 +176,17 @@ bool NPC_Record::VisitFormIDs(FormIDOp &op)
     if(RNAM.IsLoaded())
         op.Accept(RNAM.value);
 
-    for(UINT32 x = 0; x < SPLO.size(); x++)
-        op.Accept(SPLO[x]);
+    for(UINT32 ListIndex = 0; ListIndex < SPLO.value.size(); ListIndex++)
+        op.Accept(SPLO.value[ListIndex]);
 
     if(SCRI.IsLoaded())
         op.Accept(SCRI.value);
 
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        op.Accept(CNTO[x]->value.item);
+    for(UINT32 ListIndex = 0; ListIndex < CNTO.value.size(); ListIndex++)
+        op.Accept(CNTO.value[ListIndex]->item);
 
-    for(UINT32 x = 0; x < PKID.size(); x++)
-        op.Accept(PKID[x]);
+    for(UINT32 ListIndex = 0; ListIndex < PKID.value.size(); ListIndex++)
+        op.Accept(PKID.value[ListIndex]);
 
     if(CNAM.IsLoaded())
         op.Accept(CNAM.value);
@@ -530,131 +508,122 @@ UINT32 NPC_Record::GetType()
     return REV32(NPC_);
     }
 
-
 STRING NPC_Record::GetStrType()
     {
     return "NPC_";
     }
 
-SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 NPC_Record::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    FORMID curFormID = 0;
-    ReqSubRecord<GENSNAM> *newSNAM = NULL;
-    ReqSubRecord<GENCNTO> *newCNTO = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ACBS):
-                ACBS.Read(buffer, subSize, curPos);
+                ACBS.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                newSNAM = new ReqSubRecord<GENSNAM>;
-                newSNAM->Read(buffer, subSize, curPos);
-                SNAM.push_back(newSNAM);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize);
                 break;
             case REV32(SPLO):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                SPLO.push_back(curFormID);
+                SPLO.Read(buffer, subSize);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(CNTO):
-                newCNTO = new ReqSubRecord<GENCNTO>;
-                newCNTO->Read(buffer, subSize, curPos);
-                CNTO.push_back(newCNTO);
+                CNTO.Read(buffer, subSize);
                 break;
             case REV32(AIDT):
-                AIDT.Read(buffer, subSize, curPos);
+                AIDT.Read(buffer, subSize);
                 break;
             case REV32(PKID):
-                _readBuffer(&curFormID, buffer, subSize, curPos);
-                PKID.push_back(curFormID);
+                PKID.Read(buffer, subSize);
                 break;
             case REV32(KFFZ):
-                KFFZ.Read(buffer, subSize, curPos);
+                KFFZ.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(HNAM):
-                HNAM.Read(buffer, subSize, curPos);
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             case REV32(ENAM):
-                ENAM.Read(buffer, subSize, curPos);
+                ENAM.Read(buffer, subSize);
                 break;
             case REV32(HCLR):
-                HCLR.Read(buffer, subSize, curPos);
+                HCLR.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(FGGS):
-                FGGS.Read(buffer, subSize, curPos);
+                FGGS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGGA):
-                FGGA.Read(buffer, subSize, curPos);
+                FGGA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGTS):
-                FGTS.Read(buffer, subSize, curPos);
+                FGTS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  NPC_: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
 
             }
@@ -670,26 +639,14 @@ SINT32 NPC_Record::Unload()
     FULL.Unload();
     MODL.Unload();
     ACBS.Unload();
-
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        delete SNAM[x];
-    SNAM.clear();
-
+    SNAM.Unload();
     INAM.Unload();
     RNAM.Unload();
-
-    SPLO.clear();
-
+    SPLO.Unload();
     SCRI.Unload();
-
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        delete CNTO[x];
-    CNTO.clear();
-
+    CNTO.Unload();
     AIDT.Unload();
-
-    PKID.clear();
-
+    PKID.Unload();
     KFFZ.Unload();
     CNAM.Unload();
     DATA.Unload();
@@ -707,128 +664,68 @@ SINT32 NPC_Record::Unload()
 
 SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     {
-    UINT32 cSize = 0;
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-
-    if(ACBS.IsLoaded())
-        writer.record_write_subrecord(REV32(ACBS), &ACBS.value, ACBS.GetSize());
-    for(UINT32 p = 0; p < SNAM.size(); p++)
-        if(SNAM[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(SNAM), &SNAM[p]->value, SNAM[p]->GetSize());
-    if(INAM.IsLoaded())
-        writer.record_write_subrecord(REV32(INAM), &INAM.value, INAM.GetSize());
-    if(RNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(RNAM), &RNAM.value, RNAM.GetSize());
-    for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(UINT32));
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-    for(UINT32 p = 0; p < CNTO.size(); p++)
-        if(CNTO[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(CNTO), &CNTO[p]->value, sizeof(GENCNTO));
-    if(AIDT.IsLoaded())
-        writer.record_write_subrecord(REV32(AIDT), &AIDT.value, AIDT.GetSize());
-    for(UINT32 p = 0; p < PKID.size(); p++)
-        writer.record_write_subrecord(REV32(PKID), &PKID[p], sizeof(UINT32));
-
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(ACBS);
+    WRITE(SNAM);
+    WRITE(INAM);
+    WRITE(RNAM);
+    WRITE(SPLO);
+    WRITE(SCRI);
+    WRITE(CNTO);
+    WRITE(AIDT);
+    WRITE(PKID);
     WRITE(KFFZ);
-
-    if(CNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(HNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(HNAM), &HNAM.value, HNAM.GetSize());
-    if(LNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(LNAM), LNAM.value, LNAM.GetSize());
-    if(ENAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ENAM), &ENAM.value, ENAM.GetSize());
-    if(HCLR.IsLoaded())
-        writer.record_write_subrecord(REV32(HCLR), &HCLR.value, HCLR.GetSize());
-    if(ZNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ZNAM), &ZNAM.value, ZNAM.GetSize());
-    if(FGGS.IsLoaded())
-        writer.record_write_subrecord(REV32(FGGS), FGGS.value, FGGS.GetSize());
-    if(FGGA.IsLoaded())
-        writer.record_write_subrecord(REV32(FGGA), FGGA.value, FGGA.GetSize());
-    if(FGTS.IsLoaded())
-        writer.record_write_subrecord(REV32(FGTS), FGTS.value, FGTS.GetSize());
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
+    WRITE(CNAM);
+    WRITE(DATA);
+    WRITE(HNAM);
+    WRITE(LNAM);
+    WRITE(ENAM);
+    WRITE(HCLR);
+    WRITE(ZNAM);
+    WRITE(FGGS);
+    WRITE(FGGA);
+    WRITE(FGTS);
+    WRITE(FNAM);
     return -1;
     }
 
 bool NPC_Record::operator ==(const NPC_Record &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        MODL == other.MODL &&
-        ACBS == other.ACBS &&
-        INAM == other.INAM &&
-        RNAM == other.RNAM &&
-        SCRI == other.SCRI &&
-        AIDT == other.AIDT &&
-        CNAM == other.CNAM &&
-        DATA == other.DATA &&
-        HNAM == other.HNAM &&
-        LNAM == other.LNAM &&
-        ENAM == other.ENAM &&
-        HCLR == other.HCLR &&
-        ZNAM == other.ZNAM &&
-        FGGS == other.FGGS &&
-        FGGA == other.FGGA &&
-        FGTS == other.FGTS &&
-        FNAM == other.FNAM &&
-        SNAM.size() == other.SNAM.size() &&
-        SPLO.size() == other.SPLO.size() &&
-        CNTO.size() == other.CNTO.size() &&
-        PKID.size() == other.PKID.size() &&
-        KFFZ.equalsi(other.KFFZ))
-        {
-        //Not sure if record order matters on factions, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < SNAM.size(); ++x)
-            if(*SNAM[x] != *other.SNAM[x])
-                return false;
-
-        //Record order doesn't matter on spells, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < SPLO.size(); ++x)
-            if(SPLO[x] != other.SPLO[x])
-                return false;
-
-        //Record order doesn't matter on items, so equality testing isn't easy
-        //The proper solution would be to check each item against every other item to see if there's a one-to-one match
-        //Fix-up later
-        for(UINT32 x = 0; x < CNTO.size(); ++x)
-            if(*CNTO[x] != *other.CNTO[x])
-                return false;
-
-        //Record order matters on ai packages, so equality testing is easy
-        for(UINT32 x = 0; x < PKID.size(); ++x)
-            if(PKID[x] != other.PKID[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            MODL == other.MODL &&
+            ACBS == other.ACBS &&
+            INAM == other.INAM &&
+            RNAM == other.RNAM &&
+            SCRI == other.SCRI &&
+            AIDT == other.AIDT &&
+            CNAM == other.CNAM &&
+            DATA == other.DATA &&
+            HNAM == other.HNAM &&
+            LNAM == other.LNAM &&
+            ENAM == other.ENAM &&
+            HCLR == other.HCLR &&
+            ZNAM == other.ZNAM &&
+            FNAM == other.FNAM &&
+            FGGS == other.FGGS &&
+            FGGA == other.FGGA &&
+            FGTS == other.FGTS &&
+            SNAM == other.SNAM &&
+            SPLO == other.SPLO &&
+            CNTO == other.CNTO &&
+            PKID == other.PKID &&
+            KFFZ.equalsi(other.KFFZ));
     }
 
 bool NPC_Record::operator !=(const NPC_Record &other) const
     {
     return !(*this == other);
     }
+
+bool NPC_Record::equals(Record *other)
+    {
+    return *this == *(NPC_Record *)other;
+    }
+}

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\WTHRRecord.h"
 
+namespace Ob
+{
 UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -809,13 +811,13 @@ UINT32 WTHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Sounds.size();
+                        return (UINT32)Sounds.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -838,11 +840,11 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //lowerLayerPath
@@ -1283,15 +1285,15 @@ void * WTHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 202: //boltBlue
             return &DATA.value.boltBlue;
         case 203: //sounds
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //sound
-                    return &Sounds[ListIndex]->value.sound;
+                    return &Sounds.value[ListIndex]->sound;
                 case 2: //type
-                    return &Sounds[ListIndex]->value.type;
+                    return &Sounds.value[ListIndex]->type;
                 default:
                     return NULL;
                 }
@@ -1995,31 +1997,20 @@ bool WTHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 203: //sounds
             if(ListFieldID == 0) //soundsSize
                 {
-                ArraySize -= (UINT32)Sounds.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Sounds.push_back(new ReqSubRecord<WTHRSNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Sounds.back();
-                    Sounds.pop_back();
-                    ++ArraySize;
-                    }
+                Sounds.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //sound
-                    Sounds[ListIndex]->value.sound = *(FORMID *)FieldValue;
+                    Sounds.value[ListIndex]->sound = *(FORMID *)FieldValue;
                     return true;
                 case 2: //type
-                    Sounds[ListIndex]->value.SetType(*(UINT32 *)FieldValue);
+                    Sounds.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 default:
                     break;
@@ -2652,22 +2643,20 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 203: //sounds
             if(ListFieldID == 0) //sounds
                 {
-                for(UINT32 x = 0; x < (UINT32)Sounds.size(); x++)
-                    delete Sounds[x];
-                Sounds.clear();
+                Sounds.Unload();
                 return;
                 }
 
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //sound
-                    Sounds[ListIndex]->value.sound = defaultSNAM.sound;
+                    Sounds.value[ListIndex]->sound = defaultSNAM.sound;
                     return;
                 case 2: //type
-                    Sounds[ListIndex]->value.type = defaultSNAM.type;
+                    Sounds.value[ListIndex]->type = defaultSNAM.type;
                     return;
                 default:
                     return;
@@ -2708,3 +2697,4 @@ void WTHRRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

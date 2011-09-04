@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "MGEFRecord.h"
-#include <vector>
 
+namespace Ob
+{
 MGEFRecord::MGEFDATA::MGEFDATA():
     flags(0),
     baseCost(0.0f),
@@ -41,7 +42,7 @@ MGEFRecord::MGEFDATA::MGEFDATA():
     cefEnchantment(0.0f),
     cefBarter(0.0f)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 MGEFRecord::MGEFDATA::~MGEFDATA()
@@ -52,19 +53,19 @@ MGEFRecord::MGEFDATA::~MGEFDATA()
 bool MGEFRecord::MGEFDATA::operator ==(const MGEFDATA &other) const
     {
     return (flags == other.flags &&
-            AlmostEqual(baseCost,other.baseCost,2) &&
             associated == other.associated &&
             school == other.school &&
             resistValue == other.resistValue &&
             numCounters == other.numCounters &&
             light == other.light &&
-            AlmostEqual(projectileSpeed,other.projectileSpeed,2) &&
             effectShader == other.effectShader &&
             enchantEffect == other.enchantEffect &&
             castingSound == other.castingSound &&
             boltSound == other.boltSound &&
             hitSound == other.hitSound &&
             areaSound == other.areaSound &&
+            AlmostEqual(baseCost,other.baseCost,2) &&
+            AlmostEqual(projectileSpeed,other.projectileSpeed,2) &&
             AlmostEqual(cefEnchantment,other.cefEnchantment,2) &&
             AlmostEqual(cefBarter,other.cefBarter,2));
     }
@@ -76,7 +77,7 @@ bool MGEFRecord::MGEFDATA::operator !=(const MGEFDATA &other) const
 
 MGEFRecord::OBMEEDDX::OBMEEDDX()
     {
-    memset(&mgefCode[0], 0x00, 5);
+    memset(&mgefCode[0], 0x00, sizeof(mgefCode));
     }
 
 MGEFRecord::OBMEEDDX::~OBMEEDDX()
@@ -105,8 +106,8 @@ MGEFRecord::MGEFOBME::MGEFOBME():
     flags(0),
     mgefParamB(0)
     {
-    memset(&reserved1, 0x00, 2);
-    memset(&reserved2, 0x00, 0x1C);
+    memset(&reserved1[0], 0x00, sizeof(reserved1));
+    memset(&reserved2[0], 0x00, sizeof(reserved2));
     }
 
 MGEFRecord::MGEFOBME::~MGEFOBME()
@@ -163,32 +164,20 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
     flagsUnk = srcRecord->flagsUnk;
     EDID = srcRecord->EDID;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;
     ICON = srcRecord->ICON;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     DATA = srcRecord->DATA;
     ESCE = srcRecord->ESCE;
-    if(srcRecord->OBME.IsLoaded())
-        {
-        OBME.Load();
-        OBME->OBME = srcRecord->OBME->OBME;
-        OBME->EDDX = srcRecord->OBME->EDDX;
-        OBME->DATX = srcRecord->OBME->DATX;
-        }
+    OBME = srcRecord->OBME;
     }
 
 MGEFRecord::~MGEFRecord()
@@ -209,7 +198,7 @@ bool MGEFRecord::VisitFormIDs(FormIDOp &op)
             {
             MGEFCODE tempMgef = *(MGEFCODE *)&OBME->EDDX.value.mgefCode[0];
             op.AcceptMGEF(tempMgef);
-            memcpy(&OBME->EDDX.value.mgefCode[0], &tempMgef, 4);
+            memcpy(&OBME->EDDX.value.mgefCode[0], &tempMgef, sizeof(OBME->EDDX.value.mgefCode) - 1);
             OBME->EDDX.value.mgefCode[4] = 0;
             }
 
@@ -270,9 +259,9 @@ bool MGEFRecord::VisitFormIDs(FormIDOp &op)
         if(DATA.value.resistValue >= 0x800)
             op.Accept(DATA.value.resistValue);
 
-        for(UINT32 x = 0; x < ESCE.size(); ++x)
-            if(ESCE[x] >= 0x80000000)
-                op.AcceptMGEF(ESCE[x]);
+        for(UINT32 ListIndex = 0; ListIndex < ESCE.value.size(); ++ListIndex)
+            if(ESCE.value[ListIndex] >= 0x80000000)
+                op.AcceptMGEF(ESCE.value[ListIndex]);
         }
     else
         {
@@ -805,7 +794,6 @@ UINT32 MGEFRecord::GetType()
     return REV32(MGEF);
     }
 
-
 STRING MGEFRecord::GetStrType()
     {
     return "MGEF";
@@ -824,96 +812,83 @@ STRING MGEFRecord::GetEditorIDKey()
         return (STRING)GetField(4);
     }
 
-SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBME):
                 OBME.Load();
-                OBME->OBME.Read(buffer, subSize, curPos);
+                OBME->OBME.Read(buffer, subSize);
                 break;
             case REV32(EDDX):
                 OBME.Load();
-                memcpy(&OBME->EDDX.value.mgefCode[0], EDID.value, 4);
+                memcpy(&OBME->EDDX.value.mgefCode[0], EDID.value, sizeof(OBME->EDDX.value.mgefCode) - 1);
                 OBME->EDDX.value.mgefCode[4] = 0x00;
                 EDID.Unload();
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(DATX):
                 OBME.Load();
-                OBME->DATX.Read(buffer, subSize, curPos);
+                OBME->DATX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ESCE):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    ESCE.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&ESCE[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized ESCE size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                ESCE.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  MGEF: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
-    //MGEFs should always be loaded since they're keyed by editorID (or mgefCode)
-    //By marking it as changed, it prevents the record from being unloaded
-    //IsChanged(true);
     return 0;
     }
 
@@ -931,7 +906,7 @@ SINT32 MGEFRecord::Unload()
     ICON.Unload();
     MODL.Unload();
     DATA.Unload();
-    ESCE.clear();
+    ESCE.Unload();
     return 1;
     }
 
@@ -943,60 +918,30 @@ SINT32 MGEFRecord::WriteRecord(FileWriter &writer)
         //So EDDX is written as if it was the EDID chunk, and vice versa
         //Hence the mismatched type in record_write_subrecord
         if(OBME->EDDX.IsLoaded())
-            writer.record_write_subrecord(REV32(EDID), &OBME->EDDX.value.mgefCode[0], 5);
+            OBME->WRITEAS(EDDX,EDID);
         if(OBME->OBME.IsLoaded())
-            writer.record_write_subrecord(REV32(OBME), &OBME->OBME.value, OBME->OBME.GetSize());
-        if(EDID.IsLoaded())
-            writer.record_write_subrecord(REV32(EDDX), EDID.value, EDID.GetSize());
-        if(FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-        if(DESC.IsLoaded())
-            writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-        if(ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-        if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-            {
-            writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-            if(MODL->MODB.IsLoaded())
-                writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-            if(MODL->MODT.IsLoaded())
-                writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-            }
-        if(DATA.IsLoaded())
-            {
-            DATA.value.numCounters = (UINT16)ESCE.size(); //Just to ensure that the proper value is written
-            writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-            }
+            OBME->WRITE(OBME);
+        WRITEAS(EDID,EDDX);
+        WRITE(FULL);
+        WRITE(DESC);
+        WRITE(ICON);
+        MODL.Write(writer);
+        DATA.value.numCounters = (UINT16)ESCE.value.size(); //Just to ensure that the proper value is written
+        WRITE(DATA);
         if(OBME->DATX.IsLoaded())
-            writer.record_write_subrecord(REV32(DATX), OBME->DATX.value, OBME->DATX.GetSize());
-        if(ESCE.size())
-            writer.record_write_subrecord(REV32(ESCE), &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
+            OBME->WRITE(DATX);
+        WRITE(ESCE);
         }
     else
         {
-        if(EDID.IsLoaded())
-            writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-        if(FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-        if(DESC.IsLoaded())
-            writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-        if(ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-        if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-            {
-            writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-            if(MODL->MODB.IsLoaded())
-                writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-            if(MODL->MODT.IsLoaded())
-                writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-            }
-        if(DATA.IsLoaded())
-            {
-            DATA.value.numCounters = (UINT16)ESCE.size(); //Just to ensure that the proper value is written
-            writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-            }
-        if(ESCE.size())
-            writer.record_write_subrecord(REV32(ESCE), &ESCE[0], (UINT32)ESCE.size() * sizeof(UINT32));
+        WRITE(EDID);
+        WRITE(FULL);
+        WRITE(DESC);
+        WRITE(ICON);
+        MODL.Write(writer);
+        DATA.value.numCounters = (UINT16)ESCE.value.size(); //Just to ensure that the proper value is written
+        WRITE(DATA);
+        WRITE(ESCE);
         }
 
     return -1;
@@ -1004,28 +949,23 @@ SINT32 MGEFRecord::WriteRecord(FileWriter &writer)
 
 bool MGEFRecord::operator ==(const MGEFRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DESC.equals(other.DESC) &&
-        ICON.equalsi(other.ICON) &&
-        MODL == other.MODL &&
-        DATA == other.DATA &&
-        OBME == other.OBME &&
-        ESCE.size() == other.ESCE.size())
-        {
-        //Record order doesn't matter on counter effects, so equality testing isn't easy
-        //The proper solution would be to check each counter effect against every other counter effect to see if there's a one-to-one match
-        //Fix-up later
-        for(UINT32 x = 0; x < ESCE.size(); ++x)
-            if(ESCE[x] != other.ESCE[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON) &&
+            MODL == other.MODL &&
+            DATA == other.DATA &&
+            OBME == other.OBME &&
+            ESCE == other.ESCE);
     }
 
 bool MGEFRecord::operator !=(const MGEFRecord &other) const
     {
     return !(*this == other);
     }
+
+bool MGEFRecord::equals(Record *other)
+    {
+    return *this == *(MGEFRecord *)other;
+    }
+}

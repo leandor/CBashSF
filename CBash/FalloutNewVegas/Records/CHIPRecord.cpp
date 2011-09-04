@@ -43,10 +43,10 @@ CHIPRecord::CHIPRecord(CHIPRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -109,95 +109,96 @@ SINT32 CHIPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DEST):
                 Destructable.Load();
-                Destructable->DEST.Read(buffer, subSize, curPos);
+                Destructable->DEST.Read(buffer, subSize);
                 break;
             case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize);
                 break;
             case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize);
                 break;
             case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize);
                 break;
             case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
             case REV32(YNAM):
-                YNAM.Read(buffer, subSize, curPos);
+                YNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  CHIP: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -255,5 +256,10 @@ bool CHIPRecord::operator ==(const CHIPRecord &other) const
 bool CHIPRecord::operator !=(const CHIPRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool CHIPRecord::equals(const Record *other) const
+    {
+    return *this == *(CHIPRecord *)other;
     }
 }

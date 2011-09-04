@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class QUSTRecord : public Record
+namespace Ob
+{
+class QUSTRecord : public Record //Quest
     {
     private:
         struct QUSTDATA
@@ -38,49 +39,63 @@ class QUSTRecord : public Record
             bool operator !=(const QUSTDATA &other) const;
             };
 
-        struct QUSTEntry
+        struct QUSTEntry //Log Entry
             {
-            ReqSimpleSubRecord<UINT8> QSDT;
-            std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-            StringRecord CNAM;
-            ReqSubRecord<GENSCHR> SCHR;
-            RawRecord SCDA;
-            NonNullStringRecord SCTX;
-            std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+            ReqSimpleSubRecord<UINT8> QSDT; //Stage Flags
+            OrderedSparseArray<GENCTDA *> CTDA; //Conditions
+            StringRecord CNAM; //Log Entry
+            ReqSubRecord<GENSCHR> SCHR; //Basic Script Data
+            RawRecord SCDA; //Unknown (Script Header?)
+            NonNullStringRecord SCTX; //Script Source
+            OrderedSparseArray<GENSCR_ *> SCR_; //References
 
             enum entriesFlags
                 {
                 fIsCompletes = 0x00000001
                 };
 
-            QUSTEntry();
-            ~QUSTEntry();
+            enum scriptTypeTypes
+                {
+                eObject = 0x0000,
+                eQuest  = 0x0001,
+                eEffect = 0x0100
+                };
 
             bool IsCompletes();
             void IsCompletes(bool value);
             bool IsFlagMask(UINT8 Mask, bool Exact=false);
             void SetFlagMask(UINT8 Mask);
 
+            bool IsObject();
+            void IsObject(bool value);
+            bool IsQuest();
+            void IsQuest(bool value);
+            bool IsEffect();
+            void IsEffect(bool value);
+            bool IsType(UINT16 Type);
+            void SetType(UINT16 Type);
+
+            void Write(FileWriter &writer);
+
             bool operator ==(const QUSTEntry &other) const;
             bool operator !=(const QUSTEntry &other) const;
             };
 
-        struct QUSTStage
+        struct QUSTStage //Stage
             {
-            ReqSimpleSubRecord<UINT16> INDX;
-            std::vector<QUSTEntry *> Entries;
+            ReqSimpleSubRecord<UINT16> INDX; //Stage Index
+            UnorderedSparseArray<QUSTEntry *> Entries; //Log Entries
 
-            QUSTStage();
-            ~QUSTStage();
+            void Write(FileWriter &writer);
 
             bool operator ==(const QUSTStage &other) const;
             bool operator !=(const QUSTStage &other) const;
             };
 
-        struct QUSTQSTA
+        struct QUSTQSTA //Target
             {
-            FORMID  targetId;
-            UINT8   flags, unused1[3];
+            FORMID  targetId; //Target
+            UINT8   flags, unused1[3]; //Flags, Unused
 
             QUSTQSTA();
             ~QUSTQSTA();
@@ -89,23 +104,22 @@ class QUSTRecord : public Record
             bool operator !=(const QUSTQSTA &other) const;
             };
 
-        struct QUSTTarget
+        struct QUSTTarget //Target
             {
-            ReqSubRecord<QUSTQSTA> QSTA;
-            std::vector<ReqSubRecord<GENCTDA> *> CTDA;
+            ReqSubRecord<QUSTQSTA> QSTA; //Target
+            OrderedSparseArray<GENCTDA *> CTDA; //Conditions
 
             enum targetsFlags
                 {
                 fIsIgnoresLocks = 0x00000001
                 };
 
-            QUSTTarget();
-            ~QUSTTarget();
-
             bool IsIgnoresLocks();
             void IsIgnoresLocks(bool value);
             bool IsFlagMask(UINT8 Mask, bool Exact=false);
             void SetFlagMask(UINT8 Mask);
+
+            void Write(FileWriter &writer);
 
             bool operator ==(const QUSTTarget &other) const;
             bool operator !=(const QUSTTarget &other) const;
@@ -119,14 +133,14 @@ class QUSTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        OptSimpleSubRecord<FORMID> SCRI;
-        StringRecord FULL;
-        StringRecord ICON;
-        ReqSubRecord<QUSTDATA> DATA;
-        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        std::vector<QUSTStage *> Stages;
-        std::vector<QUSTTarget *> Targets;
+        StringRecord EDID; //Editor ID
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        StringRecord FULL; //Name
+        StringRecord ICON; //Large Icon Filename
+        ReqSubRecord<QUSTDATA> DATA; //General
+        OrderedSparseArray<GENCTDA *> CTDA; //Conditions
+        UnorderedSparseArray<QUSTStage *> Stages; //Stages
+        UnorderedSparseArray<QUSTTarget *> Targets; //Targets
 
         QUSTRecord(unsigned char *_recData=NULL);
         QUSTRecord(QUSTRecord *srcRecord);
@@ -151,10 +165,12 @@ class QUSTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const QUSTRecord &other) const;
         bool operator !=(const QUSTRecord &other) const;
+        bool equals(Record *other);
     };
+}

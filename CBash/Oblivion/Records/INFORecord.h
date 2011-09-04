@@ -16,20 +16,23 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
+namespace Ob
+{
 class INFORecord : public Record
     {
     private:
+        #pragma pack(push)
+        #pragma pack(1)
         struct INFODATA
             {
-            UINT16  dialType;
+            UINT16  dialType; //Type
             UINT8   flags;
 
             INFODATA();
@@ -38,12 +41,13 @@ class INFORecord : public Record
             bool operator ==(const INFODATA &other) const;
             bool operator !=(const INFODATA &other) const;
             };
+        #pragma pack(pop)
 
-        struct INFOTRDT
+        struct INFOTRDT //Response Data
             {
-            UINT32  emotionType;
-            SINT32  emotionValue;
-            UINT8   unused1[4], responseNum, unused2[3];
+            UINT32  emotionType; //Emotion Type
+            SINT32  emotionValue; //Emotion Value
+            UINT8   unused1[4], responseNum, unused2[3]; //Unused, Response Number, Unused
 
             INFOTRDT();
             ~INFOTRDT();
@@ -54,9 +58,9 @@ class INFORecord : public Record
 
         struct INFOResponse
             {
-            ReqSubRecord<INFOTRDT> TRDT;
-            StringRecord NAM1;
-            StringRecord NAM2;
+            ReqSubRecord<INFOTRDT> TRDT; //Response Data
+            StringRecord NAM1; //Response Text
+            StringRecord NAM2; //Script Notes
 
             enum eEmotionType
                 {
@@ -86,6 +90,8 @@ class INFORecord : public Record
             bool   IsType(UINT32 Type);
             void   SetType(UINT32 Type);
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const INFOResponse &other) const;
             bool operator !=(const INFOResponse &other) const;
             };
@@ -112,21 +118,31 @@ class INFORecord : public Record
             fIsRunForRumors   = 0x00000040
             };
 
+        enum scriptTypeTypes
+            {
+            eObject = 0x0000,
+            eQuest  = 0x0001,
+            eEffect = 0x0100
+            };
+
     public:
-        StringRecord EDID;
-        ReqSubRecord<INFODATA> DATA;
-        ReqSimpleSubRecord<FORMID> QSTI;
-        OptSimpleSubRecord<FORMID> TPIC;
-        SemiOptSimpleSubRecord<FORMID> PNAM;
-        std::vector<FORMID> NAME;
-        std::vector<INFOResponse *> Responses;
-        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        std::vector<FORMID> TCLT;
-        std::vector<FORMID> TCLF;
-        ReqSubRecord<GENSCHR> SCHR;
-        RawRecord SCDA;
-        NonNullStringRecord SCTX;
-        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+        StringRecord EDID; //Editor ID
+        ReqSubRecord<INFODATA> DATA; //INFO Data
+        ReqSimpleSubRecord<FORMID> QSTI; //Quest
+        OptSimpleSubRecord<FORMID> TPIC; //Topic
+        SemiOptSimpleSubRecord<FORMID> PNAM; //Previous INFO
+        UnorderedSparseArray<FORMID> NAME; //Topics
+        UnorderedSparseArray<INFOResponse *> Responses; //Responses
+        OrderedSparseArray<GENCTDA *> CTDA; //Conditions
+        UnorderedSparseArray<FORMID> TCLT; //Choices
+        UnorderedSparseArray<FORMID> TCLF; //Link From
+
+        ReqSubRecord<GENSCHR> SCHR; //Basic Script Data
+        RawRecord SCDA; //Unknown (Script Header?)
+        NonNullStringRecord SCTX; //Script Source
+        OrderedSparseArray<GENSCR_ *> SCR_; //References
+
+        Record *Parent;
 
         INFORecord(unsigned char *_recData=NULL);
         INFORecord(INFORecord *srcRecord);
@@ -168,6 +184,15 @@ class INFORecord : public Record
         bool   IsFlagMask(UINT8 Mask, bool Exact=false);
         void   SetFlagMask(UINT8 Mask);
 
+        bool   IsScriptObject();
+        void   IsScriptObject(bool value);
+        bool   IsScriptQuest();
+        void   IsScriptQuest(bool value);
+        bool   IsScriptEffect();
+        void   IsScriptEffect(bool value);
+        bool   IsScriptType(UINT32 Type);
+        void   SetScriptType(UINT32 Type);
+
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
@@ -175,12 +200,15 @@ class INFORecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const INFORecord &other) const;
         bool operator !=(const INFORecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

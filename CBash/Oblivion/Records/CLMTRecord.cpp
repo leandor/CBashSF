@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "CLMTRecord.h"
-#include <vector>
 
+namespace Ob
+{
 CLMTRecord::CLMTWLST::CLMTWLST():
     weather(0),
     chance(0)
@@ -93,10 +94,10 @@ CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -104,13 +105,7 @@ CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
     Weathers = srcRecord->Weathers;
     FNAM = srcRecord->FNAM;
     GNAM = srcRecord->GNAM;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     TNAM = srcRecord->TNAM;
     return;
     }
@@ -125,8 +120,8 @@ bool CLMTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < Weathers.size(); x++)
-        op.Accept(Weathers[x].weather);
+    for(UINT32 ListIndex = 0; ListIndex < Weathers.value.size(); ListIndex++)
+        op.Accept(Weathers.value[ListIndex].weather);
 
     return op.Stop();
     }
@@ -141,73 +136,63 @@ STRING CLMTRecord::GetStrType()
     return "CLMT";
     }
 
-SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CLMTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(WLST):
-                if(subSize % sizeof(CLMTWLST) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    Weathers.resize(subSize / sizeof(CLMTWLST));
-                    _readBuffer(&Weathers[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized Weathers size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                Weathers.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(GNAM):
-                GNAM.Read(buffer, subSize, curPos);
+                GNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CLMT: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -219,7 +204,7 @@ SINT32 CLMTRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
-    Weathers.clear();
+    Weathers.Unload();
     FNAM.Unload();
     GNAM.Unload();
     MODL.Unload();
@@ -229,53 +214,32 @@ SINT32 CLMTRecord::Unload()
 
 SINT32 CLMTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(Weathers.size())
-        writer.record_write_subrecord(REV32(WLST), &Weathers[0], (UINT32)Weathers.size() * sizeof(CLMTWLST));
-    //else
-    //    writer.record_write_subheader(REV32(WLST), 0);
-
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), FNAM.value, FNAM.GetSize());
-    if(GNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(GNAM), GNAM.value, GNAM.GetSize());
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-
-    if(TNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(TNAM), &TNAM.value, TNAM.GetSize());
+    WRITE(EDID);
+    WRITEAS(Weathers,WLST);
+    WRITE(FNAM);
+    WRITE(GNAM);
+    MODL.Write(writer);
+    WRITE(TNAM);
     return -1;
     }
 
 bool CLMTRecord::operator ==(const CLMTRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FNAM.equalsi(other.FNAM) &&
-        GNAM.equalsi(other.GNAM) &&
-        MODL == other.MODL &&
-        TNAM == other.TNAM &&
-        Weathers.size() == other.Weathers.size())
-        {
-        //Not sure if record order matters on weathers, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Weathers.size(); ++x)
-            if(Weathers[x] != other.Weathers[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (TNAM == other.TNAM &&
+            EDID.equalsi(other.EDID) &&
+            FNAM.equalsi(other.FNAM) &&
+            GNAM.equalsi(other.GNAM) &&
+            Weathers == other.Weathers &&
+            MODL == other.MODL);
     }
 
 bool CLMTRecord::operator !=(const CLMTRecord &other) const
     {
     return !(*this == other);
     }
+
+bool CLMTRecord::equals(Record *other)
+    {
+    return *this == *(CLMTRecord *)other;
+    }
+}

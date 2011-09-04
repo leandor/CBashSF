@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -28,7 +28,7 @@ namespace FNV
 class RGDLRecord : public FNVRecord //Ragdoll
     {
     private:
-        struct RGDLDATA // General Data
+        struct RGDLDATA //General Data
             {
             UINT32  numBones;
             UINT8   unused1[4], feedbackType;
@@ -42,7 +42,7 @@ class RGDLRecord : public FNVRecord //Ragdoll
             bool operator !=(const RGDLDATA &other) const;
             };
 
-        struct RGDLRAFD // Feedback Data
+        struct RGDLRAFD //Feedback Data
             {
             FLOAT32 blendAmt, hierachyGain, posGain,
                     velGain, accGain, snapGain, velDamping,
@@ -57,7 +57,7 @@ class RGDLRecord : public FNVRecord //Ragdoll
             bool operator !=(const RGDLRAFD &other) const;
             };
 
-        struct RGDLRAPS // Pose Matching Data
+        struct RGDLRAPS //Pose Matching Data
             {
             UINT16  matchBones1, matchBones2, matchBones3;
             UINT8   flags, unused;
@@ -109,10 +109,10 @@ class RGDLRecord : public FNVRecord //Ragdoll
     public:
         StringRecord EDID; //Editor ID
         OptSimpleSubRecord<UINT32> NVER; //Version
-        OptSubRecord<RGDLDATA> DATA; // General Data
+        OptSubRecord<RGDLDATA> DATA; //General Data
         OptSimpleSubRecord<FORMID> XNAM; //Actor Base
         OptSimpleSubRecord<FORMID> TNAM; //Body Part Data
-        OptSubRecord<RGDLRAFD> RAFD; // Feedback Data
+        OptSubRecord<RGDLRAFD> RAFD; //Feedback Data
         std::vector<UINT16> RAFB; //Feedback Dynamic Bones
         OptSubRecord<RGDLRAPS> RAPS; //Pose Matching Data
         StringRecord ANAM; //Death Pose
@@ -171,11 +171,12 @@ class RGDLRecord : public FNVRecord //Ragdoll
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const RGDLRecord &other) const;
         bool operator !=(const RGDLRecord &other) const;
+        bool equals(Record *other);
     };
 }

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -159,7 +159,7 @@ class WTHRRecord : public FNVRecord //Weather
         ReqSubRecord<WTHRFNAM> FNAM; //Fog Distance
         RawRecord INAM; //Unused
         ReqSubRecord<WTHRDATA> DATA; //Data
-        UnorderedSparseArray<WTHRSNAM *> Sounds; // Sounds
+        UnorderedSparseArray<WTHRSNAM *> Sounds; //Sounds
 
         WTHRRecord(unsigned char *_recData=NULL);
         WTHRRecord(WTHRRecord *srcRecord);
@@ -194,11 +194,12 @@ class WTHRRecord : public FNVRecord //Weather
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WTHRRecord &other) const;
         bool operator !=(const WTHRRecord &other) const;
+        bool equals(Record *other);
     };
 }

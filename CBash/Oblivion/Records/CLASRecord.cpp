@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "CLASRecord.h"
 
+namespace Ob
+{
 CLASRecord::CLASDATA::CLASDATA():
     specialization(0),
     flags(0),
@@ -38,7 +40,7 @@ CLASRecord::CLASDATA::CLASDATA():
     major[4]=16;
     major[5]=17;
     major[6]=18;
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 CLASRecord::CLASDATA::~CLASDATA()
@@ -85,10 +87,10 @@ CLASRecord::CLASRecord(CLASRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -295,49 +297,50 @@ STRING CLASRecord::GetStrType()
     return "CLAS";
     }
 
-SINT32 CLASRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CLASRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CLAS: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -358,16 +361,11 @@ SINT32 CLASRecord::Unload()
 
 SINT32 CLASRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(DESC);
+    WRITE(ICON);
+    WRITE(DATA);
     return -1;
     }
 
@@ -384,3 +382,9 @@ bool CLASRecord::operator !=(const CLASRecord &other) const
     {
     return !(*this == other);
     }
+
+bool CLASRecord::equals(Record *other)
+    {
+    return *this == *(CLASRecord *)other;
+    }
+}

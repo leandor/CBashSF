@@ -16,13 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
+namespace Ob
+{
 class ACRERecord : public Record
     {
     private:
@@ -32,14 +34,16 @@ class ACRERecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSimpleSubRecord<FORMID> NAME;
-        OptSubRecord<GENXOWN> Ownership;
-        OptSubRecord<GENXLOD> XLOD;
-        OptSubRecord<GENXESP> XESP;
-        RawRecord XRGD;
-        OptSimpleFloatSubRecord<flt_1> XSCL; // scale
-        ReqSubRecord<GENPOSDATA> DATA;
+        StringRecord EDID; //Editor ID
+        ReqSimpleSubRecord<FORMID> NAME; //Base
+        OptSubRecord<GENXOWN> Ownership; //Owner
+        OptSubRecord<GENXLOD> XLOD; //Distant LOD Data
+        OptSubRecord<GENXESP> XESP; //Enable Parent
+        RawRecord XRGD; //Ragdoll Data
+        OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
+        ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
+
+        Record *Parent;
 
         ACRERecord(unsigned char *_recData=NULL);
         ACRERecord(ACRERecord *srcRecord);
@@ -59,12 +63,15 @@ class ACRERecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const ACRERecord &other) const;
         bool operator !=(const ACRERecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\ANIORecord.h"
 
+namespace Ob
+{
 UINT32 ANIORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -64,11 +66,11 @@ void * ANIORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //modPath
@@ -153,3 +155,4 @@ void ANIORecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

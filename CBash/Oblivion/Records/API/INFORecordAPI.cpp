@@ -16,16 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\INFORecord.h"
 
+namespace Ob
+{
 UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
-    Function_Arguments_Iterator curCTDAFunction;
-
     switch(FieldID)
         {
         case 0: //recType
@@ -54,7 +54,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)NAME.size();
+                    return (UINT32)NAME.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -67,13 +67,13 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Responses.size();
+                        return (UINT32)Responses.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Responses.size())
+            if(ListIndex >= Responses.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -120,13 +120,14 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)CTDA.size();
+                        return (UINT32)CTDA.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
+                return UNKNOWN_FIELD;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -143,8 +144,18 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 case 3: //compValue
-                    return FLOAT32_FIELD;
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_FLOAT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 case 4: //ifunc
                     return UINT32_TYPE_FIELD;
                 case 5: //param1
@@ -153,9 +164,12 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            curCTDAFunction = Function_Arguments.find(CTDA[ListIndex]->value.ifunc);
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(CTDA.value[ListIndex]->ifunc);
                             if(curCTDAFunction != Function_Arguments.end())
-                                switch(curCTDAFunction->second.first)
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.first)
                                     {
                                     case eFORMID:
                                         return FORMID_FIELD;
@@ -164,6 +178,8 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     default:
                                         return UNKNOWN_FIELD;
                                     }
+                                }
+                            }
                             return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
@@ -174,9 +190,12 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            curCTDAFunction = Function_Arguments.find(CTDA[ListIndex]->value.ifunc);
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(CTDA.value[ListIndex]->ifunc);
                             if(curCTDAFunction != Function_Arguments.end())
-                                switch(curCTDAFunction->second.second)
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.second)
                                     {
                                     case eFORMID:
                                         return FORMID_FIELD;
@@ -185,6 +204,8 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     default:
                                         return UNKNOWN_FIELD;
                                     }
+                                }
+                            }
                             return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
@@ -209,7 +230,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)TCLT.size();
+                    return (UINT32)TCLT.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -220,7 +241,7 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)TCLF.size();
+                    return (UINT32)TCLF.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -265,13 +286,13 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return FORMID_OR_UINT32_ARRAY_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)SCR_.size();
+                        return (UINT32)SCR_.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -282,13 +303,15 @@ UINT32 INFORecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            return (SCR_[ListIndex]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                            return (SCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
                         default:
                             return UNKNOWN_FIELD;
                         }
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 23: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -300,11 +323,11 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //dialType
@@ -318,65 +341,65 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //prevInfo
             return PNAM.value;
         case 10: //addTopics
-            *FieldValues = NAME.size() ? &NAME[0] : NULL;
+            *FieldValues = NAME.value.size() ? &NAME.value[0] : NULL;
             return NULL;
         case 11: //responses
-            if(ListIndex >= Responses.size())
+            if(ListIndex >= Responses.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //emotionType
-                    return &Responses[ListIndex]->TRDT.value.emotionType;
+                    return &Responses.value[ListIndex]->TRDT.value.emotionType;
                 case 2: //emotionValue
-                    return &Responses[ListIndex]->TRDT.value.emotionValue;
+                    return &Responses.value[ListIndex]->TRDT.value.emotionValue;
                 case 3: //unused1
-                    *FieldValues = &Responses[ListIndex]->TRDT.value.unused1[0];
+                    *FieldValues = &Responses.value[ListIndex]->TRDT.value.unused1[0];
                     return NULL;
                 case 4: //responseNum
-                    return &Responses[ListIndex]->TRDT.value.responseNum;
+                    return &Responses.value[ListIndex]->TRDT.value.responseNum;
                 case 5: //unused2
-                    *FieldValues = &Responses[ListIndex]->TRDT.value.unused2[0];
+                    *FieldValues = &Responses.value[ListIndex]->TRDT.value.unused2[0];
                     return NULL;
                 case 6: //responseText
-                    return Responses[ListIndex]->NAM1.value;
+                    return Responses.value[ListIndex]->NAM1.value;
                 case 7: //actorNotes
-                    return Responses[ListIndex]->NAM2.value;
+                    return Responses.value[ListIndex]->NAM2.value;
                 default:
                     return NULL;
                 }
             return NULL;
         case 12: //conditions
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    return &CTDA[ListIndex]->value.operType;
+                    return &CTDA.value[ListIndex]->operType;
                 case 2: //unused1
-                    *FieldValues = &CTDA[ListIndex]->value.unused1[0];
+                    *FieldValues = &CTDA.value[ListIndex]->unused1[0];
                     return NULL;
                 case 3: //compValue
-                    return &CTDA[ListIndex]->value.compValue;
+                    return &CTDA.value[ListIndex]->compValue;
                 case 4: //ifunc
-                    return &CTDA[ListIndex]->value.ifunc;
+                    return &CTDA.value[ListIndex]->ifunc;
                 case 5: //param1
-                    return &CTDA[ListIndex]->value.param1;
+                    return &CTDA.value[ListIndex]->param1;
                 case 6: //param2
-                    return &CTDA[ListIndex]->value.param2;
+                    return &CTDA.value[ListIndex]->param2;
                 case 7: //unused2
-                    *FieldValues = &CTDA[ListIndex]->value.unused2[0];
+                    *FieldValues = &CTDA.value[ListIndex]->unused2[0];
                     return NULL;
                 default:
                     return NULL;
                 }
             return NULL;
         case 13: //choices
-            *FieldValues = TCLT.size() ? &TCLT[0] : NULL;
+            *FieldValues = TCLT.value.size() ? &TCLT.value[0] : NULL;
             return NULL;
         case 14: //linksFrom
-            *FieldValues = TCLF.size() ? &TCLF[0] : NULL;
+            *FieldValues = TCLF.value.size() ? &TCLF.value[0] : NULL;
             return NULL;
         case 15: //unused1
             *FieldValues = &SCHR.value.unused1[0];
@@ -395,9 +418,11 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 21: //scriptText
             return SCTX.value;
         case 22: //references
-            for(UINT32 x = 0; x < SCR_.size(); ++x)
-                ((FORMIDARRAY)FieldValues)[x] = SCR_[x]->value.reference;
+            for(UINT32 x = 0; x < SCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = SCR_.value[x]->reference;
             return NULL;
+        case 23: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -436,60 +461,49 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 10: //addTopics
             NAME.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                NAME[x] = ((FORMIDARRAY)FieldValue)[x];
+                NAME.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 11: //responses
             if(ListFieldID == 0) //responsesSize
                 {
-                ArraySize -= (UINT32)Responses.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Responses.push_back(new INFOResponse);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Responses.back();
-                    Responses.pop_back();
-                    ++ArraySize;
-                    }
+                Responses.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Responses.size())
+            if(ListIndex >= Responses.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //emotionType
-                    Responses[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    Responses.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 case 2: //emotionValue
-                    Responses[ListIndex]->TRDT.value.emotionValue = *(SINT32 *)FieldValue;
+                    Responses.value[ListIndex]->TRDT.value.emotionValue = *(SINT32 *)FieldValue;
                     break;
                 case 3: //unused1
                     if(ArraySize != 4)
                         break;
-                    Responses[ListIndex]->TRDT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    Responses[ListIndex]->TRDT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    Responses[ListIndex]->TRDT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
-                    Responses[ListIndex]->TRDT.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    Responses.value[ListIndex]->TRDT.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Responses.value[ListIndex]->TRDT.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Responses.value[ListIndex]->TRDT.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Responses.value[ListIndex]->TRDT.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
                     break;
                 case 4: //responseNum
-                    Responses[ListIndex]->TRDT.value.responseNum = *(UINT8 *)FieldValue;
+                    Responses.value[ListIndex]->TRDT.value.responseNum = *(UINT8 *)FieldValue;
                     break;
                 case 5: //unused2
                     if(ArraySize != 3)
                         break;
-                    Responses[ListIndex]->TRDT.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-                    Responses[ListIndex]->TRDT.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
-                    Responses[ListIndex]->TRDT.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Responses.value[ListIndex]->TRDT.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Responses.value[ListIndex]->TRDT.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Responses.value[ListIndex]->TRDT.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 6: //responseText
-                    Responses[ListIndex]->NAM1.Copy((STRING)FieldValue);
+                    Responses.value[ListIndex]->NAM1.Copy((STRING)FieldValue);
                     break;
                 case 7: //actorNotes
-                    Responses[ListIndex]->NAM2.Copy((STRING)FieldValue);
+                    Responses.value[ListIndex]->NAM2.Copy((STRING)FieldValue);
                     break;
                 default:
                     break;
@@ -498,55 +512,44 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 12: //conditions
             if(ListFieldID == 0) //conditionsSize
                 {
-                ArraySize -= (UINT32)CTDA.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete CTDA.back();
-                    CTDA.pop_back();
-                    ++ArraySize;
-                    }
+                CTDA.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    CTDA[ListIndex]->value.operType = *(UINT8 *)FieldValue;
+                    CTDA.value[ListIndex]->operType = *(UINT8 *)FieldValue;
                     break;
                 case 2: //unused1
                     if(ArraySize != 3)
                         break;
-                    CTDA[ListIndex]->value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    CTDA[ListIndex]->value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    CTDA[ListIndex]->value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    CTDA.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 3: //compValue
-                    CTDA[ListIndex]->value.compValue = *(FLOAT32 *)FieldValue;
+                    CTDA.value[ListIndex]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
                     return true;
                 case 4: //ifunc
-                    CTDA[ListIndex]->value.ifunc = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
                     return true;
                 case 5: //param1
-                    CTDA[ListIndex]->value.param1 = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->param1 = *(UINT32 *)FieldValue;
                     return true;
                 case 6: //param2
-                    CTDA[ListIndex]->value.param2 = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->param2 = *(UINT32 *)FieldValue;
                     return true;
                 case 7: //unused2
                     if(ArraySize != 4)
                         break;
-                    CTDA[ListIndex]->value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-                    CTDA[ListIndex]->value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
-                    CTDA[ListIndex]->value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
-                    CTDA[ListIndex]->value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    CTDA.value[ListIndex]->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    CTDA.value[ListIndex]->unused2[3] = ((UINT8ARRAY)FieldValue)[3];
                     break;
                 default:
                     break;
@@ -555,12 +558,12 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 13: //choices
             TCLT.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                TCLT[x] = ((FORMIDARRAY)FieldValue)[x];
+                TCLT.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 14: //linksFrom
             TCLF.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                TCLF[x] = ((FORMIDARRAY)FieldValue)[x];
+                TCLF.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 15: //unused1
             if(ArraySize != 4)
@@ -580,7 +583,7 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SCHR.value.lastIndex = *(UINT32 *)FieldValue;
             break;
         case 19: //scriptType
-            SCHR.value.scriptType = *(UINT32 *)FieldValue;
+            SetScriptType(*(UINT32 *)FieldValue);
             break;
         case 20: //compiled_p
             SCDA.Copy(((UINT8ARRAY)FieldValue), ArraySize);
@@ -591,30 +594,19 @@ bool INFORecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 22: //references
             if(ListFieldID == 0) //referencesSize
                 {
-                ArraySize -= (UINT32)SCR_.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete SCR_.back();
-                    SCR_.pop_back();
-                    ++ArraySize;
-                    }
+                SCR_.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
                     //Borrowing ArraySize to flag if the new value is a formID
-                    SCR_[ListIndex]->value.reference = *(UINT32 *)FieldValue;
-                    SCR_[ListIndex]->value.isSCRO = ArraySize ? true : false;
+                    SCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    SCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
                     return ArraySize != 0;
                 default:
                     break;
@@ -662,47 +654,45 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             PNAM.Unload();
             return;
         case 10: //addTopics
-            NAME.clear();
+            NAME.Unload();
             return;
         case 11: //responses
             if(ListFieldID == 0) //responses
                 {
-                for(UINT32 x = 0; x < (UINT32)Responses.size(); x++)
-                    delete Responses[x];
-                Responses.clear();
+                Responses.Unload();
                 return;
                 }
 
-            if(ListIndex >= Responses.size())
+            if(ListIndex >= Responses.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //emotionType
-                    Responses[ListIndex]->SetType(defaultTRDT.emotionType);
+                    Responses.value[ListIndex]->SetType(defaultTRDT.emotionType);
                     return;
                 case 2: //emotionValue
-                    Responses[ListIndex]->TRDT.value.emotionValue = defaultTRDT.emotionValue;
+                    Responses.value[ListIndex]->TRDT.value.emotionValue = defaultTRDT.emotionValue;
                     return;
                 case 3: //unused1
-                    Responses[ListIndex]->TRDT.value.unused1[0] = defaultTRDT.unused1[0];
-                    Responses[ListIndex]->TRDT.value.unused1[1] = defaultTRDT.unused1[1];
-                    Responses[ListIndex]->TRDT.value.unused1[2] = defaultTRDT.unused1[2];
-                    Responses[ListIndex]->TRDT.value.unused1[3] = defaultTRDT.unused1[3];
+                    Responses.value[ListIndex]->TRDT.value.unused1[0] = defaultTRDT.unused1[0];
+                    Responses.value[ListIndex]->TRDT.value.unused1[1] = defaultTRDT.unused1[1];
+                    Responses.value[ListIndex]->TRDT.value.unused1[2] = defaultTRDT.unused1[2];
+                    Responses.value[ListIndex]->TRDT.value.unused1[3] = defaultTRDT.unused1[3];
                     return;
                 case 4: //responseNum
-                    Responses[ListIndex]->TRDT.value.responseNum = defaultTRDT.responseNum;
+                    Responses.value[ListIndex]->TRDT.value.responseNum = defaultTRDT.responseNum;
                     return;
                 case 5: //unused2
-                    Responses[ListIndex]->TRDT.value.unused2[0] = defaultTRDT.unused2[0];
-                    Responses[ListIndex]->TRDT.value.unused2[1] = defaultTRDT.unused2[1];
-                    Responses[ListIndex]->TRDT.value.unused2[2] = defaultTRDT.unused2[2];
+                    Responses.value[ListIndex]->TRDT.value.unused2[0] = defaultTRDT.unused2[0];
+                    Responses.value[ListIndex]->TRDT.value.unused2[1] = defaultTRDT.unused2[1];
+                    Responses.value[ListIndex]->TRDT.value.unused2[2] = defaultTRDT.unused2[2];
                     return;
                 case 6: //responseText
-                    Responses[ListIndex]->NAM1.Unload();
+                    Responses.value[ListIndex]->NAM1.Unload();
                     return;
                 case 7: //actorNotes
-                    Responses[ListIndex]->NAM2.Unload();
+                    Responses.value[ListIndex]->NAM2.Unload();
                     return;
                 default:
                     return;
@@ -711,52 +701,50 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
         case 12: //conditions
             if(ListFieldID == 0) //conditions
                 {
-                for(UINT32 x = 0; x < (UINT32)CTDA.size(); ++x)
-                    delete CTDA[x];
-                CTDA.clear();
+                CTDA.Unload();
                 return;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    CTDA[ListIndex]->value.operType = defaultCTDA.operType;
+                    CTDA.value[ListIndex]->operType = defaultCTDA.operType;
                     return;
                 case 2: //unused1
-                    CTDA[ListIndex]->value.unused1[0] = defaultCTDA.unused1[0];
-                    CTDA[ListIndex]->value.unused1[1] = defaultCTDA.unused1[1];
-                    CTDA[ListIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    CTDA.value[ListIndex]->unused1[0] = defaultCTDA.unused1[0];
+                    CTDA.value[ListIndex]->unused1[1] = defaultCTDA.unused1[1];
+                    CTDA.value[ListIndex]->unused1[2] = defaultCTDA.unused1[2];
                     return;
                 case 3: //compValue
-                    CTDA[ListIndex]->value.compValue = defaultCTDA.compValue;
+                    CTDA.value[ListIndex]->compValue = defaultCTDA.compValue;
                     return;
                 case 4: //ifunc
-                    CTDA[ListIndex]->value.ifunc = defaultCTDA.ifunc;
+                    CTDA.value[ListIndex]->ifunc = defaultCTDA.ifunc;
                     return;
                 case 5: //param1
-                    CTDA[ListIndex]->value.param1 = defaultCTDA.param1;
+                    CTDA.value[ListIndex]->param1 = defaultCTDA.param1;
                     return;
                 case 6: //param2
-                    CTDA[ListIndex]->value.param2 = defaultCTDA.param2;
+                    CTDA.value[ListIndex]->param2 = defaultCTDA.param2;
                     return;
                 case 7: //unused2
-                    CTDA[ListIndex]->value.unused2[0] = defaultCTDA.unused2[0];
-                    CTDA[ListIndex]->value.unused2[1] = defaultCTDA.unused2[1];
-                    CTDA[ListIndex]->value.unused2[2] = defaultCTDA.unused2[2];
-                    CTDA[ListIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    CTDA.value[ListIndex]->unused2[0] = defaultCTDA.unused2[0];
+                    CTDA.value[ListIndex]->unused2[1] = defaultCTDA.unused2[1];
+                    CTDA.value[ListIndex]->unused2[2] = defaultCTDA.unused2[2];
+                    CTDA.value[ListIndex]->unused2[3] = defaultCTDA.unused2[3];
                     return;
                 default:
                     return;
                 }
             return;
         case 13: //choices
-            TCLT.clear();
+            TCLT.Unload();
             return;
         case 14: //linksFrom
-            TCLF.clear();
+            TCLF.Unload();
             return;
         case 15: //unused1
             SCHR.value.unused1[0] = defaultSCHR.unused1[0];
@@ -774,7 +762,7 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
             SCHR.value.lastIndex = defaultSCHR.lastIndex;
             return;
         case 19: //scriptType
-            SCHR.value.scriptType = defaultSCHR.scriptType;
+            SetScriptType(defaultSCHR.scriptType);
             return;
         case 20: //compiled_p
             SCDA.Unload();
@@ -785,20 +773,18 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
         case 22: //references
             if(ListFieldID == 0) //references
                 {
-                for(UINT32 x = 0; x < (UINT32)SCR_.size(); x++)
-                    delete SCR_[x];
-                SCR_.clear();
+                SCR_.Unload();
                 return;
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
-                    SCR_[ListIndex]->value.reference = defaultSCR_.reference;
-                    SCR_[ListIndex]->value.isSCRO = defaultSCR_.isSCRO;
+                    SCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    SCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
                     return;
                 default:
                     return;
@@ -809,3 +795,4 @@ void INFORecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class LVLIRecord : public Record
+namespace Ob
+{
+class LVLIRecord : public Record //Leveled Item
     {
     private:
         enum flagsFlags
@@ -36,10 +37,10 @@ class LVLIRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSimpleSubRecord<UINT8> LVLD;
-        SemiOptSimpleSubRecord<UINT8> LVLF;
-        std::vector<ReqSubRecord<LVLLVLO> *> Entries;
+        StringRecord EDID; //Editor ID
+        ReqSimpleSubRecord<UINT8> LVLD; //Chance none
+        SemiOptSimpleSubRecord<UINT8> LVLF; //Flags
+        UnorderedSparseArray<LVLLVLO *> Entries; //Leveled List Entries
         //RawRecord DATA; //Older version of LVLF. Auto-updated to newer format.
 
         LVLIRecord(unsigned char *_recData=NULL);
@@ -65,10 +66,12 @@ class LVLIRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const LVLIRecord &other) const;
         bool operator !=(const LVLIRecord &other) const;
+        bool equals(Record *other);
     };
+}

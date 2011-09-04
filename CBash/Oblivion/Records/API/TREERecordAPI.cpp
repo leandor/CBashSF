@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\TREERecord.h"
 
+namespace Ob
+{
 UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -59,7 +61,7 @@ UINT32 TREERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return UINT32_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)SNAM.size();
+                    return (UINT32)SNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -95,11 +97,11 @@ void * TREERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //modPath
@@ -112,7 +114,7 @@ void * TREERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //iconPath
             return ICON.value;
         case 9: //speedTree
-            *FieldValues = SNAM.size() != 0 ? &SNAM[0] : NULL;
+            *FieldValues = SNAM.value.size() != 0 ? &SNAM.value[0] : NULL;
             return NULL;
         case 10: //curvature
             return &CNAM.value.curvature;
@@ -171,7 +173,7 @@ bool TREERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 9: //speedTree
             SNAM.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                SNAM[x] = ((UINT32ARRAY)FieldValue)[x];
+                SNAM.value[x] = ((UINT32ARRAY)FieldValue)[x];
             break;
         case 10: //curvature
             CNAM.value.curvature = *(FLOAT32 *)FieldValue;
@@ -241,7 +243,7 @@ void TREERecord::DeleteField(FIELD_IDENTIFIERS)
             ICON.Unload();
             return;
         case 9: //speedTree
-            SNAM.clear();
+            SNAM.Unload();
             return;
         case 10: //curvature
             CNAM.value.curvature = defaultCNAM.curvature;
@@ -278,3 +280,4 @@ void TREERecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

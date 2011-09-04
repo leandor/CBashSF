@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -52,7 +52,6 @@ class CELLRecord : public FNVRecord //Cell
             fBehaveLikeExterior = 0x00000080
             };
 
-
         enum lightFlags
             {
             fIsAmbientInherited             = 0x00000001,
@@ -77,7 +76,7 @@ class CELLRecord : public FNVRecord //Cell
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
-        OptSimpleSubRecord<UINT8> DATA; //Flags
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
         OptSubRecord<CELLXCLC> XCLC; //Grid
         OptSubRecord<FNVLIGHT> XCLL; //Lighting
         UnorderedSparseArray<GENIMPS *> IMPS; //Swapped Impact
@@ -96,6 +95,7 @@ class CELLRecord : public FNVRecord //Cell
         OptSimpleSubRecord<FORMID> XCAS; //Acoustic Space
         RawRecord XCMT; //Unused
         OptSimpleSubRecord<FORMID> XCMO; //Music Type
+
         std::vector<Record *> ACHR;
         std::vector<Record *> ACRE;
         std::vector<Record *> REFR;
@@ -113,7 +113,6 @@ class CELLRecord : public FNVRecord //Cell
         CELLRecord(CELLRecord *srcRecord);
         ~CELLRecord();
 
-        bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsInterior();
@@ -174,13 +173,15 @@ class CELLRecord : public FNVRecord //Cell
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CELLRecord &other) const;
         bool operator !=(const CELLRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
 }

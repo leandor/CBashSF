@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -43,10 +43,10 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -69,9 +69,9 @@ bool SCPTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SCR_.value.size(); x++)
-        if(SCR_.value[x]->isSCRO)
-            op.Accept(SCR_.value[x]->reference);
+    for(UINT32 ListIndex = 0; ListIndex < SCR_.value.size(); ListIndex++)
+        if(SCR_.value[ListIndex]->isSCRO)
+            op.Accept(SCR_.value[ListIndex]->reference);
 
     return op.Stop();
     }
@@ -146,55 +146,56 @@ STRING SCPTRecord::GetStrType()
     return "SCPT";
     }
 
-SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCHR):
-                SCHR.Read(buffer, subSize, curPos);
+                SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
-                SCDA.Read(buffer, subSize, curPos);
+                SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
-                SCTX.Read(buffer, subSize, curPos);
+                SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SLSD):
                 VARS.value.push_back(new GENVARS);
-                VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                VARS.value.back()->SLSD.Read(buffer, subSize);
                 break;
             case REV32(SCVR):
                 if(VARS.value.size() == 0)
                     VARS.value.push_back(new GENVARS);
-                VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                VARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRV):
-                SCR_.Read(buffer, subSize, curPos);
+                SCR_.Read(buffer, subSize);
                 SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(SCRO):
-                SCR_.Read(buffer, subSize, curPos);
+                SCR_.Read(buffer, subSize);
                 SCR_.value.back()->isSCRO = true;
                 break;
             default:
@@ -202,8 +203,8 @@ SINT32 SCPTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 printer("  SCPT: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -240,16 +241,21 @@ SINT32 SCPTRecord::WriteRecord(FileWriter &writer)
 
 bool SCPTRecord::operator ==(const SCPTRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            SCHR == other.SCHR &&
+    return (SCHR == other.SCHR &&
+            EDID.equalsi(other.EDID) &&
             SCDA == other.SCDA &&
-            SCTX.equalsi(other.SCTX) &&
             VARS == other.VARS &&
-            SCR_ == other.SCR_);
+            SCR_ == other.SCR_ &&
+            SCTX.equalsi(other.SCTX));
     }
 
 bool SCPTRecord::operator !=(const SCPTRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool SCPTRecord::equals(Record *other)
+    {
+    return *this == *(SCPTRecord *)other;
     }
 }

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "WATRRecord.h"
 
+namespace Ob
+{
 WATRRecord::WATRDATA::WATRDATA():
     windVelocity(0.1f),
     windDirection(90.0f),
@@ -50,7 +52,7 @@ WATRRecord::WATRDATA::WATRDATA():
     dispSize(0.05f),
     damage(0)
     {
-    memset(&unused1, 0xCD, 3);
+    memset(&unused1[0], 0xCD, sizeof(unused1));
     }
 
 WATRRecord::WATRDATA::~WATRDATA()
@@ -60,7 +62,9 @@ WATRRecord::WATRDATA::~WATRDATA()
 
 bool WATRRecord::WATRDATA::operator ==(const WATRDATA &other) const
     {
-    return (AlmostEqual(windVelocity,other.windVelocity,2) &&
+    return (damage == other.damage &&
+            blend == other.blend &&
+            AlmostEqual(windVelocity,other.windVelocity,2) &&
             AlmostEqual(windDirection,other.windDirection,2) &&
             AlmostEqual(waveAmp,other.waveAmp,2) &&
             AlmostEqual(waveFreq,other.waveFreq,2) &&
@@ -71,10 +75,6 @@ bool WATRRecord::WATRDATA::operator ==(const WATRDATA &other) const
             AlmostEqual(ySpeed,other.ySpeed,2) &&
             AlmostEqual(fogNear,other.fogNear,2) &&
             AlmostEqual(fogFar,other.fogFar,2) &&
-            shallow == other.shallow &&
-            deep == other.deep &&
-            refl == other.refl &&
-            blend == other.blend &&
             AlmostEqual(rainForce,other.rainForce,2) &&
             AlmostEqual(rainVelocity,other.rainVelocity,2) &&
             AlmostEqual(rainFalloff,other.rainFalloff,2) &&
@@ -85,7 +85,9 @@ bool WATRRecord::WATRDATA::operator ==(const WATRDATA &other) const
             AlmostEqual(dispFalloff,other.dispFalloff,2) &&
             AlmostEqual(dispDampner,other.dispDampner,2) &&
             AlmostEqual(dispSize,other.dispSize,2) &&
-            damage == other.damage);
+            shallow == other.shallow &&
+            deep == other.deep &&
+            refl == other.refl);
     }
 
 bool WATRRecord::WATRDATA::operator !=(const WATRDATA &other) const
@@ -134,10 +136,10 @@ WATRRecord::WATRRecord(WATRRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -223,59 +225,60 @@ STRING WATRRecord::GetStrType()
     return "WATR";
     }
 
-SINT32 WATRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WATRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(MNAM):
-                MNAM.Read(buffer, subSize, curPos);
+                MNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(GNAM):
-                GNAM.Read(buffer, subSize, curPos);
+                GNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WATR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -299,38 +302,36 @@ SINT32 WATRRecord::Unload()
 
 SINT32 WATRRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(TNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(TNAM), TNAM.value, TNAM.GetSize());
-    if(ANAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
-    if(MNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
-    if(SNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), DATA.value, DATA.GetSize());
-    if(GNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(GNAM), GNAM.value, GNAM.GetSize());
+    WRITE(EDID);
+    WRITE(TNAM);
+    WRITE(ANAM);
+    WRITE(FNAM);
+    WRITE(MNAM);
+    WRITE(SNAM);
+    WRITE(DATA);
+    WRITE(GNAM);
     return -1;
     }
 
 bool WATRRecord::operator ==(const WATRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            TNAM.equalsi(other.TNAM) &&
-            ANAM == other.ANAM &&
+    return (ANAM == other.ANAM &&
             FNAM == other.FNAM &&
-            MNAM.equalsi(other.MNAM) &&
             SNAM == other.SNAM &&
-            DATA == other.DATA &&
-            GNAM == other.GNAM);
+            GNAM == other.GNAM &&
+            EDID.equalsi(other.EDID) &&
+            TNAM.equalsi(other.TNAM) &&
+            MNAM.equalsi(other.MNAM) &&
+            DATA == other.DATA);
     }
 
 bool WATRRecord::operator !=(const WATRRecord &other) const
     {
     return !(*this == other);
     }
+
+bool WATRRecord::equals(Record *other)
+    {
+    return *this == *(WATRRecord *)other;
+    }
+}

@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class LVLCRecord : public Record
+namespace Ob
+{
+class LVLCRecord : public Record //Leveled Creature
     {
     private:
         enum flagsFlags
@@ -36,12 +37,12 @@ class LVLCRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSimpleSubRecord<UINT8> LVLD;
-        SemiOptSimpleSubRecord<UINT8> LVLF;
-        OptSimpleSubRecord<FORMID> SCRI;
-        OptSimpleSubRecord<FORMID> TNAM;
-        std::vector<ReqSubRecord<LVLLVLO> *> Entries;
+        StringRecord EDID; //Editor ID
+        ReqSimpleSubRecord<UINT8> LVLD; //Chance none
+        SemiOptSimpleSubRecord<UINT8> LVLF; //Flags
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> TNAM; //Template
+        UnorderedSparseArray<LVLLVLO *> Entries; //Leveled List Entries
 
         LVLCRecord(unsigned char *_recData=NULL);
         LVLCRecord(LVLCRecord *srcRecord);
@@ -66,10 +67,12 @@ class LVLCRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const LVLCRecord &other) const;
         bool operator !=(const LVLCRecord &other) const;
+        bool equals(Record *other);
     };
+}

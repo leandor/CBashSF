@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\NPC_Record.h"
 
+namespace Ob
+{
 UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -75,13 +77,13 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)SNAM.size();
+                        return (UINT32)SNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -114,7 +116,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)SPLO.size();
+                    return (UINT32)SPLO.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -129,13 +131,13 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)CNTO.size();
+                        return (UINT32)CNTO.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -179,7 +181,7 @@ UINT32 NPC_Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)PKID.size();
+                    return (UINT32)PKID.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -339,11 +341,11 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -370,17 +372,17 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 15: //calcMax
             return &ACBS.value.calcMax;
         case 16: //factions
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    return &SNAM[ListIndex]->value.faction;
+                    return &SNAM.value[ListIndex]->faction;
                 case 2: //rank
-                    return &SNAM[ListIndex]->value.rank;
+                    return &SNAM.value[ListIndex]->rank;
                 case 3: //unused1
-                    *FieldValues = &SNAM[ListIndex]->value.unused1[0];
+                    *FieldValues = &SNAM.value[ListIndex]->unused1[0];
                     return NULL;
                 default:
                     return NULL;
@@ -391,20 +393,20 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 18: //race
             return RNAM.IsLoaded() ? &RNAM.value : NULL;
         case 19: //spells
-            *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
+            *FieldValues = SPLO.value.size() ? &SPLO.value[0] : NULL;
             return NULL;
         case 20: //script
             return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 21: //items
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    return &CNTO[ListIndex]->value.item;
+                    return &CNTO.value[ListIndex]->item;
                 case 2: //count
-                    return &CNTO[ListIndex]->value.count;
+                    return &CNTO.value[ListIndex]->count;
                 default:
                     return NULL;
                 }
@@ -427,7 +429,7 @@ void * NPC_Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &AIDT.value.unused1[0];
             return NULL;
         case 30: //aiPackages
-            *FieldValues = PKID.size() ? &PKID[0] : NULL;
+            *FieldValues = PKID.value.size() ? &PKID.value[0] : NULL;
             return NULL;
         case 31: //animations
             for(UINT32 p = 0;p < KFFZ.value.size();p++)
@@ -584,38 +586,27 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 16: //factions
             if(ListFieldID == 0) //factionsSize
                 {
-                ArraySize -= (UINT32)SNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    SNAM.push_back(new ReqSubRecord<GENSNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete SNAM.back();
-                    SNAM.pop_back();
-                    ++ArraySize;
-                    }
+                SNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    SNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    SNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
                     return true;
                 case 2: //rank
-                    SNAM[ListIndex]->value.rank = *(UINT8 *)FieldValue;
+                    SNAM.value[ListIndex]->rank = *(UINT8 *)FieldValue;
                     break;
                 case 3: //unused1
                     if(ArraySize != 3)
                         break;
-                    SNAM[ListIndex]->value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    SNAM[ListIndex]->value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    SNAM[ListIndex]->value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    SNAM.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    SNAM.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    SNAM.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 default:
                     break;
@@ -630,7 +621,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 19: //spells
             SPLO.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
+                SPLO.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 20: //script
             SCRI.value = *(FORMID *)FieldValue;
@@ -638,31 +629,20 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 21: //items
             if(ListFieldID == 0) //itemsSize
                 {
-                ArraySize -= (UINT32)CNTO.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    CNTO.push_back(new ReqSubRecord<GENCNTO>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete CNTO.back();
-                    CNTO.pop_back();
-                    ++ArraySize;
-                    }
+                CNTO.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = *(FORMID *)FieldValue;
+                    CNTO.value[ListIndex]->item = *(FORMID *)FieldValue;
                     return true;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = *(SINT32 *)FieldValue;
+                    CNTO.value[ListIndex]->count = *(SINT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -698,7 +678,7 @@ bool NPC_Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 30: //aiPackages
             PKID.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                PKID[x] = ((FORMIDARRAY)FieldValue)[x];
+                PKID.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 31: //animations
             KFFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
@@ -913,27 +893,25 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
         case 16: //factions
             if(ListFieldID == 0) //factions
                 {
-                for(UINT32 x = 0; x < (UINT32)SNAM.size(); x++)
-                    delete SNAM[x];
-                SNAM.clear();
+                SNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    SNAM[ListIndex]->value.faction = defaultSNAM.faction;
+                    SNAM.value[ListIndex]->faction = defaultSNAM.faction;
                     return;
                 case 2: //rank
-                    SNAM[ListIndex]->value.rank = defaultSNAM.rank;
+                    SNAM.value[ListIndex]->rank = defaultSNAM.rank;
                     return;
                 case 3: //unused1
-                    SNAM[ListIndex]->value.unused1[0] = defaultSNAM.unused1[0];
-                    SNAM[ListIndex]->value.unused1[1] = defaultSNAM.unused1[1];
-                    SNAM[ListIndex]->value.unused1[2] = defaultSNAM.unused1[2];
+                    SNAM.value[ListIndex]->unused1[0] = defaultSNAM.unused1[0];
+                    SNAM.value[ListIndex]->unused1[1] = defaultSNAM.unused1[1];
+                    SNAM.value[ListIndex]->unused1[2] = defaultSNAM.unused1[2];
                     return;
                 default:
                     return;
@@ -946,7 +924,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             RNAM.Unload();
             return;
         case 19: //spells
-            SPLO.clear();
+            SPLO.Unload();
             return;
         case 20: //script
             SCRI.Unload();
@@ -954,22 +932,20 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
         case 21: //items
             if(ListFieldID == 0) //items
                 {
-                for(UINT32 x = 0; x < (UINT32)CNTO.size(); x++)
-                    delete CNTO[x];
-                CNTO.clear();
+                CNTO.Unload();
                 return;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = defaultCNTO.item;
+                    CNTO.value[ListIndex]->item = defaultCNTO.item;
                     return;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = defaultCNTO.count;
+                    CNTO.value[ListIndex]->count = defaultCNTO.count;
                     return;
                 default:
                     return;
@@ -1001,7 +977,7 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
             AIDT.value.unused1[1] = defaultAIDT.unused1[1];
             return;
         case 30: //aiPackages
-            PKID.clear();
+            PKID.Unload();
             return;
         case 31: //animations
             KFFZ.Unload();
@@ -1144,3 +1120,4 @@ void NPC_Record::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

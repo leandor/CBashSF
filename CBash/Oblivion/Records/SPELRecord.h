@@ -16,14 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
+namespace Ob
+{
 class SPELRecord : public Record
     {
     private:
@@ -74,11 +75,11 @@ class SPELRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        ReqSubRecord<SPELSPIT> SPIT;
-        std::vector<GENEffect *> Effects;
-        OptSubRecord<OBMEMAGIC> OBME;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        ReqSubRecord<SPELSPIT> SPIT; //Data
+        UnorderedSparseArray<GENEffect *> Effects; //Effects
+        OptSubRecord<OBMEMAGIC> OBME; //OBME Extended Data
 
         SPELRecord(unsigned char *_recData=NULL);
         SPELRecord(SPELRecord *srcRecord);
@@ -147,10 +148,12 @@ class SPELRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const SPELRecord &other) const;
         bool operator !=(const SPELRecord &other) const;
+        bool equals(Record *other);
     };
+}

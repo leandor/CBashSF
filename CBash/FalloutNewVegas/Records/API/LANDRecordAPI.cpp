@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
@@ -443,6 +443,8 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 17: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -458,11 +460,11 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = &flagsUnk;
+            *FieldValues = cleaned_flag2();
             return NULL;
         case 5: //formVersion
             return &formVersion;
@@ -755,6 +757,8 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return NULL;
                 }
             return NULL;
+        case 17: //Parent
+            return Parent;
         default:
             return NULL;
         }

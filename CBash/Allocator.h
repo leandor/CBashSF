@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -71,8 +71,10 @@ class RecordPoolAllocator
                         ((Record *)last_position)->~Record();
                         }
                     }
+                free(buffers[p]);
                 }
-            purge_no_destructors();
+            buffers.clear();
+            freed_position = NULL;
             }
 
         void reserve(UINT32 elements)
@@ -93,70 +95,6 @@ class RecordPoolAllocator
                 }
 
             //Save the buffer so it can be deallocated later
-            buffers.push_back(buffer);
-            }
-
-        void consolidate()
-            {
-            //consolidates all memory pools into one large pool, removing any freed positions and unused memory
-            //invalidates any python records, so it can only be safely done after loading and
-            //before control is returned to python
-            //this improves locality of records, so iterating through them should be faster
-            //consolidate never leaves the pool completely empty (tries to leave AllocUnit amount available)
-            //return;
-            if(buffers.size() == 0)
-                {
-                //buffer is unused
-                return;
-                }
-
-            if(buffers.size() == 1 && freed_position == NULL)
-                {
-                //buffer is already consolidated
-                return;
-                }
-
-            boost::unordered_set<unsigned char *> free_set;
-            MakeFreeSet(free_set);
-
-            UINT32 total_bytes = bytes_capacity();
-            UINT32 free_bytes = free_set.size() * sizeof(T);
-            //assert(free_bytes <= total_bytes);
-            UINT32 used_bytes = total_bytes - free_bytes;
-            //assert(used_bytes % sizeof(T) == 0);
-            //assert(free_bytes % sizeof(T) == 0);
-            //DPRINT("Saved %u bytes (%u objects out of %u allocated)", free_bytes, free_bytes / sizeof(T), used_bytes / sizeof(T));
-            if(used_bytes == 0)
-                {
-                //no memory is currently allocated
-                purge_no_destructors();
-                return;
-                }
-
-            unsigned char *buffer = (unsigned char *)malloc(used_bytes);
-            if(buffer == 0)
-                throw std::bad_alloc();
-            unsigned char *buffer_position = buffer;
-
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                {
-                UINT32 buffer_size = _msize(buffers[p]);
-                //in case malloc returned more than the requested amount
-                buffer_size -= buffer_size % sizeof(T);
-                unsigned char *end_of_buffer = buffers[p] + buffer_size;
-                for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
-                    {
-                    if(free_set.find(last_position) == free_set.end())
-                        {
-                        new(buffer_position) T((T *)last_position);
-                        ((Record *)last_position)->~Record();
-                        //memcpy(buffer_position, last_position, sizeof(T));
-                        buffer_position += sizeof(T);
-                        }
-                    }
-                }
-            assert(buffer_position == buffer + used_bytes);
-            purge_no_destructors(); //destructors run in loop above
             buffers.push_back(buffer);
             }
 
@@ -238,12 +176,10 @@ class RecordPoolAllocator
             if(freed_position)
                 {
                 size++;
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                while(next_position != NULL)
+                for(unsigned char *next_position = *(unsigned char **)freed_position; next_position != NULL; next_position = *(unsigned char **)next_position)
                     {
                     size++;
-                    next_position = *(unsigned char **)next_position;
-                    };
+                    }
                 }
 
             return size;
@@ -256,45 +192,21 @@ class RecordPoolAllocator
 
         UINT32 bytes_capacity()
             {
-            UINT32 size = 0;
-            for(UINT32 p = 0;p < buffers.size(); p++)
-                {
-                UINT32 buffer_size = _msize(buffers[p]);
-                //in case malloc returned more than the requested amount
-                buffer_size -= buffer_size % sizeof(T);
-                size += buffer_size;
-                }
-
-            return size;
+            return object_capacity() * sizeof(T);
             }
 
         UINT32 free_bytes_capacity()
             {
-            UINT32 size = 0;
-
-            if(freed_position)
-                {
-                size++;
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                while(next_position != NULL)
-                    {
-                    size++;
-                    next_position = *(unsigned char **)next_position;
-                    };
-                }
-
-            return size * sizeof(T);
+            return free_object_capacity() * sizeof(T);
             }
 
         UINT32 used_bytes_capacity()
             {
-            return bytes_capacity() - free_bytes_capacity();
+            return used_object_capacity() * sizeof(T);
             }
 
-        bool VisitRecords(const UINT32 &RecordType, RecordOp &op, bool DeepVisit)
+        bool VisitRecords(RecordOp &op)
             {
-            bool stop = false;
-            Record * curRecord = NULL;
             boost::unordered_set<unsigned char *> free_set;
 
             MakeFreeSet(free_set);
@@ -308,31 +220,12 @@ class RecordPoolAllocator
                     {
                     if(free_set.find(last_position) == free_set.end())
                         {
-                        curRecord = (Record *)last_position;
-                        if(RecordType == NULL || RecordType == RecType)
-                            {
-                            stop = op.Accept(curRecord);
-                            if(curRecord == NULL)
-                                {
-                                destroy(curRecord);
-                                if(stop)
-                                    return stop;
-                                continue;
-                                }
-                            if(stop)
-                                return stop;
-                            }
-
-                        if(DeepVisit)
-                            {
-                            stop = curRecord->VisitSubRecords(RecordType, op);
-                            if(stop)
-                                return stop;
-                            }
+                        if(op.Accept((Record *&)last_position))
+                            return true;
                         }
                     }
                 }
-            return stop;
+            return false;
             }
 
         void MakeFreeSet(boost::unordered_set<unsigned char *> &free_set)
@@ -368,13 +261,13 @@ class RecordPoolAllocator
             {
             boost::unordered_set<unsigned char *> free_set;
             MakeFreeSet(free_set);
+            Records.reserve(object_capacity() - free_set.size());
             for(UINT32 p = 0;p < buffers.size(); p++)
                 {
                 UINT32 buffer_size = _msize(buffers[p]);
                 //in case malloc returned more than the requested amount
                 buffer_size -= buffer_size % sizeof(T);
                 unsigned char *end_of_buffer = buffers[p] + buffer_size;
-                Records.reserve(Records.size() + (buffer_size / sizeof(T)) - (UINT32)free_set.size());
                 for(unsigned char *last_position = buffers[p];last_position < end_of_buffer; last_position += sizeof(T))
                     {
                     if(free_set.find(last_position) == free_set.end())
@@ -400,6 +293,39 @@ class RecordPoolAllocator
                         ((RECORDIDARRAY)Records)[pos++] = (Record *)last_position;
                     }
                 }
+            }
+
+        template<class U>
+        void Take_Ownership(U &rhs)
+            {
+            if(this != &rhs)
+                {
+                //purge_with_destructors();
+                if(freed_position != NULL && rhs.freed_position != NULL)
+                    {
+                    //Add the rhs frees to the end of the current frees
+                    unsigned char *next_position = *(unsigned char **)freed_position;
+                    while(*(unsigned char **)next_position != NULL)
+                        {
+                        next_position = *(unsigned char **)next_position;
+                        };
+                    *(unsigned char **)next_position = rhs.freed_position;
+                    }
+                else if(rhs.freed_position != NULL)
+                    freed_position = rhs.freed_position;
+
+                for(UINT32 x = 0; x < rhs.buffers.size(); ++x)
+                    buffers.push_back(rhs.buffers[x]);
+                rhs.freed_position = NULL;
+                rhs.buffers.clear();
+                }
+            return;
+            }
+
+        void add_buffer(unsigned char *buffer)
+            {
+            buffers.push_back(buffer);
+            return;
             }
     };
 
@@ -554,16 +480,42 @@ class RecordPoolAllocator
 //            return bytes_capacity() - free_bytes_capacity();
 //            }
 //    };
-//
+
 //class StringPoolAllocator
 //    {
 //    private:
+//        static char null_term;
+//        PODPoolAllocator<4, 1024>   pool4;
+//        PODPoolAllocator<6, 1024>   pool6;
+//        PODPoolAllocator<8, 1024>   pool8;
+//        PODPoolAllocator<10, 1024>  pool10;
+//        PODPoolAllocator<12, 1024>  pool12;
+//        PODPoolAllocator<14, 1024>  pool14;
+//        PODPoolAllocator<16, 1024>  pool16;
+//        PODPoolAllocator<18, 1024>  pool18;
+//        PODPoolAllocator<20, 1024>  pool20;
+//        PODPoolAllocator<22, 1024>  pool22;
+//        PODPoolAllocator<24, 1024>  pool24;
+//        PODPoolAllocator<26, 1024>  pool26;
+//        PODPoolAllocator<28, 1024>  pool28;
+//        PODPoolAllocator<30, 1024>  pool30;
+//        PODPoolAllocator<32, 1024>  pool32;
+//        PODPoolAllocator<34, 1024>  pool34;
+//        PODPoolAllocator<36, 1024>  pool36;
+//        PODPoolAllocator<38, 1024>  pool38;
+//        PODPoolAllocator<40, 1024>  pool40;
+//        PODPoolAllocator<48, 1024>  pool48;
+//        PODPoolAllocator<56, 1024>  pool56;
+//        PODPoolAllocator<64, 1024>  pool64;
+//        PODPoolAllocator<128, 1024>  pool128;
+//        PODPoolAllocator<256, 1024>  pool256;
 //        unsigned char *freed_position;
 //        std::vector<char *> buffers;
 //
 //    public:
 //        StringPoolAllocator():
-//            freed_position(NULL)
+//            freed_position(NULL),
+//            null_term(0x00)
 //            {
 //            //reserve(AllocUnit);
 //            }

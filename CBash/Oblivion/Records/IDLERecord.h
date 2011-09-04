@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class IDLERecord : public Record
+namespace Ob
+{
+class IDLERecord : public Record //Idle Animation
     {
     private:
         struct IDLEDATA
@@ -55,11 +56,11 @@ class IDLERecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        OptSubRecord<GENMODEL> MODL;
-        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
-        ReqSimpleSubRecord<UINT8> ANAM;
-        ReqSubRecord<IDLEDATA> DATA;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model
+        OrderedSparseArray<GENCTDA *> CTDA; //Conditions
+        ReqSimpleSubRecord<UINT8> ANAM; //Group Flags
+        ReqSubRecord<IDLEDATA> DATA; //Data
 
         IDLERecord(unsigned char *_recData=NULL);
         IDLERecord(IDLERecord *srcRecord);
@@ -98,10 +99,12 @@ class IDLERecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const IDLERecord &other) const;
         bool operator !=(const IDLERecord &other) const;
+        bool equals(Record *other);
     };
+}

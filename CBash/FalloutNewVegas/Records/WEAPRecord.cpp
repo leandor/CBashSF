@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -113,7 +113,7 @@ WEAPRecord::WEAPDNAM::WEAPDNAM():
     impulseDist(0.0f),
     skillReq(0)
     {
-    memset(&unknown5[0], 0x00, 2);
+    memset(&unknown5[0], 0x00, sizeof(unknown5));
     }
 
 WEAPRecord::WEAPDNAM::~WEAPDNAM()
@@ -196,8 +196,8 @@ WEAPRecord::WEAPCRDT::WEAPCRDT():
     flags(0),
     effect(0)
     {
-    memset(&unused1[0], 0x00, 2);
-    memset(&unused2[0], 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
     }
 
 WEAPRecord::WEAPCRDT::~WEAPCRDT()
@@ -226,7 +226,7 @@ WEAPRecord::WEAPVATS::WEAPVATS():
     silenceType(0),
     modRequiredType(0)
     {
-    memset(&unused1[0], 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 WEAPRecord::WEAPVATS::~WEAPVATS()
@@ -268,10 +268,10 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -2184,282 +2184,283 @@ STRING WEAPRecord::GetStrType()
     return "WEAP";
     }
 
-SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 curSound = 0;
     enum curSounds
         {
         fIsGun3DRead   = 0x01,
         fIsShoot3DRead = 0x02
         };
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(EITM):
-                EITM.Read(buffer, subSize, curPos);
+                EITM.Read(buffer, subSize);
                 break;
             case REV32(EAMT):
-                EAMT.Read(buffer, subSize, curPos);
+                EAMT.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                NAM0.Read(buffer, subSize);
                 break;
             case REV32(DEST):
                 Destructable.Load();
-                Destructable->DEST.Read(buffer, subSize, curPos);
+                Destructable->DEST.Read(buffer, subSize);
                 break;
             case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize);
                 break;
             case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
             case REV32(REPL):
-                REPL.Read(buffer, subSize, curPos);
+                REPL.Read(buffer, subSize);
                 break;
             case REV32(ETYP):
-                ETYP.Read(buffer, subSize, curPos);
+                ETYP.Read(buffer, subSize);
                 break;
             case REV32(BIPL):
-                BIPL.Read(buffer, subSize, curPos);
+                BIPL.Read(buffer, subSize);
                 break;
             case REV32(YNAM):
-                YNAM.Read(buffer, subSize, curPos);
+                YNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(MOD2):
                 MOD2.Load();
-                MOD2->MODL.Read(buffer, subSize, curPos);
+                MOD2->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO2T):
                 MOD2.Load();
-                MOD2->MODT.Read(buffer, subSize, curPos);
+                MOD2->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO2S):
                 MOD2.Load();
-                MOD2->Textures.Read(buffer, subSize, curPos);
+                MOD2->Textures.Read(buffer, subSize);
                 break;
             case REV32(MOD3):
                 MOD3.Load();
-                MOD3->MODL.Read(buffer, subSize, curPos);
+                MOD3->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO3T):
                 MOD3.Load();
-                MOD3->MODT.Read(buffer, subSize, curPos);
+                MOD3->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO3S):
                 MOD3.Load();
-                MOD3->Textures.Read(buffer, subSize, curPos);
+                MOD3->Textures.Read(buffer, subSize);
                 break;
             case REV32(EFSD):
-                EFSD.Read(buffer, subSize, curPos);
+                EFSD.Read(buffer, subSize);
                 break;
             case REV32(MOD4):
                 MOD4.Load();
-                MOD4->MODL.Read(buffer, subSize, curPos);
+                MOD4->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO4T):
                 MOD4.Load();
-                MOD4->MODT.Read(buffer, subSize, curPos);
+                MOD4->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MO4S):
                 MOD4.Load();
-                MOD4->Textures.Read(buffer, subSize, curPos);
+                MOD4->Textures.Read(buffer, subSize);
                 break;
             case REV32(VANM):
-                VANM.Read(buffer, subSize, curPos);
+                VANM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NNAM):
-                NNAM.Read(buffer, subSize, curPos);
+                NNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD1):
-                MWD1.Read(buffer, subSize, curPos);
+                MWD1.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD2):
-                MWD2.Read(buffer, subSize, curPos);
+                MWD2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD3):
-                MWD3.Read(buffer, subSize, curPos);
+                MWD3.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD4):
-                MWD4.Read(buffer, subSize, curPos);
+                MWD4.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD5):
-                MWD5.Read(buffer, subSize, curPos);
+                MWD5.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD6):
-                MWD6.Read(buffer, subSize, curPos);
+                MWD6.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MWD7):
-                MWD7.Read(buffer, subSize, curPos);
+                MWD7.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(WNM1):
-                WNM1.Read(buffer, subSize, curPos);
+                WNM1.Read(buffer, subSize);
                 break;
             case REV32(WNM2):
-                WNM2.Read(buffer, subSize, curPos);
+                WNM2.Read(buffer, subSize);
                 break;
             case REV32(WNM3):
-                WNM3.Read(buffer, subSize, curPos);
+                WNM3.Read(buffer, subSize);
                 break;
             case REV32(WNM4):
-                WNM4.Read(buffer, subSize, curPos);
+                WNM4.Read(buffer, subSize);
                 break;
             case REV32(WNM5):
-                WNM5.Read(buffer, subSize, curPos);
+                WNM5.Read(buffer, subSize);
                 break;
             case REV32(WNM6):
-                WNM6.Read(buffer, subSize, curPos);
+                WNM6.Read(buffer, subSize);
                 break;
             case REV32(WNM7):
-                WNM7.Read(buffer, subSize, curPos);
+                WNM7.Read(buffer, subSize);
                 break;
             case REV32(WMI1):
-                WMI1.Read(buffer, subSize, curPos);
+                WMI1.Read(buffer, subSize);
                 break;
             case REV32(WMI2):
-                WMI2.Read(buffer, subSize, curPos);
+                WMI2.Read(buffer, subSize);
                 break;
             case REV32(WMI3):
-                WMI3.Read(buffer, subSize, curPos);
+                WMI3.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
                 if((curSound & fIsGun3DRead) == 0)
-                    SNAM1.Read(buffer, subSize, curPos);
+                    SNAM1.Read(buffer, subSize);
                 else
-                    SNAM2.Read(buffer, subSize, curPos);
+                    SNAM2.Read(buffer, subSize);
                 curSound |= fIsGun3DRead;
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM7):
-                NAM7.Read(buffer, subSize, curPos);
+                NAM7.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM6):
-                NAM6.Read(buffer, subSize, curPos);
+                NAM6.Read(buffer, subSize);
                 break;
             case REV32(UNAM):
-                UNAM.Read(buffer, subSize, curPos);
+                UNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM9):
-                NAM9.Read(buffer, subSize, curPos);
+                NAM9.Read(buffer, subSize);
                 break;
             case REV32(NAM8):
-                NAM8.Read(buffer, subSize, curPos);
+                NAM8.Read(buffer, subSize);
                 break;
             case REV32(WMS1):
                 if((curSound & fIsShoot3DRead) == 0)
-                    WMS11.Read(buffer, subSize, curPos);
+                    WMS11.Read(buffer, subSize);
                 else
-                    WMS12.Read(buffer, subSize, curPos);
+                    WMS12.Read(buffer, subSize);
                 curSound |= fIsShoot3DRead;
                 break;
             case REV32(WMS2):
-                WMS2.Read(buffer, subSize, curPos);
+                WMS2.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(CRDT):
-                CRDT.Read(buffer, subSize, curPos);
+                CRDT.Read(buffer, subSize);
                 break;
             case REV32(VATS):
-                VATS.Read(buffer, subSize, curPos);
+                VATS.Read(buffer, subSize);
                 break;
             case REV32(VNAM):
-                VNAM.Read(buffer, subSize, curPos);
+                VNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WEAP: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -2551,22 +2552,22 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(ZNAM);
     if(MOD2.IsLoaded())
         {
-        MOD2->WRITEAS(MODL, MOD2);
-        MOD2->WRITEAS(MODT, MO2T);
-        MOD2->WRITEAS(Textures, MO2S);
+        MOD2->WRITEAS(MODL,MOD2);
+        MOD2->WRITEAS(MODT,MO2T);
+        MOD2->WRITEAS(Textures,MO2S);
         }
     if(MOD3.IsLoaded())
         {
-        MOD3->WRITEAS(MODL, MOD3);
-        MOD3->WRITEAS(MODT, MO3T);
-        MOD3->WRITEAS(Textures, MO3S);
+        MOD3->WRITEAS(MODL,MOD3);
+        MOD3->WRITEAS(MODT,MO3T);
+        MOD3->WRITEAS(Textures,MO3S);
         }
     WRITE(EFSD);
     if(MOD4.IsLoaded())
         {
-        MOD4->WRITEAS(MODL, MOD4);
-        MOD4->WRITEAS(MODT, MO4T);
-        MOD4->WRITEAS(Textures, MO4S);
+        MOD4->WRITEAS(MODL,MOD4);
+        MOD4->WRITEAS(MODT,MO4T);
+        MOD4->WRITEAS(Textures,MO4S);
         }
     WRITE(VANM);
     WRITE(NNAM);
@@ -2590,10 +2591,10 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(WMI1);
     WRITE(WMI2);
     WRITE(WMI3);
-    WRITEAS(SNAM1, SNAM);
+    WRITEAS(SNAM1,SNAM);
     if(SNAM2.IsLoaded() && !SNAM1.IsLoaded()) //SNAM1 must be written even if empty for SNAM2 to work
         writer.record_write_subrecord(REV32(SNAM), &SNAM1.value, sizeof(SNAM1.value));
-    WRITEAS(SNAM2, SNAM);
+    WRITEAS(SNAM2,SNAM);
     WRITE(XNAM);
     WRITE(NAM7);
     WRITE(TNAM);
@@ -2601,10 +2602,10 @@ SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     WRITE(UNAM);
     WRITE(NAM9);
     WRITE(NAM8);
-    WRITEAS(WMS11, WMS1);
+    WRITEAS(WMS11,WMS1);
     if(WMS12.IsLoaded() && !WMS11.IsLoaded()) //WMS11 must be written even if empty for WMS12 to work
         writer.record_write_subrecord(REV32(WMS1), &WMS11.value, sizeof(WMS11.value));
-    WRITEAS(WMS12, WMS1);
+    WRITEAS(WMS12,WMS1);
     WRITE(WMS2);
     WRITE(DATA);
     WRITE(DNAM);
@@ -2679,5 +2680,10 @@ bool WEAPRecord::operator ==(const WEAPRecord &other) const
 bool WEAPRecord::operator !=(const WEAPRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool WEAPRecord::equals(Record *other)
+    {
+    return *this == *(WEAPRecord *)other;
     }
 }

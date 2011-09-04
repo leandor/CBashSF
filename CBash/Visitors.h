@@ -16,12 +16,13 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 // Visitors.h
 #include "GenericRecord.h"
+#include "ModFile.h"
 
 class FormIDMasterUpdater : public FormIDOp
     {
@@ -157,19 +158,6 @@ class RecordDeindexer : public RecordOp
         bool Accept(Record *&curRecord);
     };
 
-class RecordDeleter : public RecordOp
-    {
-    private:
-        RecordDeindexer deindexer;
-        Record *RecordToDelete;
-
-    public:
-        RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
-        ~RecordDeleter();
-
-        bool Accept(Record *&curRecord);
-    };
-
 class RecordChanger : public RecordOp
     {
     private:
@@ -178,6 +166,27 @@ class RecordChanger : public RecordOp
     public:
         RecordChanger(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
         ~RecordChanger();
+
+        bool Accept(Record *&curRecord);
+    };
+
+class IdenticalToMasterRetriever : public RecordOp
+    {
+    private:
+        EditorID_Map &EditorID_ModFile_Record;
+        FormID_Map &FormID_ModFile_Record;
+        const std::vector<ModFile *> &LoadOrder255;
+        const UINT8 &MasterIndex;
+        boost::unordered_set<Record *> &identical_records;
+        std::vector<FormIDResolver *> &Expanders;
+
+        RecordReader reader;
+
+    public:
+        IdenticalToMasterRetriever(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders,
+            std::vector<ModFile *> &_LoadOrder255, boost::unordered_set<Record *> &_identical_records,
+            EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
+        ~IdenticalToMasterRetriever();
 
         bool Accept(Record *&curRecord);
     };

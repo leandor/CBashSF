@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\CONTRecord.h"
 
+namespace Ob
+{
 UINT32 CONTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -63,13 +65,13 @@ UINT32 CONTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)CNTO.size();
+                        return (UINT32)CNTO.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -101,11 +103,11 @@ void * CONTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -120,15 +122,15 @@ void * CONTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 9: //script
             return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 10: //items
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    return &CNTO[ListIndex]->value.item;
+                    return &CNTO.value[ListIndex]->item;
                 case 2: //count
-                    return &CNTO[ListIndex]->value.count;
+                    return &CNTO.value[ListIndex]->count;
                 default:
                     return NULL;
                 }
@@ -181,31 +183,20 @@ bool CONTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 10: //items
             if(ListFieldID == 0) //itemsSize
                 {
-                ArraySize -= (UINT32)CNTO.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    CNTO.push_back(new ReqSubRecord<GENCNTO>());
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete CNTO.back();
-                    CNTO.pop_back();
-                    ++ArraySize;
-                    }
+                CNTO.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = *(FORMID *)FieldValue;
+                    CNTO.value[ListIndex]->item = *(FORMID *)FieldValue;
                     return true;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = *(SINT32 *)FieldValue;
+                    CNTO.value[ListIndex]->count = *(SINT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -266,22 +257,20 @@ void CONTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 10: //items
             if(ListFieldID == 0) //items
                 {
-                for(UINT32 x = 0; x < (UINT32)CNTO.size(); ++x)
-                    delete CNTO[x];
-                CNTO.clear();
+                CNTO.Unload();
                 return;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = defaultCNTO.item;
+                    CNTO.value[ListIndex]->item = defaultCNTO.item;
                     return;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = defaultCNTO.count;
+                    CNTO.value[ListIndex]->count = defaultCNTO.count;
                     return;
                 default:
                     return;
@@ -304,3 +293,4 @@ void CONTRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

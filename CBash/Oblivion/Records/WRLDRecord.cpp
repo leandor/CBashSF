@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "WRLDRecord.h"
-#include <vector>
 
+namespace Ob
+{
 WRLDRecord::WRLDRecord(unsigned char *_recData):
     Record(_recData),
     ROAD(NULL),
@@ -43,10 +44,10 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -66,34 +67,9 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
 
 WRLDRecord::~WRLDRecord()
     {
-    //
-    }
-
-bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-
-    if(ROAD != NULL && (RecordType == NULL || RecordType == REV32(ROAD)))
-        stop = op.Accept(ROAD);
-    if(stop)
-        return stop;
-
-    if(RecordType == NULL || RecordType != REV32(CELL) ||
-        RecordType != REV32(PGRD) || RecordType != REV32(LAND) ||
-        RecordType != REV32(REFR) || RecordType != REV32(ACHR) ||
-        RecordType != REV32(ACRE))
-        {
-        if(CELL != NULL && (RecordType == NULL || RecordType == REV32(CELL)))
-            stop = op.Accept(CELL);
-        if(stop)
-            return stop;
-
-        stop = cell_pool.VisitRecords(RecordType, op, true);
-        if(stop)
-            return stop;
-        }
-
-    return op.Stop();
+    //ROAD is owned at the mod level, so must be destroyed there
+    //CELL is owned at the mod level, so must be destroyed there
+    //CELLS are owned at the mod level, so must be destroyed there
     }
 
 bool WRLDRecord::VisitFormIDs(FormIDOp &op)
@@ -240,71 +216,72 @@ STRING WRLDRecord::GetStrType()
     return "WRLD";
     }
 
-SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM2):
-                NAM2.Read(buffer, subSize, curPos);
+                NAM2.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MNAM):
-                MNAM.Read(buffer, subSize, curPos);
+                MNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                NAM0.Read(buffer, subSize);
                 break;
             case REV32(NAM9):
-                NAM9.Read(buffer, subSize, curPos);
+                NAM9.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(OFST):
-                OFST.Read(buffer, subSize, curPos);
+                OFST.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WRLD: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -332,46 +309,34 @@ SINT32 WRLDRecord::Unload()
 
 SINT32 WRLDRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(WNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
-    if(CNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
-    if(NAM2.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM2), &NAM2.value, NAM2.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(MNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(NAM0.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM0), &NAM0.value, NAM0.GetSize());
-    if(NAM9.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM9), &NAM9.value, NAM9.GetSize());
-    if(SNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
-    if(OFST.IsLoaded())
-        writer.record_write_subrecord(REV32(OFST), OFST.value, OFST.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(WNAM);
+    WRITE(CNAM);
+    WRITE(NAM2);
+    WRITE(ICON);
+    WRITE(MNAM);
+    WRITE(DATA);
+    WRITE(NAM0);
+    WRITE(NAM9);
+    WRITE(SNAM);
+    WRITE(OFST);
     return -1;
     }
 
 bool WRLDRecord::operator ==(const WRLDRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            FULL.equals(other.FULL) &&
+    return (DATA == other.DATA &&
+            SNAM == other.SNAM &&
             WNAM == other.WNAM &&
             CNAM == other.CNAM &&
             NAM2 == other.NAM2 &&
-            ICON.equalsi(other.ICON) &&
             MNAM == other.MNAM &&
-            DATA == other.DATA &&
             NAM0 == other.NAM0 &&
             NAM9 == other.NAM9 &&
-            SNAM == other.SNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
             OFST == other.OFST);
     }
 
@@ -379,3 +344,54 @@ bool WRLDRecord::operator !=(const WRLDRecord &other) const
     {
     return !(*this == other);
     }
+
+bool WRLDRecord::equals(Record *other)
+    {
+    return *this == *(WRLDRecord *)other;
+    }
+
+bool WRLDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+    const WRLDRecord *master_wrld = (WRLDRecord *)master;
+
+    if(CELLS.size() > master_wrld->CELLS.size())
+        return false;
+
+    if(ROAD != NULL)
+        {
+        if(master_wrld->ROAD != NULL)
+            {
+            if(identical_records.count(ROAD) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    if(CELL != NULL)
+        {
+        if(master_wrld->CELL != NULL)
+            {
+            if(identical_records.count(CELL) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    for(UINT32 ListIndex = 0; ListIndex < CELLS.size(); ++ListIndex)
+        if(identical_records.count(CELLS[ListIndex]) == 0)
+                return false;
+
+    //The cell and all its contents are dupes, so remove the child records from identical_records
+    // This prevents Bash from trying to double delete records (first the cell, and later a child that was in the cell)
+    identical_records.erase(ROAD);
+    identical_records.erase(CELL);
+
+    for(UINT32 ListIndex = 0; ListIndex < CELLS.size(); ++ListIndex)
+        identical_records.erase(CELLS[ListIndex]);
+    return true;
+    }
+}

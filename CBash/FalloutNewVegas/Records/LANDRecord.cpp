@@ -16,11 +16,12 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "LANDRecord.h"
+#include "CELLRecord.h"
 
 namespace FNV
 {
@@ -68,7 +69,7 @@ LANDRecord::LANDVHGT::LANDVHGT():
     offset(0.0f)
     {
     memset(&VHGT[0][0], 0, 1089);
-    memset(&unused1[0], 0, 3);
+    memset(&unused1[0], 0, sizeof(unused1));
     }
 
 LANDRecord::LANDVHGT::~LANDVHGT()
@@ -166,7 +167,7 @@ LANDRecord::LANDVTXT::LANDVTXT():
     position(0),
     opacity(0.0f)
     {
-    memset(&unused1[0], 0, 2);
+    memset(&unused1[0], 0, sizeof(unused1));
     }
 
 LANDRecord::LANDVTXT::~LANDVTXT()
@@ -207,7 +208,8 @@ LANDRecord::LANDRecord(unsigned char *_recData):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL)
+    SouthLand(NULL),
+    Parent(NULL)
     {
     //LAND records are normally compressed due to size
     if(_recData == NULL)
@@ -219,7 +221,8 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL)
+    SouthLand(NULL),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -231,10 +234,10 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -310,9 +313,9 @@ STRING LANDRecord::GetStrType()
     return "LAND";
     }
 
-UINT32 LANDRecord::GetParentType()
+Record * LANDRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
 FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
@@ -331,51 +334,52 @@ FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
     return fRetValue;
     }
 
-SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LANDRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(VNML):
-                VNML.Read(buffer, subSize, curPos);
+                VNML.Read(buffer, subSize);
                 break;
             case REV32(VHGT):
-                VHGT.Read(buffer, subSize, curPos);
+                VHGT.Read(buffer, subSize);
                 break;
             case REV32(VCLR):
-                VCLR.Read(buffer, subSize, curPos);
+                VCLR.Read(buffer, subSize);
                 break;
             case REV32(BTXT):
-                BTXT.Read(buffer, subSize, curPos);
+                BTXT.Read(buffer, subSize);
                 break;
             case REV32(ATXT):
                 Layers.value.push_back(new LANDLAYERS);
-                Layers.value.back()->ATXT.Read(buffer, subSize, curPos);
+                Layers.value.back()->ATXT.Read(buffer, subSize);
                 break;
             case REV32(VTXT):
                 if(Layers.value.size() == 0)
                     Layers.value.push_back(new LANDLAYERS);
-                Layers.value.back()->VTXT.Read(buffer, subSize, curPos);
+                Layers.value.back()->VTXT.Read(buffer, subSize);
                 //switch(curTexture.value.quadrant)
                 //    {
                 //    case eBottomLeft:
@@ -400,15 +404,15 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //    }
                 break;
             case REV32(VTEX):
-                VTEX.Read(buffer, subSize, curPos);
+                VTEX.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  LAND: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -456,5 +460,33 @@ bool LANDRecord::operator ==(const LANDRecord &other) const
 bool LANDRecord::operator !=(const LANDRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool LANDRecord::equals(Record *other)
+    {
+    return *this == *(LANDRecord *)other;
+    }
+
+bool LANDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    LANDRecord *master_land = (LANDRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_land->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_land->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_land->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_land->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_land->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_land->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
     }
 }

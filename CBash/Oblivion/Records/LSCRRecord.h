@@ -16,18 +16,19 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class LSCRRecord : public Record
+namespace Ob
+{
+class LSCRRecord : public Record //Load Screen
     {
     private:
-        struct LSCRLNAM
+        struct LSCRLNAM //Location
             {
             FORMID  direct, indirect;
             SINT16  gridY, gridX;
@@ -40,10 +41,10 @@ class LSCRRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord ICON;
-        StringRecord DESC;
-        std::vector<ReqSubRecord<LSCRLNAM> *> LNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord ICON; //Large Icon Filename
+        StringRecord DESC; //Description
+        UnorderedSparseArray<LSCRLNAM *> LNAM; //Locations
 
         LSCRRecord(unsigned char *_recData=NULL);
         LSCRRecord(LSCRRecord *srcRecord);
@@ -59,10 +60,12 @@ class LSCRRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const LSCRRecord &other) const;
         bool operator !=(const LSCRRecord &other) const;
+        bool equals(Record *other);
     };
+}

@@ -16,17 +16,19 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CSTYRecord : public Record
+namespace Ob
+{
+class CSTYRecord : public Record //Combat Style
     {
     private:
-        struct CSTYCSTD
+        struct CSTYCSTD //Standard
             {
             UINT8   dodgeChance, lrChance, unused1[2];
             FLOAT32 lrTimerMin, lrTimerMax, forTimerMin, forTimerMax, backTimerMin,
@@ -50,7 +52,7 @@ class CSTYRecord : public Record
             bool operator !=(const CSTYCSTD &other) const;
             };
 
-        struct CSTYCSAD
+        struct CSTYCSAD //Advanced
             {
             FLOAT32 dodgeFMult, dodgeFBase, encSBase, encSMult, dodgeAtkMult,
                     dodgeNAtkMult, dodgeBAtkMult, dodgeBNAtkMult,
@@ -83,9 +85,9 @@ class CSTYRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSubRecord<CSTYCSTD> CSTD;
-        SemiOptSubRecord<CSTYCSAD> CSAD;
+        StringRecord EDID; //Editor ID
+        ReqSubRecord<CSTYCSTD> CSTD; //Standard
+        SemiOptSubRecord<CSTYCSAD> CSAD; //Advanced
 
         CSTYRecord(unsigned char *_recData=NULL);
         CSTYRecord(CSTYRecord *srcRecord);
@@ -123,10 +125,12 @@ class CSTYRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CSTYRecord &other) const;
         bool operator !=(const CSTYRecord &other) const;
+        bool equals(Record *other);
     };
+}

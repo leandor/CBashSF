@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CLOTRecord : public Record
+namespace Ob
+{
+class CLOTRecord : public Record //Clothing
     {
     private:
         enum flagsFlags
@@ -50,19 +52,19 @@ class CLOTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSimpleSubRecord<FORMID> SCRI;
-        OptSimpleSubRecord<FORMID> ENAM;
-        OptSimpleSubRecord<UINT16> ANAM;
-        ReqSimpleSubRecord<UINT32> BMDT;
-        OptSubRecord<GENMODEL> MODL;
-        OptSubRecord<GENMODEL> MOD2;
-        StringRecord ICON;
-        OptSubRecord<GENMODEL> MOD3;
-        OptSubRecord<GENMODEL> MOD4;
-        StringRecord ICO2;
-        ReqSubRecord<GENVALUEWEIGHT> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        OptSimpleSubRecord<FORMID> ENAM; //Enchantment
+        OptSimpleSubRecord<UINT16> ANAM; //Enchantment Points
+        ReqSimpleSubRecord<UINT32> BMDT; //Biped Flags
+        OptSubRecord<GENMODEL> MODL; //Male biped model
+        OptSubRecord<GENMODEL> MOD2; //Male world model
+        StringRecord ICON; //Male icon filename
+        OptSubRecord<GENMODEL> MOD3; //Female biped model
+        OptSubRecord<GENMODEL> MOD4; //Female world model
+        StringRecord ICO2; //Female icon filename
+        ReqSubRecord<GENVALUEWEIGHT> DATA; //Data
 
         CLOTRecord(unsigned char *_recData=NULL);
         CLOTRecord(CLOTRecord *srcRecord);
@@ -119,10 +121,12 @@ class CLOTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CLOTRecord &other) const;
         bool operator !=(const CLOTRecord &other) const;
+        bool equals(Record *other);
     };
+}

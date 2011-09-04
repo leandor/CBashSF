@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -43,10 +43,10 @@ TXSTRecord::TXSTRecord(TXSTRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -149,65 +149,66 @@ STRING TXSTRecord::GetStrType()
     return "TXST";
     }
 
-SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 TXSTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(TX00):
-                TX00.Read(buffer, subSize, curPos);
+                TX00.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TX01):
-                TX01.Read(buffer, subSize, curPos);
+                TX01.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TX02):
-                TX02.Read(buffer, subSize, curPos);
+                TX02.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TX03):
-                TX03.Read(buffer, subSize, curPos);
+                TX03.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TX04):
-                TX04.Read(buffer, subSize, curPos);
+                TX04.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(TX05):
-                TX05.Read(buffer, subSize, curPos);
+                TX05.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DODT):
-                DODT.Read(buffer, subSize, curPos);
+                DODT.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  TXST: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -264,5 +265,10 @@ bool TXSTRecord::operator ==(const TXSTRecord &other) const
 bool TXSTRecord::operator !=(const TXSTRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool TXSTRecord::equals(Record *other)
+    {
+    return *this == *(TXSTRecord *)other;
     }
 }

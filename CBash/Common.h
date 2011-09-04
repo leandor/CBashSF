@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -215,7 +215,9 @@ extern const float flt_max;
 extern const float flt_min;
 extern const float flt_0;
 extern const float flt_1;
+extern const float flt_3;
 extern const float flt_n2147483648;
+extern UINT32 clean_flags;
 
 #ifdef CBASH_CALLTIMING
     extern std::map<char *, double> CallTime;
@@ -224,11 +226,9 @@ extern const float flt_n2147483648;
     extern std::map<char *, unsigned long> CallCount;
 #endif
 
-inline void _readBuffer(void *_DstBuf, const unsigned char *_SrcBuf, const UINT32 &_MaxCharCount, UINT32 &_BufPos)
-    {
-    memcpy(_DstBuf, _SrcBuf + _BufPos, _MaxCharCount);
-    _BufPos += _MaxCharCount;
-    }
+#ifdef CBASH_DEBUG_CHUNK
+    void peek_around(unsigned char *position, UINT32 length);
+#endif
 
 STRING DeGhostModName(STRING const ModName);
 bool FileExists(STRING const FileName);
@@ -260,43 +260,6 @@ class FileWriter
         UINT32 file_tell();
         void   file_write(const void *source_buffer, UINT32 source_buffer_used);
         void   file_write(UINT32 position, const void *source_buffer, UINT32 source_buffer_used);
-    };
-
-class FileReader
-    {
-    private:
-        boost::iostreams::mapped_file_source file_map;
-
-        STRING FileName;
-        STRING ModName;
-
-        unsigned char *buffer_start, *buffer_position, *buffer_end;
-
-    public:
-        FileReader(STRING filename, STRING modname);
-        ~FileReader();
-
-        STRING const getFileName();
-        STRING const getModName();
-        bool   IsGhosted();
-
-        time_t mtime();
-        bool   exists();
-
-        SINT32 open();
-        SINT32 close();
-        bool   IsOpen();
-
-        unsigned char * tell();
-        unsigned char * start();
-        unsigned char * end();
-        bool   eof();
-        void   skip(UINT32 length);
-        bool   IsInFile(void *buffer);
-        void   read(void *destination, UINT32 length);
-        #ifdef CBASH_DEBUG_CHUNK
-            void   peek_around(UINT32 length, unsigned char *position=NULL);
-        #endif
     };
 
 class FormIDHandlerClass
@@ -439,7 +402,7 @@ class FormIDHandlerClass
     // CBash uses the terminology "expand" when resolving an on disk formID to an in memory formID,
     // and "collapse" when resolving an in memory formID to an on disk formID.
     public:
-        std::vector<StringRecord> &MAST;        //The list of masters
+        std::vector<STRING> &MAST;        //The list of masters
         std::vector<STRING> LoadOrder255;       //The current load order of active mods
         boost::unordered_set<UINT32> NewTypes;  //Tracks the type of any new records for reporting
         UINT32 &nextObject;                     //The object counter for quickly providing new objectIDs
@@ -452,7 +415,7 @@ class FormIDHandlerClass
         bool   IsEmpty;
         bool   bMastersChanged;
 
-        FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject);
+        FormIDHandlerClass(std::vector<STRING> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();
 
         void   SetLoadOrder(std::vector<STRING> &cLoadOrder);
@@ -461,8 +424,6 @@ class FormIDHandlerClass
         void   UpdateFormIDLookup();
         void   AddMaster(STRING const curMaster);
         bool   MastersChanged();
-        bool   IsNewRecord(const UINT32 *&RecordFormID);
-        bool   IsNewRecord(const UINT32 &RecordFormID);
         bool   IsValid(const unsigned char *_SrcBuf);
     };
 
@@ -471,9 +432,7 @@ class CreateRecordOptions
     private:
         enum createFlags
             {
-            fSetAsOverride       = 0x00000001,
-            fSetAsWorldCell      = 0x00000002,
-            fCopyWorldCellStatus = 0x00000004
+            fSetAsOverride = 0x00000001
             };
 
     public:
@@ -482,8 +441,6 @@ class CreateRecordOptions
         ~CreateRecordOptions();
 
         bool SetAsOverride;
-        bool SetAsWorldCell;
-        bool CopyWorldCellStatus;
 
         //Internal use
         bool ExistingReturned;
@@ -585,25 +542,71 @@ class ModFlags
         UINT32 GetFlags();
     };
 
+class EqualityOptions
+    {
+    private:
+        enum equalityFlags
+            {
+            fIsDeepEquality = 0x00000001
+            };
+
+    public:
+        EqualityOptions();
+        EqualityOptions(UINT32 nFlags);
+        ~EqualityOptions();
+
+        bool IsDeepEquality;
+    };
+
 class StringRecord
     {
     private:
-        bool IsOnDisk;
+        #ifdef CBASH_X64_COMPATIBILITY
+            bool IsOnDisk;
+            #define O_IS_ON_DISK(x) (x.IsOnDisk)
+            #define S_IS_ON_DISK (IsOnDisk)
+            #define O_SET_ON_DISK(x, y) (x.IsOnDisk = y)
+            #define S_SET_ON_DISK(x) (IsOnDisk = x)
+            #define S_GET_VALUE (value)
+            #define O_GET_VALUE(x) (x.value)
+            #define VAL_NAME value
+        #else
+            //Save memory on x86 builds by using the unused high bit of the STRING pointer
+            enum flagsFlags
+                {
+                fIsOnDisk = 0x80000000
+                };
+            #define O_IS_ON_DISK(x) (((UINT32)x._value & 0x80000000) != 0)
+            #define S_IS_ON_DISK (((UINT32)_value & 0x80000000) != 0)
+            #define O_SET_ON_DISK(x, y) (x._value = y ? (STRING)((UINT32)x._value | 0x80000000) : (STRING)((UINT32)x._value & ~0x80000000))
+            #define S_SET_ON_DISK(x) (_value = x ? (STRING)((UINT32)_value | 0x80000000) : (STRING)((UINT32)_value & ~0x80000000))
+            #define S_GET_VALUE ((STRING)((UINT32)_value & ~0x80000000))
+            #define O_GET_VALUE(x) ((STRING)((UINT32)x._value & ~0x80000000))
+            #define VAL_NAME _value
+            STRING _value;
+        #endif
 
     public:
-        STRING value;
+        #ifdef CBASH_X64_COMPATIBILITY
+            STRING value;
+        #else
+            __declspec(property(get=GetString)) STRING value;
+        #endif
 
         StringRecord();
         StringRecord(const StringRecord &p);
         ~StringRecord();
 
         UINT32 GetSize() const;
+        #ifndef CBASH_X64_COMPATIBILITY
+            STRING GetString();
+        #endif
 
         bool IsLoaded() const;
         void Load();
         void Unload();
 
-        bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+        bool Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk);
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
@@ -632,7 +635,7 @@ class NonNullStringRecord
         void Load();
         void Unload();
 
-        bool Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos);
+        bool Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk);
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
@@ -643,35 +646,41 @@ class NonNullStringRecord
         NonNullStringRecord& operator = (const NonNullStringRecord &rhs);
     };
 
-struct UnorderedPackedStrings
+class UnorderedPackedStrings
     {
-    std::vector<STRING> value;
+    public:
+        std::vector<STRING> value;
 
-    UnorderedPackedStrings();
-    ~UnorderedPackedStrings();
+        UnorderedPackedStrings();
+        ~UnorderedPackedStrings();
 
-    UINT32 GetSize() const;
+        UINT32 GetSize() const;
 
-    bool IsLoaded() const;
-    void Load();
-    void Unload();
+        bool IsLoaded() const;
+        void Load();
+        void Unload();
 
-    void resize(UINT32 newSize);
+        void resize(UINT32 newSize);
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
-    void Write(UINT32 _Type, FileWriter &writer);
+        bool Read(unsigned char *&buffer, const UINT32 &subSize);
+        void Write(UINT32 _Type, FileWriter &writer);
 
-    void Copy(STRINGARRAY FieldValue, UINT32 ArraySize);
+        void Copy(STRINGARRAY FieldValue, UINT32 ArraySize);
 
-    UnorderedPackedStrings& operator = (const UnorderedPackedStrings &rhs);
-    bool equals(const UnorderedPackedStrings &other) const;
-    bool equalsi(const UnorderedPackedStrings &other) const;
+        UnorderedPackedStrings& operator = (const UnorderedPackedStrings &rhs);
+        bool equals(const UnorderedPackedStrings &other) const;
+        bool equalsi(const UnorderedPackedStrings &other) const;
     };
 
 class RawRecord
     {
     private:
-        bool IsOnDisk;
+        //Using the upper bit of size to store a flag
+        //This restricts the max size to a paltry 2GB, so not an issue
+        enum flagsFlags
+            {
+            fIsOnDisk = 0x80000000
+            };
 
     public:
         UINT32 size;
@@ -687,7 +696,7 @@ class RawRecord
         void Load();
         void Unload();
 
-        bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+        bool Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk);
         void Write(UINT32 _Type, FileWriter &writer);
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
@@ -702,7 +711,7 @@ class RawRecord
 //Used when it isn't known if the record is required or optional.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template<class T, SINT32 defaultValue=0>
+template<class T, T defaultValue=0>
 struct SimpleSubRecord
     {
     T value;
@@ -738,11 +747,11 @@ struct SimpleSubRecord
         isLoaded = false;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(isLoaded)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         if(subSize > sizeof(T))
@@ -751,11 +760,11 @@ struct SimpleSubRecord
                 printer("SimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(T));
+            memcpy(&value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -764,18 +773,18 @@ struct SimpleSubRecord
                 printer("SimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
             }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         isLoaded = true;
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
     void Write(UINT32 _Type, FileWriter &writer)
@@ -842,11 +851,11 @@ struct SimpleFloatSubRecord
         isLoaded = false;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(isLoaded)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         if(subSize > sizeof(FLOAT32))
@@ -855,11 +864,11 @@ struct SimpleFloatSubRecord
                 printer("SimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            memcpy(&value, buffer, sizeof(FLOAT32));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
@@ -867,24 +876,26 @@ struct SimpleFloatSubRecord
                 printer("SimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
-                memcpy(&value, buffer + curPos, subSize);
+                memcpy(&value, buffer, subSize);
                 }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         isLoaded = true;
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(isLoaded && value != defaultValue)
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
+
     void ReqWrite(UINT32 _Type, FileWriter &writer)
         {
         writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
@@ -917,7 +928,7 @@ struct SimpleFloatSubRecord
 //Unloading them simply resets the values to default.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
 //exponent parameter is only used on the float specialization
-template<class T, SINT32 defaultValue=0>
+template<class T, T defaultValue=0>
 struct ReqSimpleSubRecord
     {
     T value;
@@ -927,6 +938,7 @@ struct ReqSimpleSubRecord
         {
         //
         }
+
     ~ReqSimpleSubRecord()
         {
         //
@@ -941,16 +953,18 @@ struct ReqSimpleSubRecord
         {
         return true;
         }
+
     void Load()
         {
         //
         }
+
     void Unload()
         {
         value = defaultValue;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(subSize > sizeof(T))
             {
@@ -958,11 +972,11 @@ struct ReqSimpleSubRecord
                 printer("ReqSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(T));
+            memcpy(&value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -971,19 +985,20 @@ struct ReqSimpleSubRecord
                 printer("ReqSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
             }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         writer.record_write_subrecord(_Type, &value, sizeof(T));
@@ -995,10 +1010,12 @@ struct ReqSimpleSubRecord
             value = rhs.value;
         return *this;
         }
+
     bool operator ==(const ReqSimpleSubRecord<T, defaultValue> &other) const
         {
         return (value == other.value);
         }
+
     bool operator !=(const ReqSimpleSubRecord<T, defaultValue> &other) const
         {
         return !(*this == other);
@@ -1015,6 +1032,7 @@ struct ReqSimpleFloatSubRecord
         {
         //
         }
+
     ~ReqSimpleFloatSubRecord()
         {
         //
@@ -1029,16 +1047,18 @@ struct ReqSimpleFloatSubRecord
         {
         return true;
         }
+
     void Load()
         {
         //
         }
+
     void Unload()
         {
         value = defaultValue;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(subSize > sizeof(FLOAT32))
             {
@@ -1046,11 +1066,11 @@ struct ReqSimpleFloatSubRecord
                 printer("ReqSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            memcpy(&value, buffer, sizeof(FLOAT32));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
@@ -1058,18 +1078,19 @@ struct ReqSimpleFloatSubRecord
                 printer("ReqSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
-                memcpy(&value, buffer + curPos, subSize);
+                memcpy(&value, buffer, subSize);
                 }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
@@ -1081,10 +1102,12 @@ struct ReqSimpleFloatSubRecord
             value = rhs.value;
         return *this;
         }
+
     bool operator ==(const ReqSimpleFloatSubRecord<defaultValue> &other) const
         {
         return (AlmostEqual(value, other.value, 2));
         }
+
     bool operator !=(const ReqSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(*this == other);
@@ -1093,8 +1116,7 @@ struct ReqSimpleFloatSubRecord
 //Used for subrecords that are optional
 //Even if loaded, they are considered unloaded if they're equal to their defaults
 //Should only be used with simple data types (int, float, etc) and not structs
-//exponent parameter is only used on the float specialization
-template<class T, SINT32 defaultValue=0>
+template<class T, T defaultValue=0>
 struct OptSimpleSubRecord
     {
     T value;
@@ -1130,11 +1152,11 @@ struct OptSimpleSubRecord
         value = defaultValue;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != defaultValue)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
 
@@ -1144,34 +1166,34 @@ struct OptSimpleSubRecord
             printer("OptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                    subSize, sizeof(T));
             CBASH_CHUNK_DEBUG
         #endif
-            memcpy(&value, buffer + curPos, sizeof(T));
+            memcpy(&value, buffer, sizeof(T));
             }
     #ifdef CBASH_CHUNK_LCHECK
         else if(subSize < sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            UINT32 test = *((UINT32 *)(buffer - 6));
             if (!(test == REV32(PKPT) && subSize == 1 && sizeof(T) == 2))
                 {
                 printer("OptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
                 }
         #endif
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
             }
     #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
 
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
 
@@ -1228,20 +1250,22 @@ struct OptSimpleFloatSubRecord
         {
         return !(AlmostEqual(value, defaultValue, 2));
         }
+
     void Load()
         {
         //
         }
+
     void Unload()
         {
         value = defaultValue;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(!(AlmostEqual(value, defaultValue, 2)))
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         if(subSize > sizeof(FLOAT32))
@@ -1250,11 +1274,11 @@ struct OptSimpleFloatSubRecord
                 printer("OptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(FLOAT32));
+            memcpy(&value, buffer, sizeof(FLOAT32));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
@@ -1262,22 +1286,24 @@ struct OptSimpleFloatSubRecord
                 printer("OptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
-                memcpy(&value, buffer + curPos, subSize);
+                memcpy(&value, buffer, subSize);
                 }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(&value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(IsLoaded())
             writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
         }
+
     void ReqWrite(UINT32 _Type, FileWriter &writer)
         {
         writer.record_write_subrecord(_Type, &value, sizeof(FLOAT32));
@@ -1289,10 +1315,12 @@ struct OptSimpleFloatSubRecord
             value = rhs.value;
         return *this;
         }
+
     bool operator ==(const OptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return AlmostEqual(value, other.value, 2);
         }
+
     bool operator !=(const OptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(AlmostEqual(value, other.value, 2));
@@ -1300,11 +1328,9 @@ struct OptSimpleFloatSubRecord
     };
 //Identical to OptSimpleSubRecord except for IsLoaded
 //Once loaded, they are always considered loaded unless they're explicitly unloaded.
-//They don't compare to the default value to see if they're
-// still considered loaded.
+//They don't compare to the default value to see if they're still considered loaded.
 //Should only be used with simple data types that should be initialized to 0 (int, float, etc) and not structs
-//exponent parameter is only used on the float specialization
-template<class T, SINT32 defaultValue=0>
+template<class T, T defaultValue=0>
 struct SemiOptSimpleSubRecord
     {
     T *value;
@@ -1314,6 +1340,7 @@ struct SemiOptSimpleSubRecord
         {
         //
         }
+
     ~SemiOptSimpleSubRecord()
         {
         Unload();
@@ -1328,22 +1355,24 @@ struct SemiOptSimpleSubRecord
         {
         return (value != NULL);
         }
+
     void Load()
         {
         if(value == NULL)
             value = new T(defaultValue);
         }
+
     void Unload()
         {
         delete value;
         value = NULL;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != NULL)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         value = new T(defaultValue);
@@ -1353,11 +1382,11 @@ struct SemiOptSimpleSubRecord
                 printer("SemiOptSimpleSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, sizeof(T));
+            memcpy(value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -1366,18 +1395,19 @@ struct SemiOptSimpleSubRecord
                 printer("SemiOptSimpleSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, subSize);
+            memcpy(value, buffer, subSize);
             }
         #endif
         else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(value != NULL)
@@ -1402,6 +1432,7 @@ struct SemiOptSimpleSubRecord
                 }
         return *this;
         }
+
     bool operator ==(const SemiOptSimpleSubRecord<T, defaultValue> &other) const
         {
         if(!IsLoaded())
@@ -1413,6 +1444,7 @@ struct SemiOptSimpleSubRecord
             return true;
         return false;
         }
+
     bool operator !=(const SemiOptSimpleSubRecord<T, defaultValue> &other) const
         {
         return !(*this == other);
@@ -1443,22 +1475,24 @@ struct SemiOptSimpleFloatSubRecord
         {
         return (value != NULL);
         }
+
     void Load()
         {
         if(value == NULL)
             value = new FLOAT32(defaultValue);
         }
+
     void Unload()
         {
         delete value;
         value = NULL;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != NULL)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         value = new FLOAT32(defaultValue);
@@ -1468,11 +1502,11 @@ struct SemiOptSimpleFloatSubRecord
                 printer("SemiOptSimpleFloatSubRecord<>: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, sizeof(FLOAT32));
+            memcpy(value, buffer, sizeof(FLOAT32));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(FLOAT32))
@@ -1480,15 +1514,15 @@ struct SemiOptSimpleFloatSubRecord
                 printer("SemiOptSimpleFloatSubRecord<>: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(FLOAT32));
                 CBASH_CHUNK_DEBUG
-                memcpy(&value, buffer + curPos, subSize);
+                memcpy(&value, buffer, subSize);
                 }
         #endif
         else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
     void Write(UINT32 _Type, FileWriter &writer)
@@ -1513,6 +1547,7 @@ struct SemiOptSimpleFloatSubRecord
                 }
         return *this;
         }
+
     bool operator ==(const SemiOptSimpleFloatSubRecord<defaultValue> &other) const
         {
         if(!IsLoaded())
@@ -1524,6 +1559,7 @@ struct SemiOptSimpleFloatSubRecord
             return true;
         return false;
         }
+
     bool operator !=(const SemiOptSimpleFloatSubRecord<defaultValue> &other) const
         {
         return !(*this == other);
@@ -1544,6 +1580,7 @@ struct SubRecord
         {
         //
         }
+
     ~SubRecord()
         {
         //
@@ -1556,13 +1593,14 @@ struct SubRecord
 
     bool IsLoaded() const
         {
-        T defaultValue;
-        return (isLoaded && value != defaultValue);
+        return (isLoaded && value != DefaultSingleton<T>::value());
         }
+
     void Load()
         {
         isLoaded = true;
         }
+
     void Unload()
         {
         T newValue;
@@ -1571,11 +1609,11 @@ struct SubRecord
         isLoaded = false;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(isLoaded)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         if(subSize > sizeof(T))
@@ -1584,11 +1622,11 @@ struct SubRecord
                 printer("SubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, sizeof(T));
+            memcpy(&value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -1597,18 +1635,18 @@ struct SubRecord
                 printer("SubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
             }
         #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         isLoaded = true;
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
     void Write(UINT32 _Type, FileWriter &writer)
@@ -1670,7 +1708,7 @@ struct ReqSubRecord
         value = newValue;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(subSize > sizeof(T))
             {
@@ -1678,18 +1716,18 @@ struct ReqSubRecord
             printer("ReqSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                    subSize, sizeof(T));
             CBASH_CHUNK_DEBUG
         #endif
-            memcpy(&value, buffer + curPos, sizeof(T));
+            memcpy(&value, buffer, sizeof(T));
             }
     #ifdef CBASH_CHUNK_LCHECK
         else if(subSize < sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
-            UINT32 test2 = *((UINT32 *)(buffer + curPos + subSize));
+            UINT32 test = *((UINT32 *)(buffer - 6));
+            UINT32 test2 = *((UINT32 *)(buffer + subSize));
             if (!(test == REV32(DATA) && (test2 == REV32(DIAL) || test2 == REV32(GRUP)) && subSize == 1 && sizeof(T) == 2) &&
                 !(test == REV32(DATA) && (test2 == REV32(CNAM) || test2 == REV32(RNAM) || test2 == REV32(WMI1)) && sizeof(T) == 4 && subSize == 1) &&
                 !(test == REV32(SNDX) && subSize == 12) &&
@@ -1709,18 +1747,18 @@ struct ReqSubRecord
                 printer("ReqSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
                 }
         #endif
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
             }
     #endif
         else
-            memcpy(&value, buffer + curPos, subSize);
+            memcpy(&value, buffer, subSize);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
     void Write(UINT32 _Type, FileWriter &writer)
@@ -1742,6 +1780,22 @@ struct ReqSubRecord
         }
     };
 
+template<class T>
+class DefaultSingleton
+    {
+    private:
+        DefaultSingleton() {};                                     // Private constructor
+        DefaultSingleton(const DefaultSingleton&);                 // Prevent copy-construction
+        DefaultSingleton& operator=(const DefaultSingleton&);      // Prevent assignment
+
+    public:
+        static T& value()
+            {
+            static T defaultValue;
+            return defaultValue;
+            }
+    };
+
 //Used for subrecords that are optional
 //Even if loaded, they are considered unloaded if they're equal to their defaults
 template<class T>
@@ -1754,6 +1808,7 @@ struct OptSubRecord
         {
         //
         }
+
     ~OptSubRecord()
         {
         Unload();
@@ -1766,9 +1821,9 @@ struct OptSubRecord
 
     bool IsLoaded() const
         {
-        T defaultValue;
-        return (value != NULL && *value != defaultValue);
+        return (value != NULL && *value != DefaultSingleton<T>::value());
         }
+
     void Load()
         {
         if(value == NULL)
@@ -1780,11 +1835,11 @@ struct OptSubRecord
         value = NULL;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != NULL)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         value = new T();
@@ -1794,18 +1849,18 @@ struct OptSubRecord
                 printer("OptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, sizeof(T));
+            memcpy(value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
-            UINT32 test2 = *((UINT32 *)(buffer + curPos + subSize));
+            UINT32 test = *((UINT32 *)(buffer - 6));
+            UINT32 test2 = *((UINT32 *)(buffer + subSize));
             if (!(test == REV32(XCLC) && subSize == 8) &&
                 !(test == REV32(DAT2) && (test2 == REV32(ONAM) || test2 == REV32(QNAM) || test2 == REV32(RCIL) || test2 == REV32(AMMO)) && subSize == 12 && sizeof(T) == 20)
                 )
@@ -1813,24 +1868,26 @@ struct OptSubRecord
                 printer("OptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
                 }
         #endif
-            memcpy(value, buffer + curPos, subSize);
+            memcpy(value, buffer, subSize);
             }
         #endif
         else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
+
     void Write(FileWriter &writer)
         {
         if(value != NULL)
             value->Write(writer);
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(value != NULL)
@@ -1841,6 +1898,7 @@ struct OptSubRecord
         {
         return value;
         }
+
     OptSubRecord<T>& operator = (const OptSubRecord<T> &rhs)
         {
         if(this != &rhs)
@@ -1859,6 +1917,7 @@ struct OptSubRecord
                 }
         return *this;
         }
+
     bool operator ==(const OptSubRecord<T> &other) const
         {
         if(!IsLoaded())
@@ -1870,6 +1929,7 @@ struct OptSubRecord
             return true;
         return false;
         }
+
     bool operator !=(const OptSubRecord<T> &other) const
         {
         return !(*this == other);
@@ -1878,8 +1938,7 @@ struct OptSubRecord
 
 //Identical to OptSubRecord except for IsLoaded
 //Once loaded, they are always considered loaded unless they're explicitly unloaded.
-//They don't compare to the default value to see if they're
-// still considered loaded.
+//They don't compare to the default value to see if they're still considered loaded.
 template<class T>
 struct SemiOptSubRecord
     {
@@ -1904,22 +1963,24 @@ struct SemiOptSubRecord
         {
         return (value != NULL);
         }
+
     void Load()
         {
         if(value == NULL)
             value = new T();
         }
+
     void Unload()
         {
         delete value;
         value = NULL;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != NULL)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         value = new T();
@@ -1929,35 +1990,42 @@ struct SemiOptSubRecord
             printer("SemiOptSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                    "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                    "and will be truncated.\n",
-                   (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                   buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                    subSize, sizeof(T));
             CBASH_CHUNK_DEBUG
         #endif
-            memcpy(value, buffer + curPos, sizeof(T));
+            memcpy(value, buffer, sizeof(T));
             }
     #ifdef CBASH_CHUNK_LCHECK
         else if(subSize < sizeof(T))
             {
         #ifdef CBASH_CHUNK_WARN
-            UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+            UINT32 test = *((UINT32 *)(buffer - 6));
             if(!(test == REV32(XLOC) && subSize == 12 && sizeof(T) == 20))
                 {
                 printer("SemiOptSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
                 }
         #endif
-            memcpy(value, buffer + curPos, subSize);
+            memcpy(value, buffer, subSize);
             }
     #endif
         else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
+
+    void Write(FileWriter &writer)
+        {
+        if(value != NULL)
+            value->Write(writer);
+        }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(value != NULL)
@@ -1968,6 +2036,7 @@ struct SemiOptSubRecord
         {
         return value;
         }
+
     SemiOptSubRecord<T>& operator = (const SemiOptSubRecord<T> &rhs)
         {
         if(this != &rhs)
@@ -1986,6 +2055,7 @@ struct SemiOptSubRecord
                 }
         return *this;
         }
+
     bool operator ==(const SemiOptSubRecord<T> &other) const
         {
         if(!IsLoaded())
@@ -1997,6 +2067,7 @@ struct SemiOptSubRecord
             return true;
         return false;
         }
+
     bool operator !=(const SemiOptSubRecord<T> &other) const
         {
         return !(*this == other);
@@ -2016,6 +2087,7 @@ struct OBMEEFIXSubRecord
         {
         //
         }
+
     ~OBMEEFIXSubRecord()
         {
         Unload();
@@ -2035,30 +2107,32 @@ struct OBMEEFIXSubRecord
             Unload();
             return false;
             }
-        T defaultValue;
-        return (*value != defaultValue);
+
+        return (*value != DefaultSingleton<T>::value());
         }
+
     bool Internal_IsLoaded() const
         {
-        T defaultValue;
-        return (value != NULL && *value != defaultValue);
+        return (value != NULL && *value != DefaultSingleton<T>::value());
         }
+
     void Load()
         {
         if(value == NULL)
             value = new T();
         }
+
     void Unload()
         {
         delete value;
         value = NULL;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(value != NULL)
             {
-            curPos += subSize;
+            buffer += subSize;
             return false;
             }
         value = new T();
@@ -2068,11 +2142,11 @@ struct OBMEEFIXSubRecord
                 printer("OBMEEFIXSubRecord: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, sizeof(T));
+            memcpy(value, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -2081,18 +2155,19 @@ struct OBMEEFIXSubRecord
                 printer("OBMEEFIXSubRecord: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(value, buffer + curPos, subSize);
+            memcpy(value, buffer, subSize);
             }
         #endif
         else
-            memcpy(value, buffer + curPos, subSize);
-        curPos += subSize;
+            memcpy(value, buffer, subSize);
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(IsLoaded())
@@ -2150,6 +2225,7 @@ struct OrderedPackedArray
         {
         //
         }
+
     ~OrderedPackedArray()
         {
         //
@@ -2176,17 +2252,17 @@ struct OrderedPackedArray
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(subSize % sizeof(T) == 0)
             {
             if(subSize == 0)
                 {
-                curPos += subSize;
+                buffer += subSize;
                 return false;
                 }
             value.resize(subSize / sizeof(T));
-            memcpy(&value[0], buffer + curPos, subSize);
+            memcpy(&value[0], buffer, subSize);
             }
         #ifdef CBASH_CHUNK_WARN
             else
@@ -2198,9 +2274,10 @@ struct OrderedPackedArray
                 }
         #endif
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         std::sort(value.begin(), value.end(), _Pr());
@@ -2230,6 +2307,7 @@ struct OrderedPackedArray
             }
         return false;
         }
+
     bool operator !=(const OrderedPackedArray<T, _Pr> &other) const
         {
         return !(*this == other);
@@ -2245,6 +2323,7 @@ struct UnorderedPackedArray
         {
         //
         }
+
     ~UnorderedPackedArray()
         {
         //
@@ -2265,23 +2344,23 @@ struct UnorderedPackedArray
         value.clear();
         }
 
-    void resize(UINT32 &newSize)
+    void resize(UINT32 newSize)
         {
         value.resize(newSize);
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         if(subSize % sizeof(T) == 0)
             {
             if(subSize == 0)
                 {
-                curPos += subSize;
+                buffer += subSize;
                 return false;
                 }
             value.resize(subSize / sizeof(T));
-            memcpy(&value[0], buffer + curPos, subSize);
+            memcpy(&value[0], buffer, subSize);
             }
         #ifdef CBASH_CHUNK_WARN
             else
@@ -2293,14 +2372,16 @@ struct UnorderedPackedArray
                 }
         #endif
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
+
     void Write(UINT32 _Type, FileWriter &writer)
         {
         if(value.size())
             writer.record_write_subrecord(_Type, &value[0], (UINT32)value.size() * sizeof(T));
         }
+
     void ReqWrite(UINT32 _Type, FileWriter &writer)
         {
         if(value.size())
@@ -2319,26 +2400,28 @@ struct UnorderedPackedArray
             }
         return *this;
         }
+
     bool operator ==(const UnorderedPackedArray<T> &other) const
         {
-        //Hack
-        //Equality testing should use a set or somesuch
-        //For now, testing also tests ordering
         if(value.size() == other.value.size())
             {
-            //std::multiset<T> self1, other1;
-            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+            for(UINT32 x = 0; x < value.size(); ++x)
                 {
-                if(value[x] != other.value[x])
-                    return false;
-                //self1.insert(value[x]);
-                //other1.insert(other.value[x]);
+                bool good = false;
+                for(UINT32 y = 0; y < value.size(); ++y)
+                    if(value[x] == other.value[y])
+                        {
+                        //Found its match
+                        good = true;
+                        break;
+                        }
+                if(!good) return false;
                 }
-            //return self1 == other1;
             return true;
             }
         return false;
         }
+
     bool operator !=(const UnorderedPackedArray<T> &other) const
         {
         return !(*this == other);
@@ -2359,7 +2442,6 @@ struct OrderedSparseArray
         //
         }
 
-
     bool IsLoaded() const
         {
         return value.size() != 0;
@@ -2376,7 +2458,7 @@ struct OrderedSparseArray
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         T curValue;
         if(subSize > sizeof(T))
@@ -2385,11 +2467,11 @@ struct OrderedSparseArray
                 printer("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&curValue, buffer + curPos, sizeof(T));
+            memcpy(&curValue, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -2398,18 +2480,18 @@ struct OrderedSparseArray
                 printer("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&curValue, buffer + curPos, subSize);
+            memcpy(&curValue, buffer, subSize);
             }
         #endif
         else
-            memcpy(&curValue, buffer + curPos, subSize);
+            memcpy(&curValue, buffer, subSize);
         value.push_back(curValue);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
 
@@ -2492,7 +2574,7 @@ struct OrderedSparseArray<T *, _Pr>
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         value.push_back(new T);
         if(subSize > sizeof(T))
@@ -2501,17 +2583,17 @@ struct OrderedSparseArray<T *, _Pr>
                 printer("OrderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&(*value.back()), buffer + curPos, sizeof(T));
+            memcpy(&(*value.back()), buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
             {
             #ifdef CBASH_CHUNK_WARN
-                UINT32 test = *((UINT32 *)(buffer + curPos - 6));
+                UINT32 test = *((UINT32 *)(buffer - 6));
                 if (!((test == REV32(SCRO) || test == REV32(SCRV)) && subSize == 4) &&
                     !(test == REV32(CTDA) && (subSize == 20 || subSize == 24)&& sizeof(T) == 28)
                     )
@@ -2519,18 +2601,18 @@ struct OrderedSparseArray<T *, _Pr>
                     printer("OrderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                            "of chunk (%u) is less than the size of the subrecord (%u) and any "
                            "remaining fields have their default value.\n",
-                           (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                           buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                            subSize, sizeof(T));
                     CBASH_CHUNK_DEBUG
                     }
             #endif
-            memcpy(&(*value.back()), buffer + curPos, subSize);
+            memcpy(&(*value.back()), buffer, subSize);
             }
         #endif
         else
-            memcpy(&(*value.back()), buffer + curPos, subSize);
+            memcpy(&(*value.back()), buffer, subSize);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
 
@@ -2620,7 +2702,7 @@ struct UnorderedSparseArray
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         T curValue;
         if(subSize > sizeof(T))
@@ -2629,11 +2711,11 @@ struct UnorderedSparseArray
                 printer("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&curValue, buffer + curPos, sizeof(T));
+            memcpy(&curValue, buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -2642,18 +2724,18 @@ struct UnorderedSparseArray
                 printer("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&curValue, buffer + curPos, subSize);
+            memcpy(&curValue, buffer, subSize);
             }
         #endif
         else
-            memcpy(&curValue, buffer + curPos, subSize);
+            memcpy(&curValue, buffer, subSize);
         value.push_back(curValue);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
 
@@ -2683,13 +2765,19 @@ struct UnorderedSparseArray
         {
         if(value.size() == other.value.size())
             {
-            std::multiset<T> self1, other1;
-            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+            for(UINT32 x = 0; x < value.size(); ++x)
                 {
-                self1.insert(value[x]);
-                other1.insert(other.value[x]);
+                bool good = false;
+                for(UINT32 y = 0; y < value.size(); ++y)
+                    if(value[x] == other.value[y])
+                        {
+                        //Found its match
+                        good = true;
+                        break;
+                        }
+                if(!good) return false;
                 }
-            return self1 == other1;
+            return true;
             }
         return false;
         }
@@ -2738,7 +2826,7 @@ struct UnorderedSparseArray<T *>
         return;
         }
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+    bool Read(unsigned char *&buffer, const UINT32 &subSize)
         {
         value.push_back(new T);
         if(subSize > sizeof(T))
@@ -2747,11 +2835,11 @@ struct UnorderedSparseArray<T *>
                 printer("UnorderedSparseArray: Warning - Unable to fully parse chunk (%c%c%c%c). "
                        "Size of chunk (%u) is larger than the size of the subrecord (%u) "
                        "and will be truncated.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&(*value.back()), buffer + curPos, sizeof(T));
+            memcpy(&(*value.back()), buffer, sizeof(T));
             }
         #ifdef CBASH_CHUNK_LCHECK
             else if(subSize < sizeof(T))
@@ -2760,17 +2848,17 @@ struct UnorderedSparseArray<T *>
                 printer("UnorderedSparseArray: Info - Unable to fully parse chunk (%c%c%c%c). Size "
                        "of chunk (%u) is less than the size of the subrecord (%u) and any "
                        "remaining fields have their default value.\n",
-                       (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
+                       buffer[-6], buffer[-5], buffer[-4], buffer[-3],
                        subSize, sizeof(T));
                 CBASH_CHUNK_DEBUG
             #endif
-            memcpy(&(*value.back()), buffer + curPos, subSize);
+            memcpy(&(*value.back()), buffer, subSize);
             }
         #endif
         else
-            memcpy(&(*value.back()), buffer + curPos, subSize);
+            memcpy(&(*value.back()), buffer, subSize);
         //size = subSize;
-        curPos += subSize;
+        buffer += subSize;
         return true;
         }
 
@@ -2801,20 +2889,20 @@ struct UnorderedSparseArray<T *>
 
     bool operator ==(const UnorderedSparseArray<T *> &other) const
         {
-        //Hack
-        //Equality testing should use a set or somesuch
-        //For now, testing also tests ordering
         if(value.size() == other.value.size())
             {
-            //std::multiset<T> self1, other1;
-            for(UINT32 x = 0; x < (UINT32)value.size(); ++x)
+            for(UINT32 x = 0; x < value.size(); ++x)
                 {
-                if(*value[x] != *other.value[x])
-                    return false;
-                //self1.insert(*value[x]);
-                //other1.insert(*other.value[x]);
+                bool good = false;
+                for(UINT32 y = 0; y < value.size(); ++y)
+                    if(*value[x] == *other.value[y])
+                        {
+                        //Found its match
+                        good = true;
+                        break;
+                        }
+                if(!good) return false;
                 }
-            //return self1 == other1;
             return true;
             }
         return false;

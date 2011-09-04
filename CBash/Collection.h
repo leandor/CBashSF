@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -71,6 +71,8 @@ class Collection
         EditorID_Map ExtendedEditorID_ModFile_Record;
         FormID_Map ExtendedFormID_ModFile_Record;
 
+        boost::unordered_set<Record *> identical_records;
+
         Collection(STRING const &ModsPath, UINT32 _CollectionType);
         ~Collection();
 
@@ -92,25 +94,10 @@ class Collection
         UINT32 NextFreeExpandedFormID(ModFile *&curModFile, UINT32 depth = 0);
         Record * CreateRecord(ModFile *&curModFile, const UINT32 &RecordType, FORMID RecordFormID, STRING const &RecordEditorID, const FORMID &ParentFormID, UINT32 CreateFlags);
         Record * CopyRecord(ModFile *&curModFile, Record *&curRecord, ModFile *&DestModFile, const FORMID &DestParentFormID, FORMID DestRecordFormID, STRING const &DestRecordEditorID, UINT32 CreateFlags);
-        SINT32 DeleteRecord(ModFile *&curModFile, Record *&curRecord, Record *&ParentRecord);
 
-        SINT32 SetRecordIDs(ModFile *&curModFile, Record *&RecordID, FORMID FormID, STRING const &EditorID);
+        SINT32 SetIDFields(ModFile *&curModFile, Record *&RecordID, FORMID FormID, STRING const &EditorID);
     };
 
-//class RecordDeleter : public RecordOp
-//    {
-//    private:
-//        EditorID_Map &EditorID_ModFile_Record;
-//        FormID_Map &FormID_ModFile_Record;
-//        Record *RecordToDelete;
-//        //bool IsExtended;
-//
-//    public:
-//        RecordDeleter(Record *_RecordToDelete, /*bool IsExtended,*/ EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record);
-//        ~RecordDeleter();
-//
-//        bool Accept(Record *&curRecord);
-//    };
 //
 //class RecordIndexer : public RecordOp
 //    {

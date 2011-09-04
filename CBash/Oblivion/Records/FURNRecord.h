@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class FURNRecord : public Record
+namespace Ob
+{
+class FURNRecord : public Record //Furniture
     {
     private:
         enum flagsFlags
@@ -63,11 +65,11 @@ class FURNRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        OptSimpleSubRecord<FORMID> SCRI;
-        ReqSimpleSubRecord<UINT32> MNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        ReqSimpleSubRecord<UINT32> MNAM; //Marker Flags
 
         FURNRecord(unsigned char *_recData=NULL);
         FURNRecord(FURNRecord *srcRecord);
@@ -150,10 +152,12 @@ class FURNRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const FURNRecord &other) const;
         bool operator !=(const FURNRecord &other) const;
+        bool equals(Record *other);
     };
+}

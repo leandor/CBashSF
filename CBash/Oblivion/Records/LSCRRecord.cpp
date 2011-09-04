@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "LSCRRecord.h"
-#include <vector>
 
+namespace Ob
+{
 LSCRRecord::LSCRLNAM::LSCRLNAM():
     direct(0),
     indirect(0),
@@ -66,30 +67,23 @@ LSCRRecord::LSCRRecord(LSCRRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     ICON = srcRecord->ICON;
     DESC = srcRecord->DESC;
-    LNAM.clear();
-    LNAM.resize(srcRecord->LNAM.size());
-    for(UINT32 x = 0; x < srcRecord->LNAM.size(); x++)
-        {
-        LNAM[x] = new ReqSubRecord<LSCRLNAM>;
-        *LNAM[x] = *srcRecord->LNAM[x];
-        }
+    LNAM = srcRecord->LNAM;
     return;
     }
 
 LSCRRecord::~LSCRRecord()
     {
-    for(UINT32 x = 0; x < LNAM.size(); x++)
-        delete LNAM[x];
+    //
     }
 
 bool LSCRRecord::VisitFormIDs(FormIDOp &op)
@@ -97,10 +91,10 @@ bool LSCRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < LNAM.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < LNAM.value.size(); ListIndex++)
         {
-        op.Accept(LNAM[x]->value.direct);
-        op.Accept(LNAM[x]->value.indirect);
+        op.Accept(LNAM.value[ListIndex]->direct);
+        op.Accept(LNAM.value[ListIndex]->indirect);
         }
 
     return op.Stop();
@@ -111,56 +105,53 @@ UINT32 LSCRRecord::GetType()
     return REV32(LSCR);
     }
 
-
 STRING LSCRRecord::GetStrType()
     {
     return "LSCR";
     }
 
-SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LSCRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    ReqSubRecord<LSCRLNAM> *newLNAM = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(LNAM):
-                newLNAM = new ReqSubRecord<LSCRLNAM>;
-                newLNAM->Read(buffer, subSize, curPos);
-                LNAM.push_back(newLNAM);
+                LNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  LSCR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -174,45 +165,34 @@ SINT32 LSCRRecord::Unload()
     EDID.Unload();
     ICON.Unload();
     DESC.Unload();
-    for(UINT32 x = 0; x < LNAM.size(); x++)
-        delete LNAM[x];
-    LNAM.clear();
+    LNAM.Unload();
     return 1;
     }
 
 SINT32 LSCRRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-    for(UINT32 p = 0; p < LNAM.size(); p++)
-        if(LNAM[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(LNAM), &LNAM[p]->value, LNAM[p]->GetSize());
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(DESC);
+    WRITE(LNAM);
     return -1;
     }
 
 bool LSCRRecord::operator ==(const LSCRRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        ICON.equalsi(other.ICON) &&
-        DESC.equals(other.DESC) &&
-        LNAM.size() == other.LNAM.size())
-        {
-        //Not sure if record order matters on locations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < LNAM.size(); ++x)
-            if(*LNAM[x] != *other.LNAM[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON) &&
+            DESC.equals(other.DESC) &&
+            LNAM == other.LNAM);
     }
 
 bool LSCRRecord::operator !=(const LSCRRecord &other) const
     {
     return !(*this == other);
     }
+
+bool LSCRRecord::equals(Record *other)
+    {
+    return *this == *(LSCRRecord *)other;
+    }
+}

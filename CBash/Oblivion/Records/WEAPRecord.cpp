@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "WEAPRecord.h"
 
+namespace Ob
+{
 WEAPRecord::WEAPDATA::WEAPDATA():
     weaponType(0),
     speed(0.0f),
@@ -72,22 +74,16 @@ WEAPRecord::WEAPRecord(WEAPRecord *srcRecord):Record()
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     ICON = srcRecord->ICON;
     SCRI = srcRecord->SCRI;
     ENAM = srcRecord->ENAM;
@@ -140,10 +136,7 @@ bool WEAPRecord::IsNormalWeapon()
 
 void WEAPRecord::IsNormalWeapon(bool value)
     {
-    if(value)
-        DATA.value.flags &= ~fIsNotNormalWeapon;
-    else
-        DATA.value.flags |= fIsNotNormalWeapon;
+    DATA.value.flags = value ? DATA.value.flags & ~fIsNotNormalWeapon : DATA.value.flags | fIsNotNormalWeapon;
     }
 
 bool WEAPRecord::IsNormal()
@@ -153,10 +146,7 @@ bool WEAPRecord::IsNormal()
 
 void WEAPRecord::IsNormal(bool value)
     {
-    if(value)
-        DATA.value.flags &= ~fIsNotNormalWeapon;
-    else
-        DATA.value.flags |= fIsNotNormalWeapon;
+    DATA.value.flags = value ? DATA.value.flags & ~fIsNotNormalWeapon : DATA.value.flags | fIsNotNormalWeapon;
     }
 
 bool WEAPRecord::IsFlagMask(UINT32 Mask, bool Exact)
@@ -267,68 +257,69 @@ STRING WEAPRecord::GetStrType()
     return "WEAP";
     }
 
-SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WEAPRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(ENAM):
-                ENAM.Read(buffer, subSize, curPos);
+                ENAM.Read(buffer, subSize);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WEAP: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -352,44 +343,36 @@ SINT32 WEAPRecord::Unload()
 
 SINT32 WEAPRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-    if(ENAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ENAM), &ENAM.value, ENAM.GetSize());
-    if(ANAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ANAM), &ANAM.value, ANAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(ICON);
+    WRITE(SCRI);
+    WRITE(ENAM);
+    WRITE(ANAM);
+    WRITE(DATA);
     return -1;
     }
 
 bool WEAPRecord::operator ==(const WEAPRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            FULL.equals(other.FULL) &&
-            MODL == other.MODL &&
-            ICON.equalsi(other.ICON) &&
+    return (ANAM == other.ANAM &&
             SCRI == other.SCRI &&
             ENAM == other.ENAM &&
-            ANAM == other.ANAM &&
-            DATA == other.DATA);
+            DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            MODL == other.MODL);
     }
 
 bool WEAPRecord::operator !=(const WEAPRecord &other) const
     {
     return !(*this == other);
     }
+
+bool WEAPRecord::equals(Record *other)
+    {
+    return *this == *(WEAPRecord *)other;
+    }
+}

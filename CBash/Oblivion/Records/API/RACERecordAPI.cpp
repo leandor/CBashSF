@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\RACERecord.h"
 
+namespace Ob
+{
 UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -46,7 +48,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)SPLO.size();
+                    return (UINT32)SPLO.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -59,13 +61,13 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)XNAM.size();
+                        return (UINT32)XNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -382,7 +384,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)HNAM.size();
+                    return (UINT32)HNAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -393,7 +395,7 @@ UINT32 RACERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)ENAM.size();
+                    return (UINT32)ENAM.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -452,11 +454,11 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -464,18 +466,18 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 6: //text
             return DESC.value;
         case 7: //spells
-            *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
+            *FieldValues = SPLO.value.size() ? &SPLO.value[0] : NULL;
             return NULL;
         case 8: //relations
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    return &XNAM[ListIndex]->value.faction;
+                    return &XNAM.value[ListIndex]->faction;
                 case 2: //mod
-                    return &XNAM[ListIndex]->value.mod;
+                    return &XNAM.value[ListIndex]->mod;
                 default:
                     return NULL;
                 }
@@ -683,10 +685,10 @@ void * RACERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 103: //femaleTailPath
             return FICON4.value;
         case 104: //hairs
-            *FieldValues = HNAM.size() ? &HNAM[0] : NULL;
+            *FieldValues = HNAM.value.size() ? &HNAM.value[0] : NULL;
             return NULL;
         case 105: //eyes
-            *FieldValues = ENAM.size() ? &ENAM[0] : NULL;
+            *FieldValues = ENAM.value.size() ? &ENAM.value[0] : NULL;
             return NULL;
         case 106: //fggs_p
             *FieldValues = FGGS.value;
@@ -728,36 +730,25 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 7: //spells
             SPLO.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
+                SPLO.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 8: //relations
             if(ListFieldID == 0) //relationsSize
                 {
-                ArraySize -= (UINT32)XNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    XNAM.push_back(new ReqSubRecord<GENXNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete XNAM.back();
-                    XNAM.pop_back();
-                    ++ArraySize;
-                    }
+                XNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    XNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
                     return true;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = *(SINT32 *)FieldValue;
+                    XNAM.value[ListIndex]->mod = *(SINT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -1102,12 +1093,12 @@ bool RACERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 104: //hairs
             HNAM.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                HNAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                HNAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 105: //eyes
             ENAM.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                ENAM[x] = ((FORMIDARRAY)FieldValue)[x];
+                ENAM.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 106: //fggs_p
             if(ArraySize != 200)
@@ -1163,27 +1154,25 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             DESC.Unload();
             return;
         case 7: //spells
-            SPLO.clear();
+            SPLO.Unload();
             return;
         case 8: //relations
             if(ListFieldID == 0) //relations
                 {
-                for(UINT32 x = 0; x < (UINT32)XNAM.size(); x++)
-                    delete XNAM[x];
-                XNAM.clear();
+                XNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= XNAM.size())
+            if(ListIndex >= XNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    XNAM[ListIndex]->value.faction = defaultXNAM.faction;
+                    XNAM.value[ListIndex]->faction = defaultXNAM.faction;
                     return;
                 case 2: //mod
-                    XNAM[ListIndex]->value.mod = defaultXNAM.mod;
+                    XNAM.value[ListIndex]->mod = defaultXNAM.mod;
                     return;
                 default:
                     return;
@@ -1518,10 +1507,10 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
             FICON4.Unload();
             return;
         case 104: //hairs
-            HNAM.clear();
+            HNAM.Unload();
             return;
         case 105: //eyes
-            ENAM.clear();
+            ENAM.Unload();
             return;
         case 106: //fggs_p
             FGGS.Unload();
@@ -1540,3 +1529,4 @@ void RACERecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

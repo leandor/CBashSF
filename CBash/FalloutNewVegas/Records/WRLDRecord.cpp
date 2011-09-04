@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -45,10 +45,10 @@ WRLDRecord::WRLDRecord(WRLDRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -84,53 +84,6 @@ WRLDRecord::~WRLDRecord()
     delete CELL;
     for(UINT32 x = 0; x < CELLS.size(); ++x)
         delete CELLS[x];
-    }
-
-bool WRLDRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-
-    //if(RecordType == NULL || RecordType == REV32(ROAD))
-    //    {
-    //    if(ROAD != NULL)
-    //        {
-    //        if(op.Accept(ROAD))
-    //            return true;
-    //        }
-    //    }
-
-    if(RecordType == NULL ||
-        RecordType != REV32(CELL) ||
-        RecordType != REV32(ACHR) ||
-        RecordType != REV32(ACRE) ||
-        RecordType != REV32(REFR) ||
-        RecordType != REV32(PGRE) ||
-        RecordType != REV32(PMIS) ||
-        RecordType != REV32(PBEA) ||
-        RecordType != REV32(PFLA) ||
-        RecordType != REV32(PCBE) ||
-        RecordType != REV32(NAVM))
-        {
-        if(CELL != NULL)
-            {
-            if(op.Accept(CELL))
-                return true;
-            }
-
-        for(UINT32 x = 0; x < CELLS.size();++x)
-            {
-            stop = op.Accept(CELLS[x]);
-            if(CELLS[x] == NULL)
-                {
-                CELLS.erase(CELLS.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-        }
-
-    return op.Stop();
     }
 
 bool WRLDRecord::VisitFormIDs(FormIDOp &op)
@@ -349,107 +302,108 @@ STRING WRLDRecord::GetStrType()
     return "WRLD";
     }
 
-SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WRLDRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XEZN):
-                XEZN.Read(buffer, subSize, curPos);
+                XEZN.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM2):
-                NAM2.Read(buffer, subSize, curPos);
+                NAM2.Read(buffer, subSize);
                 break;
             case REV32(NAM3):
-                NAM3.Read(buffer, subSize, curPos);
+                NAM3.Read(buffer, subSize);
                 break;
             case REV32(NAM4):
-                NAM4.Read(buffer, subSize, curPos);
+                NAM4.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MNAM):
-                MNAM.Read(buffer, subSize, curPos);
+                MNAM.Read(buffer, subSize);
                 break;
             case REV32(ONAM):
-                ONAM.Read(buffer, subSize, curPos);
+                ONAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                NAM0.Read(buffer, subSize);
                 break;
             case REV32(NAM9):
-                NAM9.Read(buffer, subSize, curPos);
+                NAM9.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(NNAM):
-                NNAM.Read(buffer, subSize, curPos);
+                NNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(IMPS):
-                IMPS.Read(buffer, subSize, curPos);
+                IMPS.Read(buffer, subSize);
                 break;
             case REV32(IMPF):
-                IMPF.Read(buffer, subSize, curPos);
+                IMPF.Read(buffer, subSize);
                 break;
             case REV32(OFST):
-                OFST.Read(buffer, subSize, curPos);
+                OFST.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WRLD: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -548,5 +502,36 @@ bool WRLDRecord::operator ==(const WRLDRecord &other) const
 bool WRLDRecord::operator !=(const WRLDRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool WRLDRecord::equals(Record *other)
+    {
+    return *this == *(WRLDRecord *)other;
+    }
+
+bool WRLDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+    const WRLDRecord *master_wrld = (WRLDRecord *)master;
+
+    if(CELLS.size() > master_wrld->CELLS.size())
+        return false;
+
+    if(CELL != NULL)
+        {
+        if(master_wrld->CELL != NULL)
+            {
+            if(identical_records.count(CELL) == 0)
+                return false;
+            }
+        else
+            return false;
+        }
+
+    for(UINT32 ListIndex = 0; ListIndex < CELLS.size(); ++ListIndex)
+        if(identical_records.count(CELLS[ListIndex]) == 0)
+                return false;
+    return true;
     }
 }

@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\IDLERecord.h"
 
+namespace Ob
+{
 UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     Function_Arguments_Iterator curCTDAFunction;
@@ -61,13 +63,14 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)CTDA.size();
+                        return (UINT32)CTDA.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
+                return UNKNOWN_FIELD;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -84,8 +87,18 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         default:
                             return UNKNOWN_FIELD;
                         }
+                    return UNKNOWN_FIELD;
                 case 3: //compValue
-                    return FLOAT32_FIELD;
+                    switch(WhichAttribute)
+                        {
+                        case 0: //fieldType
+                            return FORMID_OR_FLOAT32_FIELD;
+                        case 2: //WhichType
+                            return CTDA.value[ListIndex]->IsUseGlobal() ? FORMID_FIELD :  FLOAT32_FIELD;
+                        default:
+                            return UNKNOWN_FIELD;
+                        }
+                    return UNKNOWN_FIELD;
                 case 4: //ifunc
                     return UINT32_TYPE_FIELD;
                 case 5: //param1
@@ -94,9 +107,12 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            curCTDAFunction = Function_Arguments.find(CTDA[ListIndex]->value.ifunc);
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(CTDA.value[ListIndex]->ifunc);
                             if(curCTDAFunction != Function_Arguments.end())
-                                switch(curCTDAFunction->second.first)
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.first)
                                     {
                                     case eFORMID:
                                         return FORMID_FIELD;
@@ -105,6 +121,8 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     default:
                                         return UNKNOWN_FIELD;
                                     }
+                                }
+                            }
                             return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
@@ -115,9 +133,12 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UNKNOWN_OR_FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            curCTDAFunction = Function_Arguments.find(CTDA[ListIndex]->value.ifunc);
+                            {
+                            Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(CTDA.value[ListIndex]->ifunc);
                             if(curCTDAFunction != Function_Arguments.end())
-                                switch(curCTDAFunction->second.second)
+                                {
+                                const FunctionArguments &CTDAFunction = curCTDAFunction->second;
+                                switch(CTDAFunction.second)
                                     {
                                     case eFORMID:
                                         return FORMID_FIELD;
@@ -126,6 +147,8 @@ UINT32 IDLERecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     default:
                                         return UNKNOWN_FIELD;
                                     }
+                                }
+                            }
                             return UNKNOWN_FIELD;
                         default:
                             return UNKNOWN_FIELD;
@@ -161,11 +184,11 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //modPath
@@ -176,26 +199,26 @@ void * IDLERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 8: //conditions
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    return &CTDA[ListIndex]->value.operType;
+                    return &CTDA.value[ListIndex]->operType;
                 case 2: //unused1
-                    *FieldValues = &CTDA[ListIndex]->value.unused1[0];
+                    *FieldValues = &CTDA.value[ListIndex]->unused1[0];
                     return NULL;
                 case 3: //compValue
-                    return &CTDA[ListIndex]->value.compValue;
+                    return &CTDA.value[ListIndex]->compValue;
                 case 4: //ifunc
-                    return &CTDA[ListIndex]->value.ifunc;
+                    return &CTDA.value[ListIndex]->ifunc;
                 case 5: //param1
-                    return &CTDA[ListIndex]->value.param1;
+                    return &CTDA.value[ListIndex]->param1;
                 case 6: //param2
-                    return &CTDA[ListIndex]->value.param2;
+                    return &CTDA.value[ListIndex]->param2;
                 case 7: //unused2
-                    *FieldValues = &CTDA[ListIndex]->value.unused2[0];
+                    *FieldValues = &CTDA.value[ListIndex]->unused2[0];
                     return NULL;
                 default:
                     return NULL;
@@ -241,55 +264,44 @@ bool IDLERecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //conditions
             if(ListFieldID == 0) //conditionsSize
                 {
-                ArraySize -= (UINT32)CTDA.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    CTDA.push_back(new ReqSubRecord<GENCTDA>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete CTDA.back();
-                    CTDA.pop_back();
-                    ++ArraySize;
-                    }
+                CTDA.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    CTDA[ListIndex]->value.operType = *(UINT8 *)FieldValue;
+                    CTDA.value[ListIndex]->operType = *(UINT8 *)FieldValue;
                     break;
                 case 2: //unused1
                     if(ArraySize != 3)
                         break;
-                    CTDA[ListIndex]->value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    CTDA[ListIndex]->value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    CTDA[ListIndex]->value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    CTDA.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 3: //compValue
-                    CTDA[ListIndex]->value.compValue = *(FLOAT32 *)FieldValue;
-                    break;
+                    CTDA.value[ListIndex]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
+                    return true;
                 case 4: //ifunc
-                    CTDA[ListIndex]->value.ifunc = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
                     return true;
                 case 5: //param1
-                    CTDA[ListIndex]->value.param1 = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->param1 = *(UINT32 *)FieldValue;
                     return true;
                 case 6: //param2
-                    CTDA[ListIndex]->value.param2 = *(UINT32 *)FieldValue;
+                    CTDA.value[ListIndex]->param2 = *(UINT32 *)FieldValue;
                     return true;
                 case 7: //unused2
                     if(ArraySize != 4)
                         break;
-                    CTDA[ListIndex]->value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-                    CTDA[ListIndex]->value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
-                    CTDA[ListIndex]->value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
-                    CTDA[ListIndex]->value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    CTDA.value[ListIndex]->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    CTDA.value[ListIndex]->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    CTDA.value[ListIndex]->unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    CTDA.value[ListIndex]->unused2[3] = ((UINT8ARRAY)FieldValue)[3];
                     break;
                 default:
                     break;
@@ -341,42 +353,40 @@ void IDLERecord::DeleteField(FIELD_IDENTIFIERS)
         case 8: //conditions
             if(ListFieldID == 0) //conditions
                 {
-                for(UINT32 x = 0; x < (UINT32)CTDA.size(); ++x)
-                    delete CTDA[x];
-                CTDA.clear();
+                CTDA.Unload();
                 return;
                 }
 
-            if(ListIndex >= CTDA.size())
+            if(ListIndex >= CTDA.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //operType
-                    CTDA[ListIndex]->value.operType = defaultCTDA.operType;
+                    CTDA.value[ListIndex]->operType = defaultCTDA.operType;
                     return;
                 case 2: //unused1
-                    CTDA[ListIndex]->value.unused1[0] = defaultCTDA.unused1[0];
-                    CTDA[ListIndex]->value.unused1[1] = defaultCTDA.unused1[1];
-                    CTDA[ListIndex]->value.unused1[2] = defaultCTDA.unused1[2];
+                    CTDA.value[ListIndex]->unused1[0] = defaultCTDA.unused1[0];
+                    CTDA.value[ListIndex]->unused1[1] = defaultCTDA.unused1[1];
+                    CTDA.value[ListIndex]->unused1[2] = defaultCTDA.unused1[2];
                     return;
                 case 3: //compValue
-                    CTDA[ListIndex]->value.compValue = defaultCTDA.compValue;
+                    CTDA.value[ListIndex]->compValue = defaultCTDA.compValue;
                     return;
                 case 4: //ifunc
-                    CTDA[ListIndex]->value.ifunc = defaultCTDA.ifunc;
+                    CTDA.value[ListIndex]->ifunc = defaultCTDA.ifunc;
                     return;
                 case 5: //param1
-                    CTDA[ListIndex]->value.param1 = defaultCTDA.param1;
+                    CTDA.value[ListIndex]->param1 = defaultCTDA.param1;
                     return;
                 case 6: //param2
-                    CTDA[ListIndex]->value.param2 = defaultCTDA.param2;
+                    CTDA.value[ListIndex]->param2 = defaultCTDA.param2;
                     return;
                 case 7: //unused2
-                    CTDA[ListIndex]->value.unused2[0] = defaultCTDA.unused2[0];
-                    CTDA[ListIndex]->value.unused2[1] = defaultCTDA.unused2[1];
-                    CTDA[ListIndex]->value.unused2[2] = defaultCTDA.unused2[2];
-                    CTDA[ListIndex]->value.unused2[3] = defaultCTDA.unused2[3];
+                    CTDA.value[ListIndex]->unused2[0] = defaultCTDA.unused2[0];
+                    CTDA.value[ListIndex]->unused2[1] = defaultCTDA.unused2[1];
+                    CTDA.value[ListIndex]->unused2[2] = defaultCTDA.unused2[2];
+                    CTDA.value[ListIndex]->unused2[3] = defaultCTDA.unused2[3];
                     return;
                 default:
                     return;
@@ -396,3 +406,4 @@ void IDLERecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

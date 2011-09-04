@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -50,7 +50,6 @@ bool WTHRRecord::WTHRONAM::operator !=(const WTHRONAM &other) const
     {
     return !(*this == other);
     }
-
 
 bool WTHRRecord::WTHRColors::operator ==(const WTHRColors &other) const
     {
@@ -282,10 +281,10 @@ WTHRRecord::WTHRRecord(WTHRRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -510,143 +509,144 @@ STRING WTHRRecord::GetStrType()
     return "WTHR";
     }
 
-SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x00:
                 //Unlike all other sigs, IAD's use 0x00, 0x01, etc instead of the character 0, 1, etc
                 //So this oddity has to be compensated for
                 //The above nonsense gets optimized away, so there's no runtime cost
-                _0IAD.Read(buffer, subSize, curPos);
+                _0IAD.Read(buffer, subSize);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x01:
-                _1IAD.Read(buffer, subSize, curPos);
+                _1IAD.Read(buffer, subSize);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x02:
-                _2IAD.Read(buffer, subSize, curPos);
+                _2IAD.Read(buffer, subSize);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x03:
-                _3IAD.Read(buffer, subSize, curPos);
+                _3IAD.Read(buffer, subSize);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x04:
-                _4IAD.Read(buffer, subSize, curPos);
+                _4IAD.Read(buffer, subSize);
                 break;
             case REV32(_IAD) & 0xFFFFFF00 | 0x05:
-                _5IAD.Read(buffer, subSize, curPos);
+                _5IAD.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(BNAM):
-                BNAM.Read(buffer, subSize, curPos);
+                BNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             case REV32(ONAM):
-                ONAM.Read(buffer, subSize, curPos);
+                ONAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM0):
                 switch(subSize)
                     {
                     case 160:
                         //old format is missing the noon and midnight colors
-                        memcpy(&NAM0.value.upperSky, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.fog, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.lowerClouds, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.ambient, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.sunlight, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.sun, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.stars, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.lowerSky, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.horizon, buffer + curPos, 16);
-                        curPos += 16;
-                        memcpy(&NAM0.value.upperClouds, buffer + curPos, 16);
-                        curPos += 16;
+                        memcpy(&NAM0.value.upperSky, buffer, sizeof(NAM0.value.upperSky));
+                        buffer += sizeof(NAM0.value.upperSky);
+                        memcpy(&NAM0.value.fog, buffer, sizeof(NAM0.value.fog));
+                        buffer += sizeof(NAM0.value.fog);
+                        memcpy(&NAM0.value.lowerClouds, buffer, sizeof(NAM0.value.lowerClouds));
+                        buffer += sizeof(NAM0.value.lowerClouds);
+                        memcpy(&NAM0.value.ambient, buffer, sizeof(NAM0.value.ambient));
+                        buffer += sizeof(NAM0.value.ambient);
+                        memcpy(&NAM0.value.sunlight, buffer, sizeof(NAM0.value.sunlight));
+                        buffer += sizeof(NAM0.value.sunlight);
+                        memcpy(&NAM0.value.sun, buffer, sizeof(NAM0.value.sun));
+                        buffer += sizeof(NAM0.value.sun);
+                        memcpy(&NAM0.value.stars, buffer, sizeof(NAM0.value.stars));
+                        buffer += sizeof(NAM0.value.stars);
+                        memcpy(&NAM0.value.lowerSky, buffer, sizeof(NAM0.value.lowerSky));
+                        buffer += sizeof(NAM0.value.lowerSky);
+                        memcpy(&NAM0.value.horizon, buffer, sizeof(NAM0.value.horizon));
+                        buffer += sizeof(NAM0.value.horizon);
+                        memcpy(&NAM0.value.upperClouds, buffer, sizeof(NAM0.value.upperClouds));
+                        buffer += sizeof(NAM0.value.upperClouds);
                         break;
                     default:
-                        NAM0.Read(buffer, subSize, curPos);
+                        NAM0.Read(buffer, subSize);
                         break;
                     }
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                Sounds.Read(buffer, subSize, curPos);
+                Sounds.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WTHR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -701,7 +701,7 @@ SINT32 WTHRRecord::WriteRecord(FileWriter &writer)
     WRITE(FNAM);
     WRITE(INAM);
     WRITE(DATA);
-    WRITEAS(Sounds, SNAM);
+    WRITEAS(Sounds,SNAM);
     return -1;
     }
 
@@ -732,5 +732,10 @@ bool WTHRRecord::operator ==(const WTHRRecord &other) const
 bool WTHRRecord::operator !=(const WTHRRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool WTHRRecord::equals(Record *other)
+    {
+    return *this == *(WTHRRecord *)other;
     }
 }

@@ -16,11 +16,12 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "NAVMRecord.h"
+#include "CELLRecord.h"
 
 namespace FNV
 {
@@ -494,13 +495,15 @@ bool NAVMRecord::NAVMNVEX::operator !=(const NAVMNVEX &other) const
     }
 
 NAVMRecord::NAVMRecord(unsigned char *_recData):
-    FNVRecord(_recData)
+    FNVRecord(_recData),
+    Parent(NULL)
     {
     //
     }
 
 NAVMRecord::NAVMRecord(NAVMRecord *srcRecord):
-    FNVRecord()
+    FNVRecord(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -512,10 +515,10 @@ NAVMRecord::NAVMRecord(NAVMRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -560,67 +563,68 @@ STRING NAVMRecord::GetStrType()
     return "NAVM";
     }
 
-UINT32 NAVMRecord::GetParentType()
+Record * NAVMRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 NAVMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 NAVMRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NVER):
-                NVER.Read(buffer, subSize, curPos);
+                NVER.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(NVVX):
-                NVVX.Read(buffer, subSize, curPos);
+                NVVX.Read(buffer, subSize);
                 break;
             case REV32(NVTR):
-                NVTR.Read(buffer, subSize, curPos);
+                NVTR.Read(buffer, subSize);
                 break;
             case REV32(NVCA):
-                NVCA.Read(buffer, subSize, curPos);
+                NVCA.Read(buffer, subSize);
                 break;
             case REV32(NVDP):
-                NVDP.Read(buffer, subSize, curPos);
+                NVDP.Read(buffer, subSize);
                 break;
             case REV32(NVGD):
-                NVGD.Read(buffer, subSize, curPos);
+                NVGD.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NVEX):
-                NVEX.Read(buffer, subSize, curPos);
+                NVEX.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  NAVM: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -674,5 +678,33 @@ bool NAVMRecord::operator ==(const NAVMRecord &other) const
 bool NAVMRecord::operator !=(const NAVMRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool NAVMRecord::equals(Record *other)
+    {
+    return *this == *(NAVMRecord *)other;
+    }
+
+bool NAVMRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    NAVMRecord *master_refr = (NAVMRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_refr->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_refr->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_refr->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_refr->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_refr->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_refr->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
     }
 }

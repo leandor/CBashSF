@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
@@ -733,11 +733,11 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = &flagsUnk;
+            *FieldValues = cleaned_flag2();
             return NULL;
         case 4: //eid
             return EDID.value;
@@ -1030,7 +1030,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     CTDA.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 3: //compValue
-                    CTDA.value[ListIndex]->compValue = *(FORMID *)FieldValue;
+                    CTDA.value[ListIndex]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
                     return true;
                 case 4: //ifunc
                     CTDA.value[ListIndex]->ifunc = *(UINT32 *)FieldValue;
@@ -1104,7 +1104,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                     Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                                     break;
                                 case 3: //compValue
-                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID *)FieldValue;
+                                    Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
                                     return true;
                                 case 4: //ifunc
                                     Stages.value[ListIndex]->Entries.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = *(UINT32 *)FieldValue;
@@ -1304,7 +1304,7 @@ bool QUSTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                                     Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                                     break;
                                 case 3: //compValue
-                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID *)FieldValue;
+                                    Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->compValue = *(FORMID_OR_FLOAT32 *)FieldValue;
                                     return true;
                                 case 4: //ifunc
                                     Objectives.value[ListIndex]->Targets.value[ListX2Index]->CTDA.value[ListX3Index]->ifunc = *(UINT32 *)FieldValue;

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -69,7 +69,7 @@ class SOUNRecord : public FNVRecord //Sound
         ReqSubRecord<GENOBND> OBND; //Object Bounds
         StringRecord FNAM; //Sound Filename
         SemiOptSimpleSubRecord<UINT8> RNAM; //Random Chance %
-        ReqSubRecord<SOUNSNDD> SNDD; // Sound Data (May be SNDX format, so auto-update on read)
+        ReqSubRecord<SOUNSNDD> SNDD; //Sound Data (May be SNDX format, so auto-update on read)
 
         //OptSubRecord<GENANAM> ANAM; //Attenuation Curve (Read into SNDD)
         //OptSimpleSubRecord<SINT16> GNAM; //Reverb Attenuation Control (Read into SNDD)
@@ -116,11 +116,12 @@ class SOUNRecord : public FNVRecord //Sound
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const SOUNRecord &other) const;
         bool operator !=(const SOUNRecord &other) const;
+        bool equals(Record *other);
     };
 }

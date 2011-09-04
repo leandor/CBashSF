@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -42,7 +42,7 @@ class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
             NAVINVMI();
             ~NAVINVMI();
 
-            bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+            bool Read(unsigned char *&buffer, const UINT32 &subSize);
             void Write(FileWriter &writer);
 
             NAVINVMI& operator = (const NAVINVMI &rhs);
@@ -63,7 +63,7 @@ class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
             NAVINVCI();
             ~NAVINVCI();
 
-            bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+            bool Read(unsigned char *&buffer, const UINT32 &subSize);
             void Write(FileWriter &writer);
 
             bool operator ==(const NAVINVCI &other) const;
@@ -90,11 +90,12 @@ class NAVIRecord : public FNVRecord //Navigation Mesh Info Map
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const NAVIRecord &other) const;
         bool operator !=(const NAVIRecord &other) const;
+        bool equals(Record *other);
     };
 }

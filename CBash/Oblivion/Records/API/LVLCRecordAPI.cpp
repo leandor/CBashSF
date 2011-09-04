@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\LVLCRecord.h"
 
+namespace Ob
+{
 UINT32 LVLCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -52,14 +54,14 @@ UINT32 LVLCRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Entries.size();
+                        return (UINT32)Entries.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 return UNKNOWN_FIELD;
                 }
 
-            if(ListIndex >= Entries.size())
+            if(ListIndex >= Entries.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -107,11 +109,11 @@ void * LVLCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //chanceNone
@@ -123,22 +125,22 @@ void * LVLCRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 8: //template
             return TNAM.IsLoaded() ? &TNAM.value : NULL;
         case 9: //entries
-            if(ListIndex >= Entries.size())
+            if(ListIndex >= Entries.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //level
-                    return &Entries[ListIndex]->value.level;
+                    return &Entries.value[ListIndex]->level;
                 case 2: //unused1
-                    *FieldValues = &Entries[ListIndex]->value.unused1[0];
+                    *FieldValues = &Entries.value[ListIndex]->unused1[0];
                     return NULL;
                 case 3: //listId
-                    return &Entries[ListIndex]->value.listId;
+                    return &Entries.value[ListIndex]->listId;
                 case 4: //count
-                    return &Entries[ListIndex]->value.count;
+                    return &Entries.value[ListIndex]->count;
                 case 5: //unused2
-                    *FieldValues = &Entries[ListIndex]->value.unused2[0];
+                    *FieldValues = &Entries.value[ListIndex]->unused2[0];
                     return NULL;
                 default:
                     return NULL;
@@ -183,46 +185,35 @@ bool LVLCRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 9: //entries
             if(ListFieldID == 0) //entriesSize
                 {
-                ArraySize -= (UINT32)Entries.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Entries.push_back(new ReqSubRecord<LVLLVLO>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Entries.back();
-                    Entries.pop_back();
-                    ++ArraySize;
-                    }
+                Entries.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Entries.size())
+            if(ListIndex >= Entries.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //level
-                    Entries[ListIndex]->value.level = *(SINT16 *)FieldValue;
+                    Entries.value[ListIndex]->level = *(SINT16 *)FieldValue;
                     break;
                 case 2: //unused1
                     if(ArraySize != 2)
                         break;
-                    Entries[ListIndex]->value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    Entries[ListIndex]->value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Entries.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Entries.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
                     break;
                 case 3: //listId
-                    Entries[ListIndex]->value.listId = *(FORMID *)FieldValue;
+                    Entries.value[ListIndex]->listId = *(FORMID *)FieldValue;
                     return true;
                 case 4: //count
-                    Entries[ListIndex]->value.count = *(SINT16 *)FieldValue;
+                    Entries.value[ListIndex]->count = *(SINT16 *)FieldValue;
                     break;
                 case 5: //unused2
                     if(ArraySize != 2)
                         break;
-                    Entries[ListIndex]->value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-                    Entries[ListIndex]->value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Entries.value[ListIndex]->unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Entries.value[ListIndex]->unused2[1] = ((UINT8ARRAY)FieldValue)[1];
                     break;
                 default:
                     break;
@@ -264,33 +255,31 @@ void LVLCRecord::DeleteField(FIELD_IDENTIFIERS)
         case 9: //entries
             if(ListFieldID == 0) //entries
                 {
-                for(UINT32 x = 0; x < (UINT32)Entries.size(); x++)
-                    delete Entries[x];
-                Entries.clear();
+                Entries.Unload();
                 return;
                 }
 
-            if(ListIndex >= Entries.size())
+            if(ListIndex >= Entries.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //level
-                    Entries[ListIndex]->value.level = defaultLVLO.level;
+                    Entries.value[ListIndex]->level = defaultLVLO.level;
                     return;
                 case 2: //unused1
-                    Entries[ListIndex]->value.unused1[0] = defaultLVLO.unused1[0];
-                    Entries[ListIndex]->value.unused1[1] = defaultLVLO.unused1[1];
+                    Entries.value[ListIndex]->unused1[0] = defaultLVLO.unused1[0];
+                    Entries.value[ListIndex]->unused1[1] = defaultLVLO.unused1[1];
                     return;
                 case 3: //listId
-                    Entries[ListIndex]->value.listId = defaultLVLO.listId;
+                    Entries.value[ListIndex]->listId = defaultLVLO.listId;
                     return;
                 case 4: //count
-                    Entries[ListIndex]->value.count = defaultLVLO.count;
+                    Entries.value[ListIndex]->count = defaultLVLO.count;
                     return;
                 case 5: //unused2
-                    Entries[ListIndex]->value.unused2[0] = defaultLVLO.unused2[0];
-                    Entries[ListIndex]->value.unused2[1] = defaultLVLO.unused2[1];
+                    Entries.value[ListIndex]->unused2[0] = defaultLVLO.unused2[0];
+                    Entries.value[ListIndex]->unused2[1] = defaultLVLO.unused2[1];
                     return;
                 default:
                     return;
@@ -301,3 +290,4 @@ void LVLCRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

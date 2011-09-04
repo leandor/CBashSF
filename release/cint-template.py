@@ -1,13 +1,21 @@
+# -*- coding: utf-8 -*-
+
 from ctypes import *
 import struct
 import math
-from os.path import exists
+from os.path import exists, join
 try:
-    from bolt import GPath
+    from bolt import CBash as CBashEnabled
+    from bolt import GPath, deprint, _
     import bush
     import bosh
 except:
+    CBashEnabled = "."
     def GPath(obj):
+        return obj
+    def deprint(obj):
+        print obj
+    def _(obj):
         return obj
 
 _CBashRequiredVersion = (0,6,0)
@@ -34,127 +42,152 @@ def PositiveIsErrorCheck(result, function, cArguments, *args):
     return result
 
 CBash = None
-if(exists(".\\CBash.dll")):
-    CBash = CDLL("CBash.dll")
+# path to compiled dir hardcoded since importing bosh would be circular
+# TODO: refactor to avoid circular deps
+if CBashEnabled == 0: #regular depends on the filepath existing.
+    paths = [join("bash", "compiled", "CBash.dll")]
+elif CBashEnabled == 1: #force python mode
+    paths = []
+elif CBashEnabled == 2: #attempt to force CBash mode
+    paths = [join("bash", "compiled", filename) for filename in ["CBash.dll","rename_CBash.dll","_CBash.dll"]]
+else: #attempt to force path to CBash dll
+    paths = [join(CBashEnabled,"CBash.dll")]
+
+try:
+    for path in paths:
+        if exists(path):
+            CBash = CDLL(path)
+            break
+    del paths
+except AttributeError, error:
+    CBash = None
+    print error
+except ImportError, error:
+    CBash = None
+    print error
+except OSError, error:
+    CBash = None
+    print error
+except:
+    CBash = None
+    raise
+
+if(CBash):
     try:
-        try:
-            _CGetVersionMajor = CBash.GetVersionMajor
-            _CGetVersionMinor = CBash.GetVersionMinor
-            _CGetVersionRevision = CBash.GetVersionRevision
-        except AttributeError: #Functions were renamed in v0.5.0
-            _CGetVersionMajor = CBash.GetMajor
-            _CGetVersionMinor = CBash.GetMinor
-            _CGetVersionRevision = CBash.GetRevision
-        _CGetVersionMajor.restype = c_ulong
-        _CGetVersionMinor.restype = c_ulong
-        _CGetVersionRevision.restype = c_ulong
-        if (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision()) < _CBashRequiredVersion:
-            raise ImportError("cint.py requires CBash v%d.%d.%d or higher! (found v%d.%d.%d)" % (_CBashRequiredVersion + (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision())))
-        _CCreateCollection = CBash.CreateCollection
-        _CCreateCollection.errcheck = ZeroIsErrorCheck
-        _CDeleteCollection = CBash.DeleteCollection
-        _CDeleteCollection.errcheck = NegativeIsErrorCheck
-        _CLoadCollection = CBash.LoadCollection
-        _CLoadCollection.errcheck = NegativeIsErrorCheck
-        _CUnloadCollection = CBash.UnloadCollection
-        _CUnloadCollection.errcheck = NegativeIsErrorCheck
-        _CUnloadAllCollections = CBash.UnloadAllCollections
-        _CUnloadAllCollections.errcheck = NegativeIsErrorCheck
-        _CDeleteAllCollections = CBash.DeleteAllCollections
-        _CDeleteAllCollections.errcheck = NegativeIsErrorCheck
-        _CAddMod = CBash.AddMod
-        _CAddMod.errcheck = NegativeIsErrorCheck
-        _CLoadMod = CBash.LoadMod
-        _CLoadMod.errcheck = NegativeIsErrorCheck
-        _CUnloadMod = CBash.UnloadMod
-        _CUnloadMod.errcheck = NegativeIsErrorCheck
-        _CCleanModMasters = CBash.CleanModMasters
-        _CCleanModMasters.errcheck = NegativeIsErrorCheck
-        _CSaveMod = CBash.SaveMod
-        _CSaveMod.errcheck = NegativeIsErrorCheck
-        _CGetAllNumMods = CBash.GetAllNumMods
-        _CGetAllModIDs = CBash.GetAllModIDs
-        _CGetLoadOrderNumMods = CBash.GetLoadOrderNumMods
-        _CGetLoadOrderModIDs = CBash.GetLoadOrderModIDs
-        _CGetFileNameByID = CBash.GetFileNameByID
-        _CGetFileNameByLoadOrder = CBash.GetFileNameByLoadOrder
-        _CGetModNameByID = CBash.GetModNameByID
-        _CGetModNameByLoadOrder = CBash.GetModNameByLoadOrder
-        _CGetModIDByName = CBash.GetModIDByName
-        _CGetModIDByLoadOrder = CBash.GetModIDByLoadOrder
-        _CGetModLoadOrderByName = CBash.GetModLoadOrderByName
-        _CGetModLoadOrderByID = CBash.GetModLoadOrderByID
-        _CGetLongIDName = CBash.GetLongIDName
-        _CIsModEmpty = CBash.IsModEmpty
-        _CGetModNumTypes = CBash.GetModNumTypes
-        _CGetModNumTypes.errcheck = NegativeIsErrorCheck
-        _CGetModTypes = CBash.GetModTypes
-        _CGetModTypes.errcheck = NegativeIsErrorCheck
-        _CCreateRecord = CBash.CreateRecord
-        _CDeleteRecord = CBash.DeleteRecord
-        _CCopyRecord = CBash.CopyRecord
-        _CUnloadRecord = CBash.UnloadRecord
-        _CSetRecordIdentifiers = CBash.SetRecordIdentifiers
-        _CGetRecordID = CBash.GetRecordID
-        _CGetNumRecords = CBash.GetNumRecords
-        _CGetRecordIDs = CBash.GetRecordIDs
-        _CIsRecordWinning = CBash.IsRecordWinning
-        _CGetNumRecordConflicts = CBash.GetNumRecordConflicts
-        _CGetRecordConflicts = CBash.GetRecordConflicts
-        _CGetRecordHistory = CBash.GetRecordHistory
-        _CUpdateReferences = CBash.UpdateReferences
-        _CGetNumReferences = CBash.GetNumReferences
-        _CSetField = CBash.SetField
-        _CDeleteField = CBash.DeleteField
-        _CGetFieldAttribute = CBash.GetFieldAttribute
-        _CGetField = CBash.GetField
-        _CCreateCollection.restype = c_ulong
-        _CDeleteCollection.restype = c_long
-        _CLoadCollection.restype = c_long
-        _CUnloadCollection.restype = c_long
-        _CDeleteAllCollections.restype = c_long
-        _CAddMod.restype = c_long
-        _CLoadMod.restype = c_long
-        _CUnloadMod.restype = c_long
-        _CCleanModMasters.restype = c_long
-        _CGetAllNumMods.restype = c_long
-        _CGetAllModIDs.restype = c_long
-        _CGetLoadOrderNumMods.restype = c_long
-        _CGetLoadOrderModIDs.restype = c_long
-        _CGetFileNameByID.restype = c_char_p
-        _CGetFileNameByLoadOrder.restype = c_char_p
-        _CGetModNameByID.restype = c_char_p
-        _CGetModNameByLoadOrder.restype = c_char_p
-        _CGetModIDByName.restype = c_ulong
-        _CGetModIDByLoadOrder.restype = c_ulong
-        _CGetModLoadOrderByName.restype = c_long
-        _CGetModLoadOrderByID.restype = c_long
-        _CGetLongIDName.restype = c_char_p
-        _CIsModEmpty.restype = c_ulong
-        _CGetModNumTypes.restype = c_long
-        _CCreateRecord.restype = c_ulong
-        _CDeleteRecord.restype = c_long
-        _CCopyRecord.restype = c_ulong
-        _CUnloadRecord.restype = c_long
-        _CSetRecordIdentifiers.restype = c_long
-        _CGetRecordID.restype = c_ulong
-        _CGetNumRecords.restype = c_long
-        _CIsRecordWinning.restype = c_long
-        _CGetNumRecordConflicts.restype = c_long
-        _CGetRecordConflicts.restype = c_long
-        _CGetRecordHistory.restype = c_long
-        _CUpdateReferences.restype = c_long
-        _CGetNumReferences.restype = c_long
-        _CGetFieldAttribute.restype = c_ulong
-    except AttributeError, error:
-        CBash = None
-        print error
-    except ImportError, error:
-        CBash = None
-        print error
-    except:
-        CBash = None
-        raise
+        _CGetVersionMajor = CBash.GetVersionMajor
+        _CGetVersionMinor = CBash.GetVersionMinor
+        _CGetVersionRevision = CBash.GetVersionRevision
+    except AttributeError: #Functions were renamed in v0.5.0
+        _CGetVersionMajor = CBash.GetMajor
+        _CGetVersionMinor = CBash.GetMinor
+        _CGetVersionRevision = CBash.GetRevision
+    _CGetVersionMajor.restype = c_ulong
+    _CGetVersionMinor.restype = c_ulong
+    _CGetVersionRevision.restype = c_ulong
+    if (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision()) < _CBashRequiredVersion:
+        raise ImportError(_("cint.py requires CBash v%d.%d.%d or higher! (found v%d.%d.%d)") % (_CBashRequiredVersion + (_CGetVersionMajor(),_CGetVersionMinor(),_CGetVersionRevision())))
+    _CCreateCollection = CBash.CreateCollection
+    _CCreateCollection.errcheck = ZeroIsErrorCheck
+    _CDeleteCollection = CBash.DeleteCollection
+    _CDeleteCollection.errcheck = NegativeIsErrorCheck
+    _CLoadCollection = CBash.LoadCollection
+    _CLoadCollection.errcheck = NegativeIsErrorCheck
+    _CUnloadCollection = CBash.UnloadCollection
+    _CUnloadCollection.errcheck = NegativeIsErrorCheck
+    _CUnloadAllCollections = CBash.UnloadAllCollections
+    _CUnloadAllCollections.errcheck = NegativeIsErrorCheck
+    _CDeleteAllCollections = CBash.DeleteAllCollections
+    _CDeleteAllCollections.errcheck = NegativeIsErrorCheck
+    _CAddMod = CBash.AddMod
+    _CAddMod.errcheck = NegativeIsErrorCheck
+    _CLoadMod = CBash.LoadMod
+    _CLoadMod.errcheck = NegativeIsErrorCheck
+    _CUnloadMod = CBash.UnloadMod
+    _CUnloadMod.errcheck = NegativeIsErrorCheck
+    _CCleanModMasters = CBash.CleanModMasters
+    _CCleanModMasters.errcheck = NegativeIsErrorCheck
+    _CSaveMod = CBash.SaveMod
+    _CSaveMod.errcheck = NegativeIsErrorCheck
+    _CGetAllNumMods = CBash.GetAllNumMods
+    _CGetAllModIDs = CBash.GetAllModIDs
+    _CGetLoadOrderNumMods = CBash.GetLoadOrderNumMods
+    _CGetLoadOrderModIDs = CBash.GetLoadOrderModIDs
+    _CGetFileNameByID = CBash.GetFileNameByID
+    _CGetFileNameByLoadOrder = CBash.GetFileNameByLoadOrder
+    _CGetModNameByID = CBash.GetModNameByID
+    _CGetModNameByLoadOrder = CBash.GetModNameByLoadOrder
+    _CGetModIDByName = CBash.GetModIDByName
+    _CGetModIDByLoadOrder = CBash.GetModIDByLoadOrder
+    _CGetModLoadOrderByName = CBash.GetModLoadOrderByName
+    _CGetModLoadOrderByID = CBash.GetModLoadOrderByID
+    _CGetLongIDName = CBash.GetLongIDName
+    _CIsModEmpty = CBash.IsModEmpty
+    _CGetModNumTypes = CBash.GetModNumTypes
+    _CGetModNumTypes.errcheck = NegativeIsErrorCheck
+    _CGetModTypes = CBash.GetModTypes
+    _CGetModTypes.errcheck = NegativeIsErrorCheck
+    _CCreateRecord = CBash.CreateRecord
+    _CDeleteRecord = CBash.DeleteRecord
+    _CResetRecord = CBash.ResetRecord
+    _CCopyRecord = CBash.CopyRecord
+    _CUnloadRecord = CBash.UnloadRecord
+    _CSetIDFields = CBash.SetIDFields
+    _CGetRecordID = CBash.GetRecordID
+    _CGetNumRecords = CBash.GetNumRecords
+    _CGetRecordIDs = CBash.GetRecordIDs
+    _CIsRecordWinning = CBash.IsRecordWinning
+    _CGetNumRecordConflicts = CBash.GetNumRecordConflicts
+    _CGetRecordConflicts = CBash.GetRecordConflicts
+    _CGetRecordHistory = CBash.GetRecordHistory
+    _CGetNumIdenticalToMasterRecords = CBash.GetNumIdenticalToMasterRecords
+    _CGetIdenticalToMasterRecords = CBash.GetIdenticalToMasterRecords
+    _CUpdateReferences = CBash.UpdateReferences
+    _CGetNumReferences = CBash.GetNumReferences
+    _CSetField = CBash.SetField
+    _CDeleteField = CBash.DeleteField
+    _CGetFieldAttribute = CBash.GetFieldAttribute
+    _CGetField = CBash.GetField
+    _CCreateCollection.restype = c_ulong
+    _CDeleteCollection.restype = c_long
+    _CLoadCollection.restype = c_long
+    _CUnloadCollection.restype = c_long
+    _CDeleteAllCollections.restype = c_long
+    _CAddMod.restype = c_long
+    _CLoadMod.restype = c_long
+    _CUnloadMod.restype = c_long
+    _CCleanModMasters.restype = c_long
+    _CGetAllNumMods.restype = c_long
+    _CGetAllModIDs.restype = c_long
+    _CGetLoadOrderNumMods.restype = c_long
+    _CGetLoadOrderModIDs.restype = c_long
+    _CGetFileNameByID.restype = c_char_p
+    _CGetFileNameByLoadOrder.restype = c_char_p
+    _CGetModNameByID.restype = c_char_p
+    _CGetModNameByLoadOrder.restype = c_char_p
+    _CGetModIDByName.restype = c_ulong
+    _CGetModIDByLoadOrder.restype = c_ulong
+    _CGetModLoadOrderByName.restype = c_long
+    _CGetModLoadOrderByID.restype = c_long
+    _CGetLongIDName.restype = c_char_p
+    _CIsModEmpty.restype = c_ulong
+    _CGetModNumTypes.restype = c_long
+    _CCreateRecord.restype = c_ulong
+    _CDeleteRecord.restype = c_long
+    _CResetRecord.restype = c_long
+    _CCopyRecord.restype = c_ulong
+    _CUnloadRecord.restype = c_long
+    _CSetIDFields.restype = c_long
+    _CGetRecordID.restype = c_ulong
+    _CGetNumRecords.restype = c_long
+    _CIsRecordWinning.restype = c_long
+    _CGetNumRecordConflicts.restype = c_long
+    _CGetRecordConflicts.restype = c_long
+    _CGetRecordHistory.restype = c_long
+    _CGetNumIdenticalToMasterRecords.restype = c_long
+    _CGetIdenticalToMasterRecords.restype = c_long
+    _CUpdateReferences.restype = c_long
+    _CGetNumReferences.restype = c_long
+    _CGetFieldAttribute.restype = c_ulong
 
 def LoggingCB(logString):
     print logString,
@@ -346,7 +379,7 @@ def setattr_deep(obj, attr, value):
 def MakeLongFid(CollectionID, ModID, fid):
     if fid is None or fid == 0: return 0
     if isinstance(fid,tuple): return fid
-    master = _CGetLongIDName(CollectionID, ModID, int(fid >> 24))
+    master = _CGetLongIDName(ModID, int(fid >> 24))
     if not master: return (None,int(fid & 0x00FFFFFFL))
     return (GPath(master),int(fid & 0x00FFFFFFL))
 
@@ -355,7 +388,7 @@ def MakeShortFid(CollectionID, fid):
     if not isinstance(fid,tuple): return fid
     master, object = fid
     if master is None:
-        raise AttributeError("Unable to convert long fid (None, %06X) into a short formID" % object)
+        raise AttributeError(_("Unable to convert long fid (None, %06X) into a short formID") % object)
     masterIndex = _CGetModLoadOrderByName(CollectionID, str(master))
     if(masterIndex == -1): return None
     return int(masterIndex << 24) | int(object & 0x00FFFFFFL)
@@ -363,7 +396,7 @@ def MakeShortFid(CollectionID, fid):
 def MakeLongMGEFCode(CollectionID, ModID, MGEFCode):
     if MGEFCode is None or MGEFCode == 0: return 0
     if isinstance(MGEFCode,tuple): return MGEFCode
-    master = _CGetLongIDName(CollectionID, ModID, int(MGEFCode & 0x000000FFL))
+    master = _CGetLongIDName(ModID, int(MGEFCode & 0x000000FFL))
     if not master: return (None,int(MGEFCode & 0xFFFFFF00L))
     return (GPath(master),int(MGEFCode & 0xFFFFFF00L))
 
@@ -373,7 +406,7 @@ def MakeShortMGEFCode(CollectionID, ModID, MGEFCode):
     if not isinstance(MGEFCode,tuple): return MGEFCode
     master, object = MGEFCode
     if master is None:
-        raise AttributeError("Unable to convert long MGEFCode (None, %06X) into a short MGEFCode" % object)
+        raise AttributeError(_("Unable to convert long MGEFCode (None, %06X) into a short MGEFCode") % object)
     masterIndex = _CGetModLoadOrderByName(CollectionID, str(master))
     if(masterIndex == -1): return None
     return int(masterIndex & 0x000000FFL) | int(object & 0xFFFFFF00L)
@@ -1004,58 +1037,55 @@ class CBashISTRING(object):
 
 
 class CBashRECORDARRAY(object):
-    def __init__(self, Type, TypeName, CopyFlags=0):
+    def __init__(self, Type, TypeName):
         self._Type = Type
         self._TypeName = cast(TypeName, POINTER(c_ulong)).contents.value
-        self._CopyFlags = CopyFlags
     def __get__(self, instance, owner):
-        numRecords = _CGetNumRecords(instance._CollectionID, instance._ModID, self._TypeName)
+        numRecords = _CGetNumRecords(instance._ModID, self._TypeName)
         if(numRecords > 0):
             cRecords = (c_ulong * numRecords)()
-            _CGetRecordIDs(instance._CollectionID, instance._ModID, self._TypeName, byref(cRecords))
-            return [self._Type(instance._CollectionID, instance._ModID, x, 0, self._CopyFlags) for x in cRecords]
+            _CGetRecordIDs(instance._ModID, self._TypeName, byref(cRecords))
+            return [self._Type(instance._CollectionID, instance._ModID, x) for x in cRecords]
         return []
     def __set__(self, instance, nValue):
         return
 
 class CBashSUBRECORD(object):
-    def __init__(self, FieldID, Type, TypeName, CopyFlags=0):
+    def __init__(self, FieldID, Type, TypeName):
         self._FieldID = FieldID
         self._Type = Type
         self._TypeName = TypeName
-        self._CopyFlags = CopyFlags
         self._ResType = c_ulong
     def __get__(self, instance, owner):
         _CGetField.restype = self._ResType
         retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
-        if(retValue): return self._Type(instance._CollectionID, instance._ModID, retValue, instance._RecordID, self._CopyFlags)
+        if(retValue): return self._Type(instance._CollectionID, instance._ModID, retValue)
         return None
     def __set__(self, instance, nValue):
         _CGetField.restype = self._ResType
         retValue = _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0)
-        if(retValue): oSubRecord = self._Type(instance._CollectionID, instance._ModID, retValue, instance._RecordID, self._CopyFlags)
+        if(retValue): oSubRecord = self._Type(instance._CollectionID, instance._ModID, retValue)
         else: oSubRecord = None
         if nSubRecord is None and oSubRecord is not None: oSubRecord.DeleteRecord()
         else:
             if oSubRecord is None:
                 RecordID = _CCreateRecord(instance._CollectionID, instance._ModID, self._TypeName, 0, 0, instance._RecordID, c_ulong(self._CopyFlags))
-                if(RecordID): oSubRecord = self._Type(instance._CollectionID, instance._ModID, RecordID, instance._RecordID, self._CopyFlags)
+                if(RecordID): oSubRecord = self._Type(instance._CollectionID, instance._ModID, RecordID)
             if oSubRecord is None:
                 return
             SetCopyList(oSubRecord, ExtractCopyList(nSubRecord))
 
 class CBashSUBRECORDARRAY(object):
-    def __init__(self, FieldID, Type, TypeName, CopyFlags=0):
+    def __init__(self, FieldID, Type, TypeName):
         self._FieldID = FieldID
         self._Type = Type
         self._TypeName = TypeName
-        self._CopyFlags = CopyFlags
     def __get__(self, instance, owner):
         numRecords = _CGetFieldAttribute(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1)
         if(numRecords > 0):
             cRecords = (c_ulong * numRecords)()
             _CGetField(instance._CollectionID, instance._ModID, instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords))
-            return [self._Type(instance._CollectionID, instance._ModID, x, instance._RecordID, self._CopyFlags) for x in cRecords]
+            return [self._Type(instance._CollectionID, instance._ModID, x) for x in cRecords]
         return []
     def __set__(self, instance, nValue):
         return
@@ -2018,12 +2048,10 @@ class PGRP(ListComponent):
 #--Fallout New Vegas
 class FnvBaseRecord(object):
     _Type = 'BASE'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+    def __init__(self, CollectionIndex, ModID, RecordID):
         self._CollectionID = CollectionIndex
         self._ModID = ModID
         self._RecordID = RecordID
-        self._CopyFlags = CopyFlags
-        #ParentID isn't kept for most records
 
     def __eq__(self, other):
         if type(other) is type(self):
@@ -2035,21 +2063,24 @@ class FnvBaseRecord(object):
 
     @property
     def FileName(self):
-        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetFileNameByID(self._ModID) or 'Missing'
 
     @property
     def ModName(self):
-        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetModNameByID(self._ModID) or 'Missing'
 
     @property
     def GName(self):
         return GPath(self.ModName)
 
+    def ResetRecord(self):
+        _CResetRecord(self._RecordID)
+
     def UnloadRecord(self):
-        _CUnloadRecord(self._CollectionID, self._ModID, self._RecordID)
+        _CUnloadRecord(self._RecordID)
 
     def DeleteRecord(self):
-        _CDeleteRecord(self._CollectionID, self._ModID, self._RecordID, getattr(self, '_ParentID', 0))
+        _CDeleteRecord(self._CollectionID, self._ModID, self._RecordID)
 
     def GetNumReferences(self, FormIDToMatch):
         FormIDToMatch = MakeShortFid(self._CollectionID, FormIDToMatch)
@@ -2066,8 +2097,7 @@ class FnvBaseRecord(object):
         cModIDs = (c_ulong * 257)() #just allocate enough for the max number + size
         cRecordIDs = (c_ulong * 257)() #just allocate enough for the max number + size
         numRecords = _CGetRecordHistory(self._CollectionID, self._ModID, self._RecordID, byref(cModIDs), byref(cRecordIDs))
-        parent = getattr(self, '_ParentID', 0)
-        return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+        return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x]) for x in range(0, numRecords)]
 
     def IsWinning(self, GetExtendedConflicts=False):
         """Returns true if the record is the last to load.
@@ -2081,87 +2111,103 @@ class FnvBaseRecord(object):
             cModIDs = (c_ulong * numRecords)()
             cRecordIDs = (c_ulong * numRecords)()
             numRecords = _CGetRecordConflicts(self._CollectionID, self._RecordID, byref(cModIDs), byref(cRecordIDs), c_ulong(GetExtendedConflicts))
-            parent = getattr(self, '_ParentID', 0)
-            return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+            return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x]) for x in range(0, numRecords)]
         return []
 
     def ConflictDetails(self, attrs=None, GetExtendedConflicts=False):
+        """New: attrs is an iterable, for each item, the following is checked:
+           if the item is a string type: changes are reported
+           if the item is another iterable (set,list,tuple), then if any of the subitems is
+             different, then all sub items are reported.  This allows grouping of dependant
+             items."""
         conflicting = {}
         if attrs is None:
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        #recordMasters = set(FnvModFile(self._CollectionID, self._ModID).TES4.masters)
-        #sort oldest to newest rather than newest to oldest
-        #conflicts = self.Conflicts(GetExtendedConflicts)
-        #Less pythonic, but optimized for better speed.
-        #Equivalent to commented out code.
-        #parentRecords = [parent for parent in conflicts if parent.ModName in recordMasters]
-        #parentRecords.reverse()
+
         parentRecords = self.History()
         if parentRecords:
-            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+            for attr in attrs:
+                if isinstance(attr,basestring):
+                    # Single attr
+                    conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+                elif isinstance(attr,(list,tuple,set)):
+                    # Group of attrs that need to stay together
+                    for parentRecord in parentRecords:
+                        subconflicting = {}
+                        conflict = False
+                        for subattr in attr:
+                            self_value = reduce(getattr, subattr.split('.'), self)
+                            if not conflict and self_value != reduce(getattr, subattr.split('.'), parentRecord):
+                                conflict = True
+                            subconflicting.update([(subattr,self_value)])
+                        if conflict:
+                            conflicting.update(subconflicting)
         else: #is the first instance of the record
-            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for attr in attrs])
-##        if parentRecords:
-##            for parentRecord in parentRecords:
-##                for attr in attrs:
-##                    if getattr_deep(self,attr) != getattr_deep(parentRecord,attr):
-##                        conflicting[attr] = getattr_deep(self,attr)
-##        else:
-##            for attr in attrs:
-##                conflicting[attr] = getattr_deep(self,attr)
+            for attr in attrs:
+                if isinstance(attr, basestring):
+                    conflicting.update([(attr,reduce(getattr, attr.split('.'), self))])
+                elif isinstance(attr,(list,tuple,set)):
+                    conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
+
+        skipped_conflicting = [(attr, value) for attr, value in conflicting if isinstance(value,tuple) and value[0] is None]
+        for attr, value in skipped_conflicting:
+            try:
+                deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GName, value))
+            except: #a record type that doesn't have a full chunk:
+                deprint(_("%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GName, value))
+            del conflicting[attr]
+
         return conflicting
 
     def mergeFilter(self,modSet):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
         for a list record, items coming from mods not in the modSet could be
-        removed from the list."""
-        pass
+        removed from the list.
 
-    def CopyAsOverride(self, target, CopyFlags=None):
-        if CopyFlags is None: CopyFlags = self._CopyFlags
+        In a case where items either cannot be filtered, or doing so will break
+        the record, False should be returned.  If filtering was successful, True
+        should be returned."""
+        return True
+
+    def CopyAsOverride(self, target, CopyFlags=0):
         targetID = 0
         if hasattr(self, '_ParentID'):
             if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
+        ##SetAsOverride       = 0x00000001
         #Set SetAsOverride
         CopyFlags |= 0x00000001
         RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, 0, 0, c_ulong(CopyFlags))
         #Clear SetAsOverride
         CopyFlags &= ~0x00000001
-        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID)
         return None
 
-    def CopyAsNew(self, target, RecordFormID=0, CopyFlags=None):
-        if CopyFlags is None: CopyFlags = self._CopyFlags
+    def CopyAsNew(self, target, RecordFormID=0, CopyFlags=0):
         targetID = 0
         if hasattr(self, '_ParentID'):
             if isinstance(target, FnvModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
+        ##SetAsOverride       = 0x00000001
         #Clear SetAsOverride in case it was set
         CopyFlags &= ~0x00000001
         RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, RecordFormID, 0, c_ulong(CopyFlags))
-        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID)
         return None
 
     @property
     def Parent(self):
-        ParentID = getattr(self, '_ParentID', 0)
-        if ParentID:
-            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
+        RecordID = getattr(self, '_ParentID', 0)
+        if RecordID:
+            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID)
             RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
-                return RecordType(self._CollectionID, self._ModID, ParentID, 0, 0)
+                return RecordType(self._CollectionID, self._ModID, RecordID)
         return None
 
     @property
@@ -2182,7 +2228,7 @@ class FnvBaseRecord(object):
     def set_fid(self, nValue):
         if nValue is None: nValue = 0
         else: nValue = MakeShortFid(self._CollectionID, nValue)
-        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, nValue, self.eid or 0)
+        _CSetIDFields(self._CollectionID, self._ModID, self._RecordID, nValue, self.eid or 0)
     fid = property(get_fid, set_fid)
 
     UINT8_ARRAY_MACRO(versionControl1, 3, 4)
@@ -2197,7 +2243,7 @@ class FnvBaseRecord(object):
     def set_eid(self, nValue):
         if nValue is None or not len(nValue): nValue = 0
         else: nValue = str(nValue)
-        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, MakeShortFid(self._CollectionID, self.fid or 0), nValue)
+        _CSetIDFields(self._CollectionID, self._ModID, self._RecordID, MakeShortFid(self._CollectionID, self.fid or 0), nValue)
     eid = property(get_eid, set_eid)
 
     BasicFlagMACRO(IsDeleted, flags1, 0x00000020)
@@ -2240,10 +2286,13 @@ class FnvBaseRecord(object):
 
 class FnvTES4Record(object):
     _Type = 'TES4'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+    def __init__(self, CollectionIndex, ModID, RecordID):
         self._CollectionID = CollectionIndex
         self._ModID = ModID
         self._RecordID = RecordID
+
+    def ResetRecord(self):
+        pass
 
     def UnloadRecord(self):
         pass
@@ -2273,9 +2322,13 @@ class FnvTES4Record(object):
                  'author', 'description', 'masters', 'overrides', 'screenshot_p']
 
 class FnvACHRRecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 55, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'ACHR'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -2382,9 +2435,12 @@ class FnvACHRRecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvACRERecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 57, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'ACRE'
     class Decal(ListComponent):
@@ -2494,9 +2550,13 @@ class FnvACRERecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvREFRRecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 141, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'REFR'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -2656,6 +2716,8 @@ class FnvREFRRecord(FnvBaseRecord):
     RADIAN_MACRO(rotY, 139)
     RADIAN_MACRO(rotZ, 140)
 
+    BasicFlagMACRO(IsEnabled, scriptFlags, 0x0001)
+
     BasicFlagMACRO(IsNoAlarm, destinationFlags, 0x00000001)
 
     BasicFlagMACRO(IsVisible, markerFlags, 0x00000001)
@@ -2670,6 +2732,10 @@ class FnvREFRRecord(FnvBaseRecord):
     BasicFlagMACRO(IsPopIn, parentFlags, 0x00000002)
 
     BasicFlagMACRO(IsLeveledLock, lockFlags, 0x00000004)
+
+    BasicTypeMACRO(IsObject, scriptType, 0x0000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x0001, IsObject)
+    BasicTypeMACRO(IsEffect, scriptType, 0x0100, IsObject)
 
     BasicTypeMACRO(IsNone, primitiveType, 0, IsBox)
     BasicTypeMACRO(IsBox, primitiveType, 1, IsNone)
@@ -2823,9 +2889,13 @@ class FnvREFRRecord(FnvBaseRecord):
                                              'scale', 'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xsrf_p', 'xsrd_p', 'audioBnam_p', 'audioFull_p', 'rclr_p',  'xrgd_p', 'xrgb_p','compiled_p',
 
 class FnvPGRERecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 56, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'PGRE'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -2944,9 +3014,13 @@ class FnvPGRERecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvPMISRecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 56, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'PMIS'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -3065,9 +3139,13 @@ class FnvPMISRecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvPBEARecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 56, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'PBEA'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -3186,9 +3264,13 @@ class FnvPBEARecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvPFLARecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 56, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'PFLA'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -3307,9 +3389,13 @@ class FnvPFLARecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvPCBERecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 56, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'PCBE'
     class Decal(ListComponent):
         FORMID_LISTMACRO(reference, 1)
@@ -3428,9 +3514,13 @@ class FnvPCBERecord(FnvBaseRecord):
                                              'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ']# 'xrgd_p', 'xrgb_p', 'compiled_p',
 
 class FnvNAVMRecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 20, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
+
     _Type = 'NAVM'
     class Vertex(ListComponent):
         FLOAT32_LISTMACRO(x, 1)
@@ -3526,9 +3616,12 @@ class FnvNAVMRecord(FnvBaseRecord):
                                              'connections_list']# 'nvgd_p',
 
 class FnvLANDRecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 17, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'LAND'
     class Normal(ListX2Component):
@@ -3682,9 +3775,12 @@ class FnvLANDRecord(FnvBaseRecord):
                                         'vertexTextures_list'] #'data_p',
 
 class FnvINFORecord(FnvBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 44, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'INFO'
     class Response(ListComponent):
@@ -3772,10 +3868,6 @@ class FnvINFORecord(FnvBaseRecord):
     BasicFlagMACRO(IsSayOnceADay, flags, 0x0100)
     BasicFlagMACRO(IsAlwaysDarken, flags, 0x0200)
 
-    BasicFlagMACRO(IsBeginEnabled, scriptFlags, 0x0001)
-
-    BasicFlagMACRO(IsEndEnabled, endScriptFlags, 0x0001)
-
     BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
     BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
     BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
@@ -3795,14 +3887,6 @@ class FnvINFORecord(FnvBaseRecord):
     BasicTypeMACRO(IsAverage, challengeType, 3, IsNone)
     BasicTypeMACRO(IsHard, challengeType, 4, IsNone)
     BasicTypeMACRO(IsVeryHard, challengeType, 5, IsNone)
-
-    BasicTypeMACRO(IsBeginObject, scriptType, 0x0000, IsQuest)
-    BasicTypeMACRO(IsBeginQuest, scriptType, 0x0001, IsObject)
-    BasicTypeMACRO(IsBeginEffect, scriptType, 0x0100, IsObject)
-
-    BasicTypeMACRO(IsEndObject, endScriptType, 0x0000, IsQuest)
-    BasicTypeMACRO(IsEndQuest, endScriptType, 0x0001, IsObject)
-    BasicTypeMACRO(IsEndEffect, endScriptType, 0x0100, IsObject)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['dialType', 'nextSpeaker', 'flags',
                                                          'quest', 'topic', 'prevInfo',
                                                          'addTopics', 'responses_list',
@@ -4379,6 +4463,16 @@ class FnvMGEFRecord(FnvBaseRecord):
 
 class FnvSCPTRecord(FnvBaseRecord):
     _Type = 'SCPT'
+    def mergeFilter(self, modSet):
+        """Filter references that don't come from the specified modSet.
+           Since we can't actually do this for SCPT records, return False if
+           any references are to mods not in modSet."""
+        for ref in self.references:
+            if not isinstance(ref,tuple):
+                continue
+            if ref[0] not in modSet: return False
+        return True
+
     UINT8_ARRAY_MACRO(unused1, 7, 4)
     UINT32_MACRO(numRefs, 8)
     UINT32_MACRO(compiledSize, 9)
@@ -4872,6 +4966,7 @@ class FnvCONTRecord(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
@@ -5976,6 +6071,7 @@ class FnvNPC_Record(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
@@ -6228,6 +6324,7 @@ class FnvCREARecord(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     class SoundType(ListComponent):
         class Sound(ListX2Component):
@@ -6650,6 +6747,7 @@ class FnvLVLCRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     class Entry(ListComponent):
         SINT16_LISTMACRO(level, 1)
@@ -6705,6 +6803,7 @@ class FnvLVLNRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     class Entry(ListComponent):
         SINT16_LISTMACRO(level, 1)
@@ -7103,6 +7202,7 @@ class FnvLVLIRecord(FnvBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     class Entry(ListComponent):
         SINT16_LISTMACRO(level, 1)
@@ -7493,19 +7593,31 @@ class FnvNAVIRecord(FnvBaseRecord):
 
 class FnvCELLRecord(FnvBaseRecord):
     _Type = 'CELL'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=4):
-        ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
-        FnvBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
         retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 67, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
+
+    @property
+    def bsb(self):
+        """Returns tesfile block and sub-block indices for cells in this group.
+        For interior cell, bsb is (blockNum,subBlockNum). For exterior cell, bsb is
+        ((blockX,blockY),(subblockX,subblockY))."""
+        #--Interior cell
+        if self.IsInterior:
+            ObjectID = self.fid[1] & 0x00FFFFFF
+            blockNum = ObjectID % 10
+            subBlockNum = (ObjectID / 10) % 10
+            return (blockNum, subBlockNum)
+        #--Exterior cell
+        else:
+            blockX = int(math.floor(self.posX or 0 / 8.0))
+            blockY = int(math.floor(self.posY or 0 / 8.0))
+            subblockX = int(math.floor(blockX / 4.0))
+            subblockY = int(math.floor(blockY / 4.0))
+            return ((blockX, blockY), (subblockX, subblockY))
 
     class SwappedImpact(ListComponent):
         UINT32_TYPE_LISTMACRO(material, 1)
@@ -7577,16 +7689,16 @@ class FnvCELLRecord(FnvBaseRecord):
     FORMID_MACRO(acousticSpace, 54)
     UINT8_ARRAY_MACRO(xcmt_p, 55)
     FORMID_MACRO(music, 56)
-    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 57, FnvACHRRecord, 0)
-    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 58, FnvACRERecord, 0)
-    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 59, FnvREFRRecord, 0)
-    SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 60, FnvPGRERecord, 0)
-    SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 61, FnvPMISRecord, 0)
-    SUBRECORD_ARRAY_MACRO(PBEA, "PBEA", 62, FnvPBEARecord, 0)
-    SUBRECORD_ARRAY_MACRO(PFLA, "PFLA", 63, FnvPFLARecord, 0)
-    SUBRECORD_ARRAY_MACRO(PCBE, "PCBE", 64, FnvPCBERecord, 0)
-    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 65, FnvNAVMRecord, 0)
-    SUBRECORD_MACRO(LAND, "LAND", 66, FnvLANDRecord, 0)
+    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 57, FnvACHRRecord)
+    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 58, FnvACRERecord)
+    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 59, FnvREFRRecord)
+    SUBRECORD_ARRAY_MACRO(PGRE, "PGRE", 60, FnvPGRERecord)
+    SUBRECORD_ARRAY_MACRO(PMIS, "PMIS", 61, FnvPMISRecord)
+    SUBRECORD_ARRAY_MACRO(PBEA, "PBEA", 62, FnvPBEARecord)
+    SUBRECORD_ARRAY_MACRO(PFLA, "PFLA", 63, FnvPFLARecord)
+    SUBRECORD_ARRAY_MACRO(PCBE, "PCBE", 64, FnvPCBERecord)
+    SUBRECORD_ARRAY_MACRO(NAVM, "NAVM", 65, FnvNAVMRecord)
+    SUBRECORD_MACRO(LAND, "LAND", 66, FnvLANDRecord)
 
     BasicFlagMACRO(IsInterior, flags, 0x00000001)
     BasicFlagMACRO(IsHasWater, flags, 0x00000002)
@@ -7701,8 +7813,8 @@ class FnvWRLDRecord(FnvBaseRecord):
     STRING_MACRO(water, 47)
     UINT8_ARRAY_MACRO(ofst_p, 48)
 
-    SUBRECORD_MACRO(WorldCELL, "CELL", 49, FnvCELLRecord, 2)
-    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 50, FnvCELLRecord, 0)
+    SUBRECORD_MACRO(WorldCELL, "WCEL", 49, FnvCELLRecord) ##"WCEL" is an artificial type CBash uses to distinguish World Cells
+    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 50, FnvCELLRecord)
 
     BasicFlagMACRO(IsSmallWorld, flags, 0x01)
     BasicFlagMACRO(IsNoFastTravel, flags, 0x02)
@@ -7777,7 +7889,7 @@ class FnvDIALRecord(FnvBaseRecord):
     STRING_MACRO(unknown, 11)
     UINT8_TYPE_MACRO(dialType, 12)
     UINT8_FLAG_MACRO(flags, 13)
-    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 14, FnvINFORecord, 0)
+    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 14, FnvINFORecord)
 
     BasicFlagMACRO(IsRumors, flags, 0x01)
     BasicFlagMACRO(IsTopLevel, flags, 0x02)
@@ -7796,6 +7908,22 @@ class FnvDIALRecord(FnvBaseRecord):
 
 class FnvQUSTRecord(FnvBaseRecord):
     _Type = 'QUST'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet.
+        Filters items."""
+        self.conditions = [x for x in self.conditions if (
+            (not isinstance(x.param1,tuple) or x.param1[0] in modSet)
+            and
+            (not isinstance(x.param2,tuple) or x.param2[0] in modSet)
+            )]
+        #for target in self.targets_list:
+        #    target.conditions = [x for x in target.conditions_list if (
+        #        (not isinstance(x.param1,tuple) or x.param1[0] in modSet)
+        #        and
+        #        (not isinstance(x.param2,tuple) or x.param2[0] in modSet)
+        #        )]
+        return True
+
     class Stage(ListComponent):
         class Entry(ListX2Component):
             UINT8_FLAG_LISTX2MACRO(flags, 1)
@@ -8818,12 +8946,10 @@ class FnvSLPDRecord(FnvBaseRecord):
 #--Oblivion
 class ObBaseRecord(object):
     _Type = 'BASE'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+    def __init__(self, CollectionIndex, ModID, RecordID):
         self._CollectionID = CollectionIndex
         self._ModID = ModID
         self._RecordID = RecordID
-        self._CopyFlags = CopyFlags
-        #ParentID isn't kept for most records
 
     def __eq__(self, other):
         if type(other) is type(self):
@@ -8835,21 +8961,24 @@ class ObBaseRecord(object):
 
     @property
     def FileName(self):
-        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetFileNameByID(self._ModID) or 'Missing'
 
     @property
     def ModName(self):
-        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetModNameByID(self._ModID) or 'Missing'
 
     @property
     def GName(self):
         return GPath(self.ModName)
 
+    def ResetRecord(self):
+        _CResetRecord(self._RecordID)
+
     def UnloadRecord(self):
-        _CUnloadRecord(self._CollectionID, self._ModID, self._RecordID)
+        _CUnloadRecord(self._RecordID)
 
     def DeleteRecord(self):
-        _CDeleteRecord(self._CollectionID, self._ModID, self._RecordID, getattr(self, '_ParentID', 0))
+        _CDeleteRecord(self._CollectionID, self._ModID, self._RecordID)
 
     def GetNumReferences(self, FormIDToMatch):
         FormIDToMatch = MakeShortFid(self._CollectionID, FormIDToMatch)
@@ -8866,8 +8995,7 @@ class ObBaseRecord(object):
         cModIDs = (c_ulong * 257)() #just allocate enough for the max number + size
         cRecordIDs = (c_ulong * 257)() #just allocate enough for the max number + size
         numRecords = _CGetRecordHistory(self._CollectionID, self._ModID, self._RecordID, byref(cModIDs), byref(cRecordIDs))
-        parent = getattr(self, '_ParentID', 0)
-        return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+        return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x]) for x in range(0, numRecords)]
 
     def IsWinning(self, GetExtendedConflicts=False):
         """Returns true if the record is the last to load.
@@ -8881,87 +9009,103 @@ class ObBaseRecord(object):
             cModIDs = (c_ulong * numRecords)()
             cRecordIDs = (c_ulong * numRecords)()
             numRecords = _CGetRecordConflicts(self._CollectionID, self._RecordID, byref(cModIDs), byref(cRecordIDs), c_ulong(GetExtendedConflicts))
-            parent = getattr(self, '_ParentID', 0)
-            return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x], parent, self._CopyFlags) for x in range(0, numRecords)]
+            return [self.__class__(self._CollectionID, cModIDs[x], cRecordIDs[x]) for x in range(0, numRecords)]
         return []
 
     def ConflictDetails(self, attrs=None, GetExtendedConflicts=False):
+        """New: attrs is an iterable, for each item, the following is checked:
+           if the item is a string type: changes are reported
+           if the item is another iterable (set,list,tuple), then if any of the subitems is
+             different, then all sub items are reported.  This allows grouping of dependant
+             items."""
         conflicting = {}
         if attrs is None:
             attrs = self.copyattrs
         if not attrs:
             return conflicting
-        #recordMasters = set(ObModFile(self._CollectionID, self._ModID).TES4.masters)
-        #sort oldest to newest rather than newest to oldest
-        #conflicts = self.Conflicts(GetExtendedConflicts)
-        #Less pythonic, but optimized for better speed.
-        #Equivalent to commented out code.
-        #parentRecords = [parent for parent in conflicts if parent.ModName in recordMasters]
-        #parentRecords.reverse()
+
         parentRecords = self.History()
         if parentRecords:
-            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords for attr in attrs if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+            for attr in attrs:
+                if isinstance(attr,basestring):
+                    # Single attr
+                    conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for parentRecord in parentRecords if reduce(getattr, attr.split('.'), self) != reduce(getattr, attr.split('.'), parentRecord)])
+                elif isinstance(attr,(list,tuple,set)):
+                    # Group of attrs that need to stay together
+                    for parentRecord in parentRecords:
+                        subconflicting = {}
+                        conflict = False
+                        for subattr in attr:
+                            self_value = reduce(getattr, subattr.split('.'), self)
+                            if not conflict and self_value != reduce(getattr, subattr.split('.'), parentRecord):
+                                conflict = True
+                            subconflicting.update([(subattr,self_value)])
+                        if conflict:
+                            conflicting.update(subconflicting)
         else: #is the first instance of the record
-            conflicting.update([(attr,reduce(getattr, attr.split('.'), self)) for attr in attrs])
-##        if parentRecords:
-##            for parentRecord in parentRecords:
-##                for attr in attrs:
-##                    if getattr_deep(self,attr) != getattr_deep(parentRecord,attr):
-##                        conflicting[attr] = getattr_deep(self,attr)
-##        else:
-##            for attr in attrs:
-##                conflicting[attr] = getattr_deep(self,attr)
+            for attr in attrs:
+                if isinstance(attr, basestring):
+                    conflicting.update([(attr,reduce(getattr, attr.split('.'), self))])
+                elif isinstance(attr,(list,tuple,set)):
+                    conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
+
+        skipped_conflicting = [(attr, value) for attr, value in conflicting if isinstance(value,tuple) and value[0] is None]
+        for attr, value in skipped_conflicting:
+            try:
+                deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GName, value))
+            except: #a record type that doesn't have a full chunk:
+                deprint(_("%s attribute of %s record importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.GName, value))
+            del conflicting[attr]
+
         return conflicting
 
     def mergeFilter(self,modSet):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
         for a list record, items coming from mods not in the modSet could be
-        removed from the list."""
-        pass
+        removed from the list.
 
-    def CopyAsOverride(self, target, CopyFlags=None):
-        if CopyFlags is None: CopyFlags = self._CopyFlags
+        In a case where items either cannot be filtered, or doing so will break
+        the record, False should be returned.  If filtering was successful, True
+        should be returned."""
+        return True
+
+    def CopyAsOverride(self, target, CopyFlags=0):
         targetID = 0
         if hasattr(self, '_ParentID'):
             if isinstance(target, ObModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
+        ##SetAsOverride       = 0x00000001
         #Set SetAsOverride
         CopyFlags |= 0x00000001
         RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, 0, 0, c_ulong(CopyFlags))
         #Clear SetAsOverride
         CopyFlags &= ~0x00000001
-        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID)
         return None
 
-    def CopyAsNew(self, target, RecordFormID=0, CopyFlags=None):
-        if CopyFlags is None: CopyFlags = self._CopyFlags
+    def CopyAsNew(self, target, RecordFormID=0, CopyFlags=0):
         targetID = 0
         if hasattr(self, '_ParentID'):
             if isinstance(target, ObModFile): targetID = self._ParentID
             else: targetID = target._RecordID
         ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
+        ##SetAsOverride       = 0x00000001
         #Clear SetAsOverride in case it was set
         CopyFlags &= ~0x00000001
         RecordID = _CCopyRecord(self._CollectionID, self._ModID, self._RecordID, target._ModID, targetID, RecordFormID, 0, c_ulong(CopyFlags))
-        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID, getattr(self, '_ParentID', 0), CopyFlags)
+        if(RecordID): return self.__class__(self._CollectionID, target._ModID, RecordID)
         return None
 
     @property
     def Parent(self):
-        ParentID = getattr(self, '_ParentID', 0)
-        if ParentID:
-            testRecord = ObBaseRecord(self._CollectionID, self._ModID, ParentID, 0, 0)
+        RecordID = getattr(self, '_ParentID', 0)
+        if RecordID:
+            testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID)
             RecordType = type_record[testRecord.recType]
             if RecordType:
-                return RecordType(self._CollectionID, self._ModID, ParentID, 0, 0)
+                return RecordType(self._CollectionID, self._ModID, RecordID)
         return None
 
     @property
@@ -8982,7 +9126,7 @@ class ObBaseRecord(object):
     def set_fid(self, nValue):
         if nValue is None: nValue = 0
         else: nValue = MakeShortFid(self._CollectionID, nValue)
-        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, nValue, self.eid or 0)
+        _CSetIDFields(self._CollectionID, self._ModID, self._RecordID, nValue, self.eid or 0)
     fid = property(get_fid, set_fid)
 
     UINT32_FLAG_MACRO(flags2, 3)
@@ -8995,7 +9139,7 @@ class ObBaseRecord(object):
     def set_eid(self, nValue):
         if nValue is None or not len(nValue): nValue = 0
         else: nValue = str(nValue)
-        _CSetRecordIdentifiers(self._CollectionID, self._ModID, self._RecordID, MakeShortFid(self._CollectionID, self.fid or 0), nValue)
+        _CSetIDFields(self._CollectionID, self._ModID, self._RecordID, MakeShortFid(self._CollectionID, self.fid or 0), nValue)
     eid = property(get_eid, set_eid)
 
     BasicFlagMACRO(IsDeleted, flags1, 0x00000020)
@@ -9016,10 +9160,13 @@ class ObBaseRecord(object):
 
 class ObTES4Record(object):
     _Type = 'TES4'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
+    def __init__(self, CollectionIndex, ModID, RecordID):
         self._CollectionID = CollectionIndex
         self._ModID = ModID
         self._RecordID = RecordID
+
+    def ResetRecord(self):
+        pass
 
     def UnloadRecord(self):
         pass
@@ -9075,9 +9222,12 @@ class ObGMSTRecord(ObBaseRecord):
     exportattrs = copyattrs = ObBaseRecord.baseattrs + ['value']
 
 class ObACHRRecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 24, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'ACHR'
     FORMID_MACRO(base, 5)
@@ -9110,9 +9260,12 @@ class ObACHRRecord(ObBaseRecord):
                                         'posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ'] #'xrgd_p',
 
 class ObACRERecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags=0)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 23, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'ACRE'
     FORMID_MACRO(base, 5)
@@ -9144,9 +9297,12 @@ class ObACRERecord(ObBaseRecord):
                                         'rotY', 'rotZ'] #'xrgd_p',
 
 class ObREFRRecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 50, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'REFR'
     FORMID_MACRO(base, 5)
@@ -9237,9 +9393,12 @@ class ObREFRRecord(ObBaseRecord):
                                         'rotY', 'rotZ']
 
 class ObINFORecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 23, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'INFO'
     class Response(ListComponent):
@@ -9286,6 +9445,9 @@ class ObINFORecord(ObBaseRecord):
     BasicTypeMACRO(IsDetection, dialType, 4, IsTopic)
     BasicTypeMACRO(IsService, dialType, 5, IsTopic)
     BasicTypeMACRO(IsMisc, dialType, 6, IsTopic)
+    BasicTypeMACRO(IsObject, scriptType, 0x00000000, IsQuest)
+    BasicTypeMACRO(IsQuest, scriptType, 0x00000001, IsObject)
+    BasicTypeMACRO(IsMagicEffect, scriptType, 0x00000100, IsObject)
     BasicFlagMACRO(IsGoodbye, flags, 0x00000001)
     BasicFlagMACRO(IsRandom, flags, 0x00000002)
     BasicFlagMACRO(IsSayOnce, flags, 0x00000004)
@@ -9307,9 +9469,12 @@ class ObINFORecord(ObBaseRecord):
                                         'references'] #'compiled_p',
 
 class ObLANDRecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 15, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'LAND'
     class Normal(ListX2Component):
@@ -9463,9 +9628,12 @@ class ObLANDRecord(ObBaseRecord):
                                         'vertexTextures_list'] #'data_p',
 
 class ObPGRDRecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 11, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'PGRD'
     class PGRI(ListComponent):
@@ -9495,9 +9663,12 @@ class ObPGRDRecord(ObBaseRecord):
                                         'pgri_list', 'pgrl_list'] # 'pgag_p', 'pgrr_p',
 
 class ObROADRecord(ObBaseRecord):
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=0):
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-        self._ParentID = ParentID
+    @property
+    def _ParentID(self):
+        _CGetField.restype = c_ulong
+        retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 7, 0, 0, 0, 0, 0, 0, 0)
+        if(retValue): return retValue
+        return 0
 
     _Type = 'ROAD'
     class PGRR(ListComponent):
@@ -9698,19 +9869,31 @@ class ObBSGNRecord(ObBaseRecord):
 
 class ObCELLRecord(ObBaseRecord):
     _Type = 'CELL'
-    def __init__(self, CollectionIndex, ModID, RecordID, ParentID=0, CopyFlags=4):
-        ##Record Creation Flags
-        ##SetAsOverride       = 0x00000001,
-        ##SetAsWorldCell      = 0x00000002,
-        ##CopyWorldCellStatus = 0x00000004
-        ObBaseRecord.__init__(self, CollectionIndex, ModID, RecordID, ParentID, CopyFlags)
-
     @property
     def _ParentID(self):
         _CGetField.restype = c_ulong
         retValue = _CGetField(self._CollectionID, self._ModID, self._RecordID, 40, 0, 0, 0, 0, 0, 0, 0)
         if(retValue): return retValue
         return 0
+
+    @property
+    def bsb(self):
+        """Returns tesfile block and sub-block indices for cells in this group.
+        For interior cell, bsb is (blockNum,subBlockNum). For exterior cell, bsb is
+        ((blockX,blockY),(subblockX,subblockY))."""
+        #--Interior cell
+        if self.IsInterior:
+            ObjectID = self.fid[1] & 0x00FFFFFF
+            blockNum = ObjectID % 10
+            subBlockNum = (ObjectID / 10) % 10
+            return (blockNum, subBlockNum)
+        #--Exterior cell
+        else:
+            blockX = int(math.floor(self.posX or 0 / 8.0))
+            blockY = int(math.floor(self.posY or 0 / 8.0))
+            subblockX = int(math.floor(blockX / 4.0))
+            subblockY = int(math.floor(blockY / 4.0))
+            return ((blockX, blockY), (subblockX, subblockY))
 
     STRING_MACRO(full, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -9742,11 +9925,11 @@ class ObCELLRecord(ObBaseRecord):
     UNKNOWN_OR_SINT32_MACRO(posX, 32)
     UNKNOWN_OR_SINT32_MACRO(posY, 33)
     FORMID_MACRO(water, 34)
-    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 35, ObACHRRecord, 0)
-    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 36, ObACRERecord, 0)
-    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 37, ObREFRRecord, 0)
-    SUBRECORD_MACRO(PGRD, "PGRD", 38, ObPGRDRecord, 0)
-    SUBRECORD_MACRO(LAND, "LAND", 39, ObLANDRecord, 0)
+    SUBRECORD_ARRAY_MACRO(ACHR, "ACHR", 35, ObACHRRecord)
+    SUBRECORD_ARRAY_MACRO(ACRE, "ACRE", 36, ObACRERecord)
+    SUBRECORD_ARRAY_MACRO(REFR, "REFR", 37, ObREFRRecord)
+    SUBRECORD_MACRO(PGRD, "PGRD", 38, ObPGRDRecord)
+    SUBRECORD_MACRO(LAND, "LAND", 39, ObLANDRecord)
     BasicFlagMACRO(IsInterior, flags, 0x00000001)
     BasicFlagMACRO(IsHasWater, flags, 0x00000002)
     BasicFlagMACRO(IsInvertFastTravel, flags, 0x00000004)
@@ -9883,6 +10066,7 @@ class ObCONTRecord(ObBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -9912,6 +10096,7 @@ class ObCREARecord(ObBaseRecord):
         self.spells = [x for x in self.spells if x[0] in modSet]
         self.factions = [x for x in self.factions if x.faction[0] in modSet]
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     class Sound(ListComponent):
         UINT32_LISTMACRO(soundType, 1)
@@ -10167,7 +10352,7 @@ class ObDIALRecord(ObBaseRecord):
     FORMID_ARRAY_MACRO(removedQuests, 6)
     STRING_MACRO(full, 7)
     UINT8_TYPE_MACRO(dialType, 8)
-    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 9, ObINFORecord, 0)
+    SUBRECORD_ARRAY_MACRO(INFO, "INFO", 9, ObINFORecord)
     BasicTypeMACRO(IsTopic, dialType, 0, IsConversation)
     BasicTypeMACRO(IsConversation, dialType, 1, IsTopic)
     BasicTypeMACRO(IsCombat, dialType, 2, IsTopic)
@@ -10620,21 +10805,37 @@ class ObLTEXRecord(ObBaseRecord):
     UINT8_MACRO(restitution, 8)
     UINT8_MACRO(specular, 9)
     FORMID_ARRAY_MACRO(grass, 10)
-    BasicTypeMACRO(IsStone, types, 0, IsCloth)
-    BasicTypeMACRO(IsCloth, types, 1, IsStone)
+    BasicTypeMACRO(IsStone, types, 0, IsDirt)
+    BasicTypeMACRO(IsCloth, types, 1, IsDirt)
     BasicTypeMACRO(IsDirt, types, 2, IsStone)
-    BasicTypeMACRO(IsGlass, types, 3, IsStone)
-    BasicTypeMACRO(IsGrass, types, 4, IsStone)
-    BasicTypeMACRO(IsMetal, types, 5, IsStone)
-    BasicTypeMACRO(IsOrganic, types, 6, IsStone)
-    BasicTypeMACRO(IsSkin, types, 7, IsStone)
-    BasicTypeMACRO(IsWater, types, 8, IsStone)
-    BasicTypeMACRO(IsWood, types, 9, IsStone)
-    BasicTypeMACRO(IsHeavyStone, types, 10, IsStone)
-    BasicTypeMACRO(IsHeavyMetal, types, 11, IsStone)
-    BasicTypeMACRO(IsHeavyWood, types, 12, IsStone)
-    BasicTypeMACRO(IsChain, types, 13, IsStone)
-    BasicTypeMACRO(IsSnow, types, 14, IsStone)
+    BasicTypeMACRO(IsGlass, types, 3, IsDirt)
+    BasicTypeMACRO(IsGrass, types, 4, IsDirt)
+    BasicTypeMACRO(IsMetal, types, 5, IsDirt)
+    BasicTypeMACRO(IsOrganic, types, 6, IsDirt)
+    BasicTypeMACRO(IsSkin, types, 7, IsDirt)
+    BasicTypeMACRO(IsWater, types, 8, IsDirt)
+    BasicTypeMACRO(IsWood, types, 9, IsDirt)
+    BasicTypeMACRO(IsHeavyStone, types, 10, IsDirt)
+    BasicTypeMACRO(IsHeavyMetal, types, 11, IsDirt)
+    BasicTypeMACRO(IsHeavyWood, types, 12, IsDirt)
+    BasicTypeMACRO(IsChain, types, 13, IsDirt)
+    BasicTypeMACRO(IsSnow, types, 14, IsDirt)
+    BasicTypeMACRO(IsStoneStairs, types, 15, IsDirt)
+    BasicTypeMACRO(IsClothStairs, types, 16, IsDirt)
+    BasicTypeMACRO(IsDirtStairs, types, 17, IsDirt)
+    BasicTypeMACRO(IsGlassStairs, types, 18, IsDirt)
+    BasicTypeMACRO(IsGrassStairs, types, 19, IsDirt)
+    BasicTypeMACRO(IsMetalStairs, types, 20, IsDirt)
+    BasicTypeMACRO(IsOrganicStairs, types, 21, IsDirt)
+    BasicTypeMACRO(IsSkinStairs, types, 22, IsDirt)
+    BasicTypeMACRO(IsWaterStairs, types, 23, IsDirt)
+    BasicTypeMACRO(IsWoodStairs, types, 24, IsDirt)
+    BasicTypeMACRO(IsHeavyStoneStairs, types, 25, IsDirt)
+    BasicTypeMACRO(IsHeavyMetalStairs, types, 26, IsDirt)
+    BasicTypeMACRO(IsHeavyWoodStairs, types, 27, IsDirt)
+    BasicTypeMACRO(IsChainStairs, types, 28, IsDirt)
+    BasicTypeMACRO(IsSnowStairs, types, 29, IsDirt)
+    BasicTypeMACRO(IsElevator, types, 30, IsDirt)
     exportattrs = copyattrs = ObBaseRecord.baseattrs + ['iconPath', 'types', 'friction', 'restitution',
                                         'specular', 'grass']
 
@@ -10651,6 +10852,7 @@ class ObLVLCRecord(ObBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -10677,6 +10879,7 @@ class ObLVLIRecord(ObBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -10702,6 +10905,7 @@ class ObLVSPRecord(ObBaseRecord):
     def mergeFilter(self,modSet):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId[0] in modSet]
+        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -10868,6 +11072,7 @@ class ObNPC_Record(ObBaseRecord):
         self.spells = [x for x in self.spells if x[0] in modSet]
         self.factions = [x for x in self.factions if x.faction[0] in modSet]
         self.items = [x for x in self.items if x.item[0] in modSet]
+        return True
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -11082,6 +11287,22 @@ class ObPACKRecord(ObBaseRecord):
 
 class ObQUSTRecord(ObBaseRecord):
     _Type = 'QUST'
+    def mergeFilter(self,modSet):
+        """Filter out items that don't come from specified modSet.
+        Filters items."""
+        self.conditions = [x for x in self.conditions if (
+            (not isinstance(x.param1,tuple) or x.param1[0] in modSet)
+            and
+            (not isinstance(x.param2,tuple) or x.param2[0] in modSet)
+            )]
+        #for target in self.targets_list:
+        #    target.conditions = [x for x in target.conditions_list if (
+        #        (not isinstance(x.param1,tuple) or x.param1[0] in modSet)
+        #        and
+        #        (not isinstance(x.param2,tuple) or x.param2[0] in modSet)
+        #        )]
+        return True
+
     class Stage(ListComponent):
         class Entry(ListX2Component):
             class ConditionX3(ListX3Component):
@@ -11117,6 +11338,9 @@ class ObQUSTRecord(ObBaseRecord):
             ISTRING_LISTX2MACRO(scriptText, 10)
             FORMID_OR_UINT32_ARRAY_LISTX2MACRO(references, 11)
             BasicFlagMACRO(IsCompletes, flags, 0x00000001)
+            BasicTypeMACRO(IsObject, scriptType, 0x00000000, IsQuest)
+            BasicTypeMACRO(IsQuest, scriptType, 0x00000001, IsObject)
+            BasicTypeMACRO(IsMagicEffect, scriptType, 0x00000100, IsObject)
             copyattrs = ['flags', 'conditions_list', 'text', 'numRefs', 'compiledSize',
                          'lastIndex', 'scriptType', 'compiled_p', 'scriptText',
                          'references']
@@ -11440,6 +11664,16 @@ class ObSBSPRecord(ObBaseRecord):
 
 class ObSCPTRecord(ObBaseRecord):
     _Type = 'SCPT'
+    def mergeFilter(self, modSet):
+        """Filter references that don't come from the specified modSet.
+           Since we can't actually do this for SCPT records, return False if
+           any references are to mods not in modSet."""
+        for ref in self.references:
+            if not isinstance(ref,tuple):
+                continue
+            if ref[0] not in modSet: return False
+        return True
+
     UINT8_ARRAY_MACRO(unused1, 5, 2)
     UINT32_MACRO(numRefs, 6)
     UINT32_MACRO(compiledSize, 7)
@@ -11770,9 +12004,9 @@ class ObWRLDRecord(ObBaseRecord):
     FLOAT32_MACRO(yMaxObjBounds, 20)
     UINT32_MACRO(musicType, 21)
     UINT8_ARRAY_MACRO(ofst_p, 22)
-    SUBRECORD_MACRO(ROAD, "ROAD", 23, ObROADRecord, 0)
-    SUBRECORD_MACRO(WorldCELL, "CELL", 24, ObCELLRecord, 2)
-    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 25, ObCELLRecord, 0)
+    SUBRECORD_MACRO(ROAD, "ROAD", 23, ObROADRecord)
+    SUBRECORD_MACRO(WorldCELL, "WCEL", 24, ObCELLRecord) ##"WCEL" is an artificial type CBash uses to distinguish World Cells
+    SUBRECORD_ARRAY_MACRO(CELLS, "CELL", 25, ObCELLRecord)
     BasicFlagMACRO(IsSmallWorld, flags, 0x00000001)
     BasicFlagMACRO(IsNoFastTravel, flags, 0x00000002)
     BasicInvertedFlagMACRO(IsFastTravel, IsNoFastTravel)
@@ -12018,18 +12252,28 @@ class ObModFile(object):
 
     @property
     def FileName(self):
-        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetFileNameByID(self._ModID) or 'Missing'
 
     @property
     def ModName(self):
-        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetModNameByID(self._ModID) or 'Missing'
 
     @property
     def GName(self):
         return GPath(self.ModName)
 
     def HasRecord(self, RecordIdentifier):
-        return self.LookupRecord(RecordIdentifier) is not None
+        if not RecordIdentifier: return False
+        if isinstance(RecordIdentifier, basestring):
+            _FormID = 0
+            _EditorID = RecordIdentifier
+        else:
+            _FormID = MakeShortFid(self._CollectionID, RecordIdentifier)
+            _EditorID = 0
+        if not (_EditorID or _FormID): return False
+        if _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID):
+            return True
+        return False
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
@@ -12042,20 +12286,20 @@ class ObModFile(object):
         if not (_EditorID or _FormID): return None
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID)
         if RecordID:
-            testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+            testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID)
             RecordType = type_record[testRecord.recType]
             if RecordType:
-                return RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
+                return RecordType(self._CollectionID, self._ModID, RecordID)
         return None
 
     def IsEmpty(self):
-        return _CIsModEmpty(self._CollectionID, self._ModID)
+        return _CIsModEmpty(self._ModID)
 
     def GetNewRecordTypes(self):
-        numRecords = _CGetModNumTypes(self._CollectionID, self._ModID)
+        numRecords = _CGetModNumTypes(self._ModID)
         if(numRecords > 0):
             cRecords = ((c_char * 4) * numRecords)()
-            _CGetModTypes(self._CollectionID, self._ModID, byref(cRecords))
+            _CGetModTypes(self._ModID, byref(cRecords))
             return [cRecord.value for cRecord in cRecords if cRecord]
         return []
 
@@ -12068,8 +12312,19 @@ class ObModFile(object):
     def CleanMasters(self):
         return _CCleanModMasters(self._CollectionID, self._ModID)
 
+    def GetRecordsIdenticalToMaster(self):
+        numRecords = _CGetNumIdenticalToMasterRecords(self._CollectionID, self._ModID)
+        if(numRecords > 0):
+            cRecords = (c_ulong * numRecords)()
+            _CGetIdenticalToMasterRecords(self._CollectionID, byref(cRecords))
+            return [type_record[ObBaseRecord(self._CollectionID, self._ModID, x).recType](self._CollectionID, self._ModID, x) for x in cRecords]
+        return []
+
+    def Load(self):
+        _CLoadMod(self._CollectionID, self._ModID)
+
     def Unload(self):
-        _CUnloadMod(self._CollectionID, self._ModID)
+        _CUnloadMod(self._ModID)
 
     def save(self, CloseCollection=True):
         return _CSaveMod(self._CollectionID, self._ModID, c_ulong(CloseCollection))
@@ -12077,7 +12332,7 @@ class ObModFile(object):
     @property
     def TES4(self):
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, 0, 0)
-        return ObTES4Record(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return ObTES4Record(self._CollectionID, self._ModID, RecordID)
 
     ObModEDIDRecordsMACRO(GMST)
     ObModRecordsMACRO(GLOB)
@@ -12135,99 +12390,16 @@ class ObModFile(object):
     ObModRecordsMACRO(ANIO)
     ObModRecordsMACRO(WATR)
     ObModRecordsMACRO(EFSH)
-
     ##Aggregate properties. Useful for iterating through all records without going through the parent records.
-    @property
-    def CELLS(self):
-        cells = self.CELL
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): cells += [cell]
-            cells += world.CELLS
-        return cells
-
-    @property
-    def INFOS(self):
-        infos = []
-        for dial in self.DIAL:
-            infos += dial.INFO
-        return infos
-
-    @property
-    def ACHRS(self):
-        achrs = []
-        for cell in self.CELL:
-            achrs += cell.ACHR
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): achrs += cell.ACHR
-            for cell in world.CELLS:
-                achrs += cell.ACHR
-        return achrs
-
-    @property
-    def ACRES(self):
-        acres = []
-        for cell in self.CELL:
-            acres += cell.ACRE
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): acres += cell.ACRE
-            for cell in world.CELLS:
-                acres += cell.ACRE
-        return acres
-
-    @property
-    def REFRS(self):
-        refrs = []
-        for cell in self.CELL:
-            refrs += cell.REFR
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): refrs += cell.REFR
-            for cell in world.CELLS:
-                refrs += cell.REFR
-        return refrs
-
-    @property
-    def PGRDS(self):
-        pgrds = []
-        for cell in self.CELL:
-            pgrd = cell.PGRD
-            if(pgrd): pgrds += [pgrd]
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell):
-                pgrd = cell.PGRD
-                if(pgrd): pgrds += [pgrd]
-            for cell in world.CELLS:
-                pgrd = cell.PGRD
-                if(pgrd): pgrds += [pgrd]
-        return pgrds
-
-    @property
-    def LANDS(self):
-        lands = []
-        for cell in self.CELL:
-            land = cell.LAND
-            if(land): lands += [land]
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell):
-                land = cell.LAND
-                if(land): lands += [land]
-            for cell in world.CELLS:
-                land = cell.LAND
-                if(land): lands += [land]
-        return lands
-
-    @property
-    def ROADS(self):
-        roads = []
-        for world in self.WRLD:
-            road = world.ROAD
-            if(road): roads.append(road)
-        return roads
+    WorldCELLS = CBashRECORDARRAY(ObCELLRecord, 'WCEL') ##"WCEL" is an artificial type CBash uses to distinguish World Cells
+    CELLS = CBashRECORDARRAY(ObCELLRecord, 'CLLS') ##"CLLS" is an artificial type CBash uses to distinguish all cells (includes WCEL)
+    INFOS = CBashRECORDARRAY(ObINFORecord, 'INFO')
+    ACHRS = CBashRECORDARRAY(ObACHRRecord, 'ACHR')
+    ACRES = CBashRECORDARRAY(ObACRERecord, 'ACRE')
+    REFRS = CBashRECORDARRAY(ObREFRRecord, 'REFR')
+    PGRDS = CBashRECORDARRAY(ObPGRDRecord, 'PGRD')
+    LANDS = CBashRECORDARRAY(ObLANDRecord, 'LAND')
+    ROADS = CBashRECORDARRAY(ObROADRecord, 'ROAD')
 
     @property
     def tops(self):
@@ -12280,18 +12452,28 @@ class FnvModFile(object):
 
     @property
     def FileName(self):
-        return _CGetFileNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetFileNameByID(self._ModID) or 'Missing'
 
     @property
     def ModName(self):
-        return _CGetModNameByID(self._CollectionID, self._ModID) or 'Missing'
+        return _CGetModNameByID(self._ModID) or 'Missing'
 
     @property
     def GName(self):
         return GPath(self.ModName)
 
     def HasRecord(self, RecordIdentifier):
-        return self.LookupRecord(RecordIdentifier) is not None
+        if not RecordIdentifier: return False
+        if isinstance(RecordIdentifier, basestring):
+            _FormID = 0
+            _EditorID = RecordIdentifier
+        else:
+            _FormID = MakeShortFid(self._CollectionID, RecordIdentifier)
+            _EditorID = 0
+        if not (_EditorID or _FormID): return False
+        if _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID):
+            return True
+        return False
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
@@ -12304,20 +12486,20 @@ class FnvModFile(object):
         if not (_EditorID or _FormID): return None
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID)
         if RecordID:
-            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+            testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID)
             RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
-                return RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
+                return RecordType(self._CollectionID, self._ModID, RecordID)
         return None
 
     def IsEmpty(self):
-        return _CIsModEmpty(self._CollectionID, self._ModID)
+        return _CIsModEmpty(self._ModID)
 
     def GetNewRecordTypes(self):
-        numRecords = _CGetModNumTypes(self._CollectionID, self._ModID)
+        numRecords = _CGetModNumTypes(self._ModID)
         if(numRecords > 0):
             cRecords = ((c_char * 4) * numRecords)()
-            _CGetModTypes(self._CollectionID, self._ModID, byref(cRecords))
+            _CGetModTypes(self._ModID, byref(cRecords))
             return [cRecord.value for cRecord in cRecords if cRecord]
         return []
 
@@ -12330,8 +12512,19 @@ class FnvModFile(object):
     def CleanMasters(self):
         return _CCleanModMasters(self._CollectionID, self._ModID)
 
+    def GetRecordsIdenticalToMaster(self):
+        numRecords = _CGetNumIdenticalToMasterRecords(self._CollectionID, self._ModID)
+        if(numRecords > 0):
+            cRecords = (c_ulong * numRecords)()
+            _CGetIdenticalToMasterRecords(self._CollectionID, byref(cRecords))
+            return [fnv_type_record[FnvBaseRecord(self._CollectionID, self._ModID, x).recType](self._CollectionID, self._ModID, x) for x in cRecords]
+        return []
+
+    def Load(self):
+        _CLoadMod(self._CollectionID, self._ModID)
+
     def Unload(self):
-        _CUnloadMod(self._CollectionID, self._ModID)
+        _CUnloadMod(self._ModID)
 
     def save(self, CloseCollection=True):
         return _CSaveMod(self._CollectionID, self._ModID, c_ulong(CloseCollection))
@@ -12339,7 +12532,7 @@ class FnvModFile(object):
     @property
     def TES4(self):
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, 0, 0)
-        return FnvTES4Record(self._CollectionID, self._ModID, RecordID, 0, 0)
+        return FnvTES4Record(self._CollectionID, self._ModID, RecordID)
 
     FnvModEDIDRecordsMACRO(GMST)
     FnvModRecordsMACRO(TXST)
@@ -12442,146 +12635,20 @@ class FnvModFile(object):
     FnvModRecordsMACRO(DEHY)
     FnvModRecordsMACRO(HUNG)
     FnvModRecordsMACRO(SLPD)
-
-    @property
-    def INFOS(self):
-        infos = []
-        for dial in self.DIAL:
-            infos += dial.INFO
-        return infos
-
-    @property
-    def CELLS(self):
-        cells = self.CELL
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): cells += [cell]
-            cells += world.CELLS
-        return cells
-
-    @property
-    def ACHRS(self):
-        achrs = []
-        for cell in self.CELL:
-            achrs += cell.ACHR
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): achrs += cell.ACHR
-            for cell in world.CELLS:
-                achrs += cell.ACHR
-        return achrs
-
-    @property
-    def ACRES(self):
-        acres = []
-        for cell in self.CELL:
-            acres += cell.ACRE
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): acres += cell.ACRE
-            for cell in world.CELLS:
-                acres += cell.ACRE
-        return acres
-
-    @property
-    def REFRS(self):
-        refrs = []
-        for cell in self.CELL:
-            refrs += cell.REFR
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): refrs += cell.REFR
-            for cell in world.CELLS:
-                refrs += cell.REFR
-        return refrs
-
-    @property
-    def PGRES(self):
-        pgres = []
-        for cell in self.CELL:
-            pgres += cell.PGRE
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): pgres += cell.PGRE
-            for cell in world.CELLS:
-                pgres += cell.PGRE
-        return pgres
-
-    @property
-    def PMISS(self):
-        pmiss = []
-        for cell in self.CELL:
-            pmiss += cell.PMIS
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): pmiss += cell.PMIS
-            for cell in world.CELLS:
-                pmiss += cell.PMIS
-        return pmiss
-
-    @property
-    def PBEAS(self):
-        pbeas = []
-        for cell in self.CELL:
-            pbeas += cell.PBEA
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): pbeas += cell.PBEA
-            for cell in world.CELLS:
-                pbeas += cell.PBEA
-        return pbeas
-
-    @property
-    def PFLAS(self):
-        pflas = []
-        for cell in self.CELL:
-            pflas += cell.PFLA
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): pflas += cell.PFLA
-            for cell in world.CELLS:
-                pflas += cell.PFLA
-        return pflas
-
-    @property
-    def PCBES(self):
-        pcbes = []
-        for cell in self.CELL:
-            pcbes += cell.PCBE
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): pcbes += cell.PCBE
-            for cell in world.CELLS:
-                pcbes += cell.PCBE
-        return pcbes
-
-    @property
-    def NAVMS(self):
-        navms = []
-        for cell in self.CELL:
-            navms += cell.NAVM
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell): navms += cell.NAVM
-            for cell in world.CELLS:
-                navms += cell.NAVM
-        return navms
-
-    @property
-    def LANDS(self):
-        lands = []
-        for cell in self.CELL:
-            land = cell.LAND
-            if(land): lands += [land]
-        for world in self.WRLD:
-            cell = world.WorldCELL
-            if(cell):
-                land = cell.LAND
-                if(land): lands += [land]
-            for cell in world.CELLS:
-                land = cell.LAND
-                if(land): lands += [land]
-        return lands
+    ##Aggregate properties. Useful for iterating through all records without going through the parent records.
+    WorldCELLS = CBashRECORDARRAY(FnvCELLRecord, 'WCEL') ##"WCEL" is an artificial type CBash uses to distinguish World Cells
+    CELLS = CBashRECORDARRAY(FnvCELLRecord, 'CLLS') ##"CLLS" is an artificial type CBash uses to distinguish all cells (includes WCEL)
+    INFOS = CBashRECORDARRAY(FnvINFORecord, 'INFO')
+    ACHRS = CBashRECORDARRAY(FnvACHRRecord, 'ACHR')
+    ACRES = CBashRECORDARRAY(FnvACRERecord, 'ACRE')
+    REFRS = CBashRECORDARRAY(FnvREFRRecord, 'REFR')
+    PGRES = CBashRECORDARRAY(FnvPGRERecord, 'PGRE')
+    PMISS = CBashRECORDARRAY(FnvPMISRecord, 'PMIS')
+    PBEAS = CBashRECORDARRAY(FnvPBEARecord, 'PBEA')
+    PFLAS = CBashRECORDARRAY(FnvPFLARecord, 'PFLA')
+    PCBES = CBashRECORDARRAY(FnvPCBERecord, 'PCBE')
+    NAVMS = CBashRECORDARRAY(FnvNAVMRecord, 'NAVM')
+    LANDS = CBashRECORDARRAY(FnvLANDRecord, 'LAND')
 
     @property
     def tops(self):
@@ -12799,13 +12866,13 @@ class ObCollection:
         RecordID = _CGetRecordID(self._CollectionID, self._ModID, _FormID, _EditorID)
         if RecordID:
             if self._WhichGame == 0:
-                testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+                testRecord = ObBaseRecord(self._CollectionID, self._ModID, RecordID)
                 RecordType = type_record[testRecord.recType]
             elif self._WhichGame == 2:
-                testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID, 0, 0)
+                testRecord = FnvBaseRecord(self._CollectionID, self._ModID, RecordID)
                 RecordType = fnv_type_record[testRecord.recType]
             if RecordType:
-                return RecordType(self._CollectionID, self._ModID, RecordID, 0, 0)
+                return RecordType(self._CollectionID, self._ModID, RecordID)
         return None
 
     def LookupRecords(self, RecordIdentifier, GetExtendedConflicts=False):
@@ -12821,11 +12888,14 @@ class ObCollection:
     def LookupModFile(self, ModName):
         ModID = _CGetModIDByName(self._CollectionID, str(ModName))
         if(ModID == -1):
-            raise KeyError("ModName(%s) not found in collection (%08X)\n" % (ModName, self._CollectionID) + self.Debug_DumpModFiles())
+            raise KeyError(_("ModName(%s) not found in collection (%08X)\n") % (ModName, self._CollectionID) + self.Debug_DumpModFiles())
         if self._WhichGame == 0:
             return ObModFile(self._CollectionID, ModID)
         elif self._WhichGame == 2:
             return FnvModFile(self._CollectionID, ModID)
+
+    def LookupModFileLoadOrder(self, ModName):
+        return _CGetModLoadOrderByName(self._CollectionID, str(ModName))
 
     def UpdateReferences(self, FormIDToReplace, ReplacementFormID):
         return sum([mod.UpdateReferences(FormIDToReplace, ReplacementFormID) for mod in self.LoadOrderMods])
@@ -12837,14 +12907,14 @@ class ObCollection:
         _CDeleteCollection(self._CollectionID)
 
     def Debug_DumpModFiles(self):
-        value = "Collection (%08X) contains the following modfiles:\n" % (self._CollectionID,)
+        value = _("Collection (%08X) contains the following modfiles:\n") % (self._CollectionID,)
         for mod in self.AllMods:
-            LoadOrder = _CGetModLoadOrderByID(self._CollectionID, mod._ModID)
+            LoadOrder = _CGetModLoadOrderByID(mod._ModID)
             if LoadOrder == -1: LoadOrder = '--'
             else: LoadOrder = '%02X' % (LoadOrder,)
             ModName, FileName = mod.ModName, mod.FileName
             if ModName == FileName:
-                value += "Load Order (%s), Name(%s)\n" % (LoadOrder, ModName)
+                value += _("Load Order (%s), Name(%s)\n") % (LoadOrder, ModName)
             else:
-                value += "Load Order (%s), ModName(%s) FileName(%s)\n" % (LoadOrder, ModName, FileName)
+                value += _("Load Order (%s), ModName(%s) FileName(%s)\n") % (LoadOrder, ModName, FileName)
         return value

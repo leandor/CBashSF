@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class GMSTRecord : public Record
+namespace Ob
+{
+class GMSTRecord : public Record //Game Setting
     {
     private:
         enum GMSTSubRecords {
@@ -52,8 +54,8 @@ class GMSTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        GMSTDATA DATA;
+        StringRecord EDID; //Editor ID
+        GMSTDATA DATA; //Data
 
         GMSTRecord(unsigned char *_recData=NULL);
         GMSTRecord(GMSTRecord *srcRecord);
@@ -68,10 +70,12 @@ class GMSTRecord : public Record
         STRING GetStrType();
         bool   IsKeyedByEditorID();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const GMSTRecord &other) const;
         bool operator !=(const GMSTRecord &other) const;
+        bool equals(Record *other);
     };
+}

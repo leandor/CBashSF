@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -117,10 +117,10 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -138,26 +138,6 @@ DIALRecord::~DIALRecord()
     {
     for(UINT32 x = 0; x < INFO.size(); x++)
         delete INFO[x];
-    }
-
-bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-
-    if(RecordType == NULL || RecordType == REV32(INFO))
-        for(UINT32 x = 0; x < INFO.size();++x)
-            {
-            stop = op.Accept(INFO[x]);
-            if(INFO[x] == NULL)
-                {
-                INFO.erase(INFO.begin() + x);
-                --x;
-                }
-            if(stop)
-                return stop;
-            }
-
-    return op.Stop();
     }
 
 bool DIALRecord::VisitFormIDs(FormIDOp &op)
@@ -311,35 +291,36 @@ STRING DIALRecord::GetStrType()
     return "DIAL";
     }
 
-SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DIALRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(QSTI):
                 QSTI.value.push_back(new DIALQSTI);
-                QSTI.value.back()->QSTI.Read(buffer, subSize, curPos);
+                QSTI.value.back()->QSTI.Read(buffer, subSize);
                 lastChunk = REV32(QSTI);
                 break;
             case REV32(INFC):
@@ -349,25 +330,25 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         if(QSTI.value.size() == 0)
                             QSTI.value.push_back(new DIALQSTI);
                         QSTI.value.back()->Unknown.value.push_back(new DIALUNK);
-                        QSTI.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize, curPos);
+                        QSTI.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize);
                         break;
                     case REV32(QSTR):
                         if(QSTR.value.size() == 0)
                             QSTR.value.push_back(new DIALQSTR);
                         QSTR.value.back()->Unknown.value.push_back(new DIALUNK);
-                        QSTR.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize, curPos);
+                        QSTR.value.back()->Unknown.value.back()->INFC.Read(buffer, subSize);
                         break;
                     default:
                         //Occurs a limited number of times in FalloutNV.esm
                         //Presumably the CS was broken when writing these records at some point
                         //May not be ideal to junk them, but not much else can be done while their use is unknown
-                        curPos += subSize;
+                        buffer += subSize;
                         break;
                         //printer("  DIAL: %08X - Unexpected INFC chunk\n", formID);
                         //CBASH_CHUNK_DEBUG
                         //printer("  Size = %i\n", subSize);
-                        //printer("  CurPos = %04x\n\n", curPos - 6);
-                        //curPos += subSize;
+                        //printer("  CurPos = %04x\n\n", buffer - 6);
+                        //buffer += subSize;
                         //break;
                     }
                 break;
@@ -379,53 +360,53 @@ SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                             QSTI.value.push_back(new DIALQSTI);
                         if(QSTI.value.back()->Unknown.value.size() == 0)
                             QSTI.value.back()->Unknown.value.push_back(new DIALUNK);
-                        QSTI.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize, curPos);
+                        QSTI.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize);
                         break;
                     case REV32(QSTR):
                         if(QSTR.value.size() == 0)
                             QSTR.value.push_back(new DIALQSTR);
                         if(QSTR.value.back()->Unknown.value.size() == 0)
                             QSTR.value.back()->Unknown.value.push_back(new DIALUNK);
-                        QSTR.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize, curPos);
+                        QSTR.value.back()->Unknown.value.back()->INFX.Read(buffer, subSize);
                         break;
                     default:
                         //Occurs a limited number of times in FalloutNV.esm
                         //Presumably the CS was broken when writing these records at some point
                         //May not be ideal to junk them, but not much else can be done while their use is unknown
-                        curPos += subSize;
+                        buffer += subSize;
                         break;
                         //printer("  DIAL: %08X - Unexpected INFX chunk\n", formID);
                         //CBASH_CHUNK_DEBUG
                         //printer("  Size = %i\n", subSize);
-                        //printer("  CurPos = %04x\n\n", curPos - 6);
-                        //curPos += subSize;
+                        //printer("  CurPos = %04x\n\n", buffer - 6);
+                        //buffer += subSize;
                         //break;
                     }
                 break;
             case REV32(QSTR):
                 QSTR.value.push_back(new DIALQSTR);
-                QSTR.value.back()->QSTR.Read(buffer, subSize, curPos);
+                QSTR.value.back()->QSTR.Read(buffer, subSize);
                 lastChunk = REV32(QSTR);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(TDUM):
-                TDUM.Read(buffer, subSize, curPos);
+                TDUM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  DIAL: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -473,5 +454,25 @@ bool DIALRecord::operator ==(const DIALRecord &other) const
 bool DIALRecord::operator !=(const DIALRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool DIALRecord::equals(Record *other)
+    {
+    return *this == *(DIALRecord *)other;
+    }
+
+bool DIALRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+    const DIALRecord *master_dial = (DIALRecord *)master;
+
+    if(INFO.size() > master_dial->INFO.size())
+        return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < INFO.size(); ++ListIndex)
+        if(identical_records.count(INFO[ListIndex]) == 0)
+                return false;
+    return true;
     }
 }

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -605,10 +605,10 @@ REGNRecord::REGNRecord(REGNRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -634,27 +634,27 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
 
     if(WNAM.IsLoaded())
         op.Accept(WNAM.value);
-    for(UINT32 x = 0; x < Entries.value.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < Entries.value.size(); ListIndex++)
         {
-        for(UINT32 y = 0; y < Entries.value[x]->RDOT.value.size(); y++)
-            op.Accept(Entries.value[x]->RDOT.value[y].objectId);
-        for(UINT32 y = 0; y < Entries.value[x]->RDGS.value.size(); y++)
-            op.Accept(Entries.value[x]->RDGS.value[y].grass);
-        for(UINT32 y = 0; y < Entries.value[x]->RDSD.value.size(); y++)
-            op.Accept(Entries.value[x]->RDSD.value[y].sound);
-        for(UINT32 y = 0; y < Entries.value[x]->RDWT.value.size(); y++)
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDOT.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDOT.value[ListX2Index].objectId);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDGS.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDGS.value[ListX2Index].grass);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDSD.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDSD.value[ListX2Index].sound);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDWT.value.size(); ListX2Index++)
             {
-            op.Accept(Entries.value[x]->RDWT.value[y].weather);
-            op.Accept(Entries.value[x]->RDWT.value[y].globalId);
+            op.Accept(Entries.value[ListIndex]->RDWT.value[ListX2Index].weather);
+            op.Accept(Entries.value[ListIndex]->RDWT.value[ListX2Index].globalId);
             }
-        if(Entries.value[x]->RDMO.IsLoaded())
-            op.Accept(Entries.value[x]->RDMO.value);
-        if(Entries.value[x]->RDSI.IsLoaded())
-            op.Accept(Entries.value[x]->RDSI.value);
-        for(UINT32 y = 0; y < Entries.value[x]->RDSB.value.size(); y++)
-            op.Accept(Entries.value[x]->RDSB.value[y]);
-        for(UINT32 y = 0; y < Entries.value[x]->RDID.value.size(); y++)
-            op.Accept(Entries.value[x]->RDID.value[y]);
+        if(Entries.value[ListIndex]->RDMO.IsLoaded())
+            op.Accept(Entries.value[ListIndex]->RDMO.value);
+        if(Entries.value[ListIndex]->RDSI.IsLoaded())
+            op.Accept(Entries.value[ListIndex]->RDSI.value);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDSB.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDSB.value[ListX2Index]);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDID.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDID.value[ListX2Index]);
         }
 
     return op.Stop();
@@ -665,122 +665,122 @@ UINT32 REGNRecord::GetType()
     return REV32(REGN);
     }
 
-
 STRING REGNRecord::GetStrType()
     {
     return "REGN";
     }
 
-SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 REGNRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
                 if(Entries.value.size() != 0 && Entries.value.back()->IsLand())
-                    Entries.value.back()->ICON.Read(buffer, subSize, curPos);
+                    Entries.value.back()->ICON.Read(buffer, subSize, CompressedOnDisk);
                 else
-                    ICON.Read(buffer, subSize, curPos);
+                    ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(RCLR):
-                RCLR.Read(buffer, subSize, curPos);
+                RCLR.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(RPLI):
                 Areas.value.push_back(new REGNArea);
-                Areas.value.back()->RPLI.Read(buffer, subSize, curPos);
+                Areas.value.back()->RPLI.Read(buffer, subSize);
                 break;
             case REV32(RPLD):
                 if(Areas.value.size() == 0)
                     Areas.value.push_back(new REGNArea);
-                Areas.value.back()->RPLD.Read(buffer, subSize, curPos);
+                Areas.value.back()->RPLD.Read(buffer, subSize);
                 break;
             case REV32(RDAT):
                 Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDAT.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDAT.Read(buffer, subSize);
                 break;
             case REV32(RDOT):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDOT.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDOT.Read(buffer, subSize);
                 break;
             case REV32(RDMP):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDMP.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDMP.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(RDGS):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDGS.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDGS.Read(buffer, subSize);
                 break;
             case REV32(RDMD):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDMD.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDMD.Read(buffer, subSize);
                 break;
             case REV32(RDMO):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDMO.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDMO.Read(buffer, subSize);
                 break;
             case REV32(RDSI):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDSI.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDSI.Read(buffer, subSize);
                 break;
             case REV32(RDSB):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDSB.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDSB.Read(buffer, subSize);
                 break;
             case REV32(RDSD):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDSD.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDSD.Read(buffer, subSize);
                 break;
             case REV32(RDWT):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDWT.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDWT.Read(buffer, subSize);
                 break;
             case REV32(RDID):
                 if(Entries.value.size() == 0)
                     Entries.value.push_back(new REGNEntry);
-                Entries.value.back()->RDID.Read(buffer, subSize, curPos);
+                Entries.value.back()->RDID.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  REGN: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -829,5 +829,10 @@ bool REGNRecord::operator ==(const REGNRecord &other) const
 bool REGNRecord::operator !=(const REGNRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool REGNRecord::equals(Record *other)
+    {
+    return *this == *(REGNRecord *)other;
     }
 }

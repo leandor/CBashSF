@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "DIALRecord.h"
-#include <vector>
 
+namespace Ob
+{
 DIALRecord::DIALRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -39,20 +40,16 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
-    QSTI.resize(srcRecord->QSTI.size());
-    for(UINT32 x = 0; x < srcRecord->QSTI.size(); x++)
-        QSTI[x] = srcRecord->QSTI[x];
-    QSTR.resize(srcRecord->QSTR.size());
-    for(UINT32 x = 0; x < srcRecord->QSTR.size(); x++)
-        QSTR[x] = srcRecord->QSTR[x];
+    QSTI = srcRecord->QSTI;
+    QSTR = srcRecord->QSTR;
     FULL = srcRecord->FULL;
     DATA = srcRecord->DATA;
     return;
@@ -60,18 +57,7 @@ DIALRecord::DIALRecord(DIALRecord *srcRecord):
 
 DIALRecord::~DIALRecord()
     {
-    //
-    }
-
-bool DIALRecord::VisitSubRecords(const UINT32 &RecordType, RecordOp &op)
-    {
-    bool stop;
-    if(RecordType == NULL || RecordType == REV32(INFO))
-        stop = info_pool.VisitRecords(RecordType, op, true);
-    if(stop)
-        return stop;
-
-    return op.Stop();
+    //INFOs are owned at the mod level, so must be destroyed there
     }
 
 bool DIALRecord::VisitFormIDs(FormIDOp &op)
@@ -79,11 +65,11 @@ bool DIALRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < QSTI.size(); x++)
-        op.Accept(QSTI[x]);
+    for(UINT32 ListIndex = 0; ListIndex < QSTI.value.size(); ListIndex++)
+        op.Accept(QSTI.value[ListIndex]);
 
-    for(UINT32 x = 0; x < QSTR.size(); x++)
-        op.Accept(QSTR[x]);
+    for(UINT32 ListIndex = 0; ListIndex < QSTR.value.size(); ListIndex++)
+        op.Accept(QSTR.value[ListIndex]);
 
     return op.Stop();
     }
@@ -199,53 +185,51 @@ STRING DIALRecord::GetStrType()
     return "DIAL";
     }
 
-SINT32 DIALRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DIALRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(QSTI):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                QSTI.push_back(curFormID);
+                QSTI.Read(buffer, subSize);
                 break;
             case REV32(QSTR):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                QSTR.push_back(curFormID);
+                QSTR.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  DIAL: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -257,10 +241,8 @@ SINT32 DIALRecord::Unload()
     IsChanged(false);
     IsLoaded(false);
     EDID.Unload();
-
-    QSTI.clear();
-    QSTR.clear();
-
+    QSTI.Unload();
+    QSTR.Unload();
     FULL.Unload();
     DATA.Unload();
     return 1;
@@ -268,45 +250,45 @@ SINT32 DIALRecord::Unload()
 
 SINT32 DIALRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    for(UINT32 p = 0; p < QSTI.size(); p++)
-        writer.record_write_subrecord(REV32(QSTI), &QSTI[p], sizeof(UINT32));
-    for(UINT32 p = 0; p < QSTR.size(); p++)
-        writer.record_write_subrecord(REV32(QSTR), &QSTR[p], sizeof(UINT32));
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(QSTI);
+    WRITE(QSTR);
+    WRITE(FULL);
+    WRITE(DATA);
     return -1;
     }
 
 bool DIALRecord::operator ==(const DIALRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DATA == other.DATA &&
-        QSTI.size() == other.QSTI.size() &&
-        QSTR.size() == other.QSTR.size())
-        {
-        //Not sure if record order matters on quests, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < QSTI.size(); ++x)
-            if(QSTI[x] != other.QSTI[x])
-                return false;
-
-        //Not sure if record order matters on removed quests, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < QSTR.size(); ++x)
-            if(QSTR[x] != other.QSTR[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            QSTI == other.QSTI &&
+            QSTR == other.QSTR);
     }
 
 bool DIALRecord::operator !=(const DIALRecord &other) const
     {
     return !(*this == other);
     }
+
+bool DIALRecord::equals(Record *other)
+    {
+    return *this == *(DIALRecord *)other;
+    }
+
+bool DIALRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    //              all child records have been visited
+    const DIALRecord *master_dial = (DIALRecord *)master;
+
+    if(INFO.size() > master_dial->INFO.size())
+        return false;
+
+    for(UINT32 ListIndex = 0; ListIndex < INFO.size(); ++ListIndex)
+        if(identical_records.count(INFO[ListIndex]) == 0)
+                return false;
+    return true;
+    }
+}

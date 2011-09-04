@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "SKILRecord.h"
 
+namespace Ob
+{
 SKILRecord::SKILDATA::SKILDATA():
     action(26),
     attribute(0),
@@ -67,10 +69,10 @@ SKILRecord::SKILRecord(SKILRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -101,61 +103,62 @@ STRING SKILRecord::GetStrType()
     return "SKIL";
     }
 
-SINT32 SKILRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 SKILRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(INDX):
-                INDX.Read(buffer, subSize, curPos);
+                INDX.Read(buffer, subSize);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(JNAM):
-                JNAM.Read(buffer, subSize, curPos);
+                JNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ENAM):
-                ENAM.Read(buffer, subSize, curPos);
+                ENAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MNAM):
-                MNAM.Read(buffer, subSize, curPos);
+                MNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  SKIL: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -180,41 +183,38 @@ SINT32 SKILRecord::Unload()
 
 SINT32 SKILRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(INDX.IsLoaded())
-        writer.record_write_subrecord(REV32(INDX), &INDX.value, INDX.GetSize());
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(ANAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ANAM), ANAM.value, ANAM.GetSize());
-    if(JNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(JNAM), JNAM.value, JNAM.GetSize());
-    if(ENAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ENAM), ENAM.value, ENAM.GetSize());
-    if(MNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(MNAM), MNAM.value, MNAM.GetSize());
+    WRITE(EDID);
+    WRITE(INDX);
+    WRITE(DESC);
+    WRITE(ICON);
+    WRITE(DATA);
+    WRITE(ANAM);
+    WRITE(JNAM);
+    WRITE(ENAM);
+    WRITE(MNAM);
     return -1;
     }
 
 bool SKILRecord::operator ==(const SKILRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            INDX == other.INDX &&
-            DESC.equals(other.DESC) &&
-            ICON.equalsi(other.ICON) &&
+    return (INDX == other.INDX &&
             DATA == other.DATA &&
+            DESC.equals(other.DESC) &&
             ANAM.equals(other.ANAM) &&
             JNAM.equals(other.JNAM) &&
             ENAM.equals(other.ENAM) &&
-            MNAM.equals(other.MNAM));
+            MNAM.equals(other.MNAM) &&
+            EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON));
     }
 
 bool SKILRecord::operator !=(const SKILRecord &other) const
     {
     return !(*this == other);
     }
+
+bool SKILRecord::equals(Record *other)
+    {
+    return *this == *(SKILRecord *)other;
+    }
+}

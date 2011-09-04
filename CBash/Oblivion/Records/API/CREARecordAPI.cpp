@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\CREARecord.h"
 
+namespace Ob
+{
 UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -59,7 +61,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)SPLO.size();
+                    return (UINT32)SPLO.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -108,13 +110,13 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)SNAM.size();
+                        return (UINT32)SNAM.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -149,13 +151,13 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)CNTO.size();
+                        return (UINT32)CNTO.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= CNTO.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -199,7 +201,7 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)PKID.size();
+                    return (UINT32)PKID.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -291,13 +293,13 @@ UINT32 CREARecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Sounds.size();
+                        return (UINT32)Sounds.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= Sounds.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -322,11 +324,11 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -339,7 +341,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = MODL.IsLoaded() ? MODL->MODT.value : NULL;
             return NULL;
         case 9: //spells
-            *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
+            *FieldValues = SPLO.value.size() ? &SPLO.value[0] : NULL;
             return NULL;
         case 10: //bodyParts
             for(UINT32 p = 0;p < NIFZ.value.size();p++)
@@ -363,17 +365,17 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 18: //calcMax
             return &ACBS.value.calcMax;
         case 19: //factions
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    return &SNAM[ListIndex]->value.faction;
+                    return &SNAM.value[ListIndex]->faction;
                 case 2: //rank
-                    return &SNAM[ListIndex]->value.rank;
+                    return &SNAM.value[ListIndex]->rank;
                 case 3: //unused1
-                    *FieldValues = &SNAM[ListIndex]->value.unused1[0];
+                    *FieldValues = &SNAM.value[ListIndex]->unused1[0];
                     return NULL;
                 default:
                     return NULL;
@@ -384,15 +386,15 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 21: //script
             return SCRI.IsLoaded() ? &SCRI.value : NULL;
         case 22: //items
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    return &CNTO[ListIndex]->value.item;
+                    return &CNTO.value[ListIndex]->item;
                 case 2: //count
-                    return &CNTO[ListIndex]->value.count;
+                    return &CNTO.value[ListIndex]->count;
                 default:
                     return NULL;
                 }
@@ -415,7 +417,7 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &AIDT.value.unused1[0];
             return NULL;
         case 31: //aiPackages
-            *FieldValues = PKID.size() ? &PKID[0] : NULL;
+            *FieldValues = PKID.value.size() ? &PKID.value[0] : NULL;
             return NULL;
         case 32: //animations
             for(UINT32 p = 0;p < KFFZ.value.size();p++)
@@ -474,17 +476,17 @@ void * CREARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 57: //bloodDecalPath
             return NAM1.value;
         case 58: //sounds
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //soundType
-                    return &Sounds[ListIndex]->CSDT.value;
+                    return &Sounds.value[ListIndex]->CSDT.value;
                 case 2: //sound
-                    return &Sounds[ListIndex]->CSDI.value;
+                    return &Sounds.value[ListIndex]->CSDI.value;
                 case 3: //chance
-                    return &Sounds[ListIndex]->CSDC.value;
+                    return &Sounds.value[ListIndex]->CSDC.value;
                 default:
                     return NULL;
                 }
@@ -526,7 +528,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 9: //spells
             SPLO.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
+                SPLO.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 10: //bodyParts
             NIFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
@@ -558,38 +560,27 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 19: //factions
             if(ListFieldID == 0) //factionsSize
                 {
-                ArraySize -= (UINT32)SNAM.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    SNAM.push_back(new ReqSubRecord<GENSNAM>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete SNAM.back();
-                    SNAM.pop_back();
-                    ++ArraySize;
-                    }
+                SNAM.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    SNAM[ListIndex]->value.faction = *(FORMID *)FieldValue;
+                    SNAM.value[ListIndex]->faction = *(FORMID *)FieldValue;
                     return true;
                 case 2: //rank
-                    SNAM[ListIndex]->value.rank = *(UINT8 *)FieldValue;
+                    SNAM.value[ListIndex]->rank = *(UINT8 *)FieldValue;
                     break;
                 case 3: //unused1
                     if(ArraySize != 3)
                         break;
-                    SNAM[ListIndex]->value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    SNAM[ListIndex]->value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    SNAM[ListIndex]->value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    SNAM.value[ListIndex]->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    SNAM.value[ListIndex]->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    SNAM.value[ListIndex]->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 default:
                     break;
@@ -604,31 +595,20 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 22: //items
             if(ListFieldID == 0) //itemsSize
                 {
-                ArraySize -= (UINT32)CNTO.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    CNTO.push_back(new ReqSubRecord<GENCNTO>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete CNTO.back();
-                    CNTO.pop_back();
-                    ++ArraySize;
-                    }
+                CNTO.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = *(FORMID *)FieldValue;
+                    CNTO.value[ListIndex]->item = *(FORMID *)FieldValue;
                     return true;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = *(SINT32 *)FieldValue;
+                    CNTO.value[ListIndex]->count = *(SINT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -664,7 +644,7 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 31: //aiPackages
             PKID.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                PKID[x] = ((FORMIDARRAY)FieldValue)[x];
+                PKID.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 32: //animations
             KFFZ.Copy((STRINGARRAY)FieldValue, ArraySize);
@@ -752,34 +732,23 @@ bool CREARecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 58: //sounds
             if(ListFieldID == 0) //soundsSize
                 {
-                ArraySize -= (UINT32)Sounds.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Sounds.push_back(new CREASound());
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Sounds.back();
-                    Sounds.pop_back();
-                    ++ArraySize;
-                    }
+                Sounds.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //soundType
-                    Sounds[ListIndex]->SetType(*(UINT32 *)FieldValue);
+                    Sounds.value[ListIndex]->SetType(*(UINT32 *)FieldValue);
                     break;
                 case 2: //sound
-                    Sounds[ListIndex]->CSDI.value = *(FORMID *)FieldValue;
+                    Sounds.value[ListIndex]->CSDI.value = *(FORMID *)FieldValue;
                     return true;
                 case 3: //chance
-                    Sounds[ListIndex]->CSDC.value = *(UINT8 *)FieldValue;
+                    Sounds.value[ListIndex]->CSDC.value = *(UINT8 *)FieldValue;
                     break;
                 default:
                     break;
@@ -826,7 +795,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
                 MODL->MODT.Unload();
             return;
         case 9: //spells
-            SPLO.clear();
+            SPLO.Unload();
             return;
         case 10: //bodyParts
             NIFZ.Unload();
@@ -858,27 +827,25 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
         case 19: //factions
             if(ListFieldID == 0) //factions
                 {
-                for(UINT32 x = 0; x < (UINT32)SNAM.size(); x++)
-                    delete SNAM[x];
-                SNAM.clear();
+                SNAM.Unload();
                 return;
                 }
 
-            if(ListIndex >= SNAM.size())
+            if(ListIndex >= SNAM.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //faction
-                    SNAM[ListIndex]->value.faction = defaultSNAM.faction;
+                    SNAM.value[ListIndex]->faction = defaultSNAM.faction;
                     return;
                 case 2: //rank
-                    SNAM[ListIndex]->value.rank = defaultSNAM.rank;
+                    SNAM.value[ListIndex]->rank = defaultSNAM.rank;
                     return;
                 case 3: //unused1
-                    SNAM[ListIndex]->value.unused1[0] = defaultSNAM.unused1[0];
-                    SNAM[ListIndex]->value.unused1[1] = defaultSNAM.unused1[1];
-                    SNAM[ListIndex]->value.unused1[2] = defaultSNAM.unused1[2];
+                    SNAM.value[ListIndex]->unused1[0] = defaultSNAM.unused1[0];
+                    SNAM.value[ListIndex]->unused1[1] = defaultSNAM.unused1[1];
+                    SNAM.value[ListIndex]->unused1[2] = defaultSNAM.unused1[2];
                     return;
                 default:
                     return;
@@ -893,22 +860,20 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
         case 22: //items
             if(ListFieldID == 0) //items
                 {
-                for(UINT32 x = 0; x < (UINT32)CNTO.size(); x++)
-                    delete CNTO[x];
-                CNTO.clear();
+                CNTO.Unload();
                 return;
                 }
 
-            if(ListIndex >= CNTO.size())
+            if(ListIndex >= CNTO.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //item
-                    CNTO[ListIndex]->value.item = defaultCNTO.item;
+                    CNTO.value[ListIndex]->item = defaultCNTO.item;
                     return;
                 case 2: //count
-                    CNTO[ListIndex]->value.count = defaultCNTO.count;
+                    CNTO.value[ListIndex]->count = defaultCNTO.count;
                     return;
                 default:
                     return;
@@ -940,7 +905,7 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
             AIDT.value.unused1[1] = defaultAIDT.unused1[1];
             return;
         case 31: //aiPackages
-            PKID.clear();
+            PKID.Unload();
             return;
         case 32: //animations
             KFFZ.Unload();
@@ -1024,25 +989,23 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
         case 58: //sounds
             if(ListFieldID == 0) //sounds
                 {
-                for(UINT32 x = 0; x < (UINT32)Sounds.size(); x++)
-                    delete Sounds[x];
-                Sounds.clear();
+                Sounds.Unload();
                 return;
                 }
 
-            if(ListIndex >= Sounds.size())
+            if(ListIndex >= Sounds.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //soundType
-                    Sounds[ListIndex]->CSDT.Unload();
+                    Sounds.value[ListIndex]->CSDT.Unload();
                     return;
                 case 2: //sound
-                    Sounds[ListIndex]->CSDI.Unload();
+                    Sounds.value[ListIndex]->CSDI.Unload();
                     return;
                 case 3: //chance
-                    Sounds[ListIndex]->CSDC.Unload();
+                    Sounds.value[ListIndex]->CSDC.Unload();
                     return;
                 default:
                     return;
@@ -1053,3 +1016,4 @@ void CREARecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

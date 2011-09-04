@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "EFSHRecord.h"
 
+namespace Ob
+{
 EFSHRecord::EFSHDATA::EFSHDATA():
     flags(0),
     memSBlend(5),
@@ -78,7 +80,7 @@ EFSHRecord::EFSHDATA::EFSHDATA():
     key2Time(0.5f),
     key3Time(1.0f)
     {
-    memset(&unused1, 0xCD, 3);
+    memset(&unused1[0], 0xCD, sizeof(unused1));
     }
 
 EFSHRecord::EFSHDATA::~EFSHDATA()
@@ -166,10 +168,10 @@ EFSHRecord::EFSHRecord(EFSHRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -275,47 +277,48 @@ void EFSHRecord::SetFlagMask(UINT8 Mask)
     DATA.value.flags = Mask;
     }
 
-SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 EFSHRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICO2):
-                ICO2.Read(buffer, subSize, curPos);
+                ICO2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  EFSH: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -345,14 +348,10 @@ SINT32 EFSHRecord::Unload()
 
 SINT32 EFSHRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(ICO2.IsLoaded())
-        writer.record_write_subrecord(REV32(ICO2), ICO2.value, ICO2.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(ICO2);
+    WRITE(DATA);
     return -1;
     }
 
@@ -368,3 +367,9 @@ bool EFSHRecord::operator !=(const EFSHRecord &other) const
     {
     return !(*this == other);
     }
+
+bool EFSHRecord::equals(Record *other)
+    {
+    return *this == *(EFSHRecord *)other;
+    }
+}

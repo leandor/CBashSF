@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\WRLDRecord.h"
 
+namespace Ob
+{
 UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -91,7 +93,7 @@ UINT32 WRLDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)cell_pool.used_object_capacity();
+                    return (UINT32)CELLS.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -106,11 +108,11 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -155,7 +157,8 @@ void * WRLDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 24: //CELL
             return CELL;
         case 25: //CELLS
-            cell_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
+            for(UINT32 p = 0;p < (UINT32)CELLS.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = CELLS[p];
             return NULL;
         default:
             return NULL;
@@ -324,3 +327,4 @@ void WRLDRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

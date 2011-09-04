@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class WTHRRecord : public Record
+namespace Ob
+{
+class WTHRRecord : public Record //Weather
     {
     private:
         struct WTHRColors
@@ -139,15 +140,15 @@ class WTHRRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord CNAM;
-        StringRecord DNAM;
-        OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<WTHRNAM0> NAM0;
-        ReqSubRecord<WTHRFNAM> FNAM;
-        ReqSubRecord<WTHRHNAM> HNAM;
-        ReqSubRecord<WTHRDATA> DATA;
-        std::vector<ReqSubRecord<WTHRSNAM> *> Sounds;
+        StringRecord EDID; //Editor ID
+        StringRecord CNAM; //Texture Lower Layer
+        StringRecord DNAM; //Texture Upper Layer
+        OptSubRecord<GENMODEL> MODL; //Model
+        ReqSubRecord<WTHRNAM0> NAM0; //Colors
+        ReqSubRecord<WTHRFNAM> FNAM; //Fog Distance
+        ReqSubRecord<WTHRHNAM> HNAM; //HDR Data
+        ReqSubRecord<WTHRDATA> DATA; //Data
+        UnorderedSparseArray<WTHRSNAM *> Sounds; //Sounds
 
         WTHRRecord(unsigned char *_recData=NULL);
         WTHRRecord(WTHRRecord *srcRecord);
@@ -182,10 +183,12 @@ class WTHRRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WTHRRecord &other) const;
         bool operator !=(const WTHRRecord &other) const;
+        bool equals(Record *other);
     };
+}

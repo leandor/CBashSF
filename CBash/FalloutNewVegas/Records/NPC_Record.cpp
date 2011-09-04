@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -152,10 +152,10 @@ NPC_Record::NPC_Record(NPC_Record *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
     EDID = srcRecord->EDID;
@@ -1155,181 +1155,182 @@ STRING NPC_Record::GetStrType()
     return "NPC_";
     }
 
-SINT32 NPC_Record::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 NPC_Record::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(ACBS):
-                ACBS.Read(buffer, subSize, curPos);
+                ACBS.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(VTCK):
-                VTCK.Read(buffer, subSize, curPos);
+                VTCK.Read(buffer, subSize);
                 break;
             case REV32(TPLT):
-                TPLT.Read(buffer, subSize, curPos);
+                TPLT.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize);
                 break;
             case REV32(SPLO):
-                SPLO.Read(buffer, subSize, curPos);
+                SPLO.Read(buffer, subSize);
                 break;
             case REV32(EITM):
-                EITM.Read(buffer, subSize, curPos);
+                EITM.Read(buffer, subSize);
                 break;
             case REV32(EAMT):
-                EAMT.Read(buffer, subSize, curPos);
+                EAMT.Read(buffer, subSize);
                 break;
             case REV32(DEST):
                 Destructable.Load();
-                Destructable->DEST.Read(buffer, subSize, curPos);
+                Destructable->DEST.Read(buffer, subSize);
                 break;
             case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize);
                 break;
             case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(CNTO):
                 CNTO.value.push_back(new FNVCNTO);
-                CNTO.value.back()->CNTO.Read(buffer, subSize, curPos);
+                CNTO.value.back()->CNTO.Read(buffer, subSize);
                 break;
             case REV32(COED):
                 if(CNTO.value.size() == 0)
                     CNTO.value.push_back(new FNVCNTO);
-                CNTO.value.back()->COED.Read(buffer, subSize, curPos);
+                CNTO.value.back()->COED.Read(buffer, subSize);
                 break;
             case REV32(AIDT):
-                AIDT.Read(buffer, subSize, curPos);
+                AIDT.Read(buffer, subSize);
                 break;
             case REV32(PKID):
-                PKID.Read(buffer, subSize, curPos);
+                PKID.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(HNAM):
-                HNAM.Read(buffer, subSize, curPos);
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             case REV32(ENAM):
-                ENAM.Read(buffer, subSize, curPos);
+                ENAM.Read(buffer, subSize);
                 break;
             case REV32(HCLR):
-                HCLR.Read(buffer, subSize, curPos);
+                HCLR.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM4):
-                NAM4.Read(buffer, subSize, curPos);
+                NAM4.Read(buffer, subSize);
                 break;
             case REV32(FGGS):
-                FGGS.Read(buffer, subSize, curPos);
+                FGGS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGGA):
-                FGGA.Read(buffer, subSize, curPos);
+                FGGA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGTS):
-                FGTS.Read(buffer, subSize, curPos);
+                FGTS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM5):
-                NAM5.Read(buffer, subSize, curPos);
+                NAM5.Read(buffer, subSize);
                 break;
             case REV32(NAM6):
-                NAM6.Read(buffer, subSize, curPos);
+                NAM6.Read(buffer, subSize);
                 break;
             case REV32(NAM7):
-                NAM7.Read(buffer, subSize, curPos);
+                NAM7.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  NPC_: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -1458,5 +1459,10 @@ bool NPC_Record::operator ==(const NPC_Record &other) const
 bool NPC_Record::operator !=(const NPC_Record &other) const
     {
     return !(*this == other);
+    }
+
+bool NPC_Record::equals(Record *other)
+    {
+    return *this == *(NPC_Record *)other;
     }
 }

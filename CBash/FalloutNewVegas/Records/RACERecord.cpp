@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -71,10 +71,10 @@ RACERecord::RACERecord(RACERecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -145,8 +145,8 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < XNAM.value.size(); x++)
-        op.Accept(XNAM.value[x]->faction);
+    for(UINT32 ListIndex = 0; ListIndex < XNAM.value.size(); ListIndex++)
+        op.Accept(XNAM.value[ListIndex]->faction);
     if(ONAM.IsLoaded())
         op.Accept(ONAM.value);
     if(YNAM.IsLoaded())
@@ -164,152 +164,152 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
 
     if(MHMOD0.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD0.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD0.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD0.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD0.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD1.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD1.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD1.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD1.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD1.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD2.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD2.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD2.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD2.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD2.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD3.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD3.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD3.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD3.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD3.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD4.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD4.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD4.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD4.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD4.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD5.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD5.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD5.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD5.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD5.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD6.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD6.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD6.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD6.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD6.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MHMOD7.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MHMOD7.MODL->Textures.MODS.size(); p++)
-            op.Accept(MHMOD7.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MHMOD7.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MHMOD7.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD0.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD0.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD0.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD0.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD0.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD1.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD1.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD1.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD1.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD1.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD2.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD2.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD2.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD2.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD2.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD3.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD3.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD3.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD3.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD3.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD4.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD4.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD4.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD4.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD4.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD5.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD5.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD5.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD5.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD5.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD6.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD6.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD6.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD6.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD6.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FHMOD7.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FHMOD7.MODL->Textures.MODS.size(); p++)
-            op.Accept(FHMOD7.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FHMOD7.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FHMOD7.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MBMOD0.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MBMOD0.MODL->Textures.MODS.size(); p++)
-            op.Accept(MBMOD0.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MBMOD0.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MBMOD0.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MBMOD1.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MBMOD1.MODL->Textures.MODS.size(); p++)
-            op.Accept(MBMOD1.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MBMOD1.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MBMOD1.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MBMOD2.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MBMOD2.MODL->Textures.MODS.size(); p++)
-            op.Accept(MBMOD2.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MBMOD2.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MBMOD2.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(MBMOD3.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < MBMOD3.MODL->Textures.MODS.size(); p++)
-            op.Accept(MBMOD3.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < MBMOD3.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(MBMOD3.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FBMOD0.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FBMOD0.MODL->Textures.MODS.size(); p++)
-            op.Accept(FBMOD0.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FBMOD0.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FBMOD0.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FBMOD1.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FBMOD1.MODL->Textures.MODS.size(); p++)
-            op.Accept(FBMOD1.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FBMOD1.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FBMOD1.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FBMOD2.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FBMOD2.MODL->Textures.MODS.size(); p++)
-            op.Accept(FBMOD2.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FBMOD2.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FBMOD2.MODL->Textures.MODS[ListIndex]->texture);
         }
 
     if(FBMOD3.MODL.IsLoaded())
         {
-        for(UINT32 p = 0; p < FBMOD3.MODL->Textures.MODS.size(); p++)
-            op.Accept(FBMOD3.MODL->Textures.MODS[p]->texture);
+        for(UINT32 ListIndex = 0; ListIndex < FBMOD3.MODL->Textures.MODS.size(); ListIndex++)
+            op.Accept(FBMOD3.MODL->Textures.MODS[ListIndex]->texture);
         }
 
-    for(UINT32 x = 0; x < HNAM.value.size(); x++)
-        op.Accept(HNAM.value[x]);
-    for(UINT32 x = 0; x < ENAM.value.size(); x++)
-        op.Accept(ENAM.value[x]);
+    for(UINT32 ListIndex = 0; ListIndex < HNAM.value.size(); ListIndex++)
+        op.Accept(HNAM.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < ENAM.value.size(); ListIndex++)
+        op.Accept(ENAM.value[ListIndex]);
 
     return op.Stop();
     }
@@ -354,1552 +354,943 @@ STRING RACERecord::GetStrType()
     return "RACE";
     }
 
-SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RACERecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     enum namFlags
         {
-        fIsMale   = 0x00000001,
-        fIsFemale = 0x00000002,
-        fIsHead   = 0x00000004,
-        fIsBody   = 0x00000008
+        fIsMale   = 0x10000000,
+        fIsFemale = 0x20000000,
+        fIsHead   = 0x40000000,
+        fIsBody   = 0x80000000
+        };
+
+    enum headEnum
+        {
+        eHead = 0,
+        eEars,
+        eMouth,
+        eLowerTeeth,
+        eUpperTeeth,
+        eTongue,
+        eLeftEye,
+        eRightEye
+        };
+
+    enum bodyEnum
+        {
+        eUpperBody = 0,
+        eLeftHand,
+        eRightHand,
+        eUpperBodyTexture
         };
 
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    UINT32 curNAM = 0;
-    SINT32 curINDX = -1;
-    FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    UINT32 part_id = 0;
+    UINT32 temp_id = 0;
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(ONAM):
-                ONAM.Read(buffer, subSize, curPos);
+                ONAM.Read(buffer, subSize);
                 break;
             case REV32(YNAM):
-                YNAM.Read(buffer, subSize, curPos);
+                YNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM2): //Unknown empty marker
                 break;
             case REV32(VTCK):
-                VTCK.Read(buffer, subSize, curPos);
+                VTCK.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(UNAM):
-                UNAM.Read(buffer, subSize, curPos);
+                UNAM.Read(buffer, subSize);
                 break;
             case REV32(ATTR):
-                ATTR.Read(buffer, subSize, curPos);
+                ATTR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM0):
-                curNAM = (curNAM & ~fIsBody) | fIsHead;
-                curINDX = -1;
+                part_id = fIsHead;
+                break;
+            case REV32(NAM1):
+                part_id = fIsBody;
                 break;
             case REV32(MNAM):
-                curNAM = (curNAM & ~fIsFemale) | fIsMale;
+                part_id = (part_id & ~fIsFemale) | fIsMale;
+                break;
+            case REV32(FNAM):
+                part_id = (part_id & ~fIsMale) | fIsFemale;
                 break;
             case REV32(INDX):
-                _readBuffer(&curINDX, buffer, subSize, curPos);
+                temp_id = *(UINT32 *)buffer;
+                buffer += 4;
+                part_id = (part_id & 0xFF000000) | temp_id;
                 break;
             case REV32(MODL):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MODL.Load();
-                                MHMOD0.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MODL.Load();
-                                FHMOD0.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MODL.Load();
-                                MBMOD0.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MODL.Load();
-                                FBMOD0.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MODL.Load();
+                        MHMOD0.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MODL.Load();
-                                MHMOD1.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MODL.Load();
-                                FHMOD1.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MODL.Load();
-                                MBMOD1.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MODL.Load();
-                                FBMOD1.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MODL.Load();
+                        MHMOD1.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MODL.Load();
-                                MHMOD2.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MODL.Load();
-                                FHMOD2.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MODL.Load();
-                                MBMOD2.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MODL.Load();
-                                FBMOD2.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MODL.Load();
+                        MHMOD2.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MODL.Load();
-                                MHMOD3.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MODL.Load();
-                                FHMOD3.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MODL.Load();
-                                MBMOD3.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MODL.Load();
-                                FBMOD3.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MODL.Load();
+                        MHMOD3.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MODL.Load();
-                                MHMOD4.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MODL.Load();
-                                FHMOD4.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MODL.Load();
+                        MHMOD4.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MODL.Load();
-                                MHMOD5.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MODL.Load();
-                                FHMOD5.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MODL.Load();
+                        MHMOD5.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MODL.Load();
-                                MHMOD6.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MODL.Load();
-                                FHMOD6.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MODL.Load();
+                        MHMOD6.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MODL.Load();
-                                MHMOD7.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MODL.Load();
-                                FHMOD7.MODL->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODL\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MODL.Load();
+                        MHMOD7.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MODL.Load();
+                        FHMOD0.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MODL.Load();
+                        FHMOD1.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MODL.Load();
+                        FHMOD2.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MODL.Load();
+                        FHMOD3.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MODL.Load();
+                        FHMOD4.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MODL.Load();
+                        FHMOD5.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MODL.Load();
+                        FHMOD6.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MODL.Load();
+                        FHMOD7.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MODL.Load();
+                        MBMOD0.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MODL.Load();
+                        MBMOD1.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MODL.Load();
+                        MBMOD2.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MODL.Load();
+                        MBMOD3.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MODL.Load();
+                        FBMOD0.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MODL.Load();
+                        FBMOD1.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MODL.Load();
+                        FBMOD2.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MODL.Load();
+                        FBMOD3.MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected MODL\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODB):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MODL.Load();
-                                MHMOD0.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MODL.Load();
-                                FHMOD0.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MODL.Load();
-                                MBMOD0.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MODL.Load();
-                                FBMOD0.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MODL.Load();
+                        MHMOD0.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MODL.Load();
-                                MHMOD1.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MODL.Load();
-                                FHMOD1.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MODL.Load();
-                                MBMOD1.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MODL.Load();
-                                FBMOD1.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MODL.Load();
+                        MHMOD1.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MODL.Load();
-                                MHMOD2.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MODL.Load();
-                                FHMOD2.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MODL.Load();
-                                MBMOD2.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MODL.Load();
-                                FBMOD2.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MODL.Load();
+                        MHMOD2.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MODL.Load();
-                                MHMOD3.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MODL.Load();
-                                FHMOD3.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MODL.Load();
-                                MBMOD3.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MODL.Load();
-                                FBMOD3.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MODL.Load();
+                        MHMOD3.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MODL.Load();
-                                MHMOD4.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MODL.Load();
-                                FHMOD4.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MODL.Load();
+                        MHMOD4.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MODL.Load();
-                                MHMOD5.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MODL.Load();
-                                FHMOD5.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MODL.Load();
+                        MHMOD5.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MODL.Load();
-                                MHMOD6.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MODL.Load();
-                                FHMOD6.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MODL.Load();
+                        MHMOD6.MODL->MODB.Read(buffer, subSize);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MODL.Load();
-                                MHMOD7.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MODL.Load();
-                                FHMOD7.MODL->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODB\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MODL.Load();
+                        MHMOD7.MODL->MODB.Read(buffer, subSize);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MODL.Load();
+                        FHMOD0.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MODL.Load();
+                        FHMOD1.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MODL.Load();
+                        FHMOD2.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MODL.Load();
+                        FHMOD3.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MODL.Load();
+                        FHMOD4.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MODL.Load();
+                        FHMOD5.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MODL.Load();
+                        FHMOD6.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MODL.Load();
+                        FHMOD7.MODL->MODB.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MODL.Load();
+                        MBMOD0.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MODL.Load();
+                        MBMOD1.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MODL.Load();
+                        MBMOD2.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MODL.Load();
+                        MBMOD3.MODL->MODB.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MODL.Load();
+                        FBMOD0.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MODL.Load();
+                        FBMOD1.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MODL.Load();
+                        FBMOD2.MODL->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MODL.Load();
+                        FBMOD3.MODL->MODB.Read(buffer, subSize);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected MODB\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODT):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MODL.Load();
-                                MHMOD0.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MODL.Load();
-                                FHMOD0.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MODL.Load();
-                                MBMOD0.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MODL.Load();
-                                FBMOD0.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MODL.Load();
+                        MHMOD0.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MODL.Load();
-                                MHMOD1.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MODL.Load();
-                                FHMOD1.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MODL.Load();
-                                MBMOD1.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MODL.Load();
-                                FBMOD1.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MODL.Load();
+                        MHMOD1.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MODL.Load();
-                                MHMOD2.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MODL.Load();
-                                FHMOD2.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MODL.Load();
-                                MBMOD2.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MODL.Load();
-                                FBMOD2.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MODL.Load();
+                        MHMOD2.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MODL.Load();
-                                MHMOD3.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MODL.Load();
-                                FHMOD3.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MODL.Load();
-                                MBMOD3.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MODL.Load();
-                                FBMOD3.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MODL.Load();
+                        MHMOD3.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MODL.Load();
-                                MHMOD4.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MODL.Load();
-                                FHMOD4.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MODL.Load();
+                        MHMOD4.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MODL.Load();
-                                MHMOD5.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MODL.Load();
-                                FHMOD5.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MODL.Load();
+                        MHMOD5.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MODL.Load();
-                                MHMOD6.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MODL.Load();
-                                FHMOD6.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MODL.Load();
+                        MHMOD6.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MODL.Load();
-                                MHMOD7.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MODL.Load();
-                                FHMOD7.MODL->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODT\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MODL.Load();
+                        MHMOD7.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MODL.Load();
+                        FHMOD0.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MODL.Load();
+                        FHMOD1.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MODL.Load();
+                        FHMOD2.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MODL.Load();
+                        FHMOD3.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MODL.Load();
+                        FHMOD4.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MODL.Load();
+                        FHMOD5.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MODL.Load();
+                        FHMOD6.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MODL.Load();
+                        FHMOD7.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MODL.Load();
+                        MBMOD0.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MODL.Load();
+                        MBMOD1.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MODL.Load();
+                        MBMOD2.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MODL.Load();
+                        MBMOD3.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MODL.Load();
+                        FBMOD0.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MODL.Load();
+                        FBMOD1.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MODL.Load();
+                        FBMOD2.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MODL.Load();
+                        FBMOD3.MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected MODT\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODS):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MODL.Load();
-                                MHMOD0.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MODL.Load();
-                                FHMOD0.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MODL.Load();
-                                MBMOD0.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MODL.Load();
-                                FBMOD0.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MODL.Load();
+                        MHMOD0.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MODL.Load();
-                                MHMOD1.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MODL.Load();
-                                FHMOD1.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MODL.Load();
-                                MBMOD1.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MODL.Load();
-                                FBMOD1.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MODL.Load();
+                        MHMOD1.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MODL.Load();
-                                MHMOD2.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MODL.Load();
-                                FHMOD2.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MODL.Load();
-                                MBMOD2.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MODL.Load();
-                                FBMOD2.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MODL.Load();
+                        MHMOD2.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MODL.Load();
-                                MHMOD3.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MODL.Load();
-                                FHMOD3.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MODL.Load();
-                                MBMOD3.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MODL.Load();
-                                FBMOD3.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MODL.Load();
+                        MHMOD3.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MODL.Load();
-                                MHMOD4.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MODL.Load();
-                                FHMOD4.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MODL.Load();
+                        MHMOD4.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MODL.Load();
-                                MHMOD5.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MODL.Load();
-                                FHMOD5.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MODL.Load();
+                        MHMOD5.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MODL.Load();
-                                MHMOD6.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MODL.Load();
-                                FHMOD6.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MODL.Load();
+                        MHMOD6.MODL->Textures.Read(buffer, subSize);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MODL.Load();
-                                MHMOD7.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MODL.Load();
-                                FHMOD7.MODL->Textures.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected Textures\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MODL.Load();
+                        MHMOD7.MODL->Textures.Read(buffer, subSize);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MODL.Load();
+                        FHMOD0.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MODL.Load();
+                        FHMOD1.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MODL.Load();
+                        FHMOD2.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MODL.Load();
+                        FHMOD3.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MODL.Load();
+                        FHMOD4.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MODL.Load();
+                        FHMOD5.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MODL.Load();
+                        FHMOD6.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MODL.Load();
+                        FHMOD7.MODL->Textures.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MODL.Load();
+                        MBMOD0.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MODL.Load();
+                        MBMOD1.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MODL.Load();
+                        MBMOD2.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MODL.Load();
+                        MBMOD3.MODL->Textures.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MODL.Load();
+                        FBMOD0.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MODL.Load();
+                        FBMOD1.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MODL.Load();
+                        FBMOD2.MODL->Textures.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MODL.Load();
+                        FBMOD3.MODL->Textures.Read(buffer, subSize);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
-                        printer("  RACE: %08X - Unexpected Textures\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  RACE: %08X - Unexpected MODS\n", formID);
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODD):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MODL.Load();
-                                MHMOD0.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MODL.Load();
-                                FHMOD0.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MODL.Load();
-                                MBMOD0.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MODL.Load();
-                                FBMOD0.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MODL.Load();
+                        MHMOD0.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MODL.Load();
-                                MHMOD1.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MODL.Load();
-                                FHMOD1.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MODL.Load();
-                                MBMOD1.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MODL.Load();
-                                FBMOD1.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MODL.Load();
+                        MHMOD1.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MODL.Load();
-                                MHMOD2.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MODL.Load();
-                                FHMOD2.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MODL.Load();
-                                MBMOD2.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MODL.Load();
-                                FBMOD2.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MODL.Load();
+                        MHMOD2.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MODL.Load();
-                                MHMOD3.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MODL.Load();
-                                FHMOD3.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MODL.Load();
-                                MBMOD3.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MODL.Load();
-                                FBMOD3.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MODL.Load();
+                        MHMOD3.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MODL.Load();
-                                MHMOD4.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MODL.Load();
-                                FHMOD4.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MODL.Load();
+                        MHMOD4.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MODL.Load();
-                                MHMOD5.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MODL.Load();
-                                FHMOD5.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MODL.Load();
+                        MHMOD5.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MODL.Load();
-                                MHMOD6.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MODL.Load();
-                                FHMOD6.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MODL.Load();
+                        MHMOD6.MODL->MODD.Read(buffer, subSize);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MODL.Load();
-                                MHMOD7.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MODL.Load();
-                                FHMOD7.MODL->MODD.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MODD\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MODL.Load();
+                        MHMOD7.MODL->MODD.Read(buffer, subSize);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MODL.Load();
+                        FHMOD0.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MODL.Load();
+                        FHMOD1.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MODL.Load();
+                        FHMOD2.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MODL.Load();
+                        FHMOD3.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MODL.Load();
+                        FHMOD4.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MODL.Load();
+                        FHMOD5.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MODL.Load();
+                        FHMOD6.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MODL.Load();
+                        FHMOD7.MODL->MODD.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MODL.Load();
+                        MBMOD0.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MODL.Load();
+                        MBMOD1.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MODL.Load();
+                        MBMOD2.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MODL.Load();
+                        MBMOD3.MODL->MODD.Read(buffer, subSize);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MODL.Load();
+                        FBMOD0.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MODL.Load();
+                        FBMOD1.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MODL.Load();
+                        FBMOD2.MODL->MODD.Read(buffer, subSize);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MODL.Load();
+                        FBMOD3.MODL->MODD.Read(buffer, subSize);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected MODD\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(ICON):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected ICON\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MICO):
-                switch(curINDX) //Part ID
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD0.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD0.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD0.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD0.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eHead:
+                        MHMOD0.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 1:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD1.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD1.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD1.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD1.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eEars:
+                        MHMOD1.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD2.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD2.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD2.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD2.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eMouth:
+                        MHMOD2.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD3.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD3.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsMale | fIsBody:
-                                MBMOD3.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsBody:
-                                FBMOD3.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLowerTeeth:
+                        MHMOD3.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 4:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD4.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD4.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eUpperTeeth:
+                        MHMOD4.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 5:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD5.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD5.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eTongue:
+                        MHMOD5.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 6:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD6.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD6.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eLeftEye:
+                        MHMOD6.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 7:
-                        switch(curNAM)
-                            {
-                            case fIsMale | fIsHead:
-                                MHMOD7.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            case fIsFemale | fIsHead:
-                                FHMOD7.MICO.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected MICO\n", formID);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsHead | fIsMale | eRightEye:
+                        MHMOD7.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsHead | fIsFemale | eHead:
+                        FHMOD0.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eEars:
+                        FHMOD1.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eMouth:
+                        FHMOD2.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLowerTeeth:
+                        FHMOD3.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eUpperTeeth:
+                        FHMOD4.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eTongue:
+                        FHMOD5.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eLeftEye:
+                        FHMOD6.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsHead | fIsFemale | eRightEye:
+                        FHMOD7.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsMale | eUpperBody:
+                        MBMOD0.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eLeftHand:
+                        MBMOD1.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eRightHand:
+                        MBMOD2.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsMale | eUpperBodyTexture:
+                        MBMOD3.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+
+                    case fIsBody | fIsFemale | eUpperBody:
+                        FBMOD0.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eLeftHand:
+                        FBMOD1.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eRightHand:
+                        FBMOD2.MICO.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsBody | fIsFemale | eUpperBodyTexture:
+                        FBMOD3.MICO.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected MICO\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
-            case REV32(FNAM):
-                curNAM = (curNAM & ~fIsMale) | fIsFemale;
-                break;
-            case REV32(NAM1):
-                curNAM = (curNAM & ~fIsHead) | fIsBody;
-                curINDX = -1;
-                break;
             case REV32(HNAM):
-                HNAM.Read(buffer, subSize, curPos);
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(ENAM):
-                ENAM.Read(buffer, subSize, curPos);
+                ENAM.Read(buffer, subSize);
                 break;
             case REV32(FGGS):
-                curNAM &= ~(fIsBody |fIsHead);
-                switch(curNAM)
+                part_id &= ~(fIsBody | fIsHead);
+                switch(part_id & 0xFF000000)
                     {
                     case fIsMale: //Male
-                        MaleFGGS.Read(buffer, subSize, curPos);
+                        MaleFGGS.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case fIsFemale: //Female
-                        FemaleFGGS.Read(buffer, subSize, curPos);
+                        FemaleFGGS.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected FGGS\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(FGGA):
-                curNAM &= ~(fIsBody |fIsHead);
-                switch(curNAM)
+                part_id &= ~(fIsBody | fIsHead);
+                switch(part_id & 0xFF000000)
                     {
                     case fIsMale: //Male
-                        MaleFGGA.Read(buffer, subSize, curPos);
+                        MaleFGGA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case fIsFemale: //Female
-                        FemaleFGGA.Read(buffer, subSize, curPos);
+                        FemaleFGGA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected FGGA\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(FGTS):
-                curNAM &= ~(fIsBody |fIsHead);
-                switch(curNAM)
+                part_id &= ~(fIsBody | fIsHead);
+                switch(part_id & 0xFF000000)
                     {
                     case fIsMale: //Male
-                        MaleFGTS.Read(buffer, subSize, curPos);
+                        MaleFGTS.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case fIsFemale: //Female
-                        FemaleFGTS.Read(buffer, subSize, curPos);
+                        FemaleFGTS.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected FGTS\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(SNAM):
-                curNAM &= ~(fIsBody |fIsHead);
-                switch(curNAM)
+                part_id &= ~(fIsBody | fIsHead);
+                switch(part_id & 0xFF000000)
                     {
                     case fIsMale: //Male
-                        MaleSNAM.Read(buffer, subSize, curPos);
+                        MaleSNAM.Read(buffer, subSize);
                         break;
                     case fIsFemale: //Female
-                        FemaleSNAM.Read(buffer, subSize, curPos);
+                        FemaleSNAM.Read(buffer, subSize);
                         break;
                     default:
                         //printer("FileName = %s\n", FileName);
                         printer("  RACE: %08X - Unexpected SNAM\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
@@ -1908,8 +1299,8 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 printer("  RACE: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -2108,56 +1499,61 @@ SINT32 RACERecord::WriteRecord(FileWriter &writer)
 bool RACERecord::operator ==(const RACERecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DESC.equals(other.DESC) &&
-        DATA == other.DATA &&
-        VTCK == other.VTCK &&
-        DNAM == other.DNAM &&
-        CNAM == other.CNAM &&
-        ONAM == other.ONAM &&
-        YNAM == other.YNAM &&
-        PNAM == other.PNAM &&
-        UNAM == other.UNAM &&
-        ATTR == other.ATTR &&
-        MHMOD0 == other.MHMOD0 &&
-        MHMOD1 == other.MHMOD1 &&
-        MHMOD2 == other.MHMOD2 &&
-        MHMOD3 == other.MHMOD3 &&
-        MHMOD4 == other.MHMOD4 &&
-        MHMOD5 == other.MHMOD5 &&
-        MHMOD6 == other.MHMOD6 &&
-        MHMOD7 == other.MHMOD7 &&
-        FHMOD0 == other.FHMOD0 &&
-        FHMOD1 == other.FHMOD1 &&
-        FHMOD2 == other.FHMOD2 &&
-        FHMOD3 == other.FHMOD3 &&
-        FHMOD4 == other.FHMOD4 &&
-        FHMOD5 == other.FHMOD5 &&
-        FHMOD6 == other.FHMOD6 &&
-        FHMOD7 == other.FHMOD7 &&
-        MBMOD0 == other.MBMOD0 &&
-        MBMOD1 == other.MBMOD1 &&
-        MBMOD2 == other.MBMOD2 &&
-        MBMOD3 == other.MBMOD3 &&
-        FBMOD0 == other.FBMOD0 &&
-        FBMOD1 == other.FBMOD1 &&
-        FBMOD2 == other.FBMOD2 &&
-        FBMOD3 == other.FBMOD3 &&
-        MaleFGGS == other.MaleFGGS &&
-        MaleFGGA == other.MaleFGGA &&
-        MaleFGTS == other.MaleFGTS &&
-        MaleSNAM == other.MaleSNAM &&
-        FemaleFGGS == other.FemaleFGGS &&
-        FemaleFGGA == other.FemaleFGGA &&
-        FemaleFGTS == other.FemaleFGTS &&
-        FemaleSNAM == other.FemaleSNAM &&
-        XNAM == other.XNAM &&
-        HNAM == other.HNAM &&
-        ENAM == other.ENAM);
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            DATA == other.DATA &&
+            VTCK == other.VTCK &&
+            DNAM == other.DNAM &&
+            CNAM == other.CNAM &&
+            ONAM == other.ONAM &&
+            YNAM == other.YNAM &&
+            PNAM == other.PNAM &&
+            UNAM == other.UNAM &&
+            ATTR == other.ATTR &&
+            MHMOD0 == other.MHMOD0 &&
+            MHMOD1 == other.MHMOD1 &&
+            MHMOD2 == other.MHMOD2 &&
+            MHMOD3 == other.MHMOD3 &&
+            MHMOD4 == other.MHMOD4 &&
+            MHMOD5 == other.MHMOD5 &&
+            MHMOD6 == other.MHMOD6 &&
+            MHMOD7 == other.MHMOD7 &&
+            FHMOD0 == other.FHMOD0 &&
+            FHMOD1 == other.FHMOD1 &&
+            FHMOD2 == other.FHMOD2 &&
+            FHMOD3 == other.FHMOD3 &&
+            FHMOD4 == other.FHMOD4 &&
+            FHMOD5 == other.FHMOD5 &&
+            FHMOD6 == other.FHMOD6 &&
+            FHMOD7 == other.FHMOD7 &&
+            MBMOD0 == other.MBMOD0 &&
+            MBMOD1 == other.MBMOD1 &&
+            MBMOD2 == other.MBMOD2 &&
+            MBMOD3 == other.MBMOD3 &&
+            FBMOD0 == other.FBMOD0 &&
+            FBMOD1 == other.FBMOD1 &&
+            FBMOD2 == other.FBMOD2 &&
+            FBMOD3 == other.FBMOD3 &&
+            MaleFGGS == other.MaleFGGS &&
+            MaleFGGA == other.MaleFGGA &&
+            MaleFGTS == other.MaleFGTS &&
+            MaleSNAM == other.MaleSNAM &&
+            FemaleFGGS == other.FemaleFGGS &&
+            FemaleFGGA == other.FemaleFGGA &&
+            FemaleFGTS == other.FemaleFGTS &&
+            FemaleSNAM == other.FemaleSNAM &&
+            XNAM == other.XNAM &&
+            HNAM == other.HNAM &&
+            ENAM == other.ENAM);
     }
 
 bool RACERecord::operator !=(const RACERecord &other) const
     {
     return !(*this == other);
+    }
+
+bool RACERecord::equals(Record *other)
+    {
+    return *this == *(RACERecord *)other;
     }
 }

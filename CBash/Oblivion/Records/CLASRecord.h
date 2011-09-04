@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class CLASRecord : public Record
+namespace Ob
+{
+class CLASRecord : public Record //Class
     {
     private:
         struct CLASDATA
@@ -68,11 +70,11 @@ class CLASRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        StringRecord DESC;
-        StringRecord ICON;
-        ReqSubRecord<CLASDATA> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        StringRecord ICON; //Large Icon Filename
+        ReqSubRecord<CLASDATA> DATA; //Data
 
         CLASRecord(unsigned char *_recData=NULL);
         CLASRecord(CLASRecord *srcRecord);
@@ -124,10 +126,12 @@ class CLASRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CLASRecord &other) const;
         bool operator !=(const CLASRecord &other) const;
+        bool equals(Record *other);
     };
+}

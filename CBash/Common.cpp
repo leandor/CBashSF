@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 // Common.cpp
@@ -93,6 +93,22 @@ bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     {
     return icmps(s1, s2) < 0;
     }
+
+#ifdef CBASH_DEBUG_CHUNK
+    void peek_around(unsigned char *position, UINT32 length)
+        {
+        for(SINT32 x = length; x > 0; x--)
+            printer("%02X ", (position)[-x]);
+        for(UINT32 x = 0; x < length; x++)
+            printer("%02X ", (position)[x]);
+        printer("\n\n");
+        for(SINT32 x = length; x > 0; x--)
+            printer("%c", (position)[-x]);
+        for(UINT32 x = 0; x < length; x++)
+            printer("%c", (position)[x]);
+        printer("\n");
+        }
+#endif
 
 STRING DeGhostModName(STRING const ModName)
     {
@@ -373,153 +389,7 @@ void FileWriter::file_write(UINT32 position, const void *source_buffer, UINT32 s
     return;
     }
 
-FileReader::FileReader(STRING filename, STRING modname):
-    file_map(),
-    FileName(filename),
-    ModName(modname),
-    buffer_position(NULL),
-    buffer_start(NULL),
-    buffer_end(NULL)
-    {
-    //
-    }
-
-FileReader::~FileReader()
-    {
-    if(FileName != ModName)
-        delete []FileName;
-    delete []ModName;
-    close();
-    }
-
-STRING const FileReader::getFileName()
-    {
-    return FileName;
-    }
-
-STRING const FileReader::getModName()
-    {
-    return ModName;
-    }
-
-bool FileReader::IsGhosted()
-    {
-    return ModName != FileName;
-    }
-
-time_t FileReader::mtime()
-    {
-    struct stat buf;
-    if(stat(FileName, &buf) < 0)
-        return 0;
-    else
-        return buf.st_mtime;
-    }
-
-bool FileReader::exists()
-    {
-    struct stat statBuffer;
-    return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
-    }
-
-SINT32 FileReader::open()
-    {
-    if(FileName == NULL || file_map.is_open())
-        return -1;
-    try
-        {
-        file_map.open(FileName);
-        }
-    catch(std::ios::failure const & e)
-        {
-        printer("FileReader: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
-        throw e;
-        }
-    catch(...)
-        {
-        printer("FileReader: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
-        throw;
-        }
-    buffer_position = buffer_start = (unsigned char *)file_map.data();
-    buffer_end = buffer_start + file_map.size();
-    return 0;
-    }
-
-SINT32 FileReader::close()
-    {
-    file_map.close();
-    return 0;
-    }
-
-bool FileReader::IsOpen()
-    {
-    return file_map.is_open();
-    }
-
-unsigned char *FileReader::tell()
-    {
-    return buffer_position;
-    }
-
-unsigned char *FileReader::start()
-    {
-    return buffer_start;
-    }
-
-unsigned char *FileReader::end()
-    {
-    return buffer_end;
-    }
-
-bool FileReader::eof()
-    {
-    return (buffer_position >= buffer_end);
-    }
-
-void FileReader::skip(UINT32 length)
-    {
-    buffer_position += length;
-    }
-
-bool FileReader::IsInFile(void *buffer)
-    {
-    return (buffer >= buffer_start) && (buffer <= buffer_end);
-    }
-
-void FileReader::read(void *destination, UINT32 length)
-    {
-    //if(destination == NULL || !file_map.is_open())
-    //    {
-    //    if(destination == NULL)
-    //        printer("FileHandler: Error - Unable to read from buffer. Destination pointer is NULL.\n");
-    //    else
-    //        printer("FileHandler: Error - Unable to read from buffer. Source pointer is NULL.\n");
-    //    return;
-    //    }
-    memcpy(destination, buffer_position, length);
-    buffer_position += length;
-    }
-
-#ifdef CBASH_DEBUG_CHUNK
-    void FileReader::peek_around(UINT32 length, unsigned char *position)
-        {
-        if(position == NULL)
-            position = buffer_position;
-        printer("File Position: %08X\n", position - buffer_start);
-        for(SINT32 x = length; x > 0; x--)
-            printer("%02X ", (position)[-x]);
-        for(UINT32 x = 0; x < length; x++)
-            printer("%02X ", (position)[x]);
-        printer("\n\n");
-        for(SINT32 x = length; x > 0; x--)
-            printer("%c", (position)[-x]);
-        for(UINT32 x = 0; x < length; x++)
-            printer("%c", (position)[x]);
-        printer("\n");
-        }
-#endif
-
-FormIDHandlerClass::FormIDHandlerClass(std::vector<StringRecord> &_MAST, UINT32 &_NextObject):
+FormIDHandlerClass::FormIDHandlerClass(std::vector<STRING> &_MAST, UINT32 &_NextObject):
     MAST(_MAST),
     nextObject(_NextObject),
     ExpandedIndex(0),
@@ -577,13 +447,14 @@ void FormIDHandlerClass::UpdateFormIDLookup()
 
     //Go ahead and sort the masters now since it can't otherwise be done without
     // screwing up the CollapseTable
-    std::vector<StringRecord> sortedMAST;
+    std::vector<STRING> sortedMAST;
     sortedMAST.reserve(CollapsedIndex);
     for(UINT32 x = 0; x < LoadOrder255.size(); ++x)
         {
+        curMaster = LoadOrder255[(UINT8)x];
         for(UINT16 y = 0; y < CollapsedIndex; ++y)
             {
-            if(icmps(LoadOrder255[(UINT8)x], MAST[(UINT8)y].value) == 0)
+            if(icmps(curMaster, MAST[(UINT8)y]) == 0)
                 {
                 sortedMAST.push_back(MAST[(UINT8)y]);
                 break;
@@ -601,8 +472,7 @@ void FormIDHandlerClass::UpdateFormIDLookup()
     // fields.
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
-        MAST[(UINT8)p] = sortedMAST[(UINT8)p];
-        curMaster = MAST[(UINT8)p].value;
+        curMaster = MAST[(UINT8)p] = sortedMAST[(UINT8)p];
         //printer("master %s\n", curMaster);
         for(UINT32 y = 0; y < numMods; ++y)
             if(icmps(LoadOrder255[(UINT8)y], curMaster) == 0)
@@ -651,7 +521,7 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
     //Map every on disk modIndex to its in memory modIndex and vice versa
     for(UINT16 p = 0; p < CollapsedIndex; ++p)
         {
-        curMaster = MAST[(UINT8)p].value;
+        curMaster = MAST[(UINT8)p];
         for(UINT32 y = 0; y < numMods; ++y)
             if(icmps(LoadOrder255[(UINT8)y], curMaster) == 0)
                 {
@@ -665,8 +535,10 @@ void FormIDHandlerClass::CreateFormIDLookup(const UINT8 expandedIndex)
 
 void FormIDHandlerClass::AddMaster(STRING const curMaster)
     {
-    MAST.push_back(StringRecord());
-    MAST.back().Copy(curMaster);
+    UINT32 size = (UINT32)strlen(curMaster) + 1;
+    MAST.push_back(new char[size]);
+    memcpy(MAST.back(), curMaster, size);
+
     bMastersChanged = true;
     //Update the formID resolution lookup table
     UpdateFormIDLookup();
@@ -678,20 +550,6 @@ bool FormIDHandlerClass::MastersChanged()
     return bMastersChanged;
     }
 
-bool FormIDHandlerClass::IsNewRecord(const UINT32 *&RecordFormID)
-    {
-    //if((*RecordFormID >> 24) >= ExpandedIndex)
-    //    printer("%02X - %08X - %02X\n", (*RecordFormID >> 24), *RecordFormID, ExpandedIndex);
-    return ((*RecordFormID >> 24) >= ExpandedIndex);
-    }
-
-bool FormIDHandlerClass::IsNewRecord(const UINT32 &RecordFormID)
-    {
-    //if((RecordFormID >> 24) >= ExpandedIndex)
-    //    printer("%02X - %08X - %02X\n", (RecordFormID >> 24), RecordFormID, ExpandedIndex);
-    return ((RecordFormID >> 24) >= ExpandedIndex);
-    }
-
 bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
     {
     return (_SrcBuf >= FileStart && _SrcBuf <= FileEnd);
@@ -699,8 +557,6 @@ bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
 
 CreateRecordOptions::CreateRecordOptions():
     SetAsOverride(false),
-    SetAsWorldCell(false),
-    CopyWorldCellStatus(false),
     ExistingReturned(false)
     {
     //
@@ -708,8 +564,6 @@ CreateRecordOptions::CreateRecordOptions():
 
 CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     SetAsOverride((nFlags & fSetAsOverride) != 0),
-    SetAsWorldCell((nFlags & fSetAsWorldCell) != 0),
-    CopyWorldCellStatus((nFlags & fCopyWorldCellStatus) != 0),
     ExistingReturned(false)
     {
     //
@@ -725,10 +579,6 @@ UINT32 CreateRecordOptions::GetFlags()
     UINT32 flags = 0;
     if(SetAsOverride)
         flags |= fSetAsOverride;
-    if(SetAsWorldCell)
-        flags |= fSetAsWorldCell;
-    if(CopyWorldCellStatus)
-        flags |= fCopyWorldCellStatus;
     return flags;
     }
 
@@ -820,47 +670,79 @@ UINT32 ModFlags::GetFlags()
     return flags;
     }
 
+EqualityOptions::EqualityOptions():
+    IsDeepEquality(false)
+    {
+    //
+    }
+
+EqualityOptions::EqualityOptions(UINT32 nFlags):
+    IsDeepEquality((nFlags & fIsDeepEquality) != 0)
+    {
+    //
+    }
+
+EqualityOptions::~EqualityOptions()
+    {
+    //
+    }
+
 StringRecord::StringRecord():
+#ifdef CBASH_X64_COMPATIBILITY
     value(NULL),
     IsOnDisk(false)
+#else
+    _value(NULL)
+#endif
     {
     //
     }
 
 StringRecord::StringRecord(const StringRecord &p):
+#ifdef CBASH_X64_COMPATIBILITY
     value(NULL),
     IsOnDisk(false)
+#else
+    _value(NULL)
+#endif
     {
     if(!p.IsLoaded())
         return;
 
-    if(p.IsOnDisk)
+    if(O_IS_ON_DISK(p))
         {
-        value = p.value;
-        IsOnDisk = true;
+        VAL_NAME = p.VAL_NAME;
+        S_SET_ON_DISK(true);
         }
     else
         {
         UINT32 size = p.GetSize();
-        value = new char[size];
-        memcpy(value, p.value, size);
+        VAL_NAME = new char[size];
+        memcpy(VAL_NAME, p.VAL_NAME, size);
         }
     }
 
 StringRecord::~StringRecord()
     {
-    if(!IsOnDisk)
-        delete []value;
+    if(!S_IS_ON_DISK)
+        delete []VAL_NAME;
     }
 
 UINT32 StringRecord::GetSize() const
     {
-    return value != NULL ? (UINT32)strlen(value) + 1 : 0;
+    return VAL_NAME != NULL ? (UINT32)strlen((S_GET_VALUE)) + 1 : 0;
     }
+
+#ifndef CBASH_X64_COMPATIBILITY
+    STRING StringRecord::GetString()
+        {
+        return S_GET_VALUE;
+        }
+#endif
 
 bool StringRecord::IsLoaded() const
     {
-    return value != NULL;
+    return VAL_NAME != NULL;
     }
 
 void StringRecord::Load()
@@ -870,38 +752,45 @@ void StringRecord::Load()
 
 void StringRecord::Unload()
     {
-    if(!IsOnDisk)
+    if(!S_IS_ON_DISK)
         {
-        delete []value;
-        value = NULL;
+        delete []VAL_NAME;
+        VAL_NAME = NULL;
         }
     }
 
-bool StringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
+bool StringRecord::Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk)
     {
     if(IsLoaded())
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
-    IsOnDisk = true;
-    value = (char *)buffer + curPos;
-    //value = new char[subSize];
-    //memcpy(value, buffer + curPos, subSize);
-    curPos += subSize;
+    if(CompressedOnDisk)
+        {
+        VAL_NAME = new char[subSize];
+        memcpy(VAL_NAME, buffer, subSize);
+        }
+    else
+        {
+        VAL_NAME = (char *)buffer;
+        S_SET_ON_DISK(true);
+        }
+
+    buffer += subSize;
     return true;
     }
 
 void StringRecord::Write(UINT32 _Type, FileWriter &writer)
     {
-    if(value != NULL)
-        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value) + 1);
+    if((S_GET_VALUE) != NULL)
+        writer.record_write_subrecord(_Type, (S_GET_VALUE), (UINT32)strlen((S_GET_VALUE)) + 1);
     }
 
 void StringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
     {
-    if(value != NULL)
-        writer.record_write_subrecord(_Type, value, (UINT32)strlen(value) + 1);
+    if((S_GET_VALUE) != NULL)
+        writer.record_write_subrecord(_Type, (S_GET_VALUE), (UINT32)strlen((S_GET_VALUE)) + 1);
     else
         {
         char null = 0x00;
@@ -914,34 +803,40 @@ void StringRecord::Copy(STRING FieldValue)
     Unload();
     if(FieldValue != NULL)
         {
-        IsOnDisk = false;
+        S_SET_ON_DISK(false);
         UINT32 size = (UINT32)strlen(FieldValue) + 1;
-        value = new char[size];
-        memcpy(value, FieldValue, size);
+        VAL_NAME = new char[size];
+        memcpy(VAL_NAME, FieldValue, size);
         }
     }
 
 bool StringRecord::equals(const StringRecord &other) const
     {
-    return cmps(value, other.value) == 0;
+    return cmps((S_GET_VALUE), (O_GET_VALUE(other))) == 0;
     }
 
 bool StringRecord::equalsi(const StringRecord &other) const
     {
-    return icmps(value, other.value) == 0;
+    return icmps((S_GET_VALUE), (O_GET_VALUE(other))) == 0;
     }
 
 StringRecord& StringRecord::operator = (const StringRecord &rhs)
     {
     if(this != &rhs)
         {
-        if(rhs.IsOnDisk)
+        Unload();
+        if(O_IS_ON_DISK(rhs))
             {
-            value = rhs.value;
-            IsOnDisk = true;
+            VAL_NAME = rhs.VAL_NAME;
+            S_SET_ON_DISK(true);
             }
-        else
-            Copy(rhs.value);
+        else if(rhs.VAL_NAME != NULL)
+            {
+            S_SET_ON_DISK(false);
+            UINT32 size = (UINT32)strlen(rhs.VAL_NAME) + 1;
+            VAL_NAME = new char[size];
+            memcpy(VAL_NAME, rhs.VAL_NAME, size);
+            }
         }
     return *this;
     }
@@ -1003,19 +898,25 @@ void NonNullStringRecord::Unload()
         }
     }
 
-bool NonNullStringRecord::Read(unsigned char *buffer, const UINT32 &subSize, UINT32 &curPos)
+bool NonNullStringRecord::Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk)
     {
     if(IsLoaded())
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
-    DiskSize = subSize;
-    value = (char *)buffer + curPos;
-    //value = new char[subSize + 1];
-    //value[subSize] = 0x00;
-    //memcpy(value, buffer + curPos, subSize);
-    curPos += subSize;
+    if(CompressedOnDisk)
+        {
+        value = new char[subSize + 1];
+        value[subSize] = 0x00;
+        memcpy(value, buffer, subSize);
+        }
+    else
+        {
+        DiskSize = subSize;
+        value = (char *)buffer;
+        }
+    buffer += subSize;
     return true;
     }
 
@@ -1062,13 +963,19 @@ NonNullStringRecord& NonNullStringRecord::operator = (const NonNullStringRecord 
     {
     if(this != &rhs)
         {
+        Unload();
         if(rhs.DiskSize)
             {
             value = rhs.value;
             DiskSize = rhs.DiskSize;
             }
-        else
-            Copy(rhs.value);
+        else if(rhs.value != NULL)
+            {
+            DiskSize = 0;
+            UINT32 size = (UINT32)strlen(rhs.value) + 1;
+            value = new char[size];
+            memcpy(value, rhs.value, size);
+            }
         }
     return *this;
     }
@@ -1125,26 +1032,29 @@ void UnorderedPackedStrings::resize(UINT32 newSize)
         value[size++] = NULL;
     }
 
-bool UnorderedPackedStrings::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool UnorderedPackedStrings::Read(unsigned char *&buffer, const UINT32 &subSize)
     {
     if(value.size() != 0)
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
     STRING curString = NULL;
-    STRING s = NULL;
-    for(subSize += curPos;curPos < (subSize - 1);curPos += (UINT32)strlen((STRING)&buffer[curPos]) + 1)
+
+    for(unsigned char *end_buffer = buffer + subSize;buffer < (end_buffer - 1);)
         {
-        s = (STRING)&buffer[curPos];
-        if(s == NULL)
+        if(((STRING)buffer)[0] == 0x00)
+            {
+            buffer++;
             continue;
-        UINT32 size = (UINT32)strlen(s) + 1;
+            }
+        UINT32 size = (UINT32)strlen((STRING)buffer) + 1;
         curString = new char[size];
-        strcpy_s(curString, size, s);
+        strcpy_s(curString, size, (STRING)buffer);
         value.push_back(curString);
+        buffer += size;
         }
-    curPos++; //Skip the final null terminator
+    buffer++; //Skip the final null terminator
     return true;
     }
 
@@ -1180,9 +1090,9 @@ UnorderedPackedStrings& UnorderedPackedStrings::operator = (const UnorderedPacke
     {
     if(this != &rhs)
         {
+        Unload();
         if(rhs.value.size() != 0)
             {
-            Unload();
             value.resize(rhs.value.size());
             UINT32 size = 0;
             for(UINT32 p = 0; p < rhs.value.size(); p++)
@@ -1195,8 +1105,6 @@ UnorderedPackedStrings& UnorderedPackedStrings::operator = (const UnorderedPacke
                     }
                 }
             }
-        else
-            Unload();
         }
     return *this;
     }
@@ -1231,24 +1139,19 @@ bool UnorderedPackedStrings::equalsi(const UnorderedPackedStrings &other) const
 
 RawRecord::RawRecord():
     size(0),
-    value(NULL),
-    IsOnDisk(false)
+    value(NULL)
     {
     //
     }
 
 RawRecord::RawRecord(const RawRecord &p):
-    value(NULL),
-    IsOnDisk(false)
+    value(NULL)
     {
     if(!p.IsLoaded())
         return;
     size = p.size;
-    if(p.IsOnDisk)
-        {
-        IsOnDisk = true;
+    if((fIsOnDisk & p.size) != 0)
         value = p.value;
-        }
     else
         {
         value = new unsigned char[size];
@@ -1258,13 +1161,13 @@ RawRecord::RawRecord(const RawRecord &p):
 
 RawRecord::~RawRecord()
     {
-    if(!IsOnDisk)
+    if((fIsOnDisk & size) == 0)
         delete []value;
     }
 
 UINT32 RawRecord::GetSize() const
     {
-    return size;
+    return size & ~fIsOnDisk;
     }
 
 bool RawRecord::IsLoaded() const
@@ -1279,7 +1182,7 @@ void RawRecord::Load()
 
 void RawRecord::Unload()
     {
-    if(!IsOnDisk)
+    if((fIsOnDisk & size) == 0)
         {
         size = 0;
         delete []value;
@@ -1287,32 +1190,38 @@ void RawRecord::Unload()
         }
     }
 
-bool RawRecord::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool RawRecord::Read(unsigned char *&buffer, const UINT32 &subSize, const bool &CompressedOnDisk)
     {
     if(IsLoaded())
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
-    IsOnDisk = true;
-    value = buffer + curPos;
     size = subSize;
-    //value = new unsigned char[size];
-    //memcpy(value, buffer + curPos, size);
-    curPos += subSize;
+    if(CompressedOnDisk)
+        {
+        value = new unsigned char[size];
+        memcpy(value, buffer, size);
+        }
+    else
+        {
+        size |= fIsOnDisk;
+        value = buffer;
+        }
+    buffer += subSize;
     return true;
     }
 
 void RawRecord::Write(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
-        writer.record_write_subrecord(_Type, value, size);
+        writer.record_write_subrecord(_Type, value, size & ~fIsOnDisk);
     }
 
 void RawRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
     {
     if(value != NULL)
-        writer.record_write_subrecord(_Type, value, size);
+        writer.record_write_subrecord(_Type, value, size & ~fIsOnDisk);
     else
         {
         char null = 0x00;
@@ -1325,7 +1234,6 @@ void RawRecord::Copy(unsigned char *FieldValue, UINT32 nSize)
     Unload();
     if(FieldValue != NULL)
         {
-        IsOnDisk = false;
         size = nSize;
         value = new unsigned char[size];
         memcpy(value, FieldValue, size);
@@ -1336,14 +1244,18 @@ RawRecord& RawRecord::operator = (const RawRecord &rhs)
     {
     if(this != &rhs)
         {
-        if(rhs.IsOnDisk)
+        Unload();
+        if((rhs.size & fIsOnDisk) != 0)
             {
             value = rhs.value;
             size = rhs.size;
-            IsOnDisk = true;
             }
-        else
-            Copy(rhs.value, rhs.size);
+        else if(rhs.value != NULL)
+            {
+            size = rhs.size;
+            value = new unsigned char[size];
+            memcpy(value, rhs.value, size);
+            }
         }
     return *this;
     }
@@ -1355,7 +1267,7 @@ bool RawRecord::operator ==(const RawRecord &other) const
         if(!other.IsLoaded())
             return true;
         }
-    else if(other.IsLoaded() && size == other.size && (memcmp(value, other.value, size) == 0))
+    else if(other.IsLoaded() && ((size & ~fIsOnDisk) == (other.size & ~fIsOnDisk)) && (memcmp(value, other.value, size & ~fIsOnDisk) == 0))
         return true;
     return false;
     }
@@ -2504,7 +2416,6 @@ std::vector<UINT32> AllGroups(_AllPossibleGroups, _AllPossibleGroups + (sizeof(_
 //'REGN'
 //'CLMT'
 
-
 RecordType_PossibleGroupsType RecordType_PossibleGroupsInit[] =
     {
     RecordType_PossibleGroupsType(REV32(GMST), AllGroups),
@@ -2582,6 +2493,8 @@ const std::map<UINT32, FunctionArguments> FNVFunction_Arguments(FNVFunction_Argu
 
 const float flt_max = FLT_MAX;
 const float flt_min = FLT_MIN;
+const float flt_3 = 3.0f;
 const float flt_1 = 1.0f;
 const float flt_0 = 0.0f;
 const float flt_n2147483648 = -2147483648.0f;
+UINT32 clean_flags = 0;

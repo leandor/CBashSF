@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "RACERecord.h"
-#include <vector>
 
-RACERecord::RACEATTR::RACEATTR():maleStrength(50), maleIntelligence(50),
+namespace Ob
+{
+RACERecord::RACEATTR::RACEATTR():
+    maleStrength(50), maleIntelligence(50),
     maleWillpower(50), maleAgility(50),
     maleSpeed(50), maleEndurance(50),
     malePersonality(50), maleLuck(50),
@@ -65,12 +67,23 @@ bool RACERecord::RACEATTR::operator !=(const RACEATTR &other) const
     return !(*this == other);
     }
 
+void RACERecord::RACEMODEL::Write(FileWriter &writer)
+    {
+    if(MODL.IsLoaded())
+        {
+        WRITE(MODL);
+        WRITE(MODB);
+        WRITE(MODT);
+        WRITE(ICON);
+        }
+    }
+
 bool RACERecord::RACEMODEL::operator ==(const RACEMODEL &other) const
     {
     return (MODB == other.MODB &&
             MODL.equalsi(other.MODL) &&
-            MODT == other.MODT &&
-            ICON.equalsi(other.ICON));
+            ICON.equalsi(other.ICON) &&
+            MODT == other.MODT);
     }
 
 bool RACERecord::RACEMODEL::operator !=(const RACEMODEL &other) const
@@ -94,141 +107,41 @@ RACERecord::RACERecord(RACERecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;
-
-    SPLO.resize(srcRecord->SPLO.size());
-    for(UINT32 x = 0; x < srcRecord->SPLO.size(); x++)
-        SPLO[x] = srcRecord->SPLO[x];
-
-    XNAM.resize(srcRecord->XNAM.size());
-    for(UINT32 x = 0; x < srcRecord->XNAM.size(); x++)
-        {
-        XNAM[x] = new ReqSubRecord<GENXNAM>;
-        *XNAM[x] = *srcRecord->XNAM[x];
-        }
-
+    SPLO = srcRecord->SPLO;
+    XNAM = srcRecord->XNAM;
     DATA = srcRecord->DATA;
-
     VNAM = srcRecord->VNAM;
     DNAM = srcRecord->DNAM;
-
     CNAM = srcRecord->CNAM;
     PNAM = srcRecord->PNAM;
     UNAM = srcRecord->UNAM;
     ATTR = srcRecord->ATTR;
-
-    if(srcRecord->MOD0.IsLoaded())
-        {
-        MOD0.Load();
-        MOD0->MODB = srcRecord->MOD0->MODB;
-        MOD0->MODL = srcRecord->MOD0->MODL;
-        MOD0->MODT = srcRecord->MOD0->MODT;
-        MOD0->ICON = srcRecord->MOD0->ICON;
-        }
-
-    if(srcRecord->MOD1.IsLoaded())
-        {
-        MOD1.Load();
-        MOD1->MODB = srcRecord->MOD1->MODB;
-        MOD1->MODL = srcRecord->MOD1->MODL;
-        MOD1->MODT = srcRecord->MOD1->MODT;
-        MOD1->ICON = srcRecord->MOD1->ICON;
-        }
-
-    if(srcRecord->MOD2.IsLoaded())
-        {
-        MOD2.Load();
-        MOD2->MODB = srcRecord->MOD2->MODB;
-        MOD2->MODL = srcRecord->MOD2->MODL;
-        MOD2->MODT = srcRecord->MOD2->MODT;
-        MOD2->ICON = srcRecord->MOD2->ICON;
-        }
-
-    if(srcRecord->MOD3.IsLoaded())
-        {
-        MOD3.Load();
-        MOD3->MODB = srcRecord->MOD3->MODB;
-        MOD3->MODL = srcRecord->MOD3->MODL;
-        MOD3->MODT = srcRecord->MOD3->MODT;
-        MOD3->ICON = srcRecord->MOD3->ICON;
-        }
-
-    if(srcRecord->MOD4.IsLoaded())
-        {
-        MOD4.Load();
-        MOD4->MODB = srcRecord->MOD4->MODB;
-        MOD4->MODL = srcRecord->MOD4->MODL;
-        MOD4->MODT = srcRecord->MOD4->MODT;
-        MOD4->ICON = srcRecord->MOD4->ICON;
-        }
-
-    if(srcRecord->MOD5.IsLoaded())
-        {
-        MOD5.Load();
-        MOD5->MODB = srcRecord->MOD5->MODB;
-        MOD5->MODL = srcRecord->MOD5->MODL;
-        MOD5->MODT = srcRecord->MOD5->MODT;
-        MOD5->ICON = srcRecord->MOD5->ICON;
-        }
-
-    if(srcRecord->MOD6.IsLoaded())
-        {
-        MOD6.Load();
-        MOD6->MODB = srcRecord->MOD6->MODB;
-        MOD6->MODL = srcRecord->MOD6->MODL;
-        MOD6->MODT = srcRecord->MOD6->MODT;
-        MOD6->ICON = srcRecord->MOD6->ICON;
-        }
-
-    if(srcRecord->MOD7.IsLoaded())
-        {
-        MOD7.Load();
-        MOD7->MODB = srcRecord->MOD7->MODB;
-        MOD7->MODL = srcRecord->MOD7->MODL;
-        MOD7->MODT = srcRecord->MOD7->MODT;
-        MOD7->ICON = srcRecord->MOD7->ICON;
-        }
-
-    if(srcRecord->MOD8.IsLoaded())
-        {
-        MOD8.Load();
-        MOD8->MODB = srcRecord->MOD8->MODB;
-        MOD8->MODL = srcRecord->MOD8->MODL;
-        MOD8->MODT = srcRecord->MOD8->MODT;
-        MOD8->ICON = srcRecord->MOD8->ICON;
-        }
-
-    if(srcRecord->MMODL.IsLoaded())
-        {
-        MMODL.Load();
-        MMODL->MODB = srcRecord->MMODL->MODB;
-        MMODL->MODL = srcRecord->MMODL->MODL;
-        MMODL->MODT = srcRecord->MMODL->MODT;
-        }
-
+    MOD0 = srcRecord->MOD0;
+    MOD1 = srcRecord->MOD1;
+    MOD2 = srcRecord->MOD2;
+    MOD3 = srcRecord->MOD3;
+    MOD4 = srcRecord->MOD4;
+    MOD5 = srcRecord->MOD5;
+    MOD6 = srcRecord->MOD6;
+    MOD7 = srcRecord->MOD7;
+    MOD8 = srcRecord->MOD8;
+    MMODL = srcRecord->MMODL;
     MICON0 = srcRecord->MICON0;
     MICON1 = srcRecord->MICON1;
     MICON2 = srcRecord->MICON2;
     MICON3 = srcRecord->MICON3;
     MICON4 = srcRecord->MICON4;
-
-    if(srcRecord->FMODL.IsLoaded())
-        {
-        FMODL.Load();
-        FMODL->MODB = srcRecord->FMODL->MODB;
-        FMODL->MODL = srcRecord->FMODL->MODL;
-        FMODL->MODT = srcRecord->FMODL->MODT;
-        }
-
+    FMODL = srcRecord->FMODL;
     FICON0 = srcRecord->FICON0;
     FICON1 = srcRecord->FICON1;
     FICON2 = srcRecord->FICON2;
@@ -244,8 +157,7 @@ RACERecord::RACERecord(RACERecord *srcRecord):
 
 RACERecord::~RACERecord()
     {
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        delete XNAM[x];
+    //
     }
 
 bool RACERecord::VisitFormIDs(FormIDOp &op)
@@ -253,10 +165,10 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SPLO.size(); x++)
-        op.Accept(SPLO[x]);
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        op.Accept(XNAM[x]->value.faction);
+    for(UINT32 ListIndex = 0; ListIndex < SPLO.value.size(); ListIndex++)
+        op.Accept(SPLO.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < XNAM.value.size(); ListIndex++)
+        op.Accept(XNAM.value[ListIndex]->faction);
     if(VNAM.IsLoaded())
         {
         op.Accept(VNAM.value.femaleVoice);
@@ -267,10 +179,10 @@ bool RACERecord::VisitFormIDs(FormIDOp &op)
         op.Accept(DNAM.value.defaultHairFemale);
         op.Accept(DNAM.value.defaultHairMale);
         }
-    for(UINT32 x = 0; x < HNAM.size(); x++)
-        op.Accept(HNAM[x]);
-    for(UINT32 x = 0; x < ENAM.size(); x++)
-        op.Accept(ENAM[x]);
+    for(UINT32 ListIndex = 0; ListIndex < HNAM.value.size(); ListIndex++)
+        op.Accept(HNAM.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < ENAM.value.size(); ListIndex++)
+        op.Accept(ENAM.value[ListIndex]);
 
     return op.Stop();
     }
@@ -300,59 +212,86 @@ UINT32 RACERecord::GetType()
     return REV32(RACE);
     }
 
-
 STRING RACERecord::GetStrType()
     {
     return "RACE";
     }
 
-SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 RACERecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
+    enum faceEnum
+        {
+        eHead = 0,
+        eMaleEars,
+        eFemaleEars,
+        eMouth,
+        eLowerTeeth,
+        eUpperTeeth,
+        eTongue,
+        eLeftEye,
+        eRightEye
+        };
+
+    enum bodyEnum
+        {
+        eUpperBody = 0,
+        eLowerBody,
+        eHand,
+        eFoot,
+        eTail
+        };
+
+    enum namEnum
+        {
+        fIsFace   = 0x10000000,
+        fIsBody   = 0x20000000,
+        fIsMale   = 0x40000000,
+        fIsFemale = 0x80000000
+        };
+
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    SINT32 curNAM = -1;
-    SINT32 curINDX = -1;
-    UINT32 curPos = 0;
-    FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    UINT32 part_id = 0;
+    UINT32 temp_id = 0;
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SPLO):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                SPLO.push_back(curFormID);
+                SPLO.Read(buffer, subSize);
                 break;
             case REV32(XNAM):
-                XNAM.push_back(new ReqSubRecord<GENXNAM>);
-                XNAM.back()->Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(VNAM):
-                if(VNAM.Read(buffer, subSize, curPos))
+                if(VNAM.Read(buffer, subSize))
                     {
                     if(formID == VNAM.value.maleVoice)
                         VNAM.value.maleVoice = 0;
@@ -361,402 +300,315 @@ SINT32 RACERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     }
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(UNAM):
-                UNAM.Read(buffer, subSize, curPos);
+                UNAM.Read(buffer, subSize);
                 break;
             case REV32(ATTR):
-                ATTR.Read(buffer, subSize, curPos);
+                ATTR.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                curNAM = 0;
-                curINDX = -1;
+                part_id = fIsFace;
                 break;
             case REV32(NAM1):
-                curNAM = 1;
+                part_id = fIsBody;
                 break;
             case REV32(INDX):
-                _readBuffer(&curINDX,buffer,subSize,curPos);
+                temp_id = *(UINT32 *)buffer;
+                buffer += 4;
+                part_id = (part_id & 0xFF000000) | temp_id;
                 break;
             case REV32(MNAM):
-                curNAM = 2;
-                curINDX = -1;
+                part_id = fIsMale;
                 break;
             case REV32(FNAM):
-                curNAM = 3;
-                curINDX = -1;
+                part_id = fIsFemale;
                 break;
             case REV32(MODL):
-                switch(curNAM)
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                MOD0.Load();
-                                MOD0->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                MOD1.Load();
-                                MOD1->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                MOD2.Load();
-                                MOD2->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                MOD3.Load();
-                                MOD3->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                MOD4.Load();
-                                MOD4->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 5:
-                                MOD5.Load();
-                                MOD5->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 6:
-                                MOD6.Load();
-                                MOD6->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 7:
-                                MOD7.Load();
-                                MOD7->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            case 8:
-                                MOD8.Load();
-                                MOD8->MODL.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eHead:
+                        MOD0.Load();
+                        MOD0->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
+                    case fIsFace | eMaleEars:
+                        MOD1.Load();
+                        MOD1->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eFemaleEars:
+                        MOD2.Load();
+                        MOD2->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eMouth:
+                        MOD3.Load();
+                        MOD3->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLowerTeeth:
+                        MOD4.Load();
+                        MOD4->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eUpperTeeth:
+                        MOD5.Load();
+                        MOD5->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eTongue:
+                        MOD6.Load();
+                        MOD6->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLeftEye:
+                        MOD7.Load();
+                        MOD7->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eRightEye:
+                        MOD8.Load();
+                        MOD8->MODL.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale:
                         MMODL.Load();
-                        MMODL->MODL.Read(buffer, subSize, curPos);
+                        MMODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
+                    case fIsFemale:
                         FMODL.Load();
-                        FMODL->MODL.Read(buffer, subSize, curPos);
+                        FMODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
-                        printer("  RACE: %08X - Unexpected NAM%01I: %i\n", formID, curNAM);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  RACE: %08X - Unexpected MODL\n", formID);
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(ICON):
-                switch(curNAM)
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                MOD0.Load();
-                                MOD0->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                MOD1.Load();
-                                MOD1->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                MOD2.Load();
-                                MOD2->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                MOD3.Load();
-                                MOD3->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                MOD4.Load();
-                                MOD4->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 5:
-                                MOD5.Load();
-                                MOD5->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 6:
-                                MOD6.Load();
-                                MOD6->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 7:
-                                MOD7.Load();
-                                MOD7->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            case 8:
-                                MOD8.Load();
-                                MOD8->ICON.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eHead:
+                        MOD0.Load();
+                        MOD0->ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                MICON0.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                MICON1.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                MICON2.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                MICON3.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                MICON4.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON under NAM%01I: %i\n", formID, curNAM);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eMaleEars:
+                        MOD1.Load();
+                        MOD1->ICON.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                FICON0.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                FICON1.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                FICON2.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                FICON3.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                FICON4.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected ICON under NAM%01i: indx = %i\n", formID, curNAM, curINDX);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eFemaleEars:
+                        MOD2.Load();
+                        MOD2->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eMouth:
+                        MOD3.Load();
+                        MOD3->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLowerTeeth:
+                        MOD4.Load();
+                        MOD4->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eUpperTeeth:
+                        MOD5.Load();
+                        MOD5->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eTongue:
+                        MOD6.Load();
+                        MOD6->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLeftEye:
+                        MOD7.Load();
+                        MOD7->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eRightEye:
+                        MOD8.Load();
+                        MOD8->ICON.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale | eUpperBody:
+                        MICON0.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale | eLowerBody:
+                        MICON1.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale | eHand:
+                        MICON2.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale | eFoot:
+                        MICON3.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale | eTail:
+                        MICON4.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFemale | eUpperBody:
+                        FICON0.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFemale | eLowerBody:
+                        FICON1.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFemale | eHand:
+                        FICON2.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFemale | eFoot:
+                        FICON3.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFemale | eTail:
+                        FICON4.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
-                        printer("  RACE: %08X - Unexpected ICON under NAM%01i\n", formID, curNAM);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  RACE: %08X - Unexpected ICON\n", formID);
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODB):
-                switch(curNAM)
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                MOD0.Load();
-                                MOD0->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                MOD1.Load();
-                                MOD1->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                MOD2.Load();
-                                MOD2->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                MOD3.Load();
-                                MOD3->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                MOD4.Load();
-                                MOD4->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 5:
-                                MOD5.Load();
-                                MOD5->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 6:
-                                MOD6.Load();
-                                MOD6->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 7:
-                                MOD7.Load();
-                                MOD7->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            case 8:
-                                MOD8.Load();
-                                MOD8->MODB.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eHead:
+                        MOD0.Load();
+                        MOD0->MODB.Read(buffer, subSize);
                         break;
-                    case 2:
+                    case fIsFace | eMaleEars:
+                        MOD1.Load();
+                        MOD1->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eFemaleEars:
+                        MOD2.Load();
+                        MOD2->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eMouth:
+                        MOD3.Load();
+                        MOD3->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eLowerTeeth:
+                        MOD4.Load();
+                        MOD4->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eUpperTeeth:
+                        MOD5.Load();
+                        MOD5->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eTongue:
+                        MOD6.Load();
+                        MOD6->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eLeftEye:
+                        MOD7.Load();
+                        MOD7->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsFace | eRightEye:
+                        MOD8.Load();
+                        MOD8->MODB.Read(buffer, subSize);
+                        break;
+                    case fIsMale:
                         MMODL.Load();
-                        MMODL->MODB.Read(buffer, subSize, curPos);
+                        MMODL->MODB.Read(buffer, subSize);
                         break;
-                     case 3:
+                    case fIsFemale:
                         FMODL.Load();
-                        FMODL->MODB.Read(buffer, subSize, curPos);
+                        FMODL->MODB.Read(buffer, subSize);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
-                        printer("  RACE: %08X - Unexpected MODB under NAM%01I: %i\n", formID, curNAM);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  RACE: %08X - Unexpected MODB\n", formID);
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(MODT):
-                switch(curNAM)
+                switch(part_id)
                     {
-                    case 0:
-                        switch(curINDX)
-                            {
-                            case 0:
-                                MOD0.Load();
-                                MOD0->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 1:
-                                MOD1.Load();
-                                MOD1->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 2:
-                                MOD2.Load();
-                                MOD2->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 3:
-                                MOD3.Load();
-                                MOD3->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 4:
-                                MOD4.Load();
-                                MOD4->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 5:
-                                MOD5.Load();
-                                MOD5->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 6:
-                                MOD6.Load();
-                                MOD6->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 7:
-                                MOD7.Load();
-                                MOD7->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            case 8:
-                                MOD8.Load();
-                                MOD8->MODT.Read(buffer, subSize, curPos);
-                                break;
-                            default:
-                                //ERROR
-                                //printer("FileName = %s\n", FileName);
-                                printer("  RACE: %08X - Unexpected INDX %I under NAM%01I: %i\n", formID, curINDX, curNAM);
-                                printer("  CurPos = %04x\n\n", curPos - 6);
-                                curPos = recSize;
-                                break;
-                            }
+                    case fIsFace | eHead:
+                        MOD0.Load();
+                        MOD0->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 2:
+                    case fIsFace | eMaleEars:
+                        MOD1.Load();
+                        MOD1->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eFemaleEars:
+                        MOD2.Load();
+                        MOD2->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eMouth:
+                        MOD3.Load();
+                        MOD3->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLowerTeeth:
+                        MOD4.Load();
+                        MOD4->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eUpperTeeth:
+                        MOD5.Load();
+                        MOD5->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eTongue:
+                        MOD6.Load();
+                        MOD6->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eLeftEye:
+                        MOD7.Load();
+                        MOD7->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsFace | eRightEye:
+                        MOD8.Load();
+                        MOD8->MODT.Read(buffer, subSize, CompressedOnDisk);
+                        break;
+                    case fIsMale:
                         MMODL.Load();
-                        MMODL->MODT.Read(buffer, subSize, curPos);
+                        MMODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
-                    case 3:
+                    case fIsFemale:
                         FMODL.Load();
-                        FMODL->MODT.Read(buffer, subSize, curPos);
+                        FMODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
-                        printer("  RACE: %08X - Unexpected MODT under NAM%01I: %i\n", formID, curNAM);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  RACE: %08X - Unexpected MODT\n", formID);
+                        CBASH_CHUNK_DEBUG
+                        printer("  Size = %i\n", subSize);
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
             case REV32(HNAM):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    HNAM.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&HNAM[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized HNAM size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(ENAM):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    ENAM.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&ENAM[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized ENAM size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                ENAM.Read(buffer, subSize);
                 break;
             case REV32(FGGS):
-                FGGS.Read(buffer, subSize, curPos);
+                FGGS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGGA):
-                FGGA.Read(buffer, subSize, curPos);
+                FGGA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FGTS):
-                FGTS.Read(buffer, subSize, curPos);
+                FGTS.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  RACE: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -770,23 +622,15 @@ SINT32 RACERecord::Unload()
     EDID.Unload();
     FULL.Unload();
     DESC.Unload();
-
-    SPLO.clear();
-
-    for(UINT32 x = 0; x < XNAM.size(); x++)
-        delete XNAM[x];
-    XNAM.clear();
-
+    SPLO.Unload();
+    XNAM.Unload();
     DATA.Unload();
-
     VNAM.Unload();
     DNAM.Unload();
-
     CNAM.Unload();
     PNAM.Unload();
     UNAM.Unload();
     ATTR.Unload();
-
     MOD0.Unload();
     MOD1.Unload();
     MOD2.Unload();
@@ -796,24 +640,20 @@ SINT32 RACERecord::Unload()
     MOD6.Unload();
     MOD7.Unload();
     MOD8.Unload();
-
     MMODL.Unload();
-
     MICON0.Unload();
     MICON1.Unload();
     MICON2.Unload();
     MICON3.Unload();
     MICON4.Unload();
-
     FMODL.Unload();
-
     FICON0.Unload();
     FICON1.Unload();
     FICON2.Unload();
     FICON3.Unload();
     FICON4.Unload();
-    HNAM.clear();
-    ENAM.clear();
+    HNAM.Unload();
+    ENAM.Unload();
     FGGS.Unload();
     FGGA.Unload();
     FGTS.Unload();
@@ -823,327 +663,153 @@ SINT32 RACERecord::Unload()
 
 SINT32 RACERecord::WriteRecord(FileWriter &writer)
     {
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(DESC);
+    WRITE(SPLO);
+    XNAM.Write(REV32(XNAM), writer, true);
+    WRITE(DATA);
+    WRITE(VNAM);
+    WRITE(DNAM);
+    WRITE(CNAM);
+    WRITE(PNAM);
+    WRITE(UNAM);
+    WRITE(ATTR);
+
+    WRITEEMPTY(NAM0);
     UINT32 curINDX = 0;
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-
-    for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(FORMID));
-
-    for(UINT32 p = 0; p < XNAM.size(); p++)
-        if(XNAM[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(XNAM), &XNAM[p]->value, XNAM[p]->GetSize());
-
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    if(VNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(VNAM), &VNAM.value, VNAM.GetSize());
-    if(DNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(DNAM), &DNAM.value, DNAM.GetSize());
-    if(CNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(CNAM), &CNAM.value, CNAM.GetSize());
-    if(PNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(PNAM), &PNAM.value, PNAM.GetSize());
-    if(UNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(UNAM), &UNAM.value, UNAM.GetSize());
-    if(ATTR.IsLoaded())
-        writer.record_write_subrecord(REV32(ATTR), &ATTR.value, ATTR.GetSize());
-
-    writer.record_write_subheader(REV32(NAM0), 0);
-
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD0.IsLoaded() && MOD0->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD0->MODL.value, MOD0->MODL.GetSize());
-        if(MOD0->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD0->MODB.value, MOD0->MODB.GetSize());
-        if(MOD0->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD0->MODT.value, MOD0->MODT.GetSize());
-        if(MOD0->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD0->ICON.value, MOD0->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD0.Write(writer);
+    curINDX = 1;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD1.IsLoaded() && MOD1->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD1->MODL.value, MOD1->MODL.GetSize());
-        if(MOD1->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD1->MODB.value, MOD1->MODB.GetSize());
-        if(MOD1->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD1->MODT.value, MOD1->MODT.GetSize());
-        if(MOD1->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD1->ICON.value, MOD1->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD1.Write(writer);
+    curINDX = 2;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD2.IsLoaded() && MOD2->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD2->MODL.value, MOD2->MODL.GetSize());
-        if(MOD2->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD2->MODB.value, MOD2->MODB.GetSize());
-        if(MOD2->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD2->MODT.value, MOD2->MODT.GetSize());
-        if(MOD2->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD2->ICON.value, MOD2->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD2.Write(writer);
+    curINDX = 3;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD3.IsLoaded() && MOD3->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD3->MODL.value, MOD3->MODL.GetSize());
-        if(MOD3->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD3->MODB.value, MOD3->MODB.GetSize());
-        if(MOD3->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD3->MODT.value, MOD3->MODT.GetSize());
-        if(MOD3->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD3->ICON.value, MOD3->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD3.Write(writer);
+    curINDX = 4;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD4.IsLoaded() && MOD4->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD4->MODL.value, MOD4->MODL.GetSize());
-        if(MOD4->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD4->MODB.value, MOD4->MODB.GetSize());
-        if(MOD4->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD4->MODT.value, MOD4->MODT.GetSize());
-        if(MOD4->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD4->ICON.value, MOD4->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD4.Write(writer);
+    curINDX = 5;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD5.IsLoaded() && MOD5->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD5->MODL.value, MOD5->MODL.GetSize());
-        if(MOD5->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD5->MODB.value, MOD5->MODB.GetSize());
-        if(MOD5->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD5->MODT.value, MOD5->MODT.GetSize());
-        if(MOD5->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD5->ICON.value, MOD5->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD5.Write(writer);
+    curINDX = 6;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD6.IsLoaded() && MOD6->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD6->MODL.value, MOD6->MODL.GetSize());
-        if(MOD6->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD6->MODB.value, MOD6->MODB.GetSize());
-        if(MOD6->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD6->MODT.value, MOD6->MODT.GetSize());
-        if(MOD6->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD6->ICON.value, MOD6->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD6.Write(writer);
+    curINDX = 7;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD7.IsLoaded() && MOD7->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD7->MODL.value, MOD7->MODL.GetSize());
-        if(MOD7->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD7->MODB.value, MOD7->MODB.GetSize());
-        if(MOD7->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD7->MODT.value, MOD7->MODT.GetSize());
-        if(MOD7->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD7->ICON.value, MOD7->ICON.GetSize());
-        }
-    curINDX++;
-
+    MOD7.Write(writer);
+    curINDX = 8;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MOD8.IsLoaded() && MOD8->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MOD8->MODL.value, MOD8->MODL.GetSize());
-        if(MOD8->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MOD8->MODB.value, MOD8->MODB.GetSize());
-        if(MOD8->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MOD8->MODT.value, MOD8->MODT.GetSize());
-        if(MOD8->ICON.IsLoaded())
-            writer.record_write_subrecord(REV32(ICON), MOD8->ICON.value, MOD8->ICON.GetSize());
-        }
+    MOD8.Write(writer);
 
+    WRITEEMPTY(NAM1);
+    WRITEEMPTY(MNAM);
+    MMODL.Write(writer);
     curINDX = 0;
-    writer.record_write_subheader(REV32(NAM1), 0);
-    writer.record_write_subheader(REV32(MNAM), 0);
-    if(MMODL.IsLoaded() && MMODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MMODL->MODL.value, MMODL->MODL.GetSize());
-        if(MMODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MMODL->MODB.value, MMODL->MODB.GetSize());
-        if(MMODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MMODL->MODT.value, MMODL->MODT.GetSize());
-        }
-
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MICON0.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), MICON0.value, MICON0.GetSize());
-    curINDX++;
-
+    WRITEAS(MICON0,ICON);
+    curINDX = 1;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MICON1.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), MICON1.value, MICON1.GetSize());
-    curINDX++;
-
+    WRITEAS(MICON1,ICON);
+    curINDX = 2;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MICON2.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), MICON2.value, MICON2.GetSize());
-    curINDX++;
-
+    WRITEAS(MICON2,ICON);
+    curINDX = 3;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MICON3.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), MICON3.value, MICON3.GetSize());
-    curINDX++;
-
+    WRITEAS(MICON3,ICON);
+    curINDX = 4;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(MICON4.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), MICON4.value, MICON4.GetSize());
+    WRITEAS(MICON4,ICON);
 
+    WRITEEMPTY(FNAM);
+    FMODL.Write(writer);
     curINDX = 0;
-    writer.record_write_subheader(REV32(FNAM), 0);
-    if(FMODL.IsLoaded() && FMODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), FMODL->MODL.value, FMODL->MODL.GetSize());
-        if(FMODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &FMODL->MODB.value, FMODL->MODB.GetSize());
-        if(FMODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), FMODL->MODT.value, FMODL->MODT.GetSize());
-        }
-
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(FICON0.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), FICON0.value, FICON0.GetSize());
-    curINDX++;
-
+    WRITEAS(FICON0,ICON);
+    curINDX = 1;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(FICON1.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), FICON1.value, FICON1.GetSize());
-    curINDX++;
-
+    WRITEAS(FICON1,ICON);
+    curINDX = 2;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(FICON2.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), FICON2.value, FICON2.GetSize());
-    curINDX++;
-
+    WRITEAS(FICON2,ICON);
+    curINDX = 3;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(FICON3.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), FICON3.value, FICON3.GetSize());
-    curINDX++;
-
+    WRITEAS(FICON3,ICON);
+    curINDX = 4;
     writer.record_write_subrecord(REV32(INDX), &curINDX, 4);
-    if(FICON4.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), FICON4.value, FICON4.GetSize());
+    WRITEAS(FICON4,ICON);
 
-    if(HNAM.size())
-        writer.record_write_subrecord(REV32(HNAM), &HNAM[0], (UINT32)HNAM.size() * sizeof(UINT32));
+    if(HNAM.value.size())
+        WRITE(HNAM);
     else
-        writer.record_write_subheader(REV32(HNAM), 0);
+        WRITEEMPTY(HNAM);
 
-    if(ENAM.size())
-        writer.record_write_subrecord(REV32(ENAM), &ENAM[0], (UINT32)ENAM.size() * sizeof(UINT32));
+    if(ENAM.value.size())
+        WRITE(ENAM);
     else
-        writer.record_write_subheader(REV32(ENAM), 0);
+        WRITEEMPTY(ENAM);
 
-    if(FGGS.IsLoaded())
-        writer.record_write_subrecord(REV32(FGGS), FGGS.value, FGGS.GetSize());
-    if(FGGA.IsLoaded())
-        writer.record_write_subrecord(REV32(FGGA), FGGA.value, FGGA.GetSize());
-    if(FGTS.IsLoaded())
-        writer.record_write_subrecord(REV32(FGTS), FGTS.value, FGTS.GetSize());
-
-    if(SNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(SNAM), &SNAM.value, SNAM.GetSize());
+    WRITE(FGGS);
+    WRITE(FGGA);
+    WRITE(FGTS);
+    WRITE(SNAM);
 
     return -1;
     }
 
 bool RACERecord::operator ==(const RACERecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DESC.equals(other.DESC) &&
-        DATA == other.DATA &&
-        VNAM == other.VNAM &&
-        DNAM == other.DNAM &&
-        CNAM == other.CNAM &&
-        PNAM == other.PNAM &&
-        UNAM == other.UNAM &&
-        ATTR == other.ATTR &&
-        MOD0 == other.MOD0 &&
-        MOD1 == other.MOD1 &&
-        MOD2 == other.MOD2 &&
-        MOD3 == other.MOD3 &&
-        MOD4 == other.MOD4 &&
-        MOD5 == other.MOD5 &&
-        MOD6 == other.MOD6 &&
-        MOD7 == other.MOD7 &&
-        MOD8 == other.MOD8 &&
-        MMODL == other.MMODL &&
-        MICON0.equalsi(other.MICON0) &&
-        MICON1.equalsi(other.MICON1) &&
-        MICON2.equalsi(other.MICON2) &&
-        MICON3.equalsi(other.MICON3) &&
-        MICON4.equalsi(other.MICON4) &&
-        FMODL == other.FMODL &&
-        FICON0.equalsi(other.FICON0) &&
-        FICON1.equalsi(other.FICON1) &&
-        FICON2.equalsi(other.FICON2) &&
-        FICON3.equalsi(other.FICON3) &&
-        FICON4.equalsi(other.FICON4) &&
-        FGGS == other.FGGS &&
-        FGGA == other.FGGA &&
-        FGTS == other.FGTS &&
-        SNAM == other.SNAM &&
-        SPLO.size() == other.SPLO.size() &&
-        XNAM.size() == other.XNAM.size() &&
-        HNAM.size() == other.HNAM.size() &&
-        ENAM.size() == other.ENAM.size())
-        {
-        //Record order doesn't matter on spells, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < SPLO.size(); ++x)
-            if(SPLO[x] != other.SPLO[x])
-                return false;
-
-        //Not sure if record order matters on relations, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < XNAM.size(); ++x)
-            if(*XNAM[x] != *other.XNAM[x])
-                return false;
-
-        //Record order doesn't matter on hairs, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < HNAM.size(); ++x)
-            if(HNAM[x] != other.HNAM[x])
-                return false;
-
-        //Record order doesn't matter on eyes, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < ENAM.size(); ++x)
-            if(ENAM[x] != other.ENAM[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            VNAM == other.VNAM &&
+            DNAM == other.DNAM &&
+            CNAM == other.CNAM &&
+            ATTR == other.ATTR &&
+            SNAM == other.SNAM &&
+            PNAM == other.PNAM &&
+            UNAM == other.UNAM &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            DESC.equals(other.DESC) &&
+            MICON0.equalsi(other.MICON0) &&
+            MICON1.equalsi(other.MICON1) &&
+            MICON2.equalsi(other.MICON2) &&
+            MICON3.equalsi(other.MICON3) &&
+            MICON4.equalsi(other.MICON4) &&
+            FICON0.equalsi(other.FICON0) &&
+            FICON1.equalsi(other.FICON1) &&
+            FICON2.equalsi(other.FICON2) &&
+            FICON3.equalsi(other.FICON3) &&
+            FICON4.equalsi(other.FICON4) &&
+            MOD0 == other.MOD0 &&
+            MOD1 == other.MOD1 &&
+            MOD2 == other.MOD2 &&
+            MOD3 == other.MOD3 &&
+            MOD4 == other.MOD4 &&
+            MOD5 == other.MOD5 &&
+            MOD6 == other.MOD6 &&
+            MOD7 == other.MOD7 &&
+            MOD8 == other.MOD8 &&
+            MMODL == other.MMODL &&
+            FMODL == other.FMODL &&
+            FGGS == other.FGGS &&
+            FGGA == other.FGGA &&
+            FGTS == other.FGTS &&
+            SPLO == other.SPLO &&
+            HNAM == other.HNAM &&
+            ENAM == other.ENAM &&
+            XNAM == other.XNAM);
     }
 
 bool RACERecord::operator !=(const RACERecord &other) const
     {
     return !(*this == other);
     }
+
+bool RACERecord::equals(Record *other)
+    {
+    return *this == *(RACERecord *)other;
+    }
+}

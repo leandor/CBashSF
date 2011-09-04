@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -216,13 +216,15 @@ bool INFORecord::INFOResponse::operator !=(const INFOResponse &other) const
     }
 
 INFORecord::INFORecord(unsigned char *_recData):
-    FNVRecord(_recData)
+    FNVRecord(_recData),
+    Parent(NULL)
     {
     //
     }
 
 INFORecord::INFORecord(INFORecord *srcRecord):
-    FNVRecord()
+    FNVRecord(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -234,10 +236,10 @@ INFORecord::INFORecord(INFORecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -760,104 +762,105 @@ STRING INFORecord::GetStrType()
     return "INFO";
     }
 
-UINT32 INFORecord::GetParentType()
+Record * INFORecord::GetParent()
     {
-    return REV32(DIAL);
+    return Parent;
     }
 
-SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 INFORecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = REV32(NONE);
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(QSTI):
-                QSTI.Read(buffer, subSize, curPos);
+                QSTI.Read(buffer, subSize);
                 break;
             case REV32(TPIC):
-                TPIC.Read(buffer, subSize, curPos);
+                TPIC.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(NAME):
-                NAME.Read(buffer, subSize, curPos);
+                NAME.Read(buffer, subSize);
                 break;
             case REV32(TRDT):
                 Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->TRDT.Read(buffer, subSize, curPos);
+                Responses.value.back()->TRDT.Read(buffer, subSize);
                 break;
             case REV32(NAM1):
                 if(Responses.value.size() == 0)
                     Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->NAM1.Read(buffer, subSize, curPos);
+                Responses.value.back()->NAM1.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM2):
                 if(Responses.value.size() == 0)
                     Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->NAM2.Read(buffer, subSize, curPos);
+                Responses.value.back()->NAM2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM3):
                 if(Responses.value.size() == 0)
                     Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->NAM3.Read(buffer, subSize, curPos);
+                Responses.value.back()->NAM3.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SNAM):
                 if(Responses.value.size() == 0)
                     Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->SNAM.Read(buffer, subSize, curPos);
+                Responses.value.back()->SNAM.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
                 if(Responses.value.size() == 0)
                     Responses.value.push_back(new INFOResponse);
-                Responses.value.back()->LNAM.Read(buffer, subSize, curPos);
+                Responses.value.back()->LNAM.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
-                CTDA.Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(TCLT):
-                TCLT.Read(buffer, subSize, curPos);
+                TCLT.Read(buffer, subSize);
                 break;
             case REV32(TCLF):
-                TCLF.Read(buffer, subSize, curPos);
+                TCLF.Read(buffer, subSize);
                 break;
             case REV32(TCFU):
-                TCFU.Read(buffer, subSize, curPos);
+                TCFU.Read(buffer, subSize);
                 break;
             case REV32(SCHR):
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        BeginSCHR.Read(buffer, subSize, curPos);
+                        BeginSCHR.Read(buffer, subSize);
                         break;
                     case REV32(NEXT):
-                        EndSCHR.Read(buffer, subSize, curPos);
+                        EndSCHR.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCHR chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -865,16 +868,16 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        BeginSCDA.Read(buffer, subSize, curPos);
+                        BeginSCDA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(NEXT):
-                        EndSCDA.Read(buffer, subSize, curPos);
+                        EndSCDA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCDA chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -882,16 +885,16 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        BeginSCTX.Read(buffer, subSize, curPos);
+                        BeginSCTX.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(NEXT):
-                        EndSCTX.Read(buffer, subSize, curPos);
+                        EndSCTX.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCTX chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -900,17 +903,17 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case REV32(NONE):
                         BeginVARS.value.push_back(new GENVARS);
-                        BeginVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                        BeginVARS.value.back()->SLSD.Read(buffer, subSize);
                         break;
                     case REV32(NEXT):
                         EndVARS.value.push_back(new GENVARS);
-                        EndVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                        EndVARS.value.back()->SLSD.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SLSD chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -920,18 +923,18 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     case REV32(NONE):
                         if(BeginVARS.value.size() == 0)
                             BeginVARS.value.push_back(new GENVARS);
-                        BeginVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                        BeginVARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(NEXT):
                         if(EndVARS.value.size() == 0)
                             EndVARS.value.push_back(new GENVARS);
-                        EndVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                        EndVARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCVR chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -939,18 +942,18 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        BeginSCR_.Read(buffer, subSize, curPos);
+                        BeginSCR_.Read(buffer, subSize);
                         BeginSCR_.value.back()->isSCRO = false;
                         break;
                     case REV32(NEXT):
-                        EndSCR_.Read(buffer, subSize, curPos);
+                        EndSCR_.Read(buffer, subSize);
                         EndSCR_.value.back()->isSCRO = false;
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCRV chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -958,18 +961,18 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        BeginSCR_.Read(buffer, subSize, curPos);
+                        BeginSCR_.Read(buffer, subSize);
                         BeginSCR_.value.back()->isSCRO = true;
                         break;
                     case REV32(NEXT):
-                        EndSCR_.Read(buffer, subSize, curPos);
+                        EndSCR_.Read(buffer, subSize);
                         EndSCR_.value.back()->isSCRO = true;
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCRO chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -977,27 +980,27 @@ SINT32 INFORecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 lastChunk = REV32(NEXT);
                 break;
             case REV32(SNDD):
-                SNDD.Read(buffer, subSize, curPos);
+                SNDD.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(KNAM):
-                KNAM.Read(buffer, subSize, curPos);
+                KNAM.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  INFO: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -1045,7 +1048,7 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     WRITE(PNAM);
     WRITE(NAME);
     Responses.Write(writer);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     WRITE(TCLT);
     WRITE(TCLF);
     WRITE(TCFU);
@@ -1053,9 +1056,9 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     BeginSCHR.value.compiledSize = BeginSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < BeginVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    BeginSCHR.value.lastIndex = (BeginSCHR.value.lastIndex > BeginVARS.value[x]->SLSD.value.index) ? BeginSCHR.value.lastIndex : BeginVARS.value[x]->SLSD.value.index;
-    WRITEAS(BeginSCHR, SCHR);
-    WRITEAS(BeginSCDA, SCDA);
-    WRITEAS(BeginSCTX, SCTX);
+    WRITEAS(BeginSCHR,SCHR);
+    WRITEAS(BeginSCDA,SCDA);
+    WRITEAS(BeginSCTX,SCTX);
     BeginVARS.Write(writer);
     BeginSCR_.Write(writer, true);
     WRITEEMPTY(NEXT);
@@ -1063,9 +1066,9 @@ SINT32 INFORecord::WriteRecord(FileWriter &writer)
     EndSCHR.value.compiledSize = EndSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < EndVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    EndSCHR.value.lastIndex = (EndSCHR.value.lastIndex > EndVARS.value[x]->SLSD.value.index) ? EndSCHR.value.lastIndex : EndVARS.value[x]->SLSD.value.index;
-    WRITEAS(EndSCHR, SCHR);
-    WRITEAS(EndSCDA, SCDA);
-    WRITEAS(EndSCTX, SCTX);
+    WRITEAS(EndSCHR,SCHR);
+    WRITEAS(EndSCDA,SCDA);
+    WRITEAS(EndSCTX,SCTX);
     EndVARS.Write(writer);
     EndSCR_.Write(writer, true);
 
@@ -1109,5 +1112,20 @@ bool INFORecord::operator ==(const INFORecord &other) const
 bool INFORecord::operator !=(const INFORecord &other) const
     {
     return !(*this == other);
+    }
+
+bool INFORecord::equals(Record *other)
+    {
+    return *this == *(INFORecord *)other;
+    }
+
+bool INFORecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    const INFORecord *master_info = (INFORecord *)master;
+    //Check to make sure the info is attached at the same spot
+    if(Parent->formID != master_info->Parent->formID)
+        return false;
+    return true;
     }
 }

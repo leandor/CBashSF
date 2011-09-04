@@ -16,20 +16,21 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class NPC_Record : public Record
+namespace Ob
+{
+class NPC_Record : public Record //Non-Player Character
     {
     private:
         #pragma pack(push)
         #pragma pack(1)
-        struct NPC_DATA
+        struct NPC_DATA //Data
             {
             UINT8   armorer, athletics, blade, block, blunt,
                     h2h, heavyArmor, alchemy, alteration,
@@ -83,30 +84,30 @@ class NPC_Record : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<GENACBS> ACBS;
-        std::vector<ReqSubRecord<GENSNAM> *> SNAM;
-        OptSimpleSubRecord<FORMID> INAM;
-        OptSimpleSubRecord<FORMID> RNAM;
-        std::vector<FORMID> SPLO;
-        OptSimpleSubRecord<FORMID> SCRI;
-        std::vector<ReqSubRecord<GENCNTO> *> CNTO;
-        ReqSubRecord<GENAIDT> AIDT;
-        std::vector<FORMID> PKID;
-        UnorderedPackedStrings KFFZ;
-        ReqSimpleSubRecord<FORMID> CNAM;
-        ReqSubRecord<NPC_DATA> DATA;
-        OptSimpleSubRecord<FORMID> HNAM;
-        SemiOptSimpleFloatSubRecord<flt_0> LNAM;
-        OptSimpleSubRecord<FORMID> ENAM;
-        ReqSubRecord<GENCLR> HCLR;
-        OptSimpleSubRecord<FORMID> ZNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        ReqSubRecord<GENACBS> ACBS; //Configuration
+        UnorderedSparseArray<GENSNAM *> SNAM; //Factions
+        OptSimpleSubRecord<FORMID> INAM; //Death item
+        OptSimpleSubRecord<FORMID, 0x19/*VampireRace*/> RNAM; //Race
+        UnorderedSparseArray<FORMID> SPLO; //Spells
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        UnorderedSparseArray<GENCNTO *> CNTO; //Items
+        ReqSubRecord<GENAIDT> AIDT; //AI Data
+        UnorderedSparseArray<FORMID> PKID; //Packages
+        UnorderedPackedStrings KFFZ; //Animations
+        ReqSimpleSubRecord<FORMID> CNAM; //Class
+        ReqSubRecord<NPC_DATA> DATA; //Data
+        OptSimpleSubRecord<FORMID> HNAM; //Hair
+        SemiOptSimpleFloatSubRecord<flt_0> LNAM; //Hair length
+        OptSimpleSubRecord<FORMID> ENAM; //Eyes
+        ReqSubRecord<GENCLR> HCLR; //Hair Color
+        OptSimpleSubRecord<FORMID> ZNAM; //Combat Style
         RawRecord FGGS; //FaceGen Geometry-Symmetric
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
-        ReqSimpleSubRecord<UINT16> FNAM;
+        ReqSimpleSubRecord<UINT16> FNAM; //Unknown
 
         NPC_Record(unsigned char *_recData=NULL);
         NPC_Record(NPC_Record *srcRecord);
@@ -184,10 +185,12 @@ class NPC_Record : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const NPC_Record &other) const;
         bool operator !=(const NPC_Record &other) const;
+        bool equals(Record *other);
     };
+}

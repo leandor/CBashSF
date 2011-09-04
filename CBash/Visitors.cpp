@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 // Visitors.cpp
@@ -353,62 +353,31 @@ RecordDeindexer::~RecordDeindexer()
 
 bool RecordDeindexer::Accept(Record *&curRecord)
     {
-    //De-Index the record
-    if(curRecord->IsKeyedByEditorID())
-        {
-        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
-            if(range.first->second.second == curRecord)
-                {
-                EditorID_ModFile_Record.erase(range.first);
-                ++count;
-                result = true;
-                return false;
-                }
-        }
-    else
-        {
-        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
-            if(range.first->second.second == curRecord)
-                {
-                FormID_ModFile_Record.erase(range.first);
-                ++count;
-                result = true;
-                return false;
-                }
-        }
-    return false;
-    }
-
-RecordDeleter::RecordDeleter(Record *_RecordToDelete, EditorID_Map &_EditorID_ModFile_Record, FormID_Map &_FormID_ModFile_Record):
-    RecordOp(),
-    deindexer(_EditorID_ModFile_Record, _FormID_ModFile_Record),
-    RecordToDelete(_RecordToDelete)
-    {
-    //
-    }
-
-RecordDeleter::~RecordDeleter()
-    {
-    //
-    }
-
-bool RecordDeleter::Accept(Record *&curRecord)
-    {
-    if(curRecord == NULL || curRecord == NULL)
-        return false;
-
-    if(RecordToDelete == NULL || curRecord == RecordToDelete)
+    if(curRecord != NULL)
         {
         //De-Index the record
-        deindexer.Accept(curRecord);
-        //De-index any subrecords
-        curRecord->VisitSubRecords(NULL, deindexer);
-        //Mark the record for deletion
-        curRecord = NULL;
-        ++count;
-        result = true;
-        stop = RecordToDelete != NULL;
-        return stop;
+        if(curRecord->IsKeyedByEditorID())
+            {
+            for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
+                if(range.first->second.second == curRecord)
+                    {
+                    EditorID_ModFile_Record.erase(range.first);
+                    ++count;
+                    result = true;
+                    return false;
+                    }
+            }
+        else
+            {
+            for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
+                if(range.first->second.second == curRecord)
+                    {
+                    FormID_ModFile_Record.erase(range.first);
+                    ++count;
+                    result = true;
+                    return false;
+                    }
+            }
         }
     return false;
     }
@@ -433,4 +402,65 @@ bool RecordChanger::Accept(Record *&curRecord)
     curRecord->IsChanged(true);
 
     return stop;
+    }
+
+IdenticalToMasterRetriever::IdenticalToMasterRetriever(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders,
+                                                       std::vector<ModFile *> &_LoadOrder255,
+                                                       boost::unordered_set<Record *> &_identical_records,
+                                                       EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map):
+    RecordOp(),
+    reader(_FormIDHandler, _Expanders),
+    MasterIndex(_FormIDHandler.ExpandedIndex),
+    LoadOrder255(_LoadOrder255),
+    identical_records(_identical_records),
+    EditorID_ModFile_Record(_EditorID_Map),
+    FormID_ModFile_Record(_FormID_Map),
+    Expanders(_Expanders)
+    {
+    //
+    }
+
+IdenticalToMasterRetriever::~IdenticalToMasterRetriever()
+    {
+    //
+    }
+
+bool IdenticalToMasterRetriever::Accept(Record *&curRecord)
+    {
+    UINT8 ModIndex = (UINT8)(curRecord->formID >> 24);
+
+    //The record has no master
+    if(ModIndex == MasterIndex)
+        return false;
+
+    Record *master_record = NULL;
+    ModFile *master_mod = LoadOrder255[ModIndex];
+    if(curRecord->IsKeyedByEditorID())
+        {
+        for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
+            if(range.first->second.first == master_mod)
+                {
+                master_record = range.first->second.second;
+                break;
+                }
+        }
+    else
+        {
+        for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
+            if(range.first->second.first == master_mod)
+                {
+                master_record = range.first->second.second;
+                break;
+                }
+        }
+
+    if(master_record == NULL)
+        return false;
+
+    RecordReader read_other(master_mod->FormIDHandler, Expanders);
+
+    if(curRecord->master_equality(master_record, reader, read_other, identical_records))
+        identical_records.insert(curRecord);
+
+    return false;
     }

@@ -44,7 +44,7 @@ class PERKRecord : public FNVRecord //Perk
 
         #pragma pack(push)
         #pragma pack(1)
-        struct PERKPRKE // Header
+        struct PERKPRKE //Header
             {
             UINT8   perkType, rank, priority;
 
@@ -56,7 +56,7 @@ class PERKRecord : public FNVRecord //Perk
             };
         #pragma pack(pop)
 
-        struct PERKCondition // Perk Condition
+        struct PERKCondition //Perk Condition
             {
             ReqSimpleSubRecord<SINT8> PRKC; //Run On
             OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
@@ -70,7 +70,7 @@ class PERKRecord : public FNVRecord //Perk
         //and which struct gets used depends on an earlier chunk
         //The commented out pseudocode shows how each struct is composed
         //So this struct gets a lot of personal attention...
-        struct PERKEffect // Effect
+        struct PERKEffect //Effect
             {
             OptSubRecord<PERKPRKE> PRKE; //Header
             //if(PRKE.value.perkType == 0) //Quest + Stage
@@ -332,11 +332,12 @@ class PERKRecord : public FNVRecord //Perk
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize, bool CompressedOnDisk);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const PERKRecord &other) const;
         bool operator !=(const PERKRecord &other) const;
+        bool equals(Record *other, RecordOp &read_self, RecordOp &read_other, EqualityOptions &options);
     };
 }

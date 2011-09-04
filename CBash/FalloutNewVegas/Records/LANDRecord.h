@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -171,13 +171,15 @@ class LANDRecord : public FNVRecord //Landscape
         OptSubRecord<LANDVCLR> VCLR; //Vertex Colours
         UnorderedSparseArray<LANDGENTXT *> BTXT; //Base Layer Header
         UnorderedSparseArray<LANDLAYERS *> Layers; //Layers
-        UnorderedPackedArray<FORMID> VTEX;
+        UnorderedPackedArray<FORMID> VTEX; //Textures
         //LANDMERGED *Merged;
 
         LANDRecord *WestLand;
         LANDRecord *EastLand;
         LANDRecord *NorthLand;
         LANDRecord *SouthLand;
+
+        Record *Parent;
 
         LANDRecord(unsigned char *_recData=NULL);
         LANDRecord(LANDRecord *srcRecord);
@@ -197,13 +199,15 @@ class LANDRecord : public FNVRecord //Landscape
         UINT32  GetSize(bool forceCalc=false);
         UINT32  GetType();
         STRING  GetStrType();
-        UINT32  GetParentType();
+        Record * GetParent();
 
-        SINT32  ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32  ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk);
         SINT32  Unload();
         SINT32  WriteRecord(FileWriter &writer);
 
         bool operator ==(const LANDRecord &other) const;
         bool operator !=(const LANDRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
 }

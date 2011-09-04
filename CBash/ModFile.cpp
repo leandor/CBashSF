@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 // ModFile.cpp
@@ -24,27 +24,35 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "GenericRecord.h"
 
-ModFile::ModFile(STRING FileName, STRING ModName, const UINT32 _flags):
+ModFile::ModFile(STRING filename, STRING modname, const UINT32 _flags):
     Flags(_flags),
     TES4(),
-    reader(FileName, ModName),
     FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),
-    ModID(0)
+    ModID(0),
+    FileName(filename),
+    ModName(modname),
+    file_map(),
+    buffer_position(NULL),
+    buffer_start(NULL),
+    buffer_end(NULL)
     {
     TES4.IsLoaded(false);
-    ModTime = reader.mtime();
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !reader.exists())
+    ModTime = mtime();
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !exists())
         {
         Flags.IsIgnoreExisting = true;
         TES4.IsLoaded(true);
-        STRING const _Name = reader.getModName();
+        STRING const _Name = ModName;
         TES4.IsESM(icmps(".esm",_Name + strlen(_Name) - 4) == 0);
         }
     }
 
 ModFile::~ModFile()
     {
-    //
+    if(FileName != ModName)
+        delete []FileName;
+    delete []ModName;
+    Close();
     }
 
 bool ModFile::operator <(ModFile &other)
@@ -57,26 +65,60 @@ bool ModFile::operator >(ModFile &other)
     return ModID > other.ModID;
     }
 
+time_t ModFile::mtime()
+    {
+    struct stat buf;
+    if(stat(FileName, &buf) < 0)
+        return 0;
+    else
+        return buf.st_mtime;
+    }
+
+bool ModFile::exists()
+    {
+    struct stat statBuffer;
+    return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
+    }
+
 bool ModFile::Open()
     {
     PROFILE_FUNC
 
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || reader.IsOpen() || !reader.exists())
+    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || file_map.is_open() || !exists())
         {
         if(!Flags.IsIgnoreExisting)
             {
             if(Flags.IsNoLoad)
-                printer("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", reader.getModName());
-            else if(reader.IsOpen())
-                printer("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", reader.getModName());
-            else if(!reader.exists())
-                printer("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", reader.getModName());
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", ModName);
+            else if(file_map.is_open())
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", ModName);
+            else if(!exists())
+                printer("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", ModName);
             }
         return false;
         }
-    reader.open();
-    FormIDHandler.FileStart = reader.start();
-    FormIDHandler.FileEnd = reader.end();
+
+    if(FileName == NULL || file_map.is_open())
+        return false;
+    try
+        {
+        file_map.open(FileName);
+        }
+    catch(std::ios::failure const & e)
+        {
+        printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
+        throw e;
+        }
+    catch(...)
+        {
+        printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping. An unhandled exception occurred.\n", FileName);
+        throw;
+        }
+    buffer_position = buffer_start = (unsigned char *)file_map.data();
+    buffer_end = buffer_start + file_map.size();
+
+    FormIDHandler.FileStart = buffer_start;
+    FormIDHandler.FileEnd = buffer_end;
     return true;
     }
 
@@ -84,12 +126,9 @@ bool ModFile::Close()
     {
     PROFILE_FUNC
 
-    if(!reader.IsOpen())
-        {
-        if(!Flags.IsIgnoreExisting)
-            printer("ModFile::Close: Error - Unable to close mod \"%s\". It is already closed.\n", reader.getModName());
+    if(!file_map.is_open())
         return false;
-        }
-    reader.close();
+
+    file_map.close();
     return true;
     }

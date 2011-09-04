@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -31,7 +31,7 @@ ENCHRecord::ENCHENIT::ENCHENIT():
     enchantCost(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 ENCHRecord::ENCHENIT::~ENCHENIT()
@@ -71,10 +71,10 @@ ENCHRecord::ENCHRecord(ENCHRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -171,58 +171,59 @@ STRING ENCHRecord::GetStrType()
     return "ENCH";
     }
 
-SINT32 ENCHRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ENCHRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ENIT):
-                ENIT.Read(buffer, subSize, curPos);
+                ENIT.Read(buffer, subSize);
                 break;
             case REV32(EFID):
                 Effects.value.push_back(new FNVEffect);
-                Effects.value.back()->EFID.Read(buffer, subSize, curPos);
+                Effects.value.back()->EFID.Read(buffer, subSize);
                 break;
             case REV32(EFIT):
                 if(Effects.value.size() == 0)
                     Effects.value.push_back(new FNVEffect);
-                Effects.value.back()->EFIT.Read(buffer, subSize, curPos);
+                Effects.value.back()->EFIT.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
                 if(Effects.value.size() == 0)
                     Effects.value.push_back(new FNVEffect);
-                Effects.value.back()->CTDA.Read(buffer, subSize, curPos);
+                Effects.value.back()->CTDA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ENCH: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -260,5 +261,10 @@ bool ENCHRecord::operator ==(const ENCHRecord &other) const
 bool ENCHRecord::operator !=(const ENCHRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ENCHRecord::equals(Record *other)
+    {
+    return *this == *(ENCHRecord *)other;
     }
 }

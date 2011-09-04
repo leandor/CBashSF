@@ -102,11 +102,12 @@ class IMADRecord : public FNVRecord //Image Space Modifier
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize, bool CompressedOnDisk);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const IMADRecord &other) const;
         bool operator !=(const IMADRecord &other) const;
+        bool equals(Record *other, RecordOp &read_self, RecordOp &read_other, EqualityOptions &options);
     };
 }

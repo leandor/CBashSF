@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -179,23 +179,25 @@ class INFORecord : public FNVRecord //Dialog response
         UnorderedSparseArray<FORMID> TCLT; //Choices
         UnorderedSparseArray<FORMID> TCLF; //Link From
         UnorderedSparseArray<FORMID> TCFU; //Unknown
-        ReqSubRecord<FNVSCHR> BeginSCHR;
-        RawRecord BeginSCDA;
-        NonNullStringRecord BeginSCTX;
-        OrderedSparseArray<GENVARS *, sortVARS> BeginVARS;
-        OrderedSparseArray<GENSCR_ *> BeginSCR_;
+        ReqSubRecord<FNVSCHR> BeginSCHR; //Basic Script Data
+        RawRecord BeginSCDA; //Unknown (Script Header?)
+        NonNullStringRecord BeginSCTX; //Script Source
+        OrderedSparseArray<GENVARS *, sortVARS> BeginVARS; //Local Variables
+        OrderedSparseArray<GENSCR_ *> BeginSCR_; //References
         //NEXT empty marker (REQ)
-        ReqSubRecord<FNVSCHR> EndSCHR;
-        RawRecord EndSCDA;
-        NonNullStringRecord EndSCTX;
-        OrderedSparseArray<GENVARS *, sortVARS> EndVARS;
-        OrderedSparseArray<GENSCR_ *> EndSCR_;
+        ReqSubRecord<FNVSCHR> EndSCHR; //Basic Script Data
+        RawRecord EndSCDA; //Unknown (Script Header?)
+        NonNullStringRecord EndSCTX; //Script Source
+        OrderedSparseArray<GENVARS *, sortVARS> EndVARS; //Local Variables
+        OrderedSparseArray<GENSCR_ *> EndSCR_; //References
 
         OptSimpleSubRecord<FORMID> SNDD; //Unused
         StringRecord RNAM; //Prompt
         OptSimpleSubRecord<FORMID> ANAM; //Speaker
         OptSimpleSubRecord<FORMID> KNAM; //ActorValue/Perk
         OptSimpleSubRecord<UINT32> DNAM; //Speech Challenge
+
+        Record *Parent;
 
         INFORecord(unsigned char *_recData=NULL);
         INFORecord(INFORecord *srcRecord);
@@ -304,13 +306,15 @@ class INFORecord : public FNVRecord //Dialog response
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const INFORecord &other) const;
         bool operator !=(const INFORecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
 }

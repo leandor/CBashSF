@@ -87,10 +87,10 @@ PERKRecord::PERKRecord(PERKRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -321,105 +321,106 @@ SINT32 PERKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CTDA):
-                CTDA.Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(PRKE):
-                PRKE.Read(buffer, subSize, curPos);
+                PRKE.Read(buffer, subSize);
                 break;
             case REV32(PRKC):
-                PRKC.Read(buffer, subSize, curPos);
+                PRKC.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
-                CTDA.Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(EPFT):
                 EPFT.Load();
-                EPFT->EPFT.Read(buffer, subSize, curPos);
+                EPFT->EPFT.Read(buffer, subSize);
                 break;
             case REV32(DATA):
                 EPFT.Load();
-                EPFT->DATA.Read(buffer, subSize, curPos);
+                EPFT->DATA.Read(buffer, subSize);
                 break;
             case REV32(EPF2):
-                EPF2.Read(buffer, subSize, curPos);
+                EPF2.Read(buffer, subSize);
                 break;
             case REV32(EPF3):
-                EPF3.Read(buffer, subSize, curPos);
+                EPF3.Read(buffer, subSize);
                 break;
             case REV32(SCHR):
                 SCHR.Load();
-                SCHR->SCHR.Read(buffer, subSize, curPos);
+                SCHR->SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
                 SCHR.Load();
-                SCHR->SCDA.Read(buffer, subSize, curPos);
+                SCHR->SCDA.Read(buffer, subSize);
                 break;
             case REV32(SCTX):
                 SCHR.Load();
-                SCHR->SCTX.Read(buffer, subSize, curPos);
+                SCHR->SCTX.Read(buffer, subSize);
                 break;
             case REV32(SLSD):
                 SCHR.Load();
-                SCHR->SLSD.Read(buffer, subSize, curPos);
+                SCHR->SLSD.Read(buffer, subSize);
                 break;
             case REV32(SCVR):
                 SCHR.Load();
-                SCHR->SCVR.Read(buffer, subSize, curPos);
+                SCHR->SCVR.Read(buffer, subSize);
                 break;
             case REV32(SCRO):
                 SCHR.Load();
-                SCHR->SCRO.Read(buffer, subSize, curPos);
+                SCHR->SCRO.Read(buffer, subSize);
                 break;
             case REV32(SCRV):
                 SCHR.Load();
-                SCHR->SCRV.Read(buffer, subSize, curPos);
+                SCHR->SCRV.Read(buffer, subSize);
                 break;
             case REV32(PRKF):
-                //PRKF.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //PRKF.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  PERK: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -527,5 +528,10 @@ bool PERKRecord::operator ==(const PERKRecord &other) const
 bool PERKRecord::operator !=(const PERKRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool PERKRecord::equals(const Record *other) const
+    {
+    return *this == *(PERKRecord *)other;
     }
 }

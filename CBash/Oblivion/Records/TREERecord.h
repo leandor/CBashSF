@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class TREERecord : public Record
+namespace Ob
+{
+class TREERecord : public Record //Tree
     {
     private:
         struct TREECNAM
@@ -52,12 +53,12 @@ class TREERecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        OptSubRecord<GENMODEL> MODL;
-        StringRecord ICON;
-        std::vector<UINT32> SNAM;
-        ReqSubRecord<TREECNAM> CNAM;
-        ReqSubRecord<TREEBNAM> BNAM;
+        StringRecord EDID; //Editor ID
+        OptSubRecord<GENMODEL> MODL; //Model
+        StringRecord ICON; //Large Icon Filename
+        UnorderedPackedArray<UINT32> SNAM; //SpeedTree Seeds
+        ReqSubRecord<TREECNAM> CNAM; //Tree Data
+        ReqSubRecord<TREEBNAM> BNAM; //Billboard Dimensions
 
         TREERecord(unsigned char *_recData=NULL);
         TREERecord(TREERecord *srcRecord);
@@ -71,10 +72,12 @@ class TREERecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const TREERecord &other) const;
         bool operator !=(const TREERecord &other) const;
+        bool equals(Record *other);
     };
+}

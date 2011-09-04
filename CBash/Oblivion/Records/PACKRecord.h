@@ -16,21 +16,22 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class PACKRecord : public Record
+namespace Ob
+{
+class PACKRecord : public Record //Package
     {
     private:
-        struct PACKPKDT
+        struct PACKPKDT //General
             {
-            UINT32  flags;
-            UINT8   aiType, unused1[3];
+            UINT32  flags; //General Flags
+            UINT8   aiType, unused1[3]; //Type, Unused
 
             PACKPKDT();
             ~PACKPKDT();
@@ -39,7 +40,7 @@ class PACKRecord : public Record
             bool operator !=(const PACKPKDT &other) const;
             };
 
-        struct PACKPLDT
+        struct PACKPLDT //Location
             {
             SINT32  locType;
             FORMID_OR_UINT32  locId;
@@ -52,7 +53,7 @@ class PACKRecord : public Record
             bool operator !=(const PACKPLDT &other) const;
             };
 
-        struct PACKPSDT
+        struct PACKPSDT //Schedule
             {
             SINT8   month, day;
             UINT8   date;
@@ -66,7 +67,7 @@ class PACKRecord : public Record
             bool operator !=(const PACKPSDT &other) const;
             };
 
-        struct PACKPTDT
+        struct PACKPTDT //Target
             {
             SINT32 targetType;
             FORMID_OR_UINT32 targetId;
@@ -138,12 +139,12 @@ class PACKRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSubRecord<PACKPKDT> PKDT;
-        OptSubRecord<PACKPLDT> PLDT;
-        ReqSubRecord<PACKPSDT> PSDT;
-        OptSubRecord<PACKPTDT> PTDT;
-        std::vector<ReqSubRecord<GENCTDA> *> CTDA;
+        StringRecord EDID; //Editor ID
+        ReqSubRecord<PACKPKDT> PKDT; //General
+        OptSubRecord<PACKPLDT> PLDT; //Location
+        ReqSubRecord<PACKPSDT> PSDT; //Schedule
+        OptSubRecord<PACKPTDT> PTDT; //Target
+        OrderedSparseArray<GENCTDA *> CTDA; //Conditions
 
         PACKRecord(unsigned char *_recData=NULL);
         PACKRecord(PACKRecord *srcRecord);
@@ -255,10 +256,12 @@ class PACKRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const PACKRecord &other) const;
         bool operator !=(const PACKRecord &other) const;
+        bool equals(Record *other);
     };
+}

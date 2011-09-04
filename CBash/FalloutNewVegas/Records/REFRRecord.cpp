@@ -16,22 +16,25 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "REFRRecord.h"
+#include "CELLRecord.h"
 
 namespace FNV
 {
 REFRRecord::REFRRecord(unsigned char *_recData):
-    FNVRecord(_recData)
+    FNVRecord(_recData),
+    Parent(NULL)
     {
     //
     }
 
 REFRRecord::REFRRecord(REFRRecord *srcRecord):
-    FNVRecord()
+    FNVRecord(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -43,10 +46,10 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -1132,52 +1135,53 @@ STRING REFRRecord::GetStrType()
     return "REFR";
     }
 
-UINT32 REFRRecord::GetParentType()
+Record * REFRRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 REFRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAME):
-                NAME.Read(buffer, subSize, curPos);
+                NAME.Read(buffer, subSize);
                 break;
             case REV32(XEZN):
-                XEZN.Read(buffer, subSize, curPos);
+                XEZN.Read(buffer, subSize);
                 break;
             case REV32(XRGD):
-                XRGD.Read(buffer, subSize, curPos);
+                XRGD.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XRGB):
-                XRGB.Read(buffer, subSize, curPos);
+                XRGB.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XPRD):
                 Patrol.Load();
-                Patrol->XPRD.Read(buffer, subSize, curPos);
+                Patrol->XPRD.Read(buffer, subSize);
                 break;
             case REV32(XPPA):
                 //XPPA, Patrol Script Marker (Empty)
@@ -1185,39 +1189,39 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 break;
             case REV32(INAM):
                 Patrol.Load();
-                Patrol->INAM.Read(buffer, subSize, curPos);
+                Patrol->INAM.Read(buffer, subSize);
                 break;
             case REV32(SCHR):
                 Patrol.Load();
-                Patrol->SCHR.Read(buffer, subSize, curPos);
+                Patrol->SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
                 Patrol.Load();
-                Patrol->SCDA.Read(buffer, subSize, curPos);
+                Patrol->SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
                 Patrol.Load();
-                Patrol->SCTX.Read(buffer, subSize, curPos);
+                Patrol->SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SLSD):
                 Patrol.Load();
                 Patrol->VARS.value.push_back(new GENVARS);
-                Patrol->VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                Patrol->VARS.value.back()->SLSD.Read(buffer, subSize);
                 break;
             case REV32(SCVR):
                 Patrol.Load();
                 if(Patrol->VARS.value.size() == 0)
                     Patrol->VARS.value.push_back(new GENVARS);
-                Patrol->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                Patrol->VARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRO):
                 Patrol.Load();
-                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.Read(buffer, subSize);
                 Patrol->SCR_.value.back()->isSCRO = true;
                 break;
             case REV32(SCRV):
                 Patrol.Load();
-                Patrol->SCR_.Read(buffer, subSize, curPos);
+                Patrol->SCR_.Read(buffer, subSize);
                 Patrol->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(TNAM):
@@ -1225,97 +1229,97 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case REV32(XPPA):
                         Patrol.Load();
-                        Patrol->TNAM.Read(buffer, subSize, curPos);
+                        Patrol->TNAM.Read(buffer, subSize);
                         break;
                     case REV32(XMRK):
                         MapData.Load();
-                        MapData->TNAM.Read(buffer, subSize, curPos);
+                        MapData->TNAM.Read(buffer, subSize);
                         break;
                     default:
-                        printer("  REFR: %08X - Unexpected FULL chunk\n", formID);
+                        printer("  REFR: %08X - Unexpected TNAM chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(XLCM):
-                XLCM.Read(buffer, subSize, curPos);
+                XLCM.Read(buffer, subSize);
                 break;
             case REV32(XOWN):
                 Ownership.Load();
-                Ownership->XOWN.Read(buffer, subSize, curPos);
+                Ownership->XOWN.Read(buffer, subSize);
                 break;
             case REV32(XRNK):
                 Ownership.Load();
-                Ownership->XRNK.Read(buffer, subSize, curPos);
+                Ownership->XRNK.Read(buffer, subSize);
                 break;
             case REV32(XCNT):
-                XCNT.Read(buffer, subSize, curPos);
+                XCNT.Read(buffer, subSize);
                 break;
             case REV32(XRDS):
-                XRDS.Read(buffer, subSize, curPos);
+                XRDS.Read(buffer, subSize);
                 break;
             case REV32(XHLP):
-                XHLP.Read(buffer, subSize, curPos);
+                XHLP.Read(buffer, subSize);
                 break;
             case REV32(XRAD):
-                XRAD.Read(buffer, subSize, curPos);
+                XRAD.Read(buffer, subSize);
                 break;
             case REV32(XCHG):
-                XCHG.Read(buffer, subSize, curPos);
+                XCHG.Read(buffer, subSize);
                 break;
             case REV32(XDCR):
-                XDCR.Read(buffer, subSize, curPos);
+                XDCR.Read(buffer, subSize);
                 break;
             case REV32(XLKR):
-                XLKR.Read(buffer, subSize, curPos);
+                XLKR.Read(buffer, subSize);
                 break;
             case REV32(XCLP):
-                XCLP.Read(buffer, subSize, curPos);
+                XCLP.Read(buffer, subSize);
                 break;
             case REV32(RCLR):
-                RCLR.Read(buffer, subSize, curPos);
+                RCLR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XAPD):
                 ActivateParents.Load();
-                ActivateParents->XAPD.Read(buffer, subSize, curPos);
+                ActivateParents->XAPD.Read(buffer, subSize);
                 break;
             case REV32(XAPR):
                 ActivateParents.Load();
-                ActivateParents->XAPR.Read(buffer, subSize, curPos);
+                ActivateParents->XAPR.Read(buffer, subSize);
                 break;
             case REV32(XATO):
-                XATO.Read(buffer, subSize, curPos);
+                XATO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XESP):
-                XESP.Read(buffer, subSize, curPos);
+                XESP.Read(buffer, subSize);
                 break;
             case REV32(XEMI):
-                XEMI.Read(buffer, subSize, curPos);
+                XEMI.Read(buffer, subSize);
                 break;
             case REV32(XMBR):
-                XMBR.Read(buffer, subSize, curPos);
+                XMBR.Read(buffer, subSize);
                 break;
             case REV32(XPRM):
-                XPRM.Read(buffer, subSize, curPos);
+                XPRM.Read(buffer, subSize);
                 break;
             case REV32(XTRI):
-                XTRI.Read(buffer, subSize, curPos);
+                XTRI.Read(buffer, subSize);
                 break;
             case REV32(XMBO):
-                XMBO.Read(buffer, subSize, curPos);
+                XMBO.Read(buffer, subSize);
                 break;
             case REV32(XTEL):
-                XTEL.Read(buffer, subSize, curPos);
+                XTEL.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
                 MapData.Load();
-                MapData->FNAM.Read(buffer, subSize, curPos);
+                MapData->FNAM.Read(buffer, subSize);
                 break;
             case REV32(WMI1):
                 MapData.Load();
-                MapData->WMI1.Read(buffer, subSize, curPos);
+                MapData->WMI1.Read(buffer, subSize);
                 break;
             case REV32(XMRK):
                 lastChunk = REV32(XMRK);
@@ -1328,122 +1332,122 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case REV32(XMRK):
                         MapData.Load();
-                        MapData->FULL.Read(buffer, subSize, curPos);
+                        MapData->FULL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(MMRK):
                         AudioData.Load();
-                        AudioData->FULL.Read(buffer, subSize, curPos);
+                        AudioData->FULL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  REFR: %08X - Unexpected FULL chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(CNAM):
                 AudioData.Load();
-                AudioData->CNAM.Read(buffer, subSize, curPos);
+                AudioData->CNAM.Read(buffer, subSize);
                 break;
             case REV32(BNAM):
                 AudioData.Load();
-                AudioData->BNAM.Read(buffer, subSize, curPos);
+                AudioData->BNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MNAM):
                 AudioData.Load();
-                AudioData->MNAM.Read(buffer, subSize, curPos);
+                AudioData->MNAM.Read(buffer, subSize);
                 break;
             case REV32(NNAM):
                 AudioData.Load();
-                AudioData->NNAM.Read(buffer, subSize, curPos);
+                AudioData->NNAM.Read(buffer, subSize);
                 break;
             case REV32(XSRF):
-                XSRF.Read(buffer, subSize, curPos);
+                XSRF.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XSRD):
-                XSRD.Read(buffer, subSize, curPos);
+                XSRD.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XTRG):
-                XTRG.Read(buffer, subSize, curPos);
+                XTRG.Read(buffer, subSize);
                 break;
             case REV32(XRDO):
-                XRDO.Read(buffer, subSize, curPos);
+                XRDO.Read(buffer, subSize);
                 break;
             case REV32(XLOC):
-                XLOC.Read(buffer, subSize, curPos);
+                XLOC.Read(buffer, subSize);
                 break;
             case REV32(XAMT):
                 Ammo.Load();
-                Ammo->XAMT.Read(buffer, subSize, curPos);
+                Ammo->XAMT.Read(buffer, subSize);
                 break;
             case REV32(XAMC):
                 Ammo.Load();
-                Ammo->XAMC.Read(buffer, subSize, curPos);
+                Ammo->XAMC.Read(buffer, subSize);
                 break;
             case REV32(XPWR):
-                XPWR.Read(buffer, subSize, curPos);
+                XPWR.Read(buffer, subSize);
                 break;
             case REV32(XLTW):
-                XLTW.Read(buffer, subSize, curPos);
+                XLTW.Read(buffer, subSize);
                 break;
             case REV32(XACT):
-                XACT.Read(buffer, subSize, curPos);
+                XACT.Read(buffer, subSize);
                 break;
             case REV32(XNDP):
-                XNDP.Read(buffer, subSize, curPos);
+                XNDP.Read(buffer, subSize);
                 break;
             case REV32(XPOD):
-                XPOD.Read(buffer, subSize, curPos);
+                XPOD.Read(buffer, subSize);
                 break;
             case REV32(XPTL):
-                XPTL.Read(buffer, subSize, curPos);
+                XPTL.Read(buffer, subSize);
                 break;
             case REV32(XSED):
-                XSED.Read(buffer, subSize, curPos);
+                XSED.Read(buffer, subSize);
                 break;
             case REV32(XRMR):
                 Room.Load();
-                Room->XRMR.Read(buffer, subSize, curPos);
+                Room->XRMR.Read(buffer, subSize);
                 break;
             case REV32(XLRM):
                 Room.Load();
-                Room->XLRM.Read(buffer, subSize, curPos);
+                Room->XLRM.Read(buffer, subSize);
                 break;
             case REV32(XOCP):
-                XOCP.Read(buffer, subSize, curPos);
+                XOCP.Read(buffer, subSize);
                 break;
             case REV32(XORD):
-                XORD.Read(buffer, subSize, curPos);
+                XORD.Read(buffer, subSize);
                 break;
             case REV32(XLOD):
-                XLOD.Read(buffer, subSize, curPos);
+                XLOD.Read(buffer, subSize);
                 break;
             case REV32(XIBS):
-                //XIBS.Read(buffer, subSize, curPos);
+                //XIBS.Read(buffer, subSize);
                 XIBS.value = 1;
                 break;
             case REV32(XMBP):
-                //XMBP.Read(buffer, subSize, curPos);
+                //XMBP.Read(buffer, subSize);
                 XMBP.Load();
                 break;
             case REV32(XSCL):
-                XSCL.Read(buffer, subSize, curPos);
+                XSCL.Read(buffer, subSize);
                 break;
             case REV32(ONAM):
                 IsOpenByDefault(true);
-                curPos += subSize;
+                buffer += subSize;
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  REFR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -1620,5 +1624,33 @@ bool REFRRecord::operator ==(const REFRRecord &other) const
 bool REFRRecord::operator !=(const REFRRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool REFRRecord::equals(Record *other)
+    {
+    return *this == *(REFRRecord *)other;
+    }
+
+bool REFRRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    REFRRecord *master_refr = (REFRRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_refr->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_refr->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_refr->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_refr->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_refr->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_refr->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
     }
 }

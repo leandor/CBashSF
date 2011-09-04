@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class RACERecord : public Record
+namespace Ob
+{
+class RACERecord : public Record //Race
     {
     private:
         struct RACEATTR
@@ -50,6 +51,8 @@ class RACERecord : public Record
             RawRecord MODT;
             StringRecord ICON;
 
+            void Write(FileWriter &writer);
+
             bool operator ==(const RACEMODEL &other) const;
             bool operator !=(const RACEMODEL &other) const;
             };
@@ -60,45 +63,45 @@ class RACERecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        StringRecord DESC;
-        std::vector<FORMID> SPLO;
-        std::vector<ReqSubRecord<GENXNAM> *> XNAM;
-        ReqSubRecord<RACEDATA> DATA;
-        SubRecord<RACEVNAM> VNAM;
-        SubRecord<RACEDNAM> DNAM;
-        ReqSimpleSubRecord<UINT8> CNAM;
-        OptSimpleFloatSubRecord<flt_0> PNAM;
-        OptSimpleFloatSubRecord<flt_0> UNAM;
-        ReqSubRecord<RACEATTR> ATTR;
-        OptSubRecord<RACEMODEL> MOD0;
-        OptSubRecord<RACEMODEL> MOD1;
-        OptSubRecord<RACEMODEL> MOD2;
-        OptSubRecord<RACEMODEL> MOD3;
-        OptSubRecord<RACEMODEL> MOD4;
-        OptSubRecord<RACEMODEL> MOD5;
-        OptSubRecord<RACEMODEL> MOD6;
-        OptSubRecord<RACEMODEL> MOD7;
-        OptSubRecord<RACEMODEL> MOD8;
-        OptSubRecord<GENMODEL> MMODL;
-        StringRecord MICON0;
-        StringRecord MICON1;
-        StringRecord MICON2;
-        StringRecord MICON3;
-        StringRecord MICON4;
-        OptSubRecord<GENMODEL> FMODL;
-        StringRecord FICON0;
-        StringRecord FICON1;
-        StringRecord FICON2;
-        StringRecord FICON3;
-        StringRecord FICON4;
-        std::vector<FORMID> HNAM;
-        std::vector<FORMID> ENAM;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord DESC; //Description
+        UnorderedSparseArray<FORMID> SPLO; //Spells
+        OrderedSparseArray<GENXNAM *> XNAM; //Relations, not sure if record order matters
+        ReqSubRecord<RACEDATA> DATA; //Data
+        SubRecord<RACEVNAM> VNAM; //Voices
+        SubRecord<RACEDNAM> DNAM; //Default Hair Styles
+        ReqSimpleSubRecord<UINT8> CNAM; //Default Hair Color
+        OptSimpleFloatSubRecord<flt_0> PNAM; //FaceGen - Main clamp
+        OptSimpleFloatSubRecord<flt_0> UNAM; //FaceGen - Face clamp
+        ReqSubRecord<RACEATTR> ATTR; //Base Attributes
+        OptSubRecord<RACEMODEL> MOD0; //Head Model
+        OptSubRecord<RACEMODEL> MOD1; //Male Ears Model
+        OptSubRecord<RACEMODEL> MOD2; //Female Ears Model
+        OptSubRecord<RACEMODEL> MOD3; //Mouth Model
+        OptSubRecord<RACEMODEL> MOD4; //Lower Teeth Model
+        OptSubRecord<RACEMODEL> MOD5; //Upper Teeth Model
+        OptSubRecord<RACEMODEL> MOD6; //Tongue Model
+        OptSubRecord<RACEMODEL> MOD7; //Left Eye Model
+        OptSubRecord<RACEMODEL> MOD8; //Right Eye Model
+        OptSubRecord<GENMODEL> MMODL; //Male Tail Model
+        StringRecord MICON0; //Male Upper Body Texture
+        StringRecord MICON1; //Male Lower Body Texture
+        StringRecord MICON2; //Male Hand Texture
+        StringRecord MICON3; //Male Foot Texture
+        StringRecord MICON4; //Male Tail Texture
+        OptSubRecord<GENMODEL> FMODL;//Female Tail Model
+        StringRecord FICON0; //Female Upper Body Texture
+        StringRecord FICON1; //Female Lower Body Texture
+        StringRecord FICON2; //Female Hand Texture
+        StringRecord FICON3; //Female Foot Texture
+        StringRecord FICON4; //Female Tail Texture
+        UnorderedPackedArray<FORMID> HNAM; //Hairs
+        UnorderedPackedArray<FORMID> ENAM; //Eyes
         RawRecord FGGS; //FaceGen Geometry-Symmetric
         RawRecord FGGA; //FaceGen Geometry-Asymmetric
         RawRecord FGTS; //FaceGen Texture-Symmetric
-        ReqSubRecord<RACESNAM> SNAM;
+        ReqSubRecord<RACESNAM> SNAM; //Unknown
 
         RACERecord(unsigned char *_recData=NULL);
         RACERecord(RACERecord *srcRecord);
@@ -119,10 +122,12 @@ class RACERecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const RACERecord &other) const;
         bool operator !=(const RACERecord &other) const;
+        bool equals(Record *other);
     };
+}

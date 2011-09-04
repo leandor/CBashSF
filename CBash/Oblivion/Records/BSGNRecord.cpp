@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "BSGNRecord.h"
 
+namespace Ob
+{
 BSGNRecord::BSGNRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -38,10 +40,10 @@ BSGNRecord::BSGNRecord(BSGNRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -49,9 +51,7 @@ BSGNRecord::BSGNRecord(BSGNRecord *srcRecord):
     FULL = srcRecord->FULL;
     ICON = srcRecord->ICON;
     DESC = srcRecord->DESC;
-    SPLO.resize(srcRecord->SPLO.size());
-    for(UINT32 x = 0; x < srcRecord->SPLO.size(); x++)
-        SPLO[x] = srcRecord->SPLO[x];
+    SPLO = srcRecord->SPLO;
     return;
     }
 
@@ -65,8 +65,8 @@ bool BSGNRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SPLO.size(); x++)
-        op.Accept(SPLO[x]);
+    for(UINT32 ListIndex = 0; ListIndex < SPLO.value.size(); ListIndex++)
+        op.Accept(SPLO.value[ListIndex]);
 
     return op.Stop();
     }
@@ -81,52 +81,52 @@ STRING BSGNRecord::GetStrType()
     return "BSGN";
     }
 
-SINT32 BSGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 BSGNRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     FORMID curFormID = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SPLO):
-                _readBuffer(&curFormID,buffer,subSize,curPos);
-                SPLO.push_back(curFormID);
+                SPLO.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  BSGN: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -141,50 +141,36 @@ SINT32 BSGNRecord::Unload()
     FULL.Unload();
     ICON.Unload();
     DESC.Unload();
-
-    SPLO.clear();
+    SPLO.Unload();
     return 1;
     }
 
 SINT32 BSGNRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(DESC.IsLoaded())
-        writer.record_write_subrecord(REV32(DESC), DESC.value, DESC.GetSize());
-
-    for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(UINT32));
+    WRITE(EDID);
+    WRITE(FULL);
+    WRITE(ICON);
+    WRITE(DESC);
+    WRITE(SPLO);
     return -1;
     }
 
 bool BSGNRecord::operator ==(const BSGNRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        ICON.equalsi(other.ICON) &&
-        DESC.equals(other.DESC) &&
-        SPLO.size() == other.SPLO.size())
-        {
-        //Record order doesn't matter on spells, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < SPLO.size(); ++x)
-            if(SPLO[x] != other.SPLO[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            ICON.equalsi(other.ICON) &&
+            DESC.equals(other.DESC) &&
+            SPLO == other.SPLO);
     }
 
 bool BSGNRecord::operator !=(const BSGNRecord &other) const
     {
     return !(*this == other);
     }
+
+bool BSGNRecord::equals(Record *other)
+    {
+    return *this == *(BSGNRecord *)other;
+    }
+}

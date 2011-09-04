@@ -16,14 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class EYESRecord : public Record
+namespace Ob
+{
+class EYESRecord : public Record //Eyes
     {
     private:
         enum flagsFlags
@@ -32,10 +34,10 @@ class EYESRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        StringRecord ICON;
-        ReqSimpleSubRecord<UINT8> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        StringRecord ICON; //Texture
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
 
         EYESRecord(unsigned char *_recData=NULL);
         EYESRecord(EYESRecord *srcRecord);
@@ -54,10 +56,12 @@ class EYESRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const EYESRecord &other) const;
         bool operator !=(const EYESRecord &other) const;
+        bool equals(Record *other);
     };
+}

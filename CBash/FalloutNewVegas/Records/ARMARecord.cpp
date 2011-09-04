@@ -43,10 +43,10 @@ ARMARecord::ARMARecord(ARMARecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -709,119 +709,120 @@ SINT32 ARMARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(BMDT):
-                BMDT.Read(buffer, subSize, curPos);
+                BMDT.Read(buffer, subSize);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->MODS.Read(buffer, subSize, curPos);
+                MODL->MODS.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(MOD2):
                 MOD2.Load();
-                MOD2->MOD2.Read(buffer, subSize, curPos);
+                MOD2->MOD2.Read(buffer, subSize);
                 break;
             case REV32(MO2T):
                 MOD2.Load();
-                MOD2->MO2T.Read(buffer, subSize, curPos);
+                MOD2->MO2T.Read(buffer, subSize);
                 break;
             case REV32(MO2S):
                 MOD2.Load();
-                MOD2->MO2S.Read(buffer, subSize, curPos);
+                MOD2->MO2S.Read(buffer, subSize);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MOD3):
                 MOD3.Load();
-                MOD3->MOD3.Read(buffer, subSize, curPos);
+                MOD3->MOD3.Read(buffer, subSize);
                 break;
             case REV32(MO3T):
                 MOD3.Load();
-                MOD3->MO3T.Read(buffer, subSize, curPos);
+                MOD3->MO3T.Read(buffer, subSize);
                 break;
             case REV32(MO3S):
                 MOD3.Load();
-                MOD3->MO3S.Read(buffer, subSize, curPos);
+                MOD3->MO3S.Read(buffer, subSize);
                 break;
             case REV32(MOSD):
                 MOD3.Load();
-                MOD3->MOSD.Read(buffer, subSize, curPos);
+                MOD3->MOSD.Read(buffer, subSize);
                 break;
             case REV32(MOD4):
                 MOD4.Load();
-                MOD4->MOD4.Read(buffer, subSize, curPos);
+                MOD4->MOD4.Read(buffer, subSize);
                 break;
             case REV32(MO4T):
                 MOD4.Load();
-                MOD4->MO4T.Read(buffer, subSize, curPos);
+                MOD4->MO4T.Read(buffer, subSize);
                 break;
             case REV32(MO4S):
                 MOD4.Load();
-                MOD4->MO4S.Read(buffer, subSize, curPos);
+                MOD4->MO4S.Read(buffer, subSize);
                 break;
             case REV32(ICO2):
-                ICO2.Read(buffer, subSize, curPos);
+                ICO2.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MIC2):
-                MIC2.Read(buffer, subSize, curPos);
+                MIC2.Read(buffer, subSize);
                 break;
             case REV32(ETYP):
-                ETYP.Read(buffer, subSize, curPos);
+                ETYP.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  ARMA: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -949,5 +950,10 @@ bool ARMARecord::operator ==(const ARMARecord &other) const
 bool ARMARecord::operator !=(const ARMARecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ARMARecord::equals(const Record *other) const
+    {
+    return *this == *(ARMARecord *)other;
     }
 }

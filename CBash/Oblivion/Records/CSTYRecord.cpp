@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "CSTYRecord.h"
 
+namespace Ob
+{
 CSTYRecord::CSTYCSTD::CSTYCSTD():
     dodgeChance(75),
     lrChance(50),
@@ -61,12 +63,12 @@ CSTYRecord::CSTYCSTD::CSTYCSTD():
     rushMult(1.0f),
     flagsB(0)
     {
-     memset(&unused1, 0xCD, 2);
-     memset(&unused2, 0xCD, 2);
-     memset(&unused3, 0xCD, 3);
-     memset(&unused4, 0xCD, 3);
-     memset(&unused5, 0xCD, 2);
-     memset(&unused6, 0xCD, 3);
+     memset(&unused1[0], 0xCD, sizeof(unused1));
+     memset(&unused2[0], 0xCD, sizeof(unused2));
+     memset(&unused3[0], 0xCD, sizeof(unused3));
+     memset(&unused4[0], 0xCD, sizeof(unused4));
+     memset(&unused5[0], 0xCD, sizeof(unused5));
+     memset(&unused6[0], 0xCD, sizeof(unused6));
     }
 
 CSTYRecord::CSTYCSTD::~CSTYCSTD()
@@ -201,10 +203,10 @@ CSTYRecord::CSTYRecord(CSTYRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -339,44 +341,45 @@ STRING CSTYRecord::GetStrType()
     return "CSTY";
     }
 
-SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CSTYRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CSTD):
-                CSTD.Read(buffer, subSize, curPos);
+                CSTD.Read(buffer, subSize);
                 break;
             case REV32(CSAD):
-                CSAD.Read(buffer, subSize, curPos);
+                CSAD.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CSTY: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -395,12 +398,9 @@ SINT32 CSTYRecord::Unload()
 
 SINT32 CSTYRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(CSTD.IsLoaded())
-        writer.record_write_subrecord(REV32(CSTD), &CSTD.value, CSTD.GetSize());
-    if(CSAD.IsLoaded())
-        writer.record_write_subrecord(REV32(CSAD), CSAD.value, CSAD.GetSize());
+    WRITE(EDID);
+    WRITE(CSTD);
+    WRITE(CSAD);
     return -1;
     }
 
@@ -415,3 +415,9 @@ bool CSTYRecord::operator !=(const CSTYRecord &other) const
     {
     return !(*this == other);
     }
+
+bool CSTYRecord::equals(Record *other)
+    {
+    return *this == *(CSTYRecord *)other;
+    }
+}

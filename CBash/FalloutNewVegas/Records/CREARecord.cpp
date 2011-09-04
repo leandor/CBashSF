@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -25,19 +25,19 @@ GPL License and Copyright Notice ============================================
 namespace FNV
 {
 CREARecord::CREADATA::CREADATA():
-    creatureType(0),
-    combat(0),
-    magic(0),
-    stealth(0),
-    health(0),
+    creatureType(eAnimal),
+    combat(50),
+    magic(50),
+    stealth(50),
+    health(50),
     attackDamage(0),
-    strength(0),
-    perception(0),
-    endurance(0),
-    charisma(0),
-    intelligence(0),
-    agility(0),
-    luck(0)
+    strength(5),
+    perception(5),
+    endurance(5),
+    charisma(5),
+    intelligence(5),
+    agility(5),
+    luck(5)
     {
     memset(&unused1[0], 0x00, sizeof(unused1));
     }
@@ -67,6 +67,12 @@ bool CREARecord::CREADATA::operator ==(const CREADATA &other) const
 bool CREARecord::CREADATA::operator !=(const CREADATA &other) const
     {
     return !(*this == other);
+    }
+
+void CREARecord::CREASound::Write(FileWriter &writer)
+    {
+    WRITE(CSDI);
+    WRITE(CSDC);
     }
 
 bool CREARecord::CREASound::operator ==(const CREASound &other) const
@@ -313,11 +319,7 @@ void CREARecord::CREASoundType::SetType(UINT32 Type)
 void CREARecord::CREASoundType::Write(FileWriter &writer)
     {
     WRITE(CSDT);
-    for(UINT32 x = 0; x < Sounds.value.size(); ++x)
-        {
-        Sounds.value[x]->WRITE(CSDI);
-        Sounds.value[x]->WRITE(CSDC);
-        }
+    Sounds.Write(writer);
     }
 
 bool CREARecord::CREASoundType::operator ==(const CREASoundType &other) const
@@ -334,7 +336,11 @@ bool CREARecord::CREASoundType::operator !=(const CREASoundType &other) const
 CREARecord::CREARecord(unsigned char *_recData):
     FNVRecord(_recData)
     {
-    //
+    //Creature AI differs by default from NPC AI
+    AIDT.value.aggression = eAggressive;
+    AIDT.value.energyLevel = 2;
+    //Creature Configuration differs by default from NPC Configuration
+    ACBS.value.flags = fIsWalks | fIsNoLowLevel;
     }
 
 CREARecord::CREARecord(CREARecord *srcRecord):
@@ -350,12 +356,13 @@ CREARecord::CREARecord(CREARecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
+
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;
@@ -2703,200 +2710,205 @@ STRING CREARecord::GetStrType()
     return "CREA";
     }
 
-SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CREARecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODS):
                 MODL.Load();
-                MODL->Textures.Read(buffer, subSize, curPos);
+                MODL->Textures.Read(buffer, subSize);
                 break;
             case REV32(MODD):
                 MODL.Load();
-                MODL->MODD.Read(buffer, subSize, curPos);
+                MODL->MODD.Read(buffer, subSize);
                 break;
             case REV32(SPLO):
-                SPLO.Read(buffer, subSize, curPos);
+                SPLO.Read(buffer, subSize);
                 break;
             case REV32(EITM):
-                EITM.Read(buffer, subSize, curPos);
+                EITM.Read(buffer, subSize);
                 break;
             case REV32(EAMT):
-                EAMT.Read(buffer, subSize, curPos);
+                EAMT.Read(buffer, subSize);
                 break;
             case REV32(NIFZ):
-                NIFZ.Read(buffer, subSize, curPos);
+                NIFZ.Read(buffer, subSize);
                 break;
             case REV32(NIFT):
-                NIFT.Read(buffer, subSize, curPos);
+                NIFT.Read(buffer, subSize, CompressedOnDisk);
                 //Hack
                 {
-                UINT32 testNIFT = 0;
+                bool unload_nift = true;
                 for(UINT32 x = 0; x < NIFT.GetSize(); ++x)
-                    testNIFT += NIFT.value[x];
-                if(testNIFT == 0)
+                    if(NIFT.value[x] != 0)
+                        {
+                        unload_nift = false;
+                        break;
+                        }
+                if(unload_nift)
                     NIFT.Unload();
                 }
                 break;
             case REV32(ACBS):
-                ACBS.Read(buffer, subSize, curPos);
+                ACBS.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                SNAM.Read(buffer, subSize, curPos);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(VTCK):
-                VTCK.Read(buffer, subSize, curPos);
+                VTCK.Read(buffer, subSize);
                 break;
             case REV32(TPLT):
-                TPLT.Read(buffer, subSize, curPos);
+                TPLT.Read(buffer, subSize);
                 break;
             case REV32(DEST):
                 Destructable.Load();
-                Destructable->DEST.Read(buffer, subSize, curPos);
+                Destructable->DEST.Read(buffer, subSize);
                 break;
             case REV32(DSTD):
                 Destructable.Load();
                 Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DSTD.Read(buffer, subSize);
                 break;
             case REV32(DMDL):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DMDT):
                 Destructable.Load();
                 if(Destructable->Stages.value.size() == 0)
                     Destructable->Stages.value.push_back(new DESTSTAGE);
-                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, curPos);
+                Destructable->Stages.value.back()->DMDT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DSTF):
                 //Marks end of a destruction stage
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(CNTO):
                 CNTO.value.push_back(new FNVCNTO);
-                CNTO.value.back()->CNTO.Read(buffer, subSize, curPos);
+                CNTO.value.back()->CNTO.Read(buffer, subSize);
                 break;
             case REV32(COED):
                 if(CNTO.value.size() == 0)
                     CNTO.value.push_back(new FNVCNTO);
-                CNTO.value.back()->COED.Read(buffer, subSize, curPos);
+                CNTO.value.back()->COED.Read(buffer, subSize);
                 break;
             case REV32(AIDT):
-                AIDT.Read(buffer, subSize, curPos);
+                AIDT.Read(buffer, subSize);
                 break;
             case REV32(PKID):
-                PKID.Read(buffer, subSize, curPos);
+                PKID.Read(buffer, subSize);
                 break;
             case REV32(KFFZ):
-                KFFZ.Read(buffer, subSize, curPos);
+                KFFZ.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(PNAM):
-                PNAM.Read(buffer, subSize, curPos);
+                PNAM.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             case REV32(BNAM):
-                BNAM.Read(buffer, subSize, curPos);
+                BNAM.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(NAM4):
-                NAM4.Read(buffer, subSize, curPos);
+                NAM4.Read(buffer, subSize);
                 break;
             case REV32(NAM5):
-                NAM5.Read(buffer, subSize, curPos);
+                NAM5.Read(buffer, subSize);
                 break;
             case REV32(CSCR):
-                CSCR.Read(buffer, subSize, curPos);
+                CSCR.Read(buffer, subSize);
                 break;
             case REV32(CSDT):
                 Types.value.push_back(new CREASoundType);
-                Types.value.back()->CSDT.Read(buffer, subSize, curPos);
+                Types.value.back()->CSDT.Read(buffer, subSize);
                 break;
             case REV32(CSDI):
                 if(Types.value.size() == 0)
                     Types.value.push_back(new CREASoundType);
                 Types.value.back()->Sounds.value.push_back(new CREASound);
-                Types.value.back()->Sounds.value.back()->CSDI.Read(buffer, subSize, curPos);
+                Types.value.back()->Sounds.value.back()->CSDI.Read(buffer, subSize);
                 break;
             case REV32(CSDC):
                 if(Types.value.size() == 0)
                     Types.value.push_back(new CREASoundType);
                 if(Types.value.back()->Sounds.value.size() == 0)
                     Types.value.back()->Sounds.value.push_back(new CREASound);
-                Types.value.back()->Sounds.value.back()->CSDC.Read(buffer, subSize, curPos);
+                Types.value.back()->Sounds.value.back()->CSDC.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(LNAM):
-                LNAM.Read(buffer, subSize, curPos);
+                LNAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CREA: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -3022,5 +3034,10 @@ bool CREARecord::operator ==(const CREARecord &other) const
 bool CREARecord::operator !=(const CREARecord &other) const
     {
     return !(*this == other);
+    }
+
+bool CREARecord::equals(Record *other)
+    {
+    return *this == *(CREARecord *)other;
     }
 }

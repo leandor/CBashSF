@@ -16,11 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\BSGNRecord.h"
+
+namespace Ob
+{
 UINT32 BSGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -47,7 +50,7 @@ UINT32 BSGNRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)SPLO.size();
+                    return (UINT32)SPLO.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -62,11 +65,11 @@ void * BSGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -76,7 +79,7 @@ void * BSGNRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 7: //text
             return DESC.value;
         case 8: //spells
-            *FieldValues = SPLO.size() ? &SPLO[0] : NULL;
+            *FieldValues = SPLO.value.size() ? &SPLO.value[0] : NULL;
             return NULL;
         default:
             return NULL;
@@ -109,7 +112,7 @@ bool BSGNRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 8: //spells
             SPLO.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                SPLO[x] = ((FORMIDARRAY)FieldValue)[x];
+                SPLO.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         default:
             break;
@@ -140,10 +143,11 @@ void BSGNRecord::DeleteField(FIELD_IDENTIFIERS)
             DESC.Unload();
             return;
         case 8: //spells
-            SPLO.clear();
+            SPLO.Unload();
             return;
         default:
             return;
         }
     return;
     }
+}

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -43,10 +43,10 @@ ASPCRecord::ASPCRecord(ASPCRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -446,82 +446,83 @@ STRING ASPCRecord::GetStrType()
     return "ASPC";
     }
 
-SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ASPCRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 curSNAM = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
                 switch(curSNAM)
                     {
                     case 0:
-                        DawnSNAM.Read(buffer, subSize, curPos);
+                        DawnSNAM.Read(buffer, subSize);
                         break;
                     case 1:
-                        AfternoonSNAM.Read(buffer, subSize, curPos);
+                        AfternoonSNAM.Read(buffer, subSize);
                         break;
                     case 2:
-                        DuskSNAM.Read(buffer, subSize, curPos);
+                        DuskSNAM.Read(buffer, subSize);
                         break;
                     case 3:
-                        NightSNAM.Read(buffer, subSize, curPos);
+                        NightSNAM.Read(buffer, subSize);
                         break;
                     case 4:
-                        WallaSNAM.Read(buffer, subSize, curPos);
+                        WallaSNAM.Read(buffer, subSize);
                         break;
                     default:
                         //ERROR
                         //printer("FileName = %s\n", FileName);
                         printer("  ASPC: %08X - Unexpected SNAM\n", formID);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 ++curSNAM;
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(RDAT):
-                RDAT.Read(buffer, subSize, curPos);
+                RDAT.Read(buffer, subSize);
                 break;
             case REV32(ANAM):
-                ANAM.Read(buffer, subSize, curPos);
+                ANAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ASPC: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -550,11 +551,11 @@ SINT32 ASPCRecord::WriteRecord(FileWriter &writer)
     {
     WRITE(EDID);
     WRITE(OBND);
-    WRITEAS(DawnSNAM, SNAM);
-    WRITEAS(AfternoonSNAM, SNAM);
-    WRITEAS(DuskSNAM, SNAM);
-    WRITEAS(NightSNAM, SNAM);
-    WRITEAS(WallaSNAM, SNAM);
+    WRITEAS(DawnSNAM,SNAM);
+    WRITEAS(AfternoonSNAM,SNAM);
+    WRITEAS(DuskSNAM,SNAM);
+    WRITEAS(NightSNAM,SNAM);
+    WRITEAS(WallaSNAM,SNAM);
     WRITE(WNAM);
     WRITE(RDAT);
     WRITE(ANAM);
@@ -580,5 +581,10 @@ bool ASPCRecord::operator ==(const ASPCRecord &other) const
 bool ASPCRecord::operator !=(const ASPCRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ASPCRecord::equals(Record *other)
+    {
+    return *this == *(ASPCRecord *)other;
     }
 }

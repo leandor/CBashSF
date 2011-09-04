@@ -16,23 +16,24 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class MISCRecord : public Record
+namespace Ob
+{
+class MISCRecord : public Record //Misc. Item
     {
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        OptSubRecord<GENMODEL> MODL;
-        StringRecord ICON;
-        OptSimpleSubRecord<FORMID> SCRI;
-        ReqSubRecord<GENVALUEWEIGHT> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        OptSubRecord<GENMODEL> MODL; //Model
+        StringRecord ICON; //Large Icon Filename
+        OptSimpleSubRecord<FORMID> SCRI; //Script
+        ReqSubRecord<GENVALUEWEIGHT> DATA; //Data
 
         MISCRecord(unsigned char *_recData=NULL);
         MISCRecord(MISCRecord *srcRecord);
@@ -48,10 +49,12 @@ class MISCRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const MISCRecord &other) const;
         bool operator !=(const MISCRecord &other) const;
+        bool equals(Record *other);
     };
+}

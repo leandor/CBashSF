@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class EFSHRecord : public Record
+namespace Ob
+{
+class EFSHRecord : public Record //Effect Shader
     {
     private:
         struct EFSHDATA
@@ -63,10 +64,10 @@ class EFSHRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord ICON;
-        StringRecord ICO2;
-        ReqSubRecord<EFSHDATA> DATA;
+        StringRecord EDID; //Editor ID
+        StringRecord ICON; //Fill Texture
+        StringRecord ICO2; //Particle Shader Texture
+        ReqSubRecord<EFSHDATA> DATA; //Data
 
         EFSHRecord(unsigned char *_recData=NULL);
         EFSHRecord(EFSHRecord *srcRecord);
@@ -99,10 +100,12 @@ class EFSHRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const EFSHRecord &other) const;
         bool operator !=(const EFSHRecord &other) const;
+        bool equals(Record *other);
     };
+}

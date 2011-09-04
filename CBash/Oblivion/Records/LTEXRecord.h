@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class LTEXRecord : public Record
+namespace Ob
+{
+class LTEXRecord : public Record //Landscape Texture
     {
     private:
         struct LTEXHNAM
@@ -54,15 +55,31 @@ class LTEXRecord : public Record
             eHeavyMetal,
             eHeavyWood,
             eChain,
-            eSnow
+            eSnow,
+            eStoneStairs,
+            eClothStairs,
+            eDirtStairs,
+            eGlassStairs,
+            eGrassStairs,
+            eMetalStairs,
+            eOrganicStairs,
+            eSkinStairs,
+            eWaterStairs,
+            eWoodStairs,
+            eHeavyStoneStairs,
+            eHeavyMetalStairs,
+            eHeavyWoodStairs,
+            eChainStairs,
+            eSnowStairs,
+            eElevator
             };
 
     public:
-        StringRecord EDID;
-        StringRecord ICON;
-        SubRecord<LTEXHNAM> HNAM;
-        SimpleSubRecord<UINT8> SNAM;
-        std::vector<FORMID> GNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord ICON; //Large Icon Filename
+        SemiOptSubRecord<LTEXHNAM> HNAM;
+        SemiOptSimpleSubRecord<UINT8, 30> SNAM; //Texture Specular Exponent
+        UnorderedSparseArray<FORMID> GNAM;
 
         LTEXRecord(unsigned char *_recData=NULL);
         LTEXRecord(LTEXRecord *srcRecord);
@@ -100,6 +117,38 @@ class LTEXRecord : public Record
         void   IsChain(bool value);
         bool   IsSnow();
         void   IsSnow(bool value);
+        bool   IsStoneStairs();
+        void   IsStoneStairs(bool value);
+        bool   IsClothStairs();
+        void   IsClothStairs(bool value);
+        bool   IsDirtStairs();
+        void   IsDirtStairs(bool value);
+        bool   IsGlassStairs();
+        void   IsGlassStairs(bool value);
+        bool   IsGrassStairs();
+        void   IsGrassStairs(bool value);
+        bool   IsMetalStairs();
+        void   IsMetalStairs(bool value);
+        bool   IsOrganicStairs();
+        void   IsOrganicStairs(bool value);
+        bool   IsSkinStairs();
+        void   IsSkinStairs(bool value);
+        bool   IsWaterStairs();
+        void   IsWaterStairs(bool value);
+        bool   IsWoodStairs();
+        void   IsWoodStairs(bool value);
+        bool   IsHeavyStoneStairs();
+        void   IsHeavyStoneStairs(bool value);
+        bool   IsHeavyMetalStairs();
+        void   IsHeavyMetalStairs(bool value);
+        bool   IsHeavyWoodStairs();
+        void   IsHeavyWoodStairs(bool value);
+        bool   IsChainStairs();
+        void   IsChainStairs(bool value);
+        bool   IsSnowStairs();
+        void   IsSnowStairs(bool value);
+        bool   IsElevator();
+        void   IsElevator(bool value);
         bool   IsType(UINT8 Type);
         void   SetType(UINT8 Type);
 
@@ -111,10 +160,12 @@ class LTEXRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const LTEXRecord &other) const;
         bool operator !=(const LTEXRecord &other) const;
+        bool equals(Record *other);
     };
+}

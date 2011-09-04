@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -45,11 +45,11 @@ class QUSTRecord : public FNVRecord //Quest
             ReqSimpleSubRecord<UINT8> QSDT; //Stage Flags
             OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
             StringRecord CNAM; //Log Entry
-            ReqSubRecord<FNVSCHR> SCHR;
-            RawRecord SCDA;
-            NonNullStringRecord SCTX;
-            OrderedSparseArray<GENVARS *, sortVARS> VARS;
-            OrderedSparseArray<GENSCR_ *> SCR_;
+            ReqSubRecord<FNVSCHR> SCHR; //Basic Script Data
+            RawRecord SCDA; //Unknown (Script Header?)
+            NonNullStringRecord SCTX; //Script Source
+            OrderedSparseArray<GENVARS *, sortVARS> VARS; //Local Variables
+            OrderedSparseArray<GENSCR_ *> SCR_; //References
             OptSimpleSubRecord<FORMID> NAM0; //Next Quest (only used if IsCompletes or IsFailed...)
 
             enum entriesFlags
@@ -145,7 +145,7 @@ class QUSTRecord : public FNVRecord //Quest
             {
             ReqSimpleSubRecord<SINT32> QOBJ; //Objective Index
             StringRecord NNAM; //Description
-            UnorderedSparseArray<QUSTTarget *> Targets;
+            UnorderedSparseArray<QUSTTarget *> Targets; //Targets
 
             void Write(FileWriter &writer);
 
@@ -169,8 +169,8 @@ class QUSTRecord : public FNVRecord //Quest
         StringRecord MICO; //Small Icon Filename
         ReqSubRecord<QUSTDATA> DATA; //General
         OrderedSparseArray<FNVCTDA *> CTDA; //Conditions
-        UnorderedSparseArray<QUSTStage *> Stages;
-        UnorderedSparseArray<QUSTObjective *> Objectives;
+        UnorderedSparseArray<QUSTStage *> Stages; //Stages
+        UnorderedSparseArray<QUSTObjective *> Objectives; //Objectives
 
         QUSTRecord(unsigned char *_recData=NULL);
         QUSTRecord(QUSTRecord *srcRecord);
@@ -197,11 +197,12 @@ class QUSTRecord : public FNVRecord //Quest
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const QUSTRecord &other) const;
         bool operator !=(const QUSTRecord &other) const;
+        bool equals(Record *other);
     };
 }

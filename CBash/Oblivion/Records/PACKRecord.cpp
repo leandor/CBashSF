@@ -16,18 +16,19 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "PACKRecord.h"
-#include <vector>
 
+namespace Ob
+{
 PACKRecord::PACKPKDT::PACKPKDT():
     flags(0),
     aiType(0)
     {
-    memset(&unused1, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 PACKRecord::PACKPKDT::~PACKPKDT()
@@ -119,6 +120,7 @@ bool PACKRecord::PACKPTDT::operator ==(const PACKPTDT &other) const
             targetId == other.targetId &&
             targetCount == other.targetCount);
     }
+
 bool PACKRecord::PACKPTDT::operator !=(const PACKPTDT &other) const
     {
     return !(*this == other);
@@ -130,13 +132,41 @@ PACKRecord::PACKRecord(unsigned char *_recData):
     //
     }
 
+PACKRecord::PACKRecord(PACKRecord *srcRecord):
+    Record()
+    {
+    if(srcRecord == NULL)
+        return;
+
+    flags = srcRecord->flags;
+    formID = srcRecord->formID;
+    flagsUnk = srcRecord->flagsUnk;
+
+    recData = srcRecord->recData;
+    if(!srcRecord->IsChanged())
+        {
+        IsLoaded(false);
+        return;
+        }
+
+    EDID = srcRecord->EDID;
+    PKDT = srcRecord->PKDT;
+    PLDT = srcRecord->PLDT;
+    PSDT = srcRecord->PSDT;
+    PTDT = srcRecord->PTDT;
+    CTDA = srcRecord->CTDA;
+    return;
+    }
+
+PACKRecord::~PACKRecord()
+    {
+    //
+    }
+
 bool PACKRecord::VisitFormIDs(FormIDOp &op)
     {
     if(!IsLoaded())
         return false;
-
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
 
     if(PLDT.IsLoaded() && (PLDT->locType < 2 || PLDT->locType == 4))
         op.Accept(PLDT->locId);
@@ -144,22 +174,8 @@ bool PACKRecord::VisitFormIDs(FormIDOp &op)
     if(PTDT.IsLoaded() && PTDT->targetType != 2)
         op.Accept(PTDT->targetId);
 
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        {
-        //if(CTDA[x]->value.ifunc == 214)
-        //    printer("%08X uses HasMagicEffect\n", formID);
-        curCTDAFunction = Function_Arguments.find(CTDA[x]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eFORMID)
-                op.Accept(CTDA[x]->value.param1);
-            if(CTDAFunction.second == eFORMID)
-                op.Accept(CTDA[x]->value.param2);
-            }
-        else
-            printer("Warning: PACKRecord %08X uses an unknown function (%d)!\n", formID, CTDA[x]->value.ifunc);
-        }
+    for(UINT32 ListIndex = 0; ListIndex < CTDA.value.size(); ListIndex++)
+        CTDA.value[ListIndex]->VisitFormIDs(op);
 
     return op.Stop();
     }
@@ -373,7 +389,6 @@ void PACKRecord::IsNoIdleAnims(bool value)
     {
     PKDT.value.flags = value ? (PKDT.value.flags | fIsNoIdleAnims) : (PKDT.value.flags & ~fIsNoIdleAnims);
     }
-
 
 bool PACKRecord::IsFlagMask(UINT32 Mask, bool Exact)
     {
@@ -709,69 +724,31 @@ STRING PACKRecord::GetStrType()
     return "PACK";
     }
 
-PACKRecord::PACKRecord(PACKRecord *srcRecord):
-    Record()
-    {
-    if(srcRecord == NULL)
-        return;
-
-    flags = srcRecord->flags;
-    formID = srcRecord->formID;
-    flagsUnk = srcRecord->flagsUnk;
-
-    if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
-        recData = srcRecord->recData;
-        return;
-        }
-
-    EDID = srcRecord->EDID;
-    PKDT = srcRecord->PKDT;
-    PLDT = srcRecord->PLDT;
-    PSDT = srcRecord->PSDT;
-    PTDT = srcRecord->PTDT;
-    CTDA.clear();
-    CTDA.resize(srcRecord->CTDA.size());
-    for(UINT32 x = 0; x < srcRecord->CTDA.size(); x++)
-        {
-        CTDA[x] = new ReqSubRecord<GENCTDA>;
-        *CTDA[x] = *srcRecord->CTDA[x];
-        }
-    return;
-    }
-
-PACKRecord::~PACKRecord()
-    {
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    }
-
-SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PACKRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    ReqSubRecord<GENCTDA> *newCTDA = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(PKDT):
                 switch(subSize)
@@ -779,37 +756,36 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     case 4:
                         //old format (flags was originally a short, but changed to a uint; this change also affected the padding)
                         //PKDT.size = 8; //Force it to write out the updated version
-                        _readBuffer(&PKDT.value.flags, buffer, 2, curPos);
-                        _readBuffer(&PKDT.value.aiType, buffer, 1, curPos);
-                        curPos++; //Skip over junk value. unused padding will default to 0
+                        PKDT.value.flags = *(UINT16 *)buffer;
+                        buffer += 2;
+                        PKDT.value.aiType = *(UINT8 *)buffer;
+                        buffer += 2; //Skip over junk value. unused padding will default to 0
                         break;
                     default:
-                        PKDT.Read(buffer, subSize, curPos);
+                        PKDT.Read(buffer, subSize);
                         break;
                     }
                 break;
             case REV32(PLDT):
-                PLDT.Read(buffer, subSize, curPos);
+                PLDT.Read(buffer, subSize);
                 break;
             case REV32(PSDT):
-                PSDT.Read(buffer, subSize, curPos);
+                PSDT.Read(buffer, subSize);
                 break;
             case REV32(PTDT):
-                PTDT.Read(buffer, subSize, curPos);
+                PTDT.Read(buffer, subSize);
                 break;
             case REV32(CTDT):
             case REV32(CTDA):
-                newCTDA = new ReqSubRecord<GENCTDA>;
-                newCTDA->Read(buffer, subSize, curPos);
-                CTDA.push_back(newCTDA);
+                CTDA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -825,64 +801,38 @@ SINT32 PACKRecord::Unload()
     PLDT.Unload();
     PSDT.Unload();
     PTDT.Unload();
-
-    for(UINT32 x = 0; x < CTDA.size(); x++)
-        delete CTDA[x];
-    CTDA.clear();
+    CTDA.Unload();
     return 1;
     }
 
 SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     {
-    FunctionArguments CTDAFunction;
-    Function_Arguments_Iterator curCTDAFunction;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(PKDT.IsLoaded())
-        writer.record_write_subrecord(REV32(PKDT), &PKDT.value, PKDT.GetSize());
-    if(PLDT.IsLoaded())
-        writer.record_write_subrecord(REV32(PLDT), PLDT.value, PLDT.GetSize());
-    if(PSDT.IsLoaded())
-        writer.record_write_subrecord(REV32(PSDT), &PSDT.value, PSDT.GetSize());
-    if(PTDT.IsLoaded())
-        writer.record_write_subrecord(REV32(PTDT), PTDT.value, PTDT.GetSize());
-    for(UINT32 p = 0; p < CTDA.size(); p++)
-        {
-        curCTDAFunction = Function_Arguments.find(CTDA[p]->value.ifunc);
-        if(curCTDAFunction != Function_Arguments.end())
-            {
-            CTDAFunction = curCTDAFunction->second;
-            if(CTDAFunction.first == eNONE)
-                CTDA[p]->value.param1 = 0;
-            if(CTDAFunction.second == eNONE)
-                CTDA[p]->value.param2 = 0;
-            }
-        writer.record_write_subrecord(REV32(CTDA), &CTDA[p]->value, CTDA[p]->GetSize());
-        }
+    WRITE(EDID);
+    WRITE(PKDT);
+    WRITE(PLDT);
+    WRITE(PSDT);
+    WRITE(PTDT);
+    CTDA.Write(writer, true);
     return -1;
     }
 
 bool PACKRecord::operator ==(const PACKRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        PKDT == other.PKDT &&
-        PLDT == other.PLDT &&
-        PSDT == other.PSDT &&
-        PTDT == other.PTDT &&
-        CTDA.size() == other.CTDA.size())
-        {
-        //Record order matters on conditions, so equality testing is easy
-        for(UINT32 x = 0; x < CTDA.size(); ++x)
-            if(*CTDA[x] != *other.CTDA[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            PKDT == other.PKDT &&
+            PLDT == other.PLDT &&
+            PSDT == other.PSDT &&
+            PTDT == other.PTDT &&
+            CTDA == other.CTDA);
     }
 
 bool PACKRecord::operator !=(const PACKRecord &other) const
     {
     return !(*this == other);
     }
+
+bool PACKRecord::equals(Record *other)
+    {
+    return *this == *(PACKRecord *)other;
+    }
+}

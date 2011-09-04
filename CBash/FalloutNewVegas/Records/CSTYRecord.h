@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -50,7 +50,7 @@ class CSTYRecord : public FNVRecord //Combat Style
             bool operator !=(const CSTYCSTD &other) const;
             };
 
-        struct CSTYCSAD // Advanced - Advanced
+        struct CSTYCSAD //Advanced - Advanced
             {
             FLOAT32 dodgeFMult, dodgeFBase, encSBase, encSMult, dodgeAtkMult,
                     dodgeNAtkMult, dodgeBAtkMult, dodgeBNAtkMult,
@@ -65,7 +65,7 @@ class CSTYRecord : public FNVRecord //Combat Style
             bool operator !=(const CSTYCSAD &other) const;
             };
 
-        struct CSTYCSSD // Simple
+        struct CSTYCSSD //Simple
             {
             FLOAT32 coverRadius, coverChance, waitTimerMin, waitTimerMax,
                     waitFireTimerMin, waitFireTimerMax, fireTimerMin,
@@ -147,11 +147,12 @@ class CSTYRecord : public FNVRecord //Combat Style
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CSTYRecord &other) const;
         bool operator !=(const CSTYRecord &other) const;
+        bool equals(Record *other);
     };
 }

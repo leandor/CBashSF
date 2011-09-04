@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "GLOBRecord.h"
 
+namespace Ob
+{
 GLOBRecord::GLOBRecord(unsigned char *_recData):
     Record(_recData)
     {
@@ -38,10 +40,10 @@ GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -65,43 +67,44 @@ STRING GLOBRecord::GetStrType()
     return "GLOB";
     }
 
-SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 GLOBRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(FLTV):
-                FLTV.Read(buffer, subSize, curPos);
+                FLTV.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  GLOB: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -120,14 +123,11 @@ SINT32 GLOBRecord::Unload()
 
 SINT32 GLOBRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
+    WRITE(EDID);
 
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
+    WRITE(FNAM);
 
-    if(FLTV.IsLoaded())
-        writer.record_write_subrecord(REV32(FLTV), &FLTV.value, FLTV.GetSize());
+    WRITE(FLTV);
 
     return -1;
     }
@@ -143,3 +143,9 @@ bool GLOBRecord::operator !=(const GLOBRecord &other) const
     {
     return !(*this == other);
     }
+
+bool GLOBRecord::equals(Record *other)
+    {
+    return *this == *(GLOBRecord *)other;
+    }
+}

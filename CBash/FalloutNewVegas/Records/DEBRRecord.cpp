@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -57,28 +57,27 @@ void DEBRRecord::DEBRModel::SetFlagMask(UINT8 Mask)
     flags = Mask;
     }
 
-bool DEBRRecord::DEBRModel::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool DEBRRecord::DEBRModel::Read(unsigned char *&buffer, const UINT32 &subSize)
     {
     if(subSize < 3)
         {
         printer("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
                "of chunk (%u) is less than the minimum size of the subrecord (%u). "
                "The chunk has been skipped.\n",
-               (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-               subSize, 3);
-        curPos += subSize;
+               buffer[-6], buffer[-5], buffer[-4], buffer[-3], subSize, 3);
+        buffer += subSize;
         return false;
         }
-    memcpy(&percentage, buffer + curPos, 1);
-    curPos += 1;
+    percentage = *(UINT8 *)buffer;
+    buffer++;
 
-    UINT32 size = (UINT32)strlen((STRING)(buffer + curPos)) + 1;
+    UINT32 size = (UINT32)strlen((STRING)buffer) + 1;
     modPath = new char[size];
-    strcpy_s(modPath, size, (STRING)(buffer + curPos));
-    curPos += size;
+    strcpy_s(modPath, size, (STRING)buffer);
+    buffer += size;
 
-    memcpy(&flags, buffer + curPos, 1);
-    curPos += 1;
+    flags = *(UINT8 *)buffer;
+    buffer++;
 
     size += 2;
     if(size != subSize)
@@ -86,8 +85,7 @@ bool DEBRRecord::DEBRModel::Read(unsigned char *buffer, UINT32 subSize, UINT32 &
         printer("DEBRModel: Warning - Unable to parse chunk (%c%c%c%c). Size "
                "of chunk (%u) is not equal to the parsed size (%u). "
                "The loaded fields are likely corrupt.\n",
-               (buffer + curPos)[-6], (buffer + curPos)[-5], (buffer + curPos)[-4], (buffer + curPos)[-3],
-               subSize, size);
+               buffer[-6], buffer[-5], buffer[-4], buffer[-3], subSize, size);
         }
     return true;
     }
@@ -237,10 +235,10 @@ DEBRRecord::DEBRRecord(DEBRRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -264,47 +262,48 @@ STRING DEBRRecord::GetStrType()
     return "DEBR";
     }
 
-SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 DEBRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
                 Models.MODS.push_back(new DEBRModel);
-                Models.MODS.back()->Read(buffer, subSize, curPos);
+                Models.MODS.back()->Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 if(Models.MODS.size() == 0)
                     Models.MODS.push_back(new DEBRModel);
-                Models.MODS.back()->MODT.Read(buffer, subSize, curPos);
+                Models.MODS.back()->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  DEBR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -336,5 +335,10 @@ bool DEBRRecord::operator ==(const DEBRRecord &other) const
 bool DEBRRecord::operator !=(const DEBRRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool DEBRRecord::equals(Record *other)
+    {
+    return *this == *(DEBRRecord *)other;
     }
 }

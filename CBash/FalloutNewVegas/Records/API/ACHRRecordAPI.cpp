@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
@@ -372,6 +372,8 @@ UINT32 ACHRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
             return RADIAN_FIELD;
         case 54: //rotZ
             return RADIAN_FIELD;
+        case 55: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -383,11 +385,11 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = &flagsUnk;
+            *FieldValues = cleaned_flag2();
             return NULL;
         case 4: //eid
             return EDID.value;
@@ -557,6 +559,8 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             return &DATA.value.rotY;
         case 54: //rotZ
             return &DATA.value.rotZ;
+        case 55: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -760,7 +764,7 @@ bool ACHRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 case 2: //unknown1
                     if(ArraySize != 24)
                         break;
-                    memcpy(&XDCR.value[ListIndex]->unknown1[0], FieldValue, 24);
+                    memcpy(&XDCR.value[ListIndex]->unknown1[0], FieldValue, sizeof(XDCR.value[ListIndex]->unknown1));
                     break;
                 default:
                     break;
@@ -1080,7 +1084,7 @@ void ACHRRecord::DeleteField(FIELD_IDENTIFIERS)
                     XDCR.value[ListIndex]->reference = defaultXDCR.reference;
                     return;
                 case 2: //unknown1
-                    memcpy(&XDCR.value[ListIndex]->unknown1[0], &defaultXDCR.unknown1[0], 24);
+                    memcpy(&XDCR.value[ListIndex]->unknown1[0], &defaultXDCR.unknown1[0], sizeof(XDCR.value[ListIndex]->unknown1));
                     return;
                 default:
                     return;

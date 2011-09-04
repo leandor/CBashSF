@@ -16,31 +16,33 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "CREARecord.h"
 
+namespace Ob
+{
 CREARecord::CREADATA::CREADATA():
-    creatureType(0),
-    combat(0),
-    magic(0),
-    stealth(0),
-    soul(0),
+    creatureType(eCreature),
+    combat(50),
+    magic(50),
+    stealth(50),
+    soul(eCommon),
     unused1(0x00),
-    health(0),
+    health(50),
     attackDamage(0),
-    strength(0),
-    intelligence(0),
-    willpower(0),
-    agility(0),
-    speed(0),
-    endurance(0),
-    personality(0),
-    luck(0)
+    strength(50),
+    intelligence(50),
+    willpower(50),
+    agility(50),
+    speed(50),
+    endurance(50),
+    personality(50),
+    luck(50)
     {
-    memset(&unused2, 0x00, 2);
+    memset(&unused2[0], 0x00, sizeof(unused2));
     }
 
 CREARecord::CREADATA::~CREADATA()
@@ -212,6 +214,13 @@ void CREARecord::CREASound::SetType(UINT32 Type)
     CSDT.value = Type;
     }
 
+void CREARecord::CREASound::Write(FileWriter &writer)
+    {
+    WRITE(CSDT);
+    WRITE(CSDI);
+    WRITE(CSDC);
+    }
+
 bool CREARecord::CREASound::operator ==(const CREASound &other) const
     {
     return (CSDT == other.CSDT &&
@@ -227,7 +236,10 @@ bool CREARecord::CREASound::operator !=(const CREASound &other) const
 CREARecord::CREARecord(unsigned char *_recData):
     Record(_recData)
     {
-    //
+    //Creature AI differs by default from NPC AI
+    AIDT.value.aggression = 70;
+    //Creature Configuration differs by default from NPC Configuration
+    ACBS.value.flags = fIsWalks | fIsNoLowLevel;
     }
 
 CREARecord::CREARecord(CREARecord *srcRecord):
@@ -240,50 +252,27 @@ CREARecord::CREARecord(CREARecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     FULL = srcRecord->FULL;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
-    SPLO.resize(srcRecord->SPLO.size());
-    for(UINT32 x = 0; x < srcRecord->SPLO.size(); x++)
-        SPLO[x] = srcRecord->SPLO[x];
+    MODL = srcRecord->MODL;
+    SPLO = srcRecord->SPLO;
 
     NIFZ = srcRecord->NIFZ;
     NIFT = srcRecord->NIFT;
     ACBS = srcRecord->ACBS;
-
-    SNAM.resize(srcRecord->SNAM.size());
-    for(UINT32 x = 0; x < srcRecord->SNAM.size(); x++)
-        {
-        SNAM[x] = new ReqSubRecord<GENSNAM>;
-        *SNAM[x] = *srcRecord->SNAM[x];
-        }
+    SNAM = srcRecord->SNAM;
     INAM = srcRecord->INAM;
     SCRI = srcRecord->SCRI;
-
-    CNTO.resize(srcRecord->CNTO.size());
-    for(UINT32 x = 0; x < srcRecord->CNTO.size(); x++)
-        {
-        CNTO[x] = new ReqSubRecord<GENCNTO>;
-        *CNTO[x] = *srcRecord->CNTO[x];
-        }
+    CNTO = srcRecord->CNTO;
     AIDT = srcRecord->AIDT;
-    PKID.resize(srcRecord->PKID.size());
-    for(UINT32 x = 0; x < srcRecord->PKID.size(); x++)
-        PKID[x] = srcRecord->PKID[x];
-
+    PKID = srcRecord->PKID;
     KFFZ = srcRecord->KFFZ;
     DATA = srcRecord->DATA;
     RNAM = srcRecord->RNAM;
@@ -294,26 +283,13 @@ CREARecord::CREARecord(CREARecord *srcRecord):
     CSCR = srcRecord->CSCR;
     NAM0 = srcRecord->NAM0;
     NAM1 = srcRecord->NAM1;
-
-    Sounds.resize(srcRecord->Sounds.size());
-    for(UINT32 x = 0; x < srcRecord->Sounds.size(); x++)
-        {
-        Sounds[x] = new CREASound;
-        Sounds[x]->CSDT = srcRecord->Sounds[x]->CSDT;
-        Sounds[x]->CSDI = srcRecord->Sounds[x]->CSDI;
-        Sounds[x]->CSDC = srcRecord->Sounds[x]->CSDC;
-        }
+    Sounds = srcRecord->Sounds;
     return;
     }
 
 CREARecord::~CREARecord()
     {
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        delete SNAM[x];
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        delete CNTO[x];
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        delete Sounds[x];
+    //
     }
 
 bool CREARecord::VisitFormIDs(FormIDOp &op)
@@ -321,24 +297,24 @@ bool CREARecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < SPLO.size(); x++)
-        op.Accept(SPLO[x]);
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        op.Accept(SNAM[x]->value.faction);
+    for(UINT32 ListIndex = 0; ListIndex < SPLO.value.size(); ListIndex++)
+        op.Accept(SPLO.value[ListIndex]);
+    for(UINT32 ListIndex = 0; ListIndex < SNAM.value.size(); ListIndex++)
+        op.Accept(SNAM.value[ListIndex]->faction);
     if(INAM.IsLoaded())
         op.Accept(INAM.value);
     if(SCRI.IsLoaded())
         op.Accept(SCRI.value);
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        op.Accept(CNTO[x]->value.item);
-    for(UINT32 x = 0; x < PKID.size(); x++)
-        op.Accept(PKID[x]);
+    for(UINT32 ListIndex = 0; ListIndex < CNTO.value.size(); ListIndex++)
+        op.Accept(CNTO.value[ListIndex]->item);
+    for(UINT32 ListIndex = 0; ListIndex < PKID.value.size(); ListIndex++)
+        op.Accept(PKID.value[ListIndex]);
     if(ZNAM.IsLoaded())
         op.Accept(ZNAM.value);
     if(CSCR.IsLoaded())
         op.Accept(CSCR.value);
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        op.Accept(Sounds[x]->CSDI.value);
+    for(UINT32 ListIndex = 0; ListIndex < Sounds.value.size(); ListIndex++)
+        op.Accept(Sounds.value[ListIndex]->CSDI.value);
 
     return op.Stop();
     }
@@ -949,151 +925,141 @@ STRING CREARecord::GetStrType()
     return "CREA";
     }
 
-SINT32 CREARecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 CREARecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     FORMID curFormID = 0;
-    ReqSubRecord<GENSNAM> *newSNAM = NULL;
-    ReqSubRecord<GENCNTO> *newCNTO = NULL;
-    CREASound *newSound = NULL;
-    UINT32 testNIFT = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SPLO):
-                _readBuffer(&curFormID, buffer, subSize, curPos);
-                SPLO.push_back(curFormID);
+                SPLO.Read(buffer, subSize);
                 break;
             case REV32(NIFZ):
-                NIFZ.Read(buffer, subSize, curPos);
+                NIFZ.Read(buffer, subSize);
                 break;
             case REV32(NIFT):
-                NIFT.Read(buffer, subSize, curPos);
+                NIFT.Read(buffer, subSize, CompressedOnDisk);
                 //Hack
-                testNIFT = 0;
-                for(UINT32 x = 0; x < NIFT.GetSize() && testNIFT == 0; ++x)
-                    testNIFT += NIFT.value[x];
-                if(testNIFT == 0)
+                {
+                bool unload_nift = true;
+                for(UINT32 x = 0; x < NIFT.GetSize(); ++x)
+                    if(NIFT.value[x] != 0)
+                        {
+                        unload_nift = false;
+                        break;
+                        }
+                if(unload_nift)
                     NIFT.Unload();
+                }
                 break;
             case REV32(ACBS):
-                ACBS.Read(buffer, subSize, curPos);
+                ACBS.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                newSNAM = new ReqSubRecord<GENSNAM>;
-                newSNAM->Read(buffer, subSize, curPos);
-                SNAM.push_back(newSNAM);
+                SNAM.Read(buffer, subSize);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(CNTO):
-                newCNTO = new ReqSubRecord<GENCNTO>;
-                newCNTO->Read(buffer, subSize, curPos);
-                CNTO.push_back(newCNTO);
+                CNTO.Read(buffer, subSize);
                 break;
             case REV32(AIDT):
-                AIDT.Read(buffer, subSize, curPos);
+                AIDT.Read(buffer, subSize);
                 break;
             case REV32(PKID):
-                _readBuffer(&curFormID, buffer, subSize, curPos);
-                PKID.push_back(curFormID);
+                PKID.Read(buffer, subSize);
                 break;
             case REV32(KFFZ):
-                KFFZ.Read(buffer, subSize, curPos);
+                KFFZ.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
-                RNAM.Read(buffer, subSize, curPos);
+                RNAM.Read(buffer, subSize);
                 break;
             case REV32(ZNAM):
-                ZNAM.Read(buffer, subSize, curPos);
+                ZNAM.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             case REV32(BNAM):
-                BNAM.Read(buffer, subSize, curPos);
+                BNAM.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(CSCR):
-                CSCR.Read(buffer, subSize, curPos);
+                CSCR.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                NAM0.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM1):
-                NAM1.Read(buffer, subSize, curPos);
+                NAM1.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CSDT):
-                newSound = new CREASound;
-                newSound->CSDT.Read(buffer, subSize, curPos);
-                Sounds.push_back(newSound);
+                Sounds.value.push_back(new CREASound);
+                Sounds.value.back()->CSDT.Read(buffer, subSize);
                 break;
             case REV32(CSDI):
-                if(newSound == NULL)
-                    {
-                    newSound = new CREASound;
-                    Sounds.push_back(newSound);
-                    }
-                newSound->CSDI.Read(buffer, subSize, curPos);
+                if(Sounds.value.size() == 0)
+                    Sounds.value.push_back(new CREASound);
+                Sounds.value.back()->CSDI.Read(buffer, subSize);
                 break;
             case REV32(CSDC):
-                if(newSound == NULL)
-                    {
-                    newSound = new CREASound;
-                    Sounds.push_back(newSound);
-                    }
-                newSound->CSDC.Read(buffer, subSize, curPos);
+                if(Sounds.value.size() == 0)
+                    Sounds.value.push_back(new CREASound);
+                Sounds.value.back()->CSDC.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  CREA: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         }
@@ -1107,28 +1073,16 @@ SINT32 CREARecord::Unload()
     EDID.Unload();
     FULL.Unload();
     MODL.Unload();
-
-    SPLO.clear();
+    SPLO.Unload();
     NIFZ.Unload();
-
     NIFT.Unload();
     ACBS.Unload();
-
-    for(UINT32 x = 0; x < SNAM.size(); x++)
-        delete SNAM[x];
-    SNAM.clear();
-
+    SNAM.Unload();
     INAM.Unload();
     SCRI.Unload();
-
-    for(UINT32 x = 0; x < CNTO.size(); x++)
-        delete CNTO[x];
-    CNTO.clear();
-
+    CNTO.Unload();
     AIDT.Unload();
-
-    PKID.clear();
-
+    PKID.Unload();
     KFFZ.Unload();
     DATA.Unload();
     RNAM.Unload();
@@ -1139,172 +1093,74 @@ SINT32 CREARecord::Unload()
     CSCR.Unload();
     NAM0.Unload();
     NAM1.Unload();
-
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        delete Sounds[x];
-    Sounds.clear();
+    Sounds.Unload();
     return 1;
     }
 
 SINT32 CREARecord::WriteRecord(FileWriter &writer)
     {
-    UINT32 cSize = 0;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-
-    if(FULL.IsLoaded())
-        writer.record_write_subrecord(REV32(FULL), FULL.value, FULL.GetSize());
-
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-
-    for(UINT32 p = 0; p < SPLO.size(); p++)
-        writer.record_write_subrecord(REV32(SPLO), &SPLO[p], sizeof(UINT32));
-
+    WRITE(EDID);
+    WRITE(FULL);
+    MODL.Write(writer);
+    WRITE(SPLO);
     WRITE(NIFZ);
-
-    if(NIFT.IsLoaded())
-        writer.record_write_subrecord(REV32(NIFT), NIFT.value, NIFT.GetSize());
-
-    if(ACBS.IsLoaded())
-        writer.record_write_subrecord(REV32(ACBS), &ACBS.value, ACBS.GetSize());
-
-    for(UINT32 p = 0; p < SNAM.size(); p++)
-        if(SNAM[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(SNAM), &SNAM[p]->value, SNAM[p]->GetSize());
-
-    if(INAM.IsLoaded())
-        writer.record_write_subrecord(REV32(INAM), &INAM.value, INAM.GetSize());
-
-    if(SCRI.IsLoaded())
-        writer.record_write_subrecord(REV32(SCRI), &SCRI.value, SCRI.GetSize());
-
-    for(UINT32 p = 0; p < CNTO.size(); p++)
-        if(CNTO[p]->IsLoaded())
-            writer.record_write_subrecord(REV32(CNTO), &CNTO[p]->value, sizeof(GENCNTO));
-
-    if(AIDT.IsLoaded())
-        writer.record_write_subrecord(REV32(AIDT), &AIDT.value, AIDT.GetSize());
-
-    for(UINT32 p = 0; p < PKID.size(); p++)
-        writer.record_write_subrecord(REV32(PKID), &PKID[p], sizeof(UINT32));
-
+    WRITE(NIFT);
+    WRITE(ACBS);
+    WRITE(SNAM);
+    WRITE(INAM);
+    WRITE(SCRI);
+    WRITE(CNTO);
+    WRITE(AIDT);
+    WRITE(PKID);
     WRITE(KFFZ);
-
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-
-    if(RNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(RNAM), &RNAM.value, RNAM.GetSize());
-
-    if(ZNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(ZNAM), &ZNAM.value, ZNAM.GetSize());
-
-    if(TNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(TNAM), &TNAM.value, TNAM.GetSize());
-
-    if(BNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(BNAM), &BNAM.value, BNAM.GetSize());
-
-    if(WNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
-
-    if(CSCR.IsLoaded())
-        writer.record_write_subrecord(REV32(CSCR), &CSCR.value, CSCR.GetSize());
-
-    if(NAM0.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM0), NAM0.value, NAM0.GetSize());
-
-    if(NAM1.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM1), NAM1.value, NAM1.GetSize());
-
-    for(UINT32 p = 0; p < Sounds.size(); p++)
-        {
-        if(Sounds[p]->CSDT.IsLoaded())
-            writer.record_write_subrecord(REV32(CSDT), &Sounds[p]->CSDT.value, Sounds[p]->CSDT.GetSize());
-
-        if(Sounds[p]->CSDI.IsLoaded())
-            writer.record_write_subrecord(REV32(CSDI), &Sounds[p]->CSDI.value, Sounds[p]->CSDI.GetSize());
-
-        if(Sounds[p]->CSDC.IsLoaded())
-            writer.record_write_subrecord(REV32(CSDC), &Sounds[p]->CSDC.value, Sounds[p]->CSDC.GetSize());
-        }
+    WRITE(DATA);
+    WRITE(RNAM);
+    WRITE(ZNAM);
+    WRITE(TNAM);
+    WRITE(BNAM);
+    WRITE(WNAM);
+    WRITE(CSCR);
+    WRITE(NAM0);
+    WRITE(NAM1);
+    Sounds.Write(writer);
     return -1;
     }
 
 bool CREARecord::operator ==(const CREARecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        MODL == other.MODL &&
-        NIFT == other.NIFT &&
-        ACBS == other.ACBS &&
-        INAM == other.INAM &&
-        SCRI == other.SCRI &&
-        AIDT == other.AIDT &&
-        DATA == other.DATA &&
-        RNAM == other.RNAM &&
-        ZNAM == other.ZNAM &&
-        TNAM == other.TNAM &&
-        BNAM == other.BNAM &&
-        WNAM == other.WNAM &&
-        CSCR == other.CSCR &&
-        NAM0.equalsi(other.NAM0) &&
-        NAM1.equalsi(other.NAM1) &&
-        SPLO.size() == other.SPLO.size() &&
-        SNAM.size() == other.SNAM.size() &&
-        CNTO.size() == other.CNTO.size() &&
-        PKID.size() == other.PKID.size() &&
-        Sounds.size() == other.Sounds.size() &&
-        NIFZ.equalsi(other.NIFZ) &&
-        KFFZ.equalsi(other.KFFZ))
-        {
-        //Record order doesn't matter on spells, so equality testing isn't easy
-        //The proper solution would be to check each spell against every other spell to see if there's a one-to-one match
-        //Perhaps using a disjoint set
-        //Fix-up later
-        for(UINT32 x = 0; x < SPLO.size(); ++x)
-            if(SPLO[x] != other.SPLO[x])
-                return false;
-
-        //Not sure if record order matters on factions, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < SNAM.size(); ++x)
-            if(*SNAM[x] != *other.SNAM[x])
-                return false;
-
-        //Record order doesn't matter on items, so equality testing isn't easy
-        //The proper solution would be to check each item against every other item to see if there's a one-to-one match
-        //Fix-up later
-        for(UINT32 x = 0; x < CNTO.size(); ++x)
-            if(*CNTO[x] != *other.CNTO[x])
-                return false;
-
-        //Record order matters on ai packages, so equality testing is easy
-        for(UINT32 x = 0; x < PKID.size(); ++x)
-            if(PKID[x] != other.PKID[x])
-                return false;
-
-        //Not sure if record order matters on sounds, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Sounds.size(); ++x)
-            if(*Sounds[x] != *other.Sounds[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (ACBS == other.ACBS &&
+            INAM == other.INAM &&
+            SCRI == other.SCRI &&
+            AIDT == other.AIDT &&
+            DATA == other.DATA &&
+            RNAM == other.RNAM &&
+            ZNAM == other.ZNAM &&
+            TNAM == other.TNAM &&
+            BNAM == other.BNAM &&
+            WNAM == other.WNAM &&
+            CSCR == other.CSCR &&
+            EDID.equalsi(other.EDID) &&
+            FULL.equals(other.FULL) &&
+            NAM0.equalsi(other.NAM0) &&
+            NAM1.equalsi(other.NAM1) &&
+            MODL == other.MODL &&
+            NIFT == other.NIFT &&
+            SPLO == other.SPLO &&
+            SNAM == other.SNAM &&
+            CNTO == other.CNTO &&
+            PKID == other.PKID &&
+            Sounds == other.Sounds &&
+            NIFZ.equalsi(other.NIFZ) &&
+            KFFZ.equalsi(other.KFFZ));
     }
 
 bool CREARecord::operator !=(const CREARecord &other) const
     {
     return !(*this == other);
     }
+
+bool CREARecord::equals(Record *other)
+    {
+    return *this == *(CREARecord *)other;
+    }
+}

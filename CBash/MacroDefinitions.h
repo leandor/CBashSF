@@ -16,10 +16,24 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
+
+//don't touch
+#ifdef _M_X64
+    //#pragma message("Compiling with x64 compatibility")
+    #define CBASH_X64_COMPATIBILITY
+    #error "CBASH is untested as a x64 build"
+#elif defined(_M_IX86)
+    //#pragma message("Compiling with x86 compatibility")
+    #undef CBASH_X64_COMPATIBILITY
+#else
+    #error "Unknown platform"
+#endif
+
+//#define CBASH_X64_COMPATIBILITY
 
 //define or undef as desired
 #undef CBASH_PROFILING
@@ -32,14 +46,14 @@ GPL License and Copyright Notice ============================================
 //Peek into the data before and after to see what's up
 #ifdef CBASH_DEBUG_CHUNK
     #define CBASH_CHUNK_DEBUG   for(SINT32 x = 32; x > 0; x--) \
-                                    printer("%02X ", (buffer + curPos)[-x]); \
+                                    printer("%02X ", buffer[-x]); \
                                 for(UINT32 x = 0; x < 32; x++) \
-                                    printer("%02X ", (buffer + curPos)[x]); \
+                                    printer("%02X ", buffer[x]); \
                                 printer("\n\n"); \
                                 for(SINT32 x = 32; x > 0; x--) \
-                                    printer("%c", (buffer + curPos)[-x]); \
+                                    printer("%c", buffer[-x]); \
                                 for(UINT32 x = 0; x < 32; x++) \
-                                    printer("%c", (buffer + curPos)[x]); \
+                                    printer("%c", buffer[x]); \
                                 printer("\n");
 #else
     //don't touch
@@ -112,7 +126,7 @@ GPL License and Copyright Notice ============================================
                 }
             void end()
                 {
-                if(did_end) 
+                if(did_end)
                     return;
                 QueryPerformanceCounter(&timer.stop);
                 LARGE_INTEGER time;
@@ -145,7 +159,7 @@ GPL License and Copyright Notice ============================================
                 }
             void end()
                 {
-                if(did_end) 
+                if(did_end)
                     return;
                 CallCount[FunctionName] = ++CallCount[FunctionName];
                 did_end = true;

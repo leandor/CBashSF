@@ -16,14 +16,18 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "ACRERecord.h"
+#include "CELLRecord.h"
 
+namespace Ob
+{
 ACRERecord::ACRERecord(unsigned char *_recData):
-Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //ACRE records are normally temporary
     if(_recData == NULL)
@@ -31,7 +35,8 @@ Record(_recData)
     }
 
 ACRERecord::ACRERecord(ACRERecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -40,22 +45,16 @@ ACRERecord::ACRERecord(ACRERecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     NAME = srcRecord->NAME;
-    if(srcRecord->Ownership.IsLoaded())
-        {
-        Ownership.Load();
-        Ownership->XOWN = srcRecord->Ownership->XOWN;
-        Ownership->XRNK = srcRecord->Ownership->XRNK;
-        Ownership->XGLB = srcRecord->Ownership->XGLB;
-        }
+    Ownership = srcRecord->Ownership;
     XLOD = srcRecord->XLOD;
     XESP = srcRecord->XESP;
     XRGD = srcRecord->XRGD;
@@ -66,7 +65,7 @@ ACRERecord::ACRERecord(ACRERecord *srcRecord):
 
 ACRERecord::~ACRERecord()
     {
-    //
+    //Parent is a shared pointer that's deleted when the CELL group is deleted
     }
 
 bool ACRERecord::VisitFormIDs(FormIDOp &op)
@@ -121,73 +120,74 @@ STRING ACRERecord::GetStrType()
     return "ACRE";
     }
 
-UINT32 ACRERecord::GetParentType()
+Record * ACRERecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 ACRERecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ACRERecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAME):
-                NAME.Read(buffer, subSize, curPos);
+                NAME.Read(buffer, subSize);
                 break;
             case REV32(XOWN):
                 Ownership.Load();
-                Ownership->XOWN.Read(buffer, subSize, curPos);
+                Ownership->XOWN.Read(buffer, subSize);
                 break;
             case REV32(XRNK):
                 Ownership.Load();
-                Ownership->XRNK.Read(buffer, subSize, curPos);
+                Ownership->XRNK.Read(buffer, subSize);
                 break;
             case REV32(XGLB):
                 Ownership.Load();
-                Ownership->XGLB.Read(buffer, subSize, curPos);
+                Ownership->XGLB.Read(buffer, subSize);
                 break;
             case REV32(XLOD):
-                XLOD.Read(buffer, subSize, curPos);
+                XLOD.Read(buffer, subSize);
                 break;
             case REV32(XESP):
-                XESP.Read(buffer, subSize, curPos);
+                XESP.Read(buffer, subSize);
                 break;
             case REV32(XRGD):
-                XRGD.Read(buffer, subSize, curPos);
+                XRGD.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XSCL):
-                XSCL.Read(buffer, subSize, curPos);
+                XSCL.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ACRE: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -211,35 +211,16 @@ SINT32 ACRERecord::Unload()
 
 SINT32 ACRERecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
+    WRITE(EDID);
+    WRITE(NAME);
+    Ownership.Write(writer);
 
-    if(NAME.IsLoaded())
-        writer.record_write_subrecord(REV32(NAME), &NAME.value, NAME.GetSize());
+    WRITE(XLOD);
+    WRITE(XESP);
+    WRITE(XRGD);
+    WRITE(XSCL);
+    WRITE(DATA);
 
-    if(Ownership.IsLoaded() && Ownership->XOWN.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(XOWN), &Ownership->XOWN.value, Ownership->XOWN.GetSize());
-        if(Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord(REV32(XRNK), Ownership->XRNK.value, Ownership->XRNK.GetSize());
-        if(Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord(REV32(XGLB), &Ownership->XGLB.value, Ownership->XGLB.GetSize());
-        }
-
-    if(XLOD.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOD), XLOD.value, XLOD.GetSize());
-
-    if(XESP.IsLoaded())
-        writer.record_write_subrecord(REV32(XESP), XESP.value, XESP.GetSize());
-
-    if(XRGD.IsLoaded())
-        writer.record_write_subrecord(REV32(XRGD), XRGD.value, XRGD.GetSize());
-
-    if(XSCL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSCL), &XSCL.value, XSCL.GetSize());
-
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
     return -1;
     }
 
@@ -259,3 +240,32 @@ bool ACRERecord::operator !=(const ACRERecord &other) const
     {
     return !(*this == other);
     }
+
+bool ACRERecord::equals(Record *other)
+    {
+    return *this == *(ACRERecord *)other;
+    }
+
+bool ACRERecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    ACRERecord *master_acre = (ACRERecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_acre->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_acre->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_acre->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_acre->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_acre->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_acre->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
+    }
+}

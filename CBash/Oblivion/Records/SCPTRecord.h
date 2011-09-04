@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class SCPTRecord : public Record
+namespace Ob
+{
+class SCPTRecord : public Record //Script
     {
     private:
         enum scriptTypeTypes
@@ -35,12 +36,12 @@ class SCPTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        ReqSubRecord<GENSCHR> SCHR;
-        RawRecord SCDA;
-        NonNullStringRecord SCTX;
-        std::vector<GENVARS *> VARS;
-        std::vector<ReqSubRecord<GENSCR_> *> SCR_;
+        StringRecord EDID; //Editor ID
+        ReqSubRecord<GENSCHR> SCHR; //Basic Script Data
+        RawRecord SCDA; //Unknown (Script Header?)
+        NonNullStringRecord SCTX; //Script Source
+        OrderedSparseArray<GENVARS *, sortVARS> VARS; //Local Variables
+        OrderedSparseArray<GENSCR_ *> SCR_; //References
 
         SCPTRecord(unsigned char *_recData=NULL);
         SCPTRecord(SCPTRecord *srcRecord);
@@ -65,10 +66,12 @@ class SCPTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const SCPTRecord &other) const;
         bool operator !=(const SCPTRecord &other) const;
+        bool equals(Record *other);
     };
+}

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -30,16 +30,16 @@ class CSNORecord : public FNVRecord //Casino
     private:
         struct CSNODATA
             {
-            FLOAT32 shufflePercent; // Decks % Before Shuffle
-            FLOAT32 bjPayoutRatio; // BlackJack Payout Ratio
+            FLOAT32 shufflePercent; //Decks % Before Shuffle
+            FLOAT32 bjPayoutRatio; //BlackJack Payout Ratio
             UINT32  symbol1Stop, symbol2Stop,
                     symbol3Stop, symbol4Stop,
                     symbol5Stop, symbol6Stop,
-                    symbolWStop; // Slot Reel Stops
-            UINT32  numDecks; // Number of Decks
-            UINT32  maxWinnings; // Max Winnings
-            FORMID  currency; // Currency
-            FORMID  winningsQuest; // Casino Winnings Quest
+                    symbolWStop; //Slot Reel Stops
+            UINT32  numDecks; //Number of Decks
+            UINT32  maxWinnings; //Max Winnings
+            FORMID  currency; //Currency
+            FORMID  winningsQuest; //Casino Winnings Quest
             UINT32  flags;
 
             CSNODATA();
@@ -99,11 +99,12 @@ class CSNORecord : public FNVRecord //Casino
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CSNORecord &other) const;
         bool operator !=(const CSNORecord &other) const;
+        bool equals(Record *other);
     };
 }

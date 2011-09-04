@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "REGNRecord.h"
-#include <vector>
 
+namespace Ob
+{
 REGNRecord::REGNRPLD::REGNRPLD():
     posX(0.0f),
     posY(0.0f)
@@ -46,20 +47,16 @@ bool REGNRecord::REGNRPLD::operator !=(const REGNRPLD &other) const
     return !(*this == other);
     }
 
+void REGNRecord::REGNArea::Write(FileWriter &writer)
+    {
+    WRITE(RPLI);
+    WRITE(RPLD);
+    }
+
 bool REGNRecord::REGNArea::operator ==(const REGNArea &other) const
     {
-    if(RPLI == other.RPLI &&
-        RPLD.size() == other.RPLD.size())
-        {
-        //Not sure if record order matters on areas, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < RPLD.size(); ++x)
-            if(RPLD[x] != other.RPLD[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (RPLI == other.RPLI &&
+            RPLD == other.RPLD);
     }
 
 bool REGNRecord::REGNArea::operator !=(const REGNArea &other) const
@@ -168,7 +165,7 @@ bool REGNRecord::REGNRDSD::operator !=(const REGNRDSD &other) const
 REGNRecord::REGNRDGS::REGNRDGS():
     grass(0)
     {
-    memset(&unk1, 0x00, 4);
+    memset(&unk1[0], 0x00, sizeof(unk1));
     }
 
 REGNRecord::REGNRDGS::~REGNRDGS()
@@ -204,10 +201,10 @@ REGNRecord::REGNRDOT::REGNRDOT():
     angleVarY(0),
     angleVarZ(0)
     {
-    memset(&unused1, 0x00, 2);
-    memset(&unk1, 0x00, 4);
-    memset(&unused2, 0x00, 2);
-    memset(&unk2, 0x00, 4);
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unk1[0], 0x00, sizeof(unk1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
+    memset(&unk2[0], 0x00, sizeof(unk2));
     }
 
 REGNRecord::REGNRDOT::~REGNRDOT()
@@ -309,20 +306,20 @@ bool REGNRecord::REGNRDOT::operator ==(const REGNRDOT &other) const
     {
     return (objectId == other.objectId &&
             parentIndex == other.parentIndex &&
-            AlmostEqual(density,other.density,2) &&
             clustering == other.clustering &&
             minSlope == other.minSlope &&
             maxSlope == other.maxSlope &&
             flags == other.flags &&
             radiusWRTParent == other.radiusWRTParent &&
             radius == other.radius &&
+            angleVarX == other.angleVarX &&
+            angleVarY == other.angleVarY &&
+            angleVarZ == other.angleVarZ &&
+            AlmostEqual(density,other.density,2) &&
             AlmostEqual(maxHeight,other.maxHeight,2) &&
             AlmostEqual(sink,other.sink,2) &&
             AlmostEqual(sinkVar,other.sinkVar,2) &&
-            AlmostEqual(sizeVar,other.sizeVar,2) &&
-            angleVarX == other.angleVarX &&
-            angleVarY == other.angleVarY &&
-            angleVarZ == other.angleVarZ);
+            AlmostEqual(sizeVar,other.sizeVar,2));
     }
 
 bool REGNRecord::REGNRDOT::operator !=(const REGNRDOT &other) const
@@ -335,7 +332,7 @@ REGNRecord::REGNRDAT::REGNRDAT():
     flags(0),
     priority(0)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 REGNRecord::REGNRDAT::~REGNRDAT()
@@ -516,46 +513,46 @@ void REGNRecord::REGNEntry::SetMusicType(UINT32 Type)
     *RDMD.value = Type;
     }
 
+void REGNRecord::REGNEntry::Write(FileWriter &writer)
+    {
+    WRITE(RDAT);
+    switch(RDAT.value.entryType)
+        {
+        case eObject:
+            WRITEREQ(RDOT);
+            break;
+        case eWeather:
+            WRITE(RDWT);
+            break;
+        case eMap:
+            WRITE(RDMP);
+            break;
+        case eUnkIcon:
+            WRITE(ICON);
+            break;
+        case eGrass:
+            WRITE(RDGS);
+            break;
+        case eSound:
+            WRITE(RDMD);
+            WRITEREQ(RDSD);
+            break;
+        default:
+            //printer("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, RDAT.value.entryType, p);
+            break;
+        }
+    }
+
 bool REGNRecord::REGNEntry::operator ==(const REGNEntry &other) const
     {
-    if(RDAT == other.RDAT &&
-        RDMP.equals(other.RDMP) &&
-        ICON.equalsi(other.ICON) &&
-        RDMD == other.RDMD &&
-
-        RDOT.size() == other.RDOT.size() &&
-        RDGS.size() == other.RDGS.size() &&
-        RDSD.size() == other.RDSD.size() &&
-        RDWT.size() == other.RDWT.size())
-        {
-        //Not sure if record order matters on objects, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < RDOT.size(); ++x)
-            if(RDOT[x] != other.RDOT[x])
-                return false;
-
-        //Not sure if record order matters on grasses, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < RDGS.size(); ++x)
-            if(RDGS[x] != other.RDGS[x])
-                return false;
-
-        //Not sure if record order matters on sounds, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < RDSD.size(); ++x)
-            if(RDSD[x] != other.RDSD[x])
-                return false;
-
-        //Not sure if record order matters on weathers, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < RDWT.size(); ++x)
-            if(RDWT[x] != other.RDWT[x])
-                return false;
-
-        return true;
-        }
-
-    return false;
+    return (RDAT == other.RDAT &&
+            RDMD == other.RDMD &&
+            RDMP.equals(other.RDMP) &&
+            ICON.equalsi(other.ICON) &&
+            RDSD == other.RDSD &&
+            RDGS == other.RDGS &&
+            RDWT == other.RDWT &&
+            RDOT == other.RDOT);
     }
 
 bool REGNRecord::REGNEntry::operator !=(const REGNEntry &other) const
@@ -579,10 +576,10 @@ REGNRecord::REGNRecord(REGNRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -590,39 +587,14 @@ REGNRecord::REGNRecord(REGNRecord *srcRecord):
     ICON = srcRecord->ICON;
     RCLR = srcRecord->RCLR;
     WNAM = srcRecord->WNAM;
-
-    Areas.clear();
-    Areas.resize(srcRecord->Areas.size());
-    for(UINT32 x = 0; x < srcRecord->Areas.size(); x++)
-        {
-        Areas[x] = new REGNArea;
-        Areas[x]->RPLI = srcRecord->Areas[x]->RPLI;
-        Areas[x]->RPLD = srcRecord->Areas[x]->RPLD;
-        }
-
-    Entries.clear();
-    Entries.resize(srcRecord->Entries.size());
-    for(UINT32 x = 0; x < srcRecord->Entries.size(); x++)
-        {
-        Entries[x] = new REGNEntry;
-        Entries[x]->RDAT = srcRecord->Entries[x]->RDAT;
-        Entries[x]->RDOT = srcRecord->Entries[x]->RDOT;
-        Entries[x]->RDMP = srcRecord->Entries[x]->RDMP;
-        Entries[x]->ICON = srcRecord->Entries[x]->ICON;
-        Entries[x]->RDGS = srcRecord->Entries[x]->RDGS;
-        Entries[x]->RDMD = srcRecord->Entries[x]->RDMD;
-        Entries[x]->RDSD = srcRecord->Entries[x]->RDSD;
-        Entries[x]->RDWT = srcRecord->Entries[x]->RDWT;
-        }
+    Areas = srcRecord->Areas;
+    Entries = srcRecord->Entries;
     return;
     }
 
 REGNRecord::~REGNRecord()
     {
-    for(UINT32 x = 0; x < Areas.size(); x++)
-        delete Areas[x];
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        delete Entries[x];
+    //
     }
 
 bool REGNRecord::VisitFormIDs(FormIDOp &op)
@@ -632,16 +604,16 @@ bool REGNRecord::VisitFormIDs(FormIDOp &op)
 
     if(WNAM.IsLoaded())
         op.Accept(WNAM.value);
-    for(UINT32 x = 0; x < Entries.size(); x++)
+    for(UINT32 ListIndex = 0; ListIndex < Entries.value.size(); ListIndex++)
         {
-        for(UINT32 y = 0; y < Entries[x]->RDOT.size(); y++)
-            op.Accept(Entries[x]->RDOT[y].objectId);
-        for(UINT32 y = 0; y < Entries[x]->RDGS.size(); y++)
-            op.Accept(Entries[x]->RDGS[y].grass);
-        for(UINT32 y = 0; y < Entries[x]->RDSD.size(); y++)
-            op.Accept(Entries[x]->RDSD[y].sound);
-        for(UINT32 y = 0; y < Entries[x]->RDWT.size(); y++)
-            op.Accept(Entries[x]->RDWT[y].weather);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDOT.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDOT.value[ListX2Index].objectId);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDGS.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDGS.value[ListX2Index].grass);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDSD.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDSD.value[ListX2Index].sound);
+        for(UINT32 ListX2Index = 0; ListX2Index < Entries.value[ListIndex]->RDWT.value.size(); ListX2Index++)
+            op.Accept(Entries.value[ListIndex]->RDWT.value[ListX2Index].weather);
         }
 
     return op.Stop();
@@ -652,179 +624,99 @@ UINT32 REGNRecord::GetType()
     return REV32(REGN);
     }
 
-
 STRING REGNRecord::GetStrType()
     {
     return "REGN";
     }
 
-SINT32 REGNRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 REGNRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    REGNArea *newArea = NULL;
-    REGNEntry *newEntry = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                if(newEntry == NULL)
-                    ICON.Read(buffer, subSize, curPos);
+                if(Entries.value.size() != 0 && Entries.value.back()->IsIcon())
+                    Entries.value.back()->ICON.Read(buffer, subSize, CompressedOnDisk);
                 else
-                    newEntry->ICON.Read(buffer, subSize, curPos);
+                    ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(RCLR):
-                RCLR.Read(buffer, subSize, curPos);
+                RCLR.Read(buffer, subSize);
                 break;
             case REV32(WNAM):
-                WNAM.Read(buffer, subSize, curPos);
+                WNAM.Read(buffer, subSize);
                 break;
             case REV32(RPLI):
-                newArea = new REGNArea;
-                newArea->RPLI.Read(buffer, subSize, curPos);
-                Areas.push_back(newArea);
+                Areas.value.push_back(new REGNArea);
+                Areas.value.back()->RPLI.Read(buffer, subSize);
                 break;
             case REV32(RPLD):
-                if(subSize % sizeof(REGNRPLD) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    if(newArea == NULL)
-                        {
-                        newArea = new REGNArea;
-                        Areas.push_back(newArea);
-                        }
-                    newArea->RPLD.resize(subSize / sizeof(REGNRPLD));
-                    _readBuffer(&newArea->RPLD[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized RPLD size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Areas.value.size() == 0)
+                    Areas.value.push_back(new REGNArea);
+                Areas.value.back()->RPLD.Read(buffer, subSize);
                 break;
             case REV32(RDAT):
-                newEntry = new REGNEntry;
-                newEntry->RDAT.Read(buffer, subSize, curPos);
-                Entries.push_back(newEntry);
+                Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDAT.Read(buffer, subSize);
                 break;
             case REV32(RDOT):
-                if(subSize % sizeof(REGNRDOT) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    if(newEntry == NULL)
-                        {
-                        newEntry = new REGNEntry;
-                        Entries.push_back(newEntry);
-                        }
-                    newEntry->RDOT.resize(subSize / sizeof(REGNRDOT));
-                    _readBuffer(&newEntry->RDOT[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized RDOT size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDOT.Read(buffer, subSize);
                 break;
             case REV32(RDMP):
-                if(newEntry == NULL)
-                    {
-                    newEntry = new REGNEntry;
-                    Entries.push_back(newEntry);
-                    }
-                newEntry->RDMP.Read(buffer, subSize, curPos);
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDMP.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(RDGS):
-                if(subSize % sizeof(REGNRDGS) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    if(newEntry == NULL)
-                        {
-                        newEntry = new REGNEntry;
-                        Entries.push_back(newEntry);
-                        }
-                    newEntry->RDGS.resize(subSize / sizeof(REGNRDGS));
-                    _readBuffer(&newEntry->RDGS[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized RDOT size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDGS.Read(buffer, subSize);
                 break;
             case REV32(RDMD):
-                if(newEntry == NULL)
-                    {
-                    newEntry = new REGNEntry;
-                    Entries.push_back(newEntry);
-                    }
-                newEntry->RDMD.Read(buffer, subSize, curPos);
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDMD.Read(buffer, subSize);
                 break;
             case REV32(RDSD):
-                if(subSize % sizeof(REGNRDSD) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    if(newEntry == NULL)
-                        {
-                        newEntry = new REGNEntry;
-                        Entries.push_back(newEntry);
-                        }
-                    newEntry->RDSD.resize(subSize / sizeof(REGNRDSD));
-                    _readBuffer(&newEntry->RDSD[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized RDSD size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDSD.Read(buffer, subSize);
                 break;
             case REV32(RDWT):
-                if(subSize % sizeof(REGNRDWT) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    if(newEntry == NULL)
-                        {
-                        newEntry = new REGNEntry;
-                        Entries.push_back(newEntry);
-                        }
-                    newEntry->RDWT.resize(subSize / sizeof(REGNRDWT));
-                    _readBuffer(&newEntry->RDWT[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized RDWT size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Entries.value.size() == 0)
+                    Entries.value.push_back(new REGNEntry);
+                Entries.value.back()->RDWT.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  REGN: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -839,106 +731,30 @@ SINT32 REGNRecord::Unload()
     ICON.Unload();
     RCLR.Unload();
     WNAM.Unload();
-    for(UINT32 x = 0; x < Areas.size(); x++)
-        delete Areas[x];
-    Areas.clear();
-    for(UINT32 x = 0; x < Entries.size(); x++)
-        delete Entries[x];
-    Entries.clear();
+    Areas.Unload();
+    Entries.Unload();
     return 1;
     }
 
 SINT32 REGNRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(ICON.IsLoaded())
-        writer.record_write_subrecord(REV32(ICON), ICON.value, ICON.GetSize());
-    if(RCLR.IsLoaded())
-        writer.record_write_subrecord(REV32(RCLR), &RCLR.value, RCLR.GetSize());
-    if(WNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(WNAM), &WNAM.value, WNAM.GetSize());
-    if(Areas.size())
-        for(UINT32 p = 0; p < Areas.size(); p++)
-            {
-            if(Areas[p]->RPLI.IsLoaded())
-                writer.record_write_subrecord(REV32(RPLI), &Areas[p]->RPLI.value, Areas[p]->RPLI.GetSize());
-            if(Areas[p]->RPLD.size())
-                writer.record_write_subrecord(REV32(RPLD), &Areas[p]->RPLD[0], (UINT32)Areas[p]->RPLD.size() * sizeof(REGNRPLD));
-            //else
-            //    writer.record_write_subheader(REV32(RPLD), 0);
-            }
-    if(Entries.size())
-        for(UINT32 p = 0; p < Entries.size(); p++)
-            {
-            if(Entries[p]->RDAT.IsLoaded())
-                writer.record_write_subrecord(REV32(RDAT), &Entries[p]->RDAT.value, Entries[p]->RDAT.GetSize());
-            switch(Entries[p]->RDAT.value.entryType)
-                {
-                case eREGNObjects:
-                    if(Entries[p]->RDOT.size())
-                        writer.record_write_subrecord(REV32(RDOT), &Entries[p]->RDOT[0], (UINT32)Entries[p]->RDOT.size() * sizeof(REGNRDOT));
-                    else
-                        writer.record_write_subheader(REV32(RDOT), 0);
-                    break;
-                case eREGNWeathers:
-                    if(Entries[p]->RDWT.size())
-                        writer.record_write_subrecord(REV32(RDWT), &Entries[p]->RDWT[0], (UINT32)Entries[p]->RDWT.size() * sizeof(REGNRDWT));
-                    //else
-                    //    writer.record_write_subheader(REV32(RDWT), 0);
-                    break;
-                case eREGNMap:
-                    if(Entries[p]->RDMP.IsLoaded())
-                        writer.record_write_subrecord(REV32(RDMP), Entries[p]->RDMP.value, Entries[p]->RDMP.GetSize());
-                    break;
-                case eREGNIcon:
-                    if(Entries[p]->ICON.IsLoaded())
-                        writer.record_write_subrecord(REV32(ICON), Entries[p]->ICON.value, Entries[p]->ICON.GetSize());
-                    break;
-                case eREGNGrasses:
-                    if(Entries[p]->RDGS.size())
-                        writer.record_write_subrecord(REV32(RDGS), &Entries[p]->RDGS[0], (UINT32)Entries[p]->RDGS.size() * sizeof(REGNRDGS));
-                    //else
-                    //    writer.record_write_subheader(REV32(RDGS), 0);
-                    break;
-                case eREGNSounds:
-                    if(Entries[p]->RDMD.IsLoaded())
-                        writer.record_write_subrecord(REV32(RDMD), Entries[p]->RDMD.value, Entries[p]->RDMD.GetSize());
-                    if(Entries[p]->RDSD.size())
-                        writer.record_write_subrecord(REV32(RDSD), &Entries[p]->RDSD[0], (UINT32)Entries[p]->RDSD.size() * sizeof(REGNRDSD));
-                    else
-                        writer.record_write_subheader(REV32(RDSD), 0);
-                    break;
-                default:
-                    printer("!!!%08X: Unknown REGN Entry type: %i, Index:%i!!!\n", formID, Entries[p]->RDAT.value.entryType, p);
-                    break;
-                }
-            }
+    WRITE(EDID);
+    WRITE(ICON);
+    WRITE(RCLR);
+    WRITE(WNAM);
+    Areas.Write(writer);
+    Entries.Write(writer);
     return -1;
     }
 
 bool REGNRecord::operator ==(const REGNRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        ICON.equalsi(other.ICON) &&
-        RCLR == other.RCLR &&
-        WNAM == other.WNAM &&
-        Areas.size() == other.Areas.size() &&
-        Entries.size() == other.Entries.size())
-        {
-        //Not sure if record order matters on areas, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Areas.size(); ++x)
-            if(*Areas[x] != *other.Areas[x])
-                return false;
-
-        //Not sure if record order matters on entries, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Entries.size(); ++x)
-            if(*Entries[x] != *other.Entries[x])
-                return false;
-        return true;
-        }
+    return (RCLR == other.RCLR &&
+            WNAM == other.WNAM &&
+            EDID.equalsi(other.EDID) &&
+            ICON.equalsi(other.ICON) &&
+            Areas == other.Areas &&
+            Entries == other.Entries);
 
     return false;
     }
@@ -947,3 +763,9 @@ bool REGNRecord::operator !=(const REGNRecord &other) const
     {
     return !(*this == other);
     }
+
+bool REGNRecord::equals(Record *other)
+    {
+    return *this == *(REGNRecord *)other;
+    }
+}

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -31,6 +31,8 @@ GPL License and Copyright Notice ============================================
 //#include "WRLDRecord.h"
 #include <vector>
 
+namespace Ob
+{
 class CELLRecord : public Record
     {
     private:
@@ -63,14 +65,14 @@ class CELLRecord : public Record
 
         enum flagsFlags
             {
-            fIsInterior           = 0x00000001,
-            fHasWater             = 0x00000002,
-            fInvertFastTravel     = 0x00000004,
-            fForceHideLand        = 0x00000008,
-            //fIsOblivionInterior = 0x00000008, //From OBSE, unconfirmed
-            fPublicPlace          = 0x00000020,
-            fHandChanged          = 0x00000040,
-            fBehaveLikeExterior   = 0x00000080
+            fIsInterior         = 0x00000001,
+            fHasWater           = 0x00000002,
+            fInvertFastTravel   = 0x00000004,
+            fForceHideLand      = 0x00000008, //Exterior Cells
+            fIsOblivionInterior = 0x00000008, //Interior Cells
+            fPublicPlace        = 0x00000020,
+            fHandChanged        = 0x00000040,
+            fBehaveLikeExterior = 0x00000080
             };
 
         enum eXCMTType
@@ -81,22 +83,21 @@ class CELLRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord FULL;
-        ReqSimpleSubRecord<UINT8> DATA;
-        SemiOptSubRecord<CELLXCLL> XCLL;
+        StringRecord EDID; //Editor ID
+        StringRecord FULL; //Name
+        ReqSimpleSubRecord<UINT8> DATA; //Flags
+        SemiOptSubRecord<CELLXCLL> XCLL; //Lighting
         SimpleSubRecord<UINT8> XCMT;
-        OptSubRecord<GENXOWN> Ownership;
-        SimpleSubRecord<FORMID> XCCM;
-        SimpleFloatSubRecord<flt_n2147483648> XCLW; // waterHeight
-        std::vector<FORMID> XCLR;
-        SemiOptSubRecord<CELLXCLC> XCLC;
-        SimpleSubRecord<FORMID> XCWT;
+        OptSubRecord<GENXOWN> Ownership; //Owner
+        SimpleSubRecord<FORMID> XCCM; //Climate
+        SimpleFloatSubRecord<flt_n2147483648> XCLW; //waterHeight
+        UnorderedPackedArray<FORMID> XCLR; //Regions
+        SemiOptSubRecord<CELLXCLC> XCLC; //Grid
+        SimpleSubRecord<FORMID> XCWT; //Water
 
-        RecordPoolAllocator<ACHRRecord, REV32(ACHR), 5> achr_pool;
-        RecordPoolAllocator<ACRERecord, REV32(ACRE), 5> acre_pool;
-        RecordPoolAllocator<REFRRecord, REV32(REFR), 25> refr_pool;
-
+        std::vector<Record *> ACHR;
+        std::vector<Record *> ACRE;
+        std::vector<Record *> REFR;
         Record *PGRD;
         Record *LAND;
 
@@ -106,7 +107,6 @@ class CELLRecord : public Record
         CELLRecord(CELLRecord *srcRecord);
         ~CELLRecord();
 
-        bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsInterior();
@@ -142,12 +142,15 @@ class CELLRecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CELLRecord &other) const;
         bool operator !=(const CELLRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
+}

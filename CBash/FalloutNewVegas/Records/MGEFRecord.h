@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -31,16 +31,16 @@ class MGEFRecord : public FNVRecord //Base Effect
         struct MGEFDATA
             {
             UINT32  flags;
-            FLOAT32 baseCost; // Unused
+            FLOAT32 baseCost; //Unused
             FORMID  associated;
-            SINT32  school; // Unused
+            SINT32  school; //Unused
             SINT32  resistType;
             UINT16  numCounters; //According to OBME
             UINT8   unused1[2];
             FORMID  light;
             FLOAT32 projectileSpeed;
             FORMID  effectShader, displayShader, effectSound, boltSound, hitSound, areaSound;
-            FLOAT32 cefEnchantment, cefBarter; // Unused, Unused
+            FLOAT32 cefEnchantment, cefBarter; //Unused, Unused
             UINT32  archType;
             SINT32  actorValue;
 
@@ -221,11 +221,12 @@ class MGEFRecord : public FNVRecord //Base Effect
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const MGEFRecord &other) const;
         bool operator !=(const MGEFRecord &other) const;
+        bool equals(Record *other);
     };
 }

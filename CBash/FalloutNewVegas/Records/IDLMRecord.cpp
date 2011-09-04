@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -43,10 +43,10 @@ IDLMRecord::IDLMRecord(IDLMRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -115,58 +115,60 @@ STRING IDLMRecord::GetStrType()
     return "IDLM";
     }
 
-SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(OBND):
-                OBND.Read(buffer, subSize, curPos);
+                OBND.Read(buffer, subSize);
                 break;
             case REV32(IDLF):
-                IDLF.Read(buffer, subSize, curPos);
+                IDLF.Read(buffer, subSize);
                 break;
             case REV32(IDLC):
                 //may be a UINT32 instead, but only the lower 8 bits are used, so skip extra
-                //IDLC.Read(buffer, 1, curPos);
-                //curPos += subSize - 1;
+                //IDLC.Read(buffer, 1);
+                //buffer += subSize - 1;
                 //Testing snippet. Verified that the extra bits aren't in use in FalloutNV.esm
                 switch(subSize)
                     {
                     case 1:
-                        IDLC.Read(buffer, subSize, curPos);
+                        IDLC.Read(buffer, subSize);
                         break;
                     case 4:
                         {
-                        IDLC.Read(buffer, 1, curPos);
+                        IDLC.Read(buffer, 1);
                         UINT32 test = 0;
-                        _readBuffer(&test, buffer, 3, curPos);
+                        memcpy(&test, buffer, 3);
+                        buffer += 3;
                         if(test != 0)
                             {
                             printer("  IDLM: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
                             CBASH_CHUNK_DEBUG
                             printer("  Size = %i\n", subSize);
-                            printer("  CurPos = %04x\n\n", curPos - 6);
+                            printer("  CurPos = %04x\n\n", buffer - 6);
                             }
                         }
                         break;
@@ -174,24 +176,24 @@ SINT32 IDLMRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         printer("  IDLM: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(IDLT):
-                IDLT.Read(buffer, subSize, curPos);
+                IDLT.Read(buffer, subSize);
                 break;
             case REV32(IDLA):
-                IDLA.Read(buffer, subSize, curPos);
+                IDLA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  IDLM: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -235,5 +237,10 @@ bool IDLMRecord::operator ==(const IDLMRecord &other) const
 bool IDLMRecord::operator !=(const IDLMRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool IDLMRecord::equals(Record *other)
+    {
+    return *this == *(IDLMRecord *)other;
     }
 }

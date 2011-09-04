@@ -16,16 +16,20 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
 
-class WATRRecord : public Record
+namespace Ob
+{
+class WATRRecord : public Record //Water
     {
     private:
+        #pragma pack(push)
+        #pragma pack(2)
         struct WATRDATA
             {
             FLOAT32 windVelocity, windDirection, waveAmp, waveFreq, sunPower,
@@ -45,6 +49,7 @@ class WATRRecord : public Record
             bool operator ==(const WATRDATA &other) const;
             bool operator !=(const WATRDATA &other) const;
             };
+        #pragma pack(pop)
 
         struct WATRGNAM
             {
@@ -64,14 +69,14 @@ class WATRRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        StringRecord TNAM;
-        ReqSimpleSubRecord<UINT8, 75> ANAM; // opacity
-        ReqSimpleSubRecord<UINT8> FNAM;
-        StringRecord MNAM;
-        OptSimpleSubRecord<FORMID> SNAM;
-        SemiOptSubRecord<WATRDATA> DATA;
-        SemiOptSubRecord<WATRGNAM> GNAM;
+        StringRecord EDID; //Editor ID
+        StringRecord TNAM; //Texture
+        ReqSimpleSubRecord<UINT8, 75> ANAM; //opacity
+        ReqSimpleSubRecord<UINT8> FNAM; //Flags
+        StringRecord MNAM; //Material ID
+        OptSimpleSubRecord<FORMID> SNAM; //Sound
+        SemiOptSubRecord<WATRDATA> DATA; //Water Data
+        SemiOptSubRecord<WATRGNAM> GNAM; //Related Waters
 
         WATRRecord(unsigned char *_recData=NULL);
         WATRRecord(WATRRecord *srcRecord);
@@ -96,20 +101,12 @@ class WATRRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WATRRecord &other) const;
         bool operator !=(const WATRRecord &other) const;
-        //void *operator new(size_t size)
-        //    {
-        //    printer("WATR Allocated with size %u\n", size);
-        //    return malloc(size);
-        //    }
-        //void operator delete(void* p)
-        //    {
-        //    printer("WATR deleted\n");
-        //    free(p);
-        //    }
+        bool equals(Record *other);
     };
+}

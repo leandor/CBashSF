@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\MGEFRecord.h"
 
+namespace Ob
+{
 UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -108,13 +110,13 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return MGEFCODE_OR_UINT32_ARRAY_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)ESCE.size();
+                        return (UINT32)ESCE.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= ESCE.size())
+            if(ListIndex >= ESCE.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -127,7 +129,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             case 0: //fieldType
                                 return MGEFCODE_OR_UINT32_FIELD;
                             case 2: //WhichType
-                                return ((ESCE[ListIndex] >= 0x80000000) ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD);
+                                return ((ESCE.value[ListIndex] >= 0x80000000) ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD);
                             default:
                                 return UNKNOWN_FIELD;
                             }
@@ -217,11 +219,11 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -273,7 +275,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 27: //cefBarter
             return &DATA.value.cefBarter;
         case 28: //counterEffects
-            *FieldValues = ESCE.size() ? &ESCE[0] : NULL;
+            *FieldValues = ESCE.value.size() ? &ESCE.value[0] : NULL;
             return NULL;
         //OBME Fields
         case 29: //recordVersion
@@ -365,7 +367,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             return true;
         case 16: //numCounters
             DATA.value.numCounters = *(UINT16 *)FieldValue;
-            ESCE.resize(*(UINT16 *)FieldValue);
+            ESCE.value.resize(*(UINT16 *)FieldValue);
             break;
         case 17: //unused1
             if(ArraySize != 2)
@@ -406,7 +408,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 28: //counterEffects
             ESCE.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; x++)
-                ESCE[x] = ((MGEFCODEARRAY)FieldValue)[x];
+                ESCE.value[x] = ((MGEFCODEARRAY)FieldValue)[x];
             return true;
         //OBME Fields
         case 29: //recordVersion
@@ -455,12 +457,12 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 0x1C)
                 break;
             OBME.Load();
-            memcpy(&OBME->OBME.value.reserved2[0], &((UINT8ARRAY)FieldValue)[0], 0x1C);
+            memcpy(&OBME->OBME.value.reserved2[0], &((UINT8ARRAY)FieldValue)[0], sizeof(OBME->OBME.value.reserved2));
             break;
         case 40: //mgefCode
             OBME.Load();
             OBME->EDDX.Load();
-            memcpy(&OBME->EDDX.value.mgefCode[0], FieldValue, 4);
+            memcpy(&OBME->EDDX.value.mgefCode[0], FieldValue, sizeof(OBME->EDDX.value.mgefCode) - 1);
             OBME->EDDX.value.mgefCode[4] = 0;
             return true;
         case 41: //datx_p
@@ -567,7 +569,7 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 28: //counterEffects
             DATA.value.numCounters = 0;
-            ESCE.clear();
+            ESCE.Unload();
             return;
         //OBME Fields
         case 29: //recordVersion
@@ -615,7 +617,7 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 39: //reserved2
             if(OBME.IsLoaded())
-                memcpy(&OBME->OBME.value.reserved2[0], &defaultOBME.reserved2[0], 0x1C);
+                memcpy(&OBME->OBME.value.reserved2[0], &defaultOBME.reserved2[0], sizeof(OBME->OBME.value.reserved2));
             return;
         case 40: //mgefCode
             if(OBME.IsLoaded())
@@ -630,3 +632,4 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

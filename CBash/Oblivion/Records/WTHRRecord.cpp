@@ -16,13 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "WTHRRecord.h"
-#include <vector>
 
+namespace Ob
+{
 bool WTHRRecord::WTHRColors::operator ==(const WTHRColors &other) const
     {
     return (rise == other.rise &&
@@ -291,40 +292,27 @@ WTHRRecord::WTHRRecord(WTHRRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     CNAM = srcRecord->CNAM;
     DNAM = srcRecord->DNAM;
-    if(srcRecord->MODL.IsLoaded())
-        {
-        MODL.Load();
-        MODL->MODB = srcRecord->MODL->MODB;
-        MODL->MODL = srcRecord->MODL->MODL;
-        MODL->MODT = srcRecord->MODL->MODT;
-        }
+    MODL = srcRecord->MODL;
     NAM0 = srcRecord->NAM0;
     FNAM = srcRecord->FNAM;
     HNAM = srcRecord->HNAM;
     DATA = srcRecord->DATA;
-    Sounds.clear();
-    Sounds.resize(srcRecord->Sounds.size());
-    for(UINT32 x = 0; x < srcRecord->Sounds.size(); x++)
-        {
-        Sounds[x] = new ReqSubRecord<WTHRSNAM>;
-        *Sounds[x] = *srcRecord->Sounds[x];
-        }
+    Sounds = srcRecord->Sounds;
     }
 
 WTHRRecord::~WTHRRecord()
     {
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        delete Sounds[x];
+    //
     }
 
 bool WTHRRecord::VisitFormIDs(FormIDOp &op)
@@ -332,8 +320,8 @@ bool WTHRRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        op.Accept(Sounds[x]->value.sound);
+    for(UINT32 ListIndex = 0; ListIndex < Sounds.value.size(); ListIndex++)
+        op.Accept(Sounds.value[ListIndex]->sound);
 
     return op.Stop();
     }
@@ -503,74 +491,72 @@ STRING WTHRRecord::GetStrType()
     return "WTHR";
     }
 
-SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 WTHRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    ReqSubRecord<WTHRSNAM> *newSNAM = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODL):
                 MODL.Load();
-                MODL->MODL.Read(buffer, subSize, curPos);
+                MODL->MODL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MODB):
                 MODL.Load();
-                MODL->MODB.Read(buffer, subSize, curPos);
+                MODL->MODB.Read(buffer, subSize);
                 break;
             case REV32(MODT):
                 MODL.Load();
-                MODL->MODT.Read(buffer, subSize, curPos);
+                MODL->MODT.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAM0):
-                NAM0.Read(buffer, subSize, curPos);
+                NAM0.Read(buffer, subSize);
                 break;
             case REV32(FNAM):
-                FNAM.Read(buffer, subSize, curPos);
+                FNAM.Read(buffer, subSize);
                 break;
             case REV32(HNAM):
-                HNAM.Read(buffer, subSize, curPos);
+                HNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(SNAM):
-                newSNAM = new ReqSubRecord<WTHRSNAM>;
-                newSNAM->Read(buffer, subSize, curPos);
-                Sounds.push_back(newSNAM);
+                Sounds.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  WTHR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -589,65 +575,44 @@ SINT32 WTHRRecord::Unload()
     FNAM.Unload();
     HNAM.Unload();
     DATA.Unload();
-    for(UINT32 x = 0; x < Sounds.size(); x++)
-        delete Sounds[x];
-    Sounds.clear();
+    Sounds.Unload();
     return 1;
     }
 
 SINT32 WTHRRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-    if(CNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(CNAM), CNAM.value, CNAM.GetSize());
-    if(DNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(DNAM), DNAM.value, DNAM.GetSize());
-    if(MODL.IsLoaded() && MODL->MODL.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(MODL), MODL->MODL.value, MODL->MODL.GetSize());
-        if(MODL->MODB.IsLoaded())
-            writer.record_write_subrecord(REV32(MODB), &MODL->MODB.value, MODL->MODB.GetSize());
-        if(MODL->MODT.IsLoaded())
-            writer.record_write_subrecord(REV32(MODT), MODL->MODT.value, MODL->MODT.GetSize());
-        }
-    if(NAM0.IsLoaded())
-        writer.record_write_subrecord(REV32(NAM0), &NAM0.value, NAM0.GetSize());
-    if(FNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(FNAM), &FNAM.value, FNAM.GetSize());
-    if(HNAM.IsLoaded())
-        writer.record_write_subrecord(REV32(HNAM), &HNAM.value, HNAM.GetSize());
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
-    for(UINT32 p = 0; p < Sounds.size(); p++)
-        writer.record_write_subrecord(REV32(SNAM), &Sounds[p]->value, Sounds[p]->GetSize());
+    WRITE(EDID);
+    WRITE(CNAM);
+    WRITE(DNAM);
+    MODL.Write(writer);
+    WRITE(NAM0);
+    WRITE(FNAM);
+    WRITE(HNAM);
+    WRITE(DATA);
+    WRITEAS(Sounds,SNAM);
     return -1;
     }
 
 bool WTHRRecord::operator ==(const WTHRRecord &other) const
     {
-    if(EDID.equalsi(other.EDID) &&
-        CNAM.equalsi(other.CNAM) &&
-        DNAM.equalsi(other.DNAM) &&
-        MODL == other.MODL &&
-        NAM0 == other.NAM0 &&
-        FNAM == other.FNAM &&
-        HNAM == other.HNAM &&
-        DATA == other.DATA &&
-        Sounds.size() == other.Sounds.size())
-        {
-        //Not sure if record order matters on sounds, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Sounds.size(); ++x)
-            if(*Sounds[x] != *other.Sounds[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (EDID.equalsi(other.EDID) &&
+            CNAM.equalsi(other.CNAM) &&
+            DNAM.equalsi(other.DNAM) &&
+            MODL == other.MODL &&
+            NAM0 == other.NAM0 &&
+            FNAM == other.FNAM &&
+            HNAM == other.HNAM &&
+            DATA == other.DATA &&
+            Sounds == other.Sounds);
     }
 
 bool WTHRRecord::operator !=(const WTHRRecord &other) const
     {
     return !(*this == other);
     }
+
+bool WTHRRecord::equals(Record *other)
+    {
+    return *this == *(WTHRRecord *)other;
+    }
+}

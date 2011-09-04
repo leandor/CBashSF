@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -142,7 +142,7 @@ void QUSTRecord::QUSTEntry::SetType(UINT16 Type)
 void QUSTRecord::QUSTEntry::Write(FileWriter &writer)
     {
     WRITE(QSDT);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     WRITE(CNAM);
     SCHR.value.numRefs = (UINT32)SCR_.value.size(); //Just to ensure that the value is correct
     SCHR.value.compiledSize = SCDA.GetSize(); //Just to ensure that the value is correct
@@ -237,7 +237,7 @@ void QUSTRecord::QUSTTarget::SetFlagMask(UINT8 Mask)
 void QUSTRecord::QUSTTarget::Write(FileWriter &writer)
     {
     WRITE(QSTA);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     }
 
 bool QUSTRecord::QUSTTarget::operator ==(const QUSTTarget &other) const
@@ -289,10 +289,10 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -410,84 +410,85 @@ STRING QUSTRecord::GetStrType()
     return "QUST";
     }
 
-SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = REV32(NONE);
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRI):
-                SCRI.Read(buffer, subSize, curPos);
+                SCRI.Read(buffer, subSize);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(ICON):
-                ICON.Read(buffer, subSize, curPos);
+                ICON.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(MICO):
-                MICO.Read(buffer, subSize, curPos);
+                MICO.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
                 switch(lastChunk)
                     {
                     case REV32(NONE):
-                        CTDA.Read(buffer, subSize, curPos);
+                        CTDA.Read(buffer, subSize);
                         break;
                     case REV32(QSDT):
                         if(Stages.value.size() == 0)
                             Stages.value.push_back(new QUSTStage);
                         if(Stages.value.back()->Entries.value.size() == 0)
                             Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                        Stages.value.back()->Entries.value.back()->CTDA.Read(buffer, subSize, curPos);
+                        Stages.value.back()->Entries.value.back()->CTDA.Read(buffer, subSize);
                         break;
                     case REV32(QSTA):
                         if(Objectives.value.size() == 0)
                             Objectives.value.push_back(new QUSTObjective);
                         if(Objectives.value.back()->Targets.value.size() == 0)
                             Objectives.value.back()->Targets.value.push_back(new QUSTTarget);
-                        Objectives.value.back()->Targets.value.back()->CTDA.Read(buffer, subSize, curPos);
+                        Objectives.value.back()->Targets.value.back()->CTDA.Read(buffer, subSize);
                         break;
                     default:
                         printer("  QUST: %08X - Unexpected CTDA chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(INDX):
                 Stages.value.push_back(new QUSTStage);
-                Stages.value.back()->INDX.Read(buffer, subSize, curPos);
+                Stages.value.back()->INDX.Read(buffer, subSize);
                 break;
             case REV32(QSDT):
                 if(Stages.value.size() == 0)
                     Stages.value.push_back(new QUSTStage);
                 Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->QSDT.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->QSDT.Read(buffer, subSize);
                 lastChunk = REV32(QSDT);
                 break;
             case REV32(CNAM):
@@ -495,28 +496,28 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->CNAM.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->CNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCHR):
                 if(Stages.value.size() == 0)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->SCHR.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->SCHR.Read(buffer, subSize);
                 break;
             case REV32(SCDA):
                 if(Stages.value.size() == 0)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->SCDA.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->SCDA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCTX):
                 if(Stages.value.size() == 0)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->SCTX.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->SCTX.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SLSD):
                 if(Stages.value.size() == 0)
@@ -524,7 +525,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
                 Stages.value.back()->Entries.value.back()->VARS.value.push_back(new GENVARS);
-                Stages.value.back()->Entries.value.back()->VARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->VARS.value.back()->SLSD.Read(buffer, subSize);
                 break;
             case REV32(SCVR):
                 if(Stages.value.size() == 0)
@@ -533,14 +534,14 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
                 if(Stages.value.back()->Entries.value.back()->VARS.value.size() == 0)
                     Stages.value.back()->Entries.value.back()->VARS.value.push_back(new GENVARS);
-                Stages.value.back()->Entries.value.back()->VARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->VARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(SCRO):
                 if(Stages.value.size() == 0)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize);
                 Stages.value.back()->Entries.value.back()->SCR_.value.back()->isSCRO = true;
                 break;
             case REV32(SCRV):
@@ -548,7 +549,7 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->SCR_.Read(buffer, subSize);
                 Stages.value.back()->Entries.value.back()->SCR_.value.back()->isSCRO = false;
                 break;
             case REV32(NAM0):
@@ -556,22 +557,22 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     Stages.value.push_back(new QUSTStage);
                 if(Stages.value.back()->Entries.value.size() == 0)
                     Stages.value.back()->Entries.value.push_back(new QUSTEntry);
-                Stages.value.back()->Entries.value.back()->NAM0.Read(buffer, subSize, curPos);
+                Stages.value.back()->Entries.value.back()->NAM0.Read(buffer, subSize);
                 break;
             case REV32(QOBJ):
                 Objectives.value.push_back(new QUSTObjective);
-                Objectives.value.back()->QOBJ.Read(buffer, subSize, curPos);
+                Objectives.value.back()->QOBJ.Read(buffer, subSize);
                 break;
             case REV32(NNAM):
                 if(Objectives.value.size() == 0)
                     Objectives.value.push_back(new QUSTObjective);
-                Objectives.value.back()->NNAM.Read(buffer, subSize, curPos);
+                Objectives.value.back()->NNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(QSTA):
                 if(Objectives.value.size() == 0)
                     Objectives.value.push_back(new QUSTObjective);
                 Objectives.value.back()->Targets.value.push_back(new QUSTTarget);
-                Objectives.value.back()->Targets.value.back()->QSTA.Read(buffer, subSize, curPos);
+                Objectives.value.back()->Targets.value.back()->QSTA.Read(buffer, subSize);
                 lastChunk = REV32(QSTA);
                 break;
             default:
@@ -579,8 +580,8 @@ SINT32 QUSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 printer("  QUST: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -612,7 +613,7 @@ SINT32 QUSTRecord::WriteRecord(FileWriter &writer)
     WRITE(ICON);
     WRITE(MICO);
     WRITE(DATA);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     Stages.Write(writer);
     Objectives.Write(writer);
     return -1;
@@ -634,5 +635,10 @@ bool QUSTRecord::operator ==(const QUSTRecord &other) const
 bool QUSTRecord::operator !=(const QUSTRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool QUSTRecord::equals(Record *other)
+    {
+    return *this == *(QUSTRecord *)other;
     }
 }

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -28,7 +28,7 @@ namespace FNV
 class NAVMRecord : public FNVRecord //Navigation Mesh
     {
     private:
-        struct NAVMDATA // Data
+        struct NAVMDATA //Data
             {
             FORMID  cell;
             UINT32  numVertices, numTriangles, numConnections, numNVCA, numDoors;
@@ -40,7 +40,7 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
             bool operator !=(const NAVMDATA &other) const;
             };
 
-        struct NAVMVertex // Vertex
+        struct NAVMVertex //Vertex
             {
             FLOAT32 x, y, z;
 
@@ -51,7 +51,7 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
             bool operator !=(const NAVMVertex &other) const;
             };
 
-        struct NAVMNVTR // Triangle
+        struct NAVMNVTR //Triangle
             {
             SINT16  vertex1, vertex2, vertex3;
             SINT16  edge1, edge2, edge3;
@@ -167,7 +167,7 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
             bool operator !=(const NAVMNVTR &other) const;
             };
 
-        struct NAVMNVDP // Door
+        struct NAVMNVDP //Door
             {
             FORMID  door;
             UINT16  unknown1;
@@ -182,10 +182,10 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
 
         #pragma pack(push)
         #pragma pack(2)
-        struct NAVMNVEX // External Connection
+        struct NAVMNVEX //External Connection
             {
             UINT8   unknown1[4];
-            FORMID  mesh; // Navigation Mesh
+            FORMID  mesh; //Navigation Mesh
             UINT16  triangle;
 
             NAVMNVEX();
@@ -207,6 +207,8 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
         RawRecord NVGD; //Unknown
         UnorderedPackedArray<NAVMNVEX> NVEX; //External Connections
 
+        Record *Parent;
+
         NAVMRecord(unsigned char *_recData=NULL);
         NAVMRecord(NAVMRecord *srcRecord);
         ~NAVMRecord();
@@ -220,13 +222,15 @@ class NAVMRecord : public FNVRecord //Navigation Mesh
 
         UINT32 GetType();
         STRING GetStrType();
-        UINT32 GetParentType();
+        Record * GetParent();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const NAVMRecord &other) const;
         bool operator !=(const NAVMRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
 }

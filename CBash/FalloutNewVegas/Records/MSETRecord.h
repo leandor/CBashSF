@@ -119,11 +119,12 @@ class MSETRecord : public FNVRecord //Media Set
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize, bool CompressedOnDisk);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const MSETRecord &other) const;
         bool operator !=(const MSETRecord &other) const;
+        bool equals(Record *other, RecordOp &read_self, RecordOp &read_other, EqualityOptions &options);
     };
 }

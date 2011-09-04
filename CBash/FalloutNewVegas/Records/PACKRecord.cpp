@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -219,10 +219,10 @@ PACKRecord::PACKRecord(PACKRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -1906,45 +1906,46 @@ STRING PACKRecord::GetStrType()
     return "PACK";
     }
 
-SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 PACKRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(PKDT):
-                PKDT.Read(buffer, subSize, curPos);
+                PKDT.Read(buffer, subSize);
                 break;
             case REV32(PLDT):
-                PLDT.Read(buffer, subSize, curPos);
+                PLDT.Read(buffer, subSize);
                 break;
             case REV32(PLD2):
-                PLD2.Read(buffer, subSize, curPos);
+                PLD2.Read(buffer, subSize);
                 //Testing snippet. PLD2 can occur twice in some cases? Second one is always equal to first though...
                 //if(PLD2.IsLoaded())
                 //    {
                 //    OptSubRecord<PACKPLDT> PLD2a;
-                //    PLD2a.Read(buffer, subSize, curPos);
+                //    PLD2a.Read(buffer, subSize);
                 //    if(PLD2 != PLD2a)
                 //        {
                 //        printer("  INFO: %08X - Unexpected PLD2 chunk\n", formID);
@@ -1952,33 +1953,33 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //        }
                 //    }
                 //else
-                //    PLD2.Read(buffer, subSize, curPos);
+                //    PLD2.Read(buffer, subSize);
                 break;
             case REV32(PSDT):
-                PSDT.Read(buffer, subSize, curPos);
+                PSDT.Read(buffer, subSize);
                 break;
             case REV32(PTDT):
-                PTDT.Read(buffer, subSize, curPos);
+                PTDT.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
-                CTDA.Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             case REV32(IDLF):
-                IDLF.Read(buffer, subSize, curPos);
+                IDLF.Read(buffer, subSize);
                 break;
             case REV32(IDLC):
                 //Idle Animation Count (may be a UINT32 instead, but only the lower 8 bits are used, so skip extra)
-                IDLC.Read(buffer, 1, curPos);
-                curPos += subSize - 1;
+                IDLC.Read(buffer, 1);
+                buffer += subSize - 1;
                 //Testing snippet. Verified that the extra bits aren't in use in FalloutNV.esm
                 //switch(subSize)
                 //    {
                 //    case 1:
-                //        IDLC.Read(buffer, subSize, curPos);
+                //        IDLC.Read(buffer, subSize);
                 //        break;
                 //    case 4:
                 //        {
-                //        IDLC.Read(buffer, 1, curPos);
+                //        IDLC.Read(buffer, 1);
                 //        UINT32 test = 0;
                 //        _readBuffer(&test, buffer, 3, curPos);
                 //        if(test != 0)
@@ -1986,7 +1987,7 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //            printer("  INFO: %08X - Unexpected IDLC value. Expected (0) and got (%u). IDLC = %u.\n", formID, test, IDLC.value);
                 //            CBASH_CHUNK_DEBUG
                 //            printer("  Size = %i\n", subSize);
-                //            printer("  CurPos = %04x\n\n", curPos - 6);
+                //            printer("  CurPos = %04x\n\n", buffer - 6);
                 //            }
                 //        }
                 //        break;
@@ -1994,59 +1995,59 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //        printer("  INFO: %08X - Unexpected IDLC chunk size. Expected (1 or 4) and got (%u)\n", formID, subSize);
                 //        CBASH_CHUNK_DEBUG
                 //        printer("  Size = %i\n", subSize);
-                //        printer("  CurPos = %04x\n\n", curPos - 6);
-                //        curPos += subSize;
+                //        printer("  CurPos = %04x\n\n", buffer - 6);
+                //        buffer += subSize;
                 //        break;
                 //    }
                 break;
             case REV32(IDLT):
-                IDLT.Read(buffer, subSize, curPos);
+                IDLT.Read(buffer, subSize);
                 break;
             case REV32(IDLA):
-                IDLA.Read(buffer, subSize, curPos);
+                IDLA.Read(buffer, subSize);
                 break;
             case REV32(IDLB):
-                IDLB.Read(buffer, subSize, curPos);
+                IDLB.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(PKE2):
-                PKE2.Read(buffer, subSize, curPos);
+                PKE2.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(PKFD):
-                PKFD.Read(buffer, subSize, curPos);
+                PKFD.Read(buffer, subSize);
                 break;
             case REV32(PKPT):
-                PKPT.Read(buffer, subSize, curPos);
+                PKPT.Read(buffer, subSize);
                 break;
             case REV32(PKW3):
-                PKW3.Read(buffer, subSize, curPos);
+                PKW3.Read(buffer, subSize);
                 break;
             case REV32(PTD2):
-                PTD2.Read(buffer, subSize, curPos);
+                PTD2.Read(buffer, subSize);
                 break;
             case REV32(PKDD):
-                PKDD.Read(buffer, subSize, curPos);
+                PKDD.Read(buffer, subSize);
                 break;
             case REV32(INAM):
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginINAM.Read(buffer, subSize, curPos);
+                        BeginINAM.Read(buffer, subSize);
                         break;
                     case REV32(POEA):
-                        EndINAM.Read(buffer, subSize, curPos);
+                        EndINAM.Read(buffer, subSize);
                         break;
                     case REV32(POCA):
-                        ChangeINAM.Read(buffer, subSize, curPos);
+                        ChangeINAM.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected INAM chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2054,20 +2055,20 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginSCHR.Read(buffer, subSize, curPos);
+                        BeginSCHR.Read(buffer, subSize);
                         break;
                     case REV32(POEA):
-                        EndSCHR.Read(buffer, subSize, curPos);
+                        EndSCHR.Read(buffer, subSize);
                         break;
                     case REV32(POCA):
-                        ChangeSCHR.Read(buffer, subSize, curPos);
+                        ChangeSCHR.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCHR chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2075,20 +2076,20 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginSCDA.Read(buffer, subSize, curPos);
+                        BeginSCDA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POEA):
-                        EndSCDA.Read(buffer, subSize, curPos);
+                        EndSCDA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POCA):
-                        ChangeSCDA.Read(buffer, subSize, curPos);
+                        ChangeSCDA.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCDA chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2096,20 +2097,20 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginSCTX.Read(buffer, subSize, curPos);
+                        BeginSCTX.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POEA):
-                        EndSCTX.Read(buffer, subSize, curPos);
+                        EndSCTX.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POCA):
-                        ChangeSCTX.Read(buffer, subSize, curPos);
+                        ChangeSCTX.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCTX chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2118,22 +2119,22 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case REV32(POBA):
                         BeginVARS.value.push_back(new GENVARS);
-                        BeginVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                        BeginVARS.value.back()->SLSD.Read(buffer, subSize);
                         break;
                     case REV32(POEA):
                         EndVARS.value.push_back(new GENVARS);
-                        EndVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                        EndVARS.value.back()->SLSD.Read(buffer, subSize);
                         break;
                     case REV32(POCA):
                         ChangeVARS.value.push_back(new GENVARS);
-                        ChangeVARS.value.back()->SLSD.Read(buffer, subSize, curPos);
+                        ChangeVARS.value.back()->SLSD.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SLSD chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2143,24 +2144,24 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     case REV32(POBA):
                         if(BeginVARS.value.size() == 0)
                             BeginVARS.value.push_back(new GENVARS);
-                        BeginVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                        BeginVARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POEA):
                         if(EndVARS.value.size() == 0)
                             EndVARS.value.push_back(new GENVARS);
-                        EndVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                        EndVARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(POCA):
                         if(ChangeVARS.value.size() == 0)
                             ChangeVARS.value.push_back(new GENVARS);
-                        ChangeVARS.value.back()->SCVR.Read(buffer, subSize, curPos);
+                        ChangeVARS.value.back()->SCVR.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCVR chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2168,23 +2169,23 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginSCR_.Read(buffer, subSize, curPos);
+                        BeginSCR_.Read(buffer, subSize);
                         BeginSCR_.value.back()->isSCRO = false;
                         break;
                     case REV32(POEA):
-                        EndSCR_.Read(buffer, subSize, curPos);
+                        EndSCR_.Read(buffer, subSize);
                         EndSCR_.value.back()->isSCRO = false;
                         break;
                     case REV32(POCA):
-                        ChangeSCR_.Read(buffer, subSize, curPos);
+                        ChangeSCR_.Read(buffer, subSize);
                         ChangeSCR_.value.back()->isSCRO = false;
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCRV chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2192,23 +2193,23 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginSCR_.Read(buffer, subSize, curPos);
+                        BeginSCR_.Read(buffer, subSize);
                         BeginSCR_.value.back()->isSCRO = true;
                         break;
                     case REV32(POEA):
-                        EndSCR_.Read(buffer, subSize, curPos);
+                        EndSCR_.Read(buffer, subSize);
                         EndSCR_.value.back()->isSCRO = true;
                         break;
                     case REV32(POCA):
-                        ChangeSCR_.Read(buffer, subSize, curPos);
+                        ChangeSCR_.Read(buffer, subSize);
                         ChangeSCR_.value.back()->isSCRO = true;
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected SCRO chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2216,20 +2217,20 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 switch(lastChunk)
                     {
                     case REV32(POBA):
-                        BeginTNAM.Read(buffer, subSize, curPos);
+                        BeginTNAM.Read(buffer, subSize);
                         break;
                     case REV32(POEA):
-                        EndTNAM.Read(buffer, subSize, curPos);
+                        EndTNAM.Read(buffer, subSize);
                         break;
                     case REV32(POCA):
-                        ChangeTNAM.Read(buffer, subSize, curPos);
+                        ChangeTNAM.Read(buffer, subSize);
                         break;
                     default:
                         printer("  INFO: %08X - Unexpected TNAM chunk\n", formID);
                         CBASH_CHUNK_DEBUG
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
@@ -2249,8 +2250,8 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     printer("  INFO: %08X - Unexpected PKED chunk\n", formID);
                     CBASH_CHUNK_DEBUG
                     printer("  Size = %i\n", subSize);
-                    printer("  CurPos = %04x\n\n", curPos - 6);
-                    curPos += subSize;
+                    printer("  CurPos = %04x\n\n", buffer - 6);
+                    buffer += subSize;
                     }
                 break;
             case REV32(PUID):
@@ -2260,8 +2261,8 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     printer("  INFO: %08X - Unexpected PUID chunk\n", formID);
                     CBASH_CHUNK_DEBUG
                     printer("  Size = %i\n", subSize);
-                    printer("  CurPos = %04x\n\n", curPos - 6);
-                    curPos += subSize;
+                    printer("  CurPos = %04x\n\n", buffer - 6);
+                    buffer += subSize;
                     }
                 break;
             case REV32(PKAM):
@@ -2271,8 +2272,8 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     printer("  INFO: %08X - Unexpected PKAM chunk\n", formID);
                     CBASH_CHUNK_DEBUG
                     printer("  Size = %i\n", subSize);
-                    printer("  CurPos = %04x\n\n", curPos - 6);
-                    curPos += subSize;
+                    printer("  CurPos = %04x\n\n", buffer - 6);
+                    buffer += subSize;
                     }
                 break;
             default:
@@ -2280,8 +2281,8 @@ SINT32 PACKRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 printer("  PACK: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -2344,7 +2345,7 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     WRITE(PLD2);
     WRITE(PSDT);
     WRITE(PTDT);
-    CTDA.Write(REV32(CTDA), writer, true);
+    CTDA.Write(writer, true);
     if(IDLF.IsLoaded() || IDLC.IsLoaded() || IDLT.IsLoaded() || IDLA.IsLoaded() || IDLB.IsLoaded())
         {
         WRITEREQ(IDLF);
@@ -2370,43 +2371,43 @@ SINT32 PACKRecord::WriteRecord(FileWriter &writer)
     WRITE(PKDD);
 
     WRITEEMPTY(POBA);
-    WRITEAS(BeginINAM, INAM);
+    WRITEAS(BeginINAM,INAM);
     BeginSCHR.value.numRefs = (UINT32)BeginSCR_.value.size(); //Just to ensure that the value is correct
     BeginSCHR.value.compiledSize = BeginSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < BeginVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    BeginSCHR.value.lastIndex = (BeginSCHR.value.lastIndex > BeginVARS.value[x]->SLSD.value.index) ? BeginSCHR.value.lastIndex : BeginVARS.value[x]->SLSD.value.index;
-    WRITEAS(BeginSCHR, SCHR);
-    WRITEAS(BeginSCDA, SCDA);
-    WRITEAS(BeginSCTX, SCTX);
+    WRITEAS(BeginSCHR,SCHR);
+    WRITEAS(BeginSCDA,SCDA);
+    WRITEAS(BeginSCTX,SCTX);
     BeginVARS.Write(writer);
     BeginSCR_.Write(writer, true);
-    WRITEAS(BeginTNAM, TNAM);
+    WRITEAS(BeginTNAM,TNAM);
 
     WRITEEMPTY(POEA);
-    WRITEAS(EndINAM, INAM);
+    WRITEAS(EndINAM,INAM);
     EndSCHR.value.numRefs = (UINT32)EndSCR_.value.size(); //Just to ensure that the value is correct
     EndSCHR.value.compiledSize = EndSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < EndVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    EndSCHR.value.lastIndex = (EndSCHR.value.lastIndex > EndVARS.value[x]->SLSD.value.index) ? EndSCHR.value.lastIndex : EndVARS.value[x]->SLSD.value.index;
-    WRITEAS(EndSCHR, SCHR);
-    WRITEAS(EndSCDA, SCDA);
-    WRITEAS(EndSCTX, SCTX);
+    WRITEAS(EndSCHR,SCHR);
+    WRITEAS(EndSCDA,SCDA);
+    WRITEAS(EndSCTX,SCTX);
     EndVARS.Write(writer);
     EndSCR_.Write(writer, true);
-    WRITEAS(EndTNAM, TNAM);
+    WRITEAS(EndTNAM,TNAM);
 
     WRITEEMPTY(POCA);
-    WRITEAS(ChangeINAM, INAM);
+    WRITEAS(ChangeINAM,INAM);
     ChangeSCHR.value.numRefs = (UINT32)ChangeSCR_.value.size(); //Just to ensure that the value is correct
     ChangeSCHR.value.compiledSize = ChangeSCDA.GetSize(); //Just to ensure that the value is correct
     //for(UINT32 x = 0; x < ChangeVARS.value.size(); ++x) //Just to ensure that the value is correct
     //    ChangeSCHR.value.lastIndex = (ChangeSCHR.value.lastIndex > ChangeVARS.value[x]->SLSD.value.index) ? ChangeSCHR.value.lastIndex : ChangeVARS.value[x]->SLSD.value.index;
-    WRITEAS(ChangeSCHR, SCHR);
-    WRITEAS(ChangeSCDA, SCDA);
-    WRITEAS(ChangeSCTX, SCTX);
+    WRITEAS(ChangeSCHR,SCHR);
+    WRITEAS(ChangeSCDA,SCDA);
+    WRITEAS(ChangeSCTX,SCTX);
     ChangeVARS.Write(writer);
     ChangeSCR_.Write(writer, true);
-    WRITEAS(ChangeTNAM, TNAM);
+    WRITEAS(ChangeTNAM,TNAM);
     return -1;
     }
 
@@ -2457,5 +2458,10 @@ bool PACKRecord::operator ==(const PACKRecord &other) const
 bool PACKRecord::operator !=(const PACKRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool PACKRecord::equals(Record *other)
+    {
+    return *this == *(PACKRecord *)other;
     }
 }

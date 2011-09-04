@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\SCPTRecord.h"
 
+namespace Ob
+{
 UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -76,13 +78,13 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)VARS.size();
+                        return (UINT32)VARS.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= VARS.size())
+            if(ListIndex >= VARS.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -125,13 +127,13 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return FORMID_OR_UINT32_ARRAY_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)SCR_.size();
+                        return (UINT32)SCR_.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -142,7 +144,7 @@ UINT32 SCPTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            return (SCR_[ListIndex]->value.isSCRO ? FORMID_FIELD : UINT32_FIELD);
+                            return (SCR_.value[ListIndex]->isSCRO ? FORMID_FIELD : UINT32_FIELD);
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -160,11 +162,11 @@ void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //unused1
@@ -184,30 +186,30 @@ void * SCPTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 11: //scriptText
             return SCTX.value;
         case 12: //vars
-            if(ListIndex >= VARS.size())
+            if(ListIndex >= VARS.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //index
-                    return &VARS[ListIndex]->SLSD.value.index;
+                    return &VARS.value[ListIndex]->SLSD.value.index;
                 case 2: //unused1
-                    *FieldValues = &VARS[ListIndex]->SLSD.value.unused1[0];
+                    *FieldValues = &VARS.value[ListIndex]->SLSD.value.unused1[0];
                     return NULL;
                 case 3: //flags
-                    return &VARS[ListIndex]->SLSD.value.flags;
+                    return &VARS.value[ListIndex]->SLSD.value.flags;
                 case 4: //unused2
-                    *FieldValues = &VARS[ListIndex]->SLSD.value.unused2[0];
+                    *FieldValues = &VARS.value[ListIndex]->SLSD.value.unused2[0];
                     return NULL;
                 case 5: //name
-                    return VARS[ListIndex]->SCVR.value;
+                    return VARS.value[ListIndex]->SCVR.value;
                 default:
                     return NULL;
                 }
             return NULL;
         case 13: //references
-            for(UINT32 x = 0; x < SCR_.size(); ++x)
-                ((FORMIDARRAY)FieldValues)[x] = SCR_[x]->value.reference;
+            for(UINT32 x = 0; x < SCR_.value.size(); ++x)
+                ((FORMIDARRAY)FieldValues)[x] = SCR_.value[x]->reference;
             return NULL;
         default:
             return NULL;
@@ -258,61 +260,49 @@ bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 12: //vars
             if(ListFieldID == 0) //varsSize
                 {
-                ArraySize -= (UINT32)VARS.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    VARS.push_back(new GENVARS);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete VARS.back();
-                    VARS.pop_back();
-                    ++ArraySize;
-                    }
-                return false;
+                VARS.resize(ArraySize);
                 }
 
-            if(ListIndex >= VARS.size())
+            if(ListIndex >= VARS.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //index
-                    VARS[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
+                    VARS.value[ListIndex]->SLSD.value.index = *(UINT32 *)FieldValue;
                     break;
                 case 2: //unused1
                     if(ArraySize != 12)
                         break;
-                    VARS[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    VARS[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    VARS[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
-                    VARS[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
-                    VARS[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
-                    VARS[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
-                    VARS[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
-                    VARS[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
-                    VARS[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
-                    VARS[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
-                    VARS[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
-                    VARS[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
+                    VARS.value[ListIndex]->SLSD.value.unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    VARS.value[ListIndex]->SLSD.value.unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    VARS.value[ListIndex]->SLSD.value.unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    VARS.value[ListIndex]->SLSD.value.unused1[3] = ((UINT8ARRAY)FieldValue)[3];
+                    VARS.value[ListIndex]->SLSD.value.unused1[4] = ((UINT8ARRAY)FieldValue)[4];
+                    VARS.value[ListIndex]->SLSD.value.unused1[5] = ((UINT8ARRAY)FieldValue)[5];
+                    VARS.value[ListIndex]->SLSD.value.unused1[6] = ((UINT8ARRAY)FieldValue)[6];
+                    VARS.value[ListIndex]->SLSD.value.unused1[7] = ((UINT8ARRAY)FieldValue)[7];
+                    VARS.value[ListIndex]->SLSD.value.unused1[8] = ((UINT8ARRAY)FieldValue)[8];
+                    VARS.value[ListIndex]->SLSD.value.unused1[9] = ((UINT8ARRAY)FieldValue)[9];
+                    VARS.value[ListIndex]->SLSD.value.unused1[10] = ((UINT8ARRAY)FieldValue)[10];
+                    VARS.value[ListIndex]->SLSD.value.unused1[11] = ((UINT8ARRAY)FieldValue)[11];
                     break;
                 case 3: //flags
-                    VARS[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    VARS.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
                     break;
                 case 4: //unused2
                     if(ArraySize != 7)
                         break;
-                    VARS[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
-                    VARS[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
-                    VARS[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
-                    VARS[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
-                    VARS[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
-                    VARS[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
-                    VARS[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
+                    VARS.value[ListIndex]->SLSD.value.unused2[0] = ((UINT8ARRAY)FieldValue)[0];
+                    VARS.value[ListIndex]->SLSD.value.unused2[1] = ((UINT8ARRAY)FieldValue)[1];
+                    VARS.value[ListIndex]->SLSD.value.unused2[2] = ((UINT8ARRAY)FieldValue)[2];
+                    VARS.value[ListIndex]->SLSD.value.unused2[3] = ((UINT8ARRAY)FieldValue)[3];
+                    VARS.value[ListIndex]->SLSD.value.unused2[4] = ((UINT8ARRAY)FieldValue)[4];
+                    VARS.value[ListIndex]->SLSD.value.unused2[5] = ((UINT8ARRAY)FieldValue)[5];
+                    VARS.value[ListIndex]->SLSD.value.unused2[6] = ((UINT8ARRAY)FieldValue)[6];
                     break;
                 case 5: //name
-                    VARS[ListIndex]->SCVR.Copy((STRING)FieldValue);
+                    VARS.value[ListIndex]->SCVR.Copy((STRING)FieldValue);
                     break;
                 default:
                     break;
@@ -321,30 +311,19 @@ bool SCPTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 13: //references
             if(ListFieldID == 0) //referencesSize
                 {
-                ArraySize -= (UINT32)SCR_.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    SCR_.push_back(new ReqSubRecord<GENSCR_>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete SCR_.back();
-                    SCR_.pop_back();
-                    ++ArraySize;
-                    }
+                SCR_.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
                     //Borrowing ArraySize to flag if the new value is a formID
-                    SCR_[ListIndex]->value.reference = *(UINT32 *)FieldValue;
-                    SCR_[ListIndex]->value.isSCRO = ArraySize ? true : false;
+                    SCR_.value[ListIndex]->reference = *(UINT32 *)FieldValue;
+                    SCR_.value[ListIndex]->isSCRO = ArraySize ? true : false;
                     return ArraySize != 0;
                 default:
                     break;
@@ -401,48 +380,46 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 12: //vars
             if(ListFieldID == 0) //vars
                 {
-                for(UINT32 x = 0; x < (UINT32)VARS.size(); x++)
-                    delete VARS[x];
-                VARS.clear();
+                VARS.Unload();
                 return;
                 }
 
-            if(ListIndex >= VARS.size())
+            if(ListIndex >= VARS.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //index
-                    VARS[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
+                    VARS.value[ListIndex]->SLSD.value.index = defaultVARS.SLSD.value.index;
                     return;
                 case 2: //unused1
-                    VARS[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
-                    VARS[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
-                    VARS[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
-                    VARS[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
-                    VARS[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
-                    VARS[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
-                    VARS[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
-                    VARS[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
-                    VARS[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
-                    VARS[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
-                    VARS[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
-                    VARS[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
+                    VARS.value[ListIndex]->SLSD.value.unused1[0] = defaultVARS.SLSD.value.unused1[0];
+                    VARS.value[ListIndex]->SLSD.value.unused1[1] = defaultVARS.SLSD.value.unused1[1];
+                    VARS.value[ListIndex]->SLSD.value.unused1[2] = defaultVARS.SLSD.value.unused1[2];
+                    VARS.value[ListIndex]->SLSD.value.unused1[3] = defaultVARS.SLSD.value.unused1[3];
+                    VARS.value[ListIndex]->SLSD.value.unused1[4] = defaultVARS.SLSD.value.unused1[4];
+                    VARS.value[ListIndex]->SLSD.value.unused1[5] = defaultVARS.SLSD.value.unused1[5];
+                    VARS.value[ListIndex]->SLSD.value.unused1[6] = defaultVARS.SLSD.value.unused1[6];
+                    VARS.value[ListIndex]->SLSD.value.unused1[7] = defaultVARS.SLSD.value.unused1[7];
+                    VARS.value[ListIndex]->SLSD.value.unused1[8] = defaultVARS.SLSD.value.unused1[8];
+                    VARS.value[ListIndex]->SLSD.value.unused1[9] = defaultVARS.SLSD.value.unused1[9];
+                    VARS.value[ListIndex]->SLSD.value.unused1[10] = defaultVARS.SLSD.value.unused1[10];
+                    VARS.value[ListIndex]->SLSD.value.unused1[11] = defaultVARS.SLSD.value.unused1[11];
                     return;
                 case 3: //flags
-                    VARS[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
+                    VARS.value[ListIndex]->SLSD.value.flags = defaultVARS.SLSD.value.flags;
                     return;
                 case 4: //unused2
-                    VARS[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
-                    VARS[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
-                    VARS[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
-                    VARS[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
-                    VARS[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
-                    VARS[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
-                    VARS[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
+                    VARS.value[ListIndex]->SLSD.value.unused2[0] = defaultVARS.SLSD.value.unused2[0];
+                    VARS.value[ListIndex]->SLSD.value.unused2[1] = defaultVARS.SLSD.value.unused2[1];
+                    VARS.value[ListIndex]->SLSD.value.unused2[2] = defaultVARS.SLSD.value.unused2[2];
+                    VARS.value[ListIndex]->SLSD.value.unused2[3] = defaultVARS.SLSD.value.unused2[3];
+                    VARS.value[ListIndex]->SLSD.value.unused2[4] = defaultVARS.SLSD.value.unused2[4];
+                    VARS.value[ListIndex]->SLSD.value.unused2[5] = defaultVARS.SLSD.value.unused2[5];
+                    VARS.value[ListIndex]->SLSD.value.unused2[6] = defaultVARS.SLSD.value.unused2[6];
                     return;
                 case 5: //name
-                    VARS[ListIndex]->SCVR.Unload();
+                    VARS.value[ListIndex]->SCVR.Unload();
                     return;
                 default:
                     return;
@@ -451,20 +428,18 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 13: //references
             if(ListFieldID == 0) //references
                 {
-                for(UINT32 x = 0; x < (UINT32)SCR_.size(); x++)
-                    delete SCR_[x];
-                SCR_.clear();
+                SCR_.Unload();
                 return;
                 }
 
-            if(ListIndex >= SCR_.size())
+            if(ListIndex >= SCR_.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
-                    SCR_[ListIndex]->value.reference = defaultSCR_.reference;
-                    SCR_[ListIndex]->value.isSCRO = defaultSCR_.isSCRO;
+                    SCR_.value[ListIndex]->reference = defaultSCR_.reference;
+                    SCR_.value[ListIndex]->isSCRO = defaultSCR_.isSCRO;
                     return;
                 default:
                     return;
@@ -475,3 +450,4 @@ void SCPTRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

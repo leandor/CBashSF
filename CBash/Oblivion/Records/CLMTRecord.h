@@ -16,15 +16,16 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
 #include "..\..\Common.h"
 #include "..\..\GenericRecord.h"
-#include <vector>
 
-class CLMTRecord : public Record
+namespace Ob
+{
+class CLMTRecord : public Record //Climate
     {
     private:
         struct CLMTWLST
@@ -51,12 +52,12 @@ class CLMTRecord : public Record
             };
 
     public:
-        StringRecord EDID;
-        std::vector<CLMTWLST> Weathers;
-        StringRecord FNAM;
-        StringRecord GNAM;
-        OptSubRecord<GENMODEL> MODL;
-        ReqSubRecord<CLMTTNAM> TNAM;
+        StringRecord EDID; //Editor ID
+        UnorderedPackedArray<CLMTWLST> Weathers; //Weather Types
+        StringRecord FNAM; //Sun Texture
+        StringRecord GNAM; //Sun Glare Texture
+        OptSubRecord<GENMODEL> MODL; //Model
+        ReqSubRecord<CLMTTNAM> TNAM; //Timing
 
         CLMTRecord(unsigned char *_recData=NULL);
         CLMTRecord(CLMTRecord *srcRecord);
@@ -72,10 +73,12 @@ class CLMTRecord : public Record
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CLMTRecord &other) const;
         bool operator !=(const CLMTRecord &other) const;
+        bool equals(Record *other);
     };
+}

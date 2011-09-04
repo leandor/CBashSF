@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -28,7 +28,7 @@ namespace FNV
 class REGNRecord : public FNVRecord //Region
     {
     private:
-        struct REGNRPLD // Point
+        struct REGNRPLD //Point
             {
             FLOAT32 posX, posY;
 
@@ -41,8 +41,8 @@ class REGNRecord : public FNVRecord //Region
 
         struct REGNArea
             {
-            ReqSimpleSubRecord<UINT32> RPLI; // Edge Fall-off
-            UnorderedPackedArray<REGNRPLD> RPLD; // Region Point List Data
+            ReqSimpleSubRecord<UINT32> RPLI; //Edge Fall-off
+            UnorderedPackedArray<REGNRPLD> RPLD; //Region Point List Data
 
             void Write(FileWriter &writer);
 
@@ -50,7 +50,7 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNArea &other) const;
             };
 
-        struct REGNRDWT // Weather Type
+        struct REGNRDWT //Weather Type
             {
             FORMID  weather;
             UINT32  chance;
@@ -63,7 +63,7 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNRDWT &other) const;
             };
 
-        struct REGNRDSD // Sound
+        struct REGNRDSD //Sound
             {
             FORMID  sound;
             UINT32  flags, chance;
@@ -94,7 +94,7 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNRDSD &other) const;
             };
 
-        struct REGNRDGS // Grass
+        struct REGNRDGS //Grass
             {
             FORMID  grass;
             UINT8   unk1[4];
@@ -106,7 +106,7 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNRDGS &other) const;
             };
 
-        struct REGNRDOT
+        struct REGNRDOT //Object
             {
             FORMID  objectId;
             UINT16  parentIndex;
@@ -157,7 +157,7 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNRDOT &other) const;
             };
 
-        struct REGNRDAT
+        struct REGNRDAT //Data Header
             {
             UINT32  entryType;
             UINT8   flags, priority, unused1[2];
@@ -169,19 +169,19 @@ class REGNRecord : public FNVRecord //Region
             bool operator !=(const REGNRDAT &other) const;
             };
 
-        struct REGNEntry // Region Data Entry
+        struct REGNEntry //Region Data Entry
             {
-            ReqSubRecord<REGNRDAT> RDAT; // Data Header
-            UnorderedPackedArray<REGNRDOT> RDOT; // Objects
+            ReqSubRecord<REGNRDAT> RDAT; //Data Header
+            UnorderedPackedArray<REGNRDOT> RDOT; //Objects
             StringRecord RDMP; //Map Name
             StringRecord ICON; //Unknown
-            UnorderedPackedArray<REGNRDGS> RDGS; // Grasses
-            SemiOptSimpleSubRecord<UINT32> RDMD; // Music Type
+            UnorderedPackedArray<REGNRDGS> RDGS; //Grasses
+            SemiOptSimpleSubRecord<UINT32> RDMD; //Music Type
             OptSimpleSubRecord<FORMID> RDMO; //Music
             OptSimpleSubRecord<FORMID> RDSI; //Incidental MediaSet
             UnorderedSparseArray<FORMID> RDSB; //Battle MediaSets
-            UnorderedPackedArray<REGNRDSD> RDSD; // Sounds
-            UnorderedPackedArray<REGNRDWT> RDWT; // Weather Types
+            UnorderedPackedArray<REGNRDSD> RDSD; //Sounds
+            UnorderedPackedArray<REGNRDWT> RDWT; //Weather Types
             UnorderedPackedArray<FORMID> RDID; //Imposters
 
             enum RDATFlags
@@ -250,8 +250,8 @@ class REGNRecord : public FNVRecord //Region
         StringRecord MICO; //Small Icon Filename
         ReqSubRecord<GENCLR> RCLR; //Map Color
         OptSimpleSubRecord<FORMID> WNAM; //Worldspace
-        UnorderedSparseArray<REGNArea *> Areas; // Areas
-        UnorderedSparseArray<REGNEntry *> Entries; // Region Data Entries
+        UnorderedSparseArray<REGNArea *> Areas; //Areas
+        UnorderedSparseArray<REGNEntry *> Entries; //Region Data Entries
 
         REGNRecord(unsigned char *_recData=NULL);
         REGNRecord(REGNRecord *srcRecord);
@@ -267,11 +267,12 @@ class REGNRecord : public FNVRecord //Region
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const REGNRecord &other) const;
         bool operator !=(const REGNRecord &other) const;
+        bool equals(Record *other);
     };
 }

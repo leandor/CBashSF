@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\CLMTRecord.h"
 
+namespace Ob
+{
 UINT32 CLMTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -44,13 +46,13 @@ UINT32 CLMTRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Weathers.size();
+                        return (UINT32)Weathers.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Weathers.size())
+            if(ListIndex >= Weathers.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -105,23 +107,23 @@ void * CLMTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //weathers
-            if(ListIndex >= Weathers.size())
+            if(ListIndex >= Weathers.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //weather
-                    return &Weathers[ListIndex].weather;
+                    return &Weathers.value[ListIndex].weather;
                 case 2: //chance
-                    return &Weathers[ListIndex].chance;
+                    return &Weathers.value[ListIndex].chance;
                 default:
                     return NULL;
                 }
@@ -175,16 +177,16 @@ bool CLMTRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= Weathers.size())
+            if(ListIndex >= Weathers.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //weather
-                    Weathers[ListIndex].weather = *(FORMID *)FieldValue;
+                    Weathers.value[ListIndex].weather = *(FORMID *)FieldValue;
                     return true;
                 case 2: //chance
-                    Weathers[ListIndex].chance = *(SINT32 *)FieldValue;
+                    Weathers.value[ListIndex].chance = *(SINT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -251,20 +253,20 @@ void CLMTRecord::DeleteField(FIELD_IDENTIFIERS)
         case 5: //weathers
             if(ListFieldID == 0) //weathers
                 {
-                Weathers.clear();
+                Weathers.Unload();
                 return;
                 }
 
-            if(ListIndex >= Weathers.size())
+            if(ListIndex >= Weathers.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //weather
-                    Weathers[ListIndex].weather = defaultWLST.weather;
+                    Weathers.value[ListIndex].weather = defaultWLST.weather;
                     return;
                 case 2: //chance
-                    Weathers[ListIndex].chance = defaultWLST.chance;
+                    Weathers.value[ListIndex].chance = defaultWLST.chance;
                     return;
                 default:
                     return;
@@ -311,3 +313,4 @@ void CLMTRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

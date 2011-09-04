@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\ROADRecord.h"
 
+namespace Ob
+{
 UINT32 ROADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -44,13 +46,13 @@ UINT32 ROADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)PGRP.size();
+                        return (UINT32)PGRP.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -85,13 +87,13 @@ UINT32 ROADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)PGRR.size();
+                        return (UINT32)PGRR.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= PGRR.size())
+            if(ListIndex >= PGRR.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -105,6 +107,8 @@ UINT32 ROADRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 7: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -116,48 +120,50 @@ void * ROADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 5: //pgrp
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    return &PGRP[ListIndex].x;
+                    return &PGRP.value[ListIndex].x;
                 case 2: //y
-                    return &PGRP[ListIndex].y;
+                    return &PGRP.value[ListIndex].y;
                 case 3: //z
-                    return &PGRP[ListIndex].z;
+                    return &PGRP.value[ListIndex].z;
                 case 4: //connections
-                    return &PGRP[ListIndex].connections;
+                    return &PGRP.value[ListIndex].connections;
                 case 5: //unused1
-                    *FieldValues = &PGRP[ListIndex].unused1[0];
+                    *FieldValues = &PGRP.value[ListIndex].unused1[0];
                     return NULL;
                 default:
                     return NULL;
                 }
             return NULL;
         case 6: //pgrr
-            if(ListIndex >= PGRR.size())
+            if(ListIndex >= PGRR.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    return &PGRR[ListIndex].x;
+                    return &PGRR.value[ListIndex].x;
                 case 2: //y
-                    return &PGRR[ListIndex].y;
+                    return &PGRR.value[ListIndex].y;
                 case 3: //z
-                    return &PGRR[ListIndex].z;
+                    return &PGRR.value[ListIndex].z;
                 default:
                     return NULL;
                 }
             return NULL;
+        case 7: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -181,29 +187,29 @@ bool ROADRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRP[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].x = *(FLOAT32 *)FieldValue;
                     break;
                 case 2: //y
-                    PGRP[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].y = *(FLOAT32 *)FieldValue;
                     break;
                 case 3: //z
-                    PGRP[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].z = *(FLOAT32 *)FieldValue;
                     break;
                 case 4: //connections
-                    PGRP[ListIndex].connections = *(UINT8 *)FieldValue;
+                    PGRP.value[ListIndex].connections = *(UINT8 *)FieldValue;
                     break;
                 case 5: //unused1
                     if(ArraySize != 3)
                         break;
-                    PGRP[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    PGRP[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    PGRP[ListIndex].unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    PGRP.value[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    PGRP.value[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    PGRP.value[ListIndex].unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 default:
                     break;
@@ -216,19 +222,19 @@ bool ROADRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= PGRR.size())
+            if(ListIndex >= PGRR.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRR[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    PGRR.value[ListIndex].x = *(FLOAT32 *)FieldValue;
                     break;
                 case 2: //y
-                    PGRR[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    PGRR.value[ListIndex].y = *(FLOAT32 *)FieldValue;
                     break;
                 case 3: //z
-                    PGRR[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    PGRR.value[ListIndex].z = *(FLOAT32 *)FieldValue;
                     break;
                 default:
                     break;
@@ -256,31 +262,31 @@ void ROADRecord::DeleteField(FIELD_IDENTIFIERS)
         case 5: //pgrp
             if(ListFieldID == 0) //pgrp
                 {
-                PGRP.clear();
+                PGRP.Unload();
                 return;
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRP[ListIndex].x = defaultPGRP.x;
+                    PGRP.value[ListIndex].x = defaultPGRP.x;
                     return;
                 case 2: //y
-                    PGRP[ListIndex].y = defaultPGRP.y;
+                    PGRP.value[ListIndex].y = defaultPGRP.y;
                     return;
                 case 3: //z
-                    PGRP[ListIndex].z = defaultPGRP.z;
+                    PGRP.value[ListIndex].z = defaultPGRP.z;
                     return;
                 case 4: //connections
-                    PGRP[ListIndex].connections = defaultPGRP.connections;
+                    PGRP.value[ListIndex].connections = defaultPGRP.connections;
                     return;
                 case 5: //unused1
-                    PGRP[ListIndex].unused1[0] = defaultPGRP.unused1[0];
-                    PGRP[ListIndex].unused1[1] = defaultPGRP.unused1[1];
-                    PGRP[ListIndex].unused1[2] = defaultPGRP.unused1[2];
+                    PGRP.value[ListIndex].unused1[0] = defaultPGRP.unused1[0];
+                    PGRP.value[ListIndex].unused1[1] = defaultPGRP.unused1[1];
+                    PGRP.value[ListIndex].unused1[2] = defaultPGRP.unused1[2];
                     return;
                 default:
                     return;
@@ -289,23 +295,23 @@ void ROADRecord::DeleteField(FIELD_IDENTIFIERS)
         case 6: //pgrr
             if(ListFieldID == 0) //pgrr
                 {
-                PGRR.clear();
+                PGRR.Unload();
                 return;
                 }
 
-            if(ListIndex >= PGRR.size())
+            if(ListIndex >= PGRR.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRR[ListIndex].x = defaultPGRP.x;
+                    PGRR.value[ListIndex].x = defaultPGRP.x;
                     return;
                 case 2: //y
-                    PGRR[ListIndex].y = defaultPGRP.y;
+                    PGRR.value[ListIndex].y = defaultPGRP.y;
                     return;
                 case 3: //z
-                    PGRR[ListIndex].z = defaultPGRP.z;
+                    PGRR.value[ListIndex].z = defaultPGRP.z;
                     return;
                 default:
                     return;
@@ -316,3 +322,4 @@ void ROADRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

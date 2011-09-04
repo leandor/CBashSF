@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -40,7 +40,7 @@ NAVIRecord::NAVINVMI::~NAVINVMI()
     delete []unknown2;
     }
 
-bool NAVIRecord::NAVINVMI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool NAVIRecord::NAVINVMI::Read(unsigned char *&buffer, const UINT32 &subSize)
     {
     #ifdef CBASH_CHUNK_LCHECK
         if(subSize < 16)
@@ -55,22 +55,22 @@ bool NAVIRecord::NAVINVMI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         return false;
         }
     #endif
-    memcpy(&unknown1[0], buffer + curPos, 4);
-    curPos += 4;
-    memcpy(&mesh, buffer + curPos, 4);
-    curPos += 4;
-    memcpy(&location, buffer + curPos, 4);
-    curPos += 4;
-    memcpy(&xGrid, buffer + curPos, 2);
-    curPos += 2;
-    memcpy(&yGrid, buffer + curPos, 2);
-    curPos += 2;
+    memcpy(&unknown1[0], buffer, sizeof(unknown1));
+    buffer += sizeof(unknown1);
+    mesh = *(FORMID *)buffer;
+    buffer += 4;
+    location = *(FORMID *)buffer;
+    buffer += 4;
+    xGrid = *(SINT16 *)buffer;
+    buffer += 2;
+    yGrid = *(SINT16 *)buffer;
+    buffer += 2;
     if(subSize - 16 < subSize)  //Handle case if subSize wraps around
         {
         unknown2Size = subSize - 16;
         unknown2 = new unsigned char[unknown2Size];
-        memcpy(unknown2, buffer + curPos, unknown2Size);
-        curPos += unknown2Size;
+        memcpy(unknown2, buffer, unknown2Size);
+        buffer += unknown2Size;
         }
     return true;
     }
@@ -141,16 +141,16 @@ NAVIRecord::NAVINVCI::~NAVINVCI()
     //
     }
 
-bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos)
+bool NAVIRecord::NAVINVCI::Read(unsigned char *&buffer, const UINT32 &subSize)
     {
     if(unknown1 != 0 || unknown2.size() != 0 || unknown3.size() != 0 || doors.size() != 0)
         {
-        curPos += subSize;
+        buffer += subSize;
         return false;
         }
-    UINT32 initPos = curPos;
+    unsigned char * init_buffer = buffer;
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + 4)
+        if(subSize < (buffer - init_buffer) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -162,11 +162,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         return false;
         }
     #endif
-    unknown1 = *(FORMID *)(buffer + curPos);
-    curPos += 4;
+    unknown1 = *(FORMID *)buffer;
+    buffer += 4;
 
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + 4)
+        if(subSize < (buffer - init_buffer) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -178,11 +178,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         return false;
         }
     #endif
-    UINT32 sizeElements = *(FORMID *)(buffer + curPos) * sizeof(FORMID);
-    unknown2.resize(*(FORMID *)(buffer + curPos));
-    curPos += 4;
+    UINT32 sizeElements = *(FORMID *)buffer * sizeof(FORMID);
+    unknown2.resize(*(FORMID *)buffer);
+    buffer += 4;
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + sizeElements)
+        if(subSize < (buffer - init_buffer) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -195,11 +195,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         }
     #endif
     if(sizeElements)
-        memcpy(&unknown2[0], buffer + curPos, sizeElements);
-    curPos += sizeElements;
+        memcpy(&unknown2[0], buffer, sizeElements);
+    buffer += sizeElements;
 
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + 4)
+        if(subSize < (buffer - init_buffer) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -211,11 +211,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         return false;
         }
     #endif
-    sizeElements = *(FORMID *)(buffer + curPos) * sizeof(FORMID);
-    unknown3.resize(*(FORMID *)(buffer + curPos));
-    curPos += 4;
+    sizeElements = *(FORMID *)buffer * sizeof(FORMID);
+    unknown3.resize(*(FORMID *)buffer);
+    buffer += 4;
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + sizeElements)
+        if(subSize < (buffer - init_buffer) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -228,11 +228,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         }
     #endif
     if(sizeElements)
-        memcpy(&unknown3[0], buffer + curPos, sizeElements);
-    curPos += sizeElements;
+        memcpy(&unknown3[0], buffer, sizeElements);
+    buffer += sizeElements;
 
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + 4)
+        if(subSize < (buffer - init_buffer) + 4)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -244,11 +244,11 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         return false;
         }
     #endif
-    sizeElements = *(FORMID *)(buffer + curPos) * sizeof(FORMID);
-    doors.resize(*(FORMID *)(buffer + curPos));
-    curPos += 4;
+    sizeElements = *(FORMID *)buffer * sizeof(FORMID);
+    doors.resize(*(FORMID *)buffer);
+    buffer += 4;
     #ifdef CBASH_CHUNK_LCHECK
-        if(subSize < (curPos - initPos) + sizeElements)
+        if(subSize < (buffer - init_buffer) + sizeElements)
         {
         #ifdef CBASH_CHUNK_WARN
             printer("NAVIRecord::NAVINVCI: Warning - Unable to fully parse chunk (NVCI). Size "
@@ -261,9 +261,9 @@ bool NAVIRecord::NAVINVCI::Read(unsigned char *buffer, UINT32 subSize, UINT32 &c
         }
     #endif
     if(sizeElements)
-        memcpy(&doors[0], buffer + curPos, sizeElements);
-    curPos += sizeElements;
-    if(subSize != (curPos - initPos))
+        memcpy(&doors[0], buffer, sizeElements);
+    buffer += sizeElements;
+    if(subSize != (buffer - init_buffer))
         printer("NAVIRecord::NAVINVCI: Warning - Unable to properly parse chunk (NVCI). An "
                "unexpected format was found and there may be corrupt data present.\n");
     return true;
@@ -345,10 +345,10 @@ NAVIRecord::NAVIRecord(NAVIRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -398,49 +398,50 @@ STRING NAVIRecord::GetStrType()
     return "NAVI";
     }
 
-SINT32 NAVIRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 NAVIRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NVER):
-                NVER.Read(buffer, subSize, curPos);
+                NVER.Read(buffer, subSize);
                 break;
             case REV32(NVMI):
                 NVMI.value.push_back(new NAVINVMI);
-                NVMI.value.back()->Read(buffer, subSize, curPos);
+                NVMI.value.back()->Read(buffer, subSize);
                 break;
             case REV32(NVCI):
                 NVCI.value.push_back(new NAVINVCI);
-                NVCI.value.back()->Read(buffer, subSize, curPos);
+                NVCI.value.back()->Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  NAVI: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -478,5 +479,10 @@ bool NAVIRecord::operator ==(const NAVIRecord &other) const
 bool NAVIRecord::operator !=(const NAVIRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool NAVIRecord::equals(Record *other)
+    {
+    return *this == *(NAVIRecord *)other;
     }
 }

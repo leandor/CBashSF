@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -98,13 +98,13 @@ class DIALRecord : public FNVRecord //Dialog Topic
         OptSimpleFloatSubRecord<flt_0> PNAM; //Priority
         StringRecord TDUM; //Unknown
         ReqSubRecord<DIALDATA> DATA; //Dialog Data
+
         std::vector<Record *> INFO;
 
         DIALRecord(unsigned char *_recData=NULL);
         DIALRecord(DIALRecord *srcRecord);
         ~DIALRecord();
 
-        bool   VisitSubRecords(const UINT32 &RecordType, RecordOp &op);
         bool   VisitFormIDs(FormIDOp &op);
 
         bool   IsTopic();
@@ -133,7 +133,6 @@ class DIALRecord : public FNVRecord //Dialog Topic
         bool   IsFlagMask(UINT8 Mask, bool Exact=false);
         void   SetFlagMask(UINT8 Mask);
 
-
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);
         bool   SetField(DEFAULTED_FIELD_IDENTIFIERS, void *FieldValue=NULL, UINT32 ArraySize=0);
@@ -142,11 +141,13 @@ class DIALRecord : public FNVRecord //Dialog Topic
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const DIALRecord &other) const;
         bool operator !=(const DIALRecord &other) const;
+        bool equals(Record *other);
+        bool deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records);
     };
 }

@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -58,7 +58,6 @@ class FormIDResolver : public FormIDOp
 
         bool Accept(UINT32 &curFormID);
         bool AcceptMGEF(UINT32 &curMgefCode);
-        bool IsValid(const unsigned char * const _SrcBuf);
     };
 
 struct GENXNAM
@@ -150,34 +149,6 @@ struct FNVSCHR
     bool operator !=(const FNVSCHR &other) const;
     };
 
-struct FNVMINSCRIPT
-    {
-    ReqSubRecord<FNVSCHR> SCHR;
-    RawRecord SCDA;
-    NonNullStringRecord SCTX;
-    std::vector<GENVARS *> VARS;
-    std::vector<ReqSubRecord<GENSCR_> *> SCR_;
-
-    enum schrFlags
-        {
-        fIsEnabled = 0x0001
-        };
-
-    FNVMINSCRIPT();
-    ~FNVMINSCRIPT();
-
-    bool IsScriptEnabled();
-    void IsScriptEnabled(bool value);
-    bool IsScriptFlagMask(UINT16 Mask, bool Exact=false);
-    void SetScriptFlagMask(UINT16 Mask);
-
-    bool IsType(UINT16 Type);
-    void SetType(UINT16 Type);
-
-    bool operator ==(const FNVMINSCRIPT &other) const;
-    bool operator !=(const FNVMINSCRIPT &other) const;
-    };
-
 struct GENEFIT
     {
     MGEFCODE_OR_UINT32 name;
@@ -246,11 +217,11 @@ struct OBMEEffect
 
 struct GENEffect
     {
-    ReqSimpleSubRecord<UINT32> EFID;
-    ReqSubRecord<GENEFIT> EFIT;
-    OptSubRecord<GENSCIT> SCIT;
-    StringRecord FULL;
-    OptSubRecord<OBMEEffect> OBME;
+    ReqSimpleSubRecord<UINT32> EFID; //Effect ID
+    ReqSubRecord<GENEFIT> EFIT; //Effect Data
+    OptSubRecord<GENSCIT> SCIT; //Script Effect
+    StringRecord FULL; //Effect Name
+    OptSubRecord<OBMEEffect> OBME; //OBME Extended Data
 
     enum SCITFlags
         {
@@ -317,9 +288,6 @@ struct GENEffect
         fOBME_IsUsingHiddenOverride            = 0x40000000
         //fOBME_IsUsingMagnitudeIsFeetOverride = 0x80000000 //Marked as Deprecated
         };
-
-    bool operator ==(const GENEffect &other) const;
-    bool operator !=(const GENEffect &other) const;
 
     bool IsHostile();
     void IsHostile(bool value);
@@ -430,6 +398,12 @@ struct GENEffect
 
     bool OBME_IsFlagMask(UINT32 Mask, bool Exact=false);
     void OBME_SetFlagMask(UINT32 Mask);
+
+    bool VisitFormIDs(FormIDOp &op);
+    void Write(FileWriter &writer);
+
+    bool operator ==(const GENEffect &other) const;
+    bool operator !=(const GENEffect &other) const;
     };
 
 struct GENENIT
@@ -476,6 +450,41 @@ struct GENACBS
     SINT16  level;
     UINT16  calcMin, calcMax;
 
+    enum flagsFlags //Used by both npc_ and crea
+        {
+        fIsEssential     = 0x00000002,
+        fIsRespawn       = 0x00000008,
+        fIsPCLevelOffset = 0x00000080,
+        fIsNoLowLevel    = 0x00000200,
+        fIsSummonable    = 0x00004000
+        };
+
+    enum npc_Flags
+        {
+        fIsFemale         = 0x00000001,
+        fIsAutoCalc       = 0x00000010,
+        fIsNoRumors       = 0x00002000,
+        fIsNoPersuasion   = 0x00008000,
+        fIsCanCorpseCheck = 0x00100000
+        };
+
+    enum creaFlags
+        {
+        fIsBiped           = 0x00000001,
+        fIsWeaponAndShield = 0x00000004,
+        fIsSwims           = 0x00000010,
+        fIsFlies           = 0x00000020,
+        fIsWalks           = 0x00000040,
+        fIsNoBloodSpray    = 0x00000800,
+        fIsNoBloodDecal    = 0x00001000,
+        fIsNoHead          = 0x00008000,
+        fIsNoRightArm      = 0x00010000,
+        fIsNoLeftArm       = 0x00020000,
+        fIsNoCombatInWater = 0x00040000,
+        fIsNoShadow        = 0x00080000,
+        fIsNoCorpseCheck   = 0x00100000
+        };
+
     GENACBS();
     ~GENACBS();
 
@@ -512,7 +521,7 @@ struct GENAIDT
 struct GENCTDA
     {
     UINT8   operType, unused1[3];
-    FLOAT32 compValue;
+    FORMID_OR_FLOAT32 compValue;
     UINT32  ifunc;
     FORMID_OR_UINT32 param1, param2;
     UINT8   unused2[4];
@@ -537,9 +546,6 @@ struct GENCTDA
     GENCTDA();
     ~GENCTDA();
 
-    bool operator ==(const GENCTDA &other) const;
-    bool operator !=(const GENCTDA &other) const;
-
     bool IsEqual();
     void IsEqual(bool value);
     bool IsNotEqual();
@@ -561,10 +567,16 @@ struct GENCTDA
     void IsOr(bool value);
     bool IsRunOnTarget();
     void IsRunOnTarget(bool value);
-    bool IsUseGlobal();
+    bool IsUseGlobal() const;
     void IsUseGlobal(bool value);
     bool IsFlagMask(UINT8 Mask, bool Exact=false);
     void SetFlagMask(UINT8 Mask);
+
+    bool VisitFormIDs(FormIDOp &op);
+    void Write(FileWriter &writer);
+
+    bool operator ==(const GENCTDA &other) const;
+    bool operator !=(const GENCTDA &other) const;
     };
 
 struct GENCLR
@@ -584,6 +596,8 @@ struct GENMODEL
     StringRecord MODL;
     RawRecord MODT;
 
+    void Write(FileWriter &writer);
+
     bool operator ==(const GENMODEL &other) const;
     bool operator !=(const GENMODEL &other) const;
     };
@@ -594,6 +608,8 @@ struct GENXOWN
     SemiOptSimpleSubRecord<SINT32> XRNK;
     OptSimpleSubRecord<FORMID> XGLB;
 
+    void Write(FileWriter &writer);
+
     bool operator ==(const GENXOWN &other) const;
     bool operator !=(const GENXOWN &other) const;
     };
@@ -602,6 +618,8 @@ struct GENXPCI
     {
     OptSimpleSubRecord<FORMID> XPCI;
     StringRecord FULL;
+
+    void Write(FileWriter &writer);
 
     bool operator ==(const GENXPCI &other) const;
     bool operator !=(const GENXPCI &other) const;
@@ -689,7 +707,6 @@ struct OBMEMAGIC
     bool operator ==(const OBMEMAGIC &other) const;
     bool operator !=(const OBMEMAGIC &other) const;
     };
-
 
 struct GENMNAM
     {
@@ -937,7 +954,7 @@ struct FNVAlternateTextures
 
     void resize(UINT32 newSize);
 
-    bool Read(unsigned char *buffer, UINT32 subSize, UINT32 &curPos);
+    bool Read(unsigned char *&buffer, const UINT32 &subSize);
     void Write(FileWriter &writer);
     void Write(UINT32 _Type, FileWriter &writer);
 
@@ -1067,6 +1084,7 @@ struct FNVCTDA //Condition
     ~FNVCTDA();
 
     bool VisitFormIDs(FormIDOp &op);
+    void Write(FileWriter &writer);
 
     bool operator ==(const FNVCTDA &other) const;
     bool operator !=(const FNVCTDA &other) const;
@@ -1584,6 +1602,47 @@ struct FNVAIDT
     SINT8   trainSkill;
     UINT8   trainLevel, assistance, aggroFlags;
     SINT32  aggroRadius;
+
+    enum aggressionTypes
+        {
+        eUnaggressive = 0,
+        eAggressive,
+        eVeryAggressive,
+        eFrenzied
+        };
+
+    enum confidenceTypes
+        {
+        eCowardly = 0,
+        eCautious,
+        eAverage,
+        eBrave,
+        eFoolhardy
+        };
+
+    enum moodTypes
+        {
+        eNeutral = 0,
+        eAfraid,
+        eAnnoyed,
+        eCocky,
+        eDrugged,
+        ePleasant,
+        eAngry,
+        eSad
+        };
+
+    enum assistanceTypes
+        {
+        eHelpsNobody = 0,
+        eHelpsAllies,
+        eHelpsFriendsAndAllies
+        };
+
+    enum aggroFlags
+        {
+        fIsAggroRadiusBehavior = 0x01
+        };
 
     FNVAIDT();
     ~FNVAIDT();

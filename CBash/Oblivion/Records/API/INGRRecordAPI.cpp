@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\INGRRecord.h"
 
+namespace Ob
+{
 UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -82,13 +84,13 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Effects.size();
+                        return (UINT32)Effects.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Effects.size())
+            if(ListIndex >= Effects.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -100,9 +102,9 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return MGEFCODE_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            if(Effects[ListIndex]->OBME.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded())
                                 {
-                                if(Effects[ListIndex]->EFID.value >= 0x80000000)
+                                if(Effects.value[ListIndex]->EFID.value >= 0x80000000)
                                     return RESOLVED_MGEFCODE_FIELD;
                                 return STATIC_MGEFCODE_FIELD;
                                 }
@@ -125,22 +127,22 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            if(Effects[ListIndex]->OBME.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded())
                                 {
-                                switch(Effects[ListIndex]->OBME->EFME.value.efitParamInfo)
+                                switch(Effects.value[ListIndex]->OBME->EFME.value.efitParamInfo)
                                     {
                                     case 1: //It's a regular formID, so nothing fancy.
                                         return FORMID_FIELD;
                                     case 2: //It's a mgefCode, and not a formID at all.
                                         //Conditional resolution of mgefCode's based on JRoush's OBME mod
                                         //It's resolved just like a formID, except it uses the lower byte instead of the upper
-                                        if(Effects[ListIndex]->EFIT.value.actorValue >= 0x80000000)
+                                        if(Effects.value[ListIndex]->EFIT.value.actorValue >= 0x80000000)
                                             return RESOLVED_MGEFCODE_FIELD;
                                         return STATIC_MGEFCODE_FIELD;
                                     case 3: //It's an actor value, and not a formID at all.
                                         //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
                                         //It's resolved just like a formID
-                                        if(Effects[ListIndex]->EFIT.value.actorValue >= 0x800)
+                                        if(Effects.value[ListIndex]->EFIT.value.actorValue >= 0x800)
                                             return RESOLVED_ACTORVALUE_FIELD;
                                         return STATIC_ACTORVALUE_FIELD;
                                     default: //It's not a formID, mgefCode, or fancied up actor value
@@ -159,22 +161,22 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->SCIT.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->SCIT.IsLoaded())
                                 {
-                                switch(Effects[ListIndex]->OBME->EFME.value.efixParamInfo)
+                                switch(Effects.value[ListIndex]->OBME->EFME.value.efixParamInfo)
                                     {
                                     case 1: //It's a regular formID, so nothing fancy.
                                         return FORMID_FIELD;
                                     case 2: //It's a mgefCode, and not a formID at all.
                                         //Conditional resolution of mgefCode's based on JRoush's OBME mod
                                         //It's resolved just like a formID, except it uses the lower byte instead of the upper
-                                        if(Effects[ListIndex]->SCIT->script >= 0x80000000)
+                                        if(Effects.value[ListIndex]->SCIT->script >= 0x80000000)
                                             return RESOLVED_MGEFCODE_FIELD;
                                         return STATIC_MGEFCODE_FIELD;
                                     case 3: //It's an actor value, and not a formID at all.
                                         //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
                                         //It's resolved just like a formID
-                                        if(Effects[ListIndex]->SCIT->script >= 0x800)
+                                        if(Effects.value[ListIndex]->SCIT->script >= 0x800)
                                             return RESOLVED_ACTORVALUE_FIELD;
                                         return STATIC_ACTORVALUE_FIELD;
                                     default: //It's not a formID, mgefCode, or fancied up actor value
@@ -195,9 +197,9 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return MGEFCODE_OR_UINT32_FIELD;
                         case 2: //WhichType
-                            if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->SCIT.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->SCIT.IsLoaded())
                                 {
-                                if(Effects[ListIndex]->SCIT->visual >= 0x80000000)
+                                if(Effects.value[ListIndex]->SCIT->visual >= 0x80000000)
                                     return RESOLVED_MGEFCODE_FIELD;
                                 return STATIC_MGEFCODE_FIELD;
                                 }
@@ -214,7 +216,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects[ListIndex]->SCIT.IsLoaded())
+                            if(Effects.value[ListIndex]->SCIT.IsLoaded())
                                 return 3;
                             return 0;
                         default:
@@ -241,7 +243,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects[ListIndex]->OBME.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded())
                                 return 0xA;
                             return 0;
                         default:
@@ -261,9 +263,9 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return ACTORVALUE_FIELD;
                         case 2: //WhichType
-                            if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
                                 {
-                                if(Effects[ListIndex]->OBME->EFIX->resistAV >= 0x800)
+                                if(Effects.value[ListIndex]->OBME->EFIX->resistAV >= 0x800)
                                     return RESOLVED_ACTORVALUE_FIELD;
                                 return STATIC_ACTORVALUE_FIELD;
                                 }
@@ -278,7 +280,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
+                            if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
                                 return 0x10;
                             return 0;
                         default:
@@ -328,11 +330,11 @@ void * INGRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -358,65 +360,65 @@ void * INGRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = &ENIT.value.unused1[0];
             return NULL;
         case 15: //effects
-            if(ListIndex >= Effects.size())
+            if(ListIndex >= Effects.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    return &Effects[ListIndex]->EFID.value;
+                    return &Effects.value[ListIndex]->EFID.value;
                 case 3: //magnitude
-                    return &Effects[ListIndex]->EFIT.value.magnitude;
+                    return &Effects.value[ListIndex]->EFIT.value.magnitude;
                 case 4: //area
-                    return &Effects[ListIndex]->EFIT.value.area;
+                    return &Effects.value[ListIndex]->EFIT.value.area;
                 case 5: //duration
-                    return &Effects[ListIndex]->EFIT.value.duration;
+                    return &Effects.value[ListIndex]->EFIT.value.duration;
                 case 6: //rangeType
-                    return &Effects[ListIndex]->EFIT.value.rangeType;
+                    return &Effects.value[ListIndex]->EFIT.value.rangeType;
                 case 7: //actorValue
-                    return &Effects[ListIndex]->EFIT.value.actorValue;
+                    return &Effects.value[ListIndex]->EFIT.value.actorValue;
                 case 8: //script
-                    return Effects[ListIndex]->SCIT.IsLoaded() ? &Effects[ListIndex]->SCIT->script : NULL;
+                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->script : NULL;
                 case 9: //school
-                    return Effects[ListIndex]->SCIT.IsLoaded() ? &Effects[ListIndex]->SCIT->school : NULL;
+                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->school : NULL;
                 case 10: //visual
-                    return Effects[ListIndex]->SCIT.IsLoaded() ? &Effects[ListIndex]->SCIT->visual : NULL;
+                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->visual : NULL;
                 case 11: //flags
-                    return Effects[ListIndex]->SCIT.IsLoaded() ? &Effects[ListIndex]->SCIT->flags : NULL;
+                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->flags : NULL;
                 case 12: //unused1
-                    *FieldValues = Effects[ListIndex]->SCIT.IsLoaded() ? &Effects[ListIndex]->SCIT->unused1[0] : NULL;
+                    *FieldValues = Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->unused1[0] : NULL;
                     return NULL;
                 case 13: //full
-                    return Effects[ListIndex]->FULL.value;
+                    return Effects.value[ListIndex]->FULL.value;
                 //OBME Fields
                 case 14: //recordVersion
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.recordVersion : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.recordVersion : NULL;
                 case 15: //betaVersion
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.betaVersion : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.betaVersion : NULL;
                 case 16: //minorVersion
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.minorVersion : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.minorVersion : NULL;
                 case 17: //majorVersion
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.majorVersion : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.majorVersion : NULL;
                 case 18: //efitParamInfo
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.efitParamInfo : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.efitParamInfo : NULL;
                 case 19: //efixParamInfo
-                    return Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.efixParamInfo : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.efixParamInfo : NULL;
                 case 20: //reserved1
-                    *FieldValues = Effects[ListIndex]->OBME.IsLoaded() ? &Effects[ListIndex]->OBME->EFME.value.reserved[0] : NULL;
+                    *FieldValues = Effects.value[ListIndex]->OBME.IsLoaded() ? &Effects.value[ListIndex]->OBME->EFME.value.reserved[0] : NULL;
                     return NULL;
                 case 21: //iconPath
-                    return Effects[ListIndex]->OBME.IsLoaded() ? Effects[ListIndex]->OBME->EFII.value : NULL;
+                    return Effects.value[ListIndex]->OBME.IsLoaded() ? Effects.value[ListIndex]->OBME->EFII.value : NULL;
                 case 22: //efixOverrides
-                    return (Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects[ListIndex]->OBME->EFIX->efixOverrides : NULL;
+                    return (Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects.value[ListIndex]->OBME->EFIX->efixOverrides : NULL;
                 case 23: //efixFlags
-                    return (Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects[ListIndex]->OBME->EFIX->efixFlags : NULL;
+                    return (Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects.value[ListIndex]->OBME->EFIX->efixFlags : NULL;
                 case 24: //baseCost
-                    return (Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects[ListIndex]->OBME->EFIX->baseCost : NULL;
+                    return (Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects.value[ListIndex]->OBME->EFIX->baseCost : NULL;
                 case 25: //resistAV
-                    return (Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects[ListIndex]->OBME->EFIX->resistAV : NULL;
+                    return (Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects.value[ListIndex]->OBME->EFIX->resistAV : NULL;
                 case 26: //reserved2
-                    *FieldValues = (Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects[ListIndex]->OBME->EFIX->reserved[0] : NULL;
+                    *FieldValues = (Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded()) ? &Effects.value[ListIndex]->OBME->EFIX->reserved[0] : NULL;
                     return NULL;
                 default:
                     return NULL;
@@ -496,129 +498,118 @@ bool INGRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 15: //effects
             if(ListFieldID == 0) //effectsSize
                 {
-                ArraySize -= (UINT32)Effects.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Effects.push_back(new GENEffect());
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Effects.back();
-                    Effects.pop_back();
-                    ++ArraySize;
-                    }
+                Effects.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Effects.size())
+            if(ListIndex >= Effects.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    Effects[ListIndex]->EFID.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
-                    Effects[ListIndex]->EFIT.value.name = *(MGEFCODE_OR_UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFID.value = *(MGEFCODE_OR_UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFIT.value.name = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     return true;
                 case 3: //magnitude
-                    Effects[ListIndex]->EFIT.value.magnitude = *(UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFIT.value.magnitude = *(UINT32 *)FieldValue;
                     break;
                 case 4: //area
-                    Effects[ListIndex]->EFIT.value.area = *(UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFIT.value.area = *(UINT32 *)FieldValue;
                     break;
                 case 5: //duration
-                    Effects[ListIndex]->EFIT.value.duration = *(UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFIT.value.duration = *(UINT32 *)FieldValue;
                     break;
                 case 6: //rangeType
-                    Effects[ListIndex]->SetRange(*(UINT32 *)FieldValue);
+                    Effects.value[ListIndex]->SetRange(*(UINT32 *)FieldValue);
                     break;
                 case 7: //actorValue
-                    Effects[ListIndex]->EFIT.value.actorValue = *(FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->EFIT.value.actorValue = *(FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 *)FieldValue;
                     return true;
                 case 8: //script
-                    Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->script = *(FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->SCIT.Load();
+                    Effects.value[ListIndex]->SCIT->script = *(FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 *)FieldValue;
                     return true;
                 case 9: //school
-                    Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->school = *(UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->SCIT.Load();
+                    Effects.value[ListIndex]->SCIT->school = *(UINT32 *)FieldValue;
                     break;
                 case 10: //visual
-                    Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->visual = *(MGEFCODE_OR_UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->SCIT.Load();
+                    Effects.value[ListIndex]->SCIT->visual = *(MGEFCODE_OR_UINT32 *)FieldValue;
                     return true;
                 case 11: //flags
-                    Effects[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
+                    Effects.value[ListIndex]->SetFlagMask(*(UINT8 *)FieldValue);
                     break;
                 case 12: //unused1
                     if(ArraySize != 3)
                         break;
-                    Effects[ListIndex]->SCIT.Load();
-                    Effects[ListIndex]->SCIT->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    Effects[ListIndex]->SCIT->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    Effects[ListIndex]->SCIT->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    Effects.value[ListIndex]->SCIT.Load();
+                    Effects.value[ListIndex]->SCIT->unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    Effects.value[ListIndex]->SCIT->unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    Effects.value[ListIndex]->SCIT->unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 case 13: //full
-                    Effects[ListIndex]->FULL.Copy((STRING)FieldValue);
+                    Effects.value[ListIndex]->FULL.Copy((STRING)FieldValue);
                     break;
                 //OBME Fields
                 case 14: //recordVersion
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.recordVersion = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.recordVersion = *(UINT8 *)FieldValue;
                     break;
                 case 15: //betaVersion
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.betaVersion = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.betaVersion = *(UINT8 *)FieldValue;
                     break;
                 case 16: //minorVersion
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.minorVersion = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.minorVersion = *(UINT8 *)FieldValue;
                     break;
                 case 17: //majorVersion
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.majorVersion = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.majorVersion = *(UINT8 *)FieldValue;
                     break;
                 case 18: //efitParamInfo
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.efitParamInfo = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.efitParamInfo = *(UINT8 *)FieldValue;
                     return true;
                 case 19: //efixParamInfo
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFME.value.efixParamInfo = *(UINT8 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFME.value.efixParamInfo = *(UINT8 *)FieldValue;
                     return true;
                 case 20: //reserved1
                     if(ArraySize != 0xA)
                         break;
-                    Effects[ListIndex]->OBME.Load();
-                    memcpy(&Effects[ListIndex]->OBME->EFME.value.reserved[0], &((UINT8ARRAY)FieldValue)[0], 0xA);
+                    Effects.value[ListIndex]->OBME.Load();
+                    memcpy(&Effects.value[ListIndex]->OBME->EFME.value.reserved[0], &((UINT8ARRAY)FieldValue)[0], sizeof(Effects.value[ListIndex]->OBME->EFME.value.reserved));
                     break;
                 case 21: //iconPath
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFII.Copy((STRING)FieldValue);
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFII.Copy((STRING)FieldValue);
                     break;
                 case 22: //efixOverrides
-                    Effects[ListIndex]->OBME_SetOverrideFlagMask(*(UINT32 *)FieldValue);
+                    Effects.value[ListIndex]->OBME_SetOverrideFlagMask(*(UINT32 *)FieldValue);
                     return true;
                 case 23: //efixFlags
-                    Effects[ListIndex]->OBME_SetFlagMask(*(UINT32 *)FieldValue);
+                    Effects.value[ListIndex]->OBME_SetFlagMask(*(UINT32 *)FieldValue);
                     return true;
                 case 24: //baseCost
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFIX.Load();
-                    Effects[ListIndex]->OBME->EFIX->baseCost = *(FLOAT32 *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFIX.Load();
+                    Effects.value[ListIndex]->OBME->EFIX->baseCost = *(FLOAT32 *)FieldValue;
                     break;
                 case 25: //resistAV
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFIX.Load();
-                    Effects[ListIndex]->OBME->EFIX->resistAV = *(ACTORVALUE *)FieldValue;
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFIX.Load();
+                    Effects.value[ListIndex]->OBME->EFIX->resistAV = *(ACTORVALUE *)FieldValue;
                     return true;
                 case 26: //reserved2
                     if(ArraySize != 0x10)
                         break;
-                    Effects[ListIndex]->OBME.Load();
-                    Effects[ListIndex]->OBME->EFIX.Load();
-                    memcpy(&Effects[ListIndex]->OBME->EFIX->reserved[0], &((UINT8ARRAY)FieldValue)[0], 0x10);
+                    Effects.value[ListIndex]->OBME.Load();
+                    Effects.value[ListIndex]->OBME->EFIX.Load();
+                    memcpy(&Effects.value[ListIndex]->OBME->EFIX->reserved[0], &((UINT8ARRAY)FieldValue)[0], sizeof(Effects.value[ListIndex]->OBME->EFIX->reserved));
                     break;
                 default:
                     break;
@@ -645,7 +636,7 @@ bool INGRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             if(ArraySize != 0x1C)
                 break;
             OBME.Load();
-            memcpy(&OBME->OBME.value.reserved[0], &((UINT8ARRAY)FieldValue)[0], 0x1C);
+            memcpy(&OBME->OBME.value.reserved[0], &((UINT8ARRAY)FieldValue)[0], sizeof(OBME->OBME.value.reserved));
             break;
         case 21: //datx_p
             if(ArraySize != 0x20)
@@ -718,116 +709,114 @@ void INGRRecord::DeleteField(FIELD_IDENTIFIERS)
         case 15: //effects
             if(ListFieldID == 0) //effects
                 {
-                for(UINT32 x = 0; x < (UINT32)Effects.size(); ++x)
-                    delete Effects[x];
-                Effects.clear();
+                Effects.Unload();
                 return;
                 }
 
-            if(ListIndex >= Effects.size())
+            if(ListIndex >= Effects.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //name0, both are always the same value, so return one and set both
                 case 2: //name
-                    Effects[ListIndex]->EFID.Unload();
-                    Effects[ListIndex]->EFIT.value.name = defaultEFIT.name;
+                    Effects.value[ListIndex]->EFID.Unload();
+                    Effects.value[ListIndex]->EFIT.value.name = defaultEFIT.name;
                     return;
                 case 3: //magnitude
-                    Effects[ListIndex]->EFIT.value.magnitude = defaultEFIT.magnitude;
+                    Effects.value[ListIndex]->EFIT.value.magnitude = defaultEFIT.magnitude;
                     return;
                 case 4: //area
-                    Effects[ListIndex]->EFIT.value.area = defaultEFIT.area;
+                    Effects.value[ListIndex]->EFIT.value.area = defaultEFIT.area;
                     return;
                 case 5: //duration
-                    Effects[ListIndex]->EFIT.value.duration = defaultEFIT.duration;
+                    Effects.value[ListIndex]->EFIT.value.duration = defaultEFIT.duration;
                     return;
                 case 6: //rangeType
-                    Effects[ListIndex]->EFIT.value.rangeType = defaultEFIT.rangeType;
+                    Effects.value[ListIndex]->EFIT.value.rangeType = defaultEFIT.rangeType;
                     return;
                 case 7: //actorValue
-                    Effects[ListIndex]->EFIT.value.actorValue = defaultEFIT.actorValue;
+                    Effects.value[ListIndex]->EFIT.value.actorValue = defaultEFIT.actorValue;
                     return;
                 case 8: //script
-                    if(Effects[ListIndex]->SCIT.IsLoaded())
-                        Effects[ListIndex]->SCIT->script = defaultSCIT.script;
+                    if(Effects.value[ListIndex]->SCIT.IsLoaded())
+                        Effects.value[ListIndex]->SCIT->script = defaultSCIT.script;
                     return;
                 case 9: //school
-                    if(Effects[ListIndex]->SCIT.IsLoaded())
-                        Effects[ListIndex]->SCIT->school = defaultSCIT.school;
+                    if(Effects.value[ListIndex]->SCIT.IsLoaded())
+                        Effects.value[ListIndex]->SCIT->school = defaultSCIT.school;
                     return;
                 case 10: //visual
-                    if(Effects[ListIndex]->SCIT.IsLoaded())
-                        Effects[ListIndex]->SCIT->visual = defaultSCIT.visual;
+                    if(Effects.value[ListIndex]->SCIT.IsLoaded())
+                        Effects.value[ListIndex]->SCIT->visual = defaultSCIT.visual;
                     return;
                 case 11: //flags
-                    if(Effects[ListIndex]->SCIT.IsLoaded())
-                        Effects[ListIndex]->SCIT->flags = defaultSCIT.flags;
+                    if(Effects.value[ListIndex]->SCIT.IsLoaded())
+                        Effects.value[ListIndex]->SCIT->flags = defaultSCIT.flags;
                     return;
                 case 12: //unused1
-                    if(Effects[ListIndex]->SCIT.IsLoaded())
+                    if(Effects.value[ListIndex]->SCIT.IsLoaded())
                         {
-                        Effects[ListIndex]->SCIT->unused1[0] = defaultSCIT.unused1[0];
-                        Effects[ListIndex]->SCIT->unused1[1] = defaultSCIT.unused1[1];
-                        Effects[ListIndex]->SCIT->unused1[2] = defaultSCIT.unused1[2];
+                        Effects.value[ListIndex]->SCIT->unused1[0] = defaultSCIT.unused1[0];
+                        Effects.value[ListIndex]->SCIT->unused1[1] = defaultSCIT.unused1[1];
+                        Effects.value[ListIndex]->SCIT->unused1[2] = defaultSCIT.unused1[2];
                         }
                     return;
                 case 13: //full
-                    Effects[ListIndex]->FULL.Unload();
+                    Effects.value[ListIndex]->FULL.Unload();
                     return;
                 //OBME Fields
                 case 14: //recordVersion
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.recordVersion = defaultEFME.recordVersion;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.recordVersion = defaultEFME.recordVersion;
                     return;
                 case 15: //betaVersion
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.betaVersion = defaultEFME.betaVersion;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.betaVersion = defaultEFME.betaVersion;
                     return;
                 case 16: //minorVersion
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.minorVersion = defaultEFME.minorVersion;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.minorVersion = defaultEFME.minorVersion;
                     return;
                 case 17: //majorVersion
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.majorVersion = defaultEFME.majorVersion;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.majorVersion = defaultEFME.majorVersion;
                     return;
                 case 18: //efitParamInfo
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.efitParamInfo = defaultEFME.efitParamInfo;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.efitParamInfo = defaultEFME.efitParamInfo;
                     return;
                 case 19: //efixParamInfo
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFME.value.efixParamInfo = defaultEFME.efixParamInfo;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFME.value.efixParamInfo = defaultEFME.efixParamInfo;
                     return;
                 case 20: //reserved1
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        memcpy(&Effects[ListIndex]->OBME->EFME.value.reserved[0],&defaultEFME.reserved[0],0xA);
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        memcpy(&Effects.value[ListIndex]->OBME->EFME.value.reserved[0],&defaultEFME.reserved[0], sizeof(Effects.value[ListIndex]->OBME->EFME.value.reserved));
                     return;
                 case 21: //iconPath
-                    if(Effects[ListIndex]->OBME.IsLoaded())
-                        Effects[ListIndex]->OBME->EFII.Unload();
+                    if(Effects.value[ListIndex]->OBME.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFII.Unload();
                     return;
                 case 22: //efixOverrides
-                    if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
-                        Effects[ListIndex]->OBME->EFIX->efixOverrides = defaultEFIX.efixOverrides;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFIX->efixOverrides = defaultEFIX.efixOverrides;
                     return;
                 case 23: //efixFlags
-                    if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
-                        Effects[ListIndex]->OBME->EFIX->efixFlags = defaultEFIX.efixFlags;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFIX->efixFlags = defaultEFIX.efixFlags;
                     return;
                 case 24: //baseCost
-                    if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
-                        Effects[ListIndex]->OBME->EFIX->baseCost = defaultEFIX.baseCost;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFIX->baseCost = defaultEFIX.baseCost;
                     return;
                 case 25: //resistAV
-                    if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
-                        Effects[ListIndex]->OBME->EFIX->resistAV = defaultEFIX.resistAV;
+                    if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
+                        Effects.value[ListIndex]->OBME->EFIX->resistAV = defaultEFIX.resistAV;
                     return;
                 case 26: //reserved2
-                    if(Effects[ListIndex]->OBME.IsLoaded() && Effects[ListIndex]->OBME->EFIX.IsLoaded())
-                        memcpy(&Effects[ListIndex]->OBME->EFIX->reserved[0],&defaultEFIX.reserved[0],0x10);
+                    if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
+                        memcpy(&Effects.value[ListIndex]->OBME->EFIX->reserved[0],&defaultEFIX.reserved[0], sizeof(Effects.value[ListIndex]->OBME->EFIX->reserved));
                     return;
                 default:
                     return;
@@ -852,7 +841,7 @@ void INGRRecord::DeleteField(FIELD_IDENTIFIERS)
             return;
         case 20: //reserved
             if(OBME.IsLoaded())
-                memcpy(&OBME->OBME.value.reserved[0], &defaultOBME.reserved[0], 0x1C);
+                memcpy(&OBME->OBME.value.reserved[0], &defaultOBME.reserved[0], sizeof(OBME->OBME.value.reserved));
             return;
         case 21: //datx_p
             if(OBME.IsLoaded())
@@ -863,3 +852,4 @@ void INGRRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

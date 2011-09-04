@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\PGRDRecord.h"
 
+namespace Ob
+{
 UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -46,13 +48,13 @@ UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)PGRP.size();
+                        return (UINT32)PGRP.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -109,13 +111,13 @@ UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)PGRI.size();
+                        return (UINT32)PGRI.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= PGRI.size())
+            if(ListIndex >= PGRI.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -150,13 +152,13 @@ UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)PGRL.size();
+                        return (UINT32)PGRL.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= PGRL.size())
+            if(ListIndex >= PGRL.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -170,13 +172,15 @@ UINT32 PGRDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             return UINT32_ARRAY_FIELD;
                         case 1: //fieldSize
                             //The first entry in the points array is actually the reference
-                            return (UINT32)PGRL[ListIndex]->points.size() - 1;
+                            return (UINT32)PGRL.value[ListIndex]->points.value.size() - 1;
                         default:
                             return UNKNOWN_FIELD;
                         }
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 11: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -188,29 +192,29 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 5: //count
             return &DATA.value;
         case 6: //pgrp
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    return &PGRP[ListIndex].x;
+                    return &PGRP.value[ListIndex].x;
                 case 2: //y
-                    return &PGRP[ListIndex].y;
+                    return &PGRP.value[ListIndex].y;
                 case 3: //z
-                    return &PGRP[ListIndex].z;
+                    return &PGRP.value[ListIndex].z;
                 case 4: //connections
-                    return &PGRP[ListIndex].connections;
+                    return &PGRP.value[ListIndex].connections;
                 case 5: //unused1
-                    *FieldValues = &PGRP[ListIndex].unused1[0];
+                    *FieldValues = &PGRP.value[ListIndex].unused1[0];
                     return NULL;
                 default:
                     return NULL;
@@ -223,41 +227,43 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
             *FieldValues = PGRR.value;
             return NULL;
         case 9: //pgri
-            if(ListIndex >= PGRI.size())
+            if(ListIndex >= PGRI.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //point
-                    return &PGRI[ListIndex].point;
+                    return &PGRI.value[ListIndex].point;
                 case 2: //unused1
-                    *FieldValues = &PGRI[ListIndex].unused1[0];
+                    *FieldValues = &PGRI.value[ListIndex].unused1[0];
                     return NULL;
                 case 3: //x
-                    return &PGRI[ListIndex].x;
+                    return &PGRI.value[ListIndex].x;
                 case 4: //y
-                    return &PGRI[ListIndex].y;
+                    return &PGRI.value[ListIndex].y;
                 case 5: //z
-                    return &PGRI[ListIndex].z;
+                    return &PGRI.value[ListIndex].z;
                 default:
                     return NULL;
                 }
             return NULL;
         case 10: //pgrl
-            if(ListIndex >= PGRL.size())
+            if(ListIndex >= PGRL.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
-                    return PGRL[ListIndex]->points.size() ? &PGRL[ListIndex]->points[0] : NULL;
+                    return PGRL.value[ListIndex]->points.value.size() ? &PGRL.value[ListIndex]->points.value[0] : NULL;
                 case 2: //points
-                    *FieldValues = (PGRL[ListIndex]->points.size() > 1) ? &PGRL[ListIndex]->points[1] : NULL;
+                    *FieldValues = (PGRL.value[ListIndex]->points.value.size() > 1) ? &PGRL.value[ListIndex]->points.value[1] : NULL;
                     return NULL;
                 default:
                     return NULL;
                 }
             return NULL;
+        case 11: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -286,29 +292,29 @@ bool PGRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRP[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].x = *(FLOAT32 *)FieldValue;
                     break;
                 case 2: //y
-                    PGRP[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].y = *(FLOAT32 *)FieldValue;
                     break;
                 case 3: //z
-                    PGRP[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    PGRP.value[ListIndex].z = *(FLOAT32 *)FieldValue;
                     break;
                 case 4: //connections
-                    PGRP[ListIndex].connections = *(UINT8 *)FieldValue;
+                    PGRP.value[ListIndex].connections = *(UINT8 *)FieldValue;
                     break;
                 case 5: //unused1
                     if(ArraySize != 3)
                         break;
-                    PGRP[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    PGRP[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
-                    PGRP[ListIndex].unused1[2] = ((UINT8ARRAY)FieldValue)[2];
+                    PGRP.value[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    PGRP.value[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    PGRP.value[ListIndex].unused1[2] = ((UINT8ARRAY)FieldValue)[2];
                     break;
                 default:
                     break;
@@ -327,69 +333,58 @@ bool PGRDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= PGRI.size())
+            if(ListIndex >= PGRI.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //point
-                    PGRI[ListIndex].point = *(UINT16 *)FieldValue;
+                    PGRI.value[ListIndex].point = *(UINT16 *)FieldValue;
                     break;
                 case 2: //unused1
                     if(ArraySize != 2)
                         break;
-                    PGRI[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                    PGRI[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                    PGRI.value[ListIndex].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                    PGRI.value[ListIndex].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
                     break;
                 case 3: //x
-                    PGRI[ListIndex].x = *(FLOAT32 *)FieldValue;
+                    PGRI.value[ListIndex].x = *(FLOAT32 *)FieldValue;
                     break;
                 case 4: //y
-                    PGRI[ListIndex].y = *(FLOAT32 *)FieldValue;
+                    PGRI.value[ListIndex].y = *(FLOAT32 *)FieldValue;
                     break;
                 case 5: //z
-                    PGRI[ListIndex].z = *(FLOAT32 *)FieldValue;
+                    PGRI.value[ListIndex].z = *(FLOAT32 *)FieldValue;
                     break;
                 default:
                     break;
                 }
             break;
         case 10: //pgrl
-            if(ListFieldID == 0) //pgriSize
+            if(ListFieldID == 0) //pgrlSize
                 {
-                ArraySize -= (UINT32)PGRL.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    PGRL.push_back(new PGRDPGRL);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete PGRL.back();
-                    PGRL.pop_back();
-                    ++ArraySize;
-                    }
+                PGRL.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= PGRL.size())
+            if(ListIndex >= PGRL.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
-                    if(PGRL[ListIndex]->points.size() == 0) //Sanity check, should already have a minimum of 1
-                        PGRL[ListIndex]->points.resize(1);
-                    PGRL[ListIndex]->points[0] = *(FORMID *)FieldValue;
+                    if(PGRL.value[ListIndex]->points.value.size() == 0) //Sanity check, should already have a minimum of 1
+                        PGRL.value[ListIndex]->points.value.resize(1);
+                    PGRL.value[ListIndex]->points.value[0] = *(FORMID *)FieldValue;
                     return true;
                 case 2: //points
-                    reference = PGRL[ListIndex]->points.size() ? PGRL[ListIndex]->points[0] : 0;
+                    reference = PGRL.value[ListIndex]->points.value.size() ? PGRL.value[ListIndex]->points.value[0] : 0;
 
-                    PGRL[ListIndex]->points.resize(ArraySize + 1);
-                    PGRL[ListIndex]->points[0] = reference;
+                    PGRL.value[ListIndex]->points.value.resize(ArraySize + 1);
+                    PGRL.value[ListIndex]->points.value[0] = reference;
 
                     for(UINT32 x = 0; x < ArraySize; x++)
-                        PGRL[ListIndex]->points[x + 1] = ((UINT32ARRAY)FieldValue)[x];
+                        PGRL.value[ListIndex]->points.value[x + 1] = ((UINT32ARRAY)FieldValue)[x];
                     break;
                 default:
                     break;
@@ -422,31 +417,31 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 6: //pgrp
             if(ListFieldID == 0) //pgrp
                 {
-                PGRP.clear();
+                PGRP.Unload();
                 return;
                 }
 
-            if(ListIndex >= PGRP.size())
+            if(ListIndex >= PGRP.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //x
-                    PGRP[ListIndex].x = defaultPGRP.x;
+                    PGRP.value[ListIndex].x = defaultPGRP.x;
                     return;
                 case 2: //y
-                    PGRP[ListIndex].y = defaultPGRP.y;
+                    PGRP.value[ListIndex].y = defaultPGRP.y;
                     return;
                 case 3: //z
-                    PGRP[ListIndex].z = defaultPGRP.z;
+                    PGRP.value[ListIndex].z = defaultPGRP.z;
                     return;
                 case 4: //connections
-                    PGRP[ListIndex].connections = defaultPGRP.connections;
+                    PGRP.value[ListIndex].connections = defaultPGRP.connections;
                     return;
                 case 5: //unused1
-                    PGRP[ListIndex].unused1[0] = defaultPGRP.unused1[0];
-                    PGRP[ListIndex].unused1[1] = defaultPGRP.unused1[1];
-                    PGRP[ListIndex].unused1[2] = defaultPGRP.unused1[2];
+                    PGRP.value[ListIndex].unused1[0] = defaultPGRP.unused1[0];
+                    PGRP.value[ListIndex].unused1[1] = defaultPGRP.unused1[1];
+                    PGRP.value[ListIndex].unused1[2] = defaultPGRP.unused1[2];
                     return;
                 default:
                     return;
@@ -461,30 +456,30 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 9: //pgri
             if(ListFieldID == 0) //pgri
                 {
-                PGRI.clear();
+                PGRI.Unload();
                 return;
                 }
 
-            if(ListIndex >= PGRI.size())
+            if(ListIndex >= PGRI.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //point
-                    PGRI[ListIndex].point = defaultPGRI.point;
+                    PGRI.value[ListIndex].point = defaultPGRI.point;
                     return;
                 case 2: //unused1
-                    PGRI[ListIndex].unused1[0] = defaultPGRI.unused1[0];
-                    PGRI[ListIndex].unused1[1] = defaultPGRI.unused1[1];
+                    PGRI.value[ListIndex].unused1[0] = defaultPGRI.unused1[0];
+                    PGRI.value[ListIndex].unused1[1] = defaultPGRI.unused1[1];
                     return;
                 case 3: //x
-                    PGRI[ListIndex].x = defaultPGRI.x;
+                    PGRI.value[ListIndex].x = defaultPGRI.x;
                     return;
                 case 4: //y
-                    PGRI[ListIndex].y = defaultPGRI.y;
+                    PGRI.value[ListIndex].y = defaultPGRI.y;
                     return;
                 case 5: //z
-                    PGRI[ListIndex].z = defaultPGRI.z;
+                    PGRI.value[ListIndex].z = defaultPGRI.z;
                     return;
                 default:
                     return;
@@ -493,24 +488,22 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 10: //pgrl
             if(ListFieldID == 0) //pgrl
                 {
-                for(UINT32 x = 0; x < (UINT32)PGRL.size(); x++)
-                    delete PGRL[x];
-                PGRL.clear();
+                PGRL.Unload();
                 return;
                 }
 
-            if(ListIndex >= PGRL.size())
+            if(ListIndex >= PGRL.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //reference
-                    PGRL[ListIndex]->points[0] = defaultPGRL.points[0];
+                    PGRL.value[ListIndex]->points.value[0] = defaultPGRL.points.value[0];
                     return;
                 case 2: //points
-                    reference = PGRL[ListIndex]->points[0];
-                    PGRL[ListIndex]->points.clear();
-                    PGRL[ListIndex]->points.push_back(reference);
+                    reference = PGRL.value[ListIndex]->points.value[0];
+                    PGRL.value[ListIndex]->points.Unload();
+                    PGRL.value[ListIndex]->points.value.push_back(reference);
                     return;
                 default:
                     return;
@@ -521,3 +514,4 @@ void PGRDRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

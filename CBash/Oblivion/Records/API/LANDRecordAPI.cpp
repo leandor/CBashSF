@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\LANDRecord.h"
 
+namespace Ob
+{
 UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     //normals, heights, and colors are accessed as if they were a list of lists
@@ -202,13 +204,13 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)BTXT.size();
+                        return (UINT32)BTXT.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= BTXT.size())
+            if(ListIndex >= BTXT.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -241,13 +243,13 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)Layers.size();
+                        return (UINT32)Layers.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= Layers.size())
+            if(ListIndex >= Layers.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -276,13 +278,13 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             case 0: //fieldType
                                 return LIST_FIELD;
                             case 1: //fieldSize
-                                return (UINT32)Layers[ListIndex]->VTXT.size();
+                                return (UINT32)Layers.value[ListIndex]->VTXT.value.size();
                             default:
                                 return UNKNOWN_FIELD;
                             }
                         }
 
-                    if(ListX2Index >= Layers[ListIndex]->VTXT.size())
+                    if(ListX2Index >= Layers.value[ListIndex]->VTXT.value.size())
                         return UNKNOWN_FIELD;
 
                     switch(ListX2FieldID)
@@ -316,13 +318,13 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     case 0: //fieldType
                         return LIST_FIELD;
                     case 1: //fieldSize
-                        return (UINT32)VTEX.size();
+                        return (UINT32)VTEX.value.size();
                     default:
                         return UNKNOWN_FIELD;
                     }
                 }
 
-            if(ListIndex >= VTEX.size())
+            if(ListIndex >= VTEX.value.size())
                 return UNKNOWN_FIELD;
 
             switch(ListFieldID)
@@ -419,6 +421,8 @@ UINT32 LANDRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 default:
                     return UNKNOWN_FIELD;
                 }
+        case 15: //Parent
+            return PARENTRECORD_FIELD;
         default:
             return UNKNOWN_FIELD;
         }
@@ -434,11 +438,11 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 5: //data
             *FieldValues = DATA.value;
             return NULL;
@@ -501,52 +505,52 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 11: //baseTextures
-            if(ListIndex >= BTXT.size())
+            if(ListIndex >= BTXT.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    return &BTXT[ListIndex]->value.texture;
+                    return &BTXT.value[ListIndex]->texture;
                 case 2: //quadrant
-                    return &BTXT[ListIndex]->value.quadrant;
+                    return &BTXT.value[ListIndex]->quadrant;
                 case 3: //unused1
-                    *FieldValues = &BTXT[ListIndex]->value.unused1;
+                    *FieldValues = &BTXT.value[ListIndex]->unused1;
                     return NULL;
                 case 4: //layer
-                    return &BTXT[ListIndex]->value.layer;
+                    return &BTXT.value[ListIndex]->layer;
                 default:
                     return NULL;
                 }
             return NULL;
         case 12: //alphaLayers
-            if(ListIndex >= Layers.size())
+            if(ListIndex >= Layers.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    return &Layers[ListIndex]->ATXT.value.texture;
+                    return &Layers.value[ListIndex]->ATXT.value.texture;
                 case 2: //quadrant
-                    return &Layers[ListIndex]->ATXT.value.quadrant;
+                    return &Layers.value[ListIndex]->ATXT.value.quadrant;
                 case 3: //unused1
-                    *FieldValues = &Layers[ListIndex]->ATXT.value.unused1;
+                    *FieldValues = &Layers.value[ListIndex]->ATXT.value.unused1;
                     return NULL;
                 case 4: //layer
-                    return &Layers[ListIndex]->ATXT.value.layer;
+                    return &Layers.value[ListIndex]->ATXT.value.layer;
                 case 5: //opacities
-                    if(ListX2Index >= Layers[ListIndex]->VTXT.size())
+                    if(ListX2Index >= Layers.value[ListIndex]->VTXT.value.size())
                         return NULL;
 
                     switch(ListX2FieldID)
                         {
                         case 1: //position
-                            return &Layers[ListIndex]->VTXT[ListX2Index].position;
+                            return &Layers.value[ListIndex]->VTXT.value[ListX2Index].position;
                         case 2: //unused1
-                            *FieldValues = &Layers[ListIndex]->VTXT[ListX2Index].unused1[0];
+                            *FieldValues = &Layers.value[ListIndex]->VTXT.value[ListX2Index].unused1[0];
                             return NULL;
                         case 3: //opacity
-                            return &Layers[ListIndex]->VTXT[ListX2Index].opacity;
+                            return &Layers.value[ListIndex]->VTXT.value[ListX2Index].opacity;
                         default:
                             return NULL;
                         }
@@ -556,13 +560,13 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 13: //vertexTextures
-            if(ListIndex >= VTEX.size())
+            if(ListIndex >= VTEX.value.size())
                 return NULL;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    return &VTEX[ListFieldID];
+                    return &VTEX.value[ListFieldID];
                 default:
                     return NULL;
                 }
@@ -597,134 +601,136 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                     return VCLR.IsLoaded() ? &VCLR->VCLR[ListIndex][ListX2Index].blue : NULL;
                 case 8: //baseTexture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < BTXT.size(); ++x)
-                        if(BTXT[x]->value.quadrant == curQuadrant)
-                            return &BTXT[x]->value.texture;
+                    for(UINT32 x = 0; x < BTXT.value.size(); ++x)
+                        if(BTXT.value[x]->quadrant == curQuadrant)
+                            return &BTXT.value[x]->texture;
                     return NULL;
                 case 9: //alphaLayer1Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 10: //alphaLayer1Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 11: //alphaLayer2Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 12: //alphaLayer2Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 13: //alphaLayer3Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 14: //alphaLayer3Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 15: //alphaLayer4Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 16: //alphaLayer4Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 17: //alphaLayer5Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 18: //alphaLayer5Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 19: //alphaLayer6Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 20: //alphaLayer6Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 21: //alphaLayer7Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 22: //alphaLayer7Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 case 23: //alphaLayer8Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
-                            return &Layers[x]->ATXT.value.texture;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
+                            return &Layers.value[x]->ATXT.value.texture;
                     return NULL;
                 case 24: //alphaLayer8Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
-                                    return &Layers[x]->VTXT[y].opacity;
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
+                                    return &Layers.value[x]->VTXT.value[y].opacity;
                     return NULL;
                 default:
                     return NULL;
                 }
             return NULL;
+        case 15: //Parent
+            return Parent;
         default:
             return NULL;
         }
@@ -737,7 +743,7 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
     UINT8    curQuadrant;
     UINT16   curPosition;
     LANDVTXT curVTXT;
-    ReqSubRecord<LANDGENTXT> *curTexture;
+    LANDGENTXT *curTexture;
     LANDLAYERS *curLayer;
 
     switch(FieldID)
@@ -842,39 +848,28 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 11: //baseTextures
             if(ListFieldID == 0) //baseTexturesSize
                 {
-                ArraySize -= (UINT32)BTXT.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    BTXT.push_back(new ReqSubRecord<LANDGENTXT>);
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete BTXT.back();
-                    BTXT.pop_back();
-                    ++ArraySize;
-                    }
+                BTXT.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= BTXT.size())
+            if(ListIndex >= BTXT.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    BTXT[ListIndex]->value.texture = *(FORMID *)FieldValue;
+                    BTXT.value[ListIndex]->texture = *(FORMID *)FieldValue;
                     return true;
                 case 2: //quadrant
-                    BTXT[ListIndex]->value.quadrant = *(UINT8 *)FieldValue;
+                    BTXT.value[ListIndex]->quadrant = *(UINT8 *)FieldValue;
                     break;
                 case 3: //unused1
                     if(ArraySize != 1)
                         break;
-                    BTXT[ListIndex]->value.unused1 = ((UINT8ARRAY)FieldValue)[0];
+                    BTXT.value[ListIndex]->unused1 = ((UINT8ARRAY)FieldValue)[0];
                     break;
                 case 4: //layer
-                    BTXT[ListIndex]->value.layer = *(SINT16 *)FieldValue;
+                    BTXT.value[ListIndex]->layer = *(SINT16 *)FieldValue;
                     break;
                 default:
                     break;
@@ -883,57 +878,46 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 12: //alphaLayers
             if(ListFieldID == 0) //alphaLayersSize
                 {
-                ArraySize -= (UINT32)Layers.size();
-                while((SINT32)ArraySize > 0)
-                    {
-                    Layers.push_back(new LANDLAYERS());
-                    --ArraySize;
-                    }
-                while((SINT32)ArraySize < 0)
-                    {
-                    delete Layers.back();
-                    Layers.pop_back();
-                    ++ArraySize;
-                    }
+                Layers.resize(ArraySize);
                 return false;
                 }
 
-            if(ListIndex >= Layers.size())
+            if(ListIndex >= Layers.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    Layers[ListIndex]->ATXT.value.texture = *(FORMID *)FieldValue;
+                    Layers.value[ListIndex]->ATXT.value.texture = *(FORMID *)FieldValue;
                     return true;
                 case 2: //quadrant
-                    Layers[ListIndex]->ATXT.value.quadrant = *(UINT8 *)FieldValue;
+                    Layers.value[ListIndex]->ATXT.value.quadrant = *(UINT8 *)FieldValue;
                     break;
                 case 3: //unused1
                     if(ArraySize != 1)
                         break;
-                    Layers[ListIndex]->ATXT.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
+                    Layers.value[ListIndex]->ATXT.value.unused1 = ((UINT8ARRAY)FieldValue)[0];
                     break;
                 case 4: //layer
-                    Layers[ListIndex]->ATXT.value.layer = *(SINT16 *)FieldValue;
+                    Layers.value[ListIndex]->ATXT.value.layer = *(SINT16 *)FieldValue;
                     break;
                 case 5: //opacities
-                    if(ListX2Index >= Layers[ListIndex]->VTXT.size())
+                    if(ListX2Index >= Layers.value[ListIndex]->VTXT.value.size())
                         break;
 
                     switch(ListX2FieldID)
                         {
                         case 1: //position
-                            Layers[ListIndex]->VTXT[ListX2Index].position = *(UINT16 *)FieldValue;
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].position = *(UINT16 *)FieldValue;
                             break;
                         case 2: //unused1
                             if(ArraySize != 2)
                                 break;
-                            Layers[ListIndex]->VTXT[ListX2Index].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
-                            Layers[ListIndex]->VTXT[ListX2Index].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].unused1[0] = ((UINT8ARRAY)FieldValue)[0];
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].unused1[1] = ((UINT8ARRAY)FieldValue)[1];
                             break;
                         case 3: //opacity
-                            Layers[ListIndex]->VTXT[ListX2Index].opacity = *(FLOAT32 *)FieldValue;
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].opacity = *(FLOAT32 *)FieldValue;
                             break;
                         default:
                             break;
@@ -950,13 +934,13 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                 return false;
                 }
 
-            if(ListIndex >= VTEX.size())
+            if(ListIndex >= VTEX.value.size())
                 break;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    VTEX[ListIndex] = *(FORMID *)FieldValue;
+                    VTEX.value[ListIndex] = *(FORMID *)FieldValue;
                     return true;
                 default:
                     break;
@@ -1228,305 +1212,305 @@ bool LANDRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     break;
                 case 8: //baseTexture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < BTXT.size(); ++x)
-                        if(BTXT[x]->value.quadrant == curQuadrant)
+                    for(UINT32 x = 0; x < BTXT.value.size(); ++x)
+                        if(BTXT.value[x]->quadrant == curQuadrant)
                             {
-                            BTXT[x]->value.texture = *(FORMID *)FieldValue;
+                            BTXT.value[x]->texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     //No existing BTXT, so make one if able
-                    if(BTXT.size() > 3)
+                    if(BTXT.value.size() > 3)
                         break;
-                    curTexture = new ReqSubRecord<LANDGENTXT>;
-                    curTexture->value.layer = -1;
-                    curTexture->value.quadrant = curQuadrant;
-                    curTexture->value.texture = *(FORMID *)FieldValue;
-                    BTXT.push_back(curTexture);
+                    curTexture = new LANDGENTXT;
+                    curTexture->layer = -1;
+                    curTexture->quadrant = curQuadrant;
+                    curTexture->texture = *(FORMID *)FieldValue;
+                    BTXT.value.push_back(curTexture);
                     return true;
                 case 9: //alphaLayer1Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 0;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 10: //alphaLayer1Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     break;
                 case 11: //alphaLayer2Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 1;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 12: //alphaLayer2Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 13: //alphaLayer3Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 2;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 14: //alphaLayer3Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 15: //alphaLayer4Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 3;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 16: //alphaLayer4Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 17: //alphaLayer5Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 4;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 18: //alphaLayer5Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 19: //alphaLayer6Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 5;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 20: //alphaLayer6Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 21: //alphaLayer7Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 6;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 22: //alphaLayer7Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
                     return false;
                 case 23: //alphaLayer8Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
                             {
-                            Layers[x]->ATXT.value.texture = *(FORMID *)FieldValue;
+                            Layers.value[x]->ATXT.value.texture = *(FORMID *)FieldValue;
                             return true;
                             }
                     curLayer = new LANDLAYERS;
                     curLayer->ATXT.value.layer = 7;
                     curLayer->ATXT.value.quadrant = curQuadrant;
                     curLayer->ATXT.value.texture = *(FORMID *)FieldValue;
-                    Layers.push_back(curLayer);
+                    Layers.value.push_back(curLayer);
                     return true;
                 case 24: //alphaLayer8Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = *(FLOAT32 *)FieldValue;
+                                    Layers.value[x]->VTXT.value[y].opacity = *(FLOAT32 *)FieldValue;
                                     return false;
                                     }
                     //No existing VTXT, so make one
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
                             {
                             curVTXT.position = curPosition;
                             curVTXT.opacity = *(FLOAT32 *)FieldValue;
-                            Layers[x]->VTXT.push_back(curVTXT);
+                            Layers.value[x]->VTXT.value.push_back(curVTXT);
                             return false;
                             }
                     //No existing ATXT, so do nothing
@@ -1697,32 +1681,26 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 11: //baseTextures
             if(ListFieldID == 0) //baseTexturesSize
                 {
-                for(UINT32 x = 0; x < BTXT.size(); ++x)
-                    delete BTXT[x];
-                BTXT.clear();
+                BTXT.Unload();
                 return;
                 }
 
-            if(ListIndex >= BTXT.size())
+            if(ListIndex >= BTXT.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    if(BTXT[ListIndex]->IsLoaded())
-                        BTXT[ListIndex]->value.texture = defaultGENTXT.texture;
+                    BTXT.value[ListIndex]->texture = defaultGENTXT.texture;
                     return;
                 case 2: //quadrant
-                    if(BTXT[ListIndex]->IsLoaded())
-                        BTXT[ListIndex]->value.quadrant = defaultGENTXT.quadrant;
+                    BTXT.value[ListIndex]->quadrant = defaultGENTXT.quadrant;
                     return;
                 case 3: //unused1
-                    if(BTXT[ListIndex]->IsLoaded())
-                        BTXT[ListIndex]->value.unused1 = defaultGENTXT.unused1;
+                    BTXT.value[ListIndex]->unused1 = defaultGENTXT.unused1;
                     return;
                 case 4: //layer
-                    if(BTXT[ListIndex]->IsLoaded())
-                        BTXT[ListIndex]->value.layer = defaultGENTXT.layer;
+                    BTXT.value[ListIndex]->layer = defaultGENTXT.layer;
                     return;
                 default:
                     return;
@@ -1731,54 +1709,52 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 12: //alphaLayers
             if(ListFieldID == 0) //alphaLayersSize
                 {
-                for(UINT32 x = 0; x < Layers.size(); ++x)
-                    delete Layers[x];
-                Layers.clear();
+                Layers.Unload();
                 return;
                 }
 
-            if(ListIndex >= Layers.size())
+            if(ListIndex >= Layers.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    if(Layers[ListIndex]->ATXT.IsLoaded())
-                        Layers[ListIndex]->ATXT.value.texture = defaultGENTXT.texture;
+                    if(Layers.value[ListIndex]->ATXT.IsLoaded())
+                        Layers.value[ListIndex]->ATXT.value.texture = defaultGENTXT.texture;
                     return;
                 case 2: //quadrant
-                    if(Layers[ListIndex]->ATXT.IsLoaded())
-                        Layers[ListIndex]->ATXT.value.quadrant = defaultGENTXT.quadrant;
+                    if(Layers.value[ListIndex]->ATXT.IsLoaded())
+                        Layers.value[ListIndex]->ATXT.value.quadrant = defaultGENTXT.quadrant;
                     return;
                 case 3: //unused1
-                    if(Layers[ListIndex]->ATXT.IsLoaded())
-                        Layers[ListIndex]->ATXT.value.unused1 = defaultGENTXT.unused1;
+                    if(Layers.value[ListIndex]->ATXT.IsLoaded())
+                        Layers.value[ListIndex]->ATXT.value.unused1 = defaultGENTXT.unused1;
                     return;
                 case 4: //layer
-                    if(Layers[ListIndex]->ATXT.IsLoaded())
-                        Layers[ListIndex]->ATXT.value.layer = defaultGENTXT.layer;
+                    if(Layers.value[ListIndex]->ATXT.IsLoaded())
+                        Layers.value[ListIndex]->ATXT.value.layer = defaultGENTXT.layer;
                     return;
                 case 5: //opacities
                     if(ListFieldID == 0) //opacitiesSize
                         {
-                        Layers[ListIndex]->VTXT.clear();
+                        Layers.value[ListIndex]->VTXT.Unload();
                         return;
                         }
 
-                    if(ListX2Index >= Layers[ListIndex]->VTXT.size())
+                    if(ListX2Index >= Layers.value[ListIndex]->VTXT.value.size())
                         return;
 
                     switch(ListX2FieldID)
                         {
                         case 1: //position
-                            Layers[ListIndex]->VTXT[ListX2Index].position = defaultVTXT.position;
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].position = defaultVTXT.position;
                             return;
                         case 2: //unused1
-                            Layers[ListIndex]->VTXT[ListX2Index].unused1[0] = defaultVTXT.unused1[0];
-                            Layers[ListIndex]->VTXT[ListX2Index].unused1[1] = defaultVTXT.unused1[1];
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].unused1[0] = defaultVTXT.unused1[0];
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].unused1[1] = defaultVTXT.unused1[1];
                             return;
                         case 3: //opacity
-                            Layers[ListIndex]->VTXT[ListX2Index].opacity = defaultVTXT.opacity;
+                            Layers.value[ListIndex]->VTXT.value[ListX2Index].opacity = defaultVTXT.opacity;
                             return;
                         default:
                             return;
@@ -1791,17 +1767,17 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
         case 13: //vertexTextures
             if(ListFieldID == 0) //vertexTexturesSize
                 {
-                VTEX.clear();
+                VTEX.Unload();
                 return;
                 }
 
-            if(ListIndex >= VTEX.size())
+            if(ListIndex >= VTEX.value.size())
                 return;
 
             switch(ListFieldID)
                 {
                 case 1: //texture
-                    VTEX.clear();
+                    VTEX.Unload();
                     return;
                 default:
                     return;
@@ -1853,20 +1829,20 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                     return;
                 case 8: //baseTexture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < BTXT.size(); ++x)
-                        if(BTXT[x]->value.quadrant == curQuadrant)
+                    for(UINT32 x = 0; x < BTXT.value.size(); ++x)
+                        if(BTXT.value[x]->quadrant == curQuadrant)
                             {
-                            BTXT[x]->value.texture = defaultGENTXT.texture;
+                            BTXT.value[x]->texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing BTXT, so nothing to do
                     return;
                 case 9: //alphaLayer1Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1874,22 +1850,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 10: //alphaLayer1Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 0)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 0)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 11: //alphaLayer2Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1897,22 +1873,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 12: //alphaLayer2Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 1)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 1)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 13: //alphaLayer3Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1920,22 +1896,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 14: //alphaLayer3Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 2)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 2)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 15: //alphaLayer4Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1943,22 +1919,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 16: //alphaLayer4Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 3)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 3)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 17: //alphaLayer5Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1966,22 +1942,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 18: //alphaLayer5Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 4)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 4)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 19: //alphaLayer6Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -1989,22 +1965,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 20: //alphaLayer6Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 5)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 5)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 21: //alphaLayer7Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -2012,22 +1988,22 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 22: //alphaLayer7Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 6)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 6)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
                     return;
                 case 23: //alphaLayer8Texture
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
                             {
-                            Layers[x]->ATXT.value.texture = defaultGENTXT.texture;
+                            Layers.value[x]->ATXT.value.texture = defaultGENTXT.texture;
                             return;
                             }
                     //No existing alpha layer, so nothing to do
@@ -2035,12 +2011,12 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
                 case 24: //alphaLayer8Opacity
                     curQuadrant = CalcQuadrant(ListIndex, ListX2Index);
                     curPosition = CalcPosition(curQuadrant, ListIndex, ListX2Index);
-                    for(UINT32 x = 0; x < Layers.size(); ++x)
-                        if(Layers[x]->ATXT.value.quadrant == curQuadrant && Layers[x]->ATXT.value.layer == 7)
-                            for(UINT32 y = 0; y < Layers[x]->VTXT.size(); ++y)
-                                if(Layers[x]->VTXT[y].position == curPosition)
+                    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+                        if(Layers.value[x]->ATXT.value.quadrant == curQuadrant && Layers.value[x]->ATXT.value.layer == 7)
+                            for(UINT32 y = 0; y < Layers.value[x]->VTXT.value.size(); ++y)
+                                if(Layers.value[x]->VTXT.value[y].position == curPosition)
                                     {
-                                    Layers[x]->VTXT[y].opacity = defaultVTXT.opacity;
+                                    Layers.value[x]->VTXT.value[y].opacity = defaultVTXT.opacity;
                                     return;
                                     }
                     //No existing VTXT, so nothing to do
@@ -2054,3 +2030,4 @@ void LANDRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

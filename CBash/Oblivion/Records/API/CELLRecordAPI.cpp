@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\..\Common.h"
 #include "..\CELLRecord.h"
 
+namespace Ob
+{
 UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     switch(FieldID)
@@ -121,7 +123,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return FORMID_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)XCLR.size();
+                    return (UINT32)XCLR.value.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -160,7 +162,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)achr_pool.used_object_capacity();
+                    return (UINT32)ACHR.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -171,7 +173,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)acre_pool.used_object_capacity();
+                    return (UINT32)ACRE.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -182,7 +184,7 @@ UINT32 CELLRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                 case 0: //fieldType
                     return SUBRECORD_ARRAY_FIELD;
                 case 1: //fieldSize
-                    return (UINT32)refr_pool.used_object_capacity();
+                    return (UINT32)REFR.size();
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -204,11 +206,11 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return &flags;
+            return cleaned_flag1();
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return &flagsUnk;
+            return cleaned_flag2();
         case 4: //eid
             return EDID.value;
         case 5: //full
@@ -267,7 +269,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 30: //waterHeight
             return XCLW.IsLoaded() ? &XCLW.value : NULL;
         case 31: //regions
-            *FieldValues = &XCLR[0];
+            *FieldValues = XCLR.value.size() ? &XCLR.value[0]: NULL;
             return NULL;
         case 32: //posX
             return (!IsInterior() & XCLC.IsLoaded()) ? &XCLC->posX : NULL;
@@ -276,13 +278,16 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 34: //water
             return XCWT.IsLoaded() ? &XCWT.value : NULL;
         case 35: //ACHR
-            achr_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
+            for(UINT32 p = 0;p < (UINT32)ACHR.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = ACHR[p];
             return NULL;
         case 36: //ACRE
-            acre_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
+            for(UINT32 p = 0;p < (UINT32)ACRE.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = ACRE[p];
             return NULL;
         case 37: //REFR
-            refr_pool.MakeRecordsArray((RECORDIDARRAY)FieldValues);
+            for(UINT32 p = 0;p < (UINT32)REFR.size();++p)
+                ((RECORDIDARRAY)FieldValues)[p] = REFR[p];
             return NULL;
         case 38: //PGRD
             return PGRD;
@@ -420,7 +425,7 @@ bool CELLRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
         case 31: //regions
             XCLR.resize(ArraySize);
             for(UINT32 x = 0; x < ArraySize; ++x)
-                XCLR[x] = ((FORMIDARRAY)FieldValue)[x];
+                XCLR.value[x] = ((FORMIDARRAY)FieldValue)[x];
             return true;
         case 32: //posX
             if(IsInterior())
@@ -560,7 +565,7 @@ void CELLRecord::DeleteField(FIELD_IDENTIFIERS)
             XCLW.Unload();
             return;
         case 31: //regions
-            XCLR.clear();
+            XCLR.Unload();
             return;
         case 32: //posX
             if(!IsInterior() && XCLC.IsLoaded())
@@ -578,3 +583,4 @@ void CELLRecord::DeleteField(FIELD_IDENTIFIERS)
         }
     return;
     }
+}

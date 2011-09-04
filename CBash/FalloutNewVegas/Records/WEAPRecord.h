@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -78,7 +78,7 @@ class WEAPRecord : public FNVRecord //Weapon
             bool operator !=(const WEAPDNAM &other) const;
             };
 
-        struct WEAPCRDT // Critical Data
+        struct WEAPCRDT //Critical Data
             {
             UINT16  critDamage;
             UINT8   unused1[2];
@@ -93,7 +93,7 @@ class WEAPRecord : public FNVRecord //Weapon
             bool operator !=(const WEAPCRDT &other) const;
             };
 
-        struct WEAPVATS // VATS
+        struct WEAPVATS //VATS
             {
             FORMID  effect;
             FLOAT32 skill, damageMult, AP;
@@ -747,11 +747,12 @@ class WEAPRecord : public FNVRecord //Weapon
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const WEAPRecord &other) const;
         bool operator !=(const WEAPRecord &other) const;
+        bool equals(Record *other);
     };
 }

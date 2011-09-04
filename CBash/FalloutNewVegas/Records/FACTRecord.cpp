@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
@@ -32,7 +32,7 @@ bool sortRNAM::operator()(const FACTRecord::FACTRNAM *lhs, const FACTRecord::FAC
 FACTRecord::FACTDATA::FACTDATA():
     flags(0)
     {
-    memset(&unused1, 0x00, 2);
+    memset(&unused1[0], 0x00, sizeof(unused1));
     }
 
 FACTRecord::FACTDATA::~FACTDATA()
@@ -90,10 +90,10 @@ FACTRecord::FACTRecord(FACTRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -117,8 +117,8 @@ bool FACTRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < XNAM.value.size(); x++)
-        op.Accept(XNAM.value[x]->faction);
+    for(UINT32 ListIndex = 0; ListIndex < XNAM.value.size(); ListIndex++)
+        op.Accept(XNAM.value[ListIndex]->faction);
     if(WMI1.IsLoaded())
         op.Accept(WMI1.value);
 
@@ -195,72 +195,73 @@ STRING FACTRecord::GetStrType()
     return "FACT";
     }
 
-SINT32 FACTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 FACTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XNAM):
-                XNAM.Read(buffer, subSize, curPos);
+                XNAM.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             case REV32(CNAM):
-                CNAM.Read(buffer, subSize, curPos);
+                CNAM.Read(buffer, subSize);
                 break;
             case REV32(RNAM):
                 RNAM.value.push_back(new FACTRNAM);
-                RNAM.value.back()->RNAM.Read(buffer, subSize, curPos);
+                RNAM.value.back()->RNAM.Read(buffer, subSize);
                 break;
             case REV32(MNAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
-                RNAM.value.back()->MNAM.Read(buffer, subSize, curPos);
+                RNAM.value.back()->MNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FNAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
-                RNAM.value.back()->FNAM.Read(buffer, subSize, curPos);
+                RNAM.value.back()->FNAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(INAM):
                 if(RNAM.value.size() == 0)
                     RNAM.value.push_back(new FACTRNAM);
-                RNAM.value.back()->INAM.Read(buffer, subSize, curPos);
+                RNAM.value.back()->INAM.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(WMI1):
-                WMI1.Read(buffer, subSize, curPos);
+                WMI1.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  FACT: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -296,16 +297,21 @@ SINT32 FACTRecord::WriteRecord(FileWriter &writer)
 bool FACTRecord::operator ==(const FACTRecord &other) const
     {
     return (EDID.equalsi(other.EDID) &&
-        FULL.equals(other.FULL) &&
-        DATA == other.DATA &&
-        CNAM == other.CNAM &&
-        WMI1 == other.WMI1 &&
-        XNAM == other.XNAM &&
-        RNAM == other.RNAM);
+            FULL.equals(other.FULL) &&
+            DATA == other.DATA &&
+            CNAM == other.CNAM &&
+            WMI1 == other.WMI1 &&
+            XNAM == other.XNAM &&
+            RNAM == other.RNAM);
     }
 
 bool FACTRecord::operator !=(const FACTRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool FACTRecord::equals(Record *other)
+    {
+    return *this == *(FACTRecord *)other;
     }
 }

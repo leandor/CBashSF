@@ -16,12 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "LANDRecord.h"
+#include "CELLRecord.h"
 
+namespace Ob
+{
 LANDRecord::LANDNORMALS::LANDNORMALS():
     x(0),
     y(0),
@@ -66,7 +69,7 @@ LANDRecord::LANDVHGT::LANDVHGT():
     offset(0.0f)
     {
     memset(&VHGT[0][0], 0, 1089);
-    memset(&unused1[0], 0, 3);
+    memset(&unused1[0], 0, sizeof(unused1));
     }
 
 LANDRecord::LANDVHGT::~LANDVHGT()
@@ -164,7 +167,7 @@ LANDRecord::LANDVTXT::LANDVTXT():
     position(0),
     opacity(0.0f)
     {
-    memset(&unused1[0], 0, 2);
+    memset(&unused1[0], 0, sizeof(unused1));
     }
 
 LANDRecord::LANDVTXT::~LANDVTXT()
@@ -183,22 +186,16 @@ bool LANDRecord::LANDVTXT::operator !=(const LANDVTXT &other) const
     return !(*this == other);
     }
 
+void LANDRecord::LANDLAYERS::Write(FileWriter &writer)
+    {
+    WRITE(ATXT);
+    WRITE(VTXT);
+    }
+
 bool LANDRecord::LANDLAYERS::operator ==(const LANDLAYERS &other) const
     {
-    if(ATXT == other.ATXT &&
-        VTXT.size() == other.VTXT.size())
-        {
-        //Record order doesn't matter on opacities, so equality testing isn't easy
-        //Instead, they're keyed by position (VTXT.value.position)
-        //The proper solution would be to see if the opacity at each position matches
-        //Fix-up later
-        for(UINT32 x = 0; x < VTXT.size(); ++x)
-            if(VTXT[x] != other.VTXT[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (ATXT == other.ATXT &&
+            VTXT == other.VTXT);
     }
 
 bool LANDRecord::LANDLAYERS::operator !=(const LANDLAYERS &other) const
@@ -211,7 +208,8 @@ LANDRecord::LANDRecord(unsigned char *_recData):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL)
+    SouthLand(NULL),
+    Parent(NULL)
     {
     //LAND records are normally compressed due to size
     if(_recData == NULL)
@@ -223,7 +221,8 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL)
+    SouthLand(NULL),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -232,10 +231,10 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -243,31 +242,15 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     VNML = srcRecord->VNML;
     VHGT = srcRecord->VHGT;
     VCLR = srcRecord->VCLR;
-
-    BTXT.resize(srcRecord->BTXT.size());
-    for(UINT32 x = 0; x < srcRecord->BTXT.size(); ++x)
-        {
-        BTXT[x] = new ReqSubRecord<LANDGENTXT>;
-        *BTXT[x] = *srcRecord->BTXT[x];
-        }
-
-    Layers.resize(srcRecord->Layers.size());
-    for(UINT32 x = 0; x < srcRecord->Layers.size(); ++x)
-        {
-        Layers[x] = new LANDLAYERS;
-        Layers[x]->ATXT = srcRecord->Layers[x]->ATXT;
-        Layers[x]->VTXT = srcRecord->Layers[x]->VTXT;
-        }
+    BTXT = srcRecord->BTXT;
+    Layers = srcRecord->Layers;
     VTEX = srcRecord->VTEX;
     return;
     }
 
 LANDRecord::~LANDRecord()
     {
-    for(UINT32 x = 0; x < BTXT.size(); ++x)
-        delete BTXT[x];
-    for(UINT32 x = 0; x < Layers.size(); ++x)
-        delete Layers[x];
+    //Parent is a shared pointer that's deleted when the WRLD group is deleted
     //WestLand,EastLand,NorthLand,SouthLand are all shared and are deleted when the LAND is deleted
     }
 
@@ -276,13 +259,12 @@ bool LANDRecord::VisitFormIDs(FormIDOp &op)
     if(!IsLoaded())
         return false;
 
-    for(UINT32 x = 0; x < BTXT.size(); ++x)
-        if(BTXT[x] != NULL)
-            op.Accept(BTXT[x]->value.texture);
-    for(UINT32 x = 0; x < Layers.size(); ++x)
-        op.Accept(Layers[x]->ATXT.value.texture);
-    for(UINT32 x = 0; x < VTEX.size(); x++)
-        op.Accept(VTEX[x]);
+    for(UINT32 x = 0; x < BTXT.value.size(); ++x)
+        op.Accept(BTXT.value[x]->texture);
+    for(UINT32 x = 0; x < Layers.value.size(); ++x)
+        op.Accept(Layers.value[x]->ATXT.value.texture);
+    for(UINT32 x = 0; x < VTEX.value.size(); x++)
+        op.Accept(VTEX.value[x]);
 
     return op.Stop();
     }
@@ -328,9 +310,9 @@ STRING LANDRecord::GetStrType()
     return "LAND";
     }
 
-UINT32 LANDRecord::GetParentType()
+Record * LANDRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
 FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
@@ -349,65 +331,52 @@ FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
     return fRetValue;
     }
 
-SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 LANDRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    ReqSubRecord<LANDGENTXT> *curTexture = NULL;
-    LANDLAYERS *curLayer = NULL;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(VNML):
-                VNML.Read(buffer, subSize, curPos);
+                VNML.Read(buffer, subSize);
                 break;
             case REV32(VHGT):
-                VHGT.Read(buffer, subSize, curPos);
+                VHGT.Read(buffer, subSize);
                 break;
             case REV32(VCLR):
-                VCLR.Read(buffer, subSize, curPos);
+                VCLR.Read(buffer, subSize);
                 break;
             case REV32(BTXT):
-                curTexture = new ReqSubRecord<LANDGENTXT>;
-                curTexture->Read(buffer, subSize, curPos);
-                BTXT.push_back(curTexture);
+                BTXT.Read(buffer, subSize);
                 break;
             case REV32(ATXT):
-                curLayer = new LANDLAYERS;
-                curLayer->ATXT.Read(buffer, subSize, curPos);
-                Layers.push_back(curLayer);
+                Layers.value.push_back(new LANDLAYERS);
+                Layers.value.back()->ATXT.Read(buffer, subSize);
                 break;
             case REV32(VTXT):
-                if(subSize % sizeof(LANDVTXT) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    curLayer->VTXT.resize(subSize / sizeof(LANDVTXT));
-                    _readBuffer(&curLayer->VTXT[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized VTXT size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                if(Layers.value.size() == 0)
+                    Layers.value.push_back(new LANDLAYERS);
+                Layers.value.back()->VTXT.Read(buffer, subSize);
                 //switch(curTexture.value.quadrant)
                 //    {
                 //    case eBottomLeft:
@@ -432,26 +401,15 @@ SINT32 LANDRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //    }
                 break;
             case REV32(VTEX):
-                if(subSize % sizeof(UINT32) == 0)
-                    {
-                    if(subSize == 0)
-                        break;
-                    VTEX.resize(subSize / sizeof(UINT32));
-                    _readBuffer(&VTEX[0], buffer, subSize, curPos);
-                    }
-                else
-                    {
-                    printer("  Unrecognized VTEX size: %i\n", subSize);
-                    curPos += subSize;
-                    }
+                VTEX.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  LAND: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -466,81 +424,66 @@ SINT32 LANDRecord::Unload()
     VNML.Unload();
     VHGT.Unload();
     VCLR.Unload();
-    for(UINT32 x = 0; x < BTXT.size(); ++x)
-        delete BTXT[x];
-    BTXT.clear();
-
-    for(UINT32 x = 0; x < Layers.size(); ++x)
-        delete Layers[x];
-    Layers.clear();
-
-    VTEX.clear();
+    BTXT.Unload();
+    Layers.Unload();
+    VTEX.Unload();
     return 1;
     }
 
 SINT32 LANDRecord::WriteRecord(FileWriter &writer)
     {
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), DATA.value, DATA.GetSize());
-    if(VNML.IsLoaded())
-        writer.record_write_subrecord(REV32(VNML), VNML.value, VNML.GetSize());
-    if(VHGT.IsLoaded())
-        writer.record_write_subrecord(REV32(VHGT), VHGT.value, VHGT.GetSize());
-    if(VCLR.IsLoaded())
-        writer.record_write_subrecord(REV32(VCLR), VCLR.value, VCLR.GetSize());
-    if(BTXT.size())
-        for(UINT32 p = 0; p < BTXT.size(); p++)
-            if(BTXT[p]->IsLoaded())
-                writer.record_write_subrecord(REV32(BTXT), &BTXT[p]->value, BTXT[p]->GetSize());
-
-    if(Layers.size())
-        for(UINT32 p = 0; p < Layers.size(); p++)
-            {
-            if(Layers[p]->ATXT.IsLoaded())
-                writer.record_write_subrecord(REV32(ATXT), &Layers[p]->ATXT.value, Layers[p]->ATXT.GetSize());
-            if(Layers[p]->VTXT.size())
-                writer.record_write_subrecord(REV32(VTXT), &Layers[p]->VTXT[0], (UINT32)Layers[p]->VTXT.size() * sizeof(LANDVTXT));
-            }
-    if(VTEX.size())
-        writer.record_write_subrecord(REV32(VTEX), &VTEX[0], (UINT32)VTEX.size() * sizeof(UINT32));
+    WRITE(DATA);
+    WRITE(VNML);
+    WRITE(VHGT);
+    WRITE(VCLR);
+    WRITE(BTXT);
+    Layers.Write(writer);
+    WRITE(VTEX);
 
     return -1;
     }
 
 bool LANDRecord::operator ==(const LANDRecord &other) const
     {
-    if(DATA == other.DATA &&
-        VNML == other.VNML &&
-        VHGT == other.VHGT &&
-        VCLR == other.VCLR &&
-        BTXT.size() == other.BTXT.size() &&
-        Layers.size() == other.Layers.size() &&
-        VTEX.size() == other.VTEX.size())
-        {
-        //Not sure if record order matters on base textures, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < BTXT.size(); ++x)
-            if(*BTXT[x] != *other.BTXT[x])
-                return false;
-
-        //Not sure if record order matters on alpha layers, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < Layers.size(); ++x)
-            if(*Layers[x] != *other.Layers[x])
-                return false;
-
-        //Not sure if record order matters on vertex textures, so equality testing is a guess
-        //Fix-up later
-        for(UINT32 x = 0; x < VTEX.size(); ++x)
-            if(VTEX[x] != other.VTEX[x])
-                return false;
-        return true;
-        }
-
-    return false;
+    return (DATA == other.DATA &&
+            VNML == other.VNML &&
+            VHGT == other.VHGT &&
+            VCLR == other.VCLR &&
+            BTXT == other.BTXT &&
+            Layers == other.Layers &&
+            VTEX == other.VTEX);
     }
 
 bool LANDRecord::operator !=(const LANDRecord &other) const
     {
     return !(*this == other);
     }
+
+bool LANDRecord::equals(Record *other)
+    {
+    return *this == *(LANDRecord *)other;
+    }
+
+bool LANDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    LANDRecord *master_land = (LANDRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_land->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_land->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_land->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_land->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_land->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_land->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
+    }
+}

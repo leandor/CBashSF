@@ -16,12 +16,14 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "GMSTRecord.h"
 
+namespace Ob
+{
 GMSTRecord::GMSTDATA::GMSTDATA(STRING _DATA):
     format('s'),
     s(_DATA)
@@ -96,10 +98,10 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
     flagsUnk = srcRecord->flagsUnk;
     EDID = srcRecord->EDID;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -147,30 +149,31 @@ bool GMSTRecord::IsKeyedByEditorID()
     return true;
     }
 
-SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(DATA):
                 DATA.format = EDID.value[0];
@@ -178,23 +181,23 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case 's':
                         DATA.s = new char[subSize];
-                        memcpy(DATA.s, buffer + curPos, subSize);
-                        curPos += subSize;
+                        memcpy(DATA.s, buffer, subSize);
+                        buffer += subSize;
                         break;
                     case 'i':
-                        memcpy(&DATA.i, buffer + curPos, subSize);
-                        curPos += subSize;
+                        memcpy(&DATA.i, buffer, subSize);
+                        buffer += subSize;
                         break;
                     case 'f':
-                        memcpy(&DATA.f, buffer + curPos, subSize);
-                        curPos += subSize;
+                        memcpy(&DATA.f, buffer, subSize);
+                        buffer += subSize;
                         break;
                     default:
                         //printer("FileName = %s\n", FileName);
                         printer("  GMST: %08X - Unknown type = %c\n", formID, DATA.format);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos = recSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer = end_buffer;
                         break;
                     }
                 break;
@@ -202,8 +205,8 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                 //printer("FileName = %s\n", FileName);
                 printer("  GMST: Unknown subType = %04X\n", subType);
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -227,8 +230,7 @@ SINT32 GMSTRecord::Unload()
 
 SINT32 GMSTRecord::WriteRecord(FileWriter &writer)
     {
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
+    WRITE(EDID);
     UINT8 null = 0;
     switch(DATA.format)
         {
@@ -260,3 +262,9 @@ bool GMSTRecord::operator !=(const GMSTRecord &other) const
     {
     return !(*this == other);
     }
+
+bool GMSTRecord::equals(Record *other)
+    {
+    return *this == *(GMSTRecord *)other;
+    }
+}

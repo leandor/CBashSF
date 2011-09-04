@@ -16,12 +16,15 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "REFRRecord.h"
+#include "CELLRecord.h"
 
+namespace Ob
+{
 REFRRecord::REFRXTEL::REFRXTEL():
     destinationFid(0)
     {
@@ -49,9 +52,9 @@ REFRRecord::REFRXLOC::REFRXLOC():
     key(0),
     flags(0)
     {
-    memset(&unused1, 0x00, 3);
-    memset(&unused2, 0x00, 4);
-    memset(&unused3, 0x00, 3);
+    memset(&unused1[0], 0x00, sizeof(unused1));
+    memset(&unused2[0], 0x00, sizeof(unused2));
+    memset(&unused3[0], 0x00, sizeof(unused3));
     }
 
 REFRRecord::REFRXLOC::~REFRXLOC()
@@ -83,6 +86,14 @@ REFRRecord::REFRXSED::~REFRXSED()
     //
     }
 
+void REFRRecord::REFRXSED::Write(FileWriter &writer)
+    {
+    if(isOffset)
+        writer.record_write_subrecord(REV32(XSED), &offset, 1);
+    else
+        writer.record_write_subrecord(REV32(XSED), &seed, 4);
+    }
+
 bool REFRRecord::REFRXSED::operator ==(const REFRXSED &other) const
     {
     if(!isOffset)
@@ -100,6 +111,14 @@ bool REFRRecord::REFRXSED::operator !=(const REFRXSED &other) const
     return !(*this == other);
     }
 
+void REFRRecord::REFRMAPMARKER::Write(FileWriter &writer)
+    {
+    WRITEEMPTY(XMRK);
+    WRITE(FNAM);
+    WRITE(FULL);
+    WRITE(TNAM);
+    }
+
 bool REFRRecord::REFRMAPMARKER::operator ==(const REFRMAPMARKER &other) const
     {
     return (FNAM == other.FNAM &&
@@ -112,7 +131,36 @@ bool REFRRecord::REFRMAPMARKER::operator !=(const REFRMAPMARKER &other) const
     return !(*this == other);
     }
 
+bool REFRRecord::REFRData::IsOpenByDefault()
+    {
+    return (XACT.value & fOpenByDefault) != 0;
+    }
 
+void REFRRecord::REFRData::Write(FileWriter &writer)
+    {
+    WRITE(EDID);
+    WRITE(NAME);
+    WRITE(XTEL);
+    WRITE(XLOC);
+    Ownership.Write(writer);
+    WRITE(XESP);
+    WRITE(XTRG);
+    XSED.Write(writer);
+    WRITE(XLOD);
+    WRITE(XCHG);
+    WRITE(XHLT);
+    XPCI.Write(writer);
+    WRITE(XLCM);
+    WRITE(XRTM);
+    WRITE(XACT);
+    WRITE(XCNT);
+    Marker.Write(writer);
+    if(IsOpenByDefault())
+        WRITEEMPTY(ONAM);
+    WRITE(XSCL);
+    WRITE(XSOL);
+    WRITE(DATA);
+    }
 
 bool REFRRecord::REFRData::operator ==(const REFRData &other) const
     {
@@ -144,13 +192,15 @@ bool REFRRecord::REFRData::operator !=(const REFRData &other) const
     }
 
 REFRRecord::REFRRecord(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //
     }
 
 REFRRecord::REFRRecord(REFRRecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -159,10 +209,10 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -173,36 +223,19 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
         Data->NAME = srcRecord->Data->NAME;
         Data->XTEL = srcRecord->Data->XTEL;
         Data->XLOC = srcRecord->Data->XLOC;
-        if(srcRecord->Data->Ownership.IsLoaded())
-            {
-            Data->Ownership.Load();
-            Data->Ownership->XOWN = srcRecord->Data->Ownership->XOWN;
-            Data->Ownership->XRNK = srcRecord->Data->Ownership->XRNK;
-            Data->Ownership->XGLB = srcRecord->Data->Ownership->XGLB;
-            }
+        Data->Ownership = srcRecord->Data->Ownership;
         Data->XESP = srcRecord->Data->XESP;
         Data->XTRG = srcRecord->Data->XTRG;
         Data->XSED = srcRecord->Data->XSED;
         Data->XLOD = srcRecord->Data->XLOD;
         Data->XCHG = srcRecord->Data->XCHG;
         Data->XHLT = srcRecord->Data->XHLT;
-        if(srcRecord->Data->XPCI.IsLoaded())
-            {
-            Data->XPCI.Load();
-            Data->XPCI->XPCI = srcRecord->Data->XPCI->XPCI;
-            Data->XPCI->FULL = srcRecord->Data->XPCI->FULL;
-            }
+        Data->XPCI = srcRecord->Data->XPCI;
         Data->XLCM = srcRecord->Data->XLCM;
         Data->XRTM = srcRecord->Data->XRTM;
         Data->XACT = srcRecord->Data->XACT;
         Data->XCNT = srcRecord->Data->XCNT;
-        if(srcRecord->Data->Marker.IsLoaded())
-            {
-            Data->Marker.Load();
-            Data->Marker->FNAM = srcRecord->Data->Marker->FNAM;
-            Data->Marker->FULL = srcRecord->Data->Marker->FULL;
-            Data->Marker->TNAM = srcRecord->Data->Marker->TNAM;
-            }
+        Data->Marker = srcRecord->Data->Marker;
         if(srcRecord->IsOpenByDefault())//bool ONAM; //Open by Default, empty marker, written whenever fOpenByDefault is true
             IsOpenByDefault(true);
         Data->XSCL = srcRecord->Data->XSCL;
@@ -213,7 +246,7 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
 
 REFRRecord::~REFRRecord()
     {
-    //
+    //Parent is a shared pointer that's deleted when the CELL group is deleted
     }
 
 bool REFRRecord::VisitFormIDs(FormIDOp &op)
@@ -753,77 +786,78 @@ STRING REFRRecord::GetStrType()
     return "REFR";
     }
 
-UINT32 REFRRecord::GetParentType()
+Record * REFRRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 REFRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
     UINT32 lastChunk = 0;
     Data.Load();
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                Data->EDID.Read(buffer, subSize, curPos);
+                Data->EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAME):
-                Data->NAME.Read(buffer, subSize, curPos);
+                Data->NAME.Read(buffer, subSize);
                 break;
             case REV32(XTEL):
-                Data->XTEL.Read(buffer, subSize, curPos);
+                Data->XTEL.Read(buffer, subSize);
                 break;
             case REV32(XLOC):
                 switch(subSize)
                     {
                     case 12: //unused2 is absent, so shift the values read into it
-                        Data->XLOC.Read(buffer, subSize, curPos);
+                        Data->XLOC.Read(buffer, subSize);
                         Data->XLOC->flags = Data->XLOC->unused2[0];
                         Data->XLOC->unused3[0] = Data->XLOC->unused2[1];
                         Data->XLOC->unused3[1] = Data->XLOC->unused2[2];
                         Data->XLOC->unused3[2] = Data->XLOC->unused2[3];
-                        memset(&Data->XLOC->unused2[0], 0x00, 4);
+                        memset(&Data->XLOC->unused2[0], 0x00, sizeof(Data->XLOC->unused2));
                         break;
                     default:
-                        Data->XLOC.Read(buffer, subSize, curPos);
+                        Data->XLOC.Read(buffer, subSize);
                         break;
                     }
                 break;
             case REV32(XOWN):
                 Data->Ownership.Load();
-                Data->Ownership->XOWN.Read(buffer, subSize, curPos);
+                Data->Ownership->XOWN.Read(buffer, subSize);
                 break;
             case REV32(XRNK):
                 Data->Ownership.Load();
-                Data->Ownership->XRNK.Read(buffer, subSize, curPos);
+                Data->Ownership->XRNK.Read(buffer, subSize);
                 break;
             case REV32(XGLB):
                 Data->Ownership.Load();
-                Data->Ownership->XGLB.Read(buffer, subSize, curPos);
+                Data->Ownership->XGLB.Read(buffer, subSize);
                 break;
             case REV32(XESP):
-                Data->XESP.Read(buffer, subSize, curPos);
+                Data->XESP.Read(buffer, subSize);
                 break;
             case REV32(XTRG):
-                Data->XTRG.Read(buffer, subSize, curPos);
+                Data->XTRG.Read(buffer, subSize);
                 break;
             case REV32(XSED):
                 switch(subSize)
@@ -833,34 +867,36 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                         Data->XSED.Load();
                         Data->XSED->isOffset = true;
                         //XSED.size = 1;
-                        _readBuffer(&Data->XSED->offset, buffer, 1, curPos);
+                        Data->XSED->offset = *(UINT8 *)buffer;
+                        buffer++;
                         break;
                     case 4:
                         //if it's 4 byte it's the seed value directly
                         Data->XSED.Load();
                         Data->XSED->isOffset = false;
                         //XSED.size = 4;
-                        _readBuffer(&Data->XSED->seed, buffer, 4, curPos);
+                        Data->XSED->seed = *(UINT32 *)buffer;
+                        buffer += 4;
                         break;
                     default:
                         printer("  REFR: %08X - Unknown XSED size = %u\n", formID, subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(XLOD):
-                Data->XLOD.Read(buffer, subSize, curPos);
+                Data->XLOD.Read(buffer, subSize);
                 break;
             case REV32(XCHG):
-                Data->XCHG.Read(buffer, subSize, curPos);
+                Data->XCHG.Read(buffer, subSize);
                 break;
             case REV32(XHLT):
-                Data->XHLT.Read(buffer, subSize, curPos);
+                Data->XHLT.Read(buffer, subSize);
                 break;
             case REV32(XPCI):
                 Data->XPCI.Load();
-                Data->XPCI->XPCI.Read(buffer, subSize, curPos);
+                Data->XPCI->XPCI.Read(buffer, subSize);
                 lastChunk = REV32(XPCI);
                 break;
             case REV32(FULL):
@@ -868,64 +904,64 @@ SINT32 REFRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
                     {
                     case REV32(XPCI):
                         Data->XPCI.Load();
-                        Data->XPCI->FULL.Read(buffer, subSize, curPos);
+                        Data->XPCI->FULL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     case REV32(XMRK):
-                        Data->Marker->FULL.Read(buffer, subSize, curPos);
+                        Data->Marker->FULL.Read(buffer, subSize, CompressedOnDisk);
                         break;
                     default:
                         printer("  REFR: %08X - Unexpected FULL chunk\n", formID);
                         printer("  Size = %i\n", subSize);
-                        printer("  CurPos = %04x\n\n", curPos - 6);
-                        curPos += subSize;
+                        printer("  CurPos = %04x\n\n", buffer - 6);
+                        buffer += subSize;
                         break;
                     }
                 break;
             case REV32(XLCM):
-                Data->XLCM.Read(buffer, subSize, curPos);
+                Data->XLCM.Read(buffer, subSize);
                 break;
             case REV32(XRTM):
-                Data->XRTM.Read(buffer, subSize, curPos);
+                Data->XRTM.Read(buffer, subSize);
                 break;
             case REV32(XACT):
-                Data->XACT.Read(buffer, subSize, curPos);
+                Data->XACT.Read(buffer, subSize);
                 break;
             case REV32(XCNT):
-                Data->XCNT.Read(buffer, subSize, curPos);
+                Data->XCNT.Read(buffer, subSize);
                 break;
             case REV32(XMRK):
                 Data->Marker.Load();
-                curPos += subSize;
+                buffer += subSize;
                 lastChunk = REV32(XMRK);
                 break;
             case REV32(FNAM):
                 Data->Marker.Load();
-                Data->Marker->FNAM.Read(buffer, subSize, curPos);
+                Data->Marker->FNAM.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
                 Data->Marker.Load();
-                Data->Marker->TNAM.Read(buffer, subSize, curPos);
+                Data->Marker->TNAM.Read(buffer, subSize);
                 break;
             case REV32(ONAM):
                 IsOpenByDefault(true);
-                curPos += subSize;
+                buffer += subSize;
                 break;
             case REV32(XSCL):
-                Data->XSCL.Read(buffer, subSize, curPos);
+                Data->XSCL.Read(buffer, subSize);
                 break;
             case REV32(XSOL):
-                Data->XSOL.Read(buffer, subSize, curPos);
+                Data->XSOL.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                Data->DATA.Read(buffer, subSize, curPos);
+                Data->DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  REFR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -962,96 +998,10 @@ SINT32 REFRRecord::Unload()
 
 SINT32 REFRRecord::WriteRecord(FileWriter &writer)
     {
-    char null = 0;
     if(!Data.IsLoaded())
         return 0;
 
-    if(Data->EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), Data->EDID.value, Data->EDID.GetSize());
-
-    if(Data->NAME.IsLoaded())
-        writer.record_write_subrecord(REV32(NAME), &Data->NAME.value, Data->NAME.GetSize());
-
-    if(Data->XTEL.IsLoaded())
-        writer.record_write_subrecord(REV32(XTEL), Data->XTEL.value, Data->XTEL.GetSize());
-
-    if(Data->XLOC.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOC), Data->XLOC.value, Data->XLOC.GetSize());
-
-    if(Data->Ownership.IsLoaded() && Data->Ownership->XOWN.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(XOWN), &Data->Ownership->XOWN.value, Data->Ownership->XOWN.GetSize());
-        if(Data->Ownership->XRNK.IsLoaded())
-            writer.record_write_subrecord(REV32(XRNK), Data->Ownership->XRNK.value, Data->Ownership->XRNK.GetSize());
-        if(Data->Ownership->XGLB.IsLoaded())
-            writer.record_write_subrecord(REV32(XGLB), &Data->Ownership->XGLB.value, Data->Ownership->XGLB.GetSize());
-        }
-
-    if(Data->XESP.IsLoaded())
-        writer.record_write_subrecord(REV32(XESP), Data->XESP.value, Data->XESP.GetSize());
-
-    if(Data->XTRG.IsLoaded())
-        writer.record_write_subrecord(REV32(XTRG), &Data->XTRG.value, Data->XTRG.GetSize());
-
-    if(Data->XSED.IsLoaded())
-        if(Data->XSED->isOffset)
-            writer.record_write_subrecord(REV32(XSED), &Data->XSED->offset, 1);
-        else
-            writer.record_write_subrecord(REV32(XSED), &Data->XSED->seed, 4);
-
-    if(Data->XLOD.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOD), Data->XLOD.value, Data->XLOD.GetSize());
-
-    if(Data->XCHG.IsLoaded())
-        writer.record_write_subrecord(REV32(XCHG), &Data->XCHG.value, Data->XCHG.GetSize());
-
-    if(Data->XHLT.IsLoaded())
-        writer.record_write_subrecord(REV32(XHLT), &Data->XHLT.value, Data->XHLT.GetSize());
-
-    if(Data->XPCI.IsLoaded() && Data->XPCI->XPCI.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(XPCI), &Data->XPCI->XPCI.value, Data->XPCI->XPCI.GetSize());
-        if(Data->XPCI->FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), Data->XPCI->FULL.value, Data->XPCI->FULL.GetSize());
-        else
-            writer.record_write_subrecord(REV32(FULL), &null, 1);
-        }
-
-    if(Data->XLCM.IsLoaded())
-        writer.record_write_subrecord(REV32(XLCM), &Data->XLCM.value, Data->XLCM.GetSize());
-
-    if(Data->XRTM.IsLoaded())
-        writer.record_write_subrecord(REV32(XRTM), &Data->XRTM.value, Data->XRTM.GetSize());
-
-    if(Data->XACT.IsLoaded())
-        writer.record_write_subrecord(REV32(XACT), &Data->XACT.value, Data->XACT.GetSize());
-
-    if(Data->XCNT.IsLoaded())
-        writer.record_write_subrecord(REV32(XCNT), &Data->XCNT.value, Data->XCNT.GetSize());
-
-    if(Data->Marker.IsLoaded())
-        {
-        writer.record_write_subheader(REV32(XMRK), 0);
-        if(Data->Marker->FNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(FNAM), &Data->Marker->FNAM.value, Data->Marker->FNAM.GetSize());
-        if(Data->Marker->FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), Data->Marker->FULL.value, Data->Marker->FULL.GetSize());
-        if(Data->Marker->TNAM.IsLoaded())
-            writer.record_write_subrecord(REV32(TNAM), &Data->Marker->TNAM.value, Data->Marker->TNAM.GetSize());
-        }
-
-    if(IsOpenByDefault()) //ONAM
-        writer.record_write_subheader(REV32(ONAM), 0);
-
-    if(Data->XSCL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSCL), &Data->XSCL.value, Data->XSCL.GetSize());
-
-    if(Data->XSOL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSOL), &Data->XSOL.value, Data->XSOL.GetSize());
-
-    if(Data->DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &Data->DATA.value, Data->DATA.GetSize());
-
+    Data.Write(writer);
     return -1;
     }
 
@@ -1064,3 +1014,32 @@ bool REFRRecord::operator !=(const REFRRecord &other) const
     {
     return !(*this == other);
     }
+
+bool REFRRecord::equals(Record *other)
+    {
+    return *this == *(REFRRecord *)other;
+    }
+
+bool REFRRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    REFRRecord *master_refr = (REFRRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_refr->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_refr->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_refr->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_refr->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_refr->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_refr->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
+    }
+}

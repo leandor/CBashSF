@@ -43,10 +43,10 @@ MESGRecord::MESGRecord(MESGRecord *srcRecord):
     versionControl2[0] = srcRecord->versionControl2[0];
     versionControl2[1] = srcRecord->versionControl2[1];
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
@@ -103,84 +103,85 @@ SINT32 MESGRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize);
                 break;
             case REV32(DESC):
-                DESC.Read(buffer, subSize, curPos);
+                DESC.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(FULL):
-                FULL.Read(buffer, subSize, curPos);
+                FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(INAM):
-                INAM.Read(buffer, subSize, curPos);
+                INAM.Read(buffer, subSize);
                 break;
             case REV32(NAM0):
-                //NAM0.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM0.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM1):
-                //NAM1.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM1.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM2):
-                //NAM2.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM2.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM3):
-                //NAM3.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM3.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM4):
-                //NAM4.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM4.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM5):
-                //NAM5.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM5.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM6):
-                //NAM6.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM6.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM7):
-                //NAM7.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM7.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM8):
-                //NAM8.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM8.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(NAM9):
-                //NAM9.Read(buffer, subSize, curPos); //FILL IN MANUALLY
+                //NAM9.Read(buffer, subSize); //FILL IN MANUALLY
                 break;
             case REV32(DNAM):
-                DNAM.Read(buffer, subSize, curPos);
+                DNAM.Read(buffer, subSize);
                 break;
             case REV32(TNAM):
-                TNAM.Read(buffer, subSize, curPos);
+                TNAM.Read(buffer, subSize);
                 break;
             case REV32(ITXT):
-                ITXT.Read(buffer, subSize, curPos);
+                ITXT.Read(buffer, subSize);
                 break;
             case REV32(CTDA):
-                CTDA.Read(buffer, subSize, curPos);
+                CTDA.Read(buffer, subSize);
                 break;
             default:
                 //printf("FileName = %s\n", FileName);
                 printf("  MESG: %08X - Unknown subType = %04x\n", formID, subType);
                 printf("  Size = %i\n", subSize);
-                printf("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printf("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -281,5 +282,10 @@ bool MESGRecord::operator ==(const MESGRecord &other) const
 bool MESGRecord::operator !=(const MESGRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool MESGRecord::equals(const Record *other) const
+    {
+    return *this == *(MESGRecord *)other;
     }
 }

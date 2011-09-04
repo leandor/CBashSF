@@ -16,7 +16,7 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #pragma once
@@ -28,9 +28,9 @@ namespace FNV
 class CHALRecord : public FNVRecord //Challenge
     {
     private:
-        struct CHALDATA // Data
+        struct CHALDATA //Data
             {
-            UINT32  challengeType, threshold, flags, interval; // Type, Threshold, Flags, Interval
+            UINT32  challengeType, threshold, flags, interval; //Type, Threshold, Flags, Interval
             UINT8   var1[2], var2[2], var3[4]; //(depends on type)
 
             CHALDATA();
@@ -121,11 +121,12 @@ class CHALRecord : public FNVRecord //Challenge
         UINT32 GetType();
         STRING GetStrType();
 
-        SINT32 ParseRecord(unsigned char *buffer, const UINT32 &recSize);
+        SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();
         SINT32 WriteRecord(FileWriter &writer);
 
         bool operator ==(const CHALRecord &other) const;
         bool operator !=(const CHALRecord &other) const;
+        bool equals(Record *other);
     };
 }

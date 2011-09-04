@@ -16,14 +16,18 @@ GPL License and Copyright Notice ============================================
  along with CBash; if not, write to the Free Software Foundation,
  Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
- CBash copyright (C) 2010 Waruddar
+ CBash copyright (C) 2010-2011 Waruddar
 =============================================================================
 */
 #include "..\..\Common.h"
 #include "ACHRRecord.h"
+#include "CELLRecord.h"
 
+namespace Ob
+{
 ACHRRecord::ACHRRecord(unsigned char *_recData):
-    Record(_recData)
+    Record(_recData),
+    Parent(NULL)
     {
     //ACHR records are normally persistent
     if(_recData == NULL)
@@ -31,7 +35,8 @@ ACHRRecord::ACHRRecord(unsigned char *_recData):
     }
 
 ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
-    Record()
+    Record(),
+    Parent(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -40,21 +45,16 @@ ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
     formID = srcRecord->formID;
     flagsUnk = srcRecord->flagsUnk;
 
+    recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
         {
         IsLoaded(false);
-        recData = srcRecord->recData;
         return;
         }
 
     EDID = srcRecord->EDID;
     NAME = srcRecord->NAME;
-    if(srcRecord->XPCI.IsLoaded())
-        {
-        XPCI.Load();
-        XPCI->XPCI = srcRecord->XPCI->XPCI;
-        XPCI->FULL = srcRecord->XPCI->FULL;
-        }
+    XPCI = srcRecord->XPCI;
     XLOD = srcRecord->XLOD;
     XESP = srcRecord->XESP;
     XMRC = srcRecord->XMRC;
@@ -67,7 +67,7 @@ ACHRRecord::ACHRRecord(ACHRRecord *srcRecord):
 
 ACHRRecord::~ACHRRecord()
     {
-    //
+    //Parent is a shared pointer that's deleted when the CELL group is deleted
     }
 
 bool ACHRRecord::VisitFormIDs(FormIDOp &op)
@@ -121,75 +121,76 @@ STRING ACHRRecord::GetStrType()
     return "ACHR";
     }
 
-UINT32 ACHRRecord::GetParentType()
+Record * ACHRRecord::GetParent()
     {
-    return REV32(CELL);
+    return Parent;
     }
 
-SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, const UINT32 &recSize)
+SINT32 ACHRRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
     UINT32 subSize = 0;
-    UINT32 curPos = 0;
-    while(curPos < recSize){
-        _readBuffer(&subType, buffer, 4, curPos);
+    while(buffer < end_buffer){
+        subType = *(UINT32 *)buffer;
+        buffer += 4;
         switch(subType)
             {
             case REV32(XXXX):
-                curPos += 2;
-                _readBuffer(&subSize, buffer, 4, curPos);
-                _readBuffer(&subType, buffer, 4, curPos);
-                curPos += 2;
+                buffer += 2;
+                subSize = *(UINT32 *)buffer;
+                buffer += 4;
+                subType = *(UINT32 *)buffer;
+                buffer += 6;
                 break;
             default:
-                subSize = 0;
-                _readBuffer(&subSize, buffer, 2, curPos);
+                subSize = *(UINT16 *)buffer;
+                buffer += 2;
                 break;
             }
         switch(subType)
             {
             case REV32(EDID):
-                EDID.Read(buffer, subSize, curPos);
+                EDID.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(NAME):
-                NAME.Read(buffer, subSize, curPos);
+                NAME.Read(buffer, subSize);
                 break;
             case REV32(XPCI):
                 XPCI.Load();
-                XPCI->XPCI.Read(buffer, subSize, curPos);
+                XPCI->XPCI.Read(buffer, subSize);
                 break;
             case REV32(FULL):
                 XPCI.Load();
-                XPCI->FULL.Read(buffer, subSize, curPos);
+                XPCI->FULL.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XLOD):
-                XLOD.Read(buffer, subSize, curPos);
+                XLOD.Read(buffer, subSize);
                 break;
             case REV32(XESP):
-                XESP.Read(buffer, subSize, curPos);
+                XESP.Read(buffer, subSize);
                 break;
             case REV32(XMRC):
-                XMRC.Read(buffer, subSize, curPos);
+                XMRC.Read(buffer, subSize);
                 break;
             case REV32(XHRS):
-                XHRS.Read(buffer, subSize, curPos);
+                XHRS.Read(buffer, subSize);
                 break;
             case REV32(XRGD):
-                XRGD.Read(buffer, subSize, curPos);
+                XRGD.Read(buffer, subSize, CompressedOnDisk);
                 break;
             case REV32(XSCL):
-                XSCL.Read(buffer, subSize, curPos);
+                XSCL.Read(buffer, subSize);
                 break;
             case REV32(DATA):
-                DATA.Read(buffer, subSize, curPos);
+                DATA.Read(buffer, subSize);
                 break;
             default:
                 //printer("FileName = %s\n", FileName);
                 printer("  ACHR: %08X - Unknown subType = %04x\n", formID, subType);
                 CBASH_CHUNK_DEBUG
                 printer("  Size = %i\n", subSize);
-                printer("  CurPos = %04x\n\n", curPos - 6);
-                curPos = recSize;
+                printer("  CurPos = %04x\n\n", buffer - 6);
+                buffer = end_buffer;
                 break;
             }
         };
@@ -215,61 +216,63 @@ SINT32 ACHRRecord::Unload()
 
 SINT32 ACHRRecord::WriteRecord(FileWriter &writer)
     {
-    char null = 0;
-
-    if(EDID.IsLoaded())
-        writer.record_write_subrecord(REV32(EDID), EDID.value, EDID.GetSize());
-
-    if(NAME.IsLoaded())
-        writer.record_write_subrecord(REV32(NAME), &NAME.value, NAME.GetSize());
-
-    if(XPCI.IsLoaded() && XPCI->XPCI.IsLoaded())
-        {
-        writer.record_write_subrecord(REV32(XPCI), &XPCI->XPCI.value, XPCI->XPCI.GetSize());
-        if(XPCI->FULL.IsLoaded())
-            writer.record_write_subrecord(REV32(FULL), XPCI->FULL.value, XPCI->FULL.GetSize());
-        else
-            writer.record_write_subrecord(REV32(FULL), &null, 1);
-        }
-
-    if(XLOD.IsLoaded())
-        writer.record_write_subrecord(REV32(XLOD), XLOD.value, XLOD.GetSize());
-
-    if(XESP.IsLoaded())
-        writer.record_write_subrecord(REV32(XESP), XESP.value, XESP.GetSize());
-
-    if(XMRC.IsLoaded())
-        writer.record_write_subrecord(REV32(XMRC), &XMRC.value, XMRC.GetSize());
-
-    if(XHRS.IsLoaded())
-        writer.record_write_subrecord(REV32(XHRS), &XHRS.value, XHRS.GetSize());
-
-    if(XRGD.IsLoaded())
-        writer.record_write_subrecord(REV32(XRGD), XRGD.value, XRGD.GetSize());
-
-    if(XSCL.IsLoaded())
-        writer.record_write_subrecord(REV32(XSCL), &XSCL.value, XSCL.GetSize());
-
-    if(DATA.IsLoaded())
-        writer.record_write_subrecord(REV32(DATA), &DATA.value, DATA.GetSize());
+    WRITE(EDID);
+    WRITE(NAME);
+    XPCI.Write(writer);
+    WRITE(XLOD);
+    WRITE(XESP);
+    WRITE(XMRC);
+    WRITE(XHRS);
+    WRITE(XRGD);
+    WRITE(XSCL);
+    WRITE(DATA);
     return -1;
     }
 
 bool ACHRRecord::operator ==(const ACHRRecord &other) const
     {
-    return (EDID.equalsi(other.EDID) &&
-            NAME == other.NAME &&
-            XPCI == other.XPCI &&
-            XLOD == other.XLOD &&
-            XESP == other.XESP &&
+    return (NAME == other.NAME &&
             XMRC == other.XMRC &&
             XHRS == other.XHRS &&
-            XRGD == other.XRGD &&
+            XESP == other.XESP &&
+            DATA == other.DATA &&
             XSCL == other.XSCL &&
-            DATA == other.DATA);
+            XLOD == other.XLOD &&
+            EDID.equalsi(other.EDID) &&
+            XPCI == other.XPCI &&
+            XRGD == other.XRGD);
     }
 
 bool ACHRRecord::operator !=(const ACHRRecord &other) const
     {
     return !(*this == other);
     }
+
+bool ACHRRecord::equals(Record *other)
+    {
+    return *this == *(ACHRRecord *)other;
+    }
+
+bool ACHRRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
+    {
+    //Precondition: equals has been run for these records and returned true
+    ACHRRecord *master_achr = (ACHRRecord *)master;
+    //Check to make sure the parent cell is attached at the same spot
+    if(Parent->formID != master_achr->Parent->formID)
+        return false;
+    if(!((CELLRecord *)Parent)->IsInterior())
+        {
+        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_achr->Parent)->Parent->formID)
+            return false;
+        read_self.Accept(Parent);
+        read_master.Accept(master_achr->Parent);
+        ((CELLRecord *)Parent)->XCLC.Load();
+        ((CELLRecord *)master_achr->Parent)->XCLC.Load();
+        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_achr->Parent)->XCLC->posX)
+            return false;
+        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_achr->Parent)->XCLC->posY)
+            return false;
+        }
+    return true;
+    }
+}
