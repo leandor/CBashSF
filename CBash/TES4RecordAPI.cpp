@@ -206,7 +206,7 @@ bool TES4Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             CNAM.Copy((STRING)FieldValue);
             break;
         case 11: //description
-            SNAM.Copy((STRING)FieldValue);
+            SNAM.TruncateCopy((STRING)FieldValue, 512);
             break;
         case 12: //masters
             for(UINT32 x = 0; x < MAST.size(); x++)

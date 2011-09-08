@@ -363,7 +363,7 @@ void * NAVMRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 20: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

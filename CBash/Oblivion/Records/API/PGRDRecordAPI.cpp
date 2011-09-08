@@ -263,7 +263,7 @@ void * PGRDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 11: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

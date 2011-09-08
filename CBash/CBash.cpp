@@ -51,23 +51,6 @@ inline void ValidatePointer(const void *testPointer)
         throw Ex_NULL();
     }
 
-ModFile *ValidateModName(Collection *curCollection, STRING const ModName)
-    {
-    //ValidatePointer(ModName);
-    STRING NonGhostName = DeGhostModName(ModName);
-    STRING const &CompName = NonGhostName ? NonGhostName : ModName;
-    //ModFiles will never contain null pointers
-    for(UINT32 x = 0; x < curCollection->ModFiles.size();++x)
-        if(icmps(CompName, curCollection->ModFiles[x]->ModName) == 0)
-            {
-            delete []NonGhostName;
-            return curCollection->ModFiles[x];
-            }
-    delete []NonGhostName;
-    throw Ex_INVALIDMODINDEX();
-    return NULL;
-    }
-
 ModFile *ValidateLoadOrderIndex(Collection *curCollection, const UINT32 ModIndex)
     {
     //ModFiles will never contain null pointers
@@ -461,7 +444,7 @@ CPPDLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const
     return -1;
     }
 
-CPPDLLEXTERN SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 LoadMod(ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -469,7 +452,7 @@ CPPDLLEXTERN SINT32 LoadMod(Collection *CollectionID, ModFile *ModID)
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+        RecordReader reader(ModID->FormIDHandler, ModID->Parent->Expanders);
         ModID->VisitAllRecords(reader);
         return 0;
         }
@@ -512,7 +495,7 @@ CPPDLLEXTERN SINT32 UnloadMod(ModFile *ModID)
     return -1;
     }
 
-CPPDLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 CleanModMasters(ModFile *ModID)
     {
     PROFILE_FUNC
 
@@ -520,7 +503,7 @@ CPPDLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        return ModID->CleanMasters(CollectionID->Expanders);
+        return ModID->Parent->CleanModMasters(ModID);
         }
     catch(std::exception &ex)
         {
@@ -536,16 +519,17 @@ CPPDLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID)
     return -1;
     }
 
-CPPDLLEXTERN SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection)
+CPPDLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField)
     {
     SINT32 err = 0;
+    SaveFlags flags(SaveFlagsField);
     try
         {
         //Profiling is in try block so that the timer gets destructed before DeleteCollection is called
         PROFILE_FUNC
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        err = CollectionID->SaveMod(ModID, CloseCollection);
+        err = ModID->Parent->SaveMod(ModID, flags);
         }
     catch(std::exception &ex)
         {
@@ -556,8 +540,8 @@ CPPDLLEXTERN SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool
         PRINT_ERROR;
         }
 
-    if(CloseCollection)
-        err = DeleteCollection(CollectionID) != 0 ? -1 : err;
+    if(flags.IsCloseCollection)
+        err = DeleteCollection(ModID->Parent) != 0 ? -1 : err;
     if(err == -1)
         {
         printer("\n\n");
@@ -765,7 +749,18 @@ CPPDLLEXTERN ModFile * GetModIDByName(Collection *CollectionID, STRING const Mod
     try
         {
         //ValidatePointer(CollectionID);
-        return ValidateModName(CollectionID, ModName);
+        //ValidatePointer(ModName);
+        STRING NonGhostName = DeGhostModName(ModName);
+        STRING const &CompName = NonGhostName ? NonGhostName : ModName;
+        //ModFiles will never contain null pointers
+        for(UINT32 x = 0; x < CollectionID->ModFiles.size();++x)
+            if(_stricmp(CompName, CollectionID->ModFiles[x]->ModName) == 0)
+                {
+                delete []NonGhostName;
+                return CollectionID->ModFiles[x];
+                }
+        delete []NonGhostName;
+        return NULL;
         }
     catch(std::exception &ex)
         {
@@ -855,19 +850,14 @@ CPPDLLEXTERN SINT32 GetModLoadOrderByID(ModFile *ModID)
     return -2;
     }
 
-CPPDLLEXTERN STRING GetLongIDName(ModFile *ModID, const UINT8 ModIndex)
+CPPDLLEXTERN ModFile * GetModIDByRecordID(Record *RecordID)
     {
     PROFILE_FUNC
 
-    if(ModIndex == 0xFF)
-        return NULL;
     try
         {
         //ValidatePointer(ModID);
-        UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
-        if(CollapsedIndex >= ModID->TES4.MAST.size())
-            return ModID->ModName;
-        return ModID->TES4.MAST[CollapsedIndex];
+        return RecordID->GetParentMod();
         }
     catch(std::exception &ex)
         {
@@ -883,32 +873,28 @@ CPPDLLEXTERN STRING GetLongIDName(ModFile *ModID, const UINT8 ModIndex)
     return NULL;
     }
 
-//CPPDLLEXTERN SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName)
-//    {
-//    if(ModID == -1)
-//        return GetModLoadOrderByName(CollectionID, ModName);
-//    try
-//        {
-//        ModFile *curModFile = ValidateModID(ValidateCollectionID(CollectionID), ModID);
-//        for(UINT16 x = 0; x < curModFile->TES4.MAST.size(); ++x)
-//            if(icmps(curModFile->TES4.MAST[x].value, ModName) == 0)
-//                return curModFile->FormIDHandler.ExpandTable[(UINT8)x] << 24;
-//        printer("GetShortIDIndex: Error\n  %s not found in %s's master list!\n", ModName, curModFile->ModName);
-//        return -1;
-//        }
-//    catch(std::exception &ex)
-//        {
-//        PRINT_EXCEPTION(ex);
-//        }
-//    catch(...)
-//        {
-//        PRINT_ERROR;
-//        }
-//    printer("\n\n");
-//    if(RaiseCallback != NULL)
-//        RaiseCallback();
-//    return -1;
-//    }
+CPPDLLEXTERN Collection * GetCollectionIDByRecordID(Record *RecordID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(ModID);
+        return RecordID->GetParentMod()->Parent;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return NULL;
+    }
 
 CPPDLLEXTERN UINT32 IsModEmpty(ModFile *ModID)
     {
@@ -997,10 +983,67 @@ CPPDLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes)
         RaiseCallback();
     return -1;
     }
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//FormID functions
+CPPDLLEXTERN STRING GetLongIDName(Record *RecordID, const UINT32 FormID, const bool IsMGEFCode)
+    {
+    PROFILE_FUNC
+
+    UINT8 ModIndex = IsMGEFCode ? (UINT8)(FormID & 0x000000FF) : (UINT8)(FormID >> 24);
+    if(ModIndex == 0xFF)
+        return NULL;
+
+    try
+        {
+        //ValidatePointer(ModID);
+        ModFile *ModID = RecordID->GetParentMod();
+        UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
+        if(CollapsedIndex >= ModID->TES4.MAST.size())
+            return ModID->ModName;
+        return ModID->TES4.MAST[CollapsedIndex];
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return NULL;
+    }
+
+CPPDLLEXTERN UINT32 MakeShortFormID(Record *RecordID, STRING const ModName, const UINT32 ObjectID, const bool IsMGEFCode)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        UINT8 ModIndex = ValidateLoadOrderIndex(RecordID->GetParentMod()->Parent, ModName)->FormIDHandler.ExpandedIndex;
+        return IsMGEFCode ? (ModIndex | (ObjectID & 0xFFFFFF00)) : ((ModIndex << 24) | (ObjectID & 0x00FFFFFF));
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return NULL;
+    }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions
-CPPDLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags)
+CPPDLLEXTERN Record * CreateRecord(ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags)
     {
     PROFILE_FUNC
 
@@ -1009,7 +1052,7 @@ CPPDLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, con
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
 
-        return CollectionID->CreateRecord(ModID, RecordType, RecordFormID, RecordEditorID, (ParentID != NULL ? ParentID->formID: NULL), CreateFlags);
+        return ModID->Parent->CreateRecord(ModID, RecordType, RecordFormID, RecordEditorID, (ParentID != NULL ? ParentID->formID: NULL), CreateFlags);
         }
     catch(std::exception &ex)
         {
@@ -1025,7 +1068,7 @@ CPPDLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, con
     return 0;
     }
 
-CPPDLLEXTERN Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
+CPPDLLEXTERN Record * CopyRecord(Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags)
     {
     PROFILE_FUNC
 
@@ -1035,7 +1078,7 @@ CPPDLLEXTERN Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Recor
         //ValidatePointer(ModID);
         //ValidatePointer(RecordID);
         //ValidatePointer(DestModID);
-        return CollectionID->CopyRecord(ModID, RecordID, DestModID, (DestParentID != NULL) ? DestParentID->formID : NULL, DestRecordFormID, DestRecordEditorID, CreateFlags);
+        return RecordID->GetParentMod()->Parent->CopyRecord(RecordID, DestModID, (DestParentID != NULL) ? DestParentID->formID : NULL, DestRecordFormID, DestRecordEditorID, CreateFlags);
         }
     catch(std::exception &ex)
         {
@@ -1082,7 +1125,7 @@ CPPDLLEXTERN SINT32 ResetRecord(Record *RecordID)
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        return RecordID->Unload();
+        return RecordID->GetParentMod()->file_map.is_open() ? RecordID->Unload() : 0;
         }
     catch(std::exception &ex)
         {
@@ -1098,7 +1141,7 @@ CPPDLLEXTERN SINT32 ResetRecord(Record *RecordID)
     return 0;
     }
 
-CPPDLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID)
+CPPDLLEXTERN SINT32 DeleteRecord(Record *RecordID)
     {
     PROFILE_FUNC
 
@@ -1106,8 +1149,8 @@ CPPDLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Recor
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        RecordDeindexer deindexer(ModID->Flags.IsExtendedConflicts ? CollectionID->ExtendedEditorID_ModFile_Record: CollectionID->EditorID_ModFile_Record, ModID->Flags.IsExtendedConflicts ? CollectionID->ExtendedFormID_ModFile_Record: CollectionID->FormID_ModFile_Record);
-        return ModID->DeleteRecord(RecordID, deindexer);
+        RecordDeindexer deindexer(RecordID);
+        return RecordID->GetParentMod()->DeleteRecord(RecordID, deindexer);
         }
     catch(std::exception &ex)
         {
@@ -1124,7 +1167,7 @@ CPPDLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Recor
     }
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-CPPDLLEXTERN Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID)
+CPPDLLEXTERN Record * GetRecordID(ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID)
     {
     PROFILE_FUNC
 
@@ -1136,11 +1179,11 @@ CPPDLLEXTERN Record * GetRecordID(Collection *CollectionID, ModFile *ModID, cons
         if(RecordFormID == 0 && RecordEditorID == 0)
             return &ModID->TES4;
         if(RecordFormID != 0)
-            CollectionID->LookupRecord(ModID, RecordFormID, curRecord);
+            ModID->Parent->LookupRecord(ModID, RecordFormID, curRecord);
         if(curRecord != NULL)
             return curRecord;
         if(RecordEditorID != 0)
-            CollectionID->LookupRecord(ModID, RecordEditorID, curRecord);
+            ModID->Parent->LookupRecord(ModID, RecordEditorID, curRecord);
         return curRecord;
         }
     catch(std::exception &ex)
@@ -1205,7 +1248,7 @@ CPPDLLEXTERN SINT32 GetRecordIDs(ModFile *ModID, const UINT32 RecordType, RECORD
     return -1;
     }
 
-CPPDLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 IsRecordWinning(Record *RecordID, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
@@ -1213,7 +1256,7 @@ CPPDLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Re
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        return CollectionID->IsRecordWinning(ModID, RecordID, GetExtendedConflicts);
+        return RecordID->GetParentMod()->Parent->IsRecordWinning(RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
@@ -1229,14 +1272,14 @@ CPPDLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Re
     return -1;
     }
 
-CPPDLLEXTERN SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 GetNumRecordConflicts(Record *RecordID, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        return CollectionID->GetNumRecordConflicts(RecordID, GetExtendedConflicts);
+        return RecordID->GetParentMod()->Parent->GetNumRecordConflicts(RecordID, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
@@ -1252,14 +1295,14 @@ CPPDLLEXTERN SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *Reco
     return -1;
     }
 
-CPPDLLEXTERN SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
+CPPDLLEXTERN SINT32 GetRecordConflicts(Record *RecordID, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts)
     {
     PROFILE_FUNC
 
     try
         {
         //ValidatePointer(CollectionID);
-        return CollectionID->GetRecordConflicts(RecordID, ModIDs, RecordIDs, GetExtendedConflicts);
+        return RecordID->GetParentMod()->Parent->GetRecordConflicts(RecordID, RecordIDs, GetExtendedConflicts);
         }
     catch(std::exception &ex)
         {
@@ -1275,7 +1318,7 @@ CPPDLLEXTERN SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordI
     return -1;
     }
 
-CPPDLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs)
+CPPDLLEXTERN SINT32 GetRecordHistory(Record *RecordID, RECORDIDARRAY RecordIDs)
     {
     PROFILE_FUNC
 
@@ -1283,7 +1326,7 @@ CPPDLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, R
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        return CollectionID->GetRecordHistory(ModID, RecordID, ModIDs, RecordIDs);
+        return RecordID->GetParentMod()->Parent->GetRecordHistory(RecordID, RecordIDs);
         }
     catch(std::exception &ex)
         {
@@ -1299,12 +1342,12 @@ CPPDLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, R
     return -1;
     }
 
-CPPDLLEXTERN SINT32 GetNumIdenticalToMasterRecords(Collection *CollectionID, ModFile *ModID)
+CPPDLLEXTERN SINT32 GetNumIdenticalToMasterRecords(ModFile *ModID)
     {
     PROFILE_FUNC
     if(ModID->Flags.IsExtendedConflicts)
         {
-        printer("GetRecordHistory: Warning - No history available. Mod \"%s\" uses extended conflicts.\n", ModID->ModName);
+        printer("GetNumIdenticalToMasterRecords: Warning - No history available. Mod \"%s\" uses extended conflicts.\n", ModID->ModName);
         return -1;
         }
 
@@ -1313,14 +1356,12 @@ CPPDLLEXTERN SINT32 GetNumIdenticalToMasterRecords(Collection *CollectionID, Mod
         //ValidatePointer(RecordID1);
 		//ValidatePointer(RecordID2);
 
-        CollectionID->identical_records.clear();
+        ModID->Parent->identical_records.clear();
 
-        IdenticalToMasterRetriever identical(ModID->FormIDHandler, CollectionID->Expanders,
-            CollectionID->LoadOrder255, CollectionID->identical_records,
-            CollectionID->EditorID_ModFile_Record, CollectionID->FormID_ModFile_Record);
+        IdenticalToMasterRetriever identical(ModID);
 
         ModID->VisitAllRecords(identical);
-        return CollectionID->identical_records.size();
+        return ModID->Parent->identical_records.size();
         }
     catch(std::exception &ex)
         {
@@ -1336,7 +1377,7 @@ CPPDLLEXTERN SINT32 GetNumIdenticalToMasterRecords(Collection *CollectionID, Mod
     return -1;
     }
 
-CPPDLLEXTERN SINT32 GetIdenticalToMasterRecords(Collection *CollectionID, RECORDIDARRAY RecordIDs)
+CPPDLLEXTERN SINT32 GetIdenticalToMasterRecords(ModFile *ModID, RECORDIDARRAY RecordIDs)
     {
     PROFILE_FUNC
 
@@ -1346,10 +1387,10 @@ CPPDLLEXTERN SINT32 GetIdenticalToMasterRecords(Collection *CollectionID, RECORD
 		//ValidatePointer(RecordID2);
         typedef boost::unordered_set<Record *>::iterator identical_it;
         UINT32 count = 0;
-        for(identical_it item = CollectionID->identical_records.begin(); item != CollectionID->identical_records.end(); item++)
+        for(identical_it item = ModID->Parent->identical_records.begin(); item != ModID->Parent->identical_records.end(); item++)
             RecordIDs[count++] = *item;
 
-        CollectionID->identical_records.clear();
+        ModID->Parent->identical_records.clear();
         return count;
         }
     catch(std::exception &ex)
@@ -1367,37 +1408,60 @@ CPPDLLEXTERN SINT32 GetIdenticalToMasterRecords(Collection *CollectionID, RECORD
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-CPPDLLEXTERN SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID)
+CPPDLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARRAY OldFormIDs, FORMIDARRAY NewFormIDs, UINT32ARRAY Changes, const UINT32 ArraySize)
     {
     PROFILE_FUNC
 
     //Sanity check.
-    if(FormIDToReplace == ReplacementFormID)
+    if(ArraySize == 0)
         return -1;
+
+    //Sanity check.
     try
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        RecordFormIDSwapper swapper(FormIDToReplace, ReplacementFormID, ModID->FormIDHandler, CollectionID->Expanders);
-
+        UINT32 count = 0;
         if(RecordID != NULL) //Swap possible uses of FormIDToReplace in a specific record only
             {
-            swapper.Accept(RecordID);
+            for(UINT32 ListIndex = 0; ListIndex < ArraySize; ++ListIndex)
+                {
+                //Sanity check.
+                if(OldFormIDs[ListIndex] == NewFormIDs[ListIndex])
+                    continue;
+                RecordFormIDSwapper swapper(OldFormIDs[ListIndex], NewFormIDs[ListIndex], RecordID->GetParentMod()->FormIDHandler, RecordID->GetParentMod()->Parent->Expanders);
+                swapper.Accept(RecordID);
+                Changes[ListIndex] = swapper.GetCount();
+                count += swapper.GetCount();
+                if(Changes[ListIndex] > 0)
+                    RecordID->GetParentMod()->Parent->changed_records.insert(RecordID);
+                }
             }
-        else //Swap all possible uses of FormIDToReplace
+        else
             {
-            ModID->VisitAllRecords(swapper);
-            //Can't get the record type when it's a NULL pointer....stupid me
-            //RecordType_PossibleGroups_Iterator curTypes = RecordType_PossibleGroups.find(RecordID->GetType());
-            //if(curTypes != RecordType_PossibleGroups.end())
-            //    {
-            //    for(std::vector<UINT32>::const_iterator x = curTypes->second.begin(); x != curTypes->second.end(); ++x)
-            //        {
-            //        ModID->VisitRecords(*x, NULL, swapper, true);
-            //        }
-            //    }
+            ModID->Parent->changed_records.clear();
+            //Build a map of references to avoid iterating through every single record N times
+            std::map<FORMID, std::vector<Record *> > formID_users;
+            RecordFormIDMapper mapper(formID_users, ModID->FormIDHandler, ModID->Parent->Expanders);
+            ModID->VisitAllRecords(mapper);
+            for(UINT32 ListIndex = 0; ListIndex < ArraySize; ++ListIndex)
+                {
+                //Sanity check.
+                if(OldFormIDs[ListIndex] == NewFormIDs[ListIndex])
+                    continue;
+                FormIDSwapper swapper(OldFormIDs[ListIndex], NewFormIDs[ListIndex], ModID->FormIDHandler);
+                std::vector<Record *> &users = formID_users[OldFormIDs[ListIndex]];
+                for(UINT32 ListX2Index = 0; ListX2Index < users.size(); ++ListX2Index)
+                    {
+                    users[ListX2Index]->VisitFormIDs(swapper);
+                    users[ListX2Index]->IsChanged(true);
+                    ModID->Parent->changed_records.insert(users[ListX2Index]);
+                    }
+                Changes[ListIndex] = swapper.GetCount();
+                count += swapper.GetCount();
+                }
             }
-        return swapper.GetCount();
+        return count;
         }
     catch(std::exception &ex)
         {
@@ -1414,26 +1478,19 @@ CPPDLLEXTERN SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, R
     }
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-CPPDLLEXTERN SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch)
+CPPDLLEXTERN SINT32 GetRecordUpdatedReferences(Collection *CollectionID, Record *RecordID)
     {
     PROFILE_FUNC
 
     try
         {
-        //ValidatePointer(CollectionID);
-        //ValidatePointer(ModID);
-        //ValidatePointer(RecordID);
-
-        //Ensure the record is fully loaded
-        if(!RecordID->IsLoaded())
+        if(RecordID == NULL)
             {
-            RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
-            reader.Accept(RecordID);
+            CollectionID->changed_records.clear();
+            return 0;
             }
 
-        FormIDMatchCounter counter(FormIDToMatch);
-        RecordID->VisitFormIDs(counter);
-        return counter.GetCount();
+        return RecordID->GetParentMod()->Parent->changed_records.count(RecordID);
         }
     catch(std::exception &ex)
         {
@@ -1451,7 +1508,7 @@ CPPDLLEXTERN SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, R
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-CPPDLLEXTERN SINT32 SetIDFields(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID)
+CPPDLLEXTERN SINT32 SetIDFields(Record *RecordID, const FORMID FormID, STRING const EditorID)
     {
     PROFILE_FUNC
 
@@ -1460,7 +1517,7 @@ CPPDLLEXTERN SINT32 SetIDFields(Collection *CollectionID, ModFile *ModID, Record
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
         //ValidatePointer(RecordID);
-        return CollectionID->SetIDFields(ModID, RecordID, FormID, EditorID);
+        return RecordID->GetParentMod()->Parent->SetIDFields(RecordID, FormID, EditorID);
         }
     catch(std::exception &ex)
         {
@@ -1476,7 +1533,7 @@ CPPDLLEXTERN SINT32 SetIDFields(Collection *CollectionID, ModFile *ModID, Record
     return -1;
     }
 
-CPPDLLEXTERN void SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
+CPPDLLEXTERN void SetField(Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize)
     {
     PROFILE_FUNC
 
@@ -1489,7 +1546,7 @@ CPPDLLEXTERN void SetField(Collection *CollectionID, ModFile *ModID, Record *Rec
         //Ensure the record is fully loaded
         if(!RecordID->IsLoaded())
             {
-            RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+            RecordReader reader(RecordID);
             reader.Accept(RecordID);
             }
 
@@ -1497,7 +1554,7 @@ CPPDLLEXTERN void SetField(Collection *CollectionID, ModFile *ModID, Record *Rec
             {
             //returns true if formIDs need to be checked
             //Update the master list if needed
-            FormIDMasterUpdater checker(ModID->FormIDHandler);
+            FormIDMasterUpdater checker(RecordID);
             //checker.Accept(curRecord->formID); //FormID can only be changed through SetRecordIDs, so no need to check
             RecordID->VisitFormIDs(checker);
             }
@@ -1521,7 +1578,7 @@ CPPDLLEXTERN void SetField(Collection *CollectionID, ModFile *ModID, Record *Rec
     return;
     }
 
-CPPDLLEXTERN void DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS)
+CPPDLLEXTERN void DeleteField(Record *RecordID, FIELD_IDENTIFIERS)
     {
     PROFILE_FUNC
 
@@ -1534,7 +1591,7 @@ CPPDLLEXTERN void DeleteField(Collection *CollectionID, ModFile *ModID, Record *
         //Ensure the record is fully loaded
         if(!RecordID->IsLoaded())
             {
-            RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+            RecordReader reader(RecordID);
             reader.Accept(RecordID);
             }
 
@@ -1560,7 +1617,7 @@ CPPDLLEXTERN void DeleteField(Collection *CollectionID, ModFile *ModID, Record *
     }
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-CPPDLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
+CPPDLLEXTERN UINT32 GetFieldAttribute(Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute)
     {
     PROFILE_FUNC
 
@@ -1576,7 +1633,7 @@ CPPDLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, 
             //Ensure the record is fully loaded
             if(!RecordID->IsLoaded())
                 {
-                RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+                RecordReader reader(RecordID);
                 reader.Accept(RecordID);
                 }
             }
@@ -1599,7 +1656,7 @@ CPPDLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, 
     return UNKNOWN_FIELD;
     }
 
-CPPDLLEXTERN void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
+CPPDLLEXTERN void * GetField(Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues)
     {
     PROFILE_FUNC
 
@@ -1612,7 +1669,7 @@ CPPDLLEXTERN void * GetField(Collection *CollectionID, ModFile *ModID, Record *R
         //Ensure the record is fully loaded
         if(!RecordID->IsLoaded())
             {
-            RecordReader reader(ModID->FormIDHandler, CollectionID->Expanders);
+            RecordReader reader(RecordID);
             reader.Accept(RecordID);
             }
 

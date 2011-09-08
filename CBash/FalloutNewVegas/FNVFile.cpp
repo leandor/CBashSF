@@ -24,8 +24,8 @@ GPL License and Copyright Notice ============================================
 #include "../GenericRecord.h"
 #include "FNVFile.h"
 
-FNVFile::FNVFile(STRING FileName, STRING ModName, const UINT32 _flags):
-    ModFile(FileName, ModName, _flags)
+FNVFile::FNVFile(Collection *_Parent, STRING FileName, STRING ModName, const UINT32 _flags):
+    ModFile(_Parent, FileName, ModName, _flags)
     {
     //
     }
@@ -77,7 +77,7 @@ SINT32 FNVFile::LoadTES4()
     return 1;
     }
 
-SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
+SINT32 FNVFile::Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
     {
     enum IgTopRecords {
         eIgGMST = REV32(GMST) | 0x00001000, //Record::fIsIgnored
@@ -201,11 +201,10 @@ SINT32 FNVFile::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders
     UINT32 GRUPLabel;
     boost::unordered_set<UINT32> UsedFormIDs;
 
-    RecordReader read_parser(FormIDHandler, Expanders);
     RecordOp skip_parser;
     RecordOp &parser = Flags.IsFullLoad ? read_parser : skip_parser;
 
-    RecordProcessor processor(FormIDHandler, Flags, UsedFormIDs);
+    RecordProcessor processor(this, FormIDHandler, Flags, UsedFormIDs);
 
     while(buffer_position < buffer_end){
         buffer_position += 4; //Skip "GRUP"
@@ -917,7 +916,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 printer("FNVFile::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ModName);
                 return NULL;
                 }
-            newRecord = GMST.pool.construct(SourceRecord);
+            newRecord = GMST.pool.construct(SourceRecord, this, true);
 
             if(RecordEditorID != NULL)
                 {
@@ -926,105 +925,105 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 }
             break;
         case REV32(TXST):
-            return TXST.pool.construct(SourceRecord);
+            return TXST.pool.construct(SourceRecord, this, true);
         case REV32(MICN):
-            return MICN.pool.construct(SourceRecord);
+            return MICN.pool.construct(SourceRecord, this, true);
         case REV32(GLOB):
-            return GLOB.pool.construct(SourceRecord);
+            return GLOB.pool.construct(SourceRecord, this, true);
         case REV32(CLAS):
-            return CLAS.pool.construct(SourceRecord);
+            return CLAS.pool.construct(SourceRecord, this, true);
         case REV32(FACT):
-            return FACT.pool.construct(SourceRecord);
+            return FACT.pool.construct(SourceRecord, this, true);
         case REV32(HDPT):
-            return HDPT.pool.construct(SourceRecord);
+            return HDPT.pool.construct(SourceRecord, this, true);
         case REV32(HAIR):
-            return HAIR.pool.construct(SourceRecord);
+            return HAIR.pool.construct(SourceRecord, this, true);
         case REV32(EYES):
-            return EYES.pool.construct(SourceRecord);
+            return EYES.pool.construct(SourceRecord, this, true);
         case REV32(RACE):
-            return RACE.pool.construct(SourceRecord);
+            return RACE.pool.construct(SourceRecord, this, true);
         case REV32(SOUN):
-            return SOUN.pool.construct(SourceRecord);
+            return SOUN.pool.construct(SourceRecord, this, true);
         case REV32(ASPC):
-            return ASPC.pool.construct(SourceRecord);
+            return ASPC.pool.construct(SourceRecord, this, true);
         case REV32(MGEF):
-            return MGEF.pool.construct(SourceRecord);
+            return MGEF.pool.construct(SourceRecord, this, true);
         case REV32(SCPT):
-            return SCPT.pool.construct(SourceRecord);
+            return SCPT.pool.construct(SourceRecord, this, true);
         case REV32(LTEX):
-            return LTEX.pool.construct(SourceRecord);
+            return LTEX.pool.construct(SourceRecord, this, true);
         case REV32(ENCH):
-            return ENCH.pool.construct(SourceRecord);
+            return ENCH.pool.construct(SourceRecord, this, true);
         case REV32(SPEL):
-            return SPEL.pool.construct(SourceRecord);
+            return SPEL.pool.construct(SourceRecord, this, true);
         case REV32(ACTI):
-            return ACTI.pool.construct(SourceRecord);
+            return ACTI.pool.construct(SourceRecord, this, true);
         case REV32(TACT):
-            return TACT.pool.construct(SourceRecord);
+            return TACT.pool.construct(SourceRecord, this, true);
         case REV32(TERM):
-            return TERM.pool.construct(SourceRecord);
+            return TERM.pool.construct(SourceRecord, this, true);
         case REV32(ARMO):
-            return ARMO.pool.construct(SourceRecord);
+            return ARMO.pool.construct(SourceRecord, this, true);
         case REV32(BOOK):
-            return BOOK.pool.construct(SourceRecord);
+            return BOOK.pool.construct(SourceRecord, this, true);
         case REV32(CONT):
-            return CONT.pool.construct(SourceRecord);
+            return CONT.pool.construct(SourceRecord, this, true);
         case REV32(DOOR):
-            return DOOR.pool.construct(SourceRecord);
+            return DOOR.pool.construct(SourceRecord, this, true);
         case REV32(INGR):
-            return INGR.pool.construct(SourceRecord);
+            return INGR.pool.construct(SourceRecord, this, true);
         case REV32(LIGH):
-            return LIGH.pool.construct(SourceRecord);
+            return LIGH.pool.construct(SourceRecord, this, true);
         case REV32(MISC):
-            return MISC.pool.construct(SourceRecord);
+            return MISC.pool.construct(SourceRecord, this, true);
         case REV32(STAT):
-            return STAT.pool.construct(SourceRecord);
+            return STAT.pool.construct(SourceRecord, this, true);
         case REV32(SCOL):
-            return SCOL.pool.construct(SourceRecord);
+            return SCOL.pool.construct(SourceRecord, this, true);
         case REV32(MSTT):
-            return MSTT.pool.construct(SourceRecord);
+            return MSTT.pool.construct(SourceRecord, this, true);
         case REV32(PWAT):
-            return PWAT.pool.construct(SourceRecord);
+            return PWAT.pool.construct(SourceRecord, this, true);
         case REV32(GRAS):
-            return GRAS.pool.construct(SourceRecord);
+            return GRAS.pool.construct(SourceRecord, this, true);
         case REV32(TREE):
-            return TREE.pool.construct(SourceRecord);
+            return TREE.pool.construct(SourceRecord, this, true);
         case REV32(FURN):
-            return FURN.pool.construct(SourceRecord);
+            return FURN.pool.construct(SourceRecord, this, true);
         case REV32(WEAP):
-            return WEAP.pool.construct(SourceRecord);
+            return WEAP.pool.construct(SourceRecord, this, true);
         case REV32(AMMO):
-            return AMMO.pool.construct(SourceRecord);
+            return AMMO.pool.construct(SourceRecord, this, true);
         case REV32(NPC_):
-            return NPC_.pool.construct(SourceRecord);
+            return NPC_.pool.construct(SourceRecord, this, true);
         case REV32(CREA):
-            return CREA.pool.construct(SourceRecord);
+            return CREA.pool.construct(SourceRecord, this, true);
         case REV32(LVLC):
-            return LVLC.pool.construct(SourceRecord);
+            return LVLC.pool.construct(SourceRecord, this, true);
         case REV32(LVLN):
-            return LVLN.pool.construct(SourceRecord);
+            return LVLN.pool.construct(SourceRecord, this, true);
         case REV32(KEYM):
-            return KEYM.pool.construct(SourceRecord);
+            return KEYM.pool.construct(SourceRecord, this, true);
         case REV32(ALCH):
-            return ALCH.pool.construct(SourceRecord);
+            return ALCH.pool.construct(SourceRecord, this, true);
         case REV32(IDLM):
-            return IDLM.pool.construct(SourceRecord);
+            return IDLM.pool.construct(SourceRecord, this, true);
         case REV32(NOTE):
-            return NOTE.pool.construct(SourceRecord);
+            return NOTE.pool.construct(SourceRecord, this, true);
         case REV32(COBJ):
-            return COBJ.pool.construct(SourceRecord);
+            return COBJ.pool.construct(SourceRecord, this, true);
         case REV32(PROJ):
-            return PROJ.pool.construct(SourceRecord);
+            return PROJ.pool.construct(SourceRecord, this, true);
         case REV32(LVLI):
-            return LVLI.pool.construct(SourceRecord);
+            return LVLI.pool.construct(SourceRecord, this, true);
         case REV32(WTHR):
-            return WTHR.pool.construct(SourceRecord);
+            return WTHR.pool.construct(SourceRecord, this, true);
         case REV32(CLMT):
-            return CLMT.pool.construct(SourceRecord);
+            return CLMT.pool.construct(SourceRecord, this, true);
         case REV32(REGN):
-            return REGN.pool.construct(SourceRecord);
+            return REGN.pool.construct(SourceRecord, this, true);
         case REV32(NAVI):
-            return NAVI.pool.construct(SourceRecord);
+            return NAVI.pool.construct(SourceRecord, this, true);
         case REV32(WCEL):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
                 {
@@ -1039,14 +1038,13 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return ((FNV::WRLDRecord *)ParentRecord)->CELL;
                 }
 
-            ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
+            ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
             ((FNV::CELLRecord *)((FNV::WRLDRecord *)ParentRecord)->CELL)->IsInterior(false);
-            ((FNV::CELLRecord *)((FNV::WRLDRecord *)ParentRecord)->CELL)->Parent = ParentRecord;
             return ((FNV::WRLDRecord *)ParentRecord)->CELL;
         case REV32(CELL):
             if(ParentRecord == NULL)
                 {
-                newRecord = CELL.cell_pool.construct(SourceRecord);
+                newRecord = CELL.cell_pool.construct(SourceRecord, this, true);
                 ((FNV::CELLRecord *)newRecord)->IsInterior(true);
                 return newRecord;
                 }
@@ -1059,7 +1057,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                     }
 
                 //If the SourceRecord is a world cell, then the copy will be a world cell
-                if(SourceRecord != NULL && ((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->Parent)->CELL == SourceRecord)
+                if(SourceRecord != NULL && ((FNV::WRLDRecord *)((FNV::CELLRecord *)SourceRecord)->GetParentRecord())->CELL == SourceRecord)
                     {
                     //If a world cell already exists, return it instead of making a new one
                     if(((FNV::WRLDRecord *)ParentRecord)->CELL != NULL)
@@ -1068,22 +1066,21 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                         return ((FNV::WRLDRecord *)ParentRecord)->CELL;
                         }
 
-                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
+                    newRecord = ((FNV::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
                     }
                 else
                     {
-                    newRecord = WRLD.cell_pool.construct(SourceRecord);
+                    newRecord = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
                     ((FNV::WRLDRecord *)ParentRecord)->CELLS.push_back(newRecord);
                     }
 
                 ((FNV::CELLRecord *)newRecord)->IsInterior(false);
-                ((FNV::CELLRecord *)newRecord)->Parent = ParentRecord;
                 return newRecord;
                 }
         case REV32(WRLD):
-            return WRLD.wrld_pool.construct(SourceRecord);
+            return WRLD.wrld_pool.construct(SourceRecord, this, true);
         case REV32(DIAL):
-            return DIAL.dial_pool.construct(SourceRecord);
+            return DIAL.dial_pool.construct(SourceRecord, this, true);
         case REV32(INFO):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
@@ -1091,8 +1088,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::DIALRecord *)ParentRecord)->INFO.push_back(DIAL.info_pool.construct(SourceRecord));
-            ((FNV::INFORecord *)((FNV::DIALRecord *)ParentRecord)->INFO.back())->Parent = ParentRecord;
+            ((FNV::DIALRecord *)ParentRecord)->INFO.push_back(DIAL.info_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::DIALRecord *)ParentRecord)->INFO.back();
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1101,8 +1097,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->ACHR.push_back(CELL.achr_pool.construct(SourceRecord));
-            ((FNV::ACHRRecord *)((FNV::CELLRecord *)ParentRecord)->ACHR.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->ACHR.push_back(CELL.achr_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->ACHR.back();
         case REV32(ACRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1111,8 +1106,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->ACRE.push_back(CELL.acre_pool.construct(SourceRecord));
-            ((FNV::ACRERecord *)((FNV::CELLRecord *)ParentRecord)->ACRE.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->ACRE.push_back(CELL.acre_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->ACRE.back();
         case REV32(REFR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1121,8 +1115,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->REFR.push_back(CELL.refr_pool.construct(SourceRecord));
-            ((FNV::REFRRecord *)((FNV::CELLRecord *)ParentRecord)->REFR.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->REFR.push_back(CELL.refr_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->REFR.back();
         case REV32(PGRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1131,8 +1124,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PGRE.push_back(CELL.pgre_pool.construct(SourceRecord));
-            ((FNV::PGRERecord *)((FNV::CELLRecord *)ParentRecord)->PGRE.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->PGRE.push_back(CELL.pgre_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->PGRE.back();
         case REV32(PMIS):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1141,8 +1133,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PMIS.push_back(CELL.pmis_pool.construct(SourceRecord));
-            ((FNV::PMISRecord *)((FNV::CELLRecord *)ParentRecord)->PMIS.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->PMIS.push_back(CELL.pmis_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->PMIS.back();
         case REV32(PBEA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1151,8 +1142,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PBEA.push_back(CELL.pbea_pool.construct(SourceRecord));
-            ((FNV::PBEARecord *)((FNV::CELLRecord *)ParentRecord)->PBEA.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->PBEA.push_back(CELL.pbea_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->PBEA.back();
         case REV32(PFLA):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1161,8 +1151,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PFLA.push_back(CELL.pfla_pool.construct(SourceRecord));
-            ((FNV::PFLARecord *)((FNV::CELLRecord *)ParentRecord)->PFLA.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->PFLA.push_back(CELL.pfla_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->PFLA.back();
         case REV32(PCBE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1171,8 +1160,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->PCBE.push_back(CELL.pcbe_pool.construct(SourceRecord));
-            ((FNV::PCBERecord *)((FNV::CELLRecord *)ParentRecord)->PCBE.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->PCBE.push_back(CELL.pcbe_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->PCBE.back();
         case REV32(NAVM):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1181,8 +1169,7 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return NULL;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->NAVM.push_back(CELL.navm_pool.construct(SourceRecord));
-            ((FNV::NAVMRecord *)((FNV::CELLRecord *)ParentRecord)->NAVM.back())->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->NAVM.push_back(CELL.navm_pool.construct(SourceRecord, ParentRecord, false));
             return ((FNV::CELLRecord *)ParentRecord)->NAVM.back();
         case REV32(LAND):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -1198,103 +1185,102 @@ Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEdi
                 return ((FNV::CELLRecord *)ParentRecord)->LAND;
                 }
 
-            ((FNV::CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord);
-            ((FNV::LANDRecord *)((FNV::CELLRecord *)ParentRecord)->LAND)->Parent = ParentRecord;
+            ((FNV::CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord, ParentRecord, false);
             return ((FNV::CELLRecord *)ParentRecord)->LAND;
         case REV32(QUST):
-            return QUST.pool.construct(SourceRecord);
+            return QUST.pool.construct(SourceRecord, this, true);
         case REV32(IDLE):
-            return IDLE.pool.construct(SourceRecord);
+            return IDLE.pool.construct(SourceRecord, this, true);
         case REV32(PACK):
-            return PACK.pool.construct(SourceRecord);
+            return PACK.pool.construct(SourceRecord, this, true);
         case REV32(CSTY):
-            return CSTY.pool.construct(SourceRecord);
+            return CSTY.pool.construct(SourceRecord, this, true);
         case REV32(LSCR):
-            return LSCR.pool.construct(SourceRecord);
+            return LSCR.pool.construct(SourceRecord, this, true);
         case REV32(ANIO):
-            return ANIO.pool.construct(SourceRecord);
+            return ANIO.pool.construct(SourceRecord, this, true);
         case REV32(WATR):
-            return WATR.pool.construct(SourceRecord);
+            return WATR.pool.construct(SourceRecord, this, true);
         case REV32(EFSH):
-            return EFSH.pool.construct(SourceRecord);
+            return EFSH.pool.construct(SourceRecord, this, true);
         case REV32(EXPL):
-            return EXPL.pool.construct(SourceRecord);
+            return EXPL.pool.construct(SourceRecord, this, true);
         case REV32(DEBR):
-            return DEBR.pool.construct(SourceRecord);
+            return DEBR.pool.construct(SourceRecord, this, true);
         case REV32(IMGS):
-            //return IMGS.pool.construct(SourceRecord);
+            //return IMGS.pool.construct(SourceRecord, this, true);
         case REV32(IMAD):
-            //return IMAD.pool.construct(SourceRecord);
+            //return IMAD.pool.construct(SourceRecord, this, true);
         case REV32(FLST):
-            //return FLST.pool.construct(SourceRecord);
+            //return FLST.pool.construct(SourceRecord, this, true);
         case REV32(PERK):
-            //return PERK.pool.construct(SourceRecord);
+            //return PERK.pool.construct(SourceRecord, this, true);
         case REV32(BPTD):
-            //return BPTD.pool.construct(SourceRecord);
+            //return BPTD.pool.construct(SourceRecord, this, true);
         case REV32(ADDN):
-            //return ADDN.pool.construct(SourceRecord);
+            //return ADDN.pool.construct(SourceRecord, this, true);
         case REV32(AVIF):
-            //return AVIF.pool.construct(SourceRecord);
+            //return AVIF.pool.construct(SourceRecord, this, true);
         case REV32(RADS):
-            //return RADS.pool.construct(SourceRecord);
+            //return RADS.pool.construct(SourceRecord, this, true);
         case REV32(CAMS):
-            //return CAMS.pool.construct(SourceRecord);
+            //return CAMS.pool.construct(SourceRecord, this, true);
         case REV32(CPTH):
-            //return CPTH.pool.construct(SourceRecord);
+            //return CPTH.pool.construct(SourceRecord, this, true);
         case REV32(VTYP):
-            //return VTYP.pool.construct(SourceRecord);
+            //return VTYP.pool.construct(SourceRecord, this, true);
         case REV32(IPCT):
-            //return IPCT.pool.construct(SourceRecord);
+            //return IPCT.pool.construct(SourceRecord, this, true);
         case REV32(IPDS):
-            //return IPDS.pool.construct(SourceRecord);
+            //return IPDS.pool.construct(SourceRecord, this, true);
         case REV32(ARMA):
-            //return ARMA.pool.construct(SourceRecord);
+            //return ARMA.pool.construct(SourceRecord, this, true);
         case REV32(ECZN):
-            //return ECZN.pool.construct(SourceRecord);
+            //return ECZN.pool.construct(SourceRecord, this, true);
         case REV32(MESG):
-            //return MESG.pool.construct(SourceRecord);
+            //return MESG.pool.construct(SourceRecord, this, true);
         case REV32(RGDL):
-            //return RGDL.pool.construct(SourceRecord);
+            //return RGDL.pool.construct(SourceRecord, this, true);
         case REV32(DOBJ):
-            //return DOBJ.pool.construct(SourceRecord);
+            //return DOBJ.pool.construct(SourceRecord, this, true);
         case REV32(LGTM):
-            //return LGTM.pool.construct(SourceRecord);
+            //return LGTM.pool.construct(SourceRecord, this, true);
         case REV32(MUSC):
-            //return MUSC.pool.construct(SourceRecord);
+            //return MUSC.pool.construct(SourceRecord, this, true);
         case REV32(IMOD):
-            //return IMOD.pool.construct(SourceRecord);
+            //return IMOD.pool.construct(SourceRecord, this, true);
         case REV32(REPU):
-            //return REPU.pool.construct(SourceRecord);
+            //return REPU.pool.construct(SourceRecord, this, true);
         case REV32(RCPE):
-            //return RCPE.pool.construct(SourceRecord);
+            //return RCPE.pool.construct(SourceRecord, this, true);
         case REV32(RCCT):
-            //return RCCT.pool.construct(SourceRecord);
+            //return RCCT.pool.construct(SourceRecord, this, true);
         case REV32(CHIP):
-            //return CHIP.pool.construct(SourceRecord);
+            //return CHIP.pool.construct(SourceRecord, this, true);
         case REV32(CSNO):
-            //return CSNO.pool.construct(SourceRecord);
+            //return CSNO.pool.construct(SourceRecord, this, true);
         case REV32(LSCT):
-            //return LSCT.pool.construct(SourceRecord);
+            //return LSCT.pool.construct(SourceRecord, this, true);
         case REV32(MSET):
-            //return MSET.pool.construct(SourceRecord);
+            //return MSET.pool.construct(SourceRecord, this, true);
         case REV32(ALOC):
-            //return ALOC.pool.construct(SourceRecord);
+            //return ALOC.pool.construct(SourceRecord, this, true);
         case REV32(CHAL):
-            //return CHAL.pool.construct(SourceRecord);
+            //return CHAL.pool.construct(SourceRecord, this, true);
         case REV32(AMEF):
-            //return AMEF.pool.construct(SourceRecord);
+            //return AMEF.pool.construct(SourceRecord, this, true);
         case REV32(CCRD):
-            //return CCRD.pool.construct(SourceRecord);
+            //return CCRD.pool.construct(SourceRecord, this, true);
         case REV32(CMNY):
-            //return CMNY.pool.construct(SourceRecord);
+            //return CMNY.pool.construct(SourceRecord, this, true);
         case REV32(CDCK):
-            //return CDCK.pool.construct(SourceRecord);
+            //return CDCK.pool.construct(SourceRecord, this, true);
         case REV32(DEHY):
-            //return DEHY.pool.construct(SourceRecord);
+            //return DEHY.pool.construct(SourceRecord, this, true);
         case REV32(HUNG):
-            //return HUNG.pool.construct(SourceRecord);
+            //return HUNG.pool.construct(SourceRecord, this, true);
         case REV32(SLPD):
-            //return SLPD.pool.construct(SourceRecord);
+            //return SLPD.pool.construct(SourceRecord, this, true);
         default:
             printer("FNVFile::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ModName);
             break;
@@ -1512,7 +1498,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(CELL):
             {
-            FNV::WRLDRecord *wrld_record = (FNV::WRLDRecord *)curRecord->GetParent();
+            FNV::WRLDRecord *wrld_record = (FNV::WRLDRecord *)curRecord->GetParentRecord();
             bool cell_found = false;
             if(wrld_record != NULL)
                 {
@@ -1535,7 +1521,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                     }
                 if(!cell_found)
                     {
-                    printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                    printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                     return 0;
                     }
                 }
@@ -1695,7 +1681,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(INFO):
             {
-            FNV::DIALRecord *dial_record = (FNV::DIALRecord *)curRecord->GetParent();
+            FNV::DIALRecord *dial_record = (FNV::DIALRecord *)curRecord->GetParentRecord();
             bool info_found = false;
             for(UINT32 ListIndex = 0; ListIndex < dial_record->INFO.size(); ++ListIndex)
                 {
@@ -1708,7 +1694,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!info_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1718,7 +1704,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(ACHR):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool achr_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->ACHR.size(); ++ListIndex)
                 {
@@ -1731,7 +1717,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!achr_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1741,7 +1727,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(ACRE):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->ACRE.size(); ++ListIndex)
                 {
@@ -1754,7 +1740,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1764,7 +1750,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(REFR):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->REFR.size(); ++ListIndex)
                 {
@@ -1777,7 +1763,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1787,7 +1773,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PGRE):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->PGRE.size(); ++ListIndex)
                 {
@@ -1800,7 +1786,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1810,7 +1796,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PMIS):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->PMIS.size(); ++ListIndex)
                 {
@@ -1823,7 +1809,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1833,7 +1819,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PBEA):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->PBEA.size(); ++ListIndex)
                 {
@@ -1846,7 +1832,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1856,7 +1842,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PFLA):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->PFLA.size(); ++ListIndex)
                 {
@@ -1869,7 +1855,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1879,7 +1865,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PCBE):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->PCBE.size(); ++ListIndex)
                 {
@@ -1892,7 +1878,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1902,7 +1888,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(NAVM):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
             bool child_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->NAVM.size(); ++ListIndex)
                 {
@@ -1915,7 +1901,7 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!child_found)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1925,11 +1911,11 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(LAND):
             {
-            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParent();
+            FNV::CELLRecord *cell_record = (FNV::CELLRecord *)curRecord->GetParentRecord();
 
             if(cell_record->LAND != curRecord)
                 {
-                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("FNVFile::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -2128,10 +2114,10 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
         //    return 1;
         default:
             {
-            Record *Parent = curRecord->GetParent();
+            Record *Parent = curRecord->GetParentRecord();
             if(Parent != NULL)
                 {
-                Record *TopParent = Parent->GetParent();
+                Record *TopParent = Parent->GetParentRecord();
                 if(TopParent != NULL)
                     printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in group (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), Parent->GetStrType(), TopParent->GetStrType(), ModName, Parent->formID, curRecord->formID);
                 else
@@ -2145,158 +2131,6 @@ SINT32 FNVFile::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
     return 0;
     }
 
-SINT32 FNVFile::CleanMasters(std::vector<FormIDResolver *> &Expanders)
-    {
-    if(Flags.IsNoLoad)
-        {
-        printer("FNVFile::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return -1;
-        }
-
-    UINT32 cleaned = 0;
-    //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
-    //TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
-    //TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
-    std::vector<UINT32> ToRemove;
-    ToRemove.reserve(TES4.MAST.size());
-    Record * topRecord = &TES4;
-
-    for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
-        {
-        RecordMasterChecker checker(FormIDHandler, Expanders, (UINT8)p);
-
-        //printer("Checking: %s\n", TES4.MAST[p].value);
-        if(checker.Accept(topRecord)) continue;
-        if(GMST.pool.VisitRecords(checker)) continue;
-        if(TXST.pool.VisitRecords(checker)) continue;
-        if(MICN.pool.VisitRecords(checker)) continue;
-        if(GLOB.pool.VisitRecords(checker)) continue;
-        if(CLAS.pool.VisitRecords(checker)) continue;
-        if(FACT.pool.VisitRecords(checker)) continue;
-        if(HDPT.pool.VisitRecords(checker)) continue;
-        if(HAIR.pool.VisitRecords(checker)) continue;
-        if(EYES.pool.VisitRecords(checker)) continue;
-        if(RACE.pool.VisitRecords(checker)) continue;
-        if(SOUN.pool.VisitRecords(checker)) continue;
-        if(ASPC.pool.VisitRecords(checker)) continue;
-        if(MGEF.pool.VisitRecords(checker)) continue;
-        if(SCPT.pool.VisitRecords(checker)) continue;
-        if(LTEX.pool.VisitRecords(checker)) continue;
-        if(ENCH.pool.VisitRecords(checker)) continue;
-        if(SPEL.pool.VisitRecords(checker)) continue;
-        if(ACTI.pool.VisitRecords(checker)) continue;
-        if(TACT.pool.VisitRecords(checker)) continue;
-        if(TERM.pool.VisitRecords(checker)) continue;
-        if(ARMO.pool.VisitRecords(checker)) continue;
-        if(BOOK.pool.VisitRecords(checker)) continue;
-        if(CONT.pool.VisitRecords(checker)) continue;
-        if(DOOR.pool.VisitRecords(checker)) continue;
-        if(INGR.pool.VisitRecords(checker)) continue;
-        if(LIGH.pool.VisitRecords(checker)) continue;
-        if(MISC.pool.VisitRecords(checker)) continue;
-        if(STAT.pool.VisitRecords(checker)) continue;
-        if(SCOL.pool.VisitRecords(checker)) continue;
-        if(MSTT.pool.VisitRecords(checker)) continue;
-        if(PWAT.pool.VisitRecords(checker)) continue;
-        if(GRAS.pool.VisitRecords(checker)) continue;
-        if(TREE.pool.VisitRecords(checker)) continue;
-        if(FURN.pool.VisitRecords(checker)) continue;
-        if(WEAP.pool.VisitRecords(checker)) continue;
-        if(AMMO.pool.VisitRecords(checker)) continue;
-        if(NPC_.pool.VisitRecords(checker)) continue;
-        if(CREA.pool.VisitRecords(checker)) continue;
-        if(LVLC.pool.VisitRecords(checker)) continue;
-        if(LVLN.pool.VisitRecords(checker)) continue;
-        if(KEYM.pool.VisitRecords(checker)) continue;
-        if(ALCH.pool.VisitRecords(checker)) continue;
-        if(IDLM.pool.VisitRecords(checker)) continue;
-        if(NOTE.pool.VisitRecords(checker)) continue;
-        if(COBJ.pool.VisitRecords(checker)) continue;
-        if(PROJ.pool.VisitRecords(checker)) continue;
-        if(LVLI.pool.VisitRecords(checker)) continue;
-        if(WTHR.pool.VisitRecords(checker)) continue;
-        if(CLMT.pool.VisitRecords(checker)) continue;
-        if(REGN.pool.VisitRecords(checker)) continue;
-        if(NAVI.pool.VisitRecords(checker)) continue;
-        if(QUST.pool.VisitRecords(checker)) continue;
-        if(IDLE.pool.VisitRecords(checker)) continue;
-        if(PACK.pool.VisitRecords(checker)) continue;
-        if(CSTY.pool.VisitRecords(checker)) continue;
-        if(LSCR.pool.VisitRecords(checker)) continue;
-        if(ANIO.pool.VisitRecords(checker)) continue;
-        if(WATR.pool.VisitRecords(checker)) continue;
-        if(EFSH.pool.VisitRecords(checker)) continue;
-        if(EXPL.pool.VisitRecords(checker)) continue;
-        if(DEBR.pool.VisitRecords(checker)) continue;
-        //if(IMGS.pool.VisitRecords(checker)) continue;
-        //if(IMAD.pool.VisitRecords(checker)) continue;
-        //if(FLST.pool.VisitRecords(checker)) continue;
-        //if(PERK.pool.VisitRecords(checker)) continue;
-        //if(BPTD.pool.VisitRecords(checker)) continue;
-        //if(ADDN.pool.VisitRecords(checker)) continue;
-        //if(AVIF.pool.VisitRecords(checker)) continue;
-        //if(RADS.pool.VisitRecords(checker)) continue;
-        //if(CAMS.pool.VisitRecords(checker)) continue;
-        //if(CPTH.pool.VisitRecords(checker)) continue;
-        //if(VTYP.pool.VisitRecords(checker)) continue;
-        //if(IPCT.pool.VisitRecords(checker)) continue;
-        //if(IPDS.pool.VisitRecords(checker)) continue;
-        //if(ARMA.pool.VisitRecords(checker)) continue;
-        //if(ECZN.pool.VisitRecords(checker)) continue;
-        //if(MESG.pool.VisitRecords(checker)) continue;
-        //if(RGDL.pool.VisitRecords(checker)) continue;
-        //if(DOBJ.pool.VisitRecords(checker)) continue;
-        //if(LGTM.pool.VisitRecords(checker)) continue;
-        //if(MUSC.pool.VisitRecords(checker)) continue;
-        //if(IMOD.pool.VisitRecords(checker)) continue;
-        //if(REPU.pool.VisitRecords(checker)) continue;
-        //if(RCPE.pool.VisitRecords(checker)) continue;
-        //if(RCCT.pool.VisitRecords(checker)) continue;
-        //if(CHIP.pool.VisitRecords(checker)) continue;
-        //if(CSNO.pool.VisitRecords(checker)) continue;
-        //if(LSCT.pool.VisitRecords(checker)) continue;
-        //if(MSET.pool.VisitRecords(checker)) continue;
-        //if(ALOC.pool.VisitRecords(checker)) continue;
-        //if(CHAL.pool.VisitRecords(checker)) continue;
-        //if(AMEF.pool.VisitRecords(checker)) continue;
-        //if(CCRD.pool.VisitRecords(checker)) continue;
-        //if(CMNY.pool.VisitRecords(checker)) continue;
-        //if(CDCK.pool.VisitRecords(checker)) continue;
-        //if(DEHY.pool.VisitRecords(checker)) continue;
-        //if(HUNG.pool.VisitRecords(checker)) continue;
-        //if(SLPD.pool.VisitRecords(checker)) continue;
-        if(CELL.cell_pool.VisitRecords(checker)) continue;
-        if(WRLD.wrld_pool.VisitRecords(checker)) continue;
-        if(WRLD.cell_pool.VisitRecords(checker)) continue;
-        if(WRLD.land_pool.VisitRecords(checker)) continue;
-        if(DIAL.dial_pool.VisitRecords(checker)) continue;
-        if(DIAL.info_pool.VisitRecords(checker)) continue;
-        if(CELL.pgre_pool.VisitRecords(checker)) continue;
-        if(CELL.pmis_pool.VisitRecords(checker)) continue;
-        if(CELL.pbea_pool.VisitRecords(checker)) continue;
-        if(CELL.pfla_pool.VisitRecords(checker)) continue;
-        if(CELL.pcbe_pool.VisitRecords(checker)) continue;
-        if(CELL.navm_pool.VisitRecords(checker)) continue;
-        if(CELL.achr_pool.VisitRecords(checker)) continue;
-        if(CELL.acre_pool.VisitRecords(checker)) continue;
-        if(CELL.refr_pool.VisitRecords(checker)) continue;
-
-        //printer("ToRemove: %s\n", TES4.MAST[p].value);
-        ToRemove.push_back(p);
-        ++cleaned;
-        }
-    if(cleaned)
-        {
-        for(SINT32 p = (SINT32)ToRemove.size() - 1; p >= 0; --p)
-            {
-            delete []TES4.MAST[ToRemove[p]];
-            TES4.MAST.erase(TES4.MAST.begin() + ToRemove[p]);
-            }
-        FormIDHandler.UpdateFormIDLookup();
-        }
-    return cleaned;
-    }
-
 SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer)
     {
     if(!Flags.IsSaveable)
@@ -2307,7 +2141,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
     FileWriter writer(SaveName, BUFFERSIZE);
     if(writer.open() == -1)
-        throw std::exception("Unable to open temporary file for writing\n");
+        throw std::exception("FNVFile::Save: Error - Unable to open temporary file for writing\n");
 
     UINT32 formCount = 0;
     FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
@@ -2423,8 +2257,7 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(34, &formCount, 4);
     writer.close();
-    if(CloseMod)
-        Close();
+    Close();
     return 0;
     }
 

@@ -790,7 +790,7 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 43: //challengeType
             return &DNAM.value;
         case 44: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

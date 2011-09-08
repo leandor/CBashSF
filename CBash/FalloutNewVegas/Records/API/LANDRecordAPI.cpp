@@ -758,7 +758,7 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 17: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

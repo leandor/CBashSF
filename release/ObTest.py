@@ -39,17 +39,15 @@ def printRecord(record):
                         if rec & z == z:
                             print " " * RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z)
 
-            elif isinstance(rec, tuple) and len(rec) == 2 and isinstance(rec[0], basestring) and isinstance(rec[1], int):
-                print PrintFormID(rec)
             elif isinstance(rec, list):
                 if len(rec) > 0:
                     IsFidList = True
                     for obj in rec:
-                        if not (isinstance(obj, tuple) and len(obj) == 2 and isinstance(obj[0], basestring) and isinstance(obj[1], int)):
+                        if not isinstance(obj, FormID):
                             IsFidList = False
                             break
                     if IsFidList:
-                        print [PrintFormID(x) for x in rec]
+                        print rec
                     elif not wasList:
                         print rec
                 elif not wasList:
@@ -74,9 +72,8 @@ def d(record, expand=False):
     global expandLists
     expandLists = expand
     try:
-        fid = record.fid
         msize = max([len(attr) for attr in record.copyattrs])
-        print "  fid" + " " * (msize - len("fid")), ":", PrintFormID(fid)
+        print "  fid" + " " * (msize - len("fid")), ":", record.fid
     except AttributeError:
         pass
     printRecord(record)
@@ -104,7 +101,7 @@ def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
 
     assert record.IsESM
-    assert record.flags1 == 0x80000001
+    assert record.flags1 == 0x00000001
     assert record.flags2 == 0
     assert record.version == 1.0
     assert record.numRecords == 1252095
@@ -170,7 +167,7 @@ def assertTES4(Current, newMod):
     record.author = "Waruddar"
     record.description = "This is a test string\nand only a test string."
 ##    record.masters = ["Oblivion.esm"] #For now, masters shouldn't be set directly. More coding needs to be done to make it safe
-    assert record.flags1 ==  5 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.flags1 ==  5
     assert record.flags2 == 12
     assert record.version == 1.2
     assert record.numRecords == 10
@@ -189,8 +186,9 @@ def assertTES4(Current, newMod):
 def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
 
+    print record.fid
     assert record.fid == ('Oblivion.esm', 0x045D2F)
-    assert record.flags1 == 0x80000000 #CBash sets 0x80000000 for internal use
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1583621
     assert record.eid == "sMiscSEBounty"
     assert record.eid == "sMiscSEbounty"
@@ -208,7 +206,7 @@ def assertGMST(Current, newMod):
     srecord.value = 1.0 #Shouldn't work
 
     assert srecord.fid == ('RegressionTests.esp', 0x001001)
-    assert srecord.flags1 == 10 | 0x80000000
+    assert srecord.flags1 == 10
     assert srecord.flags2 == 15
     assert srecord.eid == "sWarString"
     assert srecord.eid == "sWaRString"
@@ -222,7 +220,7 @@ def assertGMST(Current, newMod):
     irecord.value = 2.0 #Shouldn't work
 
     assert irecord.fid == ('RegressionTests.esp', 0x001002)
-    assert irecord.flags1 == 11 | 0x80000000
+    assert irecord.flags1 == 11
     assert irecord.flags2 == 16
     assert irecord.eid == "iWarString"
     assert irecord.eid == "IWarString"
@@ -235,7 +233,7 @@ def assertGMST(Current, newMod):
     frecord.value = 3 #Shouldn't work
 
     assert frecord.fid == ('RegressionTests.esp', 0x001003)
-    assert frecord.flags1 == 12 | 0x80000000
+    assert frecord.flags1 == 12
     assert frecord.flags2 == 17
     assert frecord.eid == "fWarString"
     assert frecord.eid == "fWarSTRing"
@@ -244,8 +242,8 @@ def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001004) #GMSTs are keyed by editorID, so the formID will change on CopyAsOverride
-    assert newrecord.flags1 == 0x80000000
+    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.flags1 == 0x00000000
     assert newrecord.flags2 == 1583621
     assert newrecord.eid == "sMiscSEBounty"
     assert newrecord.eid == "SMiscSEBounty"
@@ -258,8 +256,8 @@ def assertGMST(Current, newMod):
     newrecord.eid = "" #Shouldn't work
     newrecord.value = "Test:"
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001004)
-    assert newrecord.flags1 == 0x80000000
+    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.flags1 == 0x00000000
     assert newrecord.flags2 == 5
     assert newrecord.eid == "sTestWar"
     assert newrecord.eid == "sTEstWar"
@@ -267,7 +265,7 @@ def assertGMST(Current, newMod):
     assert newrecord.value != "TeSt:"
 
     assert record.fid == ('Oblivion.esm', 0x045D2F)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1583621
     assert record.eid == "sMiscSEBounty"
     assert record.eid == "sMiscSEBounTy"
@@ -280,7 +278,7 @@ def assertGLOB(Current, newMod):
     record = Current.LoadOrderMods[0].GLOB[0]
 
     assert record.fid == ('Oblivion.esm', 0x08D9DA)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1584398
     assert record.eid == "SEKnightSpawnTime"
     assert record.eid == "SEKnighTSpawnTime"
@@ -295,8 +293,8 @@ def assertGLOB(Current, newMod):
     record.format = 'f'
     record.value = 12.2
 
-    assert record.fid == ('RegressionTests.esp', 0x001005)
-    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001004)
+    assert record.flags1 == 0x0102
     assert record.flags2 == 0x0201
     assert record.eid == "WarGlobalTest"
     assert record.eid == "WArGlobalTest"
@@ -308,7 +306,7 @@ def assertGLOB(Current, newMod):
     newrecord = record.CopyAsOverride(newMod)
 
     assert newrecord.fid == ('Oblivion.esm', 0x08D9DA)
-    assert newrecord.flags1 == 0x80000000
+    assert newrecord.flags1 == 0x00000000
     assert newrecord.flags2 == 1584398
     assert newrecord.eid == "SEKnightSpawnTime"
     assert newrecord.eid == "SEKnighTSpawnTime"
@@ -322,7 +320,7 @@ def assertGLOB(Current, newMod):
     newrecord.format = 'f'
     newrecord.value = 16.0
 
-    assert newrecord.flags1 == 2 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.flags1 == 2 #CBash sets 0x80000000 for internal use
     assert newrecord.flags2 == 3
     assert newrecord.eid == "WarGlobalCopyTest"
     assert newrecord.eid == "WArGlobalCopyTest"
@@ -331,7 +329,7 @@ def assertGLOB(Current, newMod):
     assert newrecord.value == 16.0
 
     assert record.fid == ('Oblivion.esm', 0x08D9DA)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1584398
     assert record.eid == "SEKnightSpawnTime"
     assert record.eid == "SEKnighTSpawnTime"
@@ -341,8 +339,8 @@ def assertGLOB(Current, newMod):
 
     newrecord = record.CopyAsNew(newMod)
 
-    assert newrecord.fid == ('RegressionTests.esp', 0x001006)
-    assert newrecord.flags1 == 0x80000000
+    assert newrecord.fid == ('RegressionTests.esp', 0x001005)
+    assert newrecord.flags1 == 0x00000000
     assert newrecord.flags2 == 1584398
     assert newrecord.eid == "SEKnightSpawnTime"
     assert newrecord.eid == "SEKnighTSpawnTime"
@@ -356,7 +354,7 @@ def assertGLOB(Current, newMod):
     newrecord.format = 's'
     newrecord.value = 9.0
 
-    assert newrecord.flags1 == 4 | 0x80000000 #CBash sets 0x80000000 for internal use
+    assert newrecord.flags1 == 4 #CBash sets 0x80000000 for internal use
     assert newrecord.flags2 == 8
     assert newrecord.eid == "WarGlobalCopyNew"
     assert newrecord.eid == "WArGlobalCopyNew"
@@ -370,7 +368,7 @@ def assertCLAS(Current, newMod):
     record = Current.LoadOrderMods[0].CLAS[0]
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
     assert record.eid == "SE32SmiTh"
@@ -418,8 +416,8 @@ def assertCLAS(Current, newMod):
     record.trainLevel = 60
     record.unused1 = [0x01, 0xFF]
 
-    assert record.fid == ('RegressionTests.esp', 0x001007)
-    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001006)
+    assert record.flags1 == 0x0102
     assert record.flags2 == 0x0201
     assert record.eid == "WarCLASTest"
     assert record.eid == "WarCLAsTest"
@@ -449,7 +447,7 @@ def assertCLAS(Current, newMod):
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
     assert record.eid == "SE32SmiTh"
@@ -496,7 +494,7 @@ def assertCLAS(Current, newMod):
     record.unused1 = [0x50, 0x0F]
 
     assert record.fid == ('Oblivion.esm', 0x09712F)
-    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.flags1 == 0x0103
     assert record.flags2 == 0x0202
     assert record.eid == "WarCLASCopy"
     assert record.eid == "WarCLaSCopy"
@@ -524,7 +522,7 @@ def assertCLAS(Current, newMod):
 
     record = Current.LoadOrderMods[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
     assert record.eid == "SE32SmiTh"
@@ -550,8 +548,8 @@ def assertCLAS(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x001008)
-    assert record.flags1 == 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
     assert record.eid == "SE32SmiTh"
@@ -597,8 +595,8 @@ def assertCLAS(Current, newMod):
     record.trainLevel = 233
     record.unused1 = [0x80, 0x2F]
 
-    assert record.fid == ('RegressionTests.esp', 0x001008)
-    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001007)
+    assert record.flags1 == 0x0103
     assert record.flags2 == 0x0202
     assert record.eid == "WarCLASAsNew"
     assert record.eid == "WarCLaSAsNew"
@@ -626,7 +624,7 @@ def assertCLAS(Current, newMod):
 
     record = Current.LoadOrderMods[0].CLAS[0]
     assert record.fid == ('Oblivion.esm', 0x09712F)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 7024151
     assert record.eid == "SE32Smith"
     assert record.eid == "SE32SmiTh"
@@ -656,7 +654,7 @@ def assertFACT(Current, newMod):
     record = Current.LoadOrderMods[0].FACT[9]
 
     assert record.fid == ('Oblivion.esm', 0x080D18)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
     assert record.eid == "SERoofTopClubFaction"
@@ -687,11 +685,11 @@ def assertFACT(Current, newMod):
     record.crimeGoldMultiplier = 16.1
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x123456)
+    relation.faction = FormID('Oblivion.esm', 0x123456)
     relation.mod = 20
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x789123)
+    relation.faction = FormID('Oblivion.esm', 0x789123)
     relation.mod = 16
 
     rank = record.create_rank()
@@ -706,8 +704,8 @@ def assertFACT(Current, newMod):
     rank.female = "female_name1"
     rank.insigniaPath = r"insignia1\asdf.ico"
 
-    assert record.fid == ('RegressionTests.esp', 0x001009)
-    assert record.flags1 == 0x0106 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001008)
+    assert record.flags1 == 0x0106
     assert record.flags2 == 0x0207
     assert record.eid == "WarFACTTest"
     assert record.eid == "WarFACtTest"
@@ -746,7 +744,7 @@ def assertFACT(Current, newMod):
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x080D18)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
     assert record.eid == "SERoofTopClubFaction"
@@ -775,11 +773,11 @@ def assertFACT(Current, newMod):
     record.crimeGoldMultiplier = 13.1
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x133456)
+    relation.faction = FormID('Oblivion.esm', 0x133456)
     relation.mod = 20
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x799123)
+    relation.faction = FormID('Oblivion.esm', 0x799123)
     relation.mod = 16
 
     rank = record.create_rank()
@@ -795,7 +793,7 @@ def assertFACT(Current, newMod):
     rank.insigniaPath = r"insignia1\asdf.ico"
 
     assert record.fid == ('Oblivion.esm', 0x080D18)
-    assert record.flags1 == 0x0101 | 0x80000000
+    assert record.flags1 == 0x0101
     assert record.flags2 == 0x0201
     assert record.eid == "WarFACTCopy"
     assert record.eid == "WaRFACTCopy"
@@ -840,7 +838,7 @@ def assertFACT(Current, newMod):
 
     record = Current.LoadOrderMods[0].FACT[9]
     assert record.fid == ('Oblivion.esm', 0x080D18)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
     assert record.eid == "SERoofTopClubFaction"
@@ -863,8 +861,8 @@ def assertFACT(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x00100A)
-    assert record.flags1 == 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
     assert record.eid == "SERoofTopClubFaction"
@@ -893,11 +891,11 @@ def assertFACT(Current, newMod):
     record.crimeGoldMultiplier = 13.1
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x133456)
+    relation.faction = FormID('Oblivion.esm', 0x133456)
     relation.mod = 20
 
     relation = record.create_relation()
-    relation.faction = ('Oblivion.esm', 0x799123)
+    relation.faction = FormID('Oblivion.esm', 0x799123)
     relation.mod = 16
 
     rank = record.create_rank()
@@ -912,8 +910,8 @@ def assertFACT(Current, newMod):
     rank.female = "female_name1"
     rank.insigniaPath = r"insignia1\asdf.ico"
 
-    assert record.fid == ('RegressionTests.esp', 0x00100A)
-    assert record.flags1 == 0x0101 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x001009)
+    assert record.flags1 == 0x0101
     assert record.flags2 == 0x0201
     assert record.eid == "WarFACTCopy2"
     assert record.eid == "WaRFACTCopy2"
@@ -958,7 +956,7 @@ def assertFACT(Current, newMod):
 
     record = Current.LoadOrderMods[0].FACT[9]
     assert record.fid == ('Oblivion.esm', 0x080D18)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 2829337
     assert record.eid == "SERooftopClubFaction"
     assert record.eid == "SERoofTopClubFaction"
@@ -985,7 +983,7 @@ def assertHAIR(Current, newMod):
     record = Current.LoadOrderMods[0].HAIR[0]
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1712643
     assert record.eid == "KhajiitWisps"
     assert record.eid == "KhAjiitWisps"
@@ -1010,8 +1008,8 @@ def assertHAIR(Current, newMod):
     record.iconPath = r"hair\path\test.dds"
     record.flags = 15
 
-    assert record.fid == ('RegressionTests.esp', 0x00100B)
-    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100A)
+    assert record.flags1 == 0x0102
     assert record.flags2 == 0x0201
     assert record.eid == "HAIRWarTest"
     assert record.eid == "HaIRWarTest"
@@ -1029,7 +1027,7 @@ def assertHAIR(Current, newMod):
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1712643
     assert record.eid == "KhajiitWisps"
     assert record.eid == "KhAjiitWisps"
@@ -1054,7 +1052,7 @@ def assertHAIR(Current, newMod):
     record.flags = 17
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
-    assert record.flags1 == 0x0103 | 0x80000000
+    assert record.flags1 == 0x0103
     assert record.flags2 == 0x0202
     assert record.eid == "HAIRWarTest2"
     assert record.eid == "HaIRWarTest2"
@@ -1071,7 +1069,7 @@ def assertHAIR(Current, newMod):
     record = Current.LoadOrderMods[0].HAIR[0]
 
     assert record.fid == ('Oblivion.esm', 0x0C4821)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1712643
     assert record.eid == "KhajiitWisps"
     assert record.eid == "KhAjiitWisps"
@@ -1087,8 +1085,8 @@ def assertHAIR(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x00100C)
-    assert record.flags1 == 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1712643
     assert record.eid == "KhajiitWisps"
     assert record.eid == "KhAjiitWisps"
@@ -1112,8 +1110,8 @@ def assertHAIR(Current, newMod):
     record.iconPath = r"CopyNew\test2.dds"
     record.flags = 27
 
-    assert record.fid == ('RegressionTests.esp', 0x00100C)
-    assert record.flags1 == 0x0303 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100B)
+    assert record.flags1 == 0x0303
     assert record.flags2 == 0x0102
     assert record.eid == "HAIRWarTest2CopyNew"
     assert record.eid == "HaIRWarTest2CopyNew"
@@ -1133,7 +1131,7 @@ def assertEYES(Current, newMod):
     record = Current.LoadOrderMods[0].EYES[0]
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1714717
     assert record.eid == "eyeOrdered"
     assert record.eid == "eYeOrdered"
@@ -1152,8 +1150,8 @@ def assertEYES(Current, newMod):
     record.iconPath = r"EYES\p\nath\test.dds"
     record.flags = 15
 
-    assert record.fid == ('RegressionTests.esp', 0x00100D)
-    assert record.flags1 == 0x0102 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100C)
+    assert record.flags1 == 0x0102
     assert record.flags2 == 0x0201
     assert record.eid == "EYESWarTest"
     assert record.eid == "EYeSWarTest"
@@ -1167,7 +1165,7 @@ def assertEYES(Current, newMod):
     record = record.CopyAsOverride(newMod)
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1714717
     assert record.eid == "eyeOrdered"
     assert record.eid == "eYeOrdered"
@@ -1185,7 +1183,7 @@ def assertEYES(Current, newMod):
     record.flags = 17
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
-    assert record.flags1 == 0x0104 | 0x80000000
+    assert record.flags1 == 0x0104
     assert record.flags2 == 0x0206
     assert record.eid == "EYESWarTest2"
     assert record.eid == "EYeSWarTest2"
@@ -1198,7 +1196,7 @@ def assertEYES(Current, newMod):
     record = Current.LoadOrderMods[0].EYES[0]
 
     assert record.fid == ('Oblivion.esm', 0x05FA43)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1714717
     assert record.eid == "eyeOrdered"
     assert record.eid == "eYeOrdered"
@@ -1211,8 +1209,8 @@ def assertEYES(Current, newMod):
 
     record = record.CopyAsNew(newMod)
 
-    assert record.fid == ('RegressionTests.esp', 0x00100E)
-    assert record.flags1 == 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1714717
     assert record.eid == "eyeOrdered"
     assert record.eid == "eYeOrdered"
@@ -1229,8 +1227,8 @@ def assertEYES(Current, newMod):
     record.iconPath = r"EYES3\p\nath\test.dds"
     record.flags = 19
 
-    assert record.fid == ('RegressionTests.esp', 0x00100E)
-    assert record.flags1 == 0x0107 | 0x80000000
+    assert record.fid == ('RegressionTests.esp', 0x00100D)
+    assert record.flags1 == 0x0107
     assert record.flags2 == 0x0203
     assert record.eid == "EYESWarTest3"
     assert record.eid == "EYeSWarTest3"
@@ -1246,7 +1244,7 @@ def assertRACE(Current, newMod):
     record = Current.LoadOrderMods[0].RACE[13]
 
     assert record.fid == ('Oblivion.esm', 0x000D43)
-    assert record.flags1 == 0x80000000
+    assert record.flags1 == 0x00000000
     assert record.flags2 == 1712664
     assert record.eid == "Redguard"
     assert record.eid == "REdguard"
@@ -1426,23 +1424,23 @@ def assertRACE(Current, newMod):
     record.eid = "RACEWarTest"
     record.full = "Fancy RACE"
     record.text = "BLAH BLAH BLHARGH"
-    record.spells = [0x00000121, 0x00000222]
+    record.spells = [FormID(0x00000121), FormID(0x00000222)]
     relation = record.create_relation()
-    relation.faction = 0x00000800
+    relation.faction = FormID(0x00000800)
     relation.mod = 100
     relation = record.create_relation()
-    relation.faction = 0x00000801
+    relation.faction = FormID(0x00000801)
     relation.mod = 50
     relation = record.create_relation()
-    relation.faction = 0x00000802
+    relation.faction = FormID(0x00000802)
     relation.mod = 60
     relation = record.create_relation()
-    relation.faction = 0x00000803
+    relation.faction = FormID(0x00000803)
     relation.mod = 70
     relations = record.relations
     record.relations = [relations[1],relations[0],relations[2],relations[3]]
     relations_list = record.relations_list
-    relations_list.append((('Oblivion.esm', 0x001234),15))
+    relations_list.append((FormID('Oblivion.esm', 0x001234),15))
     record.relations_list = relations_list
     record.skill1 = 1
     record.skill1Boost = 11
@@ -1464,10 +1462,10 @@ def assertRACE(Current, newMod):
     record.maleWeight = 2.1
     record.femaleWeight = 2.2
     record.flags = 0x00000010
-    record.maleVoice = 0x00000011
-    record.femaleVoice = 0x00000012
-    record.defaultHairMale = 0x00000013
-    record.defaultHairFemale = 0x00000014
+    record.maleVoice = FormID(0x00000011)
+    record.femaleVoice = FormID(0x00000012)
+    record.defaultHairMale = FormID(0x00000013)
+    record.defaultHairFemale = FormID(0x00000014)
     record.defaultHairColor = 1
     record.mainClamp = 10.1
     record.faceClamp = 1.2
@@ -1539,15 +1537,15 @@ def assertRACE(Current, newMod):
     record.femaleHandPath = r"female\Hand\Path"
     record.femaleFootPath = r"female\Foot\Path"
     record.femaleTailPath = r"female\Tail\Path"
-    record.hairs = [0x00000001, 0x01000802]
-    record.eyes = [0x00000003, 0x01000804]
+    record.hairs = [FormID(0x00000001), FormID(0x01000802)]
+    record.eyes = [FormID(0x00000003), FormID(0x01000804)]
     record.fggs_p = [0x01, 0x20]
     record.fgga_p = [0x01, 0x21]
     record.fgts_p = [0x01, 0x22]
     record.snam_p = [0x01, 0x23]
 
 ##    assert record.fid == ('Oblivion.esm', 0x000D43)
-##    assert record.flags1 == 0x80000000
+##    assert record.flags1 == 0x00000000
 ##    assert record.flags2 == 1712664
 ##    assert record.eid == "Redguard"
 ##    assert record.eid == "REdguard"
@@ -1701,7 +1699,7 @@ def assertSOUN(Current, newMod):
 
     for record in Current.LoadOrderMods[0].SOUN:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1744,7 +1742,7 @@ def assertSOUN(Current, newMod):
 
     print "SOUN:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -1777,7 +1775,7 @@ def assertSKIL(Current, newMod):
 
     for record in Current.LoadOrderMods[0].SKIL:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         print "flags1  :", record.flags1
         print "flags2  :", record.flags2
         print "eid     :", record.eid
@@ -1823,7 +1821,7 @@ def assertSKIL(Current, newMod):
 
     print "SKIL:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2032,15 +2030,16 @@ def TestCopyAttrs():
     Current.addMod("Oblivion.esm")
     Current.load()
     srcFile = Current.LookupModFile("Oblivion.esm")
-
+    origFids = []
+    newFids = []
     for armor in srcFile.ARMO:
         clothing = srcFile.create_CLOT()
         for attr in clothing.copyattrs:
             setattr(clothing, attr, getattr(armor, attr))
-        origFid = armor.fid
-        newFid = clothing.fid
+        origFids.append(armor.fid)
+        newFids.append(clothing.fid)
         armor.DeleteRecord()
-        print srcFile.UpdateReferences(origFid, newFid)
+    print srcFile.UpdateReferences(origFids, newFids)
     srcFile.save()
 
 def TestCleanMasters():
@@ -2725,7 +2724,7 @@ def TestGLOB():
     print "GLOB:Read Test"
     for record in Current.LoadOrderMods[0].GLOB:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -2745,7 +2744,7 @@ def TestGLOB():
     print "value..."
     newRecord.value = 12.2
     print "GLOB:Set Test Results"
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2770,7 +2769,7 @@ def TestCLAS():
     print "CLAS:Read Test"
     for record in Current.LoadOrderMods[0].CLAS:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -2825,7 +2824,7 @@ def TestCLAS():
 
     print "CLAS:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -2868,7 +2867,7 @@ def TestFACT():
 
     for record in Current.LoadOrderMods[0].FACT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -2887,13 +2886,13 @@ def TestFACT():
     newRecord.full = "Waruddar's Faction"
     print "relations..."
     newRelation = newRecord.create_relation()
-    newRelation.faction = 1
+    newRelation.faction = FormID(1)
     newRelation.mod = -69
     newRelation = newRecord.create_relation()
-    newRelation.faction = 2
+    newRelation.faction = FormID(2)
     newRelation.mod = 67
     newRelation = newRecord.create_relation()
-    newRelation.faction = 15
+    newRelation.faction = FormID(15)
     newRelation.mod = 100
     print "flags..."
     newRecord.flags = 15
@@ -2918,14 +2917,14 @@ def TestFACT():
 
     print "FACT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "full               :", newRecord.full
     print "relations          :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, PrintFormID(relation.faction), relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, relation.faction, relation.mod)
     print "flags              :", newRecord.flags
     print "crimeGoldMultiplier:", newRecord.crimeGoldMultiplier
     print "ranks              :"
@@ -2953,7 +2952,7 @@ def TestHAIR():
 
     for record in Current.LoadOrderMods[0].HAIR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -2989,7 +2988,7 @@ def TestHAIR():
 
     print "HAIR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3022,7 +3021,7 @@ def TestEYES():
 
     for record in Current.LoadOrderMods[0].EYES:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3048,7 +3047,7 @@ def TestEYES():
 
     print "EYES:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3076,7 +3075,7 @@ def TestRACE():
     newMod = Current.LookupModFile("TestRACE.esp")
     for record in Current.LoadOrderMods[0].RACE:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3095,18 +3094,18 @@ def TestRACE():
     newRecord.full = "Fancy RACE"
 
     newRecord.text = "BLAH BLAH BLHARGH"
-    newRecord.spells = [0xFF000121, 0xFE000222]
+    newRecord.spells = [FormID(0xFF000121), FormID(0xFE000222)]
     newRelation = newRecord.create_relation()
-    newRelation.faction = 0x00000800
+    newRelation.faction = FormID(0x00000800)
     newRelation.mod = 100
     newRelation = newRecord.create_relation()
-    newRelation.faction = 0x00000801
+    newRelation.faction = FormID(0x00000801)
     newRelation.mod = 50
     newRelation = newRecord.create_relation()
-    newRelation.faction = 0x00000802
+    newRelation.faction = FormID(0x00000802)
     newRelation.mod = 60
     newRelation = newRecord.create_relation()
-    newRelation.faction = 0x00000803
+    newRelation.faction = FormID(0x00000803)
     newRelation.mod = 70
     nRelations = newRecord.relations
     newRecord.relations = [nRelations[1],nRelations[0],nRelations[2],nRelations[3]]
@@ -3136,11 +3135,11 @@ def TestRACE():
 
     newRecord.flags = 0x00000010
 
-    newRecord.maleVoice = 0x00000011
-    newRecord.femaleVoice = 0x00000012
+    newRecord.maleVoice = FormID(0x00000011)
+    newRecord.femaleVoice = FormID(0x00000012)
 
-    newRecord.defaultHairMale = 0x00000013
-    newRecord.defaultHairFemale = 0x00000014
+    newRecord.defaultHairMale = FormID(0x00000013)
+    newRecord.defaultHairFemale = FormID(0x00000014)
     newRecord.defaultHairColor = 1
 
     newRecord.mainClamp = 10.1
@@ -3228,8 +3227,8 @@ def TestRACE():
     newRecord.femaleHandPath = "femaleHandPath"
     newRecord.femaleFootPath = "femaleFootPath"
     newRecord.femaleTailPath = "femaleTailPath"
-    newRecord.hairs = [0x00000001, 0x01000002]
-    newRecord.eyes = [0x00000003, 0x01000004]
+    newRecord.hairs = [FormID(0x00000001), FormID(0x01000002)]
+    newRecord.eyes = [FormID(0x00000003), FormID(0x01000004)]
 
     newRecord.fggs_p = [0x01, 0x20]
     newRecord.fgga_p = [0x01, 0x20]
@@ -3239,7 +3238,7 @@ def TestRACE():
 
     print "RACE:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3248,11 +3247,11 @@ def TestRACE():
     print "text      :", newRecord.text
     print "spells    :"
     for spell in newRecord.spells:
-        print "  ", PrintFormID(spell)
+        print "  ", spell
 
     print "relations :"
     for relation in newRecord.relations:
-        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, PrintFormID(relation.faction), relation.mod)
+        print "  %i: Faction: %s, Mod: %i" % (relation._ListIndex, relation.faction, relation.mod)
 
     print "  skill1:", newRecord.skill1, ", boost:", newRecord.skill1Boost
     print "  skill2:", newRecord.skill2, ", boost:", newRecord.skill2Boost
@@ -3365,11 +3364,11 @@ def TestRACE():
 
     print "hairs :"
     for hair in newRecord.hairs:
-        print "  ", PrintFormID(hair)
+        print "  ", hair
 
     print "eyes :"
     for eye in newRecord.eyes:
-        print "  ", PrintFormID(eye)
+        print "  ", eye
 
     print "fggs_p:", newRecord.fggs_p
     print "fgga_p:", newRecord.fgga_p
@@ -3399,7 +3398,7 @@ def TestSOUN():
 
     for record in Current.LoadOrderMods[0].SOUN:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3428,7 +3427,7 @@ def TestSOUN():
 
     print "SOUN:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3465,7 +3464,7 @@ def TestSKIL():
 
     for record in Current.LoadOrderMods[0].SKIL:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3496,7 +3495,7 @@ def TestSKIL():
 
     print "SKIL:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3555,18 +3554,18 @@ def TestMGEF():
     newRecord.modb = 1.2
     newRecord.flags = 1
     newRecord.baseCost = 12
-    newRecord.associated = 7
+    newRecord.associated = FormID(7)
     newRecord.school = 30
     newRecord.resistValue = 35
     newRecord.unk1 = 15
-    newRecord.light = 8
+    newRecord.light = FormID(8)
     newRecord.projectileSpeed = 9
-    newRecord.effectShader = 10
-    newRecord.enchantEffect = 11
-    newRecord.castingSound = 12
-    newRecord.boltSound = 13
-    newRecord.hitSound = 14
-    newRecord.areaSound = 15
+    newRecord.effectShader = FormID(10)
+    newRecord.enchantEffect = FormID(11)
+    newRecord.castingSound = FormID(12)
+    newRecord.boltSound = FormID(13)
+    newRecord.hitSound = FormID(14)
+    newRecord.areaSound = FormID(15)
     newRecord.cefEnchantment = 16.0
     newRecord.cefBarter = 17.2
     newRecord.counterEffects = [1280332612]
@@ -3596,7 +3595,7 @@ def TestSCPT():
     x = 0
     for record in Current.LoadOrderMods[0].SCPT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3641,11 +3640,11 @@ def TestSCPT():
     newVar.unused2 = [0,1,2,3,4,5,6]
     newVar.name = "Did2it"
 
-    newRecord.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newRecord.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
 
     print "SCPT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3667,8 +3666,8 @@ def TestSCPT():
         print "  name    :", var.name
     print "references   :"
     for reference in newRecord.references:
-        if isinstance(reference, tuple):
-            print "  SCRO:", PrintFormID(reference)
+        if isinstance(reference, FormID):
+            print "  SCRO:", reference
         else:
             print "  SCRV:", reference
 
@@ -3693,7 +3692,7 @@ def TestLTEX():
 
     for record in Current.LoadOrderMods[0].LTEX:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3715,12 +3714,12 @@ def TestLTEX():
     newRecord.restitution = 123
     newRecord.specular = 128
 
-    newRecord.grass = [0xFF000121, 0xFE000222]
+    newRecord.grass = [FormID(0xFF000121), FormID(0xFE000222)]
 
 
     print "LTEX:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3731,7 +3730,7 @@ def TestLTEX():
     print "specular    :", newRecord.specular
     print "grass    :"
     for grass in newRecord.grass:
-        print "  ", PrintFormID(grass)
+        print "  ", grass
 
     print "LTEX:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].LTEX:
@@ -3755,7 +3754,7 @@ def TestENCH():
 
     for record in Current.LoadOrderMods[0].ENCH:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3779,23 +3778,23 @@ def TestENCH():
     newRecord.unused1 = [0,1,2]
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
     newEffect.actorValue = 5
-    newEffect.script = 0xFF000007
+    newEffect.script = FormID(0xFF000007)
     newEffect.school = 324
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ENCH?"
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -3803,14 +3802,14 @@ def TestENCH():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "ENCH??"
 
     print "ENCH:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3829,7 +3828,7 @@ def TestENCH():
         print "  duration   :", effect.duration
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
-        print "  script     :", PrintFormID(effect.script)
+        print "  script     :", effect.script
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -3858,7 +3857,7 @@ def TestSPEL():
 
     for record in Current.LoadOrderMods[0].SPEL:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3882,8 +3881,8 @@ def TestSPEL():
     newRecord.unused1 = [0,1,2]
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
@@ -3891,14 +3890,14 @@ def TestSPEL():
     newEffect.actorValue = 5
     newEffect.script = 0xFF000007
     newEffect.school = 324
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SPEL?"
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
@@ -3906,13 +3905,13 @@ def TestSPEL():
     newEffect.actorValue = 10
     newEffect.script = 0xFF00000A
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SPEL??"
     print "SPEL:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3931,7 +3930,7 @@ def TestSPEL():
         print "  duration   :", effect.duration
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
-        print "  script     :", PrintFormID(effect.script)
+        print "  script     :", effect.script
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -3959,7 +3958,7 @@ def TestBSGN():
 
     for record in Current.LoadOrderMods[0].BSGN:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -3978,10 +3977,10 @@ def TestBSGN():
 
     newRecord.iconPath = r"BSGN\p\nath\test.dds"
     newRecord.text = "BLAH BLAH BLHARGH"
-    newRecord.spells = [0xFF000121, 0xFE000222]
+    newRecord.spells = [FormID(0xFF000121), FormID(0xFE000222)]
     print "BSGN:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -3991,7 +3990,7 @@ def TestBSGN():
     print "text      :", newRecord.text
     print "spells    :"
     for spell in newRecord.spells:
-        print "  ", PrintFormID(spell)
+        print "  ", spell
     print "BSGN:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].BSGN:
         record.CopyAsOverride(newMod)
@@ -4015,7 +4014,7 @@ def TestACTI():
 
     for record in Current.LoadOrderMods[0].ACTI:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4040,12 +4039,12 @@ def TestACTI():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.script = 7
-    newRecord.sound = 0x0000000A
+    newRecord.script = FormID(7)
+    newRecord.sound = FormID(0x0000000A)
 
     print "ACTI:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4078,7 +4077,7 @@ def TestAPPA():
 
     for record in Current.LoadOrderMods[0].APPA:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4105,14 +4104,14 @@ def TestAPPA():
 
     print "iconPath..."
     newRecord.iconPath = r"APPA\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.apparatus = 1
     newRecord.value = 150
     newRecord.weight = 3.56
     newRecord.quality = 3.0
     print "APPA:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4150,7 +4149,7 @@ def TestARMO():
 
     for record in Current.LoadOrderMods[0].ARMO:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4167,8 +4166,8 @@ def TestARMO():
     newRecord.eid = "ARMOWarTest"
 
     newRecord.full =  "Fancy ARMO"
-    newRecord.script = 7
-    newRecord.enchantment = 0x0000000A
+    newRecord.script = FormID(7)
+    newRecord.enchantment = FormID(0x0000000A)
     newRecord.enchantPoints = 251
     newRecord.flags = 1
     newRecord.maleBody.modPath = r"maleBody\hay\1.nif"
@@ -4193,13 +4192,13 @@ def TestARMO():
 
     print "ARMO:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "full          :", newRecord.full
-    print "script        :", PrintFormID(newRecord.script)
-    print "enchantment   :", PrintFormID(newRecord.enchantment)
+    print "script        :", newRecord.script
+    print "enchantment   :", newRecord.enchantment
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "maleBody.modPath  :", newRecord.maleBody.modPath
@@ -4242,7 +4241,7 @@ def TestBOOK():
 
     for record in Current.LoadOrderMods[0].BOOK:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4270,8 +4269,8 @@ def TestBOOK():
     print "iconPath..."
     newRecord.iconPath = r"BOOK\path\test.dds"
     newRecord.text = "Now this is a story about...something. And an interesting thing happened to...something. But, unknown to...something..., there was opposition from...something else....\n<br>Hey!</br><herlmf></herlmf>\nJust a test\n"
-    newRecord.script = 7
-    newRecord.enchantment = 0x0000000A
+    newRecord.script = FormID(7)
+    newRecord.enchantment = FormID(0x0000000A)
     newRecord.enchantPoints = 251
     newRecord.flags = 1
     newRecord.teaches = -1
@@ -4281,7 +4280,7 @@ def TestBOOK():
 
     print "BOOK:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4293,8 +4292,8 @@ def TestBOOK():
 
     print "iconPath      :", newRecord.iconPath
     print "text          :", newRecord.text
-    print "script        :", PrintFormID(newRecord.script)
-    print "enchantment   :", PrintFormID(newRecord.enchantment)
+    print "script        :", newRecord.script
+    print "enchantment   :", newRecord.enchantment
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "teaches       :", newRecord.teaches
@@ -4322,7 +4321,7 @@ def TestCLOT():
 
     for record in Current.LoadOrderMods[0].CLOT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4339,8 +4338,8 @@ def TestCLOT():
     newRecord.eid = "CLOTWarTest"
 
     newRecord.full =  "Fancy CLOT"
-    newRecord.script = 7
-    newRecord.enchantment = 0x0000000A
+    newRecord.script = FormID(7)
+    newRecord.enchantment = FormID(0x0000000A)
     newRecord.enchantPoints = 251
     newRecord.flags = 1
     newRecord.maleBody.modPath = r"maleBody\hay\1.nif"
@@ -4361,13 +4360,13 @@ def TestCLOT():
     newRecord.weight = 6
     print "CLOT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "full          :", newRecord.full
-    print "script        :", PrintFormID(newRecord.script)
-    print "enchantment   :", PrintFormID(newRecord.enchantment)
+    print "script        :", newRecord.script
+    print "enchantment   :", newRecord.enchantment
     print "enchantPoints :", newRecord.enchantPoints
     print "flags         :", newRecord.flags
     print "maleBody.modPath  :", newRecord.maleBody.modPath
@@ -4408,7 +4407,7 @@ def TestCONT():
 
     for record in Current.LoadOrderMods[0].CONT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4433,18 +4432,18 @@ def TestCONT():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     item = newRecord.create_item()
-    item.item = 0x0100000A
+    item.item = FormID(0x0100000A)
     item.count = 50
     item = newRecord.create_item()
-    item.item = 0x0000000B
+    item.item = FormID(0x0000000B)
     item.count = 1
     item = newRecord.create_item()
-    item.item = 0x0000000C
+    item.item = FormID(0x0000000C)
     item.count = 2
     item = newRecord.create_item()
-    item.item = 0x0000000D
+    item.item = FormID(0x0000000D)
     item.count = 3
     print newRecord.items
     printRecord(newRecord.items)
@@ -4455,13 +4454,13 @@ def TestCONT():
     print 7
     newRecord.weight = 3.56
     print 8
-    newRecord.soundOpen  = 0x00000007
+    newRecord.soundOpen  = FormID(0x00000007)
     print 9
-    newRecord.soundClose = 0x00000008
+    newRecord.soundClose = FormID(0x00000008)
 
     print "CONT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4471,14 +4470,14 @@ def TestCONT():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "script     :", PrintFormID(newRecord.script)
+    print "script     :", newRecord.script
     print "items      :"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, item.item, item.count)
     print "flags      :", newRecord.flags
     print "weight     :", newRecord.weight
-    print "soundOpen  :", PrintFormID(newRecord.soundOpen)
-    print "soundClose :", PrintFormID(newRecord.soundClose)
+    print "soundOpen  :", newRecord.soundOpen
+    print "soundClose :", newRecord.soundClose
 
     print "CONT:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].CONT:
@@ -4502,7 +4501,7 @@ def TestDOOR():
 
     for record in Current.LoadOrderMods[0].DOOR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4527,16 +4526,16 @@ def TestDOOR():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.script = 8
-    newRecord.soundOpen  = 0x00000007
-    newRecord.soundClose = 0x00000008
-    newRecord.soundLoop = 0x00000009
+    newRecord.script = FormID(8)
+    newRecord.soundOpen  = FormID(0x00000007)
+    newRecord.soundClose = FormID(0x00000008)
+    newRecord.soundLoop = FormID(0x00000009)
 
     newRecord.flags = 1
-    newRecord.destinations = [0xFF000121, 0xFE000222]
+    newRecord.destinations = [FormID(0xFF000121), FormID(0xFE000222)]
     print "DOOR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4546,15 +4545,15 @@ def TestDOOR():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "script     :", PrintFormID(newRecord.script)
-    print "soundOpen  :", PrintFormID(newRecord.soundOpen)
-    print "soundClose :", PrintFormID(newRecord.soundClose)
-    print "soundLoop  :", PrintFormID(newRecord.soundLoop)
+    print "script     :", newRecord.script
+    print "soundOpen  :", newRecord.soundOpen
+    print "soundClose :", newRecord.soundClose
+    print "soundLoop  :", newRecord.soundLoop
 
     print "flags   :", newRecord.flags
     print "destinations :"
     for destination in newRecord.destinations:
-        print "  ", PrintFormID(destination)
+        print "  ", destination
 
     print "DOOR:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].DOOR:
@@ -4578,7 +4577,7 @@ def TestINGR():
 
     for record in Current.LoadOrderMods[0].INGR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4605,7 +4604,7 @@ def TestINGR():
 
     print "iconPath..."
     newRecord.iconPath = r"INGR\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.weight = 3.56
     newRecord.value = 150
 
@@ -4614,38 +4613,38 @@ def TestINGR():
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
     newEffect.actorValue = 5
-    newEffect.script = 0xFF000007
+    newEffect.script = FormID(0xFF000007)
     newEffect.school = 324
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "INGR?"
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
     newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
+    newEffect.script = FormID(0xFF00000A)
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "INGR??"
 
     print "INGR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4656,7 +4655,7 @@ def TestINGR():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  :", PrintFormID(newRecord.script)
+    print "script  :", newRecord.script
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
@@ -4672,7 +4671,7 @@ def TestINGR():
         print "  duration   :", effect.duration
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
-        print "  script     :", PrintFormID(effect.script)
+        print "  script     :", effect.script
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -4701,7 +4700,7 @@ def TestLIGH():
 
     for record in Current.LoadOrderMods[0].LIGH:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4724,7 +4723,7 @@ def TestLIGH():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.script = 7
+    newRecord.script = FormID(7)
 
     print "full..."
     newRecord.full = "Fancy LIGH"
@@ -4745,11 +4744,11 @@ def TestLIGH():
     newRecord.value = 70
     newRecord.weight = 5.2
     newRecord.fade = 6.9
-    newRecord.sound = 14
+    newRecord.sound = FormID(14)
 
     print "LIGH:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4757,7 +4756,7 @@ def TestLIGH():
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
-    print "script  :", PrintFormID(newRecord.script)
+    print "script  :", newRecord.script
     print "full    :", newRecord.full
     print "iconPath:", newRecord.iconPath
     print "duration:", newRecord.duration
@@ -4774,7 +4773,7 @@ def TestLIGH():
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
     print "fade    :", newRecord.fade
-    print "sound   :", PrintFormID(newRecord.sound)
+    print "sound   :", newRecord.sound
 
     print "LIGH:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].LIGH:
@@ -4798,7 +4797,7 @@ def TestMISC():
 
     for record in Current.LoadOrderMods[0].MISC:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4825,13 +4824,13 @@ def TestMISC():
 
     print "iconPath..."
     newRecord.iconPath = r"MISC\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.value = 150
     newRecord.weight = 3.56
 
     print "MISC:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4866,7 +4865,7 @@ def TestSTAT():
 
     for record in Current.LoadOrderMods[0].STAT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4891,7 +4890,7 @@ def TestSTAT():
 
     print "STAT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -4921,7 +4920,7 @@ def TestGRAS():
 
     for record in Current.LoadOrderMods[0].GRAS:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -4956,7 +4955,7 @@ def TestGRAS():
 
     print "GRAS:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5001,7 +5000,7 @@ def TestTREE():
 
     for record in Current.LoadOrderMods[0].TREE:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5035,7 +5034,7 @@ def TestTREE():
 
     print "TREE:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5078,7 +5077,7 @@ def TestFLOR():
 
     for record in Current.LoadOrderMods[0].FLOR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5098,8 +5097,8 @@ def TestFLOR():
     newRecord.modPath = r"GRAS\path\test.nif"
     newRecord.modb = 1.5
     newRecord.modt_p = [0xFF, 0x00, 0xFE]
-    newRecord.script = 7
-    newRecord.ingredient = 15
+    newRecord.script = FormID(7)
+    newRecord.ingredient = FormID(15)
     newRecord.spring = 25
     newRecord.summer = 35
     newRecord.fall = 45
@@ -5107,7 +5106,7 @@ def TestFLOR():
 
     print "FLOR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5144,7 +5143,7 @@ def TestFURN():
 
     for record in Current.LoadOrderMods[0].FURN:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5169,12 +5168,12 @@ def TestFURN():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.flags = 1
 
     print "FURN:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5209,7 +5208,7 @@ def TestWEAP():
 
     for record in Current.LoadOrderMods[0].WEAP:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5236,9 +5235,9 @@ def TestWEAP():
 
     print "iconPath..."
     newRecord.iconPath = r"WEAP\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
 
-    newRecord.enchantment = 15
+    newRecord.enchantment = FormID(15)
     newRecord.enchantPoints = 255
     newRecord.weaponType = 1
     newRecord.speed = 1.2
@@ -5251,7 +5250,7 @@ def TestWEAP():
 
     print "WEAP:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5261,8 +5260,8 @@ def TestWEAP():
     print "modb          :", newRecord.modb
     print "modt_p        :", newRecord.modt_p
     print "iconPath      :", newRecord.iconPath
-    print "script        :", PrintFormID(newRecord.script)
-    print "enchantment   :", PrintFormID(newRecord.enchantment)
+    print "script        :", newRecord.script
+    print "enchantment   :", newRecord.enchantment
     print "enchantPoints :", newRecord.enchantPoints
     print "weaponType    :", newRecord.weaponType
     print "speed         :", newRecord.speed
@@ -5295,7 +5294,7 @@ def TestAMMO():
 
     for record in Current.LoadOrderMods[0].AMMO:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5323,7 +5322,7 @@ def TestAMMO():
     print "iconPath..."
     newRecord.iconPath = r"AMMO\path\test.dds"
 
-    newRecord.enchantment = 15
+    newRecord.enchantment = FormID(15)
     newRecord.enchantPoints = 255
     newRecord.speed = 1.2
     newRecord.flags = 1
@@ -5334,7 +5333,7 @@ def TestAMMO():
 
     print "AMMO:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5344,7 +5343,7 @@ def TestAMMO():
     print "modb          :", newRecord.modb
     print "modt_p        :", newRecord.modt_p
     print "iconPath      :", newRecord.iconPath
-    print "enchantment   :", PrintFormID(newRecord.enchantment)
+    print "enchantment   :", newRecord.enchantment
     print "enchantPoints :", newRecord.enchantPoints
     print "speed         :", newRecord.speed
     print "flags         :", newRecord.flags
@@ -5375,7 +5374,7 @@ def TestNPC_():
 
     for record in Current.LoadOrderMods[0].NPC_:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5410,42 +5409,42 @@ def TestNPC_():
 
     print "factions..."
     newFaction = newRecord.create_faction()
-    newFaction.faction = 1
+    newFaction.faction = FormID(1)
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 3
+    newFaction.faction = FormID(3)
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 5
+    newFaction.faction = FormID(5)
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 7
+    newFaction.faction = FormID(7)
     newFaction.rank = 8
     newFaction.unused1 = [10,11,12]
     newRecord.factions =[newRecord.factions[3], newRecord.factions[2], newRecord.factions[0]]
 
-    newRecord.deathItem = 14
-    newRecord.race = 15
-    newRecord.spells = [0xFF000121, 0xFE000222]
-    newRecord.script = 7
+    newRecord.deathItem = FormID(14)
+    newRecord.race = FormID(15)
+    newRecord.spells = [FormID(0xFF000121), FormID(0xFE000222)]
+    newRecord.script = FormID(7)
 
     item = newRecord.create_item()
-    item.item = 0x0100000A
+    item.item = FormID(0x0100000A)
     item.count = 50
     item = newRecord.create_item()
-    item.item = 0x0000000B
+    item.item = FormID(0x0000000B)
     item.count = 1
     item = newRecord.create_item()
-    item.item = 0x0000000C
+    item.item = FormID(0x0000000C)
     item.count = 2
     item = newRecord.create_item()
-    item.item = 0x0000000D
+    item.item = FormID(0x0000000D)
     item.count = 3
     newRecord.items = [newRecord.items[3], newRecord.items[2], newRecord.items[0]]
 
@@ -5458,11 +5457,11 @@ def TestNPC_():
     newRecord.trainLevel = 6
     newRecord.unused1 = [1,2]
 
-    newRecord.aiPackages = [0xFF000223, 0xFE000324]
+    newRecord.aiPackages = [FormID(0xFF000223), FormID(0xFE000324)]
 
     newRecord.animations = [r"NPC_\hay2\anim1.nif", r"NPC_\hay2\anim2.nif", r"NPC_\hay2\anim3.nif", r"NPC_\hay2\anim4.nif"]
 
-    newRecord.iclass = 16
+    newRecord.iclass = FormID(16)
     newRecord.armorer = 7
     newRecord.athletics = 8
     newRecord.blade = 9
@@ -5494,14 +5493,14 @@ def TestNPC_():
     newRecord.endurance = 34
     newRecord.personality = 35
     newRecord.luck = 36
-    newRecord.hair = 9
+    newRecord.hair = FormID(9)
     newRecord.hairLength = 1.1
-    newRecord.eye = 10
+    newRecord.eye = FormID(10)
     newRecord.hairRed = 1
     newRecord.hairGreen = 2
     newRecord.hairBlue = 3
     newRecord.unused3 = [1]
-    newRecord.combatStyle = 11
+    newRecord.combatStyle = FormID(11)
     newRecord.fggs_p = [4] * 200
     newRecord.fgga_p = [5] * 120
     newRecord.fgts_p = [6] * 200
@@ -5509,7 +5508,7 @@ def TestNPC_():
 
     print "NPC_:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5527,18 +5526,18 @@ def TestNPC_():
     print "calcMax    :", newRecord.calcMax
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
-    print "deathItem :", PrintFormID(newRecord.deathItem)
-    print "race      :", PrintFormID(newRecord.race)
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, faction.faction, faction.rank), faction.unused1
+    print "deathItem :", newRecord.deathItem
+    print "race      :", newRecord.race
 
     print "spells    :"
     for spell in newRecord.spells:
-        print "  ", PrintFormID(spell)
+        print "  ", spell
 
-    print "script    :", PrintFormID(newRecord.script)
+    print "script    :", newRecord.script
     print "items     :"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, item.item, item.count)
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
     print "energyLevel    :", newRecord.energyLevel
@@ -5550,13 +5549,13 @@ def TestNPC_():
 
     print "aiPackages     :"
     for package in newRecord.aiPackages:
-        print "  ", PrintFormID(package)
+        print "  ", package
 
     print "animations     :"
     for animation in newRecord.animations:
         print "  ", animation
 
-    print "iclass         :", PrintFormID(newRecord.iclass)
+    print "iclass         :", newRecord.iclass
     print "armorer      :", newRecord.armorer
     print "athletics    :", newRecord.athletics
     print "blade        :", newRecord.blade
@@ -5588,14 +5587,14 @@ def TestNPC_():
     print "endurance    :", newRecord.endurance
     print "personality  :", newRecord.personality
     print "luck         :", newRecord.luck
-    print "hair        :", PrintFormID(newRecord.hair)
+    print "hair        :", newRecord.hair
     print "hairLength  :", newRecord.hairLength
-    print "eye         :", PrintFormID(newRecord.eye)
+    print "eye         :", newRecord.eye
     print "hairRed     :", newRecord.hairRed
     print "hairGreen   :", newRecord.hairGreen
     print "hairBlue    :", newRecord.hairBlue
     print "unused3     :", newRecord.unused3
-    print "combatStyle :", PrintFormID(newRecord.combatStyle)
+    print "combatStyle :", newRecord.combatStyle
     print "fggs_p :", newRecord.fggs_p
     print "fgga_p :", newRecord.fgga_p
     print "fgts_p :", newRecord.fgts_p
@@ -5622,7 +5621,7 @@ def TestCREA():
 
     for record in Current.LoadOrderMods[0].CREA:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5647,7 +5646,7 @@ def TestCREA():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.spells = [0xFF000121, 0xFE000222]
+    newRecord.spells = [FormID(0xFF000121), FormID(0xFE000222)]
     newRecord.bodyParts = [r"CREA\hay2\body1.nif", r"CREA\hay2\body2.nif", r"CREA\hay2\body3.nif", r"CREA\hay2\body4.nif"]
 
     newRecord.nift_p = [0x00, 0xFE, 0xFE]
@@ -5662,40 +5661,40 @@ def TestCREA():
 
     print "factions..."
     newFaction = newRecord.create_faction()
-    newFaction.faction = 1
+    newFaction.faction = FormID(1)
     newFaction.rank = 2
     newFaction.unused1 = [1,2,3]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 3
+    newFaction.faction = FormID(3)
     newFaction.rank = 4
     newFaction.unused1 = [4,5,6]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 5
+    newFaction.faction = FormID(5)
     newFaction.rank = 6
     newFaction.unused1 = [7,8,9]
 
     newFaction = newRecord.create_faction()
-    newFaction.faction = 7
+    newFaction.faction = FormID(7)
     newFaction.rank = 8
     newFaction.unused1 = [10,11,12]
     newRecord.factions =[newRecord.factions[3], newRecord.factions[2], newRecord.factions[0]]
 
-    newRecord.deathItem = 14
-    newRecord.script = 7
+    newRecord.deathItem = FormID(14)
+    newRecord.script = FormID(7)
 
     item = newRecord.create_item()
-    item.item = 0x0100000A
+    item.item = FormID(0x0100000A)
     item.count = 50
     item = newRecord.create_item()
-    item.item = 0x0000000B
+    item.item = FormID(0x0000000B)
     item.count = 1
     item = newRecord.create_item()
-    item.item = 0x0000000C
+    item.item = FormID(0x0000000C)
     item.count = 2
     item = newRecord.create_item()
-    item.item = 0x0000000D
+    item.item = FormID(0x0000000D)
     item.count = 3
     newRecord.items = [newRecord.items[3], newRecord.items[2], newRecord.items[0]]
 
@@ -5708,7 +5707,7 @@ def TestCREA():
     newRecord.trainLevel = 6
     newRecord.unused1 = [1,2]
 
-    newRecord.aiPackages = [0xFF000223, 0xFE000324]
+    newRecord.aiPackages = [FormID(0xFF000223), FormID(0xFE000324)]
 
     newRecord.animations = [r"CREA\hay2\anim1.nif", r"CREA\hay2\anim2.nif", r"CREA\hay2\anim3.nif", r"CREA\hay2\anim4.nif"]
 
@@ -5730,35 +5729,35 @@ def TestCREA():
     newRecord.personality = 35
     newRecord.luck = 36
     newRecord.attackReach = 10
-    newRecord.combatStyle = 11
+    newRecord.combatStyle = FormID(11)
     newRecord.turningSpeed = 1.1
     newRecord.baseScale = 1.2
     newRecord.footWeight = 1.3
-    newRecord.inheritsSoundsFrom = 0x14
+    newRecord.inheritsSoundsFrom = FormID(0x14)
     newRecord.bloodSprayPath = r"CREA\bloodSprayPath\anim1.dds"
     newRecord.bloodDecalPath = r"CREA\bloodDecalPath\anim1.dds"
 
     sound = newRecord.create_sound()
     sound.soundType = 0
-    sound.sound = 0x0100000A
+    sound.sound = FormID(0x0100000A)
     sound.chance = 0
     sound = newRecord.create_sound()
     sound.soundType = 1
-    sound.sound = 0x0000000B
+    sound.sound = FormID(0x0000000B)
     sound.chance = 1
     sound = newRecord.create_sound()
     sound.soundType = 2
-    sound.sound = 0x0000000C
+    sound.sound = FormID(0x0000000C)
     sound.chance = 2
     sound = newRecord.create_sound()
     sound.soundType = 3
-    sound.sound = 0x0000000D
+    sound.sound = FormID(0x0000000D)
     sound.chance = 3
     newRecord.sounds = [newRecord.sounds[3], newRecord.sounds[2], newRecord.sounds[0]]
 
     print "CREA:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -5770,7 +5769,7 @@ def TestCREA():
 
     print "spells"
     for spell in newRecord.spells:
-        print "  ", PrintFormID(spell)
+        print "  ", spell
 
     print "bodyParts"
     for bodyPart in newRecord.bodyParts:
@@ -5788,14 +5787,14 @@ def TestCREA():
 
     print "factions"
     for faction in newRecord.factions:
-         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, PrintFormID(faction.faction), faction.rank), faction.unused1
+         print "  %i: Faction: %s, Rank: %i, Unused1:" % (faction._ListIndex, faction.faction, faction.rank), faction.unused1
 
-    print "deathItem :", PrintFormID(newRecord.deathItem)
-    print "script    :", PrintFormID(newRecord.script)
+    print "deathItem :", newRecord.deathItem
+    print "script    :", newRecord.script
 
     print "items"
     for item in newRecord.items:
-        print "  %i: item: %s, count: %i" % (item._ListIndex, PrintFormID(item.item), item.count)
+        print "  %i: item: %s, count: %i" % (item._ListIndex, item.item, item.count)
 
     print "aggression     :", newRecord.aggression
     print "confidence     :", newRecord.confidence
@@ -5808,7 +5807,7 @@ def TestCREA():
 
     print "aiPackages     :"
     for package in newRecord.aiPackages:
-        print "  ", PrintFormID(package)
+        print "  ", package
 
     print "animations     :"
     for animation in newRecord.animations:
@@ -5833,17 +5832,17 @@ def TestCREA():
     print "luck         :", newRecord.luck
 
     print "attackReach  :", newRecord.attackReach
-    print "combatStyle  :", PrintFormID(newRecord.combatStyle)
+    print "combatStyle  :", newRecord.combatStyle
     print "turningSpeed :", newRecord.turningSpeed
     print "baseScale    :", newRecord.baseScale
     print "footWeight   :", newRecord.footWeight
-    print "inheritsSoundsFrom  :", PrintFormID(newRecord.inheritsSoundsFrom)
+    print "inheritsSoundsFrom  :", newRecord.inheritsSoundsFrom
     print "bloodSprayPath      :", newRecord.bloodSprayPath
     print "bloodDecalPath      :", newRecord.bloodDecalPath
 
     print "sounds"
     for sound in newRecord.sounds:
-        print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.soundType, PrintFormID(sound.sound), sound.chance)
+        print "  %i: type: %u, sound: %s, chance:%i" % (sound._ListIndex, sound.soundType, sound.sound, sound.chance)
     print "CREA:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].CREA:
         record.CopyAsOverride(newMod)
@@ -5866,7 +5865,7 @@ def TestLVLC():
 
     for record in Current.LoadOrderMods[0].LVLC:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5884,31 +5883,31 @@ def TestLVLC():
 
     newRecord.chanceNone = 20
     newRecord.flags = 1
-    newRecord.script = 7
-    newRecord.template = 0x14
+    newRecord.script = FormID(7)
+    newRecord.template = FormID(0x14)
 
     entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
-    entry.listId = 0x0100000A
+    entry.listId = FormID(0x0100000A)
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
-    entry.listId = 0x0000000B
+    entry.listId = FormID(0x0000000B)
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
-    entry.listId = 0x0000000C
+    entry.listId = FormID(0x0000000C)
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
-    entry.listId = 0x0000000D
+    entry.listId = FormID(0x0000000D)
     entry.count = 8
     entry.unused2 = [0x21, 0xFF]
     newRecord.entries = [newRecord.entries[3], newRecord.entries[2], newRecord.entries[0]]
@@ -5916,21 +5915,21 @@ def TestLVLC():
 
     print "LVLC:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "chanceNone :", newRecord.chanceNone
     print "flags      :", newRecord.flags
-    print "script     :", PrintFormID(newRecord.script)
-    print "template   :", PrintFormID(newRecord.template)
+    print "script     :", newRecord.script
+    print "template   :", newRecord.template
     print "entries"
     for entry in newRecord.entries:
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  :", PrintFormID(entry.listId)
+        print "  listId  :", entry.listId
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
 
@@ -5956,7 +5955,7 @@ def TestSLGM():
 
     for record in Current.LoadOrderMods[0].SLGM:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -5983,7 +5982,7 @@ def TestSLGM():
 
     print "iconPath..."
     newRecord.iconPath = r"SLGM\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.value = 150
     newRecord.weight = 3.56
 
@@ -5992,7 +5991,7 @@ def TestSLGM():
 
     print "SLGM:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6003,7 +6002,7 @@ def TestSLGM():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  :", PrintFormID(newRecord.script)
+    print "script  :", newRecord.script
     print "value   :", newRecord.value
     print "weight  :", newRecord.weight
 
@@ -6032,7 +6031,7 @@ def TestKEYM():
 
     for record in Current.LoadOrderMods[0].KEYM:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6059,13 +6058,13 @@ def TestKEYM():
 
     print "iconPath..."
     newRecord.iconPath = r"KEYM\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.value = 150
     newRecord.weight = 3.56
 
     print "KEYM:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6100,7 +6099,7 @@ def TestALCH():
 
     for record in Current.LoadOrderMods[0].ALCH:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6127,7 +6126,7 @@ def TestALCH():
 
     print "iconPath..."
     newRecord.iconPath = r"ALCH\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.weight = 3.56
     newRecord.value = 150
 
@@ -6136,38 +6135,38 @@ def TestALCH():
     newRecord.unused1 = [0x00, 0xFE, 0xFD]
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
     newEffect.actorValue = 5
-    newEffect.script = 0xFF000007
+    newEffect.script = FormID(0xFF000007)
     newEffect.school = 324
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "ALCH?"
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
     newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
+    newEffect.script = FormID(0xFF00000A)
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "ALCH??"
 
     print "ALCH:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6178,7 +6177,7 @@ def TestALCH():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  :", PrintFormID(newRecord.script)
+    print "script  :", newRecord.script
     print "weight  :", newRecord.weight
     print "value   :", newRecord.value
     print "flags   :", newRecord.flags
@@ -6194,7 +6193,7 @@ def TestALCH():
         print "  duration   :", effect.duration
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
-        print "  script     :", PrintFormID(effect.script)
+        print "  script     :", effect.script
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -6222,7 +6221,7 @@ def TestSBSP():
 
     for record in Current.LoadOrderMods[0].SBSP:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6243,7 +6242,7 @@ def TestSBSP():
     newRecord.sizeZ = 3.0
     print "SBSP:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6274,7 +6273,7 @@ def TestSGST():
 
     for record in Current.LoadOrderMods[0].SGST:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6301,50 +6300,50 @@ def TestSGST():
 
     print "iconPath..."
     newRecord.iconPath = r"SGST\path\test.dds"
-    newRecord.script = 7
+    newRecord.script = FormID(7)
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 1
     newEffect.area = 2
     newEffect.duration = 6
     newEffect.rangeType = 6
     newEffect.actorValue = 5
-    newEffect.script = 0x00000007
+    newEffect.script = FormID(0x00000007)
     newEffect.school = 324
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
     newEffect.full = "SGST?"
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 7
     newEffect.duration = 7
     newEffect.rangeType = 9
     newEffect.actorValue = 10
-    newEffect.script = 0x0000000A
+    newEffect.script = FormID(0x0000000A)
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SGST??"
 
 
     newEffect = newRecord.create_effect()
-    newEffect.name0 = "SEFF"
-    newEffect.name = "SEFF"
+    newEffect.name0 = MGEFCode("SEFF")
+    newEffect.name = MGEFCode("SEFF")
     newEffect.magnitude = 6
     newEffect.area = 8
     newEffect.duration = 8
     newEffect.rangeType = 9
     newEffect.actorValue = 10
-    newEffect.script = 0x0000000A
+    newEffect.script = FormID(0x0000000A)
     newEffect.school = 11
-    newEffect.visual = "SEFF"
+    newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
     newEffect.full = "SGST???"
@@ -6357,7 +6356,7 @@ def TestSGST():
 
     print "SGST:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6368,7 +6367,7 @@ def TestSGST():
     print "modt_p  :", newRecord.modt_p
 
     print "iconPath:", newRecord.iconPath
-    print "script  :", PrintFormID(newRecord.script)
+    print "script  :", newRecord.script
 
     print "effects :"
     for effect in newRecord.effects:
@@ -6379,7 +6378,7 @@ def TestSGST():
         print "  duration   :", effect.duration
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
-        print "  script     :", PrintFormID(effect.script)
+        print "  script     :", effect.script
         print "  school     :", effect.school
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
@@ -6413,7 +6412,7 @@ def TestLVLI():
 
     for record in Current.LoadOrderMods[0].LVLI:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6435,32 +6434,32 @@ def TestLVLI():
     entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
-    entry.listId = 0x0100000A
+    entry.listId = FormID(0x0100000A)
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
-    entry.listId = 0x0000000B
+    entry.listId = FormID(0x0000000B)
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
-    entry.listId = 0x0000000C
+    entry.listId = FormID(0x0000000C)
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
-    entry.listId = 0x0000000D
+    entry.listId = FormID(0x0000000D)
     entry.count = 8
     entry.unused2 = [0x21, 0xFF]
     newRecord.entries = [newRecord.entries[3], newRecord.entries[2], newRecord.entries[0]]
 
     print "LVLI:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6472,7 +6471,7 @@ def TestLVLI():
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  :", PrintFormID(entry.listId)
+        print "  listId  :", entry.listId
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
     print "LVLI:CopyAsOverride Test"
@@ -6497,7 +6496,7 @@ def TestWTHR():
 
     for record in Current.LoadOrderMods[0].WTHR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6718,26 +6717,26 @@ def TestWTHR():
     newRecord.boltBlue = 15
 
     newSound = newRecord.create_sound()
-    newSound.sound = 7
+    newSound.sound = FormID(7)
     newSound.type = 0
 
     newSound = newRecord.create_sound()
-    newSound.sound = 8
+    newSound.sound = FormID(8)
     newSound.type = 1
 
     newSound = newRecord.create_sound()
-    newSound.sound = 9
+    newSound.sound = FormID(9)
     newSound.type = 2
 
     newSound = newRecord.create_sound()
-    newSound.sound = 10
+    newSound.sound = FormID(10)
     newSound.type = 3
 
     newRecord.sounds = [newRecord.sounds[0], newRecord.sounds[3], newRecord.sounds[2]]
 
     print "WTHR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -6956,7 +6955,7 @@ def TestWTHR():
     print "boltBlue        :", newRecord.boltBlue
     print "sounds"
     for sound in newRecord.sounds:
-        print "  sound: %s, type: %u" % (PrintFormID(sound.sound), sound.type)
+        print "  sound: %s, type: %u" % (sound.sound, sound.type)
 
     print "WTHR:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].WTHR:
@@ -6980,7 +6979,7 @@ def TestCLMT():
 
     for record in Current.LoadOrderMods[0].CLMT:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -6997,19 +6996,19 @@ def TestCLMT():
     newRecord.eid = "CLMTWarTest"
 
     newWeather = newRecord.create_weather()
-    newWeather.weather = 7
+    newWeather.weather = FormID(7)
     newWeather.chance = 31
 
     newWeather = newRecord.create_weather()
-    newWeather.weather = 8
+    newWeather.weather = FormID(8)
     newWeather.chance = 32
 
     newWeather = newRecord.create_weather()
-    newWeather.weather = 9
+    newWeather.weather = FormID(9)
     newWeather.chance = 33
 
     newWeather = newRecord.create_weather()
-    newWeather.weather = 10
+    newWeather.weather = FormID(10)
     newWeather.chance = 34
 
     newRecord.weathers = [newRecord.weathers[3], newRecord.weathers[2], newRecord.weathers[0]]
@@ -7030,14 +7029,14 @@ def TestCLMT():
 
     print "CLMT:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "weathers"
     for weather in newRecord.weathers:
-        print "  weather: %s, chance: %u" % (PrintFormID(weather.weather), weather.chance)
+        print "  weather: %s, chance: %u" % (weather.weather, weather.chance)
     print "sunPath     :", newRecord.sunPath
     print "glarePath   :", newRecord.glarePath
     print "modPath     :", newRecord.modPath
@@ -7071,7 +7070,7 @@ def TestREGN():
 
     for record in Current.LoadOrderMods[0].REGN:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -7093,7 +7092,7 @@ def TestREGN():
     newRecord.mapGreen = 2
     newRecord.mapBlue = 3
     newRecord.unused1 = [4]
-    newRecord.worldspace = 7
+    newRecord.worldspace = FormID(7)
 
     newArea = newRecord.create_area()
     newArea.edgeFalloff = 1024
@@ -7201,7 +7200,7 @@ def TestREGN():
     newEntry.unused1 = [1,2]
 
     newObject = newEntry.create_object()
-    newObject.objectId = 7
+    newObject.objectId = FormID(7)
     newObject.unused1 = [1,2]
     newObject.density = 1
     newObject.clustering = 2
@@ -7221,7 +7220,7 @@ def TestREGN():
     newObject.unk2 = [1,2,3,4]
 
     newObject = newEntry.create_object()
-    newObject.objectId = 8
+    newObject.objectId = FormID(8)
     newObject.unused1 = [1,2]
     newObject.density = 2
     newObject.clustering = 3
@@ -7241,7 +7240,7 @@ def TestREGN():
     newObject.unk2 = [1,2,3,4]
 
     newObject = newEntry.create_object()
-    newObject.objectId = 9
+    newObject.objectId = FormID(9)
     newObject.unused1 = [1,2]
     newObject.density = 3
     newObject.clustering = 4
@@ -7316,7 +7315,7 @@ def TestREGN():
 
     print "REGN:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -7326,7 +7325,7 @@ def TestREGN():
     print "mapGreen   :", newRecord.mapGreen
     print "mapBlue    :", newRecord.mapBlue
     print "unused1    :", newRecord.unused1
-    print "worldspace :", PrintFormID(newRecord.worldspace)
+    print "worldspace :", newRecord.worldspace
     print "areas"
     for area in newRecord.areas:
         print "  edgeFalloff :", area.edgeFalloff
@@ -7342,7 +7341,7 @@ def TestREGN():
         print "  unused1   :", entry.unused1
         print "  objects"
         for recObject in entry.objects:
-            print "    objectId        :", PrintFormID(recObject.objectId)
+            print "    objectId        :", recObject.objectId
             print "    parentIndex     :", recObject.parentIndex
             print "    unused1         :", recObject.unused1
             print "    density         :", recObject.density
@@ -7366,17 +7365,17 @@ def TestREGN():
         print "  iconPath  :", entry.iconPath
         print "  grasses"
         for grass in entry.grasses:
-            print "    grass :", PrintFormID(grass.grass),
+            print "    grass :", grass.grass,
             print ", unk1 :", grass.unk1
         print "  musicType :", entry.musicType
         print "  sounds"
         for sound in entry.sounds:
-            print "    sound  :", PrintFormID(sound.sound)
+            print "    sound  :", sound.sound
             print "    flags  :", sound.flags
             print "    chance :", sound.chance
         print "  weathers"
         for weather in entry.weathers:
-            print "    weather :", PrintFormID(weather.weather)
+            print "    weather :", weather.weather
             print "    chance  :", weather.chance
         print
     print "REGN:CopyAsOverride Test"
@@ -7401,27 +7400,27 @@ def TestCELL():
     newMod = Current.LookupModFile("TestCELL.esp")
 
     for record in Current.LoadOrderMods[0].CELL:
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
 
         print "Placed NPCs"
         for achr in record.ACHR:
             print
-            print "fid     :", PrintFormID(achr.fid)
+            print "fid     :", achr.fid
             printRecord(achr)
             break
 
         print "Placed Creatures"
         for acre in record.ACRE:
             print
-            print "fid     :", PrintFormID(acre.fid)
+            print "fid     :", acre.fid
             printRecord(acre)
             break
 
         print "Placed Objects"
         for refr in record.REFR:
             print
-            print "fid     :", PrintFormID(refr.fid)
+            print "fid     :", refr.fid
             printRecord(refr)
             break
 
@@ -7429,7 +7428,7 @@ def TestCELL():
         pgrd = record.PGRD
         if(pgrd != None):
             print
-            print "fid     :", PrintFormID(pgrd.fid)
+            print "fid     :", pgrd.fid
             printRecord(pgrd)
             break
         break
@@ -7467,30 +7466,30 @@ def TestCELL():
     newRecord.directionalFade = 15
     newRecord.fogClip = 16
     newRecord.music = 1
-    newRecord.owner = 7
+    newRecord.owner = FormID(7)
     newRecord.rank = 1
-    newRecord.globalVariable = 17
-    newRecord.climate = 18
+    newRecord.globalVariable = FormID(17)
+    newRecord.climate = FormID(18)
     newRecord.waterHeight = 19
-    newRecord.regions = [7,8,9]
+    newRecord.regions = [FormID(7),FormID(8),FormID(9)]
     newRecord.posX = 20
     newRecord.posY = 21
-    newRecord.water = 22
+    newRecord.water = FormID(22)
 
     newNPCRef = newRecord.create_ACHR()
 
     newNPCRef.eid = "WarACHRTest"
-    newNPCRef.base = 7
-    newNPCRef.unknownXPCIFormID = 14
+    newNPCRef.base = FormID(7)
+    newNPCRef.unknownXPCIFormID = FormID(14)
     newNPCRef.unknownXPCIString = "Hrm?"
     newNPCRef.lod1 = 10.1
     newNPCRef.lod2 = 11.2
     newNPCRef.lod3 = 12.3
-    newNPCRef.parent = 7
+    newNPCRef.parent = FormID(7)
     newNPCRef.parentFlags = 1
     newNPCRef.unused1 = [1,2,3]
-    newNPCRef.merchantContainer = 18
-    newNPCRef.horse = 19
+    newNPCRef.merchantContainer = FormID(18)
+    newNPCRef.horse = FormID(19)
     newNPCRef.xrgd_p = []
     newNPCRef.scale = 1.8
     newNPCRef.posX = 100
@@ -7503,11 +7502,11 @@ def TestCELL():
     newCreaRef = newRecord.create_ACRE()
 
     newCreaRef.eid = "WarACRETest"
-    newCreaRef.base = 7
-    newCreaRef.owner = 8
+    newCreaRef.base = FormID(7)
+    newCreaRef.owner = FormID(8)
     newCreaRef.rank = 1
-    newCreaRef.globalVariable = 2
-    newCreaRef.parent = 14
+    newCreaRef.globalVariable = FormID(2)
+    newCreaRef.parent = FormID(14)
     newCreaRef.parentFlags = 1
     newCreaRef.unused1 = [1,2,3]
     newCreaRef.xrgd_p = [0x23,0xff, 0x25]
@@ -7522,8 +7521,8 @@ def TestCELL():
     newObjRef = newRecord.create_REFR()
 
     newObjRef.eid = "WarREFRTest"
-    newObjRef.base = 7
-    newObjRef.destination = 8
+    newObjRef.base = FormID(7)
+    newObjRef.destination = FormID(8)
     newObjRef.destinationPosX = 1
     newObjRef.destinationPosY = 2
     newObjRef.destinationPosZ = 3
@@ -7532,27 +7531,27 @@ def TestCELL():
     newObjRef.destinationRotZ = 6
     newObjRef.lockLevel = 5
     newObjRef.unused1 = [1,2,3]
-    newObjRef.lockKey = 14
+    newObjRef.lockKey = FormID(14)
     newObjRef.unused2 = [1,2,3,4]
     newObjRef.lockFlags = 1
     newObjRef.unused3 = [1,2,3]
-    newObjRef.owner = 15
+    newObjRef.owner = FormID(15)
     newObjRef.rank = 1
-    newObjRef.globalVariable = 2
-    newObjRef.parent = 16
+    newObjRef.globalVariable = FormID(2)
+    newObjRef.parent = FormID(16)
     newObjRef.parentFlags = 1
     newObjRef.unused4 = [1, 2, 3]
-    newObjRef.target = 17
+    newObjRef.target = FormID(17)
     newObjRef.seed = 1234
     newObjRef.lod1 = 1
     newObjRef.lod2 = 2
     newObjRef.lod3 = 3
     newObjRef.charge = 4
     newObjRef.health = 5
-    newObjRef.unknownXPCIFormID = 6
+    newObjRef.unknownXPCIFormID = FormID(6)
     newObjRef.unknownXPCIString = "blah?"
     newObjRef.levelMod = 7
-    newObjRef.unknownXRTMFormID = 8
+    newObjRef.unknownXRTMFormID = FormID(8)
     newObjRef.actionFlags = 1
     newObjRef.count = 10
     newObjRef.markerFlags = 1
@@ -7648,28 +7647,28 @@ def TestCELL():
     print 111
     newPgrl1 = newPgrd.create_pgrl()
     print 112
-    newPgrl1.reference = 7
+    newPgrl1.reference = FormID(7)
     print 11
     newPgrl1.points = [1,2,3]
     newPgrl2 = newPgrd.create_pgrl()
     print 12
-    newPgrl2.reference = 8
+    newPgrl2.reference = FormID(8)
     newPgrl2.points = [1]
     newPgrl3 = newPgrd.create_pgrl()
     print 13
-    newPgrl3.reference = 9
+    newPgrl3.reference = FormID(9)
     newPgrl3.points = [1,2]
     newPgrl4 = newPgrd.create_pgrl()
     print 14
-    newPgrl4.reference = 10
+    newPgrl4.reference = FormID(10)
     newPgrl4.points = [1,2,3,4]
     newPgrl5 = newPgrd.create_pgrl()
     print 15
-    newPgrl5.reference = 11
+    newPgrl5.reference = FormID(11)
     newPgrl5.points = [1,2,3]
     newPgrl6 = newPgrd.create_pgrl()
     print 16
-    newPgrl6.reference = 14
+    newPgrl6.reference = FormID(14)
     newPgrl6.points = [1, 2, 3, 4, 5, 6]
     print 1
     newPgrd.PGRL = [newPgrl6, newPgrl1, newPgrl2, newPgrl3, newPgrl4]
@@ -7677,7 +7676,7 @@ def TestCELL():
 
     print "CELL:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -7703,35 +7702,35 @@ def TestCELL():
     print "directionalFade  :", newRecord.directionalFade
     print "fogClip          :", newRecord.fogClip
     print "music            :", newRecord.music
-    print "owner            :", PrintFormID(newRecord.owner)
+    print "owner            :", newRecord.owner
     print "rank             :", newRecord.rank
     print "globalVariable   :", newRecord.globalVariable
-    print "climate          :", PrintFormID(newRecord.climate)
+    print "climate          :", newRecord.climate
     print "waterHeight      :", newRecord.waterHeight
     print "regions          :", newRecord.regions
     print "posX             :", newRecord.posX
     print "posY             :", newRecord.posY
-    print "water            :", PrintFormID(newRecord.water)
+    print "water            :", newRecord.water
 
     print "Placed NPCs"
     for achr in newRecord.ACHR:
         print
-        print "  fid    :", PrintFormID(achr.fid)
+        print "  fid    :", achr.fid
         print "  flags1 :", achr.flags1
         print "  flags2 :", achr.flags2
         print "  eid    :", achr.eid
 
-        print "  base              :", PrintFormID(achr.base)
-        print "  unknownXPCIFormID :", PrintFormID(achr.unknownXPCIFormID)
+        print "  base              :", achr.base
+        print "  unknownXPCIFormID :", achr.unknownXPCIFormID
         print "  unknownXPCIString :", achr.unknownXPCIString
         print "  lod1              :", achr.lod1
         print "  lod2              :", achr.lod2
         print "  lod3              :", achr.lod3
-        print "  parent            :", PrintFormID(achr.parent)
+        print "  parent            :", achr.parent
         print "  parentFlags       :", achr.parentFlags
         print "  unused1           :", achr.unused1
-        print "  merchantContainer :", PrintFormID(achr.merchantContainer)
-        print "  horse             :", PrintFormID(achr.horse)
+        print "  merchantContainer :", achr.merchantContainer
+        print "  horse             :", achr.horse
         print "  xrgd_p            :", achr.xrgd_p
         print "  scale             :", achr.scale
         print "  posX              :", achr.posX
@@ -7744,17 +7743,17 @@ def TestCELL():
     print "Placed Creatures"
     for acre in newRecord.ACRE:
         print
-        print "  fid    :", PrintFormID(acre.fid)
+        print "  fid    :", acre.fid
         print "  flags1 :", acre.flags1
         print "  flags2 :", acre.flags2
         print "  eid    :", acre.eid
 
-        print "  base           :", PrintFormID(acre.base)
-        print "  owner          :", PrintFormID(acre.owner)
+        print "  base           :", acre.base
+        print "  owner          :", acre.owner
 
         print "  rank           :", acre.rank
-        print "  globalVariable :", PrintFormID(acre.globalVariable)
-        print "  parent         :", PrintFormID(acre.parent)
+        print "  globalVariable :", acre.globalVariable
+        print "  parent         :", acre.parent
         print "  parentFlags    :", acre.parentFlags
         print "  unused1        :", acre.unused1
         print "  xrgd_p         :", acre.xrgd_p
@@ -7769,12 +7768,12 @@ def TestCELL():
     print "Placed Objects"
     for refr in newRecord.REFR:
         print
-        print "  fid    :", PrintFormID(refr.fid)
+        print "  fid    :", refr.fid
         print "  flags1 :", refr.flags1
         print "  flags2 :", refr.flags2
         print "  eid    :", refr.eid
-        print "  base              :", PrintFormID(refr.base)
-        print "  destination :", PrintFormID(refr.destination)
+        print "  base              :", refr.base
+        print "  destination :", refr.destination
 
         print "  destinationPosX   :", refr.destinationPosX
         print "  destinationPosY   :", refr.destinationPosY
@@ -7785,19 +7784,19 @@ def TestCELL():
         print "  lockLevel         :", refr.lockLevel
         print "  unused1           :", refr.unused1
 
-        print "  lockKey           :", PrintFormID(refr.lockKey)
+        print "  lockKey           :", refr.lockKey
 
         print "  unused2           :", refr.unused2
         print "  lockFlags         :", refr.lockFlags
         print "  unused3           :", refr.unused3
-        print "  owner             :", PrintFormID(refr.owner)
+        print "  owner             :", refr.owner
 
         print "  rank              :", refr.rank
-        print "  globalVariable    :", PrintFormID(refr.globalVariable)
-        print "  parent            :", PrintFormID(refr.parent)
+        print "  globalVariable    :", refr.globalVariable
+        print "  parent            :", refr.parent
         print "  parentFlags       :", refr.parentFlags
         print "  unused4           :", refr.unused4
-        print "  target      :", PrintFormID(refr.target)
+        print "  target      :", refr.target
         print "  seed              :", refr.seed
         print "  seed_as_offset        :", refr.seed_as_offset
         print "  lod1              :", refr.lod1
@@ -7805,10 +7804,10 @@ def TestCELL():
         print "  lod3              :", refr.lod3
         print "  charge            :", refr.charge
         print "  health            :", refr.health
-        print "  unknownXPCIFormID :", PrintFormID(refr.unknownXPCIFormID)
+        print "  unknownXPCIFormID :", refr.unknownXPCIFormID
         print "  unknownXPCIString :", refr.unknownXPCIString
         print "  levelMod          :", refr.levelMod
-        print "  unknownXRTMFormID :", PrintFormID(refr.unknownXRTMFormID)
+        print "  unknownXRTMFormID :", refr.unknownXRTMFormID
         print "  actionFlags       :", refr.actionFlags
         print "  count             :", refr.count
         print "  markerFlags       :", refr.markerFlags
@@ -7828,7 +7827,7 @@ def TestCELL():
     pgrd = newRecord.PGRD
     if(pgrd != None):
         print
-        print "  fid    :", PrintFormID(pgrd.fid)
+        print "  fid    :", pgrd.fid
         print "  flags1 :", pgrd.flags1
         print "  flags2 :", pgrd.flags2
 
@@ -7854,7 +7853,7 @@ def TestCELL():
             break
         print "  PGRL"
         for pgrl in pgrd.pgrl:
-            print "    reference :", PrintFormID(pgrl.reference)
+            print "    reference :", pgrl.reference
             print "    points"
             for point in pgrl.points:
                 print "      ", point
@@ -7896,50 +7895,50 @@ def TestWRLD():
 
     for record in Current.LoadOrderMods[0].WRLD:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         print "World CELL"
         wrldCell = record.WorldCELL
         if(wrldCell != None):
             print
-            print "fid     :", PrintFormID(wrldCell.fid)
+            print "fid     :", wrldCell.fid
             printRecord(wrldCell)
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "fid     :", PrintFormID(achr.fid)
+                print "fid     :", achr.fid
                 printRecord(achr)
                 break
 
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "fid     :", PrintFormID(acre.fid)
+                print "fid     :", acre.fid
                 printRecord(acre)
                 break
 
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "fid     :", PrintFormID(refr.fid)
+                print "fid     :", refr.fid
                 printRecord(refr)
                 break
 
             pgrd = wrldCell.PGRD
             if(pgrd != None):
                 print
-                print "fid     :", PrintFormID(pgrd.fid)
+                print "fid     :", pgrd.fid
                 printRecord(pgrd)
                 break
             cLand = wrldCell.LAND
             if(cLand != None):
                 print
-                print "fid     :", PrintFormID(cLand.fid)
+                print "fid     :", cLand.fid
                 printRecord(cLand)
                 break
 ##                print
 ##                print "  LAND"
-##                print "  fid    :", PrintFormID(cLand.fid)
+##                print "  fid    :", cLand.fid
 ##                print "  flags1 :", cLand.flags1
 ##                print "  flags2 :", cLand.flags2
 ##
@@ -7971,14 +7970,14 @@ def TestWRLD():
 ##                        print
 ##                print "  baseTextures"
 ##                for baseTexture in cLand.baseTextures:
-##                    print "    texture  :", PrintFormID(baseTexture.texture)
+##                    print "    texture  :", baseTexture.texture
 ##                    print "    quadrant :", baseTexture.quadrant
 ##                    print "    unused1  :", baseTexture.unused1
 ##                    print "    layer    :", baseTexture.layer
 ##                    print
 ##                print "  alphaLayers"
 ##                for alphaLayer in cLand.alphaLayers:
-##                    print "    texture  :", PrintFormID(alphaLayer.texture)
+##                    print "    texture  :", alphaLayer.texture
 ##                    print "    quadrant :", alphaLayer.quadrant
 ##                    print "    unused1  :", alphaLayer.unused1
 ##                    print "    layer    :", alphaLayer.layer
@@ -7991,7 +7990,7 @@ def TestWRLD():
 ##                    print
 ##                print "  vertexTextures"
 ##                for vertexTexture in cLand.vertexTextures:
-##                    print "    texture  :", PrintFormID(vertexTexture.texture)
+##                    print "    texture  :", vertexTexture.texture
 ##                    print
 ##
 ##                print "  Position"
@@ -8005,74 +8004,74 @@ def TestWRLD():
 ##                        print "        red           :", cColumn.red
 ##                        print "        green         :", cColumn.green
 ##                        print "        blue          :", cColumn.blue
-##                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
+##                        print "        baseTexture   :", cColumn.baseTexture
 ##
-##                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
+##                        print "        layer1Texture :", cColumn.layer1Texture
 ##                        print "        layer1Opacity :", cColumn.layer1Opacity
 ##
-##                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
+##                        print "        layer2Texture :", cColumn.layer2Texture
 ##                        print "        layer2Opacity :", cColumn.layer2Opacity
 ##
-##                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
+##                        print "        layer3Texture :", cColumn.layer3Texture
 ##                        print "        layer3Opacity :", cColumn.layer3Opacity
 ##
-##                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
+##                        print "        layer4Texture :", cColumn.layer4Texture
 ##                        print "        layer4Opacity :", cColumn.layer4Opacity
 ##
-##                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
+##                        print "        layer5Texture :", cColumn.layer5Texture
 ##                        print "        layer5Opacity :", cColumn.layer5Opacity
 ##
-##                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
+##                        print "        layer6Texture :", cColumn.layer6Texture
 ##                        print "        layer6Opacity :", cColumn.layer6Opacity
 ##
-##                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
+##                        print "        layer7Texture :", cColumn.layer7Texture
 ##                        print "        layer7Opacity :", cColumn.layer7Opacity
 ##
-##                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
+##                        print "        layer8Texture :", cColumn.layer8Texture
 ##                        print "        layer8Opacity :", cColumn.layer8Opacity
 ##                        print
 
 
         for wrldCell in record.CELLS:
             print
-            print "fid     :", PrintFormID(wrldCell.fid)
+            print "fid     :", wrldCell.fid
             printRecord(wrldCell)
             print "Placed NPCs"
             for achr in wrldCell.ACHR:
                 print
-                print "fid     :", PrintFormID(achr.fid)
+                print "fid     :", achr.fid
                 printRecord(achr)
                 break
 
             print "Placed Creatures"
             for acre in wrldCell.ACRE:
                 print
-                print "fid     :", PrintFormID(acre.fid)
+                print "fid     :", acre.fid
                 printRecord(acre)
                 break
 
             print "Placed Objects"
             for refr in wrldCell.REFR:
                 print
-                print "fid     :", PrintFormID(refr.fid)
+                print "fid     :", refr.fid
                 printRecord(refr)
                 break
 
             pgrd = wrldCell.PGRD
             if(pgrd != None):
                 print
-                print "fid     :", PrintFormID(pgrd.fid)
+                print "fid     :", pgrd.fid
                 printRecord(pgrd)
                 break
             cLand = wrldCell.LAND
             if(cLand != None):
                 print
-                print "fid     :", PrintFormID(cLand.fid)
+                print "fid     :", cLand.fid
                 printRecord(cLand)
                 break
 ##                print
 ##                print "  LAND"
-##                print "  fid    :", PrintFormID(cLand.fid)
+##                print "  fid    :", cLand.fid
 ##                print "  flags1 :", cLand.flags1
 ##                print "  flags2 :", cLand.flags2
 ##
@@ -8110,7 +8109,7 @@ def TestWRLD():
 ##                    break
 ##                print "  baseTextures"
 ##                for baseTexture in cLand.baseTextures:
-##                    print "    texture  :", PrintFormID(baseTexture.texture)
+##                    print "    texture  :", baseTexture.texture
 ##                    print "    quadrant :", baseTexture.quadrant
 ##                    print "    unused1  :", baseTexture.unused1
 ##                    print "    layer    :", baseTexture.layer
@@ -8118,7 +8117,7 @@ def TestWRLD():
 ##                    break
 ##                print "  alphaLayers"
 ##                for alphaLayer in cLand.alphaLayers:
-##                    print "    texture  :", PrintFormID(alphaLayer.texture)
+##                    print "    texture  :", alphaLayer.texture
 ##                    print "    quadrant :", alphaLayer.quadrant
 ##                    print "    unused1  :", alphaLayer.unused1
 ##                    print "    layer    :", alphaLayer.layer
@@ -8133,7 +8132,7 @@ def TestWRLD():
 ##                    break
 ##                print "  vertexTextures"
 ##                for vertexTexture in cLand.vertexTextures:
-##                    print "    texture  :", PrintFormID(vertexTexture.texture)
+##                    print "    texture  :", vertexTexture.texture
 ##                    print
 ##                    break
 ##
@@ -8148,30 +8147,30 @@ def TestWRLD():
 ##                        print "        red           :", cColumn.red
 ##                        print "        green         :", cColumn.green
 ##                        print "        blue          :", cColumn.blue
-##                        print "        baseTexture   :", PrintFormID(cColumn.baseTexture)
+##                        print "        baseTexture   :", cColumn.baseTexture
 ##
-##                        print "        layer1Texture :", PrintFormID(cColumn.layer1Texture)
+##                        print "        layer1Texture :", cColumn.layer1Texture
 ##                        print "        layer1Opacity :", cColumn.layer1Opacity
 ##
-##                        print "        layer2Texture :", PrintFormID(cColumn.layer2Texture)
+##                        print "        layer2Texture :", cColumn.layer2Texture
 ##                        print "        layer2Opacity :", cColumn.layer2Opacity
 ##
-##                        print "        layer3Texture :", PrintFormID(cColumn.layer3Texture)
+##                        print "        layer3Texture :", cColumn.layer3Texture
 ##                        print "        layer3Opacity :", cColumn.layer3Opacity
 ##
-##                        print "        layer4Texture :", PrintFormID(cColumn.layer4Texture)
+##                        print "        layer4Texture :", cColumn.layer4Texture
 ##                        print "        layer4Opacity :", cColumn.layer4Opacity
 ##
-##                        print "        layer5Texture :", PrintFormID(cColumn.layer5Texture)
+##                        print "        layer5Texture :", cColumn.layer5Texture
 ##                        print "        layer5Opacity :", cColumn.layer5Opacity
 ##
-##                        print "        layer6Texture :", PrintFormID(cColumn.layer6Texture)
+##                        print "        layer6Texture :", cColumn.layer6Texture
 ##                        print "        layer6Opacity :", cColumn.layer6Opacity
 ##
-##                        print "        layer7Texture :", PrintFormID(cColumn.layer7Texture)
+##                        print "        layer7Texture :", cColumn.layer7Texture
 ##                        print "        layer7Opacity :", cColumn.layer7Opacity
 ##
-##                        print "        layer8Texture :", PrintFormID(cColumn.layer8Texture)
+##                        print "        layer8Texture :", cColumn.layer8Texture
 ##                        print "        layer8Opacity :", cColumn.layer8Opacity
 ##                        print
 ##                        break
@@ -8192,9 +8191,9 @@ def TestWRLD():
     newRecord.eid = "WRLDWarTest"
 
     newRecord.full =  "TestWarWorld"
-    newRecord.parent = 7
-    newRecord.climate = 8
-    newRecord.water = 9
+    newRecord.parent = FormID(7)
+    newRecord.climate = FormID(8)
+    newRecord.water = FormID(9)
     newRecord.mapPath = r"MapTest\Path\Destination\test.dds"
     newRecord.dimX = 10
     newRecord.dimY = 11
@@ -8207,20 +8206,20 @@ def TestWRLD():
     newRecord.yMinObjBounds = 17.0
     newRecord.xMaxObjBounds = 18.0
     newRecord.yMaxObjBounds = 19.0
-    newRecord.sound = 20
+    newRecord.sound = FormID(20)
     newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
 
     print "WRLD:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "full      :", newRecord.full
-    print "parent    :", PrintFormID(newRecord.parent)
-    print "climate   :", PrintFormID(newRecord.climate)
-    print "water     :", PrintFormID(newRecord.water)
+    print "parent    :", newRecord.parent
+    print "climate   :", newRecord.climate
+    print "water     :", newRecord.water
     print "mapPath   :", newRecord.mapPath
     print "dimX      :", newRecord.dimX
     print "dimY      :", newRecord.dimY
@@ -8349,13 +8348,13 @@ def TestDIAL():
 
     for record in Current.LoadOrderMods[0].DIAL:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
 
         print "infos"
         for info in record.INFO:
             print
-            print "fid     :", PrintFormID(info.fid)
+            print "fid     :", info.fid
             printRecord(info)
             break
         break
@@ -8372,7 +8371,7 @@ def TestDIAL():
     print "eid..."
     newRecord.eid = "DIALWarTest"
 
-    newRecord.quests = [0xFF000121, 0xFE000222]
+    newRecord.quests = [FormID(0xFF000121), FormID(0xFE000222)]
     print "full..."
     newRecord.full = "Fancy DIAL"
     newRecord.dialType = 1
@@ -8384,10 +8383,10 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.quest = 7
-    newInfo.topic = 10
-    newInfo.prevInfo = 15
-    newInfo.addTopics = [7,15,22]
+    newInfo.quest = FormID(7)
+    newInfo.topic = FormID(10)
+    newInfo.prevInfo = FormID(15)
+    newInfo.addTopics = [FormID(7),FormID(15),FormID(22)]
 
     newResponse = newInfo.create_response()
     newResponse.emotionType = 1
@@ -8423,8 +8422,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8432,7 +8431,7 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8441,8 +8440,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8456,9 +8455,9 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]
+    newInfo.choices = [FormID(0x0A), FormID(0x0B), FormID(0x0C)]
 
-    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
+    newInfo.linksFrom = [FormID(0x0D), FormID(0x0E), FormID(0x0F)]
 
 
     newInfo.unused1 = [2,3,4,5]
@@ -8469,7 +8468,7 @@ def TestDIAL():
     newInfo.compiled_p = [1,67,255]
     newInfo.scriptText = "scn DummyScript\nThis won't compile"
 
-    newInfo.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newInfo.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
 
     print "INFO:Set Test"
@@ -8479,10 +8478,10 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.quest = 7
-    newInfo.topic = 10
-    newInfo.prevInfo = 15
-    newInfo.addTopics = [7,15,22]
+    newInfo.quest = FormID(7)
+    newInfo.topic = FormID(10)
+    newInfo.prevInfo = FormID(15)
+    newInfo.addTopics = [FormID(7),FormID(15),FormID(22)]
 
     newResponse = newInfo.create_response()
     newResponse.emotionType = 1
@@ -8518,8 +8517,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8527,7 +8526,7 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8536,8 +8535,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8551,9 +8550,9 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]
+    newInfo.choices = [FormID(0x0A), FormID(0x0B), FormID(0x0C)]
 
-    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
+    newInfo.linksFrom = [FormID(0x0D), FormID(0x0E), FormID(0x0F)]
 
     print "INFO:Set Test"
     newInfo = newRecord.create_INFO()
@@ -8562,10 +8561,10 @@ def TestDIAL():
 
     newInfo.dialType = 1
     newInfo.flags = 2
-    newInfo.quest = 7
-    newInfo.topic = 10
-    newInfo.prevInfo = 15
-    newInfo.addTopics = [7,15,22]
+    newInfo.quest = FormID(7)
+    newInfo.topic = FormID(10)
+    newInfo.prevInfo = FormID(15)
+    newInfo.addTopics = [FormID(7),FormID(15),FormID(22)]
 
     newResponse = newInfo.create_response()
     newResponse.emotionType = 1
@@ -8601,8 +8600,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8610,7 +8609,7 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8619,8 +8618,8 @@ def TestDIAL():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newInfo.create_condition()
@@ -8634,9 +8633,9 @@ def TestDIAL():
 
     newInfo.conditions = [newInfo.conditions[3], newInfo.conditions[1], newInfo.conditions[0]]
 
-    newInfo.choices = [0x0A, 0x0B, 0x0C]
+    newInfo.choices = [FormID(0x0A), FormID(0x0B), FormID(0x0C)]
 
-    newInfo.linksFrom = [0x0D, 0x0E, 0x0F]
+    newInfo.linksFrom = [FormID(0x0D), FormID(0x0E), FormID(0x0F)]
 
 
     newInfo.unused1 = [2,3,4,5]
@@ -8647,37 +8646,37 @@ def TestDIAL():
     newInfo.compiled_p = [1,67,255]
     newInfo.scriptText = "scn DummyScript\nThis won't compile"
 
-    newInfo.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newInfo.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newInfo.references = [newInfo.references[3], newInfo.references[1], newInfo.references[0]]
 
     print "DIAL:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
     print "quests"
     for quest in newRecord.quests:
-        print "  ", PrintFormID(quest)
+        print "  ", quest
     print "full     :", newRecord.full
     print "dialType :", newRecord.dialType
 
     print "infos"
     for info in newRecord.INFO:
         print
-        print "  fid    :", PrintFormID(info.fid)
+        print "  fid    :", info.fid
         print "  flags1 :", info.flags1
         print "  flags2 :", info.flags2
 
         print "  dialType     :", info.dialType
         print "  flags        :", info.flags
-        print "  quest        :", PrintFormID(info.quest)
-        print "  topic        :", PrintFormID(info.topic)
-        print "  prevInfo     :", PrintFormID(info.prevInfo)
+        print "  quest        :", info.quest
+        print "  topic        :", info.topic
+        print "  prevInfo     :", info.prevInfo
         print "  addTopics"
         for topic in info.addTopics:
-            print "    ", PrintFormID(topic)
+            print "    ", topic
 
         print "  responses"
         for response in info.responses:
@@ -8703,11 +8702,11 @@ def TestDIAL():
 
         print "  choices"
         for choice in info.choices:
-            print "    ", PrintFormID(choice)
+            print "    ", choice
 
         print "  linksFrom"
         for linksFrom in info.linksFrom:
-            print "    ", PrintFormID(linksFrom)
+            print "    ", linksFrom
 
         print "  unused1      :", info.unused1
         print "  numRefs      :", info.numRefs
@@ -8720,7 +8719,7 @@ def TestDIAL():
         print "  references"
         for reference in info.references:
             if isinstance(reference, tuple):
-                print "    SCRO:", PrintFormID(reference)
+                print "    SCRO:", reference
             else:
                 print "    SCRV:", reference
 
@@ -8750,7 +8749,7 @@ def TestQUST():
 
     for record in Current.LoadOrderMods[0].QUST:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -8767,7 +8766,7 @@ def TestQUST():
     print "eid..."
     newRecord.eid = "QUSTWarTest"
 
-    newRecord.script = 7
+    newRecord.script = FormID(7)
     newRecord.full = "Waruddar's Quest Test"
     newRecord.iconPath = r"QUST\Icon\Path\Test.dds"
     newRecord.flags = 1
@@ -8778,8 +8777,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -8787,7 +8786,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8796,8 +8795,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -8821,8 +8820,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8830,7 +8829,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 8
+    newCondition.param1 = FormID(8)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8839,8 +8838,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 9
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(9)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8863,7 +8862,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "10Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -8874,8 +8873,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8883,7 +8882,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8892,8 +8891,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8916,7 +8915,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "20Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -8927,8 +8926,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8936,7 +8935,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -8945,8 +8944,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8969,7 +8968,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "30Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
@@ -8984,8 +8983,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -8993,7 +8992,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9002,8 +9001,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9026,7 +9025,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "11Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -9037,8 +9036,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9046,7 +9045,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9055,8 +9054,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9079,7 +9078,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "21Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -9090,8 +9089,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9099,7 +9098,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9108,8 +9107,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9132,7 +9131,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "31Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
@@ -9147,8 +9146,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9156,7 +9155,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9165,8 +9164,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9189,7 +9188,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "12Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -9200,8 +9199,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9209,7 +9208,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9218,8 +9217,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9242,7 +9241,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "22Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newEntry = newStage.create_entry()
@@ -9253,8 +9252,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9262,7 +9261,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9271,8 +9270,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newEntry.create_condition()
@@ -9295,7 +9294,7 @@ def TestQUST():
     newEntry.compiled_p = []
     newEntry.scriptText = "32Another futile attempt at making this thing work"
 
-    newEntry.references = [('Oblivion.esm',0x000007), 8, ('Oblivion.esm',0x000009), 10]
+    newEntry.references = [FormID('Oblivion.esm',0x000007), 8, FormID('Oblivion.esm',0x000009), 10]
     newEntry.references = [newEntry.references[0], newEntry.references[2], newEntry.references[3], newEntry.references[0], newEntry.references[1]]
 
     newStage.entries = [newStage.entries[2], newStage.entries[0]]
@@ -9303,7 +9302,7 @@ def TestQUST():
     newRecord.stages = [newRecord.stages[2], newRecord.stages[0]]
 
     newTarget = newRecord.create_target()
-    newTarget.targetId = 7
+    newTarget.targetId = FormID(7)
     newTarget.flags = 1
     newTarget.unused1 = [1,2,3]
 
@@ -9312,8 +9311,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9321,7 +9320,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9330,8 +9329,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9346,7 +9345,7 @@ def TestQUST():
     newTarget.conditions = [newTarget.conditions[3], newTarget.conditions[1], newTarget.conditions[0]]
 
     newTarget = newRecord.create_target()
-    newTarget.targetId = 8
+    newTarget.targetId = FormID(8)
     newTarget.flags = 2
     newTarget.unused1 = [1,2,3]
 
@@ -9355,8 +9354,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9364,7 +9363,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9373,8 +9372,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9389,7 +9388,7 @@ def TestQUST():
     newTarget.conditions = [newTarget.conditions[3], newTarget.conditions[1], newTarget.conditions[0]]
 
     newTarget = newRecord.create_target()
-    newTarget.targetId = 9
+    newTarget.targetId = FormID(9)
     newTarget.flags = 3
     newTarget.unused1 = [1,2,3]
 
@@ -9398,8 +9397,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9407,7 +9406,7 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 7
+    newCondition.param1 = FormID(7)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9416,8 +9415,8 @@ def TestQUST():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 7
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(7)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newTarget.create_condition()
@@ -9435,12 +9434,12 @@ def TestQUST():
 
     print "QUST:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "script     :", PrintFormID(newRecord.script)
+    print "script     :", newRecord.script
     print "full       :", newRecord.full
     print "iconPath   :", newRecord.iconPath
     print "flags      :", newRecord.flags
@@ -9483,14 +9482,14 @@ def TestQUST():
             print "    references"
             for reference in entry.references:
                 if isinstance(reference, tuple):
-                    print "      SCRO:", PrintFormID(reference)
+                    print "      SCRO:", reference
                 else:
                     print "      SCRV:", reference
             print
         print
     print "targets"
     for target in newRecord.targets:
-        print "  targetId :", PrintFormID(target.targetId)
+        print "  targetId :", target.targetId
         print "  flags    :", target.flags
         print "  unused1  :", target.unused1
         print "  conditions"
@@ -9526,7 +9525,7 @@ def TestIDLE():
 
     for record in Current.LoadOrderMods[0].IDLE:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -9554,8 +9553,8 @@ def TestIDLE():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -9563,7 +9562,7 @@ def TestIDLE():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9572,8 +9571,8 @@ def TestIDLE():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -9588,12 +9587,12 @@ def TestIDLE():
     newRecord.conditions = [newRecord.conditions[3], newRecord.conditions[1], newRecord.conditions[0]]
 
     newRecord.group = 1
-    newRecord.parent = 7
-    newRecord.prevId = 15
+    newRecord.parent = FormID(7)
+    newRecord.prevId = FormID(15)
 
     print "IDLE:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9614,8 +9613,8 @@ def TestIDLE():
         print
 
     print "group  :", newRecord.group
-    print "parent :", PrintFormID(newRecord.parent)
-    print "prevId :", PrintFormID(newRecord.prevId)
+    print "parent :", newRecord.parent
+    print "prevId :", newRecord.prevId
 
     print "IDLE:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].IDLE:
@@ -9639,7 +9638,7 @@ def TestPACK():
 
     for record in Current.LoadOrderMods[0].PACK:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -9675,8 +9674,8 @@ def TestPACK():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 2
     newCondition.ifunc = 280
-    newCondition.param1 = 4
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(4)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -9684,7 +9683,7 @@ def TestPACK():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 3
     newCondition.ifunc = 214
-    newCondition.param1 = 5
+    newCondition.param1 = FormID(5)
     newCondition.param2 = 365
     newCondition.unused2 = [1,2,3,4]
 
@@ -9693,8 +9692,8 @@ def TestPACK():
     newCondition.unused1 = [1,2,3]
     newCondition.compValue = 4
     newCondition.ifunc = 280
-    newCondition.param1 = 6
-    newCondition.param2 = 10
+    newCondition.param1 = FormID(6)
+    newCondition.param2 = FormID(10)
     newCondition.unused2 = [1,2,3,4]
 
     newCondition = newRecord.create_condition()
@@ -9710,7 +9709,7 @@ def TestPACK():
 
     print "PACK:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9721,7 +9720,7 @@ def TestPACK():
 
     print "locType   :", newRecord.locType
     if(newRecord.locType != 5):
-        print "locId     :", PrintFormID(newRecord.locId)
+        print "locId     :", newRecord.locId
     else:
         print "locId     :", newRecord.locId
     print "locRadius :", newRecord.locRadius
@@ -9734,7 +9733,7 @@ def TestPACK():
 
     print "targetType  :", newRecord.targetType
     if(newRecord.targetType != 2):
-        print "targetId    :", PrintFormID(newRecord.targetId)
+        print "targetId    :", newRecord.targetId
     else:
         print "targetId    :", newRecord.targetId
     print "targetCount :", newRecord.targetCount
@@ -9772,7 +9771,7 @@ def TestCSTY():
 
     for record in Current.LoadOrderMods[0].CSTY:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -9855,7 +9854,7 @@ def TestCSTY():
 
     print "CSTY:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -9947,7 +9946,7 @@ def TestLSCR():
 
     for record in Current.LoadOrderMods[0].LSCR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -9967,26 +9966,26 @@ def TestLSCR():
     newRecord.text = "Hrm, what on earth could be going on?\n I don't know what this is all about, but I'm sure it'll be fine"
 
     newLocation = newRecord.create_location()
-    newLocation.direct = 7
-    newLocation.indirect = 10
+    newLocation.direct = FormID(7)
+    newLocation.indirect = FormID(10)
     newLocation.gridY = 0
     newLocation.gridX = 1
 
     newLocation = newRecord.create_location()
-    newLocation.direct = 8
-    newLocation.indirect = 11
+    newLocation.direct = FormID(8)
+    newLocation.indirect = FormID(11)
     newLocation.gridY = 2
     newLocation.gridX = 3
 
     newLocation = newRecord.create_location()
-    newLocation.direct = 9
-    newLocation.indirect = 12
+    newLocation.direct = FormID(9)
+    newLocation.indirect = FormID(12)
     newLocation.gridY = 4
     newLocation.gridX = 5
 
     newLocation = newRecord.create_location()
-    newLocation.direct = 10
-    newLocation.indirect = 13
+    newLocation.direct = FormID(10)
+    newLocation.indirect = FormID(13)
     newLocation.gridY = 6
     newLocation.gridX = 7
 
@@ -9994,7 +9993,7 @@ def TestLSCR():
 
     print "LSCR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10003,8 +10002,8 @@ def TestLSCR():
     print "text     :", newRecord.text
     print "locations"
     for location in newRecord.locations:
-        print "  direct   :", PrintFormID(location.direct)
-        print "  indirect :", PrintFormID(location.indirect)
+        print "  direct   :", location.direct
+        print "  indirect :", location.indirect
         print "  gridY    :", location.gridY
         print "  gridX    :", location.gridX
 
@@ -10030,7 +10029,7 @@ def TestLVSP():
 
     for record in Current.LoadOrderMods[0].LVSP:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -10052,32 +10051,32 @@ def TestLVSP():
     entry = newRecord.create_entry()
     entry.level = 1
     entry.unused1 = [0x14, 0xFF]
-    entry.listId = 0x0100000A
+    entry.listId = FormID(0x0100000A)
     entry.count = 2
     entry.unused2 = [0x15, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 3
     entry.unused1 = [0x16, 0xFF]
-    entry.listId = 0x0000000B
+    entry.listId = FormID(0x0000000B)
     entry.count = 4
     entry.unused2 = [0x17, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 5
     entry.unused1 = [0x18, 0xFF]
-    entry.listId = 0x0000000C
+    entry.listId = FormID(0x0000000C)
     entry.count = 6
     entry.unused2 = [0x19, 0xFF]
     entry = newRecord.create_entry()
     entry.level = 7
     entry.unused1 = [0x20, 0xFF]
-    entry.listId = 0x0000000D
+    entry.listId = FormID(0x0000000D)
     entry.count = 8
     entry.unused2 = [0x21, 0xFF]
     newRecord.entries = [newRecord.entries[3], newRecord.entries[2], newRecord.entries[0]]
 
     print "LVSP:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10089,7 +10088,7 @@ def TestLVSP():
         print
         print "  level   :", entry.level
         print "  unused1 :", entry.unused1
-        print "  listId  :", PrintFormID(entry.listId)
+        print "  listId  :", entry.listId
         print "  count   :", entry.count
         print "  unused2 :", entry.unused2
 
@@ -10115,7 +10114,7 @@ def TestANIO():
 
     for record in Current.LoadOrderMods[0].ANIO:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -10138,10 +10137,10 @@ def TestANIO():
     print "modt_p..."
     newRecord.modt_p = [0x00, 0xFF, 0xFF]
 
-    newRecord.animationId = 7
+    newRecord.animationId = FormID(7)
     print "ANIO:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10150,7 +10149,7 @@ def TestANIO():
     print "modb    :", newRecord.modb
     print "modt_p  :", newRecord.modt_p
 
-    print "animationId :", PrintFormID(newRecord.animationId     )
+    print "animationId :", newRecord.animationId
 
     print "ANIO:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].ANIO:
@@ -10174,7 +10173,7 @@ def TestWATR():
 
     for record in Current.LoadOrderMods[0].WATR:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -10194,7 +10193,7 @@ def TestWATR():
     newRecord.opacity = 1
     newRecord.flags = 2
     newRecord.material = r"WATR\Material\Path\Test\2.dds"
-    newRecord.sound = 7
+    newRecord.sound = FormID(7)
     newRecord.windVelocity = 3
     newRecord.windDirection = 4
     newRecord.waveAmp = 5
@@ -10231,13 +10230,13 @@ def TestWATR():
     newRecord.dispDampner = 32
     newRecord.dispSize = 33
     newRecord.damage = 34
-    newRecord.dayWater = 10
-    newRecord.nightWater = 14
-    newRecord.underWater = 35
+    newRecord.dayWater = FormID(10)
+    newRecord.nightWater = FormID(14)
+    newRecord.underWater = FormID(35)
 
     print "WATR:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10246,7 +10245,7 @@ def TestWATR():
     print "opacity       :", newRecord.opacity
     print "flags         :", newRecord.flags
     print "material      :", newRecord.material
-    print "sound         :", PrintFormID(newRecord.sound                    )
+    print "sound         :", newRecord.sound
     print "windVelocity  :", newRecord.windVelocity
     print "windDirection :", newRecord.windDirection
     print "waveAmp       :", newRecord.waveAmp
@@ -10283,9 +10282,9 @@ def TestWATR():
     print "dispDampner   :", newRecord.dispDampner
     print "dispSize      :", newRecord.dispSize
     print "damage        :", newRecord.damage
-    print "dayWater      :", PrintFormID(newRecord.dayWater)
-    print "nightWater    :", PrintFormID(newRecord.nightWater)
-    print "underWater    :", PrintFormID(newRecord.underWater    )
+    print "dayWater      :", newRecord.dayWater
+    print "nightWater    :", newRecord.nightWater
+    print "underWater    :", newRecord.underWater
 
     print "WATR:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].WATR:
@@ -10309,7 +10308,7 @@ def TestEFSH():
 
     for record in Current.LoadOrderMods[0].EFSH:
         print
-        print "fid     :", PrintFormID(record.fid)
+        print "fid     :", record.fid
         printRecord(record)
         break
 
@@ -10402,7 +10401,7 @@ def TestEFSH():
 
     print "EFSH:Set Test Results"
     print
-    print "fid    :", PrintFormID(newRecord.fid)
+    print "fid    :", newRecord.fid
     print "flags1 :", newRecord.flags1
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
@@ -10515,13 +10514,33 @@ def TestIdenticalToMaster():
             record.CopyAsNew(newMod).UnloadRecord()
             record.UnloadRecord()
 
-##    ident = newMod.GetRecordsIdenticalToMaster()
-##
-##    for record in ident:
-##        print PrintFormID(record.fid)
-##        record.DeleteRecord()
-##    newMod.CleanMasters()
+    ident = newMod.GetRecordsIdenticalToMaster()
+
+    for record in ident:
+        print record.fid
+        record.DeleteRecord()
+    newMod.CleanMasters()
     newMod.save()
+
+def TestUndelete():
+    Current = ObCollection()
+    Current.addMod("Oblivion.esm")
+    Current.addMod("undelete.esp")
+    Current.addMod("TestUndelete.esp")
+    Current.addMod("TestDelete.esp")
+    Current.load()
+    oldMod = Current.LookupModFile("undelete.esp")
+    newMod = Current.LookupModFile("TestUndelete.esp")
+    delMod = Current.LookupModFile("TestDelete.esp")
+    for records in oldMod.aggregates.values():
+        for record in records:
+            if record.IsDeleted:
+                rec = record.CopyAsOverride(newMod)
+                rec.IsDeleted = False
+            rec = record.CopyAsOverride(delMod)
+            rec.IsDeleted = True
+    newMod.save(False)
+    delMod.save()
 
 from timeit import Timer
 
@@ -10575,9 +10594,9 @@ from timeit import Timer
 
 ##regressionTests()
 
-TestIdenticalToMaster()
-##TestTemp()
-##TestAttrReport()
+##TestIdenticalToMaster()
+##TestUndelete()
+TestAttrReport()
 ##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()

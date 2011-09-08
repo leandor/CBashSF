@@ -563,7 +563,7 @@ void * CELLRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 66: //LAND
             return LAND;
         case 67: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

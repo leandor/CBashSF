@@ -495,15 +495,13 @@ bool NAVMRecord::NAVMNVEX::operator !=(const NAVMNVEX &other) const
     }
 
 NAVMRecord::NAVMRecord(unsigned char *_recData):
-    FNVRecord(_recData),
-    Parent(NULL)
+    FNVRecord(_recData)
     {
     //
     }
 
 NAVMRecord::NAVMRecord(NAVMRecord *srcRecord):
-    FNVRecord(),
-    Parent(NULL)
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -561,11 +559,6 @@ UINT32 NAVMRecord::GetType()
 STRING NAVMRecord::GetStrType()
     {
     return "NAVM";
-    }
-
-Record * NAVMRecord::GetParent()
-    {
-    return Parent;
     }
 
 SINT32 NAVMRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
@@ -688,21 +681,21 @@ bool NAVMRecord::equals(Record *other)
 bool NAVMRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    NAVMRecord *master_refr = (NAVMRecord *)master;
+    CELLRecord *parent_cell = (CELLRecord *)GetParentRecord(), *master_cell = (CELLRecord *)((NAVMRecord *)master)->GetParentRecord();
     //Check to make sure the parent cell is attached at the same spot
-    if(Parent->formID != master_refr->Parent->formID)
+    if(parent_cell->formID != master_cell->formID)
         return false;
-    if(!((CELLRecord *)Parent)->IsInterior())
+    if(!parent_cell->IsInterior())
         {
-        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_refr->Parent)->Parent->formID)
+        if(parent_cell->GetParentRecord()->formID != master_cell->GetParentRecord()->formID)
             return false;
-        read_self.Accept(Parent);
-        read_master.Accept(master_refr->Parent);
-        ((CELLRecord *)Parent)->XCLC.Load();
-        ((CELLRecord *)master_refr->Parent)->XCLC.Load();
-        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_refr->Parent)->XCLC->posX)
+        read_self.Accept((Record *&)parent_cell);
+        read_master.Accept((Record *&)master_cell);
+        parent_cell->XCLC.Load();
+        master_cell->XCLC.Load();
+        if(parent_cell->XCLC->posX != master_cell->XCLC->posX)
             return false;
-        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_refr->Parent)->XCLC->posY)
+        if(parent_cell->XCLC->posY != master_cell->XCLC->posY)
             return false;
         }
     return true;

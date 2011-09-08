@@ -50,15 +50,13 @@ bool ROADRecord::ROADPGRR::operator !=(const ROADPGRR &other) const
     }
 
 ROADRecord::ROADRecord(unsigned char *_recData):
-    Record(_recData),
-    Parent(NULL)
+    Record(_recData)
     {
     //
     }
 
 ROADRecord::ROADRecord(ROADRecord *srcRecord):
-    Record(),
-    Parent(NULL)
+    Record()
     {
     if(srcRecord == NULL)
         return;
@@ -92,11 +90,6 @@ UINT32 ROADRecord::GetType()
 STRING ROADRecord::GetStrType()
     {
     return "ROAD";
-    }
-
-Record * ROADRecord::GetParent()
-    {
-    return Parent;
     }
 
 SINT32 ROADRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
@@ -176,9 +169,8 @@ bool ROADRecord::equals(Record *other)
 bool ROADRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    const ROADRecord *master_road = (ROADRecord *)master;
     //Check to make sure the parent cell is attached at the same spot
-    if(Parent->formID != master_road->Parent->formID)
+    if(GetParentRecord()->formID != ((ROADRecord *)master)->GetParentRecord()->formID)
         return false;
     return true;
     }

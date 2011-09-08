@@ -281,9 +281,7 @@ bool DIALRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read
     {
     //Precondition: equals has been run for these records and returned true
     //              all child records have been visited
-    const DIALRecord *master_dial = (DIALRecord *)master;
-
-    if(INFO.size() > master_dial->INFO.size())
+    if(INFO.size() > ((DIALRecord *)master)->INFO.size())
         return false;
 
     for(UINT32 ListIndex = 0; ListIndex < INFO.size(); ++ListIndex)

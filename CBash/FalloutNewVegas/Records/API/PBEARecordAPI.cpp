@@ -602,7 +602,7 @@ void * PBEARecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 55: //rotZ
             return &DATA.value.rotZ;
         case 56: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

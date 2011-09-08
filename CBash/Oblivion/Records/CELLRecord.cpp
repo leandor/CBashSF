@@ -84,8 +84,7 @@ bool CELLRecord::CELLXCLC::operator !=(const CELLXCLC &other) const
 CELLRecord::CELLRecord(unsigned char *_recData):
     Record(_recData),
     PGRD(NULL),
-    LAND(NULL),
-    Parent(NULL)
+    LAND(NULL)
     {
     //
     }
@@ -93,8 +92,7 @@ CELLRecord::CELLRecord(unsigned char *_recData):
 CELLRecord::CELLRecord(CELLRecord *srcRecord):
     Record(),
     PGRD(NULL),
-    LAND(NULL),
-    Parent(NULL)
+    LAND(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -305,11 +303,6 @@ STRING CELLRecord::GetStrType()
     return "CELL";
     }
 
-Record * CELLRecord::GetParent()
-    {
-    return Parent;
-    }
-
 SINT32 CELLRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
@@ -455,10 +448,10 @@ bool CELLRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read
     //Precondition: equals has been run for these records and returned true
     //              all child records have been visited
 
-    const CELLRecord *master_cell = (CELLRecord *)master;
+    CELLRecord *master_cell = (CELLRecord *)master;
     //Check to make sure the CELLs are attached at the same spot
     if(!IsInterior())
-        if(Parent->formID != master_cell->Parent->formID)
+        if(GetParentRecord()->formID != master_cell->GetParentRecord()->formID)
             return false;
 
     if(ACHR.size() > master_cell->ACHR.size())

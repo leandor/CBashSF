@@ -203,7 +203,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 3: //flags2
             return cleaned_flag2();
         case 50: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             break;
         }

@@ -422,7 +422,7 @@ void * INFORecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 ((FORMIDARRAY)FieldValues)[x] = SCR_.value[x]->reference;
             return NULL;
         case 23: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

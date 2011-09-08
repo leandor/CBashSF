@@ -208,8 +208,7 @@ LANDRecord::LANDRecord(unsigned char *_recData):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL),
-    Parent(NULL)
+    SouthLand(NULL)
     {
     //LAND records are normally compressed due to size
     if(_recData == NULL)
@@ -221,8 +220,7 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
     WestLand(NULL),
     EastLand(NULL),
     NorthLand(NULL),
-    SouthLand(NULL),
-    Parent(NULL)
+    SouthLand(NULL)
     {
     if(srcRecord == NULL)
         return;
@@ -311,11 +309,6 @@ UINT32 LANDRecord::GetType()
 STRING LANDRecord::GetStrType()
     {
     return "LAND";
-    }
-
-Record * LANDRecord::GetParent()
-    {
-    return Parent;
     }
 
 FLOAT32 LANDRecord::CalcHeight(const UINT32 &row, const UINT32 &column)
@@ -470,21 +463,21 @@ bool LANDRecord::equals(Record *other)
 bool LANDRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    LANDRecord *master_land = (LANDRecord *)master;
+    CELLRecord *parent_cell = (CELLRecord *)GetParentRecord(), *master_cell = (CELLRecord *)((LANDRecord *)master)->GetParentRecord();
     //Check to make sure the parent cell is attached at the same spot
-    if(Parent->formID != master_land->Parent->formID)
+    if(parent_cell->formID != master_cell->formID)
         return false;
-    if(!((CELLRecord *)Parent)->IsInterior())
+    if(!parent_cell->IsInterior())
         {
-        if(((CELLRecord *)Parent)->Parent->formID != ((CELLRecord *)master_land->Parent)->Parent->formID)
+        if(parent_cell->GetParentRecord()->formID != master_cell->GetParentRecord()->formID)
             return false;
-        read_self.Accept(Parent);
-        read_master.Accept(master_land->Parent);
-        ((CELLRecord *)Parent)->XCLC.Load();
-        ((CELLRecord *)master_land->Parent)->XCLC.Load();
-        if(((CELLRecord *)Parent)->XCLC->posX != ((CELLRecord *)master_land->Parent)->XCLC->posX)
+        read_self.Accept((Record *&)parent_cell);
+        read_master.Accept((Record *&)master_cell);
+        parent_cell->XCLC.Load();
+        master_cell->XCLC.Load();
+        if(parent_cell->XCLC->posX != master_cell->XCLC->posX)
             return false;
-        if(((CELLRecord *)Parent)->XCLC->posY != ((CELLRecord *)master_land->Parent)->XCLC->posY)
+        if(parent_cell->XCLC->posY != master_cell->XCLC->posY)
             return false;
         }
     return true;

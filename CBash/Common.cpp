@@ -557,6 +557,7 @@ bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
 
 CreateRecordOptions::CreateRecordOptions():
     SetAsOverride(false),
+    CopyWinningParent(false),
     ExistingReturned(false)
     {
     //
@@ -564,6 +565,7 @@ CreateRecordOptions::CreateRecordOptions():
 
 CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     SetAsOverride((nFlags & fSetAsOverride) != 0),
+    CopyWinningParent((nFlags & fCopyWinningParent) != 0),
     ExistingReturned(false)
     {
     //
@@ -579,6 +581,8 @@ UINT32 CreateRecordOptions::GetFlags()
     UINT32 flags = 0;
     if(SetAsOverride)
         flags |= fSetAsOverride;
+    if(CopyWinningParent)
+        flags |= fCopyWinningParent;
     return flags;
     }
 
@@ -670,19 +674,21 @@ UINT32 ModFlags::GetFlags()
     return flags;
     }
 
-EqualityOptions::EqualityOptions():
-    IsDeepEquality(false)
+SaveFlags::SaveFlags():
+    IsCleanMasters(true),
+    IsCloseCollection(false)
     {
     //
     }
 
-EqualityOptions::EqualityOptions(UINT32 nFlags):
-    IsDeepEquality((nFlags & fIsDeepEquality) != 0)
+SaveFlags::SaveFlags(UINT32 _Flags):
+    IsCleanMasters((_Flags & fIsCleanMasters) != 0),
+    IsCloseCollection((_Flags & fIsCloseCollection) != 0)
     {
     //
     }
 
-EqualityOptions::~EqualityOptions()
+SaveFlags::~SaveFlags()
     {
     //
     }
@@ -807,6 +813,21 @@ void StringRecord::Copy(STRING FieldValue)
         UINT32 size = (UINT32)strlen(FieldValue) + 1;
         VAL_NAME = new char[size];
         memcpy(VAL_NAME, FieldValue, size);
+        }
+    }
+
+void StringRecord::TruncateCopy(STRING FieldValue, UINT32 MaxSize)
+    {
+    Unload();
+    if(FieldValue != NULL)
+        {
+        S_SET_ON_DISK(false);
+        UINT32 size = (UINT32)strlen(FieldValue) + 1;
+        if(MaxSize > size)
+            size = MaxSize;
+        VAL_NAME = new char[size];
+        memcpy(VAL_NAME, FieldValue, size);
+        VAL_NAME[size - 1] = 0x00; //Ensure null termination in case of truncation
         }
     }
 

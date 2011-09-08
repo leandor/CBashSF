@@ -24,8 +24,8 @@ GPL License and Copyright Notice ============================================
 #include "../GenericRecord.h"
 #include "TES4File.h"
 
-TES4File::TES4File(STRING FileName, STRING ModName, const UINT32 _flags):
-    ModFile(FileName, ModName, _flags)
+TES4File::TES4File(Collection *_Parent, STRING FileName, STRING ModName, const UINT32 _flags):
+    ModFile(_Parent, FileName, ModName, _flags)
     {
     //
     }
@@ -68,7 +68,7 @@ SINT32 TES4File::LoadTES4()
     return 1;
     }
 
-SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
+SINT32 TES4File::Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords)
     {
     enum IgTopRecords {
         eIgGMST = REV32(GMST) | 0x00001000, //Record::fIsIgnored
@@ -146,11 +146,10 @@ SINT32 TES4File::Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expander
     UINT32 GRUPLabel;
     boost::unordered_set<UINT32> UsedFormIDs;
 
-    RecordReader read_parser(FormIDHandler, Expanders);
     RecordOp skip_parser;
     RecordOp &parser = Flags.IsFullLoad ? read_parser : skip_parser;
 
-    RecordProcessor processor(FormIDHandler, Flags, UsedFormIDs);
+    RecordProcessor processor(this, FormIDHandler, Flags, UsedFormIDs);
 
     while(buffer_position < buffer_end){
         buffer_position += 4; //Skip "GRUP"
@@ -578,7 +577,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 printer("TES4File::CreateRecord: Error - Unable to create GMST record in mod \"%s\". No valid editorID is available.\n", ModName);
                 return NULL;
                 }
-            newRecord = GMST.pool.construct(SourceRecord);
+            newRecord = GMST.pool.construct(SourceRecord, this, true);
 
             if(RecordEditorID != NULL)
                 {
@@ -587,21 +586,21 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 }
             return newRecord;
         case REV32(GLOB):
-            return GLOB.pool.construct(SourceRecord);
+            return GLOB.pool.construct(SourceRecord, this, true);
         case REV32(CLAS):
-            return CLAS.pool.construct(SourceRecord);
+            return CLAS.pool.construct(SourceRecord, this, true);
         case REV32(FACT):
-            return FACT.pool.construct(SourceRecord);
+            return FACT.pool.construct(SourceRecord, this, true);
         case REV32(HAIR):
-            return HAIR.pool.construct(SourceRecord);
+            return HAIR.pool.construct(SourceRecord, this, true);
         case REV32(EYES):
-            return EYES.pool.construct(SourceRecord);
+            return EYES.pool.construct(SourceRecord, this, true);
         case REV32(RACE):
-            return RACE.pool.construct(SourceRecord);
+            return RACE.pool.construct(SourceRecord, this, true);
         case REV32(SOUN):
-            return SOUN.pool.construct(SourceRecord);
+            return SOUN.pool.construct(SourceRecord, this, true);
         case REV32(SKIL):
-            return SKIL.pool.construct(SourceRecord);
+            return SKIL.pool.construct(SourceRecord, this, true);
         case REV32(MGEF):
             if(RecordEditorID == NULL && SourceRecord == NULL)
                 {
@@ -609,79 +608,79 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            newRecord = MGEF.pool.construct(SourceRecord);
+            newRecord = MGEF.pool.construct(SourceRecord, this, true);
 
             if(RecordEditorID != NULL)
                 ((Ob::MGEFRecord *)newRecord)->EDID.Copy(RecordEditorID);
             return newRecord;
         case REV32(SCPT):
-            return SCPT.pool.construct(SourceRecord);
+            return SCPT.pool.construct(SourceRecord, this, true);
         case REV32(LTEX):
-            return LTEX.pool.construct(SourceRecord);
+            return LTEX.pool.construct(SourceRecord, this, true);
         case REV32(ENCH):
-            return ENCH.pool.construct(SourceRecord);
+            return ENCH.pool.construct(SourceRecord, this, true);
         case REV32(SPEL):
-            return SPEL.pool.construct(SourceRecord);
+            return SPEL.pool.construct(SourceRecord, this, true);
         case REV32(BSGN):
-            return BSGN.pool.construct(SourceRecord);
+            return BSGN.pool.construct(SourceRecord, this, true);
         case REV32(ACTI):
-            return ACTI.pool.construct(SourceRecord);
+            return ACTI.pool.construct(SourceRecord, this, true);
         case REV32(APPA):
-            return APPA.pool.construct(SourceRecord);
+            return APPA.pool.construct(SourceRecord, this, true);
         case REV32(ARMO):
-            return ARMO.pool.construct(SourceRecord);
+            return ARMO.pool.construct(SourceRecord, this, true);
         case REV32(BOOK):
-            return BOOK.pool.construct(SourceRecord);
+            return BOOK.pool.construct(SourceRecord, this, true);
         case REV32(CLOT):
-            return CLOT.pool.construct(SourceRecord);
+            return CLOT.pool.construct(SourceRecord, this, true);
         case REV32(CONT):
-            return CONT.pool.construct(SourceRecord);
+            return CONT.pool.construct(SourceRecord, this, true);
         case REV32(DOOR):
-            return DOOR.pool.construct(SourceRecord);
+            return DOOR.pool.construct(SourceRecord, this, true);
         case REV32(INGR):
-            return INGR.pool.construct(SourceRecord);
+            return INGR.pool.construct(SourceRecord, this, true);
         case REV32(LIGH):
-            return LIGH.pool.construct(SourceRecord);
+            return LIGH.pool.construct(SourceRecord, this, true);
         case REV32(MISC):
-            return MISC.pool.construct(SourceRecord);
+            return MISC.pool.construct(SourceRecord, this, true);
         case REV32(STAT):
-            return STAT.pool.construct(SourceRecord);
+            return STAT.pool.construct(SourceRecord, this, true);
         case REV32(GRAS):
-            return GRAS.pool.construct(SourceRecord);
+            return GRAS.pool.construct(SourceRecord, this, true);
         case REV32(TREE):
-            return TREE.pool.construct(SourceRecord);
+            return TREE.pool.construct(SourceRecord, this, true);
         case REV32(FLOR):
-            return FLOR.pool.construct(SourceRecord);
+            return FLOR.pool.construct(SourceRecord, this, true);
         case REV32(FURN):
-            return FURN.pool.construct(SourceRecord);
+            return FURN.pool.construct(SourceRecord, this, true);
         case REV32(WEAP):
-            return WEAP.pool.construct(SourceRecord);
+            return WEAP.pool.construct(SourceRecord, this, true);
         case REV32(AMMO):
-            return AMMO.pool.construct(SourceRecord);
+            return AMMO.pool.construct(SourceRecord, this, true);
         case REV32(NPC_):
-            return NPC_.pool.construct(SourceRecord);
+            return NPC_.pool.construct(SourceRecord, this, true);
         case REV32(CREA):
-            return CREA.pool.construct(SourceRecord);
+            return CREA.pool.construct(SourceRecord, this, true);
         case REV32(LVLC):
-            return LVLC.pool.construct(SourceRecord);
+            return LVLC.pool.construct(SourceRecord, this, true);
         case REV32(SLGM):
-            return SLGM.pool.construct(SourceRecord);
+            return SLGM.pool.construct(SourceRecord, this, true);
         case REV32(KEYM):
-            return KEYM.pool.construct(SourceRecord);
+            return KEYM.pool.construct(SourceRecord, this, true);
         case REV32(ALCH):
-            return ALCH.pool.construct(SourceRecord);
+            return ALCH.pool.construct(SourceRecord, this, true);
         case REV32(SBSP):
-            return SBSP.pool.construct(SourceRecord);
+            return SBSP.pool.construct(SourceRecord, this, true);
         case REV32(SGST):
-            return SGST.pool.construct(SourceRecord);
+            return SGST.pool.construct(SourceRecord, this, true);
         case REV32(LVLI):
-            return LVLI.pool.construct(SourceRecord);
+            return LVLI.pool.construct(SourceRecord, this, true);
         case REV32(WTHR):
-            return WTHR.pool.construct(SourceRecord);
+            return WTHR.pool.construct(SourceRecord, this, true);
         case REV32(CLMT):
-            return CLMT.pool.construct(SourceRecord);
+            return CLMT.pool.construct(SourceRecord, this, true);
         case REV32(REGN):
-            return REGN.pool.construct(SourceRecord);
+            return REGN.pool.construct(SourceRecord, this, true);
         case REV32(WCEL):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
                 {
@@ -696,14 +695,13 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return ((Ob::WRLDRecord *)ParentRecord)->CELL;
                 }
 
-            ((Ob::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
+            ((Ob::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
             ((Ob::CELLRecord *)((Ob::WRLDRecord *)ParentRecord)->CELL)->IsInterior(false);
-            ((Ob::CELLRecord *)((Ob::WRLDRecord *)ParentRecord)->CELL)->Parent = ParentRecord;
             return ((Ob::WRLDRecord *)ParentRecord)->CELL;
         case REV32(CELL):
             if(ParentRecord == NULL)
                 {
-                newRecord = CELL.cell_pool.construct(SourceRecord);
+                newRecord = CELL.cell_pool.construct(SourceRecord, this, true);
                 ((Ob::CELLRecord *)newRecord)->IsInterior(true);
                 return newRecord;
                 }
@@ -717,7 +715,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
 
                 //If the SourceRecord is a world cell, then the copy will be a world cell
 
-                if(SourceRecord != NULL && ((Ob::WRLDRecord *)((Ob::CELLRecord *)SourceRecord)->Parent)->CELL == SourceRecord)
+                if(SourceRecord != NULL && ((Ob::WRLDRecord *)((Ob::CELLRecord *)SourceRecord)->GetParentRecord())->CELL == SourceRecord)
                     {
                     //If a world cell already exists, return it instead of making a new one
                     if(((Ob::WRLDRecord *)ParentRecord)->CELL != NULL)
@@ -725,22 +723,21 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                         options.ExistingReturned = true;
                         return ((Ob::WRLDRecord *)ParentRecord)->CELL;
                         }
-                    newRecord = ((Ob::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord);
+                    newRecord = ((Ob::WRLDRecord *)ParentRecord)->CELL = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
                     }
                 else
                     {
-                    newRecord = WRLD.cell_pool.construct(SourceRecord);
+                    newRecord = WRLD.cell_pool.construct(SourceRecord, ParentRecord, false);
                     ((Ob::WRLDRecord *)ParentRecord)->CELLS.push_back(newRecord);
                     }
 
                 ((Ob::CELLRecord *)newRecord)->IsInterior(false);
-                ((Ob::CELLRecord *)newRecord)->Parent = ParentRecord;
                 return newRecord;
                 }
         case REV32(WRLD):
-            return WRLD.wrld_pool.construct(SourceRecord);
+            return WRLD.wrld_pool.construct(SourceRecord, this, true);
         case REV32(DIAL):
-            return DIAL.dial_pool.construct(SourceRecord);
+            return DIAL.dial_pool.construct(SourceRecord, this, true);
         case REV32(INFO):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(DIAL))
                 {
@@ -748,8 +745,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((Ob::DIALRecord *)ParentRecord)->INFO.push_back(DIAL.info_pool.construct(SourceRecord));
-            ((Ob::INFORecord *)((Ob::DIALRecord *)ParentRecord)->INFO.back())->Parent = ParentRecord;
+            ((Ob::DIALRecord *)ParentRecord)->INFO.push_back(DIAL.info_pool.construct(SourceRecord, ParentRecord, false));
             return ((Ob::DIALRecord *)ParentRecord)->INFO.back();
         case REV32(PGRD):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -765,8 +761,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return ((Ob::CELLRecord *)ParentRecord)->PGRD;
                 }
 
-            ((Ob::CELLRecord *)ParentRecord)->PGRD = CELL.pgrd_pool.construct(SourceRecord);
-            ((Ob::PGRDRecord *)((Ob::CELLRecord *)ParentRecord)->PGRD)->Parent = ParentRecord;
+            ((Ob::CELLRecord *)ParentRecord)->PGRD = CELL.pgrd_pool.construct(SourceRecord, ParentRecord, false);
             return ((Ob::CELLRecord *)ParentRecord)->PGRD;
         case REV32(LAND):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -782,8 +777,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return ((Ob::CELLRecord *)ParentRecord)->LAND;
                 }
 
-            ((Ob::CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord);
-            ((Ob::LANDRecord *)((Ob::CELLRecord *)ParentRecord)->LAND)->Parent = ParentRecord;
+            ((Ob::CELLRecord *)ParentRecord)->LAND = WRLD.land_pool.construct(SourceRecord, ParentRecord, false);
             return ((Ob::CELLRecord *)ParentRecord)->LAND;
         case REV32(ACHR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -792,8 +786,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((Ob::CELLRecord *)ParentRecord)->ACHR.push_back(CELL.achr_pool.construct(SourceRecord));
-            ((Ob::ACHRRecord *)((Ob::CELLRecord *)ParentRecord)->ACHR.back())->Parent = ParentRecord;
+            ((Ob::CELLRecord *)ParentRecord)->ACHR.push_back(CELL.achr_pool.construct(SourceRecord, ParentRecord, false));
             return ((Ob::CELLRecord *)ParentRecord)->ACHR.back();
         case REV32(ACRE):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -802,8 +795,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((Ob::CELLRecord *)ParentRecord)->ACRE.push_back(CELL.acre_pool.construct(SourceRecord));
-            ((Ob::ACRERecord *)((Ob::CELLRecord *)ParentRecord)->ACRE.back())->Parent = ParentRecord;
+            ((Ob::CELLRecord *)ParentRecord)->ACRE.push_back(CELL.acre_pool.construct(SourceRecord, ParentRecord, false));
             return ((Ob::CELLRecord *)ParentRecord)->ACRE.back();
         case REV32(REFR):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(CELL))
@@ -812,8 +804,7 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return NULL;
                 }
 
-            ((Ob::CELLRecord *)ParentRecord)->REFR.push_back(CELL.refr_pool.construct(SourceRecord));
-            ((Ob::REFRRecord *)((Ob::CELLRecord *)ParentRecord)->REFR.back())->Parent = ParentRecord;
+            ((Ob::CELLRecord *)ParentRecord)->REFR.push_back(CELL.refr_pool.construct(SourceRecord, ParentRecord, false));
             return ((Ob::CELLRecord *)ParentRecord)->REFR.back();
         case REV32(ROAD):
             if(ParentRecord == NULL || ParentRecord->GetType() != REV32(WRLD))
@@ -829,27 +820,26 @@ Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEd
                 return ((Ob::WRLDRecord *)ParentRecord)->ROAD;
                 }
 
-            ((Ob::WRLDRecord *)ParentRecord)->ROAD = WRLD.road_pool.construct(SourceRecord);
-            ((Ob::ROADRecord *)((Ob::WRLDRecord *)ParentRecord)->ROAD)->Parent = ParentRecord;
+            ((Ob::WRLDRecord *)ParentRecord)->ROAD = WRLD.road_pool.construct(SourceRecord, ParentRecord, false);
             return ((Ob::WRLDRecord *)ParentRecord)->ROAD;
         case REV32(QUST):
-            return QUST.pool.construct(SourceRecord);
+            return QUST.pool.construct(SourceRecord, this, true);
         case REV32(IDLE):
-            return IDLE.pool.construct(SourceRecord);
+            return IDLE.pool.construct(SourceRecord, this, true);
         case REV32(PACK):
-            return PACK.pool.construct(SourceRecord);
+            return PACK.pool.construct(SourceRecord, this, true);
         case REV32(CSTY):
-            return CSTY.pool.construct(SourceRecord);
+            return CSTY.pool.construct(SourceRecord, this, true);
         case REV32(LSCR):
-            return LSCR.pool.construct(SourceRecord);
+            return LSCR.pool.construct(SourceRecord, this, true);
         case REV32(LVSP):
-            return LVSP.pool.construct(SourceRecord);
+            return LVSP.pool.construct(SourceRecord, this, true);
         case REV32(ANIO):
-            return ANIO.pool.construct(SourceRecord);
+            return ANIO.pool.construct(SourceRecord, this, true);
         case REV32(WATR):
-            return WATR.pool.construct(SourceRecord);
+            return WATR.pool.construct(SourceRecord, this, true);
         case REV32(EFSH):
-            return EFSH.pool.construct(SourceRecord);
+            return EFSH.pool.construct(SourceRecord, this, true);
         default:
             printer("TES4File::CreateRecord: Error - Unable to create (%c%c%c%c) record in mod \"%s\". Unknown record type.\n", ((STRING)&RecordType)[0], ((STRING)&RecordType)[1], ((STRING)&RecordType)[2], ((STRING)&RecordType)[3], ModName);
             break;
@@ -1039,7 +1029,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(CELL):
             {
-            Ob::WRLDRecord *wrld_record = (Ob::WRLDRecord *)curRecord->GetParent();
+            Ob::WRLDRecord *wrld_record = (Ob::WRLDRecord *)curRecord->GetParentRecord();
             bool cell_found = false;
             if(wrld_record != NULL)
                 {
@@ -1062,7 +1052,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                     }
                 if(!cell_found)
                     {
-                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                    printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                     return 0;
                     }
                 }
@@ -1147,7 +1137,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(ACHR):
             {
-            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParent();
+            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParentRecord();
             bool achr_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->ACHR.size(); ++ListIndex)
                 {
@@ -1160,7 +1150,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!achr_found)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1170,7 +1160,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(ACRE):
             {
-            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParent();
+            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParentRecord();
             bool acre_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->ACRE.size(); ++ListIndex)
                 {
@@ -1183,7 +1173,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!acre_found)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1193,7 +1183,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(REFR):
             {
-            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParent();
+            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParentRecord();
             bool refr_found = false;
             for(UINT32 ListIndex = 0; ListIndex < cell_record->REFR.size(); ++ListIndex)
                 {
@@ -1206,7 +1196,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!refr_found)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1216,11 +1206,11 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(PGRD):
             {
-            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParent();
+            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParentRecord();
 
             if(cell_record->PGRD != curRecord)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1231,11 +1221,11 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(LAND):
             {
-            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParent();
+            Ob::CELLRecord *cell_record = (Ob::CELLRecord *)curRecord->GetParentRecord();
 
             if(cell_record->LAND != curRecord)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1246,11 +1236,11 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(ROAD):
             {
-            Ob::WRLDRecord *wrld_record = (Ob::WRLDRecord *)curRecord->GetParent();
+            Ob::WRLDRecord *wrld_record = (Ob::WRLDRecord *)curRecord->GetParentRecord();
 
             if(wrld_record->ROAD != curRecord)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1274,7 +1264,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         case REV32(INFO):
             {
-            Ob::DIALRecord *dial_record = (Ob::DIALRecord *)curRecord->GetParent();
+            Ob::DIALRecord *dial_record = (Ob::DIALRecord *)curRecord->GetParentRecord();
             bool info_found = false;
             for(UINT32 ListIndex = 0; ListIndex < dial_record->INFO.size(); ++ListIndex)
                 {
@@ -1287,7 +1277,7 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
                 }
             if(!info_found)
                 {
-                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParent()->GetStrType(), ModName, curRecord->GetParent()->formID, curRecord->formID);
+                printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), curRecord->GetParentRecord()->GetStrType(), ModName, curRecord->GetParentRecord()->formID, curRecord->formID);
                 return 0;
                 }
 
@@ -1333,10 +1323,10 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
             return 1;
         default:
             {
-            Record *Parent = curRecord->GetParent();
+            Record *Parent = curRecord->GetParentRecord();
             if(Parent != NULL)
                 {
-                Record *TopParent = Parent->GetParent();
+                Record *TopParent = Parent->GetParentRecord();
                 if(TopParent != NULL)
                     printer("TES4File::DeleteRecord: Error - Unable to delete record type (%s) with parent type (%s) in group (%s) in mod \"%s\". The parent record (%08X) does not contain the record to be deleted (%08X).\n", curRecord->GetStrType(), Parent->GetStrType(), TopParent->GetStrType(), ModName, Parent->formID, curRecord->formID);
                 else
@@ -1350,107 +1340,6 @@ SINT32 TES4File::DeleteRecord(Record *&curRecord, RecordOp &deindexer)
     return 0;
     }
 
-SINT32 TES4File::CleanMasters(std::vector<FormIDResolver *> &Expanders)
-    {
-    if(Flags.IsNoLoad)
-        {
-        printer("TES4File::CleanMasters: Error - Unable to clean masters in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return -1;
-        }
-
-    UINT32 cleaned = 0;
-    //FormIDHandlerClass TempHandler(FileName, TES4.MAST, TES4.HEDR.value.nextObject);
-    //TempHandler.SetLoadOrder(FormIDHandler.LoadOrder255);
-    //TempHandler.CreateFormIDLookup(FormIDHandler.ExpandedIndex);
-    std::vector<UINT32> ToRemove;
-    ToRemove.reserve(TES4.MAST.size());
-    Record * topRecord = &TES4;
-
-    for(UINT32 p = 0; p < (UINT8)TES4.MAST.size();++p)
-        {
-        RecordMasterChecker checker(FormIDHandler, Expanders, (UINT8)p);
-
-        //printer("Checking: %s\n", TES4.MAST[p].value);
-        if(checker.Accept(topRecord)) continue;
-        if(GMST.pool.VisitRecords(checker)) continue;
-        if(GLOB.pool.VisitRecords(checker)) continue;
-        if(CLAS.pool.VisitRecords(checker)) continue;
-        if(FACT.pool.VisitRecords(checker)) continue;
-        if(HAIR.pool.VisitRecords(checker)) continue;
-        if(EYES.pool.VisitRecords(checker)) continue;
-        if(RACE.pool.VisitRecords(checker)) continue;
-        if(SOUN.pool.VisitRecords(checker)) continue;
-        if(SKIL.pool.VisitRecords(checker)) continue;
-        if(MGEF.pool.VisitRecords(checker)) continue;
-        if(SCPT.pool.VisitRecords(checker)) continue;
-        if(LTEX.pool.VisitRecords(checker)) continue;
-        if(ENCH.pool.VisitRecords(checker)) continue;
-        if(SPEL.pool.VisitRecords(checker)) continue;
-        if(BSGN.pool.VisitRecords(checker)) continue;
-        if(ACTI.pool.VisitRecords(checker)) continue;
-        if(APPA.pool.VisitRecords(checker)) continue;
-        if(ARMO.pool.VisitRecords(checker)) continue;
-        if(BOOK.pool.VisitRecords(checker)) continue;
-        if(CLOT.pool.VisitRecords(checker)) continue;
-        if(CONT.pool.VisitRecords(checker)) continue;
-        if(DOOR.pool.VisitRecords(checker)) continue;
-        if(INGR.pool.VisitRecords(checker)) continue;
-        if(LIGH.pool.VisitRecords(checker)) continue;
-        if(MISC.pool.VisitRecords(checker)) continue;
-        if(STAT.pool.VisitRecords(checker)) continue;
-        if(GRAS.pool.VisitRecords(checker)) continue;
-        if(TREE.pool.VisitRecords(checker)) continue;
-        if(FLOR.pool.VisitRecords(checker)) continue;
-        if(FURN.pool.VisitRecords(checker)) continue;
-        if(WEAP.pool.VisitRecords(checker)) continue;
-        if(AMMO.pool.VisitRecords(checker)) continue;
-        if(NPC_.pool.VisitRecords(checker)) continue;
-        if(CREA.pool.VisitRecords(checker)) continue;
-        if(LVLC.pool.VisitRecords(checker)) continue;
-        if(SLGM.pool.VisitRecords(checker)) continue;
-        if(KEYM.pool.VisitRecords(checker)) continue;
-        if(ALCH.pool.VisitRecords(checker)) continue;
-        if(SBSP.pool.VisitRecords(checker)) continue;
-        if(SGST.pool.VisitRecords(checker)) continue;
-        if(LVLI.pool.VisitRecords(checker)) continue;
-        if(WTHR.pool.VisitRecords(checker)) continue;
-        if(CLMT.pool.VisitRecords(checker)) continue;
-        if(REGN.pool.VisitRecords(checker)) continue;
-        if(QUST.pool.VisitRecords(checker)) continue;
-        if(IDLE.pool.VisitRecords(checker)) continue;
-        if(PACK.pool.VisitRecords(checker)) continue;
-        if(CSTY.pool.VisitRecords(checker)) continue;
-        if(LSCR.pool.VisitRecords(checker)) continue;
-        if(LVSP.pool.VisitRecords(checker)) continue;
-        if(ANIO.pool.VisitRecords(checker)) continue;
-        if(WATR.pool.VisitRecords(checker)) continue;
-        if(EFSH.pool.VisitRecords(checker)) continue;
-        if(CELL.cell_pool.VisitRecords(checker)) continue;
-        if(WRLD.wrld_pool.VisitRecords(checker)) continue;
-        if(WRLD.cell_pool.VisitRecords(checker)) continue;
-        if(WRLD.land_pool.VisitRecords(checker)) continue;
-        if(WRLD.road_pool.VisitRecords(checker)) continue;
-        if(DIAL.dial_pool.VisitRecords(checker)) continue;
-        if(DIAL.info_pool.VisitRecords(checker)) continue;
-        if(CELL.achr_pool.VisitRecords(checker)) continue;
-        if(CELL.acre_pool.VisitRecords(checker)) continue;
-        if(CELL.refr_pool.VisitRecords(checker)) continue;
-        //printer("ToRemove: %s\n", TES4.MAST[p].value);
-        ToRemove.push_back(p);
-        ++cleaned;
-        }
-    if(cleaned)
-        {
-        for(SINT32 p = (SINT32)ToRemove.size() - 1; p >= 0; --p)
-            {
-            delete []TES4.MAST[ToRemove[p]];
-            TES4.MAST.erase(TES4.MAST.begin() + ToRemove[p]);
-            }
-        FormIDHandler.UpdateFormIDLookup();
-        }
-    return cleaned;
-    }
-
 SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer)
     {
     if(!Flags.IsSaveable)
@@ -1461,7 +1350,7 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
 
     FileWriter writer(SaveName, BUFFERSIZE);
     if(writer.open() == -1)
-        throw std::exception("Unable to open temporary file for writing\n");
+        throw std::exception("TES4File::Save: Error - Unable to open temporary file for writing\n");
 
     UINT32 formCount = 0;
     FormIDResolver expander(FormIDHandler.ExpandTable, FormIDHandler.FileStart, FormIDHandler.FileEnd);
@@ -1532,8 +1421,7 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(30, &formCount, 4);
     writer.close();
-    if(CloseMod)
-        Close();
+    Close();
     return 0;
     }
 

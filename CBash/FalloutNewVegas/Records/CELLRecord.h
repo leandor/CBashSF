@@ -173,7 +173,6 @@ class CELLRecord : public FNVRecord //Cell
 
         UINT32 GetType();
         STRING GetStrType();
-        Record * GetParent();
 
         SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();

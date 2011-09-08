@@ -62,56 +62,13 @@ bool RecordOp::GetResult()
     return result;
     }
 
-RecordReader::RecordReader(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):
-    RecordOp(),
+RecordProcessor::RecordProcessor(ModFile *_curModFile, FormIDHandlerClass &_FormIDHandler, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
+    curModFile(_curModFile),
+    NewTypes(_FormIDHandler.NewTypes),
+    ExpandedIndex(_FormIDHandler.ExpandedIndex),
     expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
-    Expanders(_Expanders)
-    {
-    //
-    }
-
-RecordReader::~RecordReader()
-    {
-    //
-    }
-
-bool RecordReader::Accept(Record *&curRecord)
-    {
-    result = curRecord->Read();
-    if(result)
-        {
-        if(curRecord->IsValid(expander))
-            curRecord->VisitFormIDs(expander);
-        else
-            {
-            SINT32 index = -1;
-            for(UINT32 x = 0; x < Expanders.size(); ++x)
-                if(curRecord->IsValid(*Expanders[x]))
-                    {
-                    //if(index != -1)
-                    //    printer("Multiple 'Correct' expanders found! Using last one found (likely incorrect unless lucky)\n");
-                    index = x;
-                    break;
-                    }
-            if(index == -1)
-                {
-                printer("Unable to find the correct expander!\n");
-                curRecord->VisitFormIDs(expander);
-                }
-            else
-                curRecord->VisitFormIDs(*Expanders[index]);
-            }
-        ++count;
-        }
-    return stop;
-    }
-
-RecordProcessor::RecordProcessor(FormIDHandlerClass &_FormIDHandler, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
     Flags(_Flags),
     UsedFormIDs(_UsedFormIDs),
-    NewTypes(_FormIDHandler.NewTypes),
-    expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
-    ExpandedIndex(_FormIDHandler.ExpandedIndex),
     IsSkipNewRecords(_Flags.IsSkipNewRecords),
     IsTrackNewTypes(_Flags.IsTrackNewTypes),
     IsAddMasters(_Flags.IsAddMasters)
@@ -131,7 +88,8 @@ Record::Record(unsigned char *_recData):
     flags(0),
     formID(0),
     flagsUnk(0),
-    recData(_recData)
+    recData(_recData),
+    Parent(NULL)
     {
     //If a buffer is provided, the record isn't loaded
     // until the record is read
@@ -160,6 +118,56 @@ void Record::SetData(unsigned char *_recData)
     IsChanged(false);
     }
 
+void * Record::GetParent()
+    {
+    #ifdef CBASH_X64_COMPATIBILITY
+        return Parent;
+    #else
+        return (void *)((UINT32)Parent & ~_fIsParentMod);
+    #endif
+    }
+
+bool Record::SetParent(void *_Parent, bool IsMod)
+    {
+    if(Parent != NULL)
+        return false;
+
+    #ifdef CBASH_X64_COMPATIBILITY
+        is_parent_mod = IsMod;
+        Parent = _Parent;
+    #else
+        Parent = IsMod ? (void *)((UINT32)_Parent | _fIsParentMod) : _Parent;
+    #endif
+
+    return true;
+    }
+
+bool Record::IsParentMod()
+    {
+    #ifdef CBASH_X64_COMPATIBILITY
+        return is_parent_mod;
+    #else
+        return ((UINT32)Parent & _fIsParentMod) != 0;
+    #endif
+    }
+
+Record * Record::GetParentRecord()
+    {
+    if(!IsParentMod())
+        return (Record *)GetParent();
+    return NULL;
+    }
+
+ModFile * Record::GetParentMod()
+    {
+    Record *parent_record = GetParentRecord();
+
+    if(parent_record)
+        return parent_record->GetParentMod();
+
+    return (ModFile *)GetParent();
+    }
+
 UINT32 Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {
     return UNKNOWN_FIELD;
@@ -178,11 +186,6 @@ bool Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
 void Record::DeleteField(FIELD_IDENTIFIERS)
     {
     return;
-    }
-
-Record * Record::GetParent()
-    {
-    return 0;
     }
 
 bool Record::IsKeyedByEditorID()
@@ -229,12 +232,6 @@ bool Record::Read()
 
     IsLoaded(true);
     return true;
-    }
-
-bool Record::IsValid(FormIDResolver &expander)
-    {
-    unsigned char *data = GetData();
-    return (data <= expander.FileEnd && data >= expander.FileStart);
     }
 
 UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDResolver &expander, FormIDResolver &collapser, std::vector<FormIDResolver *> &Expanders)
@@ -340,6 +337,12 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
     else
         Unload();
     return recSize + 20;
+    }
+
+bool Record::IsValid(FormIDResolver &expander)
+    {
+    unsigned char *data = GetData();
+    return (data <= expander.FileEnd && data >= expander.FileStart);
     }
 
 bool Record::master_equality(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)

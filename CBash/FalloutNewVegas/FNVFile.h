@@ -232,17 +232,16 @@ class FNVFile : public ModFile
         //FNVGRUPRecords<FNV::HUNGRecord, REV32(HUNG), 5> HUNG;
         //FNVGRUPRecords<FNV::SLPDRecord, REV32(SLPD), 5> SLPD;
 
-        FNVFile(STRING FileName, STRING ModName, const UINT32 _flags);
+        FNVFile(Collection *_Parent, STRING FileName, STRING ModName, const UINT32 _flags);
         ~FNVFile();
 
         Record * GetTES4();
         SINT32   LoadTES4();
-        SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords);
+        SINT32   Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords);
         UINT32   GetNumRecords(const UINT32 &RecordType);
         STRING   GetMasterName(UINT8 &CollapsedIndex);
         Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
         SINT32   DeleteRecord(Record *&curRecord, RecordOp &deindexer);
-        SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders);
         SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer);
 
         void     VisitAllRecords(RecordOp &op);

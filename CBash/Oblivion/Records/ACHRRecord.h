@@ -45,8 +45,6 @@ class ACHRRecord : public Record
         OptSimpleFloatSubRecord<flt_1> XSCL; //Scale
         ReqSubRecord<GENPOSDATA> DATA; //Position/Rotation
 
-        Record *Parent;
-
         ACHRRecord(unsigned char *_recData=NULL);
         ACHRRecord(ACHRRecord *srcRecord);
         ~ACHRRecord();
@@ -65,7 +63,6 @@ class ACHRRecord : public Record
 
         UINT32 GetType();
         STRING GetStrType();
-        Record * GetParent();
 
         SINT32 ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk=false);
         SINT32 Unload();

@@ -24,23 +24,6 @@ GPL License and Copyright Notice ============================================
 #include "GenericRecord.h"
 #include "ModFile.h"
 
-class FormIDMasterUpdater : public FormIDOp
-    {
-    private:
-        FormIDHandlerClass &FormIDHandler;
-        const UINT8 &ExpandedIndex;
-        const UINT8 &CollapsedIndex;
-        const UINT8 (&ExpandTable)[256];
-        const UINT8 (&CollapseTable)[256];
-
-    public:
-        FormIDMasterUpdater(FormIDHandlerClass &_FormIDHandler);
-        ~FormIDMasterUpdater();
-
-        bool Accept(UINT32 &curFormID);
-        bool AcceptMGEF(UINT32 &curMgefCode);
-    };
-
 class FormIDMatchCounter : public FormIDOp
     {
     private:
@@ -75,57 +58,19 @@ class RecordIDRetriever : public RecordOp
         bool Accept(Record *&curRecord);
     };
 
-class RecordMasterChecker : public RecordOp
+class FormIDSwapper : public FormIDOp
     {
     private:
-        class FormIDMasterChecker : public FormIDOp
-            {
-            private:
-                const UINT8 (&CollapseTable)[256];
-                const UINT8 &MasterIndex;
-
-            public:
-                FormIDMasterChecker(const UINT8 (&_CollapseTable)[256], const UINT8 &_MasterIndex);
-                ~FormIDMasterChecker();
-
-                bool Accept(UINT32 &curFormID);
-                bool AcceptMGEF(UINT32 &curMgefCode);
-            } checker;
-
-        RecordReader reader;
+        const UINT32 &FormIDToMatch;
+        const UINT32 &FormIDToSwap;
+        FormIDMasterUpdater checker;
 
     public:
-        RecordMasterChecker(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders, const UINT8 &_MasterIndex);
-        ~RecordMasterChecker();
+        FormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler);
+        ~FormIDSwapper();
 
-        bool Accept(Record *&curRecord);
-    };
-
-class RecordFormIDSwapper : public RecordOp
-    {
-    private:
-        class FormIDSwapper : public FormIDOp
-            {
-            private:
-                const UINT32 &FormIDToMatch;
-                const UINT32 &FormIDToSwap;
-                FormIDMasterUpdater checker;
-
-            public:
-                FormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler);
-                ~FormIDSwapper();
-
-                bool Accept(UINT32 &curFormID);
-                bool AcceptMGEF(UINT32 &curMgefCode);
-            } swapper;
-
-        RecordReader reader;
-
-    public:
-        RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
-        ~RecordFormIDSwapper();
-
-        bool Accept(Record *&curRecord);
+        bool Accept(UINT32 &curFormID);
+        bool AcceptMGEF(UINT32 &curMgefCode);
     };
 
 class RecordIndexer : public RecordOp
@@ -143,50 +88,4 @@ class RecordIndexer : public RecordOp
         bool Accept(Record *&curRecord);
 
         void SetModFile(ModFile *_curModFile);
-    };
-
-class RecordDeindexer : public RecordOp
-    {
-    private:
-        EditorID_Map &EditorID_ModFile_Record;
-        FormID_Map &FormID_ModFile_Record;
-
-    public:
-        RecordDeindexer(EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
-        ~RecordDeindexer();
-
-        bool Accept(Record *&curRecord);
-    };
-
-class RecordChanger : public RecordOp
-    {
-    private:
-        RecordReader reader;
-
-    public:
-        RecordChanger(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders);
-        ~RecordChanger();
-
-        bool Accept(Record *&curRecord);
-    };
-
-class IdenticalToMasterRetriever : public RecordOp
-    {
-    private:
-        EditorID_Map &EditorID_ModFile_Record;
-        FormID_Map &FormID_ModFile_Record;
-        const std::vector<ModFile *> &LoadOrder255;
-        const UINT8 &MasterIndex;
-        boost::unordered_set<Record *> &identical_records;
-        std::vector<FormIDResolver *> &Expanders;
-
-        RecordReader reader;
-
-    public:
-        IdenticalToMasterRetriever(FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders,
-            std::vector<ModFile *> &_LoadOrder255, boost::unordered_set<Record *> &_identical_records,
-            EditorID_Map &_EditorID_Map, FormID_Map &_FormID_Map);
-        ~IdenticalToMasterRetriever();
-
-        bool Accept(Record *&curRecord);
     };

@@ -183,7 +183,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     _CSetField(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -191,7 +191,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_LISTX2MACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 1)\n$1     _CSetField(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._RecordID, self._FieldID, self._ListIndex, self._ListFieldID, self._ListX2Index, $4, length)\n$1 $2$3 = CBashLIST_LISTX2($4, $5)\n$1 $2$3_list = CBashLIST_LISTX2($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -288,7 +288,7 @@ SearchAndReplace.replaceAll(view);
 
 //ListX1 Level Macros
 SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     _CSetField(self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -296,7 +296,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_LISTMACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 1)\n$1     _CSetField(self._RecordID, self._FieldID, self._ListIndex, $4, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._RecordID, self._FieldID, self._ListIndex, $4, length)\n$1 $2$3 = CBashLIST_LIST($4, $5)\n$1 $2$3_list = CBashLIST_LIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -657,16 +657,16 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 //Top Level Macros
-SearchAndReplace.setSearchString("( *) SUBRECORD_MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, $6)\n$1     if(RecordID): return $5(self._CollectionID, self._ModID, RecordID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORD($4, $5, $3, $6)\n");
+SearchAndReplace.setSearchString("( *) SUBRECORD_MACRO\\((.*?), (.*?), (.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self._RecordID), EditorID, self._RecordID)\n$1     if(RecordID): return $5(RecordID)\n$1     return None\n$1 $2 = CBashSUBRECORD($4, $5, $3)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
 SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
-SearchAndReplace.setSearchString("( *) SUBRECORD_ARRAY_MACRO\\((.*?), (.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast($3, POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, self._RecordID, $6)\n$1     if(RecordID): return $5(self._CollectionID, self._ModID, RecordID, self._RecordID, $6)\n$1     return None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3, $6)\n");
+SearchAndReplace.setSearchString("( *) SUBRECORD_ARRAY_MACRO\\((.*?), (.*?), (.*?), (.*?)(?!,)\\)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self._RecordID), EditorID, self._RecordID)\n$1     if(RecordID): return $5(RecordID)\n$1     return None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -682,7 +682,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_MACRO\\((.*?)(s|es|), (.*?), self\\.(.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     _CSetField(self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return self.$5(self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -690,7 +690,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("(.*?) LIST_MACRO\\((.*?)(s|es|), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     length = _CGetFieldAttribute(self._RecordID, $4, 0, 0, 0, 0, 0, 0, 1)\n$1     _CSetField(self._RecordID, $4, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._RecordID, $4, length)\n$1 $2$3 = CBashLIST($4, $5)\n$1 $2$3_list = CBashLIST($4, $5, True)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);
@@ -1146,7 +1146,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModEDIDRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(_CGetRecordID(self._ModID, 0, 0)), EditorID, 0)\n$1     if(RecordID): return Ob$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1154,7 +1154,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) FnvModEDIDRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Fnv$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(_CGetRecordID(self._ModID, 0, 0)), EditorID, 0)\n$1     if(RecordID): return Fnv$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1162,7 +1162,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Ob$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(_CGetRecordID(self._ModID, 0, 0)), EditorID, 0)\n$1     if(RecordID): return Ob$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1170,7 +1170,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) FnvModRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, FormID=0):\n$1     RecordID = CBash.CreateRecord(self._CollectionID, self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, MakeShortFid(self._CollectionID, FormID), EditorID, 0, 0)\n$1     if(RecordID): return Fnv$2Record(self._CollectionID, self._ModID, RecordID, 0, 0)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\', 0)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(_CGetRecordID(self._ModID, 0, 0)), EditorID, 0)\n$1     if(RecordID): return Fnv$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1323,7 +1323,7 @@ SearchAndReplace.replaceAll(view);
 
 //Grouped
 SearchAndReplace.setSearchString("(.*?) LIST_GROUPEDMACRO\\((.*?)(s|es|), (.*?), (.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FieldID = self._FieldID + $4\n$1     length = CBash.GetFieldAttribute(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)\n$1     CBash.SetField(self._CollectionID, self._ModID, self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._CollectionID, self._ModID, self._RecordID, FieldID, length)\n$1 $2$3 = CBashLIST_GROUP($4, $5)\n$1 $2$3_list = CBashLIST_GROUP($4, $5, True)");
+SearchAndReplace.setReplaceString("$1 def create_$2(self):\n$1     FieldID = self._FieldID + $4\n$1     length = _CGetFieldAttribute(self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1)\n$1     _CSetField(self._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_ulong(length + 1))\n$1     return $5(self._RecordID, FieldID, length)\n$1 $2$3 = CBashLIST_GROUP($4, $5)\n$1 $2$3_list = CBashLIST_GROUP($4, $5, True)");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(true);
 SearchAndReplace.setRegexp(true);

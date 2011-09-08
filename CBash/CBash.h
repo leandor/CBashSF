@@ -56,10 +56,10 @@ DLLEXTERN SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
 DLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
-DLLEXTERN SINT32 LoadMod(Collection *CollectionID, ModFile *ModID);
+DLLEXTERN SINT32 LoadMod(ModFile *ModID);
 DLLEXTERN SINT32 UnloadMod(ModFile *ModID);
-DLLEXTERN SINT32 CleanModMasters(Collection *CollectionID, ModFile *ModID);
-DLLEXTERN SINT32 SaveMod(Collection *CollectionID, ModFile *ModID, const bool CloseCollection);
+DLLEXTERN SINT32 CleanModMasters(ModFile *ModID);
+DLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField);
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
 DLLEXTERN SINT32 GetAllNumMods(Collection *CollectionID);
@@ -74,45 +74,51 @@ DLLEXTERN ModFile * GetModIDByName(Collection *CollectionID, STRING const ModNam
 DLLEXTERN ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT32 ModIndex);
 DLLEXTERN SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const ModName);
 DLLEXTERN SINT32 GetModLoadOrderByID(ModFile *ModID);
-DLLEXTERN STRING GetLongIDName(ModFile *ModID, const UINT8 ModIndex);
+DLLEXTERN ModFile * GetModIDByRecordID(Record *RecordID);
+DLLEXTERN Collection * GetCollectionIDByRecordID(Record *RecordID);
 //DLLEXTERN SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
 DLLEXTERN UINT32 IsModEmpty(ModFile *ModID);
 DLLEXTERN SINT32 GetModNumTypes(ModFile *ModID);
 DLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+//FormID functions
+DLLEXTERN STRING GetLongIDName(Record *RecordID, const UINT32 FormID, const bool IsMGEFCode);
+DLLEXTERN UINT32 MakeShortFormID(Record *RecordID, STRING const ModName, const UINT32 ObjectID, const bool IsMGEFCode);
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 //Record action functions
-DLLEXTERN Record * CreateRecord(Collection *CollectionID, ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags);
-DLLEXTERN Record * CopyRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
+DLLEXTERN Record * CreateRecord(ModFile *ModID, const UINT32 RecordType, const FORMID RecordFormID, STRING const RecordEditorID, Record *ParentID, const UINT32 CreateFlags);
+DLLEXTERN Record * CopyRecord(Record *RecordID, ModFile *DestModID, Record *DestParentID, const FORMID DestRecordFormID, STRING const DestRecordEditorID, const UINT32 CreateFlags);
 DLLEXTERN SINT32 UnloadRecord(Record *RecordID);
 DLLEXTERN SINT32 ResetRecord(Record *RecordID);
-DLLEXTERN SINT32 DeleteRecord(Collection *CollectionID, ModFile *ModID, Record *RecordID);
+DLLEXTERN SINT32 DeleteRecord(Record *RecordID);
 ////////////////////////////////////////////////////////////////////////
 //Record info functions
-DLLEXTERN Record * GetRecordID(Collection *CollectionID, ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID);
+DLLEXTERN Record * GetRecordID(ModFile *ModID, const FORMID RecordFormID, STRING const RecordEditorID);
 DLLEXTERN SINT32 GetNumRecords(ModFile *ModID, const UINT32 RecordType);
 DLLEXTERN SINT32 GetRecordIDs(ModFile *ModID, const UINT32 RecordType, RECORDIDARRAY RecordIDs);
-DLLEXTERN SINT32 IsRecordWinning(Collection *CollectionID, ModFile *ModID, Record *RecordID, const bool GetExtendedConflicts);
-DLLEXTERN SINT32 GetNumRecordConflicts(Collection *CollectionID, Record *RecordID, const bool GetExtendedConflicts);
-DLLEXTERN SINT32 GetRecordConflicts(Collection *CollectionID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
-DLLEXTERN SINT32 GetRecordHistory(Collection *CollectionID, ModFile *ModID, Record *RecordID, MODIDARRAY ModIDs, RECORDIDARRAY RecordIDs);
-DLLEXTERN SINT32 GetNumIdenticalToMasterRecords(Collection *CollectionID, ModFile *ModID);
-DLLEXTERN SINT32 GetIdenticalToMasterRecords(Collection *CollectionID, RECORDIDARRAY RecordIDs);
+DLLEXTERN SINT32 IsRecordWinning(Record *RecordID, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetNumRecordConflicts(Record *RecordID, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetRecordConflicts(Record *RecordID, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
+DLLEXTERN SINT32 GetRecordHistory(Record *RecordID, RECORDIDARRAY RecordIDs);
+DLLEXTERN SINT32 GetNumIdenticalToMasterRecords(ModFile *ModID);
+DLLEXTERN SINT32 GetIdenticalToMasterRecords(ModFile *ModID, RECORDIDARRAY RecordIDs);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
-DLLEXTERN SINT32 UpdateReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToReplace, const FORMID ReplacementFormID);
+DLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARRAY OldFormIDs, FORMIDARRAY NewFormIDs, UINT32ARRAY Changes, const UINT32 ArraySize);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record info functions
-DLLEXTERN SINT32 GetNumReferences(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormIDToMatch);
+DLLEXTERN SINT32 GetRecordUpdatedReferences(Collection *CollectionID, Record *RecordID);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Field action functions
-DLLEXTERN SINT32 SetIDFields(Collection *CollectionID, ModFile *ModID, Record *RecordID, const FORMID FormID, STRING const EditorID);
-DLLEXTERN void   SetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
-DLLEXTERN void   DeleteField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS);
+DLLEXTERN SINT32 SetIDFields(Record *RecordID, const FORMID FormID, STRING const EditorID);
+DLLEXTERN void   SetField(Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue, const UINT32 ArraySize);
+DLLEXTERN void   DeleteField(Record *RecordID, FIELD_IDENTIFIERS);
 ////////////////////////////////////////////////////////////////////////
 //Field info functions
-DLLEXTERN UINT32 GetFieldAttribute(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
-DLLEXTERN void * GetField(Collection *CollectionID, ModFile *ModID, Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues);
+DLLEXTERN UINT32 GetFieldAttribute(Record *RecordID, FIELD_IDENTIFIERS, const UINT32 WhichAttribute);
+DLLEXTERN void * GetField(Record *RecordID, FIELD_IDENTIFIERS, void **FieldValues);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

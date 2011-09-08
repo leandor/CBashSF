@@ -199,7 +199,6 @@ class LANDRecord : public FNVRecord //Landscape
         UINT32  GetSize(bool forceCalc=false);
         UINT32  GetType();
         STRING  GetStrType();
-        Record * GetParent();
 
         SINT32  ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk);
         SINT32  Unload();

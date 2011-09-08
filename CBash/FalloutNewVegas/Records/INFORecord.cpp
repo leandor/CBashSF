@@ -216,15 +216,13 @@ bool INFORecord::INFOResponse::operator !=(const INFOResponse &other) const
     }
 
 INFORecord::INFORecord(unsigned char *_recData):
-    FNVRecord(_recData),
-    Parent(NULL)
+    FNVRecord(_recData)
     {
     //
     }
 
 INFORecord::INFORecord(INFORecord *srcRecord):
-    FNVRecord(),
-    Parent(NULL)
+    FNVRecord()
     {
     if(srcRecord == NULL)
         return;
@@ -762,11 +760,6 @@ STRING INFORecord::GetStrType()
     return "INFO";
     }
 
-Record * INFORecord::GetParent()
-    {
-    return Parent;
-    }
-
 SINT32 INFORecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer, bool CompressedOnDisk)
     {
     UINT32 subType = 0;
@@ -1122,9 +1115,8 @@ bool INFORecord::equals(Record *other)
 bool INFORecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    const INFORecord *master_info = (INFORecord *)master;
     //Check to make sure the info is attached at the same spot
-    if(Parent->formID != master_info->Parent->formID)
+    if(GetParentRecord()->formID != ((INFORecord *)master)->GetParentRecord()->formID)
         return false;
     return true;
     }

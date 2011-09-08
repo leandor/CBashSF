@@ -155,7 +155,7 @@ void * ACHRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 23: //rotZ
             return &DATA.value.rotZ;
         case 24: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

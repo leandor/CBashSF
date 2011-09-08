@@ -163,7 +163,7 @@ void * ROADRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 }
             return NULL;
         case 7: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

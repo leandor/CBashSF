@@ -151,7 +151,7 @@ void * ACRERecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 22: //rotZ
             return &DATA.value.rotZ;
         case 23: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }

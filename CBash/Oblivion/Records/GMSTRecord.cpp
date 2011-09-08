@@ -230,24 +230,28 @@ SINT32 GMSTRecord::Unload()
 
 SINT32 GMSTRecord::WriteRecord(FileWriter &writer)
     {
-    WRITE(EDID);
-    UINT8 null = 0;
-    switch(DATA.format)
+    if(EDID.IsLoaded()) //Should only be false if the record was marked deleted
         {
-        case 'i':
-            writer.record_write_subrecord(REV32(DATA), &DATA.i, 4);
-            break;
-        case 'f':
-            writer.record_write_subrecord(REV32(DATA), &DATA.f, 4);
-            break;
-        case 's':
-            if(DATA.s != NULL)
-                writer.record_write_subrecord(REV32(DATA), DATA.s, (UINT32)strlen(DATA.s) + 1);
-            else
-                writer.record_write_subrecord(REV32(DATA), &null, 1);
-            break;
-        default:
-            printer("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
+        WRITE(EDID);
+        UINT8 null = 0;
+        switch(DATA.format)
+            {
+            case 'i':
+                writer.record_write_subrecord(REV32(DATA), &DATA.i, 4);
+                break;
+            case 'f':
+                writer.record_write_subrecord(REV32(DATA), &DATA.f, 4);
+                break;
+            case 's':
+                if(DATA.s != NULL)
+                    writer.record_write_subrecord(REV32(DATA), DATA.s, (UINT32)strlen(DATA.s) + 1);
+                else
+                    writer.record_write_subrecord(REV32(DATA), &null, 1);
+                break;
+            default:
+                printer("Unknown GMST format (%c) when writing: %s\n", DATA.format, EDID.value);
+                break;
+            }
         }
     return -1;
     }

@@ -24,7 +24,8 @@ GPL License and Copyright Notice ============================================
 #include "ModFile.h"
 #include "GenericRecord.h"
 
-ModFile::ModFile(STRING filename, STRING modname, const UINT32 _flags):
+ModFile::ModFile(Collection *_Parent, STRING filename, STRING modname, const UINT32 _flags):
+    Parent(_Parent),
     Flags(_flags),
     TES4(),
     FormIDHandler(TES4.MAST, TES4.HEDR.value.nextObject),
@@ -37,6 +38,7 @@ ModFile::ModFile(STRING filename, STRING modname, const UINT32 _flags):
     buffer_end(NULL)
     {
     TES4.IsLoaded(false);
+    TES4.SetParent(this, true);
     ModTime = mtime();
     if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !exists())
         {
@@ -131,4 +133,94 @@ bool ModFile::Close()
 
     file_map.close();
     return true;
+    }
+
+FormIDMasterUpdater::FormIDMasterUpdater(FormIDHandlerClass &_FormIDHandler):
+    FormIDOp(),
+    FormIDHandler(_FormIDHandler),
+    ExpandedIndex(_FormIDHandler.ExpandedIndex),
+    CollapsedIndex(_FormIDHandler.CollapsedIndex),
+    ExpandTable(_FormIDHandler.ExpandTable),
+    CollapseTable(_FormIDHandler.CollapseTable)
+    {
+    //
+    }
+
+FormIDMasterUpdater::FormIDMasterUpdater(ModFile *ModID):
+    FormIDOp(),
+    FormIDHandler(ModID->FormIDHandler),
+    ExpandedIndex(ModID->FormIDHandler.ExpandedIndex),
+    CollapsedIndex(ModID->FormIDHandler.CollapsedIndex),
+    ExpandTable(ModID->FormIDHandler.ExpandTable),
+    CollapseTable(ModID->FormIDHandler.CollapseTable)
+    {
+    //
+    }
+
+FormIDMasterUpdater::FormIDMasterUpdater(Record *RecordID):
+    FormIDOp(),
+    FormIDHandler(RecordID->GetParentMod()->FormIDHandler),
+    ExpandedIndex(RecordID->GetParentMod()->FormIDHandler.ExpandedIndex),
+    CollapsedIndex(RecordID->GetParentMod()->FormIDHandler.CollapsedIndex),
+    ExpandTable(RecordID->GetParentMod()->FormIDHandler.ExpandTable),
+    CollapseTable(RecordID->GetParentMod()->FormIDHandler.CollapseTable)
+    {
+    //
+    }
+
+FormIDMasterUpdater::~FormIDMasterUpdater()
+    {
+    //
+    }
+
+bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
+    {
+    //If formID is not set, or the formID belongs to the engine, do nothing
+    //Any formID whose objectID is less than END_HARDCODED_IDS is given the 00 modIndex by the engine regardless of what it actually is
+    //I.e. the CS will complain of duplicate formIDs if a mod has both 0x00000042 and 0x01000042
+    //In short, formIDs with an objectID < END_HARDCODED_IDS all collide. They don't use the modIndex.
+    if((curFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
+        {
+        curFormID &= 0x00FFFFFF;
+        return stop;
+        }
+
+    UINT32 modIndex = curFormID >> 24;
+    //printer("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
+    //If the formID belongs to the mod, or if the master is already present, do nothing
+    if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
+        return stop;
+
+    //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
+    if(modIndex >= FormIDHandler.LoadOrder255.size())
+        {
+        curFormID = (ExpandTable[CollapseTable[modIndex]] << 24) | (curFormID & 0x00FFFFFF);
+        return stop;
+        }
+    FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
+    ++count;
+    return stop;
+    }
+
+bool FormIDMasterUpdater::AcceptMGEF(UINT32 &curMgefCode)
+    {
+    //If MgefCode is not set, do nothing
+    if(curMgefCode == 0)
+        return stop;
+
+    UINT32 modIndex = curMgefCode & 0x000000FF;
+    //If the MgefCode belongs to the mod, or if the master is already present, do nothing
+    if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
+        return stop;
+
+    //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
+    if(modIndex >= FormIDHandler.LoadOrder255.size())
+        {
+        curMgefCode = (ExpandTable[CollapseTable[modIndex]]) | (curMgefCode & 0xFFFFFF00);
+        return stop;
+        }
+
+    FormIDHandler.AddMaster(FormIDHandler.LoadOrder255[modIndex]);
+    ++count;
+    return stop;
     }

@@ -104,7 +104,7 @@ class GRUPRecords
                 header.flagsUnk = *(UINT32 *)buffer_position;
                 buffer_position += 4;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
@@ -128,6 +128,7 @@ class GRUPRecords
                     header = records[x];
                     curRecord = new(buffer) T(header.data);
                     buffer += sizeof(T);
+                    curRecord->SetParent(processor.curModFile, true);
                     curRecord->flags = header.flags;
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk;
@@ -250,27 +251,27 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.flagsUnk = *(UINT32 *)buffer_position;
                 buffer_position += 4;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(DIAL):
-                        numDIAL++;
-                        break;
-                    case REV32(INFO):
-                        numINFO++;
-                        break;
-                    default:
-                        printer("GRUPRecords<Ob::DIALRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(DIAL):
+                            numDIAL++;
+                            break;
+                        case REV32(INFO):
+                            numINFO++;
+                            break;
+                        default:
+                            printer("GRUPRecords<Ob::DIALRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -310,11 +311,12 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(DIAL):
                             curRecord = last_record = new(dial_buffer) Ob::DIALRecord(header.data);
                             dial_buffer += sizeof(Ob::DIALRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(INFO):
                             curRecord = new(info_buffer) Ob::INFORecord(header.data);
                             info_buffer += sizeof(Ob::INFORecord);
-                            ((Ob::INFORecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->INFO.push_back(curRecord);
                             break;
                         default:
@@ -494,36 +496,36 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.flagsUnk = *(UINT32 *)buffer_position;
                 buffer_position += 4;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(CELL):
-                        numCELL++;
-                        break;
-                    case REV32(ACHR):
-                        numACHR++;
-                        break;
-                    case REV32(ACRE):
-                        numACRE++;
-                        break;
-                    case REV32(REFR):
-                        numREFR++;
-                        break;
-                    case REV32(PGRD):
-                        numPGRD++;
-                        break;
-                    default:
-                        printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(CELL):
+                            numCELL++;
+                            break;
+                        case REV32(ACHR):
+                            numACHR++;
+                            break;
+                        case REV32(ACRE):
+                            numACRE++;
+                            break;
+                        case REV32(REFR):
+                            numREFR++;
+                            break;
+                        case REV32(PGRD):
+                            numPGRD++;
+                            break;
+                        default:
+                            printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -591,23 +593,24 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(CELL):
                             curRecord = last_record = new(cell_buffer) Ob::CELLRecord(header.data);
                             cell_buffer += sizeof(Ob::CELLRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(ACHR):
                             curRecord = new(achr_buffer) Ob::ACHRRecord(header.data);
                             achr_buffer += sizeof(Ob::ACHRRecord);
-                            ((Ob::ACHRRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->ACHR.push_back(curRecord);
                             break;
                         case REV32(ACRE):
                             curRecord = new(acre_buffer) Ob::ACRERecord(header.data);
                             acre_buffer += sizeof(Ob::ACRERecord);
-                            ((Ob::ACRERecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->ACRE.push_back(curRecord);
                             break;
                         case REV32(REFR):
                             curRecord = new(refr_buffer) Ob::REFRRecord(header.data);
                             refr_buffer += sizeof(Ob::REFRRecord);
-                            ((Ob::REFRRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->REFR.push_back(curRecord);
                             break;
                         case REV32(PGRD):
@@ -637,7 +640,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_record->PGRD = new(pgrd_buffer) Ob::PGRDRecord(header.data);
                             pgrd_buffer += sizeof(Ob::PGRDRecord);
-                            ((Ob::PGRDRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             break;
                         default:
                             printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
@@ -1039,48 +1042,48 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.flagsUnk = *(UINT32 *)buffer_position;
                 buffer_position += 4;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(WRLD):
-                        numWRLD++;
-                        break;
-                    case REV32(ROAD):
-                        numROAD++;
-                        break;
-                    case REV32(CELL):
-                        //Uniquely mark world cells for later
-                        if(GRUP_End.first == eWorld)
-                            records.back().type = REV32(WCEL);
-                        numCELL++;
-                        break;
-                    case REV32(ACHR):
-                        numACHR++;
-                        break;
-                    case REV32(ACRE):
-                        numACRE++;
-                        break;
-                    case REV32(REFR):
-                        numREFR++;
-                        break;
-                    case REV32(PGRD):
-                        numPGRD++;
-                        break;
-                    case REV32(LAND):
-                        numLAND++;
-                        break;
-                    default:
-                        printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(WRLD):
+                            numWRLD++;
+                            break;
+                        case REV32(ROAD):
+                            numROAD++;
+                            break;
+                        case REV32(CELL):
+                            //Uniquely mark world cells for later
+                            if(GRUP_End.first == eWorld)
+                                records.back().type = REV32(WCEL);
+                            numCELL++;
+                            break;
+                        case REV32(ACHR):
+                            numACHR++;
+                            break;
+                        case REV32(ACRE):
+                            numACRE++;
+                            break;
+                        case REV32(REFR):
+                            numREFR++;
+                            break;
+                        case REV32(PGRD):
+                            numPGRD++;
+                            break;
+                        case REV32(LAND):
+                            numLAND++;
+                            break;
+                        default:
+                            printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -1175,6 +1178,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(WRLD):
                             curRecord = last_wrld_record = new(wrld_buffer) Ob::WRLDRecord(header.data);
                             wrld_buffer += sizeof(Ob::WRLDRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(ROAD):
                             if(last_wrld_record == orphaned_wrld_records)
@@ -1203,7 +1207,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_wrld_record->ROAD = new(road_buffer) Ob::ROADRecord(header.data);
                             road_buffer += sizeof(Ob::ROADRecord);
-                            ((Ob::ROADRecord *)curRecord)->Parent = last_wrld_record;
+                            curRecord->SetParent(last_wrld_record, false);
                             break;
                         case REV32(WCEL):
                             if(last_wrld_record == orphaned_wrld_records)
@@ -1232,31 +1236,31 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_cell_record = new(cell_buffer) Ob::CELLRecord(header.data);
                             cell_buffer += sizeof(Ob::CELLRecord);
-                            last_cell_record->Parent = last_wrld_record;
+                            last_cell_record->SetParent(last_wrld_record, false);
                             last_wrld_record->CELL = last_cell_record;
                             break;
                         case REV32(CELL):
                             curRecord = last_cell_record = new(cell_buffer) Ob::CELLRecord(header.data);
                             cell_buffer += sizeof(Ob::CELLRecord);
-                            last_cell_record->Parent = last_wrld_record;
+                            last_cell_record->SetParent(last_wrld_record, false);
                             last_wrld_record->CELLS.push_back(curRecord);
                             break;
                         case REV32(ACHR):
                             curRecord = new(achr_buffer) Ob::ACHRRecord(header.data);
                             achr_buffer += sizeof(Ob::ACHRRecord);
-                            ((Ob::ACHRRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->ACHR.push_back(curRecord);
                             break;
                         case REV32(ACRE):
                             curRecord = new(acre_buffer) Ob::ACRERecord(header.data);
                             acre_buffer += sizeof(Ob::ACRERecord);
-                            ((Ob::ACRERecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->ACRE.push_back(curRecord);
                             break;
                         case REV32(REFR):
                             curRecord = new(refr_buffer) Ob::REFRRecord(header.data);
                             refr_buffer += sizeof(Ob::REFRRecord);
-                            ((Ob::REFRRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->REFR.push_back(curRecord);
                             break;
                         case REV32(PGRD):
@@ -1286,7 +1290,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_cell_record->PGRD = new(pgrd_buffer) Ob::PGRDRecord(header.data);
                             pgrd_buffer += sizeof(Ob::PGRDRecord);
-                            ((Ob::PGRDRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             break;
                         case REV32(LAND):
                             if(last_cell_record == orphaned_cell_records)
@@ -1315,7 +1319,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_cell_record->LAND = new(land_buffer) Ob::LANDRecord(header.data);
                             land_buffer += sizeof(Ob::LANDRecord);
-                            ((Ob::LANDRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             if(processor.Flags.IsIndexLANDs)
                                 {
                                 read_parser.Accept((Record *&)last_cell_record); //may already be loaded, but just to be sure.
@@ -1602,10 +1606,10 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 if(curWorldCell == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
-                    curWorldCell = (Ob::CELLRecord *)cell_pool.construct((unsigned char *)NULL);
+                    curWorldCell = (Ob::CELLRecord *)cell_pool.construct((unsigned char *)NULL, curWorld, false);
                     curWorldCell->formID = FormIDHandler.NextExpandedFormID();
                     curWorld->CELL = curWorldCell;
-                    curWorldCell->Parent = curWorld;
+                    curWorldCell->SetParent(curWorld, false);
                     curWorldCell->IsInterior(false);
                     curWorldCell->IsHasWater(true);
                     curWorldCell->IsPersistent(true);
@@ -1943,9 +1947,9 @@ class FNVGRUPRecords
 
             Record * curRecord = NULL;
             UINT32 recordSize = 0;
-            FNVRecordHeader header;
+            RecordHeader header;
 
-            std::vector<FNVRecordHeader> records;
+            std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(T)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
                 //Assumes that all records in a generic group are of the same type
@@ -1966,7 +1970,7 @@ class FNVGRUPRecords
                 header.versionControl2[1] = *(UINT8 *)buffer_position;
                 buffer_position++;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
@@ -1990,6 +1994,7 @@ class FNVGRUPRecords
                     header = records[x];
                     curRecord = new(buffer) T(header.data);
                     buffer += sizeof(T);
+                    curRecord->SetParent(processor.curModFile, true);
                     curRecord->flags = header.flags;
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk; //VersionControl1
@@ -2093,12 +2098,12 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
             Record * curRecord = NULL;
             UINT32 recordSize = 0;
-            FNVRecordHeader header;
+            RecordHeader header;
 
             FNV::DIALRecord *last_record = NULL, *orphaned_records = NULL;
             UINT32 numDIAL = 0, numINFO = 0;
 
-            std::vector<FNVRecordHeader> records;
+            std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::DIALRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
                 //Assumes that all records in a generic group are of the same type
@@ -2126,27 +2131,27 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.versionControl2[1] = *(UINT8 *)buffer_position;
                 buffer_position++;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(DIAL):
-                        numDIAL++;
-                        break;
-                    case REV32(INFO):
-                        numINFO++;
-                        break;
-                    default:
-                        printer("GRUPRecords<FNV::DIALRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(DIAL):
+                            numDIAL++;
+                            break;
+                        case REV32(INFO):
+                            numINFO++;
+                            break;
+                        default:
+                            printer("GRUPRecords<FNV::DIALRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -2186,11 +2191,12 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(DIAL):
                             curRecord = last_record = new(dial_buffer) FNV::DIALRecord(header.data);
                             dial_buffer += sizeof(FNV::DIALRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(INFO):
                             curRecord = new(info_buffer) FNV::INFORecord(header.data);
                             info_buffer += sizeof(FNV::INFORecord);
-                            ((FNV::INFORecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->INFO.push_back(curRecord);
                             break;
                         default:
@@ -2357,12 +2363,12 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
             Record * curRecord = NULL;
             UINT32 recordSize = 0;
-            FNVRecordHeader header;
+            RecordHeader header;
 
             FNV::CELLRecord *last_record = NULL, *orphaned_records = NULL;
             UINT32 numCELL = 0, numACHR = 0, numACRE = 0, numREFR = 0, numPGRE = 0, numPMIS = 0, numPBEA = 0, numPFLA = 0, numPCBE = 0, numNAVM = 0;
 
-            std::vector<FNVRecordHeader> records;
+            std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::CELLRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
                 //Assumes that all records in a generic group are of the same type
@@ -2390,51 +2396,51 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.versionControl2[1] = *(UINT8 *)buffer_position;
                 buffer_position++;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(CELL):
-                        numCELL++;
-                        break;
-                    case REV32(ACHR):
-                        numACHR++;
-                        break;
-                    case REV32(ACRE):
-                        numACRE++;
-                        break;
-                    case REV32(REFR):
-                        numREFR++;
-                        break;
-                    case REV32(PGRE):
-                        numPGRE++;
-                        break;
-                    case REV32(PMIS):
-                        numPMIS++;
-                        break;
-                    case REV32(PBEA):
-                        numPBEA++;
-                        break;
-                    case REV32(PFLA):
-                        numPFLA++;
-                        break;
-                    case REV32(PCBE):
-                        numPCBE++;
-                        break;
-                    case REV32(NAVM):
-                        numNAVM++;
-                        break;
-                    default:
-                        printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(CELL):
+                            numCELL++;
+                            break;
+                        case REV32(ACHR):
+                            numACHR++;
+                            break;
+                        case REV32(ACRE):
+                            numACRE++;
+                            break;
+                        case REV32(REFR):
+                            numREFR++;
+                            break;
+                        case REV32(PGRE):
+                            numPGRE++;
+                            break;
+                        case REV32(PMIS):
+                            numPMIS++;
+                            break;
+                        case REV32(PBEA):
+                            numPBEA++;
+                            break;
+                        case REV32(PFLA):
+                            numPFLA++;
+                            break;
+                        case REV32(PCBE):
+                            numPCBE++;
+                            break;
+                        case REV32(NAVM):
+                            numNAVM++;
+                            break;
+                        default:
+                            printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -2547,59 +2553,60 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(CELL):
                             curRecord = last_record = new(cell_buffer) FNV::CELLRecord(header.data);
                             cell_buffer += sizeof(FNV::CELLRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(ACHR):
                             curRecord = new(achr_buffer) FNV::ACHRRecord(header.data);
                             achr_buffer += sizeof(FNV::ACHRRecord);
-                            ((FNV::ACHRRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->ACHR.push_back(curRecord);
                             break;
                         case REV32(ACRE):
                             curRecord = new(acre_buffer) FNV::ACRERecord(header.data);
                             acre_buffer += sizeof(FNV::ACRERecord);
-                            ((FNV::ACRERecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->ACRE.push_back(curRecord);
                             break;
                         case REV32(REFR):
                             curRecord = new(refr_buffer) FNV::REFRRecord(header.data);
                             refr_buffer += sizeof(FNV::REFRRecord);
-                            ((FNV::REFRRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->REFR.push_back(curRecord);
                             break;
                         case REV32(PGRE):
                             curRecord = new(pgre_buffer) FNV::PGRERecord(header.data);
                             pgre_buffer += sizeof(FNV::PGRERecord);
-                            ((FNV::PGRERecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->PGRE.push_back(curRecord);
                             break;
                         case REV32(PMIS):
                             curRecord = new(pmis_buffer) FNV::PMISRecord(header.data);
                             pmis_buffer += sizeof(FNV::PMISRecord);
-                            ((FNV::PMISRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->PMIS.push_back(curRecord);
                             break;
                         case REV32(PBEA):
                             curRecord = new(pbea_buffer) FNV::PBEARecord(header.data);
                             pbea_buffer += sizeof(FNV::PBEARecord);
-                            ((FNV::PBEARecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->PBEA.push_back(curRecord);
                             break;
                         case REV32(PFLA):
                             curRecord = new(pfla_buffer) FNV::PFLARecord(header.data);
                             pfla_buffer += sizeof(FNV::PFLARecord);
-                            ((FNV::PFLARecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->PFLA.push_back(curRecord);
                             break;
                         case REV32(PCBE):
                             curRecord = new(pcbe_buffer) FNV::PCBERecord(header.data);
                             pcbe_buffer += sizeof(FNV::PCBERecord);
-                            ((FNV::PCBERecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->PCBE.push_back(curRecord);
                             break;
                         case REV32(NAVM):
                             curRecord = new(navm_buffer) FNV::NAVMRecord(header.data);
                             navm_buffer += sizeof(FNV::NAVMRecord);
-                            ((FNV::NAVMRecord *)curRecord)->Parent = last_record;
+                            curRecord->SetParent(last_record, false);
                             last_record->NAVM.push_back(curRecord);
                             break;
                         default:
@@ -3098,7 +3105,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
             Record * curRecord = NULL;
             UINT32 recordSize = 0;
-            FNVRecordHeader header;
+            RecordHeader header;
 
             FNV::WRLDRecord *last_wrld_record = NULL, *orphaned_wrld_records = NULL;
             FNV::CELLRecord *last_cell_record = NULL, *orphaned_cell_records = NULL;
@@ -3111,7 +3118,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
             GRUP_End.second = group_buffer_end;
             GRUPs.push_back(GRUP_End);
 
-            std::vector<FNVRecordHeader> records;
+            std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::WRLDRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
                 while(buffer_position >= GRUP_End.second)
@@ -3153,60 +3160,60 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 header.versionControl2[1] = *(UINT8 *)buffer_position;
                 buffer_position++;
 
-                if(processor.Accept<IsKeyedByEditorID>(header))
+                if(processor.Accept(header))
                     {
                     header.data = buffer_position;
                     records.push_back(header);
-                    }
 
-                switch(header.type)
-                    {
-                    case REV32(WRLD):
-                        numWRLD++;
-                        break;
-                    case REV32(CELL):
-                        //Uniquely mark world cells for later
-                        if(GRUP_End.first == eWorld)
-                            records.back().type = REV32(WCEL);
-                        numCELL++;
-                        break;
-                    case REV32(LAND):
-                        numLAND++;
-                        break;
-                    case REV32(ACHR):
-                        numACHR++;
-                        break;
-                    case REV32(ACRE):
-                        numACRE++;
-                        break;
-                    case REV32(REFR):
-                        numREFR++;
-                        break;
-                    case REV32(PGRE):
-                        numPGRE++;
-                        break;
-                    case REV32(PMIS):
-                        numPMIS++;
-                        break;
-                    case REV32(PBEA):
-                        numPBEA++;
-                        break;
-                    case REV32(PFLA):
-                        numPFLA++;
-                        break;
-                    case REV32(PCBE):
-                        numPCBE++;
-                        break;
-                    case REV32(NAVM):
-                        numNAVM++;
-                        break;
-                    default:
-                        printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
-                        #ifdef CBASH_DEBUG_CHUNK
-                            peek_around(buffer_position, PEEK_SIZE);
-                        #endif
-                        records.pop_back();
-                        break;
+                    switch(header.type)
+                        {
+                        case REV32(WRLD):
+                            numWRLD++;
+                            break;
+                        case REV32(CELL):
+                            //Uniquely mark world cells for later
+                            if(GRUP_End.first == eWorld)
+                                records.back().type = REV32(WCEL);
+                            numCELL++;
+                            break;
+                        case REV32(LAND):
+                            numLAND++;
+                            break;
+                        case REV32(ACHR):
+                            numACHR++;
+                            break;
+                        case REV32(ACRE):
+                            numACRE++;
+                            break;
+                        case REV32(REFR):
+                            numREFR++;
+                            break;
+                        case REV32(PGRE):
+                            numPGRE++;
+                            break;
+                        case REV32(PMIS):
+                            numPMIS++;
+                            break;
+                        case REV32(PBEA):
+                            numPBEA++;
+                            break;
+                        case REV32(PFLA):
+                            numPFLA++;
+                            break;
+                        case REV32(PCBE):
+                            numPCBE++;
+                            break;
+                        case REV32(NAVM):
+                            numNAVM++;
+                            break;
+                        default:
+                            printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            #ifdef CBASH_DEBUG_CHUNK
+                                peek_around(buffer_position, PEEK_SIZE);
+                            #endif
+                            records.pop_back();
+                            break;
+                        }
                     }
 
                 buffer_position += recordSize;
@@ -3337,6 +3344,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(WRLD):
                             curRecord = last_wrld_record = new(wrld_buffer) FNV::WRLDRecord(header.data);
                             wrld_buffer += sizeof(FNV::WRLDRecord);
+                            curRecord->SetParent(processor.curModFile, true);
                             break;
                         case REV32(WCEL):
                             if(last_wrld_record == orphaned_wrld_records)
@@ -3365,13 +3373,13 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_cell_record = new(cell_buffer) FNV::CELLRecord(header.data);
                             cell_buffer += sizeof(FNV::CELLRecord);
-                            last_cell_record->Parent = last_wrld_record;
+                            last_cell_record->SetParent(last_wrld_record, false);
                             last_wrld_record->CELL = last_cell_record;
                             break;
                         case REV32(CELL):
                             curRecord = last_cell_record = new(cell_buffer) FNV::CELLRecord(header.data);
                             cell_buffer += sizeof(FNV::CELLRecord);
-                            last_cell_record->Parent = last_wrld_record;
+                            last_cell_record->SetParent(last_wrld_record, false);
                             last_wrld_record->CELLS.push_back(curRecord);
                             break;
                         case REV32(LAND):
@@ -3401,7 +3409,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             curRecord = last_cell_record->LAND = new(land_buffer) FNV::LANDRecord(header.data);
                             land_buffer += sizeof(FNV::LANDRecord);
-                            ((FNV::LANDRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             if(processor.Flags.IsIndexLANDs)
                                 {
                                 read_parser.Accept((Record *&)last_cell_record); //may already be loaded, but just to be sure.
@@ -3413,55 +3421,55 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(ACHR):
                             curRecord = new(achr_buffer) FNV::ACHRRecord(header.data);
                             achr_buffer += sizeof(FNV::ACHRRecord);
-                            ((FNV::ACHRRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->ACHR.push_back(curRecord);
                             break;
                         case REV32(ACRE):
                             curRecord = new(acre_buffer) FNV::ACRERecord(header.data);
                             acre_buffer += sizeof(FNV::ACRERecord);
-                            ((FNV::ACRERecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->ACRE.push_back(curRecord);
                             break;
                         case REV32(REFR):
                             curRecord = new(refr_buffer) FNV::REFRRecord(header.data);
                             refr_buffer += sizeof(FNV::REFRRecord);
-                            ((FNV::REFRRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->REFR.push_back(curRecord);
                             break;
                         case REV32(PGRE):
                             curRecord = new(pgre_buffer) FNV::PGRERecord(header.data);
                             pgre_buffer += sizeof(FNV::PGRERecord);
-                            ((FNV::PGRERecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->PGRE.push_back(curRecord);
                             break;
                         case REV32(PMIS):
                             curRecord = new(pmis_buffer) FNV::PMISRecord(header.data);
                             pmis_buffer += sizeof(FNV::PMISRecord);
-                            ((FNV::PMISRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->PMIS.push_back(curRecord);
                             break;
                         case REV32(PBEA):
                             curRecord = new(pbea_buffer) FNV::PBEARecord(header.data);
                             pbea_buffer += sizeof(FNV::PBEARecord);
-                            ((FNV::PBEARecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->PBEA.push_back(curRecord);
                             break;
                         case REV32(PFLA):
                             curRecord = new(pfla_buffer) FNV::PFLARecord(header.data);
                             pfla_buffer += sizeof(FNV::PFLARecord);
-                            ((FNV::PFLARecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->PFLA.push_back(curRecord);
                             break;
                         case REV32(PCBE):
                             curRecord = new(pcbe_buffer) FNV::PCBERecord(header.data);
                             pcbe_buffer += sizeof(FNV::PCBERecord);
-                            ((FNV::PCBERecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->PCBE.push_back(curRecord);
                             break;
                         case REV32(NAVM):
                             curRecord = new(navm_buffer) FNV::NAVMRecord(header.data);
                             navm_buffer += sizeof(FNV::NAVMRecord);
-                            ((FNV::NAVMRecord *)curRecord)->Parent = last_cell_record;
+                            curRecord->SetParent(last_cell_record, false);
                             last_cell_record->NAVM.push_back(curRecord);
                             break;
                         default:
@@ -3945,10 +3953,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 if(curWorldCell == NULL && FixedPersistent.size()) //create a default dummy cell for persistents
                     {
-                    curWorldCell = (FNV::CELLRecord *)cell_pool.construct((unsigned char *)NULL);
+                    curWorldCell = (FNV::CELLRecord *)cell_pool.construct((unsigned char *)NULL, curWorld, false);
                     curWorldCell->formID = FormIDHandler.NextExpandedFormID();
                     curWorld->CELL = curWorldCell;
-                    curWorldCell->Parent = curWorld;
                     curWorldCell->IsInterior(false);
                     curWorldCell->IsHasWater(true);
                     curWorldCell->IsPersistent(true);

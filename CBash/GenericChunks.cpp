@@ -1298,7 +1298,7 @@ bool GENAIDT::operator !=(const GENAIDT &other) const
 GENCTDA::GENCTDA():
     operType(0),
     compValue(0),
-    ifunc(0),
+    ifunc(5), //GetLocked, for its eNone, eNone param types...so that new conditions don't try to resolve either param1 or param2 until ifunc is set
     param1(0),
     param2(0)
     {
@@ -1495,12 +1495,10 @@ bool GENCTDA::VisitFormIDs(FormIDOp &op)
     //if(ifunc == 214)
     //    printer("%08X uses HasMagicEffect\n", formID);
 
-    Function_Arguments_Iterator curCTDAFunction;
-
     if(IsUseGlobal())
         op.Accept(compValue);
 
-    curCTDAFunction = Function_Arguments.find(ifunc);
+    Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(ifunc);
     if(curCTDAFunction != Function_Arguments.end())
         {
         const FunctionArguments &CTDAFunction = curCTDAFunction->second;
@@ -1517,9 +1515,7 @@ bool GENCTDA::VisitFormIDs(FormIDOp &op)
 
 void GENCTDA::Write(FileWriter &writer)
     {
-    Function_Arguments_Iterator curCTDAFunction;
-    curCTDAFunction = Function_Arguments.find(ifunc);
-
+    Function_Arguments_Iterator curCTDAFunction = Function_Arguments.find(ifunc);
     if(curCTDAFunction != Function_Arguments.end())
         {
         const FunctionArguments &CTDAFunction = curCTDAFunction->second;
@@ -2722,12 +2718,12 @@ FNVCTDA::~FNVCTDA()
 
 bool FNVCTDA::VisitFormIDs(FormIDOp &op)
     {
-    Function_Arguments_Iterator curCTDAFunction;
+    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(ifunc);
 
     if(IsUseGlobal())
         op.Accept(compValue);
 
-    curCTDAFunction = FNVFunction_Arguments.find(ifunc);
+
     if(curCTDAFunction != FNVFunction_Arguments.end())
         {
         const FunctionArguments &CTDAFunction = curCTDAFunction->second;
@@ -2756,9 +2752,7 @@ bool FNVCTDA::VisitFormIDs(FormIDOp &op)
 
 void FNVCTDA::Write(FileWriter &writer)
     {
-    Function_Arguments_Iterator curCTDAFunction;
-    curCTDAFunction = FNVFunction_Arguments.find(ifunc);
-
+    Function_Arguments_Iterator curCTDAFunction = FNVFunction_Arguments.find(ifunc);
     if(curCTDAFunction != FNVFunction_Arguments.end())
         {
         const FunctionArguments &CTDAFunction = curCTDAFunction->second;

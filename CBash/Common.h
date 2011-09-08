@@ -179,8 +179,8 @@ struct sameStr
     bool operator()( const STRING s1, const STRING s2 ) const;
     };
 
-typedef std::multimap<UINT32, std::pair<ModFile *, Record *> > FormID_Map;
-typedef std::multimap<STRING, std::pair<ModFile *, Record *>, sameStr> EditorID_Map;
+typedef std::multimap<UINT32, Record *> FormID_Map;
+typedef std::multimap<STRING, Record *, sameStr> EditorID_Map;
 
 typedef FormID_Map::iterator FormID_Iterator;
 typedef EditorID_Map::iterator EditorID_Iterator;
@@ -432,7 +432,8 @@ class CreateRecordOptions
     private:
         enum createFlags
             {
-            fSetAsOverride = 0x00000001
+            fSetAsOverride     = 0x00000001,
+            fCopyWinningParent = 0x00000002
             };
 
     public:
@@ -441,6 +442,7 @@ class CreateRecordOptions
         ~CreateRecordOptions();
 
         bool SetAsOverride;
+        bool CopyWinningParent;
 
         //Internal use
         bool ExistingReturned;
@@ -542,20 +544,22 @@ class ModFlags
         UINT32 GetFlags();
     };
 
-class EqualityOptions
+class SaveFlags
     {
     private:
-        enum equalityFlags
+        enum saveFlags
             {
-            fIsDeepEquality = 0x00000001
+            fIsCleanMasters    = 0x00000001,
+            fIsCloseCollection = 0x00000002
             };
 
     public:
-        EqualityOptions();
-        EqualityOptions(UINT32 nFlags);
-        ~EqualityOptions();
+        SaveFlags();
+        SaveFlags(UINT32 _Flags);
+        ~SaveFlags();
 
-        bool IsDeepEquality;
+        bool IsCleanMasters;
+        bool IsCloseCollection;
     };
 
 class StringRecord
@@ -611,6 +615,7 @@ class StringRecord
         void ReqWrite(UINT32 _Type, FileWriter &writer);
 
         void Copy(STRING FieldValue);
+        void TruncateCopy(STRING FieldValue, UINT32 MaxSize);
 
         bool equals(const StringRecord &other) const;
         bool equalsi(const StringRecord &other) const;

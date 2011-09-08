@@ -25,6 +25,8 @@ GPL License and Copyright Notice ============================================
 #include "GenericRecord.h"
 #include "TES4Record.h" //Is shared across all mod types
 
+class Collection;
+
 class ModFile
     {
     public:
@@ -40,9 +42,11 @@ class ModFile
         time_t ModTime;
         UINT32 ModID;
 
+        Collection *Parent;
+
         TES4Record TES4;
 
-        ModFile(STRING FileName, STRING ModName, const UINT32 _flags);
+        ModFile(Collection *_Parent, STRING FileName, STRING ModName, const UINT32 _flags);
         virtual ~ModFile();
 
         bool operator <(ModFile &other);
@@ -55,13 +59,31 @@ class ModFile
         bool   Close();
 
         virtual SINT32   LoadTES4() abstract {};
-        virtual SINT32   Load(RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords) abstract {};
+        virtual SINT32   Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords) abstract {};
         virtual UINT32   GetNumRecords(const UINT32 &RecordType) abstract {};
         virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options) abstract {};
         virtual SINT32   DeleteRecord(Record *&curRecord, RecordOp &deindexer) abstract {};
-        virtual SINT32   CleanMasters(std::vector<FormIDResolver *> &Expanders) abstract {};
         virtual SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer) abstract {};
 
         virtual void     VisitAllRecords(RecordOp &op) abstract {};
         virtual void     VisitRecords(const UINT32 &RecordType, RecordOp &op) abstract {};
+    };
+
+class FormIDMasterUpdater : public FormIDOp
+    {
+    private:
+        FormIDHandlerClass &FormIDHandler;
+        const UINT8 &ExpandedIndex;
+        const UINT8 &CollapsedIndex;
+        const UINT8 (&ExpandTable)[256];
+        const UINT8 (&CollapseTable)[256];
+
+    public:
+        FormIDMasterUpdater(FormIDHandlerClass &_FormIDHandler);
+        FormIDMasterUpdater(ModFile *ModID);
+        FormIDMasterUpdater(Record *RecordID);
+        ~FormIDMasterUpdater();
+
+        bool Accept(UINT32 &curFormID);
+        bool AcceptMGEF(UINT32 &curMgefCode);
     };

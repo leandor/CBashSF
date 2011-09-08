@@ -1072,7 +1072,7 @@ void * REFRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 140: //rotZ
             return &DATA.value.rotZ;
         case 141: //Parent
-            return Parent;
+            return GetParentRecord();
         default:
             return NULL;
         }
