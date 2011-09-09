@@ -235,15 +235,17 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
+                recordSize = *(UINT32 *)buffer_position;
+                buffer_position += 4;
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
-                    buffer_position += 16;
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
+                    buffer_position += 12;
                     continue;
                     }
 
-                recordSize = *(UINT32 *)buffer_position;
-                buffer_position += 4;
                 header.flags = *(UINT32 *)buffer_position;
                 buffer_position += 4;
                 header.formID = *(FORMID *)buffer_position;
@@ -350,6 +352,7 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 records.clear();
 
+                processor.OrphanedRecords += orphaned_records->INFO.size();
                 for(UINT32 x = 0; x < orphaned_records->INFO.size(); ++x)
                     {
                     curRecord = orphaned_records->INFO[x];
@@ -480,15 +483,17 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
+                recordSize = *(UINT32 *)buffer_position;
+                buffer_position += 4;
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
-                    buffer_position += 16;
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
+                    buffer_position += 12;
                     continue;
                     }
 
-                recordSize = *(UINT32 *)buffer_position;
-                buffer_position += 4;
                 header.flags = *(UINT32 *)buffer_position;
                 buffer_position += 4;
                 header.formID = *(FORMID *)buffer_position;
@@ -616,7 +621,8 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(PGRD):
                             if(last_record == orphaned_records)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -628,7 +634,8 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_record->PGRD != NULL)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_record->formID, last_record->PGRD->formID);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_record->formID, last_record->PGRD->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -643,7 +650,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                             curRecord->SetParent(last_record, false);
                             break;
                         default:
-                            printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
                             #ifdef CBASH_DEBUG_CHUNK
                                 peek_around(buffer_position, PEEK_SIZE);
                             #endif
@@ -673,6 +680,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 records.clear();
 
+                processor.OrphanedRecords += orphaned_records->ACHR.size();
                 for(UINT32 x = 0; x < orphaned_records->ACHR.size(); ++x)
                     {
                     curRecord = orphaned_records->ACHR[x];
@@ -683,6 +691,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     achr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->ACRE.size();
                 for(UINT32 x = 0; x < orphaned_records->ACRE.size(); ++x)
                     {
                     curRecord = orphaned_records->ACRE[x];
@@ -693,6 +702,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     acre_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->REFR.size();
                 for(UINT32 x = 0; x < orphaned_records->REFR.size(); ++x)
                     {
                     curRecord = orphaned_records->REFR[x];
@@ -1026,6 +1036,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
                     buffer_position += 4; //header.flags
                     header.formID = *(FORMID *)buffer_position;
                     buffer_position += 8; //header.flagsUnk
@@ -1183,7 +1195,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(ROAD):
                             if(last_wrld_record == orphaned_wrld_records)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ROAD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1195,7 +1208,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_wrld_record->ROAD != NULL)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->ROAD->formID);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped extra ROAD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->ROAD->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1212,7 +1226,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(WCEL):
                             if(last_wrld_record == orphaned_wrld_records)
                                 {
-                                printer("GRUPRecords<Ob::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1224,7 +1239,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_wrld_record->CELL != NULL)
                                 {
-                                printer("GRUPRecords<Ob::WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->CELL->formID);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->CELL->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1266,7 +1282,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(PGRD):
                             if(last_cell_record == orphaned_cell_records)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRD (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1278,7 +1295,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_cell_record->PGRD != NULL)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->PGRD->formID);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped extra PGRD (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->PGRD->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1295,7 +1313,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(LAND):
                             if(last_cell_record == orphaned_cell_records)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1307,7 +1326,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_cell_record->LAND != NULL)
                                 {
-                                printer("GRUPRecords<Ob::CELLRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->LAND->formID);
+                                processor.OrphanedRecords++;
+                                printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->LAND->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -1329,7 +1349,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             break;
                         default:
-                            printer("GRUPRecords<Ob::WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
                             #ifdef CBASH_DEBUG_CHUNK
                                 peek_around(buffer_position, PEEK_SIZE);
                             #endif
@@ -1470,6 +1490,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         }
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->ACHR.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->ACHR.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->ACHR[x];
@@ -1480,6 +1501,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.achr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->ACRE.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->ACRE.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->ACRE[x];
@@ -1490,6 +1512,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.acre_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->REFR.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->REFR.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->REFR[x];
@@ -2109,15 +2132,17 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
+                recordSize = *(UINT32 *)buffer_position;
+                buffer_position += 4;
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
-                    buffer_position += 20;
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
+                    buffer_position += 16;
                     continue;
                     }
 
-                recordSize = *(UINT32 *)buffer_position;
-                buffer_position += 4;
                 header.flags = *(UINT32 *)buffer_position;
                 buffer_position += 4;
                 header.formID = *(FORMID *)buffer_position;
@@ -2234,6 +2259,7 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 records.clear();
 
+                processor.OrphanedRecords += orphaned_records->INFO.size();
                 for(UINT32 x = 0; x < orphaned_records->INFO.size(); ++x)
                     {
                     curRecord = orphaned_records->INFO[x];
@@ -2374,15 +2400,17 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
+                recordSize = *(UINT32 *)buffer_position;
+                buffer_position += 4;
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
-                    buffer_position += 20;
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
+                    buffer_position += 16;
                     continue;
                     }
 
-                recordSize = *(UINT32 *)buffer_position;
-                buffer_position += 4;
                 header.flags = *(UINT32 *)buffer_position;
                 buffer_position += 4;
                 header.formID = *(FORMID *)buffer_position;
@@ -2610,7 +2638,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                             last_record->NAVM.push_back(curRecord);
                             break;
                         default:
-                            printer("GRUPRecords<FNV::CELLRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
                             #ifdef CBASH_DEBUG_CHUNK
                                 peek_around(buffer_position, PEEK_SIZE);
                             #endif
@@ -2644,6 +2672,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 records.clear();
 
+                processor.OrphanedRecords += orphaned_records->ACHR.size();
                 for(UINT32 x = 0; x < orphaned_records->ACHR.size(); ++x)
                     {
                     curRecord = orphaned_records->ACHR[x];
@@ -2654,6 +2683,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     achr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->ACRE.size();
                 for(UINT32 x = 0; x < orphaned_records->ACRE.size(); ++x)
                     {
                     curRecord = orphaned_records->ACRE[x];
@@ -2664,6 +2694,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     acre_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->REFR.size();
                 for(UINT32 x = 0; x < orphaned_records->REFR.size(); ++x)
                     {
                     curRecord = orphaned_records->REFR[x];
@@ -2674,6 +2705,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->PGRE.size();
                 for(UINT32 x = 0; x < orphaned_records->PGRE.size(); ++x)
                     {
                     curRecord = orphaned_records->PGRE[x];
@@ -2684,6 +2716,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->PMIS.size();
                 for(UINT32 x = 0; x < orphaned_records->PMIS.size(); ++x)
                     {
                     curRecord = orphaned_records->PMIS[x];
@@ -2694,6 +2727,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->PBEA.size();
                 for(UINT32 x = 0; x < orphaned_records->PBEA.size(); ++x)
                     {
                     curRecord = orphaned_records->PBEA[x];
@@ -2704,6 +2738,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->PFLA.size();
                 for(UINT32 x = 0; x < orphaned_records->PFLA.size(); ++x)
                     {
                     curRecord = orphaned_records->PFLA[x];
@@ -2714,6 +2749,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->PCBE.size();
                 for(UINT32 x = 0; x < orphaned_records->PCBE.size(); ++x)
                     {
                     curRecord = orphaned_records->PCBE[x];
@@ -2724,6 +2760,7 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_records->NAVM.size();
                 for(UINT32 x = 0; x < orphaned_records->NAVM.size(); ++x)
                     {
                     curRecord = orphaned_records->NAVM[x];
@@ -3138,6 +3175,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
 
                 if(header.type == REV32(GRUP)) //All GRUPs will be recreated from scratch on write (saves memory)
                     {
+                    if(recordSize == 20)
+                        processor.EmptyGRUPs++;
                     buffer_position += 4; //header.flags
                     header.formID = *(FORMID *)buffer_position;
                     buffer_position += 12; //header.flagsUnk, header.formVersion ,header.versionControl2[0]
@@ -3349,7 +3388,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(WCEL):
                             if(last_wrld_record == orphaned_wrld_records)
                                 {
-                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan World CELL (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -3361,7 +3401,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_wrld_record->CELL != NULL)
                                 {
-                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->CELL->formID);
+                                processor.OrphanedRecords++;
+                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Skipped extra World CELL (%08X) at %08X in file \"%s\"\n  WRLD (%08X) already has CELL (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_wrld_record->formID, last_wrld_record->CELL->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -3385,7 +3426,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         case REV32(LAND):
                             if(last_cell_record == orphaned_cell_records)
                                 {
-                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
+                                processor.OrphanedRecords++;
+                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan LAND (%08X) at %08X in file \"%s\"\n", header.formID, buffer_position - buffer_start, FileName);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -3397,7 +3439,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 }
                             else if(last_cell_record->LAND != NULL)
                                 {
-                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->LAND->formID);
+                                processor.OrphanedRecords++;
+                                printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Skipped extra LAND (%08X) at %08X in file \"%s\"\n  CELL (%08X) already has PGRD (%08X)\n", header.formID, buffer_position - buffer_start, FileName, last_cell_record->formID, last_cell_record->LAND->formID);
                                 #ifdef CBASH_DEBUG_CHUNK
                                     peek_around(buffer_position, PEEK_SIZE);
                                 #endif
@@ -3473,7 +3516,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                             last_cell_record->NAVM.push_back(curRecord);
                             break;
                         default:
-                            printer("FNVGRUPRecords<FNV::WRLDRecord>::Skim: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
+                            printer("FNVGRUPRecords<FNV::WRLDRecord>::Read: Warning - Parsing error. Unexpected record type (%c%c%c%c) in file \"%s\".\n", ((STRING)&header.type)[0], ((STRING)&header.type)[1], ((STRING)&header.type)[2], ((STRING)&header.type)[3], FileName);
                             #ifdef CBASH_DEBUG_CHUNK
                                 peek_around(buffer_position, PEEK_SIZE);
                             #endif
@@ -3732,6 +3775,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         }
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->ACHR.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->ACHR.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->ACHR[x];
@@ -3742,6 +3786,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.achr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->ACRE.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->ACRE.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->ACRE[x];
@@ -3752,6 +3797,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.acre_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->REFR.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->REFR.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->REFR[x];
@@ -3762,6 +3808,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.refr_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->PGRE.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->PGRE.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->PGRE[x];
@@ -3772,6 +3819,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.pgre_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->PMIS.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->PMIS.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->PMIS[x];
@@ -3782,6 +3830,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.pmis_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->PBEA.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->PBEA.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->PBEA[x];
@@ -3792,6 +3841,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.pbea_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->PFLA.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->PFLA.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->PFLA[x];
@@ -3802,6 +3852,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.pfla_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->PCBE.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->PCBE.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->PCBE[x];
@@ -3812,6 +3863,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     CELL.pcbe_pool.destroy(curRecord);
                     }
 
+                processor.OrphanedRecords += orphaned_cell_records->NAVM.size();
                 for(UINT32 x = 0; x < orphaned_cell_records->NAVM.size(); ++x)
                     {
                     curRecord = orphaned_cell_records->NAVM[x];

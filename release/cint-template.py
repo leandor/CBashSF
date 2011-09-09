@@ -5,12 +5,14 @@ import struct
 import math
 from os.path import exists, join
 try:
+    #See if cint is being used by Wrye Bash
     from bolt import CBash as CBashEnabled
-    from bolt import GPath, deprint, _
-    import bush
-    import bosh
+    from bolt import GPath, deprint, _, Path
 except:
+    #It isn't, so replace the imported items with bare definitions
     CBashEnabled = "."
+    class Path(object):
+        pass
     def GPath(obj):
         return obj
     def deprint(obj):
@@ -94,6 +96,8 @@ if(CBash):
     _CLoadCollection.errcheck = NegativeIsErrorCheck
     _CUnloadCollection = CBash.UnloadCollection
     _CUnloadCollection.errcheck = NegativeIsErrorCheck
+    _CGetCollectionType = CBash.GetCollectionType
+    _CGetCollectionType.errcheck = NegativeIsErrorCheck
     _CUnloadAllCollections = CBash.UnloadAllCollections
     _CUnloadAllCollections.errcheck = NegativeIsErrorCheck
     _CDeleteAllCollections = CBash.DeleteAllCollections
@@ -122,11 +126,17 @@ if(CBash):
     _CGetModLoadOrderByID = CBash.GetModLoadOrderByID
     _CGetModIDByRecordID = CBash.GetModIDByRecordID
     _CGetCollectionIDByRecordID = CBash.GetCollectionIDByRecordID
+    _CGetCollectionIDByModID = CBash.GetCollectionIDByModID
     _CIsModEmpty = CBash.IsModEmpty
     _CGetModNumTypes = CBash.GetModNumTypes
     _CGetModNumTypes.errcheck = NegativeIsErrorCheck
     _CGetModTypes = CBash.GetModTypes
     _CGetModTypes.errcheck = NegativeIsErrorCheck
+    _CGetModNumEmptyGRUPs = CBash.GetModNumEmptyGRUPs
+    _CGetModNumEmptyGRUPs.errcheck = NegativeIsErrorCheck
+    _CGetModNumOrphans = CBash.GetModNumOrphans
+    _CGetModNumOrphans.errcheck = NegativeIsErrorCheck
+    
     _CGetLongIDName = CBash.GetLongIDName
     _CMakeShortFormID = CBash.MakeShortFormID
     _CCreateRecord = CBash.CreateRecord
@@ -155,6 +165,7 @@ if(CBash):
     _CDeleteCollection.restype = c_long
     _CLoadCollection.restype = c_long
     _CUnloadCollection.restype = c_long
+    _CGetCollectionType.restype = c_long
     _CUnloadAllCollections.restype = c_long
     _CDeleteAllCollections.restype = c_long
     _CAddMod.restype = c_long
@@ -176,9 +187,12 @@ if(CBash):
     _CGetModLoadOrderByID.restype = c_long
     _CGetModIDByRecordID.restype = c_ulong
     _CGetCollectionIDByRecordID.restype = c_ulong
+    _CGetCollectionIDByModID.restype = c_ulong
     _CIsModEmpty.restype = c_ulong
     _CGetModNumTypes.restype = c_long
     _CGetModTypes.restype = c_long
+    _CGetModNumEmptyGRUPs.restype = c_long
+    _CGetModNumOrphans.restype = c_long
     _CGetLongIDName.restype = c_char_p
     _CMakeShortFormID.restype = c_ulong
     _CCreateRecord.restype = c_ulong
@@ -386,19 +400,20 @@ class FormID(object):
         def __repr__(self):
             return "UnvalidatedFormID('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """Unvalidated FormIDs have to be tested for each destination collection
                A FormID is valid if its master is part of the destination collection"""
+            targetID = target.GetParentCollection()._CollectionID
             master = str(self.master)
-            retValue = _CGetModIDByName(_CGetCollectionIDByRecordID(RecordID), master)
+            retValue = _CGetModIDByName(targetID, master)
             if retValue:
-                return FormID.ValidFormID(self.master, self.objectID, _CMakeShortFormID(RecordID, master, self.objectID , 0), RecordID)
+                return FormID.ValidFormID(self.master, self.objectID, _CMakeShortFormID(retValue, self.objectID , 0), targetID)
             return self
 
-        def GetShortFormID(self, RecordID):
-            """Tries to resolve the formID for the given record.
+        def GetShortFormID(self, target):
+            """Tries to resolve the formID for the given target.
                This should only get called if the FormID isn't validated prior to it being used by CBash."""
-            formID = self.Validate(RecordID)
+            formID = self.Validate(target)
             if isinstance(formID, FormID.ValidFormID):
                 return formID.shortID
             raise TypeError(_("Attempted to set an invalid formID"))
@@ -422,13 +437,13 @@ class FormID(object):
             return int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "(None, 0x%06X)" % (self.objectID,)
+            return "InvalidFormID(None, 0x%06X)" % (self.objectID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. It's invalid."""
             return self
 
-        def GetShortFormID(self, RecordID):
+        def GetShortFormID(self, target):
             """It isn't safe to use this formID. Any attempt to resolve it will be wrong."""
             raise TypeError(_("Attempted to set an invalid formID"))
 
@@ -441,29 +456,29 @@ class FormID(object):
 
            This class should never be instantiated except by class FormID(object)."""
 
-        def __init__(self, master, objectID, shortID, recordID):
-            self.master, self.objectID, self.shortID, self._RecordID = master, objectID, shortID, recordID
+        def __init__(self, master, objectID, shortID, collectionID):
+            self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __getitem__(self, x):
             if x == 0: return self.master
             return int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
+            return "ValidFormID('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
 
-        def Validate(self, RecordID):
-            """This FormID has already been validated for a specific record.
-               It must be revalidated if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+        def Validate(self, target):
+            """This FormID has already been validated for a specific collection.
+               It must be revalidated if the target being used doesn't match the earlier validation."""
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self
-            return FormID.UnvalidatedFormID(self.master, self.objectID).Validate(RecordID)
+            return FormID.UnvalidatedFormID(self.master, self.objectID).Validate(target)
 
-        def GetShortFormID(self, RecordID):
+        def GetShortFormID(self, target):
             """This FormID has already been resolved for a specific record.
-               It must be re-resolved if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+               It must be re-resolved if the target being used doesn't match the earlier validation."""
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self.shortID
-            test = FormID.UnvalidatedFormID(self.master, self.objectID).Validate(RecordID)
+            test = FormID.UnvalidatedFormID(self.master, self.objectID).Validate(target)
             if isinstance(test, FormID.ValidFormID):
                 return test.shortID
             raise TypeError(_("Attempted to set an invalid formID"))
@@ -483,14 +498,14 @@ class FormID(object):
             return None
 
         def __repr__(self):
-            return "(None, None)"
+            return "EmptyFormID(None, None)"
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. There's nothing to validate."""
             return self
 
-        def GetShortFormID(self, RecordID):
-            """An empty FormID isn't resolved, because it's always valid. That's why it subclasses ValidFormID."""
+        def GetShortFormID(self, target):
+            """An empty FormID is always valid, so it isn't resolved. That's why it subclasses ValidFormID."""
             return 0
 
     class RawFormID(ValidFormID):
@@ -507,11 +522,11 @@ class FormID(object):
         def __repr__(self):
             return "RawFormID(0x%08X)" % (self.shortID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is possible. It is impossible to tell what collection the value came from."""
             return self
 
-        def GetShortFormID(self, RecordID):
+        def GetShortFormID(self, target):
             """The raw FormID isn't resolved, so it's always valid. That's why it subclasses ValidFormID."""
             return self.shortID
 
@@ -524,20 +539,22 @@ class FormID(object):
            Empty FormID = (None            , None)"""
 
         if objectID is None:
-            if isinstance(master, FormID): #initialize from FormID
+            if isinstance(master, FormID):
                 self.formID = master.formID
             elif master is None:
                 self.formID = FormID.EmptyFormID()
             else:
                 self.formID = FormID.RawFormID(master)
         else:
-            if isinstance(master, basestring):
-                self.formID = FormID.UnvalidatedFormID(master, objectID)
+            if isinstance(master, (basestring, Path)):
+                self.formID = FormID.UnvalidatedFormID(str(master), objectID)
             else:
-                master = _CGetLongIDName(master, objectID, 0)
-                if master:
-                    self.formID = FormID.UnvalidatedFormID(master, objectID)
+                masterstr = _CGetLongIDName(master, objectID, 0)
+                if masterstr:
+                    #CBash FormID, pre-validated for its source collection
+                    self.formID = FormID.ValidFormID(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master))
                 else:
+                    #CBash FormID, pre-invalidated for all collections
                     self.formID = FormID.InvalidFormID(objectID)
 
     def __eq__(self, x):
@@ -577,27 +594,40 @@ class FormID(object):
         return self.formID.__repr__()
 
     @staticmethod
-    def FilterValid(formIDs, RecordID, AsShort=False):
+    def FilterValid(formIDs, target, AsShort=False):
         if isinstance(formIDs, FormID):
-            if formIDs.ValidateFormID(RecordID): return [formIDs.GetShortFormID(RecordID)]
+            if AsShort:
+                if formIDs.ValidateFormID(target): return [formIDs.GetShortFormID(target)]
+                return []
+            if formIDs.ValidateFormID(target): return [formIDs]
             return []
         try:
-            if AsShort: return [x.GetShortFormID(RecordID) for x in formIDs if x.ValidateFormID(RecordID)]
-            return [x for x in formIDs if x.ValidateFormID(RecordID)]
+            if AsShort: return [x.GetShortFormID(target) for x in formIDs if x.ValidateFormID(target)]
+            return [x for x in formIDs if x.ValidateFormID(target)]
         except TypeError:
-            if formIDs.ValidateFormID(RecordID): return [formIDs]
+            if formIDs.ValidateFormID(target): return [formIDs]
         return []
 
-    def ValidateFormID(self, RecordID):
-        """Tests whether the FormID is valid for the destination RecordID.
+    @staticmethod
+    def FilterValidDict(formIDs, target, KeysAreFormIDs=True, AsShort=False):
+        if KeysAreFormIDs:
+            if AsShort:
+                return dict([(formID.GetShortFormID(target), value) for formID, value in formIDs.iteritems() if formID.ValidateFormID(target)])
+            return dict([(formID, value) for formID, value in formIDs.iteritems() if formID.ValidateFormID(target)])
+        if AsShort:
+            return dict([(key, formID.GetShortFormID(target)) for key, formID in formIDs.iteritems() if formID.ValidateFormID(target)])
+        return dict([(key, formID) for key, formID in formIDs.iteritems() if formID.ValidateFormID(target)])
+
+    def ValidateFormID(self, target):
+        """Tests whether the FormID is valid for the destination.
            The test result is saved, so work isn't duplicated if FormIDs are first
            filtered for validity before being set by CBash with GetShortFormID."""
-        self.formID = self.formID.Validate(RecordID)
+        self.formID = self.formID.Validate(target)
         return isinstance(self.formID, FormID.ValidFormID)
 
-    def GetShortFormID(self, RecordID):
+    def GetShortFormID(self, target):
         """Resolves the various FormID classes to a single 32-bit value used by CBash"""
-        return self.formID.GetShortFormID(RecordID)
+        return self.formID.GetShortFormID(target)
 
 class ActorValue(object):
     """Represents an OBME ActorValue. It is mostly identical to a FormID in resolution.
@@ -623,21 +653,22 @@ class ActorValue(object):
         def __repr__(self):
             return "UnvalidatedActorValue('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """Unvalidated ActorValues have to be tested for each destination collection.
                A ActorValue is valid if its master is part of the destination collection.
 
                Resolved Actor Value's are not formIDs, but can be treated as such for resolution."""
+            targetID = target.GetParentCollection()._CollectionID
             master = str(self.master)
-            retValue = _CGetModIDByName(_CGetCollectionIDByRecordID(RecordID), master)
+            retValue = _CGetModIDByName(targetID, master)
             if retValue:
-                return ActorValue.ValidActorValue(self.master, self.objectID, _CMakeShortFormID(RecordID, master, self.objectID , 0), RecordID)
+                return ActorValue.ValidActorValue(self.master, self.objectID, _CMakeShortFormID(retValue, self.objectID , 0), targetID)
             return self
 
-        def GetShortActorValue(self, RecordID):
+        def GetShortActorValue(self, target):
             """Tries to resolve the ActorValue for the given record.
                This should only get called if the ActorValue isn't validated prior to it being used by CBash."""
-            actorValue = self.Validate(RecordID)
+            actorValue = self.Validate(target)
             if isinstance(actorValue, ActorValue.ValidActorValue):
                 return actorValue.shortID
             raise TypeError(_("Attempted to set an invalid actorValue"))
@@ -662,11 +693,11 @@ class ActorValue(object):
         def __repr__(self):
             return "InvalidActorValue(None, 0x%06X)" % (self.objectID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. It's invalid."""
             return self
 
-        def GetShortActorValue(self, RecordID):
+        def GetShortActorValue(self, target):
             """It isn't safe to use this ActorValue. Any attempt to resolve it will be wrong."""
             raise TypeError(_("Attempted to set an invalid actorValue"))
 
@@ -678,8 +709,8 @@ class ActorValue(object):
            for the same ActorValue instance to be used for multiple records.
 
            This class should never be instantiated except by class ActorValue(object)."""
-        def __init__(self, master, objectID, shortID, recordID):
-            self.master, self.objectID, self.shortID, self._RecordID = master, objectID, shortID, recordID
+        def __init__(self, master, objectID, shortID, collectionID):
+            self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __getitem__(self, x):
             if x == 0: return self.master
@@ -688,19 +719,19 @@ class ActorValue(object):
         def __repr__(self):
             return "ValidActorValue('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """This ActorValue has already been validated for a specific record.
                It must be revalidated if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self
-            return ActorValue.UnvalidatedFormID(self.master, self.objectID).Validate(RecordID)
+            return ActorValue.UnvalidatedFormID(self.master, self.objectID).Validate(target)
 
-        def GetShortActorValue(self, RecordID):
+        def GetShortActorValue(self, target):
             """This ActorValue has already been resolved for a specific record.
                It must be re-resolved if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self.shortID
-            test = ActorValue.UnvalidatedActorValue(self.master, self.objectID).Validate(RecordID)
+            test = ActorValue.UnvalidatedActorValue(self.master, self.objectID).Validate(target)
             if isinstance(test, ActorValue.ValidActorValue):
                 return test.shortID
             raise TypeError(_("Attempted to set an invalid actorValue"))
@@ -721,11 +752,11 @@ class ActorValue(object):
         def __repr__(self):
             return "EmptyActorValue(None, None)"
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. There's nothing to validate."""
             return self
 
-        def GetShortActorValue(self, RecordID):
+        def GetShortActorValue(self, target):
             """An empty ActorValue isn't resolved, because it's always valid. That's why it subclasses ValidActorValue."""
             return 0
 
@@ -745,11 +776,11 @@ class ActorValue(object):
         def __repr__(self):
             return "RawActorValue(0x%08X)" % (self.shortID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is possible. It is impossible to tell what collection the value came from."""
             return self
 
-        def GetShortActorValue(self, RecordID):
+        def GetShortActorValue(self, target):
             """The raw ActorValue isn't resolved, so it's always valid. That's why it subclasses ValidActorValue."""
             return self.shortID
 
@@ -770,16 +801,18 @@ class ActorValue(object):
             else:
                 self.actorValue = ActorValue.RawActorValue(master)
         else:
-            if isinstance(master, basestring):
-                self.actorValue = ActorValue.UnvalidatedActorValue(master, objectID)
+            if isinstance(master, (basestring, Path)):
+                self.actorValue = ActorValue.UnvalidatedActorValue(str(master), objectID)
             else:
                 if objectID < 0x800:
                     self.actorValue = ActorValue.RawActorValue(master, objectID) #Static ActorValue. No resolution takes place.
                 else:
-                    master = _CGetLongIDName(master, objectID, 0)
-                    if master:
-                        self.actorValue = ActorValue.UnvalidatedActorValue(master, objectID)
+                    masterstr = _CGetLongIDName(master, objectID, 0)
+                    if masterstr:
+                        #CBash ActorValue, pre-validated for its source collection
+                        self.actorValue = ActorValue.ValidActorValue(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master))
                     else:
+                        #CBash ActorValue, pre-invalidated for all collections
                         self.actorValue = ActorValue.InvalidActorValue(objectID)
 
     def __eq__(self, x):
@@ -822,29 +855,40 @@ class ActorValue(object):
         return self.actorValue.__repr__()
 
     @staticmethod
-    def FilterValid(actorValues, RecordID, AsShort=False):
+    def FilterValid(actorValues, target, AsShort=False):
         if isinstance(actorValues, ActorValue):
-            if actorValues.ValidateActorValue(RecordID): return [actorValues.GetShortActorValue(RecordID)]
+            if AsShort:
+                if actorValues.ValidateActorValue(target): return [actorValues.GetShortActorValue(target)]
+                return []
+            if actorValues.ValidateActorValue(target): return [actorValues]
             return []
         try:
-            if AsShort: return [x.GetShortActorValue(RecordID) for x in actorValues if x.ValidateActorValue(RecordID)]
-            return [x for x in actorValues if x.ValidateActorValue(RecordID)]
+            if AsShort: return [x.GetShortActorValue(target) for x in actorValues if x.ValidateActorValue(target)]
+            return [x for x in actorValues if x.ValidateActorValue(target)]
         except TypeError:
-            if actorValues.ValidateActorValue(RecordID): return [actorValues]
+            if actorValues.ValidateActorValue(target): return [actorValues]
         return []
 
-    def ValidateActorValue(self, RecordID):
-        """Tests whether the ActorValue is valid for the destination RecordID.
+    @staticmethod
+    def FilterValidDict(actorValues, target, KeysAreActorValues=True, AsShort=False):
+        if KeysAreActorValues:
+            if AsShort:
+                return dict([(actorValue.GetShortActorValue(target), value) for actorValue, value in actorValues.iteritems() if actorValue.ValidateActorValue(target)])
+            return dict([(actorValue, value) for actorValue, value in actorValues.iteritems() if actorValue.ValidateActorValue(target)])
+        if AsShort:
+            return dict([(key, actorValue.GetShortActorValue(target)) for key, actorValue in actorValues.iteritems() if actorValue.ValidateActorValue(target)])
+        return dict([(key, actorValue) for key, actorValue in actorValues.iteritems() if actorValue.ValidateActorValue(target)])
+
+    def ValidateActorValue(self, target):
+        """Tests whether the ActorValue is valid for the destination target.
            The test result is saved, so work isn't duplicated if ActorValues are first
            filtered for validity before being set by CBash with GetShortActorValue."""
-        self.actorValue = self.actorValue.Validate(RecordID)
+        self.actorValue = self.actorValue.Validate(target)
         return isinstance(self.actorValue, ActorValue.ValidActorValue)
 
-    def GetShortActorValue(self, RecordID):
+    def GetShortActorValue(self, target):
         """Resolves the various ActorValue classes to a single 32-bit value used by CBash"""
-        return self.actorValue.GetShortActorValue(RecordID)
-
-
+        return self.actorValue.GetShortActorValue(target)
 
 class MGEFCode(object):
     """Represents an OBME MGEFCode. It is mostly identical to a FormID in resolution.
@@ -871,21 +915,22 @@ class MGEFCode(object):
         def __repr__(self):
             return "UnvalidatedMGEFCode('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0xFFFFFF00L))
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """Unvalidated MGEFCodes have to be tested for each destination collection.
                A MGEFCode is valid if its master is part of the destination collection.
 
                Resolved MGEFCode's are not formIDs, but can be treated as such for resolution."""
+            targetID = target.GetParentCollection()._CollectionID
             master = str(self.master)
-            retValue = _CGetModIDByName(_CGetCollectionIDByRecordID(RecordID), master)
+            retValue = _CGetModIDByName(targetID, master)
             if retValue:
-                return MGEFCode.ValidMGEFCode(self.master, self.objectID, _CMakeShortFormID(RecordID, master, self.objectID , 1), RecordID)
+                return MGEFCode.ValidMGEFCode(self.master, self.objectID, _CMakeShortFormID(retValue, self.objectID , 1), targetID)
             return self
 
-        def GetShortMGEFCode(self, RecordID):
+        def GetShortMGEFCode(self, target):
             """Tries to resolve the MGEFCode for the given record.
                This should only get called if the MGEFCode isn't validated prior to it being used by CBash."""
-            mgefCode = self.Validate(RecordID)
+            mgefCode = self.Validate(target)
             if isinstance(mgefCode, MGEFCode.ValidMGEFCode):
                 return mgefCode.shortID
             raise TypeError(_("Attempted to set an invalid mgefCode"))
@@ -910,11 +955,11 @@ class MGEFCode(object):
         def __repr__(self):
             return "InvalidMGEFCode(None, 0x%06X)" % (self.objectID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. It's invalid."""
             return self
 
-        def GetShortMGEFCode(self, RecordID):
+        def GetShortMGEFCode(self, target):
             """It isn't safe to use this MGEFCode. Any attempt to resolve it will be wrong."""
             raise TypeError(_("Attempted to set an invalid mgefCode"))
 
@@ -926,8 +971,8 @@ class MGEFCode(object):
            for the same MGEFCode instance to be used for multiple records.
 
            This class should never be instantiated except by class MGEFCode(object)."""
-        def __init__(self, master, objectID, shortID, recordID):
-            self.master, self.objectID, self.shortID, self._RecordID = master, objectID, shortID, recordID
+        def __init__(self, master, objectID, shortID, collectionID):
+            self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __getitem__(self, x):
             if x == 0: return self.master
@@ -936,19 +981,19 @@ class MGEFCode(object):
         def __repr__(self):
             return "ValidMGEFCode('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0xFFFFFF00L))
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """This MGEFCode has already been validated for a specific record.
                It must be revalidated if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self
-            return MGEFCode.UnvalidatedFormID(self.master, self.objectID).Validate(RecordID)
+            return MGEFCode.UnvalidatedFormID(self.master, self.objectID).Validate(target)
 
-        def GetShortMGEFCode(self, RecordID):
+        def GetShortMGEFCode(self, target):
             """This MGEFCode has already been resolved for a specific record.
                It must be re-resolved if the record being used doesn't match the earlier validation."""
-            if RecordID == self._RecordID:
+            if target.GetParentCollection()._CollectionID == self._CollectionID:
                 return self.shortID
-            test = MGEFCode.UnvalidatedMGEFCode(self.master, self.objectID).Validate(RecordID)
+            test = MGEFCode.UnvalidatedMGEFCode(self.master, self.objectID).Validate(target)
             if isinstance(test, MGEFCode.ValidMGEFCode):
                 return test.shortID
             raise TypeError(_("Attempted to set an invalid mgefCode"))
@@ -969,11 +1014,11 @@ class MGEFCode(object):
         def __repr__(self):
             return "EmptyMGEFCode(None, None)"
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is needed. There's nothing to validate."""
             return self
 
-        def GetShortMGEFCode(self, RecordID):
+        def GetShortMGEFCode(self, target):
             """An empty MGEFCode isn't resolved, because it's always valid. That's why it subclasses ValidMGEFCode."""
             return 0
 
@@ -1001,11 +1046,11 @@ class MGEFCode(object):
                 return "RawMGEFCode(%s)" % (self.shortID,)
             return "RawMGEFCode(0x%08X)" % (self.shortID,)
 
-        def Validate(self, RecordID):
+        def Validate(self, target):
             """No validation is possible. It is impossible to tell what collection the value came from."""
             return self
 
-        def GetShortMGEFCode(self, RecordID):
+        def GetShortMGEFCode(self, target):
             """The raw MGEFCode isn't resolved, so it's always valid. That's why it subclasses ValidMGEFCode.
                If it is using a 4 character sequence, it needs to be cast as a 32 bit integer."""
             if isinstance(self.shortID, basestring):
@@ -1030,16 +1075,18 @@ class MGEFCode(object):
             else:
                 self.mgefCode = MGEFCode.RawMGEFCode(master)
         else:
-            if isinstance(master, basestring):
-                self.mgefCode = MGEFCode.UnvalidatedMGEFCode(master, objectID)
+            if isinstance(master, (basestring, Path)):
+                self.mgefCode = MGEFCode.UnvalidatedMGEFCode(str(master), objectID)
             else:
                 if objectID < 0x80000000:
                     self.mgefCode = MGEFCode.RawMGEFCode(master, objectID) #Static MGEFCode. No resolution takes place.
                 else:
-                    master = _CGetLongIDName(master, objectID, 1)
-                    if master:
-                        self.mgefCode = MGEFCode.UnvalidatedMGEFCode(master, objectID)
+                    masterstr = _CGetLongIDName(master, objectID, 1)
+                    if masterstr:
+                        #CBash MGEFCode, pre-validated for its source collection
+                        self.mgefCode = MGEFCode.ValidMGEFCode(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master))
                     else:
+                        #CBash MGEFCode, pre-invalidated for all collections
                         self.mgefCode = MGEFCode.InvalidMGEFCode(objectID)
 
     def __eq__(self, x):
@@ -1082,27 +1129,40 @@ class MGEFCode(object):
         return self.mgefCode.__repr__()
 
     @staticmethod
-    def FilterValid(mgefCodes, RecordID, AsShort=False):
+    def FilterValid(mgefCodes, target, AsShort=False):
         if isinstance(mgefCodes, MGEFCode):
-            if mgefCodes.ValidateMGEFCode(RecordID): return [mgefCodes.ValidateMGEFCode(RecordID)]
+            if AsShort:
+                if mgefCodes.ValidateMGEFCode(target): return [mgefCodes.GetShortMGEFCode(target)]
+            else:
+                if mgefCodes.ValidateMGEFCode(target): return [mgefCodes]
             return []
         try:
-            if AsShort: return [x.GetShortMGEFCode(RecordID) for x in mgefCodes if x.ValidateMGEFCode(RecordID)]
-            return [x for x in mgefCodes if x.ValidateMGEFCode(RecordID)]
+            if AsShort: return [x.GetShortMGEFCode(target) for x in mgefCodes if x.ValidateMGEFCode(target)]
+            return [x for x in mgefCodes if x.ValidateMGEFCode(target)]
         except TypeError:
-            if mgefCodes.ValidateMGEFCode(RecordID): return [mgefCodes]
+            if mgefCodes.ValidateMGEFCode(target): return [mgefCodes]
         return []
 
-    def ValidateMGEFCode(self, RecordID):
+    @staticmethod
+    def FilterValidDict(mgefCodes, target, KeysAreMGEFCodes=True, AsShort=False):
+        if KeysAreMGEFCodes:
+            if AsShort:
+                return dict([(mgefCode.GetShortMGEFCode(target), value) for mgefCode, value in mgefCodes.iteritems() if mgefCode.ValidateMGEFCode(target)])
+            return dict([(mgefCode, value) for mgefCode, value in mgefCodes.iteritems() if mgefCode.ValidateMGEFCode(target)])
+        if AsShort:
+            return dict([(key, mgefCode.GetShortMGEFCode(target)) for key, mgefCode in mgefCodes.iteritems() if mgefCode.ValidateMGEFCode(target)])
+        return dict([(key, mgefCode) for key, mgefCode in mgefCodes.iteritems() if mgefCode.ValidateMGEFCode(target)])
+
+    def ValidateMGEFCode(self, target):
         """Tests whether the MGEFCode is valid for the destination RecordID.
            The test result is saved, so work isn't duplicated if MGEFCodes are first
            filtered for validity before being set by CBash with GetShortMGEFCode."""
-        self.mgefCode = self.mgefCode.Validate(RecordID)
+        self.mgefCode = self.mgefCode.Validate(target)
         return isinstance(self.mgefCode, MGEFCode.ValidMGEFCode)
 
-    def GetShortMGEFCode(self, RecordID):
+    def GetShortMGEFCode(self, target):
         """Resolves the various MGEFCode classes to a single 32-bit value used by CBash"""
-        return self.mgefCode.GetShortMGEFCode(RecordID)
+        return self.mgefCode.GetShortMGEFCode(target)
 
 def getattr_deep(obj, attr):
     return reduce(getattr, attr.split('.'), obj)
@@ -1264,7 +1324,7 @@ class CBashFORMID_GROUP(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance._RecordID))), 0)
+        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance))), 0)
 
 class CBashFORMID_OR_UINT32_ARRAY_GROUP(object):
     def __init__(self, FieldID, Size=None):
@@ -1299,7 +1359,7 @@ class CBashFORMID_OR_UINT32_ARRAY_GROUP(object):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, FormID)
                 if IsFormID:
-                    value = value.GetShortFormID(instance._RecordID)
+                    value = value.GetShortFormID(instance)
                 _CSetField(instance._RecordID, FieldID, x, 1, 0, 0, 0, 0, byref(c_ulong(value)), IsFormID)
 
 class CBashUINT8ARRAY_GROUP(object):
@@ -1525,7 +1585,7 @@ class CBashFORMID(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance._RecordID))), 0)
+        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance))), 0)
 
 class CBashMGEFCODE(object):
     def __init__(self, FieldID):
@@ -1540,7 +1600,7 @@ class CBashMGEFCODE(object):
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
-            _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortMGEFCode(instance._RecordID))), 0)
+            _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortMGEFCode(instance))), 0)
 
 class CBashFORMIDARRAY(object):
     def __init__(self, FieldID):
@@ -1558,7 +1618,7 @@ class CBashFORMIDARRAY(object):
         if nValue is None or not len(nValue): _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             length = len(nValue)
-            nValue = [x.GetShortFormID(instance._RecordID) for x in nValue]
+            nValue = [x.GetShortFormID(instance) for x in nValue]
             cRecords = (c_ulong * length)(*nValue)
             _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(cRecords), length)
 
@@ -1581,7 +1641,7 @@ class CBashFORMID_OR_UINT32(object):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             if isinstance(nValue, FormID):
-                nValue = nValue.GetShortFormID(instance._RecordID)
+                nValue = nValue.GetShortFormID(instance)
             _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue)), 0)
 
 class CBashFORMID_OR_STRING(object):
@@ -1605,7 +1665,7 @@ class CBashFORMID_OR_STRING(object):
         else:
             type = _CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2)
             if type == API_FIELDS.FORMID:
-                _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance._RecordID))), 0)
+                _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance))), 0)
             elif type == API_FIELDS.STRING:
                 _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
 
@@ -1640,7 +1700,7 @@ class CBashFORMID_OR_UINT32_ARRAY(object):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, FormID)
                 if IsFormID:
-                    value = value.GetShortFormID(instance._RecordID)
+                    value = value.GetShortFormID(instance)
                 _CSetField(instance._RecordID, self._FieldID, x, 1, 0, 0, 0, 0, byref(c_ulong(value)), IsFormID)
 
 class CBashMGEFCODE_OR_UINT32_ARRAY(object):
@@ -1670,7 +1730,7 @@ class CBashMGEFCODE_OR_UINT32_ARRAY(object):
             #They are either all MGEFCodes or all UINT32's, so it can be set in one operation
             if len(nValue):
                 if isinstance(nValue[0], MGEFCode):
-                    nValue = [x.GetShortMGEFCode(instance._RecordID) for x in nValue]
+                    nValue = [x.GetShortMGEFCode(instance) for x in nValue]
             else:
                 nValue = []
             cRecords = (c_ulong * length)(*nValue)
@@ -1918,7 +1978,7 @@ class CBashFORMID_LIST(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance._RecordID))), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance))), 0)
 
 class CBashACTORVALUE_LIST(object):
     def __init__(self, ListFieldID):
@@ -1933,7 +1993,7 @@ class CBashACTORVALUE_LIST(object):
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
-            _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortActorValue(instance._RecordID))), 0)
+            _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue.GetShortActorValue(instance))), 0)
 
 class CBashFORMIDARRAY_LIST(object):
     def __init__(self, ListFieldID):
@@ -1951,7 +2011,7 @@ class CBashFORMIDARRAY_LIST(object):
         if nValue is None or not len(nValue): _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
             length = len(nValue)
-            nValue = [x.GetShortFormID(instance._RecordID) for x in nValue]
+            nValue = [x.GetShortFormID(instance) for x in nValue]
             cRecords = (c_ulong * length)(*nValue)
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(cRecords), length)
 
@@ -1977,7 +2037,7 @@ class CBashUNKNOWN_OR_FORMID_OR_UINT32_LIST(object):
             if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
             else:
                 if type == API_FIELDS.FORMID:
-                    nValue = nValue.GetShortFormID(instance._RecordID)
+                    nValue = nValue.GetShortFormID(instance)
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue)), 0)
 
 class CBashMGEFCODE_OR_UINT32_LIST(object):
@@ -1999,7 +2059,7 @@ class CBashMGEFCODE_OR_UINT32_LIST(object):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
             if isinstance(nValue, MGEFCode):
-                nValue = nValue.GetShortMGEFCode(instance._RecordID)
+                nValue = nValue.GetShortMGEFCode(instance)
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue)), 0)
 
 class CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST(object):
@@ -2026,11 +2086,11 @@ class CBashFORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_LIST(object):
         else:
             type = _CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 2)
             if type == API_FIELDS.FORMID and isinstance(nValue, FormID):
-                nValue = nValue.GetShortFormID(instance._RecordID)
+                nValue = nValue.GetShortFormID(instance)
             elif type in (API_FIELDS.STATIC_MGEFCODE, API_FIELDS.RESOLVED_MGEFCODE) and isinstance(nValue, MGEFCode):
-                nValue = nValue.GetShortMGEFCode(instance._RecordID)
+                nValue = nValue.GetShortMGEFCode(instance)
             elif type in (API_FIELDS.STATIC_ACTORVALUE, API_FIELDS.RESOLVED_ACTORVALUE) and isinstance(nValue, ActorValue):
-                nValue = nValue.GetShortActorValue(instance._RecordID)
+                nValue = nValue.GetShortActorValue(instance)
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, byref(c_ulong(nValue)), 0)
 
 class CBashUINT8ARRAY_LIST(object):
@@ -2104,7 +2164,7 @@ class CBashFORMID_OR_UINT32_ARRAY_LIST(object):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, FormID)
                 if IsFormID:
-                    value = value.GetShortFormID(instance._RecordID)
+                    value = value.GetShortFormID(instance)
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x, 1, 0, 0, byref(c_ulong(value)), IsFormID)
 
 class CBashFLOAT32_LIST(object):
@@ -2279,7 +2339,7 @@ class CBashFORMID_OR_UINT32_ARRAY_LISTX2(object):
                 #Borrowing ArraySize to flag if the new value is a formID
                 IsFormID = isinstance(value, FormID)
                 if IsFormID:
-                    value = value.GetShortFormID(instance._RecordID)
+                    value = value.GetShortFormID(instance)
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x, 1, byref(c_ulong(value)), IsFormID)
 
 class CBashFORMID_LISTX2(object):
@@ -2294,7 +2354,7 @@ class CBashFORMID_LISTX2(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance._RecordID))), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(nValue.GetShortFormID(instance))), 0)
 
 class CBashFORMID_OR_FLOAT32_LISTX2(object):
     def __init__(self, ListX2FieldID):
@@ -2324,7 +2384,7 @@ class CBashFORMID_OR_FLOAT32_LISTX2(object):
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_float(round(value,6))), 0)
             else:
                 try:
-                    value = nValue.GetShortFormID(instance._RecordID)
+                    value = nValue.GetShortFormID(instance)
                 except TypeError:
                     return
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(value)), 0)
@@ -2379,7 +2439,7 @@ class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(object):
             if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
             else:
                 if type == API_FIELDS.FORMID:
-                    nValue = nValue.GetShortFormID(instance._RecordID)
+                    nValue = nValue.GetShortFormID(instance)
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, byref(c_ulong(nValue)), 0)
 
 # ListX3 Descriptors
@@ -2446,7 +2506,7 @@ class CBashFORMID_OR_FLOAT32_LISTX3(object):
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_float(round(value,6))), 0)
             else:
                 try:
-                    value = nValue.GetShortFormID(instance._RecordID)
+                    value = nValue.GetShortFormID(instance)
                 except TypeError:
                     return
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_ulong(value)), 0)
@@ -2515,7 +2575,7 @@ class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(object):
             if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
             else:
                 if type == API_FIELDS.FORMID:
-                    nValue = nValue.GetShortFormID(instance._RecordID)
+                    nValue = nValue.GetShortFormID(instance)
                 _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, byref(c_ulong(nValue)), 0)
 
 #Record accessors
@@ -2525,11 +2585,17 @@ class BaseComponent(object):
         self._RecordID = RecordID
         self._FieldID = FieldID
 
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
+
 class ListComponent(object):
     def __init__(self, RecordID, FieldID, ListIndex):
         self._RecordID = RecordID
         self._FieldID = FieldID
         self._ListIndex = ListIndex
+
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
 class ListX2Component(object):
     def __init__(self, RecordID, FieldID, ListIndex, ListFieldID, ListX2Index):
@@ -2538,6 +2604,9 @@ class ListX2Component(object):
         self._ListIndex = ListIndex
         self._ListFieldID = ListFieldID
         self._ListX2Index = ListX2Index
+
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
 class ListX3Component(object):
     def __init__(self, RecordID, FieldID, ListIndex, ListFieldID, ListX2Index, ListX2FieldID, ListX3Index):
@@ -2548,6 +2617,9 @@ class ListX3Component(object):
         self._ListX2Index = ListX2Index
         self._ListX2FieldID = ListX2FieldID
         self._ListX3Index = ListX3Index
+
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
 class Model(BaseComponent):
     ISTRING_GROUPEDMACRO(modPath, 0)
@@ -2899,7 +2971,7 @@ class FnvBaseRecord(object):
         return FnvModFile(_CGetModIDByRecordID(self._RecordID))
 
     def GetParentCollection(self):
-        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID), CollectionType=2)
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
     def ResetRecord(self):
         _CResetRecord(self._RecordID)
@@ -2981,7 +3053,7 @@ class FnvBaseRecord(object):
                 elif isinstance(attr,(list,tuple,set)):
                     conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
 
-        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self._RecordID)]
+        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self)]
         for attr, value in skipped_conflicting:
             try:
                 deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
@@ -3040,7 +3112,7 @@ class FnvBaseRecord(object):
             DestModID = target._ModID
 
         if RecordFormID:
-            RecordFormID = RecordFormID.GetShortFormID(_CGetRecordID(DestModID, 0, 0))
+            RecordFormID = RecordFormID.GetShortFormID(target)
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001
         ##CopyWinningParent   = 0x00000002
@@ -3079,7 +3151,7 @@ class FnvBaseRecord(object):
         return None
     def set_fid(self, nValue):
         if nValue is None: nValue = 0
-        else: nValue = nValue.GetShortFormID(self._RecordID)
+        else: nValue = nValue.GetShortFormID(self)
         _CSetIDFields(self._RecordID, nValue, self.eid or 0)
     fid = property(get_fid, set_fid)
 
@@ -3141,6 +3213,12 @@ class FnvTES4Record(object):
     _Type = 'TES4'
     def __init__(self, RecordID):
         self._RecordID = RecordID
+
+    def GetParentMod(self):
+        return FnvModFile(_CGetModIDByRecordID(self._RecordID))
+
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
     def ResetRecord(self):
         pass
@@ -9789,7 +9867,7 @@ class ObBaseRecord(object):
         return ObModFile(_CGetModIDByRecordID(self._RecordID))
 
     def GetParentCollection(self):
-        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID), CollectionType=0)
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
     def ResetRecord(self):
         _CResetRecord(self._RecordID)
@@ -9871,7 +9949,7 @@ class ObBaseRecord(object):
                 elif isinstance(attr,(list,tuple,set)):
                     conflicting.update([(subattr,reduce(getattr, subattr.split('.'), self)) for subattr in attr])
 
-        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self._RecordID)]
+        skipped_conflicting = [(attr, value) for attr, value in conflicting.iteritems() if isinstance(value, FormID) and not value.ValidateFormID(self)]
         for attr, value in skipped_conflicting:
             try:
                 deprint(_("%s attribute of %s record (maybe named: %s) importing from %s referenced an unloaded object (probably %s) - value skipped") % (attr, self.fid, self.full, self.GetParentMod().GName, value))
@@ -9929,7 +10007,7 @@ class ObBaseRecord(object):
             DestParentID = 0
             DestModID = target._ModID
         if RecordFormID:
-            RecordFormID = RecordFormID.GetShortFormID(_CGetRecordID(DestModID, 0, 0))
+            RecordFormID = RecordFormID.GetShortFormID(target)
         ##Record Creation Flags
         ##SetAsOverride       = 0x00000001
         ##CopyWinningParent   = 0x00000002
@@ -9968,7 +10046,7 @@ class ObBaseRecord(object):
         return None
     def set_fid(self, nValue):
         if nValue is None: nValue = 0
-        else: nValue = nValue.GetShortFormID(self._RecordID)
+        else: nValue = nValue.GetShortFormID(self)
         _CSetIDFields(self._RecordID, nValue, self.eid or 0)
     fid = property(get_fid, set_fid)
 
@@ -10006,6 +10084,12 @@ class ObTES4Record(object):
     _Type = 'TES4'
     def __init__(self, RecordID):
         self._RecordID = RecordID
+
+    def GetParentMod(self):
+        return ObModFile(_CGetModIDByRecordID(self._RecordID))
+
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByRecordID(self._RecordID))
 
     def ResetRecord(self):
         pass
@@ -13087,13 +13171,16 @@ class ObModFile(object):
     def GName(self):
         return GPath(self.ModName)
 
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByModID(self._ModID))
+
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
         if isinstance(RecordIdentifier, basestring):
             _FormID = 0
             _EditorID = RecordIdentifier
         else:
-            _FormID = FormID(RecordIdentifier).GetShortFormID(_CGetRecordID(self._ModID, 0, 0))
+            _FormID = FormID(RecordIdentifier).GetShortFormID(self)
             _EditorID = 0
         if not (_EditorID or _FormID): return False
         if _CGetRecordID(self._ModID, _FormID, _EditorID):
@@ -13106,7 +13193,7 @@ class ObModFile(object):
             _FormID = 0
             _EditorID = RecordIdentifier
         else:
-            _FormID = FormID(RecordIdentifier).GetShortFormID(_CGetRecordID(self._ModID, 0, 0))
+            _FormID = FormID(RecordIdentifier).GetShortFormID(self)
             _EditorID = 0
         if not (_EditorID or _FormID): return None
         RecordID = _CGetRecordID(self._ModID, _FormID, _EditorID)
@@ -13302,13 +13389,16 @@ class FnvModFile(object):
     def GName(self):
         return GPath(self.ModName)
 
+    def GetParentCollection(self):
+        return ObCollection(_CGetCollectionIDByModID(self._ModID))
+
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
         if isinstance(RecordIdentifier, basestring):
             _FormID = 0
             _EditorID = RecordIdentifier
         else:
-            _FormID = FormID(RecordIdentifier).GetShortFormID(_CGetRecordID(self._ModID, 0, 0))
+            _FormID = FormID(RecordIdentifier).GetShortFormID(self)
             _EditorID = 0
         if not (_EditorID or _FormID): return False
         if _CGetRecordID(self._ModID, _FormID, _EditorID):
@@ -13321,7 +13411,7 @@ class FnvModFile(object):
             _FormID = 0
             _EditorID = RecordIdentifier
         else:
-            _FormID = FormID(RecordIdentifier).GetShortFormID(_CGetRecordID(self._ModID, 0, 0))
+            _FormID = FormID(RecordIdentifier).GetShortFormID(self)
             _EditorID = 0
         if not (_EditorID or _FormID): return None
         RecordID = _CGetRecordID(self._ModID, _FormID, _EditorID)
@@ -13590,9 +13680,13 @@ class ObCollection:
         #CollectionType == 0, Oblivion
         #CollectionType == 1, Fallout 3
         #CollectionType == 2, Fallout New Vegas
-        self._CollectionID = CollectionID or _CCreateCollection(str(ModsPath), CollectionType) #Oblivion collection type hardcoded for now
+        if CollectionID:
+            self._CollectionID = CollectionID
+            self._WhichGame = _CGetCollectionType(CollectionID)
+        else:
+            self._CollectionID = _CCreateCollection(str(ModsPath), CollectionType)
+            self._WhichGame = CollectionType
         self._ModIndex = -1
-        self._WhichGame = CollectionType
         self.LoadOrderMods = []
         self.AllMods = []
 
@@ -13603,6 +13697,15 @@ class ObCollection:
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def GetParentCollection(self):
+        return self
+
+    def Unload(self):
+        _CUnloadCollection(self._CollectionID)
+
+    def Close(self):
+        _CDeleteCollection(self._CollectionID)
 
     @staticmethod
     def UnloadAllCollections():
@@ -13743,12 +13846,6 @@ class ObCollection:
 
     def ClearReferenceLog(self):
         return _CGetRecordUpdatedReferences(0, self._CollectionID)
-
-    def Unload(self):
-        _CUnloadCollection(self._CollectionID)
-
-    def __del__(self):
-        _CDeleteCollection(self._CollectionID)
 
     def Debug_DumpModFiles(self):
         value = _("Collection (%08X) contains the following modfiles:\n") % (self._CollectionID,)

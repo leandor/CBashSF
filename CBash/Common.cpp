@@ -397,7 +397,9 @@ FormIDHandlerClass::FormIDHandlerClass(std::vector<STRING> &_MAST, UINT32 &_Next
     IsEmpty(true),
     bMastersChanged(false),
     FileStart(0),
-    FileEnd(0)
+    FileEnd(0),
+    EmptyGRUPs(0),
+    OrphanedRecords(0)
     {
     //
     }

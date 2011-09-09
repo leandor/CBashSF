@@ -69,6 +69,8 @@ RecordProcessor::RecordProcessor(ModFile *_curModFile, FormIDHandlerClass &_Form
     expander(_FormIDHandler.ExpandTable, _FormIDHandler.FileStart, _FormIDHandler.FileEnd),
     Flags(_Flags),
     UsedFormIDs(_UsedFormIDs),
+    EmptyGRUPs(_FormIDHandler.EmptyGRUPs),
+    OrphanedRecords(_FormIDHandler.OrphanedRecords),
     IsSkipNewRecords(_Flags.IsSkipNewRecords),
     IsTrackNewTypes(_Flags.IsTrackNewTypes),
     IsAddMasters(_Flags.IsAddMasters)

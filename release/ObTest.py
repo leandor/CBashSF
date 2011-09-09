@@ -186,7 +186,6 @@ def assertTES4(Current, newMod):
 def assertGMST(Current, newMod):
     record = Current.LoadOrderMods[0].GMST[0]
 
-    print record.fid
     assert record.fid == ('Oblivion.esm', 0x045D2F)
     assert record.flags1 == 0x00000000
     assert record.flags2 == 1583621
@@ -1872,7 +1871,7 @@ def TestAttrReport():
     mgef_fid = {}
     for modFile in Current.LoadOrderMods:
         for record in modFile.MGEF:
-            mgef_fid[record.eid] = (modFile._ModName,record.fid)
+            mgef_fid[cast(record.eid, POINTER(c_ulong)).contents.value if record.recordVersion is None else record.mgefCode] = record.fid
     try:
         fMagicDurMagBaseCostMult = Current.LookupRecords('fMagicDurMagBaseCostMult')[0].value or 0.1
     except:
@@ -1909,7 +1908,8 @@ def TestAttrReport():
 
         enchCost = 0
         for effect in enchantment.effects:
-            modName, mgefFid = mgef_fid[effect.name]
+            mgefFid = mgef_fid[effect.name]
+            modName = mgefFid[0]
             modFile = Current.LookupModFile(modName)
             mgef = modFile.LookupRecord(mgefFid)
             effectFactor = mgef.baseCost * fMagicDurMagBaseCostMult
@@ -1926,7 +1926,8 @@ def TestAttrReport():
                 enchCost = record.enchantPoints or 0
                 mod = 0
                 for effect in enchantment.effects:
-                    modName, mgefFid = mgef_fid[effect.name]
+                    mgefFid = mgef_fid[effect.name]
+                    modName = mgefFid[0]
                     modFile = Current.LookupModFile(modName)
                     mgef = modFile.LookupRecord(mgefFid)
                     if effect.name in ('WAWA','WABR','NEYE'):
@@ -1938,6 +1939,7 @@ def TestAttrReport():
             enchCost = enchCost / 2.0
         value += enchCost
         return floor(value)
+
     for attr in pickupables:
         for record in getattr(newMod,attr):
             record = Current.LookupRecords(record.fid)[0]
@@ -10592,11 +10594,11 @@ from timeit import Timer
 ##del Current
 ##phonenumber = raw_input("!")
 
-##regressionTests()
+regressionTests()
 
 ##TestIdenticalToMaster()
 ##TestUndelete()
-TestAttrReport()
+##TestAttrReport()
 ##TestCopyAttrs()
 ##TestCleanMasters()
 ##TestFullLoad()
@@ -10644,7 +10646,7 @@ TestAttrReport()
 ##TestKEYM()
 ##TestALCH()
 ##TestSBSP()
-##TestSGST()
+TestSGST()
 ##TestLVLI()
 ##TestWTHR()
 ##TestCLMT()

@@ -414,6 +414,8 @@ class FormIDHandlerClass
         UINT8  CollapsedIndex;                  //The size of MAST
         bool   IsEmpty;
         bool   bMastersChanged;
+        SINT32 EmptyGRUPs;
+        SINT32 OrphanedRecords;
 
         FormIDHandlerClass(std::vector<STRING> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();

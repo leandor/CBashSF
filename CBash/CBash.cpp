@@ -367,6 +367,29 @@ CPPDLLEXTERN SINT32 UnloadCollection(Collection *CollectionID)
     return -1;
     }
 
+CPPDLLEXTERN SINT32 GetCollectionType(Collection *CollectionID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(CollectionID);
+        return CollectionID->CollectionType;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
+    }
+
 CPPDLLEXTERN SINT32 UnloadAllCollections()
     {
     PROFILE_FUNC
@@ -896,6 +919,29 @@ CPPDLLEXTERN Collection * GetCollectionIDByRecordID(Record *RecordID)
     return NULL;
     }
 
+CPPDLLEXTERN Collection * GetCollectionIDByModID(ModFile *ModID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(ModID);
+        return ModID->Parent;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return NULL;
+    }
+
 CPPDLLEXTERN UINT32 IsModEmpty(ModFile *ModID)
     {
     PROFILE_FUNC
@@ -984,6 +1030,52 @@ CPPDLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes)
     return -1;
     }
 
+CPPDLLEXTERN SINT32 GetModNumEmptyGRUPs(ModFile *ModID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(ModID);
+        return ModID->FormIDHandler.EmptyGRUPs;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
+    }
+
+CPPDLLEXTERN SINT32 GetModNumOrphans(ModFile *ModID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(ModID);
+        return ModID->FormIDHandler.OrphanedRecords;
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
+    }
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //FormID functions
@@ -1018,14 +1110,13 @@ CPPDLLEXTERN STRING GetLongIDName(Record *RecordID, const UINT32 FormID, const b
     return NULL;
     }
 
-CPPDLLEXTERN UINT32 MakeShortFormID(Record *RecordID, STRING const ModName, const UINT32 ObjectID, const bool IsMGEFCode)
+CPPDLLEXTERN UINT32 MakeShortFormID(ModFile *ModID, const UINT32 ObjectID, const bool IsMGEFCode)
     {
     PROFILE_FUNC
 
     try
         {
-        UINT8 ModIndex = ValidateLoadOrderIndex(RecordID->GetParentMod()->Parent, ModName)->FormIDHandler.ExpandedIndex;
-        return IsMGEFCode ? (ModIndex | (ObjectID & 0xFFFFFF00)) : ((ModIndex << 24) | (ObjectID & 0x00FFFFFF));
+        return IsMGEFCode ? (ModID->FormIDHandler.ExpandedIndex | (ObjectID & 0xFFFFFF00)) : ((ModID->FormIDHandler.ExpandedIndex << 24) | (ObjectID & 0x00FFFFFF));
         }
     catch(std::exception &ex)
         {

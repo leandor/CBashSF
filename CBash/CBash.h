@@ -50,6 +50,7 @@ DLLEXTERN Collection * CreateCollection(STRING const ModsPath, const UINT32 Coll
 DLLEXTERN SINT32 DeleteCollection(Collection *CollectionID);
 DLLEXTERN SINT32 LoadCollection(Collection *CollectionID);
 DLLEXTERN SINT32 UnloadCollection(Collection *CollectionID);
+DLLEXTERN SINT32 GetCollectionType(Collection *CollectionID);
 DLLEXTERN SINT32 UnloadAllCollections();
 DLLEXTERN SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
@@ -76,15 +77,18 @@ DLLEXTERN SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const Mo
 DLLEXTERN SINT32 GetModLoadOrderByID(ModFile *ModID);
 DLLEXTERN ModFile * GetModIDByRecordID(Record *RecordID);
 DLLEXTERN Collection * GetCollectionIDByRecordID(Record *RecordID);
+DLLEXTERN Collection * GetCollectionIDByModID(ModFile *ModID);
 //DLLEXTERN SINT32 GetShortIDIndex(Collection *CollectionID, const SINT32 ModID, STRING const ModName);
 DLLEXTERN UINT32 IsModEmpty(ModFile *ModID);
 DLLEXTERN SINT32 GetModNumTypes(ModFile *ModID);
 DLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes);
+DLLEXTERN SINT32 GetModNumEmptyGRUPs(ModFile *ModID);
+DLLEXTERN SINT32 GetModNumOrphans(ModFile *ModID);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //FormID functions
 DLLEXTERN STRING GetLongIDName(Record *RecordID, const UINT32 FormID, const bool IsMGEFCode);
-DLLEXTERN UINT32 MakeShortFormID(Record *RecordID, STRING const ModName, const UINT32 ObjectID, const bool IsMGEFCode);
+DLLEXTERN UINT32 MakeShortFormID(ModFile *ModID, const UINT32 ObjectID, const bool IsMGEFCode);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Record action functions

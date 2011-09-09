@@ -66,6 +66,8 @@ class RecordProcessor
         FormIDResolver expander;
         const ModFlags &Flags;
         boost::unordered_set<UINT32> &UsedFormIDs;
+        SINT32 &EmptyGRUPs;
+        SINT32 &OrphanedRecords;
 
         bool IsSkipNewRecords;
         bool IsTrackNewTypes;

@@ -58,11 +58,11 @@ class Collection
     private:
         STRING ModsDir;
         bool IsLoaded;
-
-        whichGameTypes CollectionType;
         std::vector<std::pair<ModFile *, Record *> > sortedConflicts;
 
     public:
+        whichGameTypes CollectionType;
+
         std::vector<ModFile *> ModFiles;
         std::vector<ModFile *> LoadOrder255;
         std::vector<FormIDResolver *> Expanders;
