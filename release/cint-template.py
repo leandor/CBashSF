@@ -75,6 +75,29 @@ except:
     raise
 
 if(CBash):
+    def LoggingCB(logString):
+        print logString,
+        return 0
+
+    def RaiseCB():
+        #Raising is mostly worthless in a callback
+        #CTypes prints the error, but the traceback is useless
+        #and it doesn't propagate properly
+
+        #Apparently...
+        #"The standard way of doing something meaningful with the exception is
+        #to catch it in the callback, set a global flag, somehow encourage the
+        #C code to unwind back to the original Python call and there check the
+        #flag and re-raise the exception."
+
+        #But this would lead to a large performance hit if it were checked after
+        #every CBash call. An alternative might be to start a separate thread
+        #that then raises the error in the main thread after control returns from
+        #CBash. Dunno.
+
+        #This particular callback may disappear, or be morphed into something else
+        raise CBashError("Check the log.")
+        return
     try:
         _CGetVersionMajor = CBash.GetVersionMajor
         _CGetVersionMinor = CBash.GetVersionMinor
@@ -213,35 +236,10 @@ if(CBash):
     _CGetRecordUpdatedReferences.restype = c_long
     _CSetIDFields.restype = c_long
     _CGetFieldAttribute.restype = c_ulong
-
-def LoggingCB(logString):
-    print logString,
-    return 0
-
-def RaiseCB():
-    #Raising is mostly worthless in a callback
-    #CTypes prints the error, but the traceback is useless
-    #and it doesn't propagate properly
-
-    #Apparently...
-    #"The standard way of doing something meaningful with the exception is
-    #to catch it in the callback, set a global flag, somehow encourage the
-    #C code to unwind back to the original Python call and there check the
-    #flag and re-raise the exception."
-
-    #But this would lead to a large performance hit if it were checked after
-    #every CBash call. An alternative might be to start a separate thread
-    #that then raises the error in the main thread after control returns from
-    #CBash. Dunno.
-
-    #This particular callback may disappear, or be morphed into something else
-    raise CBashError("Check the log.")
-    return
-
-LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
-RaiseCallback = CFUNCTYPE(None)(RaiseCB)
-CBash.RedirectMessages(LoggingCallback)
-CBash.AllowRaising(RaiseCallback)
+    LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
+    RaiseCallback = CFUNCTYPE(None)(RaiseCB)
+    CBash.RedirectMessages(LoggingCallback)
+    CBash.AllowRaising(RaiseCallback)
 
 #Helper functions
 class API_FIELDS(object):
@@ -393,6 +391,9 @@ class FormID(object):
         def __init__(self, master, objectID):
             self.master, self.objectID = GPath(master), objectID
 
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return self.master
             return int(self.objectID & 0x00FFFFFFL)
@@ -432,6 +433,9 @@ class FormID(object):
         def __init__(self, objectID):
             self.objectID = objectID
 
+        def __hash__(self):
+            return hash((None, self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return None
             return int(self.objectID & 0x00FFFFFFL)
@@ -458,6 +462,9 @@ class FormID(object):
 
         def __init__(self, master, objectID, shortID, collectionID):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
+
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
 
         def __getitem__(self, x):
             if x == 0: return self.master
@@ -494,6 +501,9 @@ class FormID(object):
         def __init__(self):
             pass
 
+        def __hash__(self):
+            return hash(0)
+
         def __getitem__(self, x):
             return None
 
@@ -514,6 +524,9 @@ class FormID(object):
 
         def __init__(self, shortID):
             self.shortID = shortID
+
+        def __hash__(self):
+            return hash((self.shortID, None))
 
         def __getitem__(self, x):
             if x == 0: return self.shortID >> 24
@@ -556,6 +569,9 @@ class FormID(object):
                 else:
                     #CBash FormID, pre-invalidated for all collections
                     self.formID = FormID.InvalidFormID(objectID)
+
+    def __hash__(self):
+        return hash(self.formID)
 
     def __eq__(self, x):
         return x[1] == self.formID[1] and x[0] == self.formID[0]
@@ -646,6 +662,9 @@ class ActorValue(object):
         def __init__(self, master, objectID):
             self.master, self.objectID = GPath(master), objectID
 
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return self.master
             return int(self.objectID & 0x00FFFFFFL)
@@ -686,6 +705,9 @@ class ActorValue(object):
         def __init__(self, objectID):
             self.objectID = objectID
 
+        def __hash__(self):
+            return hash((None, self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return None
             return int(self.objectID & 0x00FFFFFFL)
@@ -711,6 +733,9 @@ class ActorValue(object):
            This class should never be instantiated except by class ActorValue(object)."""
         def __init__(self, master, objectID, shortID, collectionID):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
+
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
 
         def __getitem__(self, x):
             if x == 0: return self.master
@@ -746,6 +771,9 @@ class ActorValue(object):
         def __init__(self):
             pass
 
+        def __hash__(self):
+            return hash(0)
+
         def __getitem__(self, x):
             return None
 
@@ -768,6 +796,9 @@ class ActorValue(object):
 
         def __init__(self, shortID):
             self.shortID = shortID
+
+        def __hash__(self):
+            return hash((self.shortID, None))
 
         def __getitem__(self, x):
             if x == 0: return self.shortID >> 24
@@ -814,6 +845,9 @@ class ActorValue(object):
                     else:
                         #CBash ActorValue, pre-invalidated for all collections
                         self.actorValue = ActorValue.InvalidActorValue(objectID)
+
+    def __hash__(self):
+        return hash(self.actorValue)
 
     def __eq__(self, x):
         return x[1] == self.actorValue[1] and x[0] == self.actorValue[0]
@@ -908,6 +942,9 @@ class MGEFCode(object):
         def __init__(self, master, objectID):
             self.master, self.objectID = GPath(master), objectID
 
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return self.master
             return int(self.objectID & 0xFFFFFF00L)
@@ -948,6 +985,9 @@ class MGEFCode(object):
         def __init__(self, objectID):
             self.objectID = objectID
 
+        def __hash__(self):
+            return hash((None, self.objectID))
+
         def __getitem__(self, x):
             if x == 0: return None
             return int(self.objectID & 0xFFFFFF00L)
@@ -973,6 +1013,9 @@ class MGEFCode(object):
            This class should never be instantiated except by class MGEFCode(object)."""
         def __init__(self, master, objectID, shortID, collectionID):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
+
+        def __hash__(self):
+            return hash((str(self.master), self.objectID))
 
         def __getitem__(self, x):
             if x == 0: return self.master
@@ -1008,6 +1051,9 @@ class MGEFCode(object):
         def __init__(self):
             pass
 
+        def __hash__(self):
+            return hash(0)
+
         def __getitem__(self, x):
             return None
 
@@ -1034,6 +1080,9 @@ class MGEFCode(object):
 
         def __init__(self, shortID):
             self.shortID = shortID
+
+        def __hash__(self):
+            return hash((self.shortID, None))
 
         def __getitem__(self, x):
             if isinstance(self.shortID, basestring):
@@ -1088,6 +1137,9 @@ class MGEFCode(object):
                     else:
                         #CBash MGEFCode, pre-invalidated for all collections
                         self.mgefCode = MGEFCode.InvalidMGEFCode(objectID)
+
+    def __hash__(self):
+        return hash(self.mgefCode)
 
     def __eq__(self, x):
         return x[1] == self.mgefCode[1] and x[0] == self.mgefCode[0]
