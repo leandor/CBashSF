@@ -162,19 +162,28 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
     //Prevent loading mods more than once
 
     STRING ModName = DeGhostModName(_FileName);
-
-    if(IsLoaded || IsModAdded(ModName ? ModName : _FileName))
+    ModFile *ModID = IsModAdded(ModName ? ModName : _FileName);
+    if(ModID != NULL)
         {
-        if(!IsPreloading)
+        //Suppress any warnings if masters are being loaded, or if the mod is being added with the same flags as before
+        if(IsPreloading || ModID->Flags.GetFlags() == flags.GetFlags())
             {
-            if(IsLoaded)
-                printer("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
-            else
-                printer("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
+            delete []ModName;
+            return IsPreloading ? -1 : 0;
             }
+        printer("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
         delete []ModName;
         return -1;
         }
+
+    if(IsLoaded)
+        {
+        if(!IsPreloading)
+            printer("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
+        delete []ModName;
+        return -1;
+        }
+
     STRING FileName = new char[strlen(_FileName) + 1];
     strcpy_s(FileName, strlen(_FileName) + 1, _FileName);
     ModName = ModName ? ModName : FileName;
@@ -201,12 +210,12 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
     return 0;
     }
 
-bool Collection::IsModAdded(STRING const &ModName)
+ModFile * Collection::IsModAdded(STRING const &ModName)
     {
     for(UINT32 p = 0;p < ModFiles.size();p++)
         if(icmps(ModName, ModFiles[p]->ModName) == 0)
-            return true;
-    return false;
+            return ModFiles[p];
+    return NULL;
     }
 
 SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags)

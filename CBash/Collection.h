@@ -80,7 +80,7 @@ class Collection
         ~Collection();
 
         SINT32 AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading=false);
-        bool IsModAdded(STRING const &ModName);
+        ModFile * IsModAdded(STRING const &ModName);
         SINT32 SaveMod(ModFile *&curModFile, SaveFlags &flags);
 
         SINT32 Load();
