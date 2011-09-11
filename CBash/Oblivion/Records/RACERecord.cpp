@@ -74,8 +74,8 @@ void RACERecord::RACEMODEL::Write(FileWriter &writer)
         WRITE(MODL);
         WRITE(MODB);
         WRITE(MODT);
-        WRITE(ICON);
         }
+    WRITE(ICON);
     }
 
 bool RACERecord::RACEMODEL::operator ==(const RACEMODEL &other) const

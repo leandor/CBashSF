@@ -415,7 +415,7 @@ class FormIDHandlerClass
         bool   IsEmpty;
         bool   bMastersChanged;
         SINT32 EmptyGRUPs;
-        SINT32 OrphanedRecords;
+        std::vector<FORMID> OrphanedRecords;
 
         FormIDHandlerClass(std::vector<STRING> &_MAST, UINT32 &_NextObject);
         ~FormIDHandlerClass();

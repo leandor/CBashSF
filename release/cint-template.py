@@ -159,6 +159,8 @@ if(CBash):
     _CGetModNumEmptyGRUPs.errcheck = NegativeIsErrorCheck
     _CGetModNumOrphans = CBash.GetModNumOrphans
     _CGetModNumOrphans.errcheck = NegativeIsErrorCheck
+    _CGetModOrphansFormIDs = CBash.GetModOrphansFormIDs
+    _CGetModOrphansFormIDs.errcheck = NegativeIsErrorCheck
     
     _CGetLongIDName = CBash.GetLongIDName
     _CMakeShortFormID = CBash.MakeShortFormID
@@ -216,6 +218,7 @@ if(CBash):
     _CGetModTypes.restype = c_long
     _CGetModNumEmptyGRUPs.restype = c_long
     _CGetModNumOrphans.restype = c_long
+    _CGetModOrphansFormIDs.restype = c_long
     _CGetLongIDName.restype = c_char_p
     _CMakeShortFormID.restype = c_ulong
     _CCreateRecord.restype = c_ulong
@@ -1209,6 +1212,18 @@ class MGEFCode(object):
     def GetShortMGEFCode(self, target):
         """Resolves the various MGEFCode classes to a single 32-bit value used by CBash"""
         return self.mgefCode.GetShortMGEFCode(target)
+
+def ValidateList(Elements, Target):
+    """Convenience function to ensure that a list of values is valid for the destination.
+       Returns true if all of the FormIDs/ActorValues/MGEFCodes in the list are valid."""
+    isValid = True
+    for element in Elements:
+        if not isValid: return isValid
+        if isinstance(element, (FormID, ActorValue, MGEFCode)):
+            isValid = element.Validate(Target)
+        elif isinstance(element, (tuple, list)):
+            isValid = ValidateList(element, Target)
+    return isValid
 
 def getattr_deep(obj, attr):
     return reduce(getattr, attr.split('.'), obj)
@@ -13260,6 +13275,18 @@ class ObModFile(object):
             return [cRecord.value for cRecord in cRecords if cRecord]
         return []
 
+    def GetNumEmptyGRUPs(self):
+        return _CGetModNumEmptyGRUPs(self._ModID)
+
+    def GetOrphanedFormIDs(self):
+        numFormIDs = _CGetModNumOrphans(self._ModID)
+        if(numFormIDs > 0):
+            cFormIDs = (c_ulong * numFormIDs)()
+            _CGetModOrphansFormIDs(self._ModID, byref(cFormIDs))
+            RecordID = _CGetRecordID(self._ModID, 0, 0)
+            return [FormID(_CGetLongIDName(RecordID, cFormID, 0), cFormID) for cFormID in cFormIDs if cFormID]
+        return []
+
     def UpdateReferences(self, Old_NewFormIDs):
         Old_NewFormIDs = FormID.FilterValidDict(Old_NewFormIDs, self, True, True)
         length = len(Old_NewFormIDs)
@@ -13474,6 +13501,18 @@ class FnvModFile(object):
             cRecords = ((c_char * 4) * numRecords)()
             _CGetModTypes(self._ModID, byref(cRecords))
             return [cRecord.value for cRecord in cRecords if cRecord]
+        return []
+
+    def GetNumEmptyGRUPs(self):
+        return _CGetModNumEmptyGRUPs(self._ModID)
+
+    def GetOrphanedFormIDs(self):
+        numFormIDs = _CGetModNumOrphans(self._ModID)
+        if(numFormIDs > 0):
+            cFormIDs = (c_ulong * numFormIDs)()
+            _CGetModOrphansFormIDs(self._ModID, byref(cFormIDs))
+            RecordID = _CGetRecordID(self._ModID, 0, 0)
+            return [FormID(_CGetLongIDName(RecordID, cFormID, 0), cFormID) for cFormID in cFormIDs if cFormID]
         return []
 
     def UpdateReferences(self, Old_NewFormIDs):

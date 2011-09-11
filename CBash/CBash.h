@@ -84,6 +84,7 @@ DLLEXTERN SINT32 GetModNumTypes(ModFile *ModID);
 DLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes);
 DLLEXTERN SINT32 GetModNumEmptyGRUPs(ModFile *ModID);
 DLLEXTERN SINT32 GetModNumOrphans(ModFile *ModID);
+DLLEXTERN SINT32 GetModOrphansFormIDs(ModFile *ModID, FORMIDARRAY FormIDs);
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //FormID functions

@@ -67,7 +67,7 @@ class RecordProcessor
         const ModFlags &Flags;
         boost::unordered_set<UINT32> &UsedFormIDs;
         SINT32 &EmptyGRUPs;
-        SINT32 &OrphanedRecords;
+        std::vector<FORMID> &OrphanedRecords;
 
         bool IsSkipNewRecords;
         bool IsTrackNewTypes;

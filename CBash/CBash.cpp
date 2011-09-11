@@ -1060,7 +1060,32 @@ CPPDLLEXTERN SINT32 GetModNumOrphans(ModFile *ModID)
     try
         {
         //ValidatePointer(ModID);
-        return ModID->FormIDHandler.OrphanedRecords;
+        return ModID->FormIDHandler.OrphanedRecords.size();
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback();
+    return -1;
+    }
+
+CPPDLLEXTERN SINT32 GetModOrphansFormIDs(ModFile *ModID, FORMIDARRAY FormIDs)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        //ValidatePointer(ModID);
+        for(UINT32 ListIndex = 0; ListIndex < ModID->FormIDHandler.OrphanedRecords.size(); ++ListIndex)
+            FormIDs[ListIndex] = ModID->FormIDHandler.OrphanedRecords[ListIndex];
+        return 0;
         }
     catch(std::exception &ex)
         {
