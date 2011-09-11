@@ -1560,18 +1560,25 @@ CPPDLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARR
             std::map<FORMID, std::vector<Record *> > formID_users;
             RecordFormIDMapper mapper(formID_users, ModID->FormIDHandler, ModID->Parent->Expanders);
             ModID->VisitAllRecords(mapper);
+            UINT32 OldFormID = 0, NewFormID = 0;
+            RecordReader reader(ModID);
+            Record *curRecord;
             for(UINT32 ListIndex = 0; ListIndex < ArraySize; ++ListIndex)
                 {
                 //Sanity check.
-                if(OldFormIDs[ListIndex] == NewFormIDs[ListIndex])
+                OldFormID = OldFormIDs[ListIndex];
+                NewFormID = NewFormIDs[ListIndex];
+                if(OldFormID == NewFormID)
                     continue;
-                FormIDSwapper swapper(OldFormIDs[ListIndex], NewFormIDs[ListIndex], ModID->FormIDHandler);
-                std::vector<Record *> &users = formID_users[OldFormIDs[ListIndex]];
+                FormIDSwapper swapper(OldFormID, NewFormID, ModID->FormIDHandler);
+                std::vector<Record *> &users = formID_users[OldFormID];
                 for(UINT32 ListX2Index = 0; ListX2Index < users.size(); ++ListX2Index)
                     {
-                    users[ListX2Index]->VisitFormIDs(swapper);
-                    users[ListX2Index]->IsChanged(true);
-                    ModID->Parent->changed_records.insert(users[ListX2Index]);
+                    curRecord = users[ListX2Index];
+                    reader.Accept(curRecord);
+                    curRecord->VisitFormIDs(swapper);
+                    curRecord->IsChanged(true);
+                    ModID->Parent->changed_records.insert(curRecord);
                     }
                 Changes[ListIndex] = swapper.GetCount();
                 count += swapper.GetCount();

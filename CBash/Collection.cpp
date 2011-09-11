@@ -1494,6 +1494,10 @@ bool RecordFormIDMapper::Accept(Record *&curRecord)
     mapper.curRecord = curRecord;
     stop = curRecord->VisitFormIDs(mapper);
 
+    //If the record was read, but not changed, unload it again
+    if(reader.GetResult() && !curRecord->IsChanged())
+        curRecord->Unload();
+
     return stop;
     }
 
