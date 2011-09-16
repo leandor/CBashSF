@@ -96,7 +96,8 @@ def regressionTests():
 
 ##    assertSOUN(Current, newMod)
 ##    assertSKIL(Current, newMod)
-
+    Current.Close()
+    
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
 
@@ -2026,7 +2027,8 @@ def TestAttrReport():
     print "Min Weight/Value:", min(wvratios)
     print "Max Weight/Value:", max(wvratios)
     print "Avg Weight/Value:", sum(wvratios) / len(wvratios)
-
+    Current.Close()
+    
 def TestCopyAttrs():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -2043,6 +2045,7 @@ def TestCopyAttrs():
         armor.DeleteRecord()
     print srcFile.UpdateReferences(origFids, newFids)
     srcFile.save()
+    Current.Close()
 
 def TestCleanMasters():
     Current = ObCollection()
@@ -2052,11 +2055,13 @@ def TestCleanMasters():
     newMod = Current.LookupModFile("Speedy Disrobe OBSE.esp")
     print newMod.CleanMasters()
     newMod.save()
+    Current.Close()
 
 def TestLoadMasters():
     Current = ObCollection()
     Current.addMod("OOO Patch - Geomancy - Activator.esp")
     Current.load()
+    Current.Close()
 
 def TestDeleteRecord():
     Current = ObCollection()
@@ -2299,6 +2304,7 @@ def TestDeleteRecord():
 
     print "Delete:Save Test - TestDelete.esp"
     newMod.save()
+    Current.Close()
 
 def TestMinimalLoad():
     Current = ObCollection()
@@ -2306,6 +2312,7 @@ def TestMinimalLoad():
     Current.load()
 ##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
+    Current.Close()
 
 def TestFullLoad():
     Current = ObCollection()
@@ -2313,6 +2320,7 @@ def TestFullLoad():
     Current.load()
 ##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
+    Current.Close()
 
 def TestReadWriteAll():
     Current = ObCollection()
@@ -2636,6 +2644,7 @@ def TestReadWriteAll():
     newMod.save()
 ##    phonenumber = raw_input("!")
     print "ALL:Finished testing"
+    Current.Close()
 
 def TestTES4():
     Current = ObCollection()
@@ -2674,8 +2683,15 @@ def TestTES4():
     d(newMod.TES4)
 
     print "TES4:Save Test - TestTES4.esp"
-    newMod.save()
+    phonenumber = raw_input(">")
+    newMod.save(CloseCollection=False)
+    newMod.TES4.description = "test"
+    phonenumber = raw_input(">")
+    newMod.save(CloseCollection=False)
+    newMod.TES4.description = "tested"
+    phonenumber = raw_input(">")
     print "TES4:Finished testing"
+    Current.Close()
 
 def TestGMST():
     Current = ObCollection()
@@ -2716,6 +2732,7 @@ def TestGMST():
     print "GMST:Save Test - TestGMST.esp"
     newMod.save()
     print "GMST:Finished testing"
+    Current.Close()
 
 def TestGLOB():
     Current = ObCollection()
@@ -2761,6 +2778,7 @@ def TestGLOB():
     print "GLOB:Save Test - TestGLOB.esp"
     newMod.save()
     print "GLOB:Finished testing"
+    Current.Close()
 
 def TestCLAS():
     Current = ObCollection()
@@ -2858,7 +2876,7 @@ def TestCLAS():
     print "CLAS:Save Test - TestCLAS.esp"
     newMod.save()
     print "CLAS:Finished testing"
-
+    Current.Close()
 
 def TestFACT():
     Current = ObCollection()
@@ -2944,6 +2962,7 @@ def TestFACT():
     print "FACT:Save Test - TestFACT.esp"
     newMod.save()
     print "FACT:Finished testing"
+    Current.Close()
 
 def TestHAIR():
     Current = ObCollection()
@@ -3013,6 +3032,7 @@ def TestHAIR():
     print "HAIR:Save Test - TestHAIR.esp"
     newMod.save()
     print "HAIR:Finished testing"
+    Current.Close()
 
 def TestEYES():
     Current = ObCollection()
@@ -3068,6 +3088,7 @@ def TestEYES():
     print "EYES:Save Test - TestEYES.esp"
     newMod.save()
     print "EYES:Finished testing"
+    Current.Close()
 
 def TestRACE():
     Current = ObCollection()
@@ -3389,7 +3410,7 @@ def TestRACE():
     print "RACE:Save Test - TestRACE.esp"
     newMod.save()
     print "RACE:Finished testing"
-
+    Current.Close()
 
 def TestSOUN():
     Current = ObCollection()
@@ -3456,6 +3477,7 @@ def TestSOUN():
     print "SOUN:Save Test - TestSOUN.esp"
     newMod.save()
     print "SOUN:Finished testing"
+    Current.Close()
 
 def TestSKIL():
     Current = ObCollection()
@@ -3526,6 +3548,8 @@ def TestSKIL():
     print "SKIL:Save Test - TestSKIL.esp"
     newMod.save()
     print "SKIL:Finished testing"
+    Current.Close()
+    
 def TestMGEF():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -3588,6 +3612,8 @@ def TestMGEF():
     print "MGEF:Save Test - TestMGEF.esp"
     newMod.save()
     print "MGEF:Finished testing"
+    Current.Close()
+    
 def TestSCPT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -3684,6 +3710,7 @@ def TestSCPT():
     print "SCPT:Save Test - TestSCPT.esp"
     newMod.save()
     print "SCPT:Finished testing"
+    Current.Close()
 
 def TestLTEX():
     Current = ObCollection()
@@ -3745,7 +3772,7 @@ def TestLTEX():
     print "LTEX:Save Test - TestLTEX.esp"
     newMod.save()
     print "LTEX:Finished testing"
-
+    Current.Close()
 
 def TestENCH():
     Current = ObCollection()
@@ -3848,7 +3875,7 @@ def TestENCH():
     print "ENCH:Save Test - TestENCH.esp"
     newMod.save()
     print "ENCH:Finished testing"
-
+    Current.Close()
 
 def TestSPEL():
     Current = ObCollection()
@@ -3950,6 +3977,7 @@ def TestSPEL():
     print "SPEL:Save Test - TestSPEL.esp"
     newMod.save()
     print "SPEL:Finished testing"
+    Current.Close()
 
 def TestBSGN():
     Current = ObCollection()
@@ -4004,8 +4032,7 @@ def TestBSGN():
     print "BSGN:Save Test - TestBSGN.esp"
     newMod.save()
     print "BSGN:Finished testing"
-
-
+    Current.Close()
 
 def TestACTI():
     Current = ObCollection()
@@ -4068,7 +4095,7 @@ def TestACTI():
     print "ACTI:Save Test - TestACTI.esp"
     newMod.save()
     print "ACTI:Finished testing"
-
+    Current.Close()
 
 def TestAPPA():
     Current = ObCollection()
@@ -4140,7 +4167,7 @@ def TestAPPA():
     print "APPA:Save Test - TestAPPA.esp"
     newMod.save()
     print "APPA:Finished testing"
-
+    Current.Close()
 
 def TestARMO():
     Current = ObCollection()
@@ -4232,7 +4259,7 @@ def TestARMO():
     print "ARMO:Save Test - TestARMO.esp"
     newMod.save()
     print "ARMO:Finished testing"
-
+    Current.Close()
 
 def TestBOOK():
     Current = ObCollection()
@@ -4312,7 +4339,7 @@ def TestBOOK():
     print "BOOK:Save Test - TestBOOK.esp"
     newMod.save()
     print "BOOK:Finished testing"
-
+    Current.Close()
 
 def TestCLOT():
     Current = ObCollection()
@@ -4398,7 +4425,7 @@ def TestCLOT():
     print "CLOT:Save Test - TestCLOT.esp"
     newMod.save()
     print "CLOT:Finished testing"
-
+    Current.Close()
 
 def TestCONT():
     Current = ObCollection()
@@ -4492,7 +4519,7 @@ def TestCONT():
     print "CONT:Save Test - TestCONT.esp"
     newMod.save()
     print "CONT:Finished testing"
-
+    Current.Close()
 
 def TestDOOR():
     Current = ObCollection()
@@ -4568,7 +4595,7 @@ def TestDOOR():
     print "DOOR:Save Test - TestDOOR.esp"
     newMod.save()
     print "DOOR:Finished testing"
-
+    Current.Close()
 
 def TestINGR():
     Current = ObCollection()
@@ -4691,7 +4718,7 @@ def TestINGR():
     print "INGR:Save Test - TestINGR.esp"
     newMod.save()
     print "INGR:Finished testing"
-
+    Current.Close()
 
 def TestLIGH():
     Current = ObCollection()
@@ -4788,7 +4815,7 @@ def TestLIGH():
     print "LIGH:Save Test - TestLIGH.esp"
     newMod.save()
     print "LIGH:Finished testing"
-
+    Current.Close()
 
 def TestMISC():
     Current = ObCollection()
@@ -4857,6 +4884,7 @@ def TestMISC():
     print "MISC:Save Test - TestMISC.esp"
     newMod.save()
     print "MISC:Finished testing"
+    Current.Close()
 
 def TestSTAT():
     Current = ObCollection()
@@ -4912,6 +4940,7 @@ def TestSTAT():
     print "STAT:Save Test - TestSTAT.esp"
     newMod.save()
     print "STAT:Finished testing"
+    Current.Close()
 
 def TestGRAS():
     Current = ObCollection()
@@ -4991,7 +5020,7 @@ def TestGRAS():
     print "GRAS:Save Test - TestGRAS.esp"
     newMod.save()
     print "GRAS:Finished testing"
-
+    Current.Close()
 
 def TestTREE():
     Current = ObCollection()
@@ -5068,7 +5097,7 @@ def TestTREE():
     print "TREE:Save Test - TestTREE.esp"
     newMod.save()
     print "TREE:Finished testing"
-
+    Current.Close()
 
 def TestFLOR():
     Current = ObCollection()
@@ -5134,7 +5163,7 @@ def TestFLOR():
     print "FLOR:Save Test - TestFLOR.esp"
     newMod.save()
     print "FLOR:Finished testing"
-
+    Current.Close()
 
 def TestFURN():
     Current = ObCollection()
@@ -5199,7 +5228,7 @@ def TestFURN():
     print "FURN:Save Test - TestFURN.esp"
     newMod.save()
     print "FURN:Finished testing"
-
+    Current.Close()
 
 def TestWEAP():
     Current = ObCollection()
@@ -5285,7 +5314,7 @@ def TestWEAP():
     print "WEAP:Save Test - TestWEAP.esp"
     newMod.save()
     print "WEAP:Finished testing"
-
+    Current.Close()
 
 def TestAMMO():
     Current = ObCollection()
@@ -5365,7 +5394,7 @@ def TestAMMO():
     print "AMMO:Save Test - TestAMMO.esp"
     newMod.save()
     print "AMMO:Finished testing"
-
+    Current.Close()
 
 def TestNPC_():
     Current = ObCollection()
@@ -5612,7 +5641,7 @@ def TestNPC_():
     print "NPC_:Save Test - TestNPC_.esp"
     newMod.save()
     print "NPC_:Finished testing"
-
+    Current.Close()
 
 def TestCREA():
     Current = ObCollection()
@@ -5856,7 +5885,7 @@ def TestCREA():
     print "CREA:Save Test - TestCREA.esp"
     newMod.save()
     print "CREA:Finished testing"
-
+    Current.Close()
 
 def TestLVLC():
     Current = ObCollection()
@@ -5946,7 +5975,7 @@ def TestLVLC():
     print "LVLC:Save Test - TestLVLC.esp"
     newMod.save()
     print "LVLC:Finished testing"
-
+    Current.Close()
 
 def TestSLGM():
     Current = ObCollection()
@@ -6022,7 +6051,7 @@ def TestSLGM():
     print "SLGM:Save Test - TestSLGM.esp"
     newMod.save()
     print "SLGM:Finished testing"
-
+    Current.Close()
 
 def TestKEYM():
     Current = ObCollection()
@@ -6091,6 +6120,7 @@ def TestKEYM():
     print "KEYM:Save Test - TestKEYM.esp"
     newMod.save()
     print "KEYM:Finished testing"
+    Current.Close()
 
 def TestALCH():
     Current = ObCollection()
@@ -6213,6 +6243,7 @@ def TestALCH():
     print "ALCH:Save Test - TestALCH.esp"
     newMod.save()
     print "ALCH:Finished testing"
+    Current.Close()
 
 def TestSBSP():
     Current = ObCollection()
@@ -6264,7 +6295,7 @@ def TestSBSP():
     print "SBSP:Save Test - TestSBSP.esp"
     newMod.save()
     print "SBSP:Finished testing"
-
+    Current.Close()
 
 def TestSGST():
     Current = ObCollection()
@@ -6403,7 +6434,7 @@ def TestSGST():
     print "SGST:Save Test - TestSGST.esp"
     newMod.save()
     print "SGST:Finished testing"
-
+    Current.Close()
 
 def TestLVLI():
     Current = ObCollection()
@@ -6487,7 +6518,7 @@ def TestLVLI():
     print "LVLI:Save Test - TestLVLI.esp"
     newMod.save()
     print "LVLI:Finished testing"
-
+    Current.Close()
 
 def TestWTHR():
     Current = ObCollection()
@@ -6970,7 +7001,7 @@ def TestWTHR():
     print "WTHR:Save Test - TestWTHR.esp"
     newMod.save()
     print "WTHR:Finished testing"
-
+    Current.Close()
 
 def TestCLMT():
     Current = ObCollection()
@@ -7061,7 +7092,7 @@ def TestCLMT():
     print "CLMT:Save Test - TestCLMT.esp"
     newMod.save()
     print "CLMT:Finished testing"
-
+    Current.Close()
 
 def TestREGN():
     Current = ObCollection()
@@ -7391,8 +7422,7 @@ def TestREGN():
     print "REGN:Save Test - TestREGN.esp"
     newMod.save()
     print "REGN:Finished testing"
-
-
+    Current.Close()
 
 def TestCELL():
     Current = ObCollection()
@@ -7887,6 +7917,7 @@ def TestCELL():
     print "CELL:Save Test - TestCELL.esp"
     newMod.save()
     print "CELL:Finished testing"
+    Current.Close()
 
 def TestWRLD():
     Current = ObCollection()
@@ -8340,6 +8371,7 @@ def TestWRLD():
     print "WRLD:Save Test - TestWRLD.esp"
     newMod.save()
     print "WRLD:Finished testing"
+    Current.Close()
 
 def TestDIAL():
     Current = ObCollection()
@@ -8741,6 +8773,7 @@ def TestDIAL():
     print "DIAL:Save Test - TestDIAL.esp"
     newMod.save()
     print "DIAL:Finished testing"
+    Current.Close()
 
 def TestQUST():
     Current = ObCollection()
@@ -9516,7 +9549,7 @@ def TestQUST():
     print "QUST:Save Test - TestQUST.esp"
     newMod.save()
     print "QUST:Finished testing"
-
+    Current.Close()
 
 def TestIDLE():
     Current = ObCollection()
@@ -9629,7 +9662,7 @@ def TestIDLE():
     print "IDLE:Save Test - TestIDLE.esp"
     newMod.save()
     print "IDLE:Finished testing"
-
+    Current.Close()
 
 def TestPACK():
     Current = ObCollection()
@@ -9762,7 +9795,7 @@ def TestPACK():
     print "PACK:Save Test - TestPACK.esp"
     newMod.save()
     print "PACK:Finished testing"
-
+    Current.Close()
 
 def TestCSTY():
     Current = ObCollection()
@@ -9937,7 +9970,7 @@ def TestCSTY():
     print "CSTY:Save Test - TestCSTY.esp"
     newMod.save()
     print "CSTY:Finished testing"
-
+    Current.Close()
 
 def TestLSCR():
     Current = ObCollection()
@@ -10020,7 +10053,7 @@ def TestLSCR():
     print "LSCR:Save Test - TestLSCR.esp"
     newMod.save()
     print "LSCR:Finished testing"
-
+    Current.Close()
 
 def TestLVSP():
     Current = ObCollection()
@@ -10105,7 +10138,7 @@ def TestLVSP():
     print "LVSP:Save Test - TestLVSP.esp"
     newMod.save()
     print "LVSP:Finished testing"
-
+    Current.Close()
 
 def TestANIO():
     Current = ObCollection()
@@ -10164,7 +10197,7 @@ def TestANIO():
     print "ANIO:Save Test - TestANIO.esp"
     newMod.save()
     print "ANIO:Finished testing"
-
+    Current.Close()
 
 def TestWATR():
     Current = ObCollection()
@@ -10299,7 +10332,7 @@ def TestWATR():
     print "WATR:Save Test - TestWATR.esp"
     newMod.save()
     print "WATR:Finished testing"
-
+    Current.Close()
 
 def TestEFSH():
     Current = ObCollection()
@@ -10494,6 +10527,7 @@ def TestEFSH():
     print "EFSH:Save Test - TestEFSH.esp"
     newMod.save()
     print "EFSH:Finished testing"
+    Current.Close()
 
 def TestIdenticalToMaster():
     Current = ObCollection()
@@ -10523,6 +10557,7 @@ def TestIdenticalToMaster():
         record.DeleteRecord()
     newMod.CleanMasters()
     newMod.save()
+    Current.Close()
 
 def TestUndelete():
     Current = ObCollection()
@@ -10543,6 +10578,7 @@ def TestUndelete():
             rec.IsDeleted = True
     newMod.save(False)
     delMod.save()
+    Current.Close()
 
 from timeit import Timer
 
@@ -10591,10 +10627,11 @@ from timeit import Timer
 ####print "FullLoad"
 ##Current.load()
 ##phonenumber = raw_input(">")
+##Current.Close()
 ##del Current
 ##phonenumber = raw_input("!")
 
-regressionTests()
+##regressionTests()
 
 ##TestIdenticalToMaster()
 ##TestUndelete()
@@ -10606,7 +10643,7 @@ regressionTests()
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()
-##TestTES4()
+TestTES4()
 ##TestGMST()
 ##TestGLOB()
 ##TestCLAS()
@@ -10646,7 +10683,7 @@ regressionTests()
 ##TestKEYM()
 ##TestALCH()
 ##TestSBSP()
-TestSGST()
+##TestSGST()
 ##TestLVLI()
 ##TestWTHR()
 ##TestCLMT()

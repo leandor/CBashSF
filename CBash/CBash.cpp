@@ -246,17 +246,24 @@ CPPDLLEXTERN SINT32 DeleteCollection(Collection *CollectionID)
     try
         {
         //ValidatePointer(CollectionID);
-        for(UINT32 p = 0; p < Collections.size(); ++p)
+        for(UINT32 ListIndex = 0; ListIndex < Collections.size(); ++ListIndex)
             {
-            if(Collections[p] == CollectionID)
+            if(Collections[ListIndex] == CollectionID)
                 {
-                delete Collections[p];
-                Collections[p] = NULL;
+                for(UINT32 ListX2Index = 0; ListX2Index < CollectionID->ModFiles.size(); ++ListX2Index)
+                    CollectionID->ModFiles[ListX2Index]->Close();
+                for(UINT32 ListX2Index = 0; ListX2Index < CollectionID->closing_ops.size(); ++ListX2Index)
+                    {
+                    CollectionID->closing_ops[ListX2Index]->perform();
+                    delete CollectionID->closing_ops[ListX2Index];
+                    }
+                delete CollectionID;
+                Collections[ListIndex] = NULL;
                 }
             }
-        for(UINT32 p = 0; p < Collections.size(); ++p)
+        for(UINT32 ListIndex = 0; ListIndex < Collections.size(); ++ListIndex)
             {
-            if(Collections[p] != NULL)
+            if(Collections[ListIndex] != NULL)
                 return 0;
             }
         Collections.clear();
@@ -1266,6 +1273,28 @@ CPPDLLEXTERN SINT32 DeleteRecord(Record *RecordID)
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
         RecordDeindexer deindexer(RecordID);
+
+        if(RecordID->IsWinningDetermined() && (RecordID->IsWinning() || RecordID->IsExtendedWinning()))
+            {
+            FORMID FormID = RecordID->formID;
+            STRING EditorID = RecordID->GetEditorIDKey();
+            bool IsKeyedByEditorID = RecordID->IsKeyedByEditorID();
+            Collection *CollectionID = RecordID->GetParentMod()->Parent;
+            if(RecordID->GetParentMod()->DeleteRecord(RecordID, deindexer))
+                {
+                //Update the IsWinning flags for all related records
+                ModFile *WinningModfile = NULL;
+                Record *WinningRecord = NULL;
+                
+                if(IsKeyedByEditorID)
+                    CollectionID->LookupWinningRecord(EditorID, WinningModfile, WinningRecord, true);
+                else
+                    CollectionID->LookupWinningRecord(FormID, WinningModfile, WinningRecord, true);
+                return 1;
+                }
+            return 0;
+            }
+
         return RecordID->GetParentMod()->DeleteRecord(RecordID, deindexer);
         }
     catch(std::exception &ex)
@@ -1372,7 +1401,20 @@ CPPDLLEXTERN SINT32 IsRecordWinning(Record *RecordID, const bool GetExtendedConf
         {
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        return RecordID->GetParentMod()->Parent->IsRecordWinning(RecordID, GetExtendedConflicts);
+        if(!RecordID->IsWinningDetermined())
+            {
+            ModFile *WinningModfile = NULL;
+            Record *WinningRecord = NULL;
+            if(RecordID->IsKeyedByEditorID())
+                RecordID->GetParentMod()->Parent->LookupWinningRecord(RecordID->GetEditorIDKey(), WinningModfile, WinningRecord, true);
+            else
+                RecordID->GetParentMod()->Parent->LookupWinningRecord(RecordID->formID, WinningModfile, WinningRecord, true);
+            }
+        if(GetExtendedConflicts)
+            return RecordID->IsExtendedWinning();
+        else if(RecordID->GetParentMod()->Flags.IsExtendedConflicts)
+            return false;
+        return RecordID->IsWinning();
         }
     catch(std::exception &ex)
         {

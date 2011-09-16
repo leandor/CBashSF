@@ -58,10 +58,7 @@ SINT32 TES4File::LoadTES4()
     TES4.flagsUnk = *(UINT32 *)buffer_position;
     buffer_position += 4;
 
-    if(TES4.IsLoaded())
-        printer("_fIsLoaded Flag used!!!!: %08X\n", TES4.flags);
-
-    TES4.SetData(buffer_position);
+    TES4.recData = buffer_position;
     TES4.Read();
     TES4.IsChanged(true); //prevents the record from ever being unloaded
     buffer_position += recSize;
@@ -1421,7 +1418,7 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
     //update formCount. Cheaper to go back and write it at the end than to calculate it before any writing.
     writer.file_write(30, &formCount, 4);
     writer.close();
-    Close();
+
     return 0;
     }
 

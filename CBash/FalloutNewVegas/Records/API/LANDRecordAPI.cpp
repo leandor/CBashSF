@@ -460,11 +460,11 @@ void * LANDRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return cleaned_flag1();
+            return &flags;
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = cleaned_flag2();
+            *FieldValues = &flagsUnk;
             return NULL;
         case 5: //formVersion
             return &formVersion;

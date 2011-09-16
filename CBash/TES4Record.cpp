@@ -245,17 +245,6 @@ UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormID
     IsCompressed(false);
     UINT32 recSize = 0;
     UINT32 recType = GetType();
-    UINT32 cleanFlags = 0;
-    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
-    //So it has to be cleaned before being written.
-    if(IsLoaded())
-        {
-        IsLoaded(false);
-        cleanFlags = flags;
-        IsLoaded(true);
-        }
-    else
-        cleanFlags = flags;
 
     collapser.Accept(formID);
 
@@ -264,9 +253,9 @@ UINT32 TES4Record::Write(FileWriter &writer, const bool &bMastersChanged, FormID
     recSize = writer.record_size();
     writer.file_write(&recType, 4);
     writer.file_write(&recSize, 4);
-    writer.file_write(&cleanFlags, 4);
+    writer.file_write(&flags, 4);
     writer.file_write(&formID, 4);
-    writer.file_write(cleaned_flag2(), 4);
+    writer.file_write(&flagsUnk, 4);
     if(whichGame == eIsFalloutNewVegas)
         {
         writer.file_write(&formVersion, 2);

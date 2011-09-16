@@ -545,11 +545,11 @@ void * QUSTRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return cleaned_flag1();
+            return &flags;
         case 2: //fid
             return &formID;
         case 3: //flags2
-            return cleaned_flag2();
+            return &flagsUnk;
         case 4: //eid
             return EDID.value;
         case 5: //script

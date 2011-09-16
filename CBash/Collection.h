@@ -32,13 +32,12 @@ GPL License and Copyright Notice ============================================
 //    {
 //    public:
 //        UINT32 size;
-//        ModFile ** mods;
 //        Record ** records;
 //
 //        SortedRecords();
 //        ~SortedRecords();
 //
-//	    void push_back(ModFile *&mod, Record *&record);
+//	    void push_back(Record *&record);
 //	    void erase(UINT32 &index);
 //    };
 
@@ -47,7 +46,7 @@ GPL License and Copyright Notice ============================================
 //    SortedRecords loadordered, extended;
 //    };
 
-//typedef std::map<UINT32, SortedRecords>   FormID_Map;
+//typedef std::map<FORMID, SortedRecords>   FormID_Map;
 //typedef std::map<STRING, SortedRecords, sameStr> EditorID_Map;
 //
 //typedef FormID_Map::iterator FormID_Iterator;
@@ -58,7 +57,7 @@ class Collection
     private:
         STRING ModsDir;
         bool IsLoaded;
-        std::vector<std::pair<ModFile *, Record *> > sortedConflicts;
+        std::vector<Record *> sortedConflicts;
 
     public:
         whichGameTypes CollectionType;
@@ -75,6 +74,7 @@ class Collection
 
         boost::unordered_set<Record *> identical_records;
         boost::unordered_set<Record *> changed_records;
+        std::vector<GenericOp *> closing_ops;
 
         Collection(STRING const &ModsPath, UINT32 _CollectionType);
         ~Collection();
@@ -92,7 +92,6 @@ class Collection
         FormID_Iterator LookupWinningRecord(const FORMID &RecordFormID, ModFile *&WinningModFile, Record *&WinningRecord, const bool GetExtendedConflicts=false);
         EditorID_Iterator LookupWinningRecord(STRING const &RecordEditorID, ModFile *&WinningModFile, Record *&WinningRecord, const bool GetExtendedConflicts=false);
 
-        UINT32 IsRecordWinning(Record *&curRecord, const bool GetExtendedConflicts);
         UINT32 GetNumRecordConflicts(Record *&curRecord, const bool GetExtendedConflicts);
         SINT32 GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordIDs, const bool GetExtendedConflicts);
         SINT32 GetRecordHistory(Record *&curRecord, RECORDIDARRAY RecordIDs);

@@ -217,7 +217,6 @@ extern const float flt_0;
 extern const float flt_1;
 extern const float flt_3;
 extern const float flt_n2147483648;
-extern UINT32 clean_flags;
 
 #ifdef CBASH_CALLTIMING
     extern std::map<char *, double> CallTime;
@@ -230,8 +229,31 @@ extern UINT32 clean_flags;
     void peek_around(unsigned char *position, UINT32 length);
 #endif
 
+class GenericOp
+    {
+    public:
+        GenericOp();
+        ~GenericOp();
+
+        virtual bool perform() abstract {};
+    };
+
+class RenameOp : public GenericOp
+    {
+    private:
+        STRING original_name;
+        STRING destination_name;
+
+    public:
+        RenameOp(STRING _original_name, STRING _destination_name);
+        ~RenameOp();
+
+        bool perform();
+    };
+
 STRING DeGhostModName(STRING const ModName);
 bool FileExists(STRING const FileName);
+STRING GetTemporaryFileName(STRING FileName, bool IsBackup=false);
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps);
 
 class FileWriter

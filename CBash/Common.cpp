@@ -22,6 +22,7 @@ GPL License and Copyright Notice ============================================
 // Common.cpp
 #include "Common.h"
 #include "zlib/zlib.h"
+#include <sys/utime.h>
 
 int (*printer)(const char * _Format, ...) = &printf;
 SINT32 (*LoggingCallback)(const STRING) = NULL;
@@ -110,6 +111,16 @@ bool sameStr::operator()( const STRING s1, const STRING s2 ) const
         }
 #endif
 
+GenericOp::GenericOp()
+    {
+    //
+    }
+
+GenericOp::~GenericOp()
+    {
+    //
+    }
+
 STRING DeGhostModName(STRING const ModName)
     {
     STRING NonGhostName = NULL;
@@ -129,6 +140,147 @@ bool FileExists(STRING const FileName)
     {
     struct stat statBuffer;
     return (stat(FileName, &statBuffer) >= 0 && statBuffer.st_mode & S_IFREG);
+    }
+
+STRING GetTemporaryFileName(STRING FileName, bool IsBackup)
+    {
+    STRING NonGhostName = DeGhostModName(FileName);
+    STRING const &UsedName = NonGhostName ? NonGhostName : FileName;
+    static time_t last_save = time(NULL);
+
+    time_t ltime;
+    struct tm current_time;
+
+    //Keep at least 1 minute between each datestamp
+    time(&ltime);
+    if(ltime - last_save < 60)
+        ltime = last_save + 60;
+    last_save = ltime;
+
+    switch(_localtime64_s(&current_time, &ltime))
+        {
+        case 0:
+            break;
+        case EINVAL:
+            //Fallthrough intentional. EINVAL should never be returned.
+        default:
+            printer("GetTemporaryFileName: Error - Unable to make a temporary filename for \"%s\". _localtime64_s failed due to invalid arguments.\n", UsedName);
+            return NULL;
+        }
+
+    STRING temp_extension = IsBackup ? ".bak.%Y_%m_%d_%H_%M_%S" : ".new.%Y_%m_%d_%H_%M_%S";
+    UINT32 name_size = (UINT32)strlen(UsedName);
+    UINT32 temp_size = name_size + (UINT32)strlen(".XXX.XXXX_XX_XX_XX_XX_XX") + 1;
+    STRING temp_name = new char[temp_size];
+
+    strcpy_s(temp_name, temp_size, UsedName);
+    delete []NonGhostName;
+    strftime(temp_name + name_size, temp_size, temp_extension, &current_time);
+
+    //If the new name already exists, add another minute until a free name is available
+    //If 10 tries pass, then give up.
+    UINT32 attempts = 0;
+    while(FileExists(temp_name))
+        {
+        if(attempts > 10)
+            break;
+        attempts++;
+        current_time.tm_min++;
+        mktime(&current_time);
+        strftime(temp_name + name_size, temp_size, temp_extension, &current_time);
+        };
+
+    return temp_name;
+    }
+
+RenameOp::RenameOp(STRING _original_name, STRING _destination_name):
+    original_name(_original_name),
+    destination_name(_destination_name),
+    GenericOp()
+    {
+    //
+    }
+
+RenameOp::~RenameOp()
+    {
+    delete []original_name;
+    }
+
+bool RenameOp::perform()
+    {
+    static time_t last_save = time(NULL);
+    time_t ltime;
+    time(&ltime);
+
+    //Keep at least 1 minute between each datestamp
+    time(&ltime);
+    if(ltime - last_save < 60)
+        ltime = last_save + 60;
+    last_save = ltime;
+
+    struct stat o_time;
+    struct _utimbuf original_times;
+
+    original_times.actime = ltime;
+    original_times.modtime = ltime;
+
+    //Backup any existing file
+    if(FileExists(destination_name))
+        {
+        stat(destination_name, &o_time);
+        original_times.actime = o_time.st_atime;
+        original_times.modtime = o_time.st_mtime;
+        STRING backup_name = GetTemporaryFileName(destination_name, true);
+
+        switch(rename(destination_name, backup_name))
+            {
+            case 0:
+                _utime(backup_name, &original_times);
+                break;
+            case EACCES:
+                printer("RenameOp: Error - Unable to rename existing file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", destination_name, backup_name);
+                break;
+            case ENOENT:
+                printer("RenameOp: Error - Unable to rename existing file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", destination_name, backup_name);
+                break;
+            case EINVAL:
+                printer("RenameOp: Error - Unable to rename existing file from \"%s\" to \"%s\". Name contains invalid characters.\n", destination_name, backup_name);
+                break;
+            case EEXIST:
+                printer("RenameOp: Error - Unable to rename existing file from \"%s\" to \"%s\". The new file name already exists.\n", destination_name, backup_name);
+                break;
+            default:
+                perror("Unknown");
+                printer("RenameOp: Error - Unable to rename existing file from \"%s\" to \"%s\". Unknown details.\n", destination_name, backup_name);
+                break;
+            }
+        delete []backup_name;
+        }
+
+    //Replace any existing file with the new file
+    switch(rename(original_name, destination_name))
+        {
+        case 0:
+            _utime(destination_name, &original_times);
+            return true;
+        case EACCES:
+            printer("RenameOp: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", original_name, destination_name);
+            break;
+        case ENOENT:
+            printer("RenameOp: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", original_name, destination_name);
+            break;
+        case EINVAL:
+            printer("RenameOp: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", original_name, destination_name);
+            break;
+        case EEXIST:
+            printer("RenameOp: Warning - Unable to rename temporary file from \"%s\" to \"%s\". The new file name already exists.\n", original_name, destination_name);
+            break;
+        default:
+            perror("Unknown");
+            printer("RenameOp: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", original_name, destination_name);
+            break;
+        }
+    return false;
     }
 
 bool AlmostEqual(FLOAT32 A, FLOAT32 B, SINT32 maxUlps)
@@ -2519,4 +2671,3 @@ const float flt_3 = 3.0f;
 const float flt_1 = 1.0f;
 const float flt_0 = 0.0f;
 const float flt_n2147483648 = -2147483648.0f;
-UINT32 clean_flags = 0;

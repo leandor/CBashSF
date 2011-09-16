@@ -619,11 +619,11 @@ void * WEAPRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags
-            return cleaned_flag1();
+            return &flags;
         case 2: //fid
             return &formID;
         case 3: //versionControl1
-            *FieldValues = cleaned_flag2();
+            *FieldValues = &flagsUnk;
             return NULL;
         case 4: //eid
             return EDID.value;

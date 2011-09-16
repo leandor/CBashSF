@@ -129,13 +129,13 @@ void * TES4Record::GetField(FIELD_IDENTIFIERS, void **FieldValues)
     switch(FieldID)
         {
         case 1: //flags1
-            return cleaned_flag1();
+            return &flags;
         case 3: //flags2
             if(whichGame == eIsOblivion)
-                return cleaned_flag2();
+                return &flagsUnk;
             else
                 {
-                *FieldValues = cleaned_flag2();
+                *FieldValues = &flagsUnk;
                 return NULL;
                 }
         case 5: //version

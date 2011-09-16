@@ -22,12 +22,10 @@ GPL License and Copyright Notice ============================================
 // Collection.cpp
 #include "Collection.h"
 #include <direct.h>
-#include <sys/utime.h>
 //#include <boost/threadpool.hpp>
 
 //SortedRecords::SortedRecords():
 //    size(0),
-//    mods(NULL),
 //    records(NULL)
 //    {
 //    //
@@ -35,64 +33,56 @@ GPL License and Copyright Notice ============================================
 //
 //SortedRecords::~SortedRecords()
 //    {
-//    delete []mods;
 //    delete []records;
 //    }
 //
 //void SortedRecords::push_back(ModFile *&mod, Record *&record)
 //    {
-//    ModFile ** temp_mods = new ModFile *[size + 1];
 //    Record ** temp_records = new Record *[size + 1];
 //    bool placed = false;
 //    for(UINT32 x = 0, y = 0; x < size; ++y)
 //        {
-//        if(!placed && mods[x]->ModID > mod->ModID)
+//        if(!placed && records[x]->GetParentMod()->ModID > record->GetParentMod()->ModID)
 //            {
 //            placed = true;
-//            temp_mods[y] = mod;
 //            temp_records[y] = record;
 //            }
 //        else
 //            {
-//            temp_mods[y] = mods[x];
 //            temp_records[y] = records[x];
 //            ++x;
 //            }
 //        }
 //    if(!placed)
-//        {
-//        temp_mods[size] = mod;
 //        temp_records[size] = record;
-//        }
 //    size++;
-//    delete []mods;
 //    delete []records;
-//    mods = temp_mods;
 //    records = temp_records;
 //    }
 //
 //void SortedRecords::erase(UINT32 &index)
 //    {
-//    ModFile ** temp_mods = new ModFile *[size - 1];
 //    Record ** temp_records = new Record *[size - 1];
 //    for(UINT32 x = 0, y = 0; x < size; ++x)
 //        {
 //        if(x == index)
 //            continue;
-//        temp_mods[y] = mods[x];
 //        temp_records[y] = records[x];
 //        ++y;
 //        }
 //    size--;
-//    delete []mods;
 //    delete []records;
-//    mods = temp_mods;
 //    records = temp_records;
 //    }
 
-bool compModRecordPair(std::pair<ModFile *, Record *> &lhs, std::pair<ModFile *, Record *> &rhs)
+bool compHistory(Record *&lhs, Record *&rhs)
     {
-    return lhs.first->ModID < rhs.first->ModID;
+    return lhs->GetParentMod()->ModID < rhs->GetParentMod()->ModID;
+    }
+
+bool compConflicts(Record *&lhs, Record *&rhs)
+    {
+    return lhs->GetParentMod()->ModID > rhs->GetParentMod()->ModID;
     }
 
 bool sortMod(ModFile *lhs, ModFile *rhs)
@@ -226,7 +216,6 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags)
         return -1;
         }
 
-    //Saves to a temp file, then if successful, renames any existing files, and then renames temp file to ModName
     if(flags.IsCloseCollection)
         {
         //clear up some memory
@@ -235,209 +224,22 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags)
         ExtendedEditorID_ModFile_Record.clear();
         ExtendedFormID_ModFile_Record.clear();
         }
-    else
-        {
-        //Saving always results in the mod being closed (otherwise the file can't be replaced with the saved file)
-        //If the mod is closed, the recData pointer on all records becomes invalidated, and the record can't load new data
-        //So we have to read all the data in now, and mark all records as changed so that they aren't unloaded.
-        //Otherwise the program will crash upon accessing the invalid pointer
-        RecordChanger changer(curModFile->FormIDHandler, Expanders);
-        curModFile->VisitAllRecords(changer);
-        }
 
     if(flags.IsCleanMasters)
         CleanModMasters(curModFile);
 
+    //Some records (WRLD->CELL) may be created during the save process if necessary
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
 
     _chdir(ModsDir);
 
-    char tName[L_tmpnam_s];
+    STRING temp_name = GetTemporaryFileName(curModFile->ModName); //deleted when RenameOp is destroyed
 
-    time_t ltime;
-    struct tm currentTime;
-    struct stat oTimes;
-    struct _utimbuf originalTimes;
-
-    static time_t lastSave = time(NULL);
-
-    STRING backupName = NULL;
-    UINT32 bakAttempts = 0, bakSize = 0;
-
-    switch(tmpnam_s(tName, L_tmpnam_s))
-        {
-        case 0:
-            break;
-        case ERANGE:
-            //Fallthrough intentional. ERANGE should never be returned.
-        case EINVAL:
-            //Fallthrough intentional. EINVAL should never be returned.
-        default:
-            printer("SaveMod: Error - Unable to save \"%s\". An unspecified error occurred when creating a unique temporary filename.\n", curModFile->FileName);
-            return -1;
-        }
-
-    tName[0] = 'x';
-
-    try
-        {
-        //Save the mod to temp file, using FileBuffer to write in chunks
-        curModFile->Save(tName, Expanders, flags.IsCloseCollection, indexer);
-
-        //Rename any existing files to a datestamped backup
-        time(&ltime);
-        if(ltime - lastSave < 60)
-            ltime = lastSave + 60;
-        lastSave = ltime;
-
-        switch(_localtime64_s(&currentTime, &ltime))
-            {
-            case 0:
-                break;
-            case EINVAL:
-                //Fallthrough intentional. EINVAL should never be returned.
-            default:
-                printer("SaveMod: Error - Unable to save \"%s\". _localtime64_s failed due to invalid arguments.\n", curModFile->FileName);
-                return -1;
-            }
-
-        originalTimes.actime = ltime;
-        originalTimes.modtime = ltime;
-
-        if(curModFile->exists())
-            {
-            stat(curModFile->FileName, &oTimes);
-            originalTimes.actime = oTimes.st_atime;
-            originalTimes.modtime = oTimes.st_mtime;
-
-            bakSize = (UINT32)strlen(curModFile->FileName) + (UINT32)strlen(".bak.XXXX_XX_XX_XX_XX_XX") + 1;
-            backupName = new char[bakSize];
-            strcpy_s(backupName, bakSize, curModFile->FileName);
-            strftime(backupName + strlen(curModFile->FileName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime );
-
-            //If the backup name already exists, wait in 1 second increments until a free name is available
-            //If 10 tries pass, then give up.
-            bakAttempts = 0;
-            while(FileExists(backupName))
-                {
-                if(bakAttempts > 10)
-                    break;
-                bakAttempts++;
-                currentTime.tm_min++;
-                mktime(&currentTime);
-                strftime(backupName + strlen(curModFile->FileName), bakSize, ".bak.%Y_%m_%d_%H_%M_%S", &currentTime);
-                };
-
-            switch(rename(curModFile->FileName, backupName))
-                {
-                case 0:
-                    break;
-                case EACCES:
-                    printer("SaveMod: Error - Unable to rename existing file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", curModFile->FileName, backupName);
-                    break;
-                case ENOENT:
-                    printer("SaveMod: Error - Unable to rename existing file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", curModFile->FileName, backupName);
-                    break;
-                case EINVAL:
-                    printer("SaveMod: Error - Unable to rename existing file from \"%s\" to \"%s\". Name contains invalid characters.\n", curModFile->FileName, backupName);
-                    break;
-                case EEXIST:
-                    printer("SaveMod: Error - Unable to rename existing file from \"%s\" to \"%s\". The new file name already exists.\n", curModFile->FileName, backupName);
-                    break;
-                default:
-                    perror("Unknown");
-                    printer("SaveMod: Error - Unable to rename existing file from \"%s\" to \"%s\". Unknown details.\n", curModFile->FileName, backupName);
-                    break;
-                }
-
-            delete []backupName;
-            }
-
-        //Rename temp file to the original ModName
-        //If it fails, try to save it to a datestamped .new extension and inform the failure
-        switch(rename(tName, curModFile->FileName))
-            {
-            case 0:
-                _utime(curModFile->FileName, &originalTimes);
-                return 0;
-            case EACCES:
-                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, curModFile->FileName);
-                break;
-            case ENOENT:
-                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, curModFile->FileName);
-                break;
-            case EINVAL:
-                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, curModFile->FileName);
-                break;
-            case EEXIST:
-                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". The new file name already exists.\n", tName, curModFile->FileName);
-                break;
-            default:
-                perror("Unknown");
-                printer("SaveMod: Warning - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, curModFile->FileName);
-                break;
-            }
-
-        bakSize = (UINT32)strlen(curModFile->FileName) + (UINT32)strlen(".new.XXXX_XX_XX_XX_XX_XX") + 1;
-        backupName = new char[bakSize];
-
-        strcpy_s(backupName, bakSize, curModFile->FileName);
-        strftime(backupName+strlen(curModFile->FileName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime );
-
-        //If the backup name already exists, wait in 1 second increments until a free name is available
-        //If 10 tries pass, then give up.
-        bakAttempts = 0;
-        while(FileExists(backupName))
-            {
-            if(bakAttempts > 10)
-                break;
-            bakAttempts++;
-            currentTime.tm_min++;
-            mktime(&currentTime);
-            strftime(backupName + strlen(curModFile->FileName), bakSize, ".new.%Y_%m_%d_%H_%M_%S", &currentTime);
-            };
-
-        switch(rename(tName, backupName))
-            {
-            case 0:
-                printer("SaveMod: Warning - Renamed temporary file \"%s\" to \"%s\" instead.\n", tName, backupName);
-                _utime(backupName, &originalTimes);
-                delete []backupName;
-                return 0;
-            case EACCES:
-                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or directory specified by newname already exists or could not be created (invalid path); or oldname is a directory and newname specifies a different path.\n", tName, backupName);
-                break;
-            case ENOENT:
-                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". File or path specified by oldname not found.\n", tName, backupName);
-                break;
-            case EINVAL:
-                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Name contains invalid characters.\n", tName, backupName);
-                break;
-            case EEXIST:
-                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". The new file name already exists.\n", tName, backupName);
-                break;
-            default:
-                perror("Unknown");
-                printer("SaveMod: Error - Unable to rename temporary file from \"%s\" to \"%s\". Unknown details.\n", tName, backupName);
-                break;
-            }
-        delete []backupName;
-        return -1;
-        }
-    catch(...)
-        {
-        if(FileExists(tName))
-            {
-            if(remove(tName) == 0)
-                printer("SaveMod: Error - Unable to save \"%s\". Temporary file \"%s\" deleted.\n", curModFile->FileName, tName);
-            else
-                printer("SaveMod: Error - Unable to save \"%s\". Unable to delete temporary file \"%s\"!.\n", curModFile->FileName, tName);
-            }
-        else
-            printer("SaveMod: Error - Unable to save \"%s\".\n", curModFile->FileName);
-        throw;
-        return -1;
-        }
+    //Save the mod to temp file
+    curModFile->Save(temp_name, Expanders, flags.IsCloseCollection, indexer);
+    //Delay renaming temp file to original filename until collection is closed
+    //This way the file mapping can remain open and the entire file doesn't have to be loaded into memory
+    closing_ops.push_back(new RenameOp(temp_name, curModFile->FileName));
     return 0;
     }
 
@@ -648,7 +450,7 @@ void Collection::UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Re
                     }
                 }
             if(WinningRecord != NULL)
-                curRecord->SetData(WinningRecord->GetData());
+                curRecord->recData = WinningRecord->recData;
             else
                 {
                 //Deleted injected record?
@@ -698,9 +500,12 @@ FormID_Iterator Collection::LookupWinningRecord(const FORMID &RecordFormID, ModF
     FormID_Iterator Winning_it;
     SINT32 ModID = -1;
     ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
     for(FormID_Range range = FormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
         {
-        curModFile = range.first->second->GetParentMod();
+        curRecord = range.first->second;
+        curModFile = curRecord->GetParentMod();
+        curRecord->IsWinning(false);
         if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
             {
             ModID = curModFile->ModID;
@@ -709,11 +514,15 @@ FormID_Iterator Collection::LookupWinningRecord(const FORMID &RecordFormID, ModF
             Winning_it = range.first;
             }
         }
+    if(WinningRecord != NULL)
+        WinningRecord->IsWinning(true);
     if(GetExtendedConflicts)
         {
         for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(RecordFormID); range.first != range.second; ++range.first)
             {
-            curModFile = range.first->second->GetParentMod();
+            curRecord = range.first->second;
+            curModFile = curRecord->GetParentMod();
+            curRecord->IsWinning(false);
             if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
                 {
                 ModID = curModFile->ModID;
@@ -722,6 +531,8 @@ FormID_Iterator Collection::LookupWinningRecord(const FORMID &RecordFormID, ModF
                 Winning_it = range.first;
                 }
             }
+        if(WinningRecord != NULL)
+            WinningRecord->IsExtendedWinning(true);
         }
     if(ModID > -1)
         return Winning_it;
@@ -737,9 +548,12 @@ EditorID_Iterator Collection::LookupWinningRecord(STRING const &RecordEditorID, 
     EditorID_Iterator Winning_it;
     SINT32 ModID = -1;
     ModFile *curModFile = NULL;
+    Record *curRecord = NULL;
     for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
         {
-        curModFile = range.first->second->GetParentMod();
+        curRecord = range.first->second;
+        curModFile = curRecord->GetParentMod();
+        curRecord->IsWinning(false);
         if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
             {
             ModID = curModFile->ModID;
@@ -748,11 +562,15 @@ EditorID_Iterator Collection::LookupWinningRecord(STRING const &RecordEditorID, 
             Winning_it = range.first;
             }
         }
+    if(WinningRecord != NULL)
+        WinningRecord->IsWinning(true);
     if(GetExtendedConflicts)
         {
         for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
             {
-            curModFile = range.first->second->GetParentMod();
+            curRecord = range.first->second;
+            curModFile = curRecord->GetParentMod();
+            curRecord->IsWinning(false);
             if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
                 {
                 ModID = curModFile->ModID;
@@ -761,28 +579,13 @@ EditorID_Iterator Collection::LookupWinningRecord(STRING const &RecordEditorID, 
                 Winning_it = range.first;
                 }
             }
+        if(WinningRecord != NULL)
+            WinningRecord->IsExtendedWinning(true);
         }
     if(ModID > -1)
         return Winning_it;
 
     return EditorID_ModFile_Record.end();
-    }
-
-UINT32 Collection::IsRecordWinning(Record *&curRecord, const bool GetExtendedConflicts)
-    {
-    ModFile *curModFile = curRecord->GetParentMod();
-
-    if(curModFile->Flags.IsExtendedConflicts && !GetExtendedConflicts)
-        return false;
-    ModFile *WinningModfile = NULL;
-    Record *WinningRecord = NULL;
-
-    if(curRecord->IsKeyedByEditorID())
-        LookupWinningRecord(curRecord->GetEditorIDKey(), WinningModfile, WinningRecord, GetExtendedConflicts);
-    else
-        LookupWinningRecord(curRecord->formID, WinningModfile, WinningRecord, GetExtendedConflicts);
-
-    return curRecord == WinningRecord;
     }
 
 UINT32 Collection::GetNumRecordConflicts(Record *&curRecord, const bool GetExtendedConflicts)
@@ -819,7 +622,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
                 {
                 curModFile = range.first->second->GetParentMod();
                 if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
-                    sortedConflicts.push_back(std::make_pair(curModFile, range.first->second));
+                    sortedConflicts.push_back(range.first->second);
                 }
             if(GetExtendedConflicts)
                 {
@@ -827,7 +630,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
                     {
                     curModFile = range.first->second->GetParentMod();
                     if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
-                        sortedConflicts.push_back(std::make_pair(curModFile, range.first->second));
+                        sortedConflicts.push_back(range.first->second);
                     }
                 }
             }
@@ -838,7 +641,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
             {
             curModFile = range.first->second->GetParentMod();
             if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
-                sortedConflicts.push_back(std::make_pair(curModFile, range.first->second));
+                sortedConflicts.push_back(range.first->second);
             }
         if(GetExtendedConflicts)
             {
@@ -846,7 +649,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
                 {
                 curModFile = range.first->second->GetParentMod();
                 if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
-                    sortedConflicts.push_back(std::make_pair(curModFile, range.first->second));
+                    sortedConflicts.push_back(range.first->second);
                 }
             }
         }
@@ -854,9 +657,9 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
     UINT32 y = (UINT32)sortedConflicts.size();
     if(y)
         {
-        std::sort(sortedConflicts.begin(), sortedConflicts.end(), compModRecordPair);
+        std::sort(sortedConflicts.begin(), sortedConflicts.end(), compConflicts);
         for(UINT32 x = 0; x < y; ++x)
-            RecordIDs[x] = sortedConflicts[y - (x + 1)].second;
+            RecordIDs[x] = sortedConflicts[x];
         sortedConflicts.clear();
         }
     return y;
@@ -885,7 +688,7 @@ SINT32 Collection::GetRecordHistory(Record *&curRecord, RECORDIDARRAY RecordIDs)
                 testModFile = range.first->second->GetParentMod();
                 if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreAbsentMasters)
                     if(CollapseTable[testModFile->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
-                        sortedConflicts.push_back(std::make_pair(testModFile, range.first->second));
+                        sortedConflicts.push_back(range.first->second);
                 }
             }
         }
@@ -896,16 +699,16 @@ SINT32 Collection::GetRecordHistory(Record *&curRecord, RECORDIDARRAY RecordIDs)
             testModFile = range.first->second->GetParentMod();
             if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreAbsentMasters)
                 if(CollapseTable[testModFile->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
-                    sortedConflicts.push_back(std::make_pair(testModFile, range.first->second));
+                    sortedConflicts.push_back(range.first->second);
             }
         }
 
     UINT32 y = (UINT32)sortedConflicts.size();
     if(y)
         {
-        std::sort(sortedConflicts.begin(), sortedConflicts.end(), compModRecordPair);
+        std::sort(sortedConflicts.begin(), sortedConflicts.end(), compHistory);
         for(UINT32 x = 0; x < y; ++x)
-            RecordIDs[x] = sortedConflicts[x].second;
+            RecordIDs[x] = sortedConflicts[x];
         sortedConflicts.clear();
         }
     return y;
@@ -986,6 +789,17 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
     //Index the new record
     RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
     indexer.Accept(curRecord);
+
+    if(RecordFormID != 0)
+        {
+        //Update the IsWinning flags for all related records
+        ModFile *WinningModfile = NULL;
+        Record *WinningRecord = NULL;
+        if(curRecord->IsKeyedByEditorID())
+            LookupWinningRecord(curRecord->GetEditorIDKey(), WinningModfile, WinningRecord, true);
+        else
+            LookupWinningRecord(curRecord->formID, WinningModfile, WinningRecord, true);
+        }
 
     return curRecord;
     }
@@ -1109,6 +923,17 @@ Record * Collection::CopyRecord(Record *&curRecord, ModFile *&DestModFile, const
     RecordIndexer indexer(DestModFile, DestModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, DestModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
     indexer.Accept(RecordCopy);
 
+    if(curRecord->IsWinningDetermined() || curRecord->formID != RecordCopy->formID)
+        {
+        //Update the IsWinning flags for all related records
+        ModFile *WinningModfile = NULL;
+        Record *WinningRecord = NULL;
+        if(RecordCopy->IsKeyedByEditorID())
+            LookupWinningRecord(RecordCopy->GetEditorIDKey(), WinningModfile, WinningRecord, true);
+        else
+            LookupWinningRecord(RecordCopy->formID, WinningModfile, WinningRecord, true);
+        }
+
     if(reader.GetResult()) //If the record was read, go ahead and unload it
         RecordCopy->Unload();
     return RecordCopy;
@@ -1143,13 +968,14 @@ SINT32 Collection::CleanModMasters(ModFile *curModFile)
 SINT32 Collection::SetIDFields(Record *&RecordID, FORMID FormID, STRING const &EditorID)
     {
     ModFile *curModFile = RecordID->GetParentMod();
+    STRING OldEditorID = RecordID->GetEditorIDKey();
+    FORMID OldFormID = RecordID->formID;
 
     if((FormID & 0x00FFFFFF) < END_HARDCODED_IDS)
         FormID &= 0x00FFFFFF;
-    bool bChangingFormID = RecordID->formID != FormID;
+    bool bChangingFormID = OldFormID != FormID;
     bool bChangingEditorID = false;
-    STRING RecordEditorID = RecordID->GetEditorIDKey();
-    if(RecordEditorID == NULL)
+    if(OldEditorID == NULL)
         {
         if(EditorID != NULL)
             bChangingEditorID = true;
@@ -1158,7 +984,7 @@ SINT32 Collection::SetIDFields(Record *&RecordID, FORMID FormID, STRING const &E
         {
         if(EditorID == NULL)
             bChangingEditorID = true;
-        else if(cmps(RecordEditorID, EditorID) != 0)
+        else if(cmps(OldEditorID, EditorID) != 0)
             bChangingEditorID = true;
         }
 
@@ -1229,6 +1055,20 @@ SINT32 Collection::SetIDFields(Record *&RecordID, FORMID FormID, STRING const &E
         {
         RecordIndexer indexer(curModFile, curModFile->Flags.IsExtendedConflicts ? ExtendedEditorID_ModFile_Record: EditorID_ModFile_Record, curModFile->Flags.IsExtendedConflicts ? ExtendedFormID_ModFile_Record: FormID_ModFile_Record);
         indexer.Accept(RecordID);
+        }
+
+    //Update the IsWinning flags for all related records
+    ModFile *WinningModfile = NULL;
+    Record *WinningRecord = NULL;
+    if(bChangingEditorID && RecordID->IsKeyedByEditorID())
+        {
+        LookupWinningRecord(OldEditorID, WinningModfile, WinningRecord, true);
+        LookupWinningRecord(RecordID->GetEditorIDKey(), WinningModfile, WinningRecord, true);
+        }
+    if(bChangingFormID)
+        {
+        LookupWinningRecord(OldFormID, WinningModfile, WinningRecord, true);
+        LookupWinningRecord(RecordID->formID, WinningModfile, WinningRecord, true);
         }
     return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }
@@ -1347,6 +1187,12 @@ bool IdenticalToMasterRetriever::Accept(Record *&curRecord)
 
     if(curRecord->master_equality(master_record, reader, read_other, identical_records))
         identical_records.insert(curRecord);
+
+    //Keep memory usage at a minimum
+    if(!curRecord->IsChanged())
+        curRecord->Unload();
+    if(!master_record->IsChanged())
+        master_record->Unload();
 
     return false;
     }

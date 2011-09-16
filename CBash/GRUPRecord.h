@@ -133,8 +133,6 @@ class GRUPRecords
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk;
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -335,8 +333,6 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk;
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -356,9 +352,9 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->INFO[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::DIALRecord>::Read: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::DIALRecord>::Read: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     info_pool.destroy(curRecord);
                     }
@@ -663,8 +659,6 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk;
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -684,9 +678,9 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->ACHR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     achr_pool.destroy(curRecord);
                     }
@@ -695,9 +689,9 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->ACRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     acre_pool.destroy(curRecord);
                     }
@@ -706,9 +700,9 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->REFR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -1362,8 +1356,6 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     curRecord->formID = header.formID;
                     curRecord->flagsUnk = header.flagsUnk;
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -1494,9 +1486,9 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->ACHR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.achr_pool.destroy(curRecord);
                     }
@@ -1505,9 +1497,9 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->ACRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.acre_pool.destroy(curRecord);
                     }
@@ -1516,9 +1508,9 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->REFR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<Ob::WRLDRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.refr_pool.destroy(curRecord);
                     }
@@ -2026,8 +2018,6 @@ class FNVGRUPRecords
                     ((FNVRecord *)curRecord)->versionControl2[1] = header.versionControl2[1];
 
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -2242,8 +2232,6 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     ((FNVRecord *)curRecord)->versionControl2[1] = header.versionControl2[1];
 
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -2263,9 +2251,9 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->INFO[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::DIALRecord>::Read: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::DIALRecord>::Read: Warning - Parsing error. Skipped orphan INFO (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     info_pool.destroy(curRecord);
                     }
@@ -2655,8 +2643,6 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     ((FNVRecord *)curRecord)->versionControl2[1] = header.versionControl2[1];
 
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -2676,9 +2662,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->ACHR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     achr_pool.destroy(curRecord);
                     }
@@ -2687,9 +2673,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->ACRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     acre_pool.destroy(curRecord);
                     }
@@ -2698,9 +2684,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->REFR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2709,9 +2695,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->PGRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2720,9 +2706,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->PMIS[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2731,9 +2717,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->PBEA[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2742,9 +2728,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->PFLA[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2753,9 +2739,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->PCBE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -2764,9 +2750,9 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_records->NAVM[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("GRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     refr_pool.destroy(curRecord);
                     }
@@ -3533,8 +3519,6 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     ((FNVRecord *)curRecord)->versionControl2[1] = header.versionControl2[1];
 
                     //Testing Messages
-                    //if(IsLoaded())
-                    //    printer("_fIsLoaded Flag used!!!! %s - %08X\n", GetStrType(), curRecord->formID);
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
                     curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
@@ -3779,9 +3763,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->ACHR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACHR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.achr_pool.destroy(curRecord);
                     }
@@ -3790,9 +3774,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->ACRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan ACRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.acre_pool.destroy(curRecord);
                     }
@@ -3801,9 +3785,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->REFR[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan REFR (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.refr_pool.destroy(curRecord);
                     }
@@ -3812,9 +3796,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->PGRE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PGRE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.pgre_pool.destroy(curRecord);
                     }
@@ -3823,9 +3807,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->PMIS[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PMIS (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.pmis_pool.destroy(curRecord);
                     }
@@ -3834,9 +3818,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->PBEA[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PBEA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.pbea_pool.destroy(curRecord);
                     }
@@ -3845,9 +3829,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->PFLA[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PFLA (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.pfla_pool.destroy(curRecord);
                     }
@@ -3856,9 +3840,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->PCBE[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan PCBE (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.pcbe_pool.destroy(curRecord);
                     }
@@ -3867,9 +3851,9 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     {
                     curRecord = orphaned_cell_records->NAVM[x];
                     processor.OrphanedRecords.push_back(curRecord->formID);
-                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->GetData() - buffer_start, FileName);
+                    //printer("FNVGRUPRecords<FNV::CELLRecord>::Read: Warning - Parsing error. Skipped orphan NAVM (%08X) at %08X in file \"%s\"\n", curRecord->formID, curRecord->recData - buffer_start, FileName);
                     #ifdef CBASH_DEBUG_CHUNK
-                        peek_around(curRecord->GetData(), PEEK_SIZE);
+                        peek_around(curRecord->recData, PEEK_SIZE);
                     #endif
                     CELL.navm_pool.destroy(curRecord);
                     }

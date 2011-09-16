@@ -36,7 +36,7 @@ class RecordOp
 
     public:
         RecordOp();
-        ~RecordOp();
+        virtual ~RecordOp();
 
         virtual bool Accept(Record *&curRecord);
 
@@ -146,20 +146,20 @@ class Record
 
         enum cBashRecordFlags
             {
-            _fIsLoaded    = 0x80000000, //Not an actual flag. Used only by CBash internally. Won't be written.
-            _fIsChanged   = 0x80000000, //Not an actual flag. Used only by CBash internally. Won't be written.
-            _fIsParentMod = 0x80000000 //Not an actual flag. Used only by CBash internally. Won't be written.
+            _fIsLoaded            = 0x00000001,
+            _fIsChanged           = 0x00000002,
+            _fIsParentMod         = 0x00000004,
+            _fIsWinningDetermined = 0x00000008,
+            _fIsWinning           = 0x00000010,
+            _fIsExtendedWinning   = 0x00000020
+            //_fIsIdenticalToMaster = 0x00000040
             };
-
-        #ifdef CBASH_X64_COMPATIBILITY
-            bool is_changed;
-            bool is_parent_mod;
-        #endif
-
-        unsigned char *recData;
         void *Parent;
-        //UINT32 CBash_Flags;
+        UINT32 CBash_Flags;
+
     public:
+        unsigned char *recData;
+
         UINT32 flags;
         FORMID formID;
         UINT32 flagsUnk; //Version Control Info 1, FNV
@@ -169,15 +169,19 @@ class Record
         Record(unsigned char *_recData=NULL);
         virtual ~Record();
 
-        unsigned char * GetData();
-        void            SetData(unsigned char *_recData);
-
-        void * GetParent();
+        void * GetParent() const;
         bool   SetParent(void *_Parent, bool IsMod);
 
-        bool      IsParentMod();
-        Record *  GetParentRecord();
-        ModFile * GetParentMod();
+        bool      IsParentMod() const;
+        Record *  GetParentRecord() const;
+        ModFile * GetParentMod() const;
+
+        bool   IsWinningDetermined() const;
+        void   IsWinningDetermined(bool value);
+        bool   IsWinning() const;
+        void   IsWinning(bool value);
+        bool   IsExtendedWinning() const;
+        void   IsExtendedWinning(bool value);
 
         virtual SINT32 Unload() abstract {};
         virtual UINT32 GetType() abstract {};
@@ -250,9 +254,6 @@ class Record
 
         bool IsChanged();
         void IsChanged(bool value);
-
-        UINT32 * cleaned_flag1();
-        UINT32 * cleaned_flag2();
     };
 
 class FNVRecord : public Record

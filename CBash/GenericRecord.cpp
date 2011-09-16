@@ -84,14 +84,12 @@ RecordProcessor::~RecordProcessor()
     }
 
 Record::Record(unsigned char *_recData):
-#ifdef CBASH_X64_COMPATIBILITY
-    is_changed(false),
-#endif
     flags(0),
     formID(0),
     flagsUnk(0),
     recData(_recData),
-    Parent(NULL)
+    Parent(NULL),
+    CBash_Flags(0)
     {
     //If a buffer is provided, the record isn't loaded
     // until the record is read
@@ -104,29 +102,9 @@ Record::~Record()
     //
     }
 
-unsigned char * Record::GetData()
+void * Record::GetParent() const
     {
-    #ifdef CBASH_X64_COMPATIBILITY
-        return recData;
-    #else
-        return (unsigned char *)((UINT32)recData & ~_fIsChanged);
-    #endif
-    }
-
-void Record::SetData(unsigned char *_recData)
-    {
-    Unload();
-    recData = _recData;
-    IsChanged(false);
-    }
-
-void * Record::GetParent()
-    {
-    #ifdef CBASH_X64_COMPATIBILITY
-        return Parent;
-    #else
-        return (void *)((UINT32)Parent & ~_fIsParentMod);
-    #endif
+    return Parent;
     }
 
 bool Record::SetParent(void *_Parent, bool IsMod)
@@ -134,33 +112,24 @@ bool Record::SetParent(void *_Parent, bool IsMod)
     if(Parent != NULL)
         return false;
 
-    #ifdef CBASH_X64_COMPATIBILITY
-        is_parent_mod = IsMod;
-        Parent = _Parent;
-    #else
-        Parent = IsMod ? (void *)((UINT32)_Parent | _fIsParentMod) : _Parent;
-    #endif
-
+    CBash_Flags = IsMod ? (CBash_Flags | _fIsParentMod) : (CBash_Flags & ~_fIsParentMod);
+    Parent = _Parent;
     return true;
     }
 
-bool Record::IsParentMod()
+bool Record::IsParentMod() const
     {
-    #ifdef CBASH_X64_COMPATIBILITY
-        return is_parent_mod;
-    #else
-        return ((UINT32)Parent & _fIsParentMod) != 0;
-    #endif
+    return (CBash_Flags & _fIsParentMod) != 0;
     }
 
-Record * Record::GetParentRecord()
+Record * Record::GetParentRecord() const
     {
     if(!IsParentMod())
         return (Record *)GetParent();
     return NULL;
     }
 
-ModFile * Record::GetParentMod()
+ModFile * Record::GetParentMod() const
     {
     Record *parent_record = GetParentRecord();
 
@@ -168,6 +137,38 @@ ModFile * Record::GetParentMod()
         return parent_record->GetParentMod();
 
     return (ModFile *)GetParent();
+    }
+
+bool Record::IsWinningDetermined() const
+    {
+    return (CBash_Flags & _fIsWinningDetermined) != 0;
+    }
+
+void Record::IsWinningDetermined(bool value)
+    {
+    CBash_Flags = value ? (CBash_Flags | _fIsWinningDetermined) : (CBash_Flags & ~_fIsWinningDetermined);
+    }
+
+bool Record::IsWinning() const
+    {
+    return (CBash_Flags & _fIsWinning) != 0;
+    }
+
+void Record::IsWinning(bool value)
+    {
+    IsWinningDetermined(true);
+    CBash_Flags = value ? (CBash_Flags | _fIsWinning) : (CBash_Flags & ~_fIsWinning);
+    }
+
+bool Record::IsExtendedWinning() const
+    {
+    return (CBash_Flags & _fIsExtendedWinning) != 0;
+    }
+
+void Record::IsExtendedWinning(bool value)
+    {
+    IsWinningDetermined(true);
+    CBash_Flags = value ? (CBash_Flags | _fIsExtendedWinning) : (CBash_Flags & ~_fIsExtendedWinning);
     }
 
 UINT32 Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
@@ -215,22 +216,21 @@ bool Record::Read()
     {
     if(IsLoaded() || IsChanged())
         return false;
-    unsigned char *data = GetData();
-    UINT32 recSize = *(UINT32*)&data[-16];
+    UINT32 recSize = *(UINT32*)&recData[-16];
 
     //Check against the original record flags to see if it is compressed since the current flags may have changed
-    if ((*(UINT32*)&data[-12] & fIsCompressed) != 0)
+    if ((*(UINT32*)&recData[-12] & fIsCompressed) != 0)
         {
         unsigned char localBuffer[BUFFERSIZE];
-        UINT32 expandedRecSize = *(UINT32*)data;
+        UINT32 expandedRecSize = *(UINT32*)recData;
         unsigned char *buffer = (expandedRecSize >= BUFFERSIZE) ? new unsigned char[expandedRecSize] : &localBuffer[0];
-        uncompress(buffer, (uLongf*)&expandedRecSize, &data[4], recSize - 4);
+        uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
         ParseRecord(buffer, buffer + expandedRecSize, true);
         if(buffer != &localBuffer[0])
             delete [] buffer;
         }
     else
-        ParseRecord(data, data + recSize);
+        ParseRecord(recData, recData + recSize);
 
     IsLoaded(true);
     return true;
@@ -240,23 +240,11 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
     {
     UINT32 recSize = 0;
     UINT32 recType = GetType();
-    UINT32 cleanFlags = 0;
-    unsigned char *data = GetData();
     collapser.Accept(formID);
-    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
-    //So it has to be cleaned before being written.
-    if(IsLoaded())
-        {
-        IsLoaded(false);
-        cleanFlags = flags;
-        IsLoaded(true);
-        }
-    else
-        cleanFlags = flags;
 
     if(!IsChanged())
         {
-        if(bMastersChanged || cleanFlags != *(UINT32*)&data[-12])
+        if(bMastersChanged || flags != *(UINT32*)&recData[-12])
             {
             //if masters have changed, all formIDs have to be updated...
             //or if the flags have changed internally (notably fIsDeleted or fIsCompressed, possibly others)
@@ -293,14 +281,14 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
         else
             {
             //if masters have not changed, the record can just be written from the read buffer
-            recSize = *(UINT32*)&data[-16];
+            recSize = *(UINT32*)&recData[-16];
 
             writer.file_write(&recType, 4);
             writer.file_write(&recSize, 4);
-            writer.file_write(&cleanFlags, 4);
+            writer.file_write(&flags, 4);
             writer.file_write(&formID, 4);
-            writer.file_write(cleaned_flag2(), 4);
-            writer.file_write(data, recSize);
+            writer.file_write(&flagsUnk, 4);
+            writer.file_write(recData, recSize);
             Unload();
             return recSize + 20;
             }
@@ -315,9 +303,9 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
         recSize = IsCompressed() ? writer.record_compress() : writer.record_size();
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&cleanFlags, 4);
+        writer.file_write(&flags, 4);
         writer.file_write(&formID, 4);
-        writer.file_write(cleaned_flag2(), 4);
+        writer.file_write(&flagsUnk, 4);
         //if(IsCompressed())
         //    {
         //    printer("Compressed: %08X\n", formID);
@@ -328,9 +316,9 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
         {
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&cleanFlags, 4);
+        writer.file_write(&flags, 4);
         writer.file_write(&formID, 4);
-        writer.file_write(cleaned_flag2(), 4);
+        writer.file_write(&flagsUnk, 4);
         }
 
     expander.Accept(formID);
@@ -343,8 +331,7 @@ UINT32 Record::Write(FileWriter &writer, const bool &bMastersChanged, FormIDReso
 
 bool Record::IsValid(FormIDResolver &expander)
     {
-    unsigned char *data = GetData();
-    return (data <= expander.FileEnd && data >= expander.FileStart);
+    return (recData <= expander.FileEnd && recData >= expander.FileStart);
     }
 
 bool Record::master_equality(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
@@ -353,7 +340,7 @@ bool Record::master_equality(Record *master, RecordOp &read_self, RecordOp &read
         return false;
 
     //If neither is changed, and both use the same base data, they're equal. Don't need any expensive equality tests.
-    if(!IsChanged() && !master->IsChanged() && GetData() == master->GetData())
+    if(!IsChanged() && !master->IsChanged() && recData == master->recData)
         return deep_equals(master, read_self, read_master, identical_records);
 
     Record *temp = (Record *)this;
@@ -369,7 +356,7 @@ bool Record::shallow_equals(Record *other)
     {
     if(GetType() != other->GetType())
         return false;
-    if(*cleaned_flag1() != *other->cleaned_flag1())
+    if(flags != other->flags)
         return false;
     if(formID != other->formID)
         return false;
@@ -553,72 +540,42 @@ void Record::IsCantWait(bool value)
 
 bool Record::IsHeaderFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? (*cleaned_flag1() & Mask) == Mask : (*cleaned_flag1() & Mask) != 0;
+    return Exact ? (flags & Mask) == Mask : (flags & Mask) != 0;
     }
 
 void Record::SetHeaderFlagMask(UINT32 Mask)
     {
-    bool loaded = IsLoaded();
     flags = Mask;
-    IsLoaded(loaded);
     }
 
 bool Record::IsHeaderUnknownFlagMask(UINT32 Mask, bool Exact)
     {
-    return Exact ? (*cleaned_flag2() & Mask) == Mask : (*cleaned_flag2() & Mask) != 0;
+    return Exact ? (flagsUnk & Mask) == Mask : (flagsUnk & Mask) != 0;
     }
 
 void Record::SetHeaderUnknownFlagMask(UINT32 Mask)
     {
-    bool loaded = IsLoaded();
     flagsUnk = Mask;
-    IsLoaded(loaded);
     }
 
 bool Record::IsLoaded()
     {
-    return (flags & _fIsLoaded) != 0;
+    return (CBash_Flags & _fIsLoaded) != 0;
     }
 
 void Record::IsLoaded(bool value)
     {
-    flags = value ? (flags | _fIsLoaded) : (flags & ~_fIsLoaded);
+    CBash_Flags = value ? (CBash_Flags | _fIsLoaded) : (CBash_Flags & ~_fIsLoaded);
     }
 
 bool Record::IsChanged()
     {
-    #ifdef CBASH_X64_COMPATIBILITY
-        return recData == NULL || is_changed;
-    #else
-        return recData == NULL || ((UINT32)recData & _fIsChanged) != 0;
-    #endif
+    return recData == NULL || (CBash_Flags & _fIsChanged) != 0;
     }
 
 void Record::IsChanged(bool value)
     {
-    #ifdef CBASH_X64_COMPATIBILITY
-        is_changed = value;
-    #else
-        recData = value ? (unsigned char *)((UINT32)recData | _fIsChanged) : (unsigned char *)((UINT32)recData & ~_fIsChanged);
-    #endif
-    }
-
-UINT32* Record::cleaned_flag1()
-    {
-    bool loaded = IsLoaded();
-    IsLoaded(false);
-    clean_flags = flags;
-    IsLoaded(loaded);
-    return &clean_flags;
-    }
-
-UINT32* Record::cleaned_flag2()
-    {
-    bool loaded = IsLoaded();
-    IsLoaded(false);
-    clean_flags = flagsUnk;
-    IsLoaded(loaded);
-    return &clean_flags;
+    CBash_Flags = value ? (CBash_Flags | _fIsChanged) : (CBash_Flags & ~_fIsChanged);
     }
 
 FNVRecord::FNVRecord(unsigned char *_recData):
@@ -637,22 +594,21 @@ bool FNVRecord::Read()
     {
     if(IsLoaded() || IsChanged())
         return false;
-    unsigned char *data = GetData();
-    UINT32 recSize = *(UINT32*)&data[-20];
+    UINT32 recSize = *(UINT32*)&recData[-20];
 
     //Check against the original record flags to see if it is compressed since the current flags may have changed
-    if ((*(UINT32*)&data[-16] & fIsCompressed) != 0)
+    if ((*(UINT32*)&recData[-16] & fIsCompressed) != 0)
         {
         unsigned char localBuffer[BUFFERSIZE];
-        UINT32 expandedRecSize = *(UINT32*)data;
+        UINT32 expandedRecSize = *(UINT32*)recData;
         unsigned char *buffer = (expandedRecSize >= BUFFERSIZE) ? new unsigned char[expandedRecSize] : &localBuffer[0];
-        uncompress(buffer, (uLongf*)&expandedRecSize, &data[4], recSize - 4);
+        uncompress(buffer, (uLongf*)&expandedRecSize, &recData[4], recSize - 4);
         ParseRecord(buffer, buffer + expandedRecSize, true);
         if(buffer != &localBuffer[0])
             delete [] buffer;
         }
     else
-        ParseRecord(data, data + recSize);
+        ParseRecord(recData, recData + recSize);
 
     IsLoaded(true);
     return true;
@@ -662,24 +618,12 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
     {
     UINT32 recSize = 0;
     UINT32 recType = GetType();
-    UINT32 cleanFlags = 0;
-    unsigned char *data = GetData();
-    //IsLoaded is used by CBash internally and is not part of the file format but shares the flags field to save space.
-    //So it has to be cleaned before being written.
-    if(IsLoaded())
-        {
-        IsLoaded(false);
-        cleanFlags = flags;
-        IsLoaded(true);
-        }
-    else
-        cleanFlags = flags;
 
     collapser.Accept(formID);
 
     if(!IsChanged())
         {
-        if(bMastersChanged || cleanFlags != *(UINT32*)&data[-16])
+        if(bMastersChanged || flags != *(UINT32*)&recData[-16])
             {
             //if masters have changed, all formIDs have to be updated...
             //or if the flags have changed internally (notably fIsDeleted or fIsCompressed, possibly others)
@@ -717,16 +661,16 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
         else
             {
             //if masters have not changed, the record can just be written from the read buffer
-            recSize = *(UINT32*)&data[-20];
+            recSize = *(UINT32*)&recData[-20];
 
             writer.file_write(&recType, 4);
             writer.file_write(&recSize, 4);
-            writer.file_write(&cleanFlags, 4);
+            writer.file_write(&flags, 4);
             writer.file_write(&formID, 4);
-            writer.file_write(cleaned_flag2(), 4);
+            writer.file_write(&flagsUnk, 4);
             writer.file_write(&formVersion, 2);
             writer.file_write(&versionControl2[0], 2);
-            writer.file_write(data, recSize);
+            writer.file_write(recData, recSize);
             Unload();
             return recSize + 24;
             }
@@ -741,9 +685,9 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
         recSize = IsCompressed() ? writer.record_compress() : writer.record_size();
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&cleanFlags, 4);
+        writer.file_write(&flags, 4);
         writer.file_write(&formID, 4);
-        writer.file_write(cleaned_flag2(), 4);
+        writer.file_write(&flagsUnk, 4);
         writer.file_write(&formVersion, 2);
         writer.file_write(&versionControl2[0], 2);
         //if(IsCompressed())
@@ -756,9 +700,9 @@ UINT32 FNVRecord::Write(FileWriter &writer, const bool &bMastersChanged, FormIDR
         {
         writer.file_write(&recType, 4);
         writer.file_write(&recSize, 4);
-        writer.file_write(&cleanFlags, 4);
+        writer.file_write(&flags, 4);
         writer.file_write(&formID, 4);
-        writer.file_write(cleaned_flag2(), 4);
+        writer.file_write(&flagsUnk, 4);
         writer.file_write(&formVersion, 2);
         writer.file_write(&versionControl2[0], 2);
         }

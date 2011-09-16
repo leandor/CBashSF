@@ -33,7 +33,7 @@ class FormIDOp
 
     public:
         FormIDOp();
-        ~FormIDOp();
+        virtual ~FormIDOp();
 
         virtual bool Accept(UINT32 &curFormID) abstract {};
         virtual bool AcceptMGEF(UINT32 &curMgefCode) abstract {};
