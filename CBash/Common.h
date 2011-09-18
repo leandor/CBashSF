@@ -198,7 +198,6 @@ typedef std::map<UINT32, std::vector<UINT32> >::const_iterator RecordType_Possib
 typedef std::map<UINT32, FunctionArguments>::const_iterator Function_Arguments_Iterator;
 typedef std::map<UINT32, STRING>::const_iterator ID_Name_Iterator;
 
-extern const std::map<UINT32, std::vector<UINT32> > RecordType_PossibleGroups;
 extern const std::map<UINT32, FunctionArguments> Function_Arguments;
 extern const std::map<UINT32, STRING> Function_Name;
 extern const std::map<UINT32, STRING> Comparison_Name;
