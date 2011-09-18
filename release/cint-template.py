@@ -13375,7 +13375,7 @@ class ObModFile(object):
             flags |= 0x00000001
         if(CloseCollection):
             flags |= 0x00000002
-        return _CSaveMod(self._ModID, c_ulong(flags), str(DestinationName))
+        return _CSaveMod(self._ModID, c_ulong(flags), DestinationName)
 
     @property
     def TES4(self):
@@ -13603,7 +13603,7 @@ class FnvModFile(object):
             flags |= 0x00000001
         if(CloseCollection):
             flags |= 0x00000002
-        return _CSaveMod(self._ModID, c_ulong(flags), str(DestinationName))
+        return _CSaveMod(self._ModID, c_ulong(flags), DestinationName)
 
     @property
     def TES4(self):
@@ -13845,7 +13845,7 @@ class ObCollection:
     def DeleteAllCollections():
         return _CDeleteAllCollections()
 
-    def addMod(self, FileName, MinLoad=True, NoLoad=False, IgnoreExisting=False, Saveable=True, LoadMasters=True, Flags=0x00000079):
+    def addMod(self, FileName, MinLoad=True, NoLoad=False, IgnoreExisting=False, Saveable=True, LoadMasters=True, Flags=None):
 ##        //MinLoad and FullLoad are exclusive
 ##        // If both are set, FullLoad takes priority
 ##        // If neither is set, the mod isn't loaded
@@ -13892,8 +13892,7 @@ class ObCollection:
 ##        //Only the following combinations are tested:
 ##        // Normal:  (fIsMinLoad or fIsFullLoad) + fIsInLoadOrder + fIsSaveable + fIsAddMasters + fIsLoadMasters
 ##        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIgnoreAbsentMasters
-##        // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsExtendedConflicts
-
+##        // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIgnoreAbsentMasters + fIsExtendedConflicts
         fIsMinLoad             = 0x00000001
         fIsFullLoad            = 0x00000002
         fIsSkipNewRecords      = 0x00000004
@@ -13908,10 +13907,24 @@ class ObCollection:
         fIsIgnoreExisting      = 0x00000800
         fIsIgnoreAbsentMasters = 0x00001000
 
-        if IgnoreExisting:
-            Flags |= fIsIgnoreExisting
-        else:
-            Flags &= ~fIsIgnoreExisting
+        if Flags is None:
+            Flags = fIsMinLoad | fIsInLoadOrder | fIsSaveable | fIsAddMasters | fIsLoadMasters
+
+            if IgnoreExisting:
+                Flags |= fIsIgnoreExisting
+            else:
+                Flags &= ~fIsIgnoreExisting
+
+            if Saveable:
+                Flags |= fIsSaveable
+            else:
+                Flags &= ~fIsSaveable
+
+            if LoadMasters:
+                Flags |= fIsLoadMasters
+            else:
+                Flags &= ~fIsLoadMasters
+
         if NoLoad:
             Flags &= ~fIsFullLoad
             Flags &= ~fIsMinLoad
@@ -13921,16 +13934,6 @@ class ObCollection:
         else:
             Flags |= fIsFullLoad
             Flags &= ~fIsMinLoad
-
-        if Saveable:
-            Flags |= fIsSaveable
-        else:
-            Flags &= ~fIsSaveable
-
-        if LoadMasters:
-            Flags |= fIsLoadMasters
-        else:
-            Flags &= ~fIsLoadMasters
 
         _CAddMod(self._CollectionID, str(FileName), Flags)
         return None
@@ -13986,7 +13989,7 @@ class ObCollection:
         return sum([mod.UpdateReferences(OldFormIDs, NewFormIDs) for mod in self.LoadOrderMods])
 
     def ClearReferenceLog(self):
-        return _CGetRecordUpdatedReferences(0, self._CollectionID)
+        return _CGetRecordUpdatedReferences(self._CollectionID, 0)
 
     def Debug_DumpModFiles(self):
         value = _("Collection (%08X) contains the following modfiles:\n") % (self._CollectionID,)

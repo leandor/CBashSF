@@ -99,15 +99,15 @@ bool sameStr::operator()( const STRING s1, const STRING s2 ) const
     void peek_around(unsigned char *position, UINT32 length)
         {
         for(SINT32 x = length; x > 0; x--)
-            printer("%02X ", (position)[-x]);
+            printf("%02X ", (position)[-x]);
         for(UINT32 x = 0; x < length; x++)
-            printer("%02X ", (position)[x]);
-        printer("\n\n");
+            printf("%02X ", (position)[x]);
+        printf("\n\n");
         for(SINT32 x = length; x > 0; x--)
-            printer("%c", (position)[-x]);
+            printf("%c", (position)[-x]);
         for(UINT32 x = 0; x < length; x++)
-            printer("%c", (position)[x]);
-        printer("\n");
+            printf("%c", (position)[x]);
+        printf("\n");
         }
 #endif
 

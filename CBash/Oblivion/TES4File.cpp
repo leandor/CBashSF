@@ -387,11 +387,11 @@ SINT32 TES4File::Load(RecordOp &read_parser, RecordOp &indexer, std::vector<Form
             default:
                 if(GRUPLabel == 0 && GRUPSize == 0)
                     {
-                    printer("TES4File::Read: Warning - Unknown record group (%c%c%c%c) encountered in mod \"%s\". Bad file structure, zeros found past end of groups.\n", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ModName);
+                    printer("TES4File::Read: Warning - Mod \"%s\" contains an unknown record group (%c%c%c%c). Bad file structure, zeros found past end of groups.\n", ModName, ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3]);
                     return 1;
                     }
                 else
-                    printer("TES4File::Read: Error - Unknown record group (%c%c%c%c) encountered in mod \"%s\". ", ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3], ModName);
+                    printer("TES4File::Read: Error - Mod \"%s\" contains an unknown record group (%c%c%c%c).", ModName, ((STRING)&GRUPLabel)[0], ((STRING)&GRUPLabel)[1], ((STRING)&GRUPLabel)[2], ((STRING)&GRUPLabel)[3]);
 
                 if(GRUPSize == 0)
                     {
