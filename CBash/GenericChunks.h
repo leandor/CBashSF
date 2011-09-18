@@ -165,7 +165,7 @@ struct GENEFIT
 struct GENSCIT
     {
     FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 script;
-    UINT32  school;
+    UINT32  schoolType;
     MGEFCODE_OR_UINT32 visual;
     UINT8   flags, unused1[3];
 
@@ -223,6 +223,16 @@ struct GENEffect
     StringRecord FULL; //Effect Name
     OptSubRecord<OBMEEffect> OBME; //OBME Extended Data
 
+    enum eSCITSchools
+        {
+        eAlteration = 0,
+        eConjuration,
+        eDestruction,
+        eIllusion,
+        eMysticism,
+        eRestoration
+        };
+
     enum SCITFlags
         {
         fIsHostile = 0x01
@@ -234,6 +244,21 @@ struct GENEffect
         eRangeTouch  = 1,
         eRangeTarget = 2
         };
+
+    bool IsSchoolAlteration();
+    void IsSchoolAlteration(bool value);
+    bool IsSchoolConjuration();
+    void IsSchoolConjuration(bool value);
+    bool IsSchoolDestruction();
+    void IsSchoolDestruction(bool value);
+    bool IsSchoolIllusion();
+    void IsSchoolIllusion(bool value);
+    bool IsSchoolMysticism();
+    void IsSchoolMysticism(bool value);
+    bool IsSchoolRestoration();
+    void IsSchoolRestoration(bool value);
+    bool IsSchool(UINT32 Type);
+    void SetSchool(UINT32 Type);
 
     enum OBMEOverrideFlags
         {
@@ -300,8 +325,8 @@ struct GENEffect
     void IsRangeTouch(bool value);
     bool IsRangeTarget();
     void IsRangeTarget(bool value);
-    bool IsRange(UINT32 Mask);
-    void SetRange(UINT32 Mask);
+    bool IsRange(UINT32 Type);
+    void SetRange(UINT32 Type);
 
     bool OBME_IsUsingHostileOverride();
     void OBME_IsUsingHostileOverride(bool value);

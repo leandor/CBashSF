@@ -81,7 +81,7 @@ class Collection
 
         SINT32 AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading=false);
         ModFile * IsModAdded(STRING const &ModName);
-        SINT32 SaveMod(ModFile *&curModFile, SaveFlags &flags);
+        SINT32 SaveMod(ModFile *&curModFile, SaveFlags &flags, STRING const DestinationName);
 
         SINT32 Load();
         void   UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Record *> > > &DeletedRecords);

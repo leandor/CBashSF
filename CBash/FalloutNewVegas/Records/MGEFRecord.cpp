@@ -28,7 +28,7 @@ MGEFRecord::MGEFDATA::MGEFDATA():
     flags(0),
     baseCost(0.0f),
     associated(0),
-    school(0),
+    schoolType(0),
     resistType(-1),
     numCounters(0),
     light(0),
@@ -593,6 +593,76 @@ bool MGEFRecord::IsType(UINT32 Type)
 void MGEFRecord::SetType(UINT32 Type)
     {
     DATA.value.archType = Type;
+    }
+
+bool MGEFRecord::IsSchoolAlteration()
+    {
+    return (DATA.value.schoolType == eAlteration);
+    }
+
+void MGEFRecord::IsSchoolAlteration(bool value)
+    {
+    DATA.value.schoolType = value ? eAlteration : eConjuration;
+    }
+
+bool MGEFRecord::IsSchoolConjuration()
+    {
+    return (DATA.value.schoolType == eConjuration);
+    }
+
+void MGEFRecord::IsSchoolConjuration(bool value)
+    {
+    DATA.value.schoolType = value ? eConjuration : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolDestruction()
+    {
+    return (DATA.value.schoolType == eDestruction);
+    }
+
+void MGEFRecord::IsSchoolDestruction(bool value)
+    {
+    DATA.value.schoolType = value ? eDestruction : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolIllusion()
+    {
+    return (DATA.value.schoolType == eIllusion);
+    }
+
+void MGEFRecord::IsSchoolIllusion(bool value)
+    {
+    DATA.value.schoolType = value ? eIllusion : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolMysticism()
+    {
+    return (DATA.value.schoolType == eMysticism);
+    }
+
+void MGEFRecord::IsSchoolMysticism(bool value)
+    {
+    DATA.value.schoolType = value ? eMysticism : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolRestoration()
+    {
+    return (DATA.value.schoolType == eRestoration);
+    }
+
+void MGEFRecord::IsSchoolRestoration(bool value)
+    {
+    DATA.value.schoolType = value ? eRestoration : eAlteration;
+    }
+
+bool MGEFRecord::IsSchool(UINT32 Type)
+    {
+    return (DATA.value.schoolType == Type);
+    }
+
+void MGEFRecord::SetSchool(UINT32 Type)
+    {
+    DATA.value.schoolType = Type;
     }
 
 UINT32 MGEFRecord::GetType()

@@ -72,7 +72,7 @@ enum API_FieldTypes {
     UNKNOWN_OR_FORMID_OR_UINT32_FIELD,
     UNKNOWN_OR_SINT32_FIELD,
     UNKNOWN_OR_UINT32_FLAG_FIELD,
-    MGEFCODE_OR_UINT32_FIELD,
+    MGEFCODE_OR_CHAR4_FIELD,
     FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32_FIELD,
     RESOLVED_MGEFCODE_FIELD,
     STATIC_MGEFCODE_FIELD,
@@ -650,15 +650,17 @@ class NonNullStringRecord
     {
     private:
         UINT32 DiskSize;
+        STRING _value;
 
     public:
-        STRING value;
+        __declspec(property(get=GetString)) STRING value;
 
         NonNullStringRecord();
         NonNullStringRecord(const NonNullStringRecord &p);
         ~NonNullStringRecord();
 
         UINT32 GetSize() const;
+        STRING GetString();
 
         bool IsLoaded() const;
         void Load();

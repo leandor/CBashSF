@@ -100,16 +100,12 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                     switch(WhichAttribute)
                         {
                         case 0: //fieldType
-                            return MGEFCODE_OR_UINT32_FIELD;
+                            return MGEFCODE_OR_CHAR4_FIELD;
                         case 2: //WhichType
                             if(Effects.value[ListIndex]->OBME.IsLoaded())
-                                {
-                                if(Effects.value[ListIndex]->EFID.value >= 0x80000000)
-                                    return RESOLVED_MGEFCODE_FIELD;
-                                return STATIC_MGEFCODE_FIELD;
-                                }
+                                return Effects.value[ListIndex]->EFID.value >= 0x80000000 ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD;
                             else
-                                return UINT32_FIELD;
+                                return CHAR4_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -136,22 +132,18 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     case 2: //It's a mgefCode, and not a formID at all.
                                         //Conditional resolution of mgefCode's based on JRoush's OBME mod
                                         //It's resolved just like a formID, except it uses the lower byte instead of the upper
-                                        if(Effects.value[ListIndex]->EFIT.value.actorValue >= 0x80000000)
-                                            return RESOLVED_MGEFCODE_FIELD;
-                                        return STATIC_MGEFCODE_FIELD;
+                                        return Effects.value[ListIndex]->EFIT.value.actorValue >= 0x80000000 ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD;
                                     case 3: //It's an actor value, and not a formID at all.
                                         //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
                                         //It's resolved just like a formID
-                                        if(Effects.value[ListIndex]->EFIT.value.actorValue >= 0x800)
-                                            return RESOLVED_ACTORVALUE_FIELD;
-                                        return STATIC_ACTORVALUE_FIELD;
+                                        return Effects.value[ListIndex]->EFIT.value.actorValue >= 0x800 ? RESOLVED_ACTORVALUE_FIELD : STATIC_ACTORVALUE_FIELD;
                                     default: //It's not a formID, mgefCode, or fancied up actor value
                                         //so do nothing
                                         return UINT32_FIELD;
                                     }
                                 }
                             else
-                                return UINT32_FIELD;
+                                return STATIC_ACTORVALUE_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -170,15 +162,11 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                                     case 2: //It's a mgefCode, and not a formID at all.
                                         //Conditional resolution of mgefCode's based on JRoush's OBME mod
                                         //It's resolved just like a formID, except it uses the lower byte instead of the upper
-                                        if(Effects.value[ListIndex]->SCIT->script >= 0x80000000)
-                                            return RESOLVED_MGEFCODE_FIELD;
-                                        return STATIC_MGEFCODE_FIELD;
+                                        return Effects.value[ListIndex]->SCIT->script >= 0x80000000 ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD;
                                     case 3: //It's an actor value, and not a formID at all.
                                         //Conditional resolution of av's based on JRoush's OBME/AV mod(s)
                                         //It's resolved just like a formID
-                                        if(Effects.value[ListIndex]->SCIT->script >= 0x800)
-                                            return RESOLVED_ACTORVALUE_FIELD;
-                                        return STATIC_ACTORVALUE_FIELD;
+                                        return Effects.value[ListIndex]->SCIT->script >= 0x800 ? RESOLVED_ACTORVALUE_FIELD : STATIC_ACTORVALUE_FIELD;
                                     default: //It's not a formID, mgefCode, or fancied up actor value
                                         //so do nothing
                                         return UINT32_FIELD;
@@ -190,21 +178,17 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             return UNKNOWN_FIELD;
                         }
                 case 9: //school
-                    return UINT32_FIELD;
+                    return UINT32_TYPE_FIELD;
                 case 10: //visual
                     switch(WhichAttribute)
                         {
                         case 0: //fieldType
-                            return MGEFCODE_OR_UINT32_FIELD;
+                            return MGEFCODE_OR_CHAR4_FIELD;
                         case 2: //WhichType
                             if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->SCIT.IsLoaded())
-                                {
-                                if(Effects.value[ListIndex]->SCIT->visual >= 0x80000000)
-                                    return RESOLVED_MGEFCODE_FIELD;
-                                return STATIC_MGEFCODE_FIELD;
-                                }
+                                return ((Effects.value[ListIndex]->SCIT->visual >= 0x80000000) ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD);
                             else
-                                return UINT32_FIELD;
+                                return CHAR4_FIELD;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -216,9 +200,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects.value[ListIndex]->SCIT.IsLoaded())
-                                return 3;
-                            return 0;
+                            return Effects.value[ListIndex]->SCIT.IsLoaded() ? 3 : 0;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -243,9 +225,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects.value[ListIndex]->OBME.IsLoaded())
-                                return 0xA;
-                            return 0;
+                            return Effects.value[ListIndex]->OBME.IsLoaded() ? 0xA : 0;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -264,11 +244,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             return ACTORVALUE_FIELD;
                         case 2: //WhichType
                             if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
-                                {
-                                if(Effects.value[ListIndex]->OBME->EFIX->resistAV >= 0x800)
-                                    return RESOLVED_ACTORVALUE_FIELD;
-                                return STATIC_ACTORVALUE_FIELD;
-                                }
+                                return Effects.value[ListIndex]->OBME->EFIX->resistAV >= 0x800 ? RESOLVED_ACTORVALUE_FIELD : STATIC_ACTORVALUE_FIELD;
                             else
                                 return UNKNOWN_FIELD;
                         default:
@@ -280,9 +256,7 @@ UINT32 INGRRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         case 0: //fieldType
                             return UINT8_ARRAY_FIELD;
                         case 1: //fieldSize
-                            if(Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded())
-                                return 0x10;
-                            return 0;
+                            return Effects.value[ListIndex]->OBME.IsLoaded() && Effects.value[ListIndex]->OBME->EFIX.IsLoaded() ? 0x10 : 0;
                         default:
                             return UNKNOWN_FIELD;
                         }
@@ -381,7 +355,7 @@ void * INGRRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
                 case 8: //script
                     return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->script : NULL;
                 case 9: //school
-                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->school : NULL;
+                    return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->schoolType : NULL;
                 case 10: //visual
                     return Effects.value[ListIndex]->SCIT.IsLoaded() ? &Effects.value[ListIndex]->SCIT->visual : NULL;
                 case 11: //flags
@@ -533,7 +507,7 @@ bool INGRRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
                     return true;
                 case 9: //school
                     Effects.value[ListIndex]->SCIT.Load();
-                    Effects.value[ListIndex]->SCIT->school = *(UINT32 *)FieldValue;
+                    Effects.value[ListIndex]->SCIT->schoolType = *(UINT32 *)FieldValue;
                     break;
                 case 10: //visual
                     Effects.value[ListIndex]->SCIT.Load();
@@ -744,7 +718,7 @@ void INGRRecord::DeleteField(FIELD_IDENTIFIERS)
                     return;
                 case 9: //school
                     if(Effects.value[ListIndex]->SCIT.IsLoaded())
-                        Effects.value[ListIndex]->SCIT->school = defaultSCIT.school;
+                        Effects.value[ListIndex]->SCIT->schoolType = defaultSCIT.schoolType;
                     return;
                 case 10: //visual
                     if(Effects.value[ListIndex]->SCIT.IsLoaded())

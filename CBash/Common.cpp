@@ -1016,14 +1016,14 @@ StringRecord& StringRecord::operator = (const StringRecord &rhs)
     }
 
 NonNullStringRecord::NonNullStringRecord():
-    value(NULL),
+    _value(NULL),
     DiskSize(0)
     {
     //
     }
 
 NonNullStringRecord::NonNullStringRecord(const NonNullStringRecord &p):
-    value(NULL),
+    _value(NULL),
     DiskSize(0)
     {
     if(!p.IsLoaded())
@@ -1031,31 +1031,46 @@ NonNullStringRecord::NonNullStringRecord(const NonNullStringRecord &p):
 
     if(p.DiskSize)
         {
-        value = p.value;
+        _value = p._value;
         DiskSize = p.DiskSize;
         }
     else
         {
         UINT32 size = p.GetSize();
-        value = new char[size];
-        memcpy(value, p.value, size);
+        _value = new char[size];
+        memcpy(_value, p._value, size);
         }
     }
 
 NonNullStringRecord::~NonNullStringRecord()
     {
     if(DiskSize == 0)
-        delete []value;
+        delete []_value;
     }
 
 UINT32 NonNullStringRecord::GetSize() const
     {
-    return value != NULL ? (DiskSize ? DiskSize : (UINT32)strlen(value)) : 0;
+    return _value != NULL ? (DiskSize ? DiskSize : (UINT32)strlen(_value)) : 0;
+    }
+
+STRING NonNullStringRecord::GetString()
+    {
+    if(DiskSize != 0)
+        {    
+        //Have to sanitize the string before letting it be used
+        //The string needs a null terminator added, so load it from disk
+        STRING nvalue = new char[DiskSize + 1];
+        nvalue[DiskSize] = 0x00;
+        memcpy(nvalue, _value, DiskSize);
+        _value = nvalue;
+        DiskSize = 0;
+        }
+    return _value;
     }
 
 bool NonNullStringRecord::IsLoaded() const
     {
-    return value != NULL;
+    return _value != NULL;
     }
 
 void NonNullStringRecord::Load()
@@ -1067,8 +1082,8 @@ void NonNullStringRecord::Unload()
     {
     if(DiskSize == 0)
         {
-        delete []value;
-        value = NULL;
+        delete []_value;
+        _value = NULL;
         }
     }
 
@@ -1081,14 +1096,14 @@ bool NonNullStringRecord::Read(unsigned char *&buffer, const UINT32 &subSize, co
         }
     if(CompressedOnDisk)
         {
-        value = new char[subSize + 1];
-        value[subSize] = 0x00;
-        memcpy(value, buffer, subSize);
+        _value = new char[subSize + 1];
+        _value[subSize] = 0x00;
+        memcpy(_value, buffer, subSize);
         }
     else
         {
         DiskSize = subSize;
-        value = (char *)buffer;
+        _value = (char *)buffer;
         }
     buffer += subSize;
     return true;
@@ -1096,14 +1111,14 @@ bool NonNullStringRecord::Read(unsigned char *&buffer, const UINT32 &subSize, co
 
 void NonNullStringRecord::Write(UINT32 _Type, FileWriter &writer)
     {
-    if(value != NULL)
-        writer.record_write_subrecord(_Type, value, DiskSize ? DiskSize : (UINT32)strlen(value));
+    if(_value != NULL)
+        writer.record_write_subrecord(_Type, _value, DiskSize ? DiskSize : (UINT32)strlen(_value));
     }
 
 void NonNullStringRecord::ReqWrite(UINT32 _Type, FileWriter &writer)
     {
-    if(value != NULL)
-        writer.record_write_subrecord(_Type, value, DiskSize ? DiskSize : (UINT32)strlen(value));
+    if(_value != NULL)
+        writer.record_write_subrecord(_Type, _value, DiskSize ? DiskSize : (UINT32)strlen(_value));
     else
         {
         char null = 0x00;
@@ -1118,19 +1133,19 @@ void NonNullStringRecord::Copy(STRING FieldValue)
         {
         DiskSize = 0;
         UINT32 size = (UINT32)strlen(FieldValue) + 1;
-        value = new char[size];
-        memcpy(value, FieldValue, size);
+        _value = new char[size];
+        memcpy(_value, FieldValue, size);
         }
     }
 
 bool NonNullStringRecord::equals(const NonNullStringRecord &other) const
     {
-    return cmps(value, other.value) == 0;
+    return cmps(_value, other._value) == 0;
     }
 
 bool NonNullStringRecord::equalsi(const NonNullStringRecord &other) const
     {
-    return icmps(value, other.value) == 0;
+    return icmps(_value, other._value) == 0;
     }
 
 NonNullStringRecord& NonNullStringRecord::operator = (const NonNullStringRecord &rhs)
@@ -1140,15 +1155,15 @@ NonNullStringRecord& NonNullStringRecord::operator = (const NonNullStringRecord 
         Unload();
         if(rhs.DiskSize)
             {
-            value = rhs.value;
+            _value = rhs._value;
             DiskSize = rhs.DiskSize;
             }
-        else if(rhs.value != NULL)
+        else if(rhs._value != NULL)
             {
             DiskSize = 0;
-            UINT32 size = (UINT32)strlen(rhs.value) + 1;
-            value = new char[size];
-            memcpy(value, rhs.value, size);
+            UINT32 size = (UINT32)strlen(rhs._value) + 1;
+            _value = new char[size];
+            memcpy(_value, rhs._value, size);
             }
         }
     return *this;

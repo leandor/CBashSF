@@ -259,7 +259,7 @@ bool FNVSCHR::operator !=(const FNVSCHR &other) const
     }
 
 GENEFIT::GENEFIT():
-    name(0),
+    name(REV32(FIDG)), //Fire Damage
     magnitude(0),
     area(0),
     duration(0),
@@ -291,7 +291,7 @@ bool GENEFIT::operator !=(const GENEFIT &other) const
 
 GENSCIT::GENSCIT():
     script(0),
-    school(0),
+    schoolType(0), //Alteration
     visual(0),
     flags(0)
     {
@@ -306,7 +306,7 @@ GENSCIT::~GENSCIT()
 bool GENSCIT::operator ==(const GENSCIT &other) const
     {
     return (script == other.script &&
-            school == other.school &&
+            schoolType == other.schoolType &&
             visual == other.visual &&
             flags == other.flags);
     }
@@ -412,6 +412,90 @@ bool OBMEEffect::operator !=(const OBMEEffect &other) const
     return !(*this == other);
     }
 
+bool GENEffect::IsSchoolAlteration()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eAlteration);
+    }
+
+void GENEffect::IsSchoolAlteration(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eAlteration : eConjuration;
+    }
+
+bool GENEffect::IsSchoolConjuration()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eConjuration);
+    }
+
+void GENEffect::IsSchoolConjuration(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eConjuration : eAlteration;
+    }
+
+bool GENEffect::IsSchoolDestruction()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eDestruction);
+    }
+
+void GENEffect::IsSchoolDestruction(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eDestruction : eAlteration;
+    }
+
+bool GENEffect::IsSchoolIllusion()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eIllusion);
+    }
+
+void GENEffect::IsSchoolIllusion(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eIllusion : eAlteration;
+    }
+
+bool GENEffect::IsSchoolMysticism()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eMysticism);
+    }
+
+void GENEffect::IsSchoolMysticism(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eMysticism : eAlteration;
+    }
+
+bool GENEffect::IsSchoolRestoration()
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == eRestoration);
+    }
+
+void GENEffect::IsSchoolRestoration(bool value)
+    {
+    if(!SCIT.IsLoaded()) return;
+    SCIT->schoolType = value ? eRestoration : eAlteration;
+    }
+
+bool GENEffect::IsSchool(UINT32 Type)
+    {
+    if(!SCIT.IsLoaded()) return false;
+    return (SCIT->schoolType == Type);
+    }
+
+void GENEffect::SetSchool(UINT32 Type)
+    {
+    SCIT.Load();
+    SCIT->schoolType = Type;
+    }
+
 bool GENEffect::IsHostile()
     {
     if(!SCIT.IsLoaded()) return false;
@@ -466,14 +550,14 @@ void GENEffect::IsRangeTarget(bool value)
     EFIT.value.rangeType = value ? eRangeTarget : eRangeSelf;
     }
 
-bool GENEffect::IsRange(UINT32 Mask)
+bool GENEffect::IsRange(UINT32 Type)
     {
-    return (EFIT.value.rangeType == Mask);
+    return (EFIT.value.rangeType == Type);
     }
 
-void GENEffect::SetRange(UINT32 Mask)
+void GENEffect::SetRange(UINT32 Type)
     {
-    EFIT.value.rangeType = Mask;
+    EFIT.value.rangeType = Type;
     }
 
 bool GENEffect::OBME_IsUsingHostileOverride()

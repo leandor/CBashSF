@@ -124,7 +124,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 18: //associated
             return FORMID_FIELD;
         case 19: //schoolUnused
-            return SINT32_FIELD;
+            return UINT32_TYPE_FIELD;
         case 20: //resistType
             return SINT32_TYPE_FIELD;
         case 21: //numCounters
@@ -231,7 +231,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 18: //associated
             return &DATA.value.associated;
         case 19: //schoolUnused
-            return &DATA.value.school;
+            return &DATA.value.schoolType;
         case 20: //resistType
             return &DATA.value.resistType;
         case 21: //numCounters
@@ -367,7 +367,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.associated = *(FORMID *)FieldValue;
             return true;
         case 19: //schoolUnused
-            DATA.value.school = *(SINT32 *)FieldValue;
+            DATA.value.schoolType = *(UINT32 *)FieldValue;
             break;
         case 20: //resistType
             DATA.value.resistType = *(SINT32 *)FieldValue;
@@ -512,7 +512,7 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             DATA.value.associated = defaultDATA.associated;
             return;
         case 19: //schoolUnused
-            DATA.value.school = defaultDATA.school;
+            DATA.value.schoolType = defaultDATA.schoolType;
             return;
         case 20: //resistType
             DATA.value.resistType = defaultDATA.resistType;

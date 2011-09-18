@@ -209,6 +209,8 @@ bool TES4Record::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             SNAM.TruncateCopy((STRING)FieldValue, 512);
             break;
         case 12: //masters
+            //Good chance of breaking the plugin if called. Might be better to disallow.
+            //Or atleast try and fix things up on this side.
             for(UINT32 x = 0; x < MAST.size(); x++)
                 delete []MAST[x];
 

@@ -33,7 +33,7 @@ class MGEFRecord : public FNVRecord //Base Effect
             UINT32  flags;
             FLOAT32 baseCost; //Unused
             FORMID  associated;
-            SINT32  school; //Unused
+            UINT32  schoolType; //Unused
             SINT32  resistType;
             UINT16  numCounters; //According to OBME
             UINT8   unused1[2];
@@ -108,6 +108,17 @@ class MGEFRecord : public FNVRecord //Base Effect
             eLimbCondition  = 35,
             eTurbo          = 36
             };
+
+        enum eSchools
+            {
+            eAlteration = 0,
+            eConjuration,
+            eDestruction,
+            eIllusion,
+            eMysticism,
+            eRestoration
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
@@ -212,6 +223,21 @@ class MGEFRecord : public FNVRecord //Base Effect
         void   IsTurbo(bool value);
         bool   IsType(UINT32 Type);
         void   SetType(UINT32 Type);
+
+        bool   IsSchoolAlteration();
+        void   IsSchoolAlteration(bool value);
+        bool   IsSchoolConjuration();
+        void   IsSchoolConjuration(bool value);
+        bool   IsSchoolDestruction();
+        void   IsSchoolDestruction(bool value);
+        bool   IsSchoolIllusion();
+        void   IsSchoolIllusion(bool value);
+        bool   IsSchoolMysticism();
+        void   IsSchoolMysticism(bool value);
+        bool   IsSchoolRestoration();
+        void   IsSchoolRestoration(bool value);
+        bool   IsSchool(UINT32 Type);
+        void   SetSchool(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

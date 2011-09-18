@@ -28,7 +28,7 @@ MGEFRecord::MGEFDATA::MGEFDATA():
     flags(0),
     baseCost(0.0f),
     associated(0),
-    school(0),
+    schoolType(0),
     resistValue(0xFFFFFFFF),
     numCounters(0),
     light(0),
@@ -54,7 +54,7 @@ bool MGEFRecord::MGEFDATA::operator ==(const MGEFDATA &other) const
     {
     return (flags == other.flags &&
             associated == other.associated &&
-            school == other.school &&
+            schoolType == other.schoolType &&
             resistValue == other.resistValue &&
             numCounters == other.numCounters &&
             light == other.light &&
@@ -789,6 +789,76 @@ void MGEFRecord::SetOBMEFlagMask(UINT32 Mask)
     OBME->OBME.value.flags = Mask;
     }
 
+bool MGEFRecord::IsSchoolAlteration()
+    {
+    return (DATA.value.schoolType == eAlteration);
+    }
+
+void MGEFRecord::IsSchoolAlteration(bool value)
+    {
+    DATA.value.schoolType = value ? eAlteration : eConjuration;
+    }
+
+bool MGEFRecord::IsSchoolConjuration()
+    {
+    return (DATA.value.schoolType == eConjuration);
+    }
+
+void MGEFRecord::IsSchoolConjuration(bool value)
+    {
+    DATA.value.schoolType = value ? eConjuration : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolDestruction()
+    {
+    return (DATA.value.schoolType == eDestruction);
+    }
+
+void MGEFRecord::IsSchoolDestruction(bool value)
+    {
+    DATA.value.schoolType = value ? eDestruction : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolIllusion()
+    {
+    return (DATA.value.schoolType == eIllusion);
+    }
+
+void MGEFRecord::IsSchoolIllusion(bool value)
+    {
+    DATA.value.schoolType = value ? eIllusion : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolMysticism()
+    {
+    return (DATA.value.schoolType == eMysticism);
+    }
+
+void MGEFRecord::IsSchoolMysticism(bool value)
+    {
+    DATA.value.schoolType = value ? eMysticism : eAlteration;
+    }
+
+bool MGEFRecord::IsSchoolRestoration()
+    {
+    return (DATA.value.schoolType == eRestoration);
+    }
+
+void MGEFRecord::IsSchoolRestoration(bool value)
+    {
+    DATA.value.schoolType = value ? eRestoration : eAlteration;
+    }
+
+bool MGEFRecord::IsSchool(UINT32 Type)
+    {
+    return (DATA.value.schoolType == Type);
+    }
+
+void MGEFRecord::SetSchool(UINT32 Type)
+    {
+    DATA.value.schoolType = Type;
+    }
+
 UINT32 MGEFRecord::GetType()
     {
     return REV32(MGEF);
@@ -843,6 +913,7 @@ SINT32 MGEFRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer,
                 OBME->OBME.Read(buffer, subSize);
                 break;
             case REV32(EDDX):
+                //Is switched with the normal EDID on read and write so that the EDID field is a char *as expected
                 OBME.Load();
                 memcpy(&OBME->EDDX.value.mgefCode[0], EDID.value, sizeof(OBME->EDDX.value.mgefCode) - 1);
                 OBME->EDDX.value.mgefCode[4] = 0x00;

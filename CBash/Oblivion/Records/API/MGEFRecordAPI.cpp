@@ -66,7 +66,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
         case 13: //associated
             return FORMID_FIELD;
         case 14: //school
-            return SINT32_FIELD;
+            return UINT32_TYPE_FIELD;
         case 15: //resistValue
             return UINT32_FIELD;
         case 16: //numCounters
@@ -127,7 +127,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                         switch(WhichAttribute)
                             {
                             case 0: //fieldType
-                                return MGEFCODE_OR_UINT32_FIELD;
+                                return MGEFCODE_OR_CHAR4_FIELD;
                             case 2: //WhichType
                                 return ((ESCE.value[ListIndex] >= 0x80000000) ? RESOLVED_MGEFCODE_FIELD : STATIC_MGEFCODE_FIELD);
                             default:
@@ -135,7 +135,7 @@ UINT32 MGEFRecord::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
                             }
                         }
                     else
-                        return UINT32_FIELD;
+                        return CHAR4_FIELD;
                 default:
                     return UNKNOWN_FIELD;
                 }
@@ -246,7 +246,7 @@ void * MGEFRecord::GetField(FIELD_IDENTIFIERS, void **FieldValues)
         case 13: //associated
             return &DATA.value.associated;
         case 14: //school
-            return &DATA.value.school;
+            return &DATA.value.schoolType;
         case 15: //resistValue
             return &DATA.value.resistValue;
         case 16: //numCounters
@@ -360,7 +360,7 @@ bool MGEFRecord::SetField(FIELD_IDENTIFIERS, void *FieldValue, UINT32 ArraySize)
             DATA.value.associated = *(FORMID_OR_MGEFCODE_OR_ACTORVALUE_OR_UINT32 *)FieldValue;
             return true;
         case 14: //school
-            DATA.value.school = *(SINT32 *)FieldValue;
+            DATA.value.schoolType = *(UINT32 *)FieldValue;
             break;
         case 15: //resistValue
             DATA.value.resistValue = *(FORMID *)FieldValue;
@@ -524,7 +524,7 @@ void MGEFRecord::DeleteField(FIELD_IDENTIFIERS)
             DATA.value.associated = defaultDATA.associated;
             return;
         case 14: //school
-            DATA.value.school = defaultDATA.school;
+            DATA.value.schoolType = defaultDATA.schoolType;
             return;
         case 15: //resistValue
             DATA.value.resistValue = defaultDATA.resistValue;

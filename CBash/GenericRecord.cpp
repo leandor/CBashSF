@@ -124,9 +124,9 @@ bool Record::IsParentMod() const
 
 Record * Record::GetParentRecord() const
     {
-    if(!IsParentMod())
-        return (Record *)GetParent();
-    return NULL;
+    if(IsParentMod())
+        return NULL;
+    return (Record *)GetParent();
     }
 
 ModFile * Record::GetParentMod() const

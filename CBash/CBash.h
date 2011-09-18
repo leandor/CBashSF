@@ -60,7 +60,7 @@ DLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UI
 DLLEXTERN SINT32 LoadMod(ModFile *ModID);
 DLLEXTERN SINT32 UnloadMod(ModFile *ModID);
 DLLEXTERN SINT32 CleanModMasters(ModFile *ModID);
-DLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField);
+DLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField, STRING const DestinationName);
 ////////////////////////////////////////////////////////////////////////
 //Mod info functions
 DLLEXTERN SINT32 GetAllNumMods(Collection *CollectionID);

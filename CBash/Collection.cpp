@@ -208,7 +208,7 @@ ModFile * Collection::IsModAdded(STRING const &ModName)
     return NULL;
     }
 
-SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags)
+SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags, STRING const DestinationName)
     {
     if(!curModFile->Flags.IsSaveable)
         {
@@ -233,13 +233,13 @@ SINT32 Collection::SaveMod(ModFile *&curModFile, SaveFlags &flags)
 
     _chdir(ModsDir);
 
-    STRING temp_name = GetTemporaryFileName(curModFile->ModName); //deleted when RenameOp is destroyed
+    STRING temp_name = GetTemporaryFileName(DestinationName != NULL ? DestinationName : curModFile->ModName); //deleted when RenameOp is destroyed
 
     //Save the mod to temp file
     curModFile->Save(temp_name, Expanders, flags.IsCloseCollection, indexer);
     //Delay renaming temp file to original filename until collection is closed
     //This way the file mapping can remain open and the entire file doesn't have to be loaded into memory
-    closing_ops.push_back(new RenameOp(temp_name, curModFile->FileName));
+    closing_ops.push_back(new RenameOp(temp_name, DestinationName != NULL ? DestinationName : curModFile->FileName));
     return 0;
     }
 

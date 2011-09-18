@@ -41,7 +41,7 @@ class SPELRecord : public Record
             };
 
         enum eManualFixing {
-            eBadScript = 0x0000C079
+            eBadScript = 0x0100C079
             };
 
         enum flagsFlags

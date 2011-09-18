@@ -33,7 +33,7 @@ class MGEFRecord : public Record //Base Effect
             UINT32  flags;
             FLOAT32 baseCost;
             FORMID  associated;
-            SINT32  school;
+            UINT32  schoolType;
             UINT32  resistValue;
             UINT16  numCounters; //According to OBME
             UINT8   unused1[2];
@@ -149,6 +149,16 @@ class MGEFRecord : public Record //Base Effect
             fOBME_IsHidden           = 0x40000000
             };
 
+        enum eSchools
+            {
+            eAlteration = 0,
+            eConjuration,
+            eDestruction,
+            eIllusion,
+            eMysticism,
+            eRestoration
+            };
+
     public:
         StringRecord EDID; //Editor ID
         StringRecord FULL; //Name
@@ -259,6 +269,21 @@ class MGEFRecord : public Record //Base Effect
         void   IsHidden(bool value);
         bool   IsOBMEFlagMask(UINT32 Mask, bool Exact=false);
         void   SetOBMEFlagMask(UINT32 Mask);
+
+        bool   IsSchoolAlteration();
+        void   IsSchoolAlteration(bool value);
+        bool   IsSchoolConjuration();
+        void   IsSchoolConjuration(bool value);
+        bool   IsSchoolDestruction();
+        void   IsSchoolDestruction(bool value);
+        bool   IsSchoolIllusion();
+        void   IsSchoolIllusion(bool value);
+        bool   IsSchoolMysticism();
+        void   IsSchoolMysticism(bool value);
+        bool   IsSchoolRestoration();
+        void   IsSchoolRestoration(bool value);
+        bool   IsSchool(UINT32 Type);
+        void   SetSchool(UINT32 Type);
 
         UINT32 GetFieldAttribute(DEFAULTED_FIELD_IDENTIFIERS, UINT32 WhichAttribute=0);
         void * GetField(DEFAULTED_FIELD_IDENTIFIERS, void **FieldValues=NULL);

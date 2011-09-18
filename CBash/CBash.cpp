@@ -549,7 +549,7 @@ CPPDLLEXTERN SINT32 CleanModMasters(ModFile *ModID)
     return -1;
     }
 
-CPPDLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField)
+CPPDLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField, STRING const DestinationName)
     {
     SINT32 err = 0;
     SaveFlags flags(SaveFlagsField);
@@ -559,7 +559,7 @@ CPPDLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField)
         PROFILE_FUNC
         //ValidatePointer(CollectionID);
         //ValidatePointer(ModID);
-        err = ModID->Parent->SaveMod(ModID, flags);
+        err = ModID->Parent->SaveMod(ModID, flags, DestinationName);
         }
     catch(std::exception &ex)
         {
