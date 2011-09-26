@@ -166,10 +166,7 @@ MGEFRecord::MGEFRecord(MGEFRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     FULL = srcRecord->FULL;
     DESC = srcRecord->DESC;

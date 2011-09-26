@@ -209,10 +209,7 @@ REFRRecord::REFRRecord(REFRRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     if(srcRecord->Data.IsLoaded())
         {

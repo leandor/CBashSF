@@ -108,10 +108,7 @@ PROJRecord::PROJRecord(PROJRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
     EDID = srcRecord->EDID;
     OBND = srcRecord->OBND;
     FULL = srcRecord->FULL;

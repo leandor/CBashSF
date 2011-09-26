@@ -45,10 +45,7 @@ IPDSRecord::IPDSRecord(IPDSRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     DATA = srcRecord->DATA;

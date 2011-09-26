@@ -764,6 +764,7 @@ ModFlags::ModFlags(UINT32 _Flags):
     IsFullLoad((_Flags & fIsFullLoad) != 0),
     IsNoLoad(!(IsMinLoad || IsFullLoad)),
     IsSkipNewRecords((_Flags & fIsSkipNewRecords) != 0),
+    IsSkipAllRecords((_Flags & fIsSkipAllRecords) != 0),
     IsInLoadOrder((_Flags & fIsInLoadOrder) != 0),
     IsSaveable(((_Flags & fIsInLoadOrder) != 0) ? ((_Flags & fIsSaveable) != 0) : false),
     IsAddMasters(((_Flags & fIsIgnoreAbsentMasters) != 0) ? false : ((_Flags & fIsAddMasters) != 0)),
@@ -801,6 +802,8 @@ UINT32 ModFlags::GetFlags()
         }
     if(IsSkipNewRecords)
         flags |= fIsSkipNewRecords;
+    if(IsSkipAllRecords)
+        flags |= fIsSkipAllRecords;
     if(IsInLoadOrder)
         flags |= fIsInLoadOrder;
     if(IsSaveable)

@@ -233,10 +233,7 @@ QUSTRecord::QUSTRecord(QUSTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     SCRI = srcRecord->SCRI;

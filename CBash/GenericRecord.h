@@ -70,6 +70,8 @@ class RecordProcessor
         std::vector<FORMID> &OrphanedRecords;
 
         bool IsSkipNewRecords;
+        bool IsSkipAllRecords;
+        bool IsKeepRecords;
         bool IsTrackNewTypes;
         bool IsAddMasters;
 
@@ -83,20 +85,23 @@ class RecordProcessor
             {
             expander.Accept(header.formID);
 
-            if(IsSkipNewRecords && ((header.formID >> 24) >= ExpandedIndex))
-                return false;
+            if((IsTrackNewTypes || IsSkipNewRecords) && ((header.formID >> 24) >= ExpandedIndex))
+                {
+                if(IsTrackNewTypes)
+                    NewTypes.insert(header.type);
+                if(IsSkipNewRecords)
+                    return false;
+                }
 
             //Make sure the formID is unique within the mod
             if(UsedFormIDs.insert(header.formID).second == false)
                 {
-                if(!IsAddMasters) //Can cause any new records to be given a duplicate ID
+                if(IsAddMasters) //Can cause any new records to be given a duplicate ID
                     printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", header.formID);
                 return false;
                 }
-
-            if(IsTrackNewTypes && ((header.formID >> 24) >= ExpandedIndex))
-                NewTypes.insert(header.type);
-            return true;
+                
+            return IsKeepRecords;
             }
 
         //template<bool IsKeyedByEditorID, typename U>
@@ -119,7 +124,7 @@ class RecordProcessor
         //    //if(IsSkipNewRecords && ((header.formID >> 24) >= ExpandedIndex))
         //    //    return false;
 
-        //    return true;
+        //    return IsKeepRecords;
         //    }
     };
 
@@ -155,10 +160,10 @@ class Record
             //_fIsIdenticalToMaster = 0x00000040
             };
         void *Parent;
-        UINT32 CBash_Flags;
 
     public:
         unsigned char *recData;
+        UINT32 CBash_Flags;
 
         UINT32 flags;
         FORMID formID;

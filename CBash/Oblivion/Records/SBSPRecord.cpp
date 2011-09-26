@@ -67,10 +67,7 @@ SBSPRecord::SBSPRecord(SBSPRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     DNAM = srcRecord->DNAM;

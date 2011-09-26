@@ -42,10 +42,7 @@ SCPTRecord::SCPTRecord(SCPTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     SCHR = srcRecord->SCHR;

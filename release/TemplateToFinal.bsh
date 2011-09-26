@@ -658,7 +658,7 @@ SearchAndReplace.replaceAll(view);
 
 //Top Level Macros
 SearchAndReplace.setSearchString("( *) SUBRECORD_MACRO\\((.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, self._RecordID)\n$1     if(RecordID): return $5(RecordID)\n$1     return None\n$1 $2 = CBashSUBRECORD($4, $5, $3)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, self._RecordID)\n$1     return $5(RecordID) if RecordID else None\n$1 $2 = CBashSUBRECORD($4, $5, $3)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -666,7 +666,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) SUBRECORD_ARRAY_MACRO\\((.*?), (.*?), (.*?), (.*?)(?!,)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, self._RecordID)\n$1     if(RecordID): return $5(RecordID)\n$1     return None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3)\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self.GetParentMod()._ModID, cast($3, POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, self._RecordID)\n$1     return $5(RecordID) if RecordID else None\n$1 $2 = CBashSUBRECORDARRAY($4, $5, $3)\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1146,7 +1146,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModEDIDRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     if(RecordID): return Ob$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     return Ob$2Record(RecordID) if RecordID else None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1154,7 +1154,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) FnvModEDIDRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     if(RecordID): return Fnv$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     return Fnv$2Record(RecordID) if RecordID else None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1162,7 +1162,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) ObModRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     if(RecordID): return Ob$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     return Ob$2Record(RecordID) if RecordID else None\n$1 $2 = CBashRECORDARRAY(Ob$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);
@@ -1170,7 +1170,7 @@ SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 SearchAndReplace.replaceAll(view);
 
 SearchAndReplace.setSearchString("( *) FnvModRecordsMACRO\\((.*?)\\)");
-SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     if(RecordID): return Fnv$2Record(RecordID)\n$1     return None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
+SearchAndReplace.setReplaceString("$1 def create_$2(self, EditorID=0, formID=FormID(None, None)):\n$1     RecordID = _CCreateRecord(self._ModID, cast(\"$2\", POINTER(c_ulong)).contents.value, formID.GetShortFormID(self), EditorID, 0)\n$1     return Fnv$2Record(RecordID) if RecordID else None\n$1 $2 = CBashRECORDARRAY(Fnv$2Record, \'$2\')\n");
 SearchAndReplace.setBeanShellReplace(false);
 SearchAndReplace.setIgnoreCase(false);
 SearchAndReplace.setRegexp(true);

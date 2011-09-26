@@ -45,10 +45,7 @@ MESGRecord::MESGRecord(MESGRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     DESC = srcRecord->DESC;

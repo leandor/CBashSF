@@ -103,10 +103,7 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     DATA.format = srcRecord->DATA.format;
     UINT32 vSize;

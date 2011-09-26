@@ -72,6 +72,8 @@ RecordProcessor::RecordProcessor(ModFile *_curModFile, FormIDHandlerClass &_Form
     EmptyGRUPs(_FormIDHandler.EmptyGRUPs),
     OrphanedRecords(_FormIDHandler.OrphanedRecords),
     IsSkipNewRecords(_Flags.IsSkipNewRecords),
+    IsSkipAllRecords(_Flags.IsSkipAllRecords),
+    IsKeepRecords(!_Flags.IsSkipAllRecords),
     IsTrackNewTypes(_Flags.IsTrackNewTypes),
     IsAddMasters(_Flags.IsAddMasters)
     {

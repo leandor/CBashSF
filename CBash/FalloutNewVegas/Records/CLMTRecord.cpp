@@ -101,10 +101,7 @@ CLMTRecord::CLMTRecord(CLMTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     Weathers = srcRecord->Weathers;

@@ -94,10 +94,7 @@ PGRDRecord::PGRDRecord(PGRDRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     DATA = srcRecord->DATA;
     PGRP = srcRecord->PGRP;

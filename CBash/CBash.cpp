@@ -1591,8 +1591,11 @@ CPPDLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARR
                 swapper.Accept(RecordID);
                 Changes[ListIndex] = swapper.GetCount();
                 count += swapper.GetCount();
-                if(Changes[ListIndex] > 0)
-                    RecordID->GetParentMod()->Parent->changed_records.insert(RecordID);
+                }
+            if(count)
+                {
+                RecordID->IsChanged(true);
+                RecordID->GetParentMod()->Parent->changed_records.insert(RecordID);
                 }
             }
         else

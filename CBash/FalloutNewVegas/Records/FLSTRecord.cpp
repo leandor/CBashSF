@@ -45,10 +45,7 @@ FLSTRecord::FLSTRecord(FLSTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     LNAM = srcRecord->LNAM;

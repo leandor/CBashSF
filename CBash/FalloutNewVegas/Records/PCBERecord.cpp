@@ -46,10 +46,7 @@ PCBERecord::PCBERecord(PCBERecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     NAME = srcRecord->NAME;

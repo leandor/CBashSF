@@ -539,6 +539,7 @@ class ModFlags
             fIsFixupPlaceables     = 0x00000400,
             fIsIgnoreExisting      = 0x00000800,
             fIsIgnoreAbsentMasters = 0x00001000,
+            fIsSkipAllRecords      = 0x00002000,
             };
 
     public:
@@ -550,6 +551,7 @@ class ModFlags
         bool IsFullLoad;
         bool IsNoLoad;
         bool IsSkipNewRecords;
+        bool IsSkipAllRecords;
         bool IsInLoadOrder;
         bool IsSaveable;
         bool IsAddMasters;

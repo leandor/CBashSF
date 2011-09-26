@@ -92,6 +92,13 @@ class GRUPRecords
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(T)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(RecType) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -193,7 +200,7 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
     {
     public:
         RecordPoolAllocator<Ob::DIALRecord, RecType, AllocUnit> dial_pool;
-        RecordPoolAllocator<Ob::INFORecord, REV32(INFO), 5> info_pool;
+        RecordPoolAllocator<Ob::INFORecord, REV32(INFO), 20> info_pool;
         UINT32 stamp;
 
         GRUPRecords():
@@ -230,6 +237,14 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::DIALRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(DIAL)) > 0 &&
+                    processor.NewTypes.count(REV32(INFO)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -435,10 +450,10 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
     {
     public:
         RecordPoolAllocator<Ob::CELLRecord, RecType, AllocUnit> cell_pool;
-        RecordPoolAllocator<Ob::ACHRRecord, REV32(ACHR), 5> achr_pool;
-        RecordPoolAllocator<Ob::ACRERecord, REV32(ACRE), 5> acre_pool;
-        RecordPoolAllocator<Ob::REFRRecord, REV32(REFR), 5> refr_pool;
-        RecordPoolAllocator<Ob::PGRDRecord, REV32(PGRD), 5> pgrd_pool;
+        RecordPoolAllocator<Ob::ACHRRecord, REV32(ACHR), 20> achr_pool;
+        RecordPoolAllocator<Ob::ACRERecord, REV32(ACRE), 20> acre_pool;
+        RecordPoolAllocator<Ob::REFRRecord, REV32(REFR), 20> refr_pool;
+        RecordPoolAllocator<Ob::PGRDRecord, REV32(PGRD), 20> pgrd_pool;
         UINT32 stamp;
 
         GRUPRecords():
@@ -475,6 +490,17 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::CELLRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(CELL)) > 0 &&
+                    processor.NewTypes.count(REV32(ACHR)) > 0 &&
+                    processor.NewTypes.count(REV32(ACRE)) > 0 &&
+                    processor.NewTypes.count(REV32(REFR)) > 0 &&
+                    processor.NewTypes.count(REV32(PGRD)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -949,6 +975,11 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                 //acre_pool.purge_no_destructors();
                 //refr_pool.purge_no_destructors();
                 //pgrd_pool.purge_no_destructors();
+                //UINT32 freed_achr = achr_pool.try_to_free();
+                //UINT32 freed_acre = acre_pool.try_to_free();
+                //UINT32 freed_refr = refr_pool.try_to_free();
+                //UINT32 freed_pgrd = pgrd_pool.try_to_free();
+                //DPRINT("freed_achr = %d, freed_acre = %d, freed_refr = %d, freed_pgrd = %d, total = %d", freed_achr, freed_acre, freed_refr, freed_pgrd, freed_achr + freed_acre + freed_refr + freed_pgrd);
                 cell_pool.purge_no_destructors();
                 }
             return formCount;
@@ -960,9 +991,9 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
     {
     public:
         RecordPoolAllocator<Ob::WRLDRecord, RecType, AllocUnit> wrld_pool;
-        RecordPoolAllocator<Ob::CELLRecord, REV32(CELL), 5> cell_pool;
-        RecordPoolAllocator<Ob::LANDRecord, REV32(LAND), 5> land_pool;
-        RecordPoolAllocator<Ob::ROADRecord, REV32(ROAD), 5> road_pool;
+        RecordPoolAllocator<Ob::CELLRecord, REV32(CELL), 20> cell_pool;
+        RecordPoolAllocator<Ob::LANDRecord, REV32(LAND), 20> land_pool;
+        RecordPoolAllocator<Ob::ROADRecord, REV32(ROAD), 20> road_pool;
 
         UINT32 stamp;
 
@@ -1009,6 +1040,20 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::WRLDRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(WRLD)) > 0 &&
+                    processor.NewTypes.count(REV32(ROAD)) > 0 &&
+                    processor.NewTypes.count(REV32(CELL)) > 0 &&
+                    processor.NewTypes.count(REV32(ACHR)) > 0 &&
+                    processor.NewTypes.count(REV32(ACRE)) > 0 &&
+                    processor.NewTypes.count(REV32(REFR)) > 0 &&
+                    processor.NewTypes.count(REV32(PGRD)) > 0 &&
+                    processor.NewTypes.count(REV32(LAND)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 while(buffer_position >= GRUP_End.second)
                     {
                     //Better tracking of the last GRUP
@@ -1954,6 +1999,13 @@ class FNVGRUPRecords
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(T)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(RecType) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -2106,6 +2158,14 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::DIALRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(DIAL)) > 0 && 
+                    processor.NewTypes.count(REV32(INFO)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -2371,6 +2431,22 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::CELLRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(CELL)) > 0 && 
+                    processor.NewTypes.count(REV32(ACHR)) > 0 && 
+                    processor.NewTypes.count(REV32(ACRE)) > 0 && 
+                    processor.NewTypes.count(REV32(REFR)) > 0 && 
+                    processor.NewTypes.count(REV32(PGRE)) > 0 && 
+                    processor.NewTypes.count(REV32(PMIS)) > 0 && 
+                    processor.NewTypes.count(REV32(PBEA)) > 0 && 
+                    processor.NewTypes.count(REV32(PFLA)) > 0 && 
+                    processor.NewTypes.count(REV32(PCBE)) > 0 && 
+                    processor.NewTypes.count(REV32(NAVM)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 //Assumes that all records in a generic group are of the same type
                 header.type = *(UINT32 *)buffer_position;
                 buffer_position += 4;
@@ -3129,6 +3205,24 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::WRLDRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                    processor.NewTypes.count(REV32(WRLD)) > 0 && 
+                    processor.NewTypes.count(REV32(CELL)) > 0 && 
+                    processor.NewTypes.count(REV32(ACHR)) > 0 && 
+                    processor.NewTypes.count(REV32(ACRE)) > 0 && 
+                    processor.NewTypes.count(REV32(REFR)) > 0 && 
+                    processor.NewTypes.count(REV32(PGRE)) > 0 && 
+                    processor.NewTypes.count(REV32(PMIS)) > 0 && 
+                    processor.NewTypes.count(REV32(PBEA)) > 0 && 
+                    processor.NewTypes.count(REV32(PFLA)) > 0 && 
+                    processor.NewTypes.count(REV32(PCBE)) > 0 && 
+                    processor.NewTypes.count(REV32(NAVM)) > 0 && 
+                    processor.NewTypes.count(REV32(LAND)) > 0)
+                    {
+                    buffer_position = group_buffer_end;
+                    break;
+                    }
+
                 while(buffer_position >= GRUP_End.second)
                     {
                     //Better tracking of the last GRUP

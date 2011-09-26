@@ -237,10 +237,7 @@ CSTYRecord::CSTYRecord(CSTYRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     CSTD = srcRecord->CSTD;

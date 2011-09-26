@@ -106,10 +106,15 @@ bool ModFile::Open()
         {
         file_map.open(FileName);
         }
-    catch(std::ios::failure const & e)
+    catch(std::ios::failure const &ex)
         {
         printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
-        throw e;
+        throw ex;
+        }
+    catch(std::exception &ex)
+        {
+        printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
+        throw ex;
         }
     catch(...)
         {

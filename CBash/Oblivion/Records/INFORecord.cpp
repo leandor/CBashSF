@@ -211,10 +211,7 @@ INFORecord::INFORecord(INFORecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     DATA = srcRecord->DATA;
     QSTI = srcRecord->QSTI;

@@ -234,10 +234,7 @@ LANDRecord::LANDRecord(LANDRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     DATA = srcRecord->DATA;
     VNML = srcRecord->VNML;

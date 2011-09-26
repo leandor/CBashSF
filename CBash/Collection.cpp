@@ -454,7 +454,9 @@ void Collection::UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Re
             else
                 {
                 //Deleted injected record?
-                printer("Load: Warning - Unable to undelete record %08X in \"%s\". Was not able to determine its source record.\n", curRecord->formID, curModFile->FileName);
+                RecordDeindexer deindexer(curRecord);
+                curRecord->GetParentMod()->DeleteRecord(curRecord, deindexer);
+                //printer("Load: Warning - Unable to undelete record %08X in \"%s\". Was not able to determine its source record.\n", curRecord->formID, curModFile->FileName);
                 }
             }
         }
@@ -896,6 +898,11 @@ Record * Collection::CopyRecord(Record *&curRecord, ModFile *&DestModFile, const
     //See if an existing record was returned instead of the requested copy
     if(options.ExistingReturned)
         return RecordCopy;
+
+    //Copy over the internal flags
+    RecordCopy->CBash_Flags = curRecord->CBash_Flags;
+    if(!curRecord->IsChanged())
+        RecordCopy->IsLoaded(false);
 
     //Give the record a new formID if it isn't an override record
     if(!options.SetAsOverride)
@@ -1394,6 +1401,10 @@ bool RecordMasterCollector::Accept(Record *&curRecord)
 
     collector.Accept(curRecord->formID);
     curRecord->VisitFormIDs(collector);
+
+    //If the record was read, but not changed, unload it again
+    if(reader.GetResult() && !curRecord->IsChanged())
+        curRecord->Unload();
 
     return stop;
     }

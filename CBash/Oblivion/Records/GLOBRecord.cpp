@@ -42,10 +42,7 @@ GLOBRecord::GLOBRecord(GLOBRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     FNAM = srcRecord->FNAM;

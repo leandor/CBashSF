@@ -100,10 +100,7 @@ GMSTRecord::GMSTRecord(GMSTRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     DATA.format = srcRecord->DATA.format;
     UINT32 vSize;
@@ -210,9 +207,6 @@ SINT32 GMSTRecord::ParseRecord(unsigned char *buffer, unsigned char *end_buffer,
                 break;
             }
         };
-    //GMSTs should always be loaded since they're keyed by editorID
-    //By marking it as changed, it prevents the record from being unloaded
-    //IsChanged(true);
     return 0;
     }
 

@@ -44,6 +44,67 @@ class RecordPoolAllocator
             purge_with_destructors();
             }
 
+        //UINT32 try_to_free()
+        //    {
+        //    //attempts to free any unused buffers. Will mostly fail to free any memory unless a large number of records have been destroyed.
+        //    //this is a relatively slow function. Don't call it unless necessary.
+        //    UINT32 freed_bytes = 0;
+        //    if(freed_position)
+        //        {
+        //        boost::unordered_set<unsigned char *> free_set;
+        //        MakeFreeSet(free_set);
+        //        for(SINT32 p = (SINT32)buffers.size() - 1;p >= 0; --p)
+        //            {
+        //            unsigned char *buffer = buffers[p];
+        //            UINT32 buffer_size = (UINT32)_msize(buffer);
+        //            //in case malloc returned more than the requested amount
+        //            buffer_size -= buffer_size % sizeof(T);
+
+        //            unsigned char *end_of_buffer = buffer + buffer_size;
+        //            bool buffer_in_use = false;
+
+        //            for(unsigned char *last_position = buffer;last_position < end_of_buffer; last_position += sizeof(T))
+        //                {
+        //                if(free_set.find(last_position) == free_set.end())
+        //                    {
+        //                    buffer_in_use = true;
+        //                    break;
+        //                    }
+        //                }
+
+        //            if(!buffer_in_use)
+        //                {
+        //                UINT32 max_count = buffer_size / sizeof(T);
+        //                UINT32 removed_count = 0;
+
+        //                //Remove any freed entries at the head of the list
+        //                while(removed_count < max_count && (freed_position >= buffer && freed_position < end_of_buffer))
+        //                    {
+        //                    removed_count++;
+        //                    freed_position = *(unsigned char **)freed_position;
+        //                    };
+
+
+        //                for(unsigned char *last_position = freed_position, *next_position = NULL; removed_count < max_count && (last_position != NULL);last_position = next_position)
+        //                    {
+        //                    next_position = *(unsigned char **)last_position;
+        //                    while(next_position >= buffer && next_position < end_of_buffer)
+        //                        {
+        //                        removed_count++;
+        //                        next_position = *(unsigned char **)next_position;
+        //                        *(unsigned char **)last_position = next_position;
+        //                        };
+        //                    }
+
+        //                freed_bytes += (UINT32)_msize(buffer);
+        //                free(buffer);
+        //                buffers.erase(buffers.begin() + p);
+        //                }
+        //            }
+        //        }
+        //    return freed_bytes;
+        //    }
+
         void purge_no_destructors()
             {
             for(UINT32 p = 0;p < buffers.size(); p++)
@@ -80,64 +141,40 @@ class RecordPoolAllocator
         void reserve(UINT32 elements)
             {
             //Allocate memory
-            UINT32 buffer_size = sizeof(T) * elements;
-            unsigned char *buffer = (unsigned char *)malloc(buffer_size);
+            unsigned char *buffer = (unsigned char *)malloc(sizeof(T) * elements);
             if(buffer == 0)
                 throw std::bad_alloc();
+            buffers.push_back(buffer);
             //memset(buffer, 0x00, buffer_size);
 
             //Populate the free linked list in reverse so that the first freed_position is at the beginning of the buffer
-            //unsigned char *end_of_buffer = buffer + buffer_size;
-            for(unsigned char *last_position = buffer + buffer_size - sizeof(T);last_position >= buffer; last_position -= sizeof(T))
+            for(unsigned char *last_position = buffer + (sizeof(T) * elements) - sizeof(T);last_position >= buffer; last_position -= sizeof(T))
                 {
                 *(unsigned char **)last_position = freed_position;
                 freed_position = last_position;
                 }
-
-            //Save the buffer so it can be deallocated later
-            buffers.push_back(buffer);
             }
 
         Record *construct(unsigned char *recData, void *Parent, bool IsMod)
             {
-            //See if any memory is free
-            if(freed_position)
-                {
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                Record * curRecord = new (freed_position) T(recData);
-                curRecord->SetParent(Parent, IsMod);
-                freed_position = next_position;
-                return curRecord;
-                }
-            //Otherwise, allocate more memory
-            else
-                {
+            if(freed_position == NULL)
                 reserve(AllocUnit);
-                return construct(recData, Parent, IsMod);
-                }
-            throw std::bad_alloc();
-            return NULL;
+            unsigned char *next_position = *(unsigned char **)freed_position;
+            Record * curRecord = new (freed_position) T(recData);
+            curRecord->SetParent(Parent, IsMod);
+            freed_position = next_position;
+            return curRecord;
             }
 
         Record *construct(Record *SourceRecord, void *Parent, bool IsMod)
             {
-            //See if any memory is free
-            if(freed_position)
-                {
-                unsigned char *next_position = *(unsigned char **)freed_position;
-                Record * curRecord = new (freed_position) T((T *)SourceRecord);
-                curRecord->SetParent(Parent, IsMod);
-                freed_position = next_position;
-                return curRecord;
-                }
-            //Otherwise, allocate more memory
-            else
-                {
+            if(freed_position == NULL)
                 reserve(AllocUnit);
-                return construct(SourceRecord, Parent, IsMod);
-                }
-            throw std::bad_alloc();
-            return NULL;
+            unsigned char *next_position = *(unsigned char **)freed_position;
+            Record * curRecord = new (freed_position) T((T *)SourceRecord);
+            curRecord->SetParent(Parent, IsMod);
+            freed_position = next_position;
+            return curRecord;
             }
 
         void destroy(Record *curRecord)

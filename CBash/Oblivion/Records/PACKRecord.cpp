@@ -144,10 +144,7 @@ PACKRecord::PACKRecord(PACKRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     EDID = srcRecord->EDID;
     PKDT = srcRecord->PKDT;

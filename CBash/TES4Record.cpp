@@ -70,10 +70,7 @@ TES4Record::TES4Record(TES4Record *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     //EDID = srcRecord->EDID;
     HEDR = srcRecord->HEDR;

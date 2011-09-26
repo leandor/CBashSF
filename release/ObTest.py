@@ -97,7 +97,7 @@ def regressionTests():
 ##    assertSOUN(Current, newMod)
 ##    assertSKIL(Current, newMod)
     Current.Close()
-    
+
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
 
@@ -202,42 +202,48 @@ def assertGMST(Current, newMod):
     srecord.flags1 = 10
     srecord.flags2 = 15
     srecord.value = "It works!"
-    srecord.value = 1 #Shouldn't work
-    srecord.value = 1.0 #Shouldn't work
+    assert srecord.value == "It works!"
+    assert srecord.value != "IT works!"
+    srecord.value = 1
+    assert srecord.value == "1"
+    srecord.value = 1.0
+    assert srecord.value == "1.0"
 
     assert srecord.fid == ('RegressionTests.esp', 0x001001)
     assert srecord.flags1 == 10
     assert srecord.flags2 == 15
     assert srecord.eid == "sWarString"
     assert srecord.eid == "sWaRString"
-    assert srecord.value == "It works!"
-    assert srecord.value != "IT works!"
 
     irecord.flags1 = 11
     irecord.flags2 = 16
     irecord.value = 2
+    assert irecord.value == 2
     irecord.value = "It works!"  #Shouldn't work
-    irecord.value = 2.0 #Shouldn't work
+    assert irecord.value == 2
+    irecord.value = 5.9
+    assert irecord.value == 5
 
     assert irecord.fid == ('RegressionTests.esp', 0x001002)
     assert irecord.flags1 == 11
     assert irecord.flags2 == 16
     assert irecord.eid == "iWarString"
     assert irecord.eid == "IWarString"
-    assert irecord.value == 2
 
     frecord.flags1 = 12
     frecord.flags2 = 17
     frecord.value = 3.0
+    assert frecord.value == 3.0
     frecord.value = "It works!"  #Shouldn't work
-    frecord.value = 3 #Shouldn't work
+    assert frecord.value == 3.0
+    frecord.value = 5
+    assert frecord.value == 5.0
 
     assert frecord.fid == ('RegressionTests.esp', 0x001003)
     assert frecord.flags1 == 12
     assert frecord.flags2 == 17
     assert frecord.eid == "fWarString"
     assert frecord.eid == "fWarSTRing"
-    assert frecord.value == 3.0
 
     record = Current.LoadOrderMods[0].GMST[0]
     newrecord = record.CopyAsOverride(newMod)
@@ -256,7 +262,7 @@ def assertGMST(Current, newMod):
     newrecord.eid = "" #Shouldn't work
     newrecord.value = "Test:"
 
-    assert newrecord.fid == ('Oblivion.esm', 0x045D2F)
+    assert newrecord.fid == FormID('Oblivion.esm', 0x045D2F)
     assert newrecord.flags1 == 0x00000000
     assert newrecord.flags2 == 5
     assert newrecord.eid == "sTestWar"
@@ -1276,7 +1282,7 @@ def assertRACE(Current, newMod):
     assert record.maleWeight == 1.03
     assert record.femaleWeight == 1.0
     assert record.flags == 1
-    assert record.maleVoice == None
+    assert record.maleVoice == FormID(None,None)
     assert record.femaleVoice == None
     assert record.defaultHairMale == ('Oblivion.esm', 0x64215)
     assert record.defaultHairFemale == ('Oblivion.esm', 0x64210)
@@ -2028,7 +2034,7 @@ def TestAttrReport():
     print "Max Weight/Value:", max(wvratios)
     print "Avg Weight/Value:", sum(wvratios) / len(wvratios)
     Current.Close()
-    
+
 def TestCopyAttrs():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -2325,7 +2331,7 @@ def TestFullLoad():
 def TestReadWriteAll():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestALL.esp")
+    Current.addMod("TestALL.esp", IgnoreExisting=True)
     ##Preloading seems to have almost no effect (~2ms on all simple, CopyAsNew) on speed when later reading...
     ##Not preloading would make it faster if not all records being iterated, and save memory...
 
@@ -2640,9 +2646,9 @@ def TestReadWriteAll():
 
     print "ALL:Save Test - TestALL.esp"
 
-##    phonenumber = raw_input(">")
+    phonenumber = raw_input(">")
     newMod.save()
-##    phonenumber = raw_input("!")
+    phonenumber = raw_input("!")
     print "ALL:Finished testing"
     Current.Close()
 
@@ -2683,13 +2689,7 @@ def TestTES4():
     d(newMod.TES4)
 
     print "TES4:Save Test - TestTES4.esp"
-    phonenumber = raw_input(">")
-    newMod.save(CloseCollection=False)
-    newMod.TES4.description = "test"
-    phonenumber = raw_input(">")
-    newMod.save(CloseCollection=False)
-    newMod.TES4.description = "tested"
-    phonenumber = raw_input(">")
+    newMod.save()
     print "TES4:Finished testing"
     Current.Close()
 
@@ -3549,7 +3549,7 @@ def TestSKIL():
     newMod.save()
     print "SKIL:Finished testing"
     Current.Close()
-    
+
 def TestMGEF():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -3581,9 +3581,9 @@ def TestMGEF():
     newRecord.flags = 1
     newRecord.baseCost = 12
     newRecord.associated = FormID(7)
-    newRecord.school = 30
+    newRecord.schoolType = 30
     newRecord.resistValue = 35
-    newRecord.unk1 = 15
+    newRecord.numCounters = 15
     newRecord.light = FormID(8)
     newRecord.projectileSpeed = 9
     newRecord.effectShader = FormID(10)
@@ -3594,7 +3594,7 @@ def TestMGEF():
     newRecord.areaSound = FormID(15)
     newRecord.cefEnchantment = 16.0
     newRecord.cefBarter = 17.2
-    newRecord.counterEffects = [1280332612]
+    newRecord.counterEffects = [MGEFCode("SEFF")]
 
     print "MGEF:Set Test Results"
     print
@@ -3613,7 +3613,7 @@ def TestMGEF():
     newMod.save()
     print "MGEF:Finished testing"
     Current.Close()
-    
+
 def TestSCPT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
@@ -3738,7 +3738,7 @@ def TestLTEX():
 
     newRecord.eid = "LTEXWarTest"
     newRecord.iconPath = r"LTEX\path\test.dds"
-    newRecord.flags = 156
+    newRecord.types = 156
     newRecord.friction = 111
     newRecord.restitution = 123
     newRecord.specular = 128
@@ -3753,7 +3753,7 @@ def TestLTEX():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
     print "iconPath    :", newRecord.iconPath
-    print "flags       :", newRecord.flags
+    print "types       :", newRecord.types
     print "friction    :", newRecord.friction
     print "restitution :", newRecord.restitution
     print "specular    :", newRecord.specular
@@ -3813,9 +3813,9 @@ def TestENCH():
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
-    newEffect.actorValue = 5
+    newEffect.actorValue = ActorValue(5)
     newEffect.script = FormID(0xFF000007)
-    newEffect.school = 324
+    newEffect.schoolType = 324
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
@@ -3828,9 +3828,9 @@ def TestENCH():
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
-    newEffect.school = 11
+    newEffect.actorValue = ActorValue(10)
+    newEffect.script = FormID(0xFF00000A)
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -3858,7 +3858,7 @@ def TestENCH():
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", effect.script
-        print "  school     :", effect.school
+        print "  schoolType :", effect.schoolType
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
@@ -3905,7 +3905,7 @@ def TestSPEL():
     newRecord.full = "Fancy SPEL"
     newRecord.spellType = 1
     newRecord.cost = 2
-    newRecord.level = 3
+    newRecord.levelType = 3
     newRecord.flags = 4
     newRecord.unused1 = [0,1,2]
 
@@ -3916,9 +3916,9 @@ def TestSPEL():
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
-    newEffect.actorValue = 5
-    newEffect.script = 0xFF000007
-    newEffect.school = 324
+    newEffect.actorValue = ActorValue(5)
+    newEffect.script = FormID(0xFF000007)
+    newEffect.schoolType = 324
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
@@ -3931,9 +3931,9 @@ def TestSPEL():
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
-    newEffect.script = 0xFF00000A
-    newEffect.school = 11
+    newEffect.actorValue = ActorValue(10)
+    newEffect.script = FormID(0xFF00000A)
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -3947,7 +3947,7 @@ def TestSPEL():
     print "full         :", newRecord.full
     print "spellType    :", newRecord.spellType
     print "cost         :", newRecord.cost
-    print "level        :", newRecord.level
+    print "levelType    :", newRecord.levelType
     print "flags        :", newRecord.flags
     print "unused1      :", newRecord.unused1
     print "effects :"
@@ -3960,7 +3960,7 @@ def TestSPEL():
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", effect.script
-        print "  school     :", effect.school
+        print "  schoolType :", effect.schoolType
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
@@ -4134,7 +4134,7 @@ def TestAPPA():
     print "iconPath..."
     newRecord.iconPath = r"APPA\path\test.dds"
     newRecord.script = FormID(7)
-    newRecord.apparatus = 1
+    newRecord.apparatusType = 1
     newRecord.value = 150
     newRecord.weight = 3.56
     newRecord.quality = 3.0
@@ -4145,16 +4145,16 @@ def TestAPPA():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "full      :", newRecord.full
-    print "modPath   :", newRecord.modPath
-    print "modb      :", newRecord.modb
-    print "modt_p    :", newRecord.modt_p
-    print "iconPath  :", newRecord.iconPath
-    print "script    :", newRecord.script
-    print "apparatus :", newRecord.apparatus
-    print "value     :", newRecord.value
-    print "weight    :", newRecord.weight
-    print "quality   :", newRecord.quality
+    print "full          :", newRecord.full
+    print "modPath       :", newRecord.modPath
+    print "modb          :", newRecord.modb
+    print "modt_p        :", newRecord.modt_p
+    print "iconPath      :", newRecord.iconPath
+    print "script        :", newRecord.script
+    print "apparatusType :", newRecord.apparatusType
+    print "value         :", newRecord.value
+    print "weight        :", newRecord.weight
+    print "quality       :", newRecord.quality
 
     print "APPA:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].APPA:
@@ -4648,9 +4648,9 @@ def TestINGR():
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
-    newEffect.actorValue = 5
+    newEffect.actorValue = ActorValue(5)
     newEffect.script = FormID(0xFF000007)
-    newEffect.school = 324
+    newEffect.schoolType = 324
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
@@ -4663,9 +4663,9 @@ def TestINGR():
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
+    newEffect.actorValue = ActorValue(10)
     newEffect.script = FormID(0xFF00000A)
-    newEffect.school = 11
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -4701,7 +4701,7 @@ def TestINGR():
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", effect.script
-        print "  school     :", effect.school
+        print "  schoolType :", effect.schoolType
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
@@ -6018,7 +6018,7 @@ def TestSLGM():
     newRecord.weight = 3.56
 
     newRecord.soulType = 1
-    newRecord.capacity = 50
+    newRecord.capacityType = 50
 
     print "SLGM:Set Test Results"
     print
@@ -6038,7 +6038,7 @@ def TestSLGM():
     print "weight  :", newRecord.weight
 
     print "soulType     :", newRecord.soulType
-    print "capacity :", newRecord.capacity
+    print "capacityType :", newRecord.capacityType
 
     print "SLGM:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].SLGM:
@@ -6173,9 +6173,9 @@ def TestALCH():
     newEffect.area = 2
     newEffect.duration = 3
     newEffect.rangeType = 4
-    newEffect.actorValue = 5
+    newEffect.actorValue = ActorValue(5)
     newEffect.script = FormID(0xFF000007)
-    newEffect.school = 324
+    newEffect.schoolType = 324
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
@@ -6188,9 +6188,9 @@ def TestALCH():
     newEffect.area = 7
     newEffect.duration = 8
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
+    newEffect.actorValue = ActorValue(10)
     newEffect.script = FormID(0xFF00000A)
-    newEffect.school = 11
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -6226,7 +6226,7 @@ def TestALCH():
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", effect.script
-        print "  school     :", effect.school
+        print "  schoolType :", effect.schoolType
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
@@ -6342,9 +6342,9 @@ def TestSGST():
     newEffect.area = 2
     newEffect.duration = 6
     newEffect.rangeType = 6
-    newEffect.actorValue = 5
+    newEffect.actorValue = ActorValue(5)
     newEffect.script = FormID(0x00000007)
-    newEffect.school = 324
+    newEffect.schoolType = 324
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 16
     newEffect.unused1 = [3,4,5]
@@ -6357,9 +6357,9 @@ def TestSGST():
     newEffect.area = 7
     newEffect.duration = 7
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
+    newEffect.actorValue = ActorValue(10)
     newEffect.script = FormID(0x0000000A)
-    newEffect.school = 11
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -6373,9 +6373,9 @@ def TestSGST():
     newEffect.area = 8
     newEffect.duration = 8
     newEffect.rangeType = 9
-    newEffect.actorValue = 10
+    newEffect.actorValue = ActorValue(10)
     newEffect.script = FormID(0x0000000A)
-    newEffect.school = 11
+    newEffect.schoolType = 11
     newEffect.visual = MGEFCode("SEFF")
     newEffect.flags = 13
     newEffect.unused1 = [6,7,8]
@@ -6412,7 +6412,7 @@ def TestSGST():
         print "  rangeType  :", effect.rangeType
         print "  actorValue :", effect.actorValue
         print "  script     :", effect.script
-        print "  school     :", effect.school
+        print "  schoolType :", effect.schoolType
         print "  visual     :", effect.visual
         print "  flags      :", effect.flags
         print "  unused1    :", effect.unused1
@@ -6544,8 +6544,8 @@ def TestWTHR():
     newRecord.flags2 = 0x0201
     print "eid..."
     newRecord.eid = "WTHRWarTest"
-    newRecord.lowerLayer = r"WTHR\Test1\e.dds"
-    newRecord.upperLayer = r"WTHR\Test2\d.dds"
+    newRecord.lowerLayerPath = r"WTHR\Test1\e.dds"
+    newRecord.upperLayerPath = r"WTHR\Test2\d.dds"
     print "modPath..."
     newRecord.modPath = r"WTHR\hay2\1.nif"
     print "modb..."
@@ -6774,8 +6774,8 @@ def TestWTHR():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "lowerLayer :", newRecord.lowerLayer
-    print "upperLayer :", newRecord.upperLayer
+    print "lowerLayerPath :", newRecord.lowerLayerPath
+    print "upperLayerPath :", newRecord.upperLayerPath
 
     print "modPath :", newRecord.modPath
     print "modb    :", newRecord.modb
@@ -7497,7 +7497,7 @@ def TestCELL():
     newRecord.directionalZ = 14
     newRecord.directionalFade = 15
     newRecord.fogClip = 16
-    newRecord.music = 1
+    newRecord.musicType = 1
     newRecord.owner = FormID(7)
     newRecord.rank = 1
     newRecord.globalVariable = FormID(17)
@@ -7632,7 +7632,7 @@ def TestCELL():
     newPgrp6.y = 7
     newPgrp6.z = 8
     newPgrp6.connections = 4
-    newPgrd.PGRP = [newPgrp6, newPgrp1, newPgrp2, newPgrp3, newPgrp4]
+    newPgrd.pgrp = [newPgrp6, newPgrp1, newPgrp2, newPgrp3, newPgrp4]
 ##
 ####    newPgrd.PGAG = [0x22, 0x23, 0x01]
 ####
@@ -7674,7 +7674,7 @@ def TestCELL():
     newPgri6.x = 2
     newPgri6.y = 3
     newPgri6.z = 4
-    newPgrd.PGRI = [newPgri6, newPgri1, newPgri2, newPgri3, newPgri4]
+    newPgrd.pgri = [newPgri6, newPgri1, newPgri2, newPgri3, newPgri4]
 
     print 111
     newPgrl1 = newPgrd.create_pgrl()
@@ -7703,7 +7703,7 @@ def TestCELL():
     newPgrl6.reference = FormID(14)
     newPgrl6.points = [1, 2, 3, 4, 5, 6]
     print 1
-    newPgrd.PGRL = [newPgrl6, newPgrl1, newPgrl2, newPgrl3, newPgrl4]
+    newPgrd.pgrl = [newPgrl6, newPgrl1, newPgrl2, newPgrl3, newPgrl4]
     print 1
 
     print "CELL:Set Test Results"
@@ -7733,7 +7733,7 @@ def TestCELL():
     print "directionalZ     :", newRecord.directionalZ
     print "directionalFade  :", newRecord.directionalFade
     print "fogClip          :", newRecord.fogClip
-    print "music            :", newRecord.music
+    print "musicType        :", newRecord.musicType
     print "owner            :", newRecord.owner
     print "rank             :", newRecord.rank
     print "globalVariable   :", newRecord.globalVariable
@@ -7864,7 +7864,7 @@ def TestCELL():
         print "  flags2 :", pgrd.flags2
 
         print "  count :", pgrd.count
-        print "  PGRP"
+        print "  pgrp"
         for pgrp in pgrd.pgrp:
             print "    x           :", pgrp.x
             print "    y           :", pgrp.y
@@ -8239,7 +8239,7 @@ def TestWRLD():
     newRecord.yMinObjBounds = 17.0
     newRecord.xMaxObjBounds = 18.0
     newRecord.yMaxObjBounds = 19.0
-    newRecord.sound = FormID(20)
+    newRecord.musicType = 20
     newRecord.ofst_p = [1,2,3,4,5,6,7,8,9,10]
 
     print "WRLD:Set Test Results"
@@ -8265,7 +8265,7 @@ def TestWRLD():
     print "yMinObjBounds :", newRecord.yMinObjBounds
     print "xMaxObjBounds :", newRecord.xMaxObjBounds
     print "yMaxObjBounds :", newRecord.yMaxObjBounds
-    print "sound     :", newRecord.sound
+    print "musicType     :", newRecord.musicType
     print "ofst_p    :", newRecord.ofst_p
 
     print "WRLD:CopyAsOverride Test"
@@ -10224,10 +10224,10 @@ def TestWATR():
     print "eid..."
     newRecord.eid = "WATRWarTest"
 
-    newRecord.texture = r"WATR\Texture\Path\Test\1.dds"
+    newRecord.texturePath = r"WATR\Texture\Path\Test\1.dds"
     newRecord.opacity = 1
     newRecord.flags = 2
-    newRecord.material = r"WATR\Material\Path\Test\2.dds"
+    newRecord.materialPath = r"WATR\Material\Path\Test\2.dds"
     newRecord.sound = FormID(7)
     newRecord.windVelocity = 3
     newRecord.windDirection = 4
@@ -10276,10 +10276,10 @@ def TestWATR():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "texture       :", newRecord.texture
+    print "texturePath   :", newRecord.texturePath
     print "opacity       :", newRecord.opacity
     print "flags         :", newRecord.flags
-    print "material      :", newRecord.material
+    print "materialPath  :", newRecord.materialPath
     print "sound         :", newRecord.sound
     print "windVelocity  :", newRecord.windVelocity
     print "windDirection :", newRecord.windDirection
@@ -10359,8 +10359,8 @@ def TestEFSH():
     print "eid..."
     newRecord.eid = "EFSHWarTest"
 
-    newRecord.fillTexture = r"EFSH\fillTexture\Path\Test\1.dds"
-    newRecord.particleTexture = r"EFSH\particleTexture\Path\Test\2.dds"
+    newRecord.fillTexturePath = r"EFSH\fillTexture\Path\Test\1.dds"
+    newRecord.particleTexturePath = r"EFSH\particleTexture\Path\Test\2.dds"
     newRecord.flags = 1
     newRecord.unused1 = [1,2,3]
     newRecord.memSBlend = 2
@@ -10441,80 +10441,80 @@ def TestEFSH():
     print "flags2 :", newRecord.flags2
     print "eid    :", newRecord.eid
 
-    print "fillTexture     :", newRecord.fillTexture
-    print "particleTexture :", newRecord.particleTexture
-    print "flags           :", newRecord.flags
-    print "unused1         :", newRecord.unused1
-    print "memSBlend       :", newRecord.memSBlend
-    print "memBlendOp      :", newRecord.memBlendOp
-    print "memZFunc        :", newRecord.memZFunc
-    print "fillRed         :", newRecord.fillRed
-    print "fillGreen       :", newRecord.fillGreen
-    print "fillBlue        :", newRecord.fillBlue
-    print "unused2         :", newRecord.unused2
-    print "fillAIn         :", newRecord.fillAIn
-    print "fillAFull       :", newRecord.fillAFull
-    print "fillAOut        :", newRecord.fillAOut
-    print "fillAPRatio     :", newRecord.fillAPRatio
-    print "fillAAmp        :", newRecord.fillAAmp
-    print "fillAFreq       :", newRecord.fillAFreq
-    print "fillAnimSpdU    :", newRecord.fillAnimSpdU
-    print "fillAnimSpdV    :", newRecord.fillAnimSpdV
-    print "edgeOff         :", newRecord.edgeOff
-    print "edgeRed         :", newRecord.edgeRed
-    print "edgeGreen       :", newRecord.edgeGreen
-    print "edgeBlue        :", newRecord.edgeBlue
-    print "unused3         :", newRecord.unused3
-    print "edgeAIn         :", newRecord.edgeAIn
-    print "edgeAFull       :", newRecord.edgeAFull
-    print "edgeAOut        :", newRecord.edgeAOut
-    print "edgeAPRatio     :", newRecord.edgeAPRatio
-    print "edgeAAmp        :", newRecord.edgeAAmp
-    print "edgeAFreq       :", newRecord.edgeAFreq
-    print "fillAFRatio     :", newRecord.fillAFRatio
-    print "edgeAFRatio     :", newRecord.edgeAFRatio
-    print "memDBlend       :", newRecord.memDBlend
-    print "partSBlend      :", newRecord.partSBlend
-    print "partBlendOp     :", newRecord.partBlendOp
-    print "partZFunc       :", newRecord.partZFunc
-    print "partDBlend      :", newRecord.partDBlend
-    print "partBUp         :", newRecord.partBUp
-    print "partBFull       :", newRecord.partBFull
-    print "partBDown       :", newRecord.partBDown
-    print "partBFRatio     :", newRecord.partBFRatio
-    print "partBPRatio     :", newRecord.partBPRatio
-    print "partLTime       :", newRecord.partLTime
-    print "partLDelta      :", newRecord.partLDelta
-    print "partNSpd        :", newRecord.partNSpd
-    print "partNAcc        :", newRecord.partNAcc
-    print "partVel1        :", newRecord.partVel1
-    print "partVel2        :", newRecord.partVel2
-    print "partVel3        :", newRecord.partVel3
-    print "partAcc1        :", newRecord.partAcc1
-    print "partAcc2        :", newRecord.partAcc2
-    print "partAcc3        :", newRecord.partAcc3
-    print "partKey1        :", newRecord.partKey1
-    print "partKey2        :", newRecord.partKey2
-    print "partKey1Time    :", newRecord.partKey1Time
-    print "partKey2Time    :", newRecord.partKey2Time
-    print "key1Red         :", newRecord.key1Red
-    print "key1Green       :", newRecord.key1Green
-    print "key1Blue        :", newRecord.key1Blue
-    print "unused4         :", newRecord.unused4
-    print "key2Red         :", newRecord.key2Red
-    print "key2Green       :", newRecord.key2Green
-    print "key2Blue        :", newRecord.key2Blue
-    print "unused5         :", newRecord.unused5
-    print "key3Red         :", newRecord.key3Red
-    print "key3Green       :", newRecord.key3Green
-    print "key3Blue        :", newRecord.key3Blue
-    print "unused6         :", newRecord.unused6
-    print "key1A           :", newRecord.key1A
-    print "key2A           :", newRecord.key2A
-    print "key3A           :", newRecord.key3A
-    print "key1Time        :", newRecord.key1Time
-    print "key2Time        :", newRecord.key2Time
-    print "key3Time        :", newRecord.key3Time
+    print "fillTexturePath     :", newRecord.fillTexturePath
+    print "particleTexturePath :", newRecord.particleTexturePath
+    print "flags               :", newRecord.flags
+    print "unused1             :", newRecord.unused1
+    print "memSBlend           :", newRecord.memSBlend
+    print "memBlendOp          :", newRecord.memBlendOp
+    print "memZFunc            :", newRecord.memZFunc
+    print "fillRed             :", newRecord.fillRed
+    print "fillGreen           :", newRecord.fillGreen
+    print "fillBlue            :", newRecord.fillBlue
+    print "unused2             :", newRecord.unused2
+    print "fillAIn             :", newRecord.fillAIn
+    print "fillAFull           :", newRecord.fillAFull
+    print "fillAOut            :", newRecord.fillAOut
+    print "fillAPRatio         :", newRecord.fillAPRatio
+    print "fillAAmp            :", newRecord.fillAAmp
+    print "fillAFreq           :", newRecord.fillAFreq
+    print "fillAnimSpdU        :", newRecord.fillAnimSpdU
+    print "fillAnimSpdV        :", newRecord.fillAnimSpdV
+    print "edgeOff             :", newRecord.edgeOff
+    print "edgeRed             :", newRecord.edgeRed
+    print "edgeGreen           :", newRecord.edgeGreen
+    print "edgeBlue            :", newRecord.edgeBlue
+    print "unused3             :", newRecord.unused3
+    print "edgeAIn             :", newRecord.edgeAIn
+    print "edgeAFull           :", newRecord.edgeAFull
+    print "edgeAOut            :", newRecord.edgeAOut
+    print "edgeAPRatio         :", newRecord.edgeAPRatio
+    print "edgeAAmp            :", newRecord.edgeAAmp
+    print "edgeAFreq           :", newRecord.edgeAFreq
+    print "fillAFRatio         :", newRecord.fillAFRatio
+    print "edgeAFRatio         :", newRecord.edgeAFRatio
+    print "memDBlend           :", newRecord.memDBlend
+    print "partSBlend          :", newRecord.partSBlend
+    print "partBlendOp         :", newRecord.partBlendOp
+    print "partZFunc           :", newRecord.partZFunc
+    print "partDBlend          :", newRecord.partDBlend
+    print "partBUp             :", newRecord.partBUp
+    print "partBFull           :", newRecord.partBFull
+    print "partBDown           :", newRecord.partBDown
+    print "partBFRatio         :", newRecord.partBFRatio
+    print "partBPRatio         :", newRecord.partBPRatio
+    print "partLTime           :", newRecord.partLTime
+    print "partLDelta          :", newRecord.partLDelta
+    print "partNSpd            :", newRecord.partNSpd
+    print "partNAcc            :", newRecord.partNAcc
+    print "partVel1            :", newRecord.partVel1
+    print "partVel2            :", newRecord.partVel2
+    print "partVel3            :", newRecord.partVel3
+    print "partAcc1            :", newRecord.partAcc1
+    print "partAcc2            :", newRecord.partAcc2
+    print "partAcc3            :", newRecord.partAcc3
+    print "partKey1            :", newRecord.partKey1
+    print "partKey2            :", newRecord.partKey2
+    print "partKey1Time        :", newRecord.partKey1Time
+    print "partKey2Time        :", newRecord.partKey2Time
+    print "key1Red             :", newRecord.key1Red
+    print "key1Green           :", newRecord.key1Green
+    print "key1Blue            :", newRecord.key1Blue
+    print "unused4             :", newRecord.unused4
+    print "key2Red             :", newRecord.key2Red
+    print "key2Green           :", newRecord.key2Green
+    print "key2Blue            :", newRecord.key2Blue
+    print "unused5             :", newRecord.unused5
+    print "key3Red             :", newRecord.key3Red
+    print "key3Green           :", newRecord.key3Green
+    print "key3Blue            :", newRecord.key3Blue
+    print "unused6             :", newRecord.unused6
+    print "key1A               :", newRecord.key1A
+    print "key2A               :", newRecord.key2A
+    print "key3A               :", newRecord.key3A
+    print "key1Time            :", newRecord.key1Time
+    print "key2Time            :", newRecord.key2Time
+    print "key3Time            :", newRecord.key3Time
 
     print "EFSH:CopyAsOverride Test"
     for record in Current.LoadOrderMods[0].EFSH:
@@ -10621,10 +10621,10 @@ from timeit import Timer
 
 ##phonenumber = raw_input(">")
 ##Current = ObCollection()
-##Current.addMod("Oblivion.esm")
-##print "MinLoad"
-####Current.addMod("Oblivion.esm", MinLoad=False)
-####print "FullLoad"
+####Current.addMod("Oblivion.esm")
+####print "MinLoad"
+##Current.addMod("Oblivion.esm", MinLoad=False)
+##print "FullLoad"
 ##Current.load()
 ##phonenumber = raw_input(">")
 ##Current.Close()
@@ -10643,7 +10643,7 @@ from timeit import Timer
 ##TestLoadMasters()
 ##TestDeleteRecord()
 ##TestReadWriteAll()
-TestTES4()
+##TestTES4()
 ##TestGMST()
 ##TestGLOB()
 ##TestCLAS()

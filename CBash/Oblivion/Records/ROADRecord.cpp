@@ -67,10 +67,7 @@ ROADRecord::ROADRecord(ROADRecord *srcRecord):
 
     recData = srcRecord->recData;
     if(!srcRecord->IsChanged())
-        {
-        IsLoaded(false);
         return;
-        }
 
     PGRP = srcRecord->PGRP;
     PGRR = srcRecord->PGRR;
