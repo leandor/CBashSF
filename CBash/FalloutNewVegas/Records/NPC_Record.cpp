@@ -1395,7 +1395,7 @@ SINT32 NPC_Record::WriteRecord(FileWriter &writer)
     WRITE(SCRI);
     CNTO.Write(writer);
     WRITE(AIDT);
-    WRITE(PKID);
+    PKID.Write(REV32(PKID), writer, true);
     WRITE(CNAM);
     WRITE(DATA);
     WRITE(DNAM);

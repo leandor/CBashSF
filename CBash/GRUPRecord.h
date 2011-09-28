@@ -92,7 +92,7 @@ class GRUPRecords
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(T)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
                     processor.NewTypes.count(RecType) > 0)
                     {
                     buffer_position = group_buffer_end;
@@ -237,7 +237,7 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::DIALRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
                     processor.NewTypes.count(REV32(DIAL)) > 0 &&
                     processor.NewTypes.count(REV32(INFO)) > 0)
                     {
@@ -490,7 +490,7 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::CELLRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
                     processor.NewTypes.count(REV32(CELL)) > 0 &&
                     processor.NewTypes.count(REV32(ACHR)) > 0 &&
                     processor.NewTypes.count(REV32(ACRE)) > 0 &&
@@ -1040,7 +1040,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(Ob::WRLDRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
                     processor.NewTypes.count(REV32(WRLD)) > 0 &&
                     processor.NewTypes.count(REV32(ROAD)) > 0 &&
                     processor.NewTypes.count(REV32(CELL)) > 0 &&
@@ -1999,7 +1999,7 @@ class FNVGRUPRecords
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(T)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
                     processor.NewTypes.count(RecType) > 0)
                     {
                     buffer_position = group_buffer_end;
@@ -2158,8 +2158,8 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::DIALRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
-                    processor.NewTypes.count(REV32(DIAL)) > 0 && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
+                    processor.NewTypes.count(REV32(DIAL)) > 0 &&
                     processor.NewTypes.count(REV32(INFO)) > 0)
                     {
                     buffer_position = group_buffer_end;
@@ -2431,16 +2431,16 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::CELLRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
-                    processor.NewTypes.count(REV32(CELL)) > 0 && 
-                    processor.NewTypes.count(REV32(ACHR)) > 0 && 
-                    processor.NewTypes.count(REV32(ACRE)) > 0 && 
-                    processor.NewTypes.count(REV32(REFR)) > 0 && 
-                    processor.NewTypes.count(REV32(PGRE)) > 0 && 
-                    processor.NewTypes.count(REV32(PMIS)) > 0 && 
-                    processor.NewTypes.count(REV32(PBEA)) > 0 && 
-                    processor.NewTypes.count(REV32(PFLA)) > 0 && 
-                    processor.NewTypes.count(REV32(PCBE)) > 0 && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
+                    processor.NewTypes.count(REV32(CELL)) > 0 &&
+                    processor.NewTypes.count(REV32(ACHR)) > 0 &&
+                    processor.NewTypes.count(REV32(ACRE)) > 0 &&
+                    processor.NewTypes.count(REV32(REFR)) > 0 &&
+                    processor.NewTypes.count(REV32(PGRE)) > 0 &&
+                    processor.NewTypes.count(REV32(PMIS)) > 0 &&
+                    processor.NewTypes.count(REV32(PBEA)) > 0 &&
+                    processor.NewTypes.count(REV32(PFLA)) > 0 &&
+                    processor.NewTypes.count(REV32(PCBE)) > 0 &&
                     processor.NewTypes.count(REV32(NAVM)) > 0)
                     {
                     buffer_position = group_buffer_end;
@@ -3205,18 +3205,18 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
             std::vector<RecordHeader> records;
             records.reserve((UINT32)(group_buffer_end - buffer_position) / sizeof(FNV::WRLDRecord)); //gross overestimation, but good enough
             while(buffer_position < group_buffer_end){
-                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) && 
-                    processor.NewTypes.count(REV32(WRLD)) > 0 && 
-                    processor.NewTypes.count(REV32(CELL)) > 0 && 
-                    processor.NewTypes.count(REV32(ACHR)) > 0 && 
-                    processor.NewTypes.count(REV32(ACRE)) > 0 && 
-                    processor.NewTypes.count(REV32(REFR)) > 0 && 
-                    processor.NewTypes.count(REV32(PGRE)) > 0 && 
-                    processor.NewTypes.count(REV32(PMIS)) > 0 && 
-                    processor.NewTypes.count(REV32(PBEA)) > 0 && 
-                    processor.NewTypes.count(REV32(PFLA)) > 0 && 
-                    processor.NewTypes.count(REV32(PCBE)) > 0 && 
-                    processor.NewTypes.count(REV32(NAVM)) > 0 && 
+                if((processor.IsSkipAllRecords && processor.IsTrackNewTypes) &&
+                    processor.NewTypes.count(REV32(WRLD)) > 0 &&
+                    processor.NewTypes.count(REV32(CELL)) > 0 &&
+                    processor.NewTypes.count(REV32(ACHR)) > 0 &&
+                    processor.NewTypes.count(REV32(ACRE)) > 0 &&
+                    processor.NewTypes.count(REV32(REFR)) > 0 &&
+                    processor.NewTypes.count(REV32(PGRE)) > 0 &&
+                    processor.NewTypes.count(REV32(PMIS)) > 0 &&
+                    processor.NewTypes.count(REV32(PBEA)) > 0 &&
+                    processor.NewTypes.count(REV32(PFLA)) > 0 &&
+                    processor.NewTypes.count(REV32(PCBE)) > 0 &&
+                    processor.NewTypes.count(REV32(NAVM)) > 0 &&
                     processor.NewTypes.count(REV32(LAND)) > 0)
                     {
                     buffer_position = group_buffer_end;

@@ -166,7 +166,7 @@ class CREARecord : public Record //Creature
         OptSimpleSubRecord<FORMID> SCRI; //Script
         UnorderedSparseArray<GENCNTO *> CNTO;  //Items
         ReqSubRecord<GENAIDT> AIDT; //AI Data
-        UnorderedSparseArray<FORMID> PKID; //Packages
+        OrderedSparseArray<FORMID> PKID; //Packages
         UnorderedPackedStrings KFFZ; //Animations
         ReqSubRecord<CREADATA> DATA; //Data
         ReqSimpleSubRecord<UINT8, 32> RNAM; //Attack reach

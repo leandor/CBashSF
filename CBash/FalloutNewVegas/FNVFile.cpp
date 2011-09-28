@@ -180,9 +180,9 @@ SINT32 FNVFile::Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormI
         eIgSLPD = REV32(SLPD) | 0x00001000
         };
 
-    if(Flags.IsIgnoreExisting || !file_map.is_open() || Flags.LoadedGRUPs)
+    if(Flags.IsNoLoad || Flags.IsCreateNew || !file_map.is_open() || Flags.LoadedGRUPs)
         {
-        if(!Flags.IsIgnoreExisting)
+        if(!(Flags.IsNoLoad || Flags.IsCreateNew))
             {
             if(!file_map.is_open())
                 printer("FNVFile::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ModName);

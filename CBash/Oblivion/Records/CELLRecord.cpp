@@ -446,10 +446,20 @@ bool CELLRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read
     //              all child records have been visited
 
     CELLRecord *master_cell = (CELLRecord *)master;
+    Record *parent_wrld = GetParentRecord(), *master_wrld = master_cell->GetParentRecord();
     //Check to make sure the CELLs are attached at the same spot
-    if(!IsInterior())
-        if(GetParentRecord()->formID != master_cell->GetParentRecord()->formID)
+    if(parent_wrld != NULL)
+        {
+        if(master_wrld != NULL)
+            {
+            if(parent_wrld->formID != master_wrld->formID)
+                return false;
+            }
+        else
             return false;
+        }
+    else if(master_wrld != NULL)
+        return false;
 
     if(ACHR.size() > master_cell->ACHR.size())
         return false;
@@ -482,15 +492,15 @@ bool CELLRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read
 
     for(UINT32 ListIndex = 0; ListIndex < ACHR.size(); ++ListIndex)
         if(identical_records.count(ACHR[ListIndex]) == 0)
-                return false;
+            return false;
 
     for(UINT32 ListIndex = 0; ListIndex < ACRE.size(); ++ListIndex)
         if(identical_records.count(ACRE[ListIndex]) == 0)
-                return false;
+            return false;
 
     for(UINT32 ListIndex = 0; ListIndex < REFR.size(); ++ListIndex)
         if(identical_records.count(REFR[ListIndex]) == 0)
-                return false;
+            return false;
 
     //The cell and all its contents are dupes, so remove the child records from identical_records
     // This prevents Bash from trying to double delete records (first the cell, and later a child that was in the cell)

@@ -85,7 +85,7 @@ class RecordProcessor
             {
             expander.Accept(header.formID);
 
-            if((IsTrackNewTypes || IsSkipNewRecords) && ((header.formID >> 24) >= ExpandedIndex))
+            if((IsTrackNewTypes || IsSkipNewRecords) && ((header.formID >> 24) == ExpandedIndex))
                 {
                 if(IsTrackNewTypes)
                     NewTypes.insert(header.type);
@@ -96,11 +96,11 @@ class RecordProcessor
             //Make sure the formID is unique within the mod
             if(UsedFormIDs.insert(header.formID).second == false)
                 {
-                if(IsAddMasters) //Can cause any new records to be given a duplicate ID
+                if(IsAddMasters) //If not, can cause any new records to be given a duplicate ID
                     printer("RecordProcessor: Warning - Information lost. Record skipped with duplicate formID: %08X\n", header.formID);
                 return false;
                 }
-                
+
             return IsKeepRecords;
             }
 
@@ -121,7 +121,7 @@ class RecordProcessor
         //    //EditorID keyed records (GMST, MGEF) aren't normally createable, so they aren't really "new"
         //    //The exception being that MGEF's can be created if JRoush's OBME plugin is used
         //    //There's no good way to check for them with this available info (needs access to the MGEF's EDID chunk)
-        //    //if(IsSkipNewRecords && ((header.formID >> 24) >= ExpandedIndex))
+        //    //if(IsSkipNewRecords && ((header.formID >> 24) == ExpandedIndex))
         //    //    return false;
 
         //    return IsKeepRecords;
@@ -151,12 +151,12 @@ class Record
 
         enum cBashRecordFlags
             {
-            _fIsLoaded            = 0x00000001,
-            _fIsChanged           = 0x00000002,
-            _fIsParentMod         = 0x00000004,
-            _fIsWinningDetermined = 0x00000008,
-            _fIsWinning           = 0x00000010,
-            _fIsExtendedWinning   = 0x00000020
+            _fIsLoaded              = 0x00000001,
+            _fIsChanged             = 0x00000002,
+            _fIsParentMod           = 0x00000004,
+            _fIsWinningDetermined   = 0x00000008,
+            _fIsWinning             = 0x00000010,
+            _fIsExtendedWinning     = 0x00000020
             //_fIsIdenticalToMaster = 0x00000040
             };
         void *Parent;

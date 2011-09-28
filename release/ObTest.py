@@ -2331,7 +2331,7 @@ def TestFullLoad():
 def TestReadWriteAll():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestALL.esp", IgnoreExisting=True)
+    Current.addMod("TestALL.esp", CreateNew=True)
     ##Preloading seems to have almost no effect (~2ms on all simple, CopyAsNew) on speed when later reading...
     ##Not preloading would make it faster if not all records being iterated, and save memory...
 

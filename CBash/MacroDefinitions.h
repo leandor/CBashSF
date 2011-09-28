@@ -352,16 +352,21 @@ GPL License and Copyright Notice ============================================
     #define FIELD_IDENTIFIERS const UINT32 FieldID, const UINT32 ListIndex, const UINT32 ListFieldID, const UINT32 ListX2Index, const UINT32 ListX2FieldID, const UINT32 ListX3Index, const UINT32 ListX3FieldID
 #endif
 
-#define WHERESTR  "[%s, line %d, %s]: "
-#define WHEREARG  __FILE__, __LINE__, __FUNCTION__
-#define DEBUGPRINT2(...)       printer(__VA_ARGS__)
-#define DPRINT(_fmt, ...)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
-#define DPRINT1(_fmt)  DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG)
+#define WHERESTR            "[%s, line %d]: "
+#define WHEREARG            __FUNCTION__, __LINE__
+#define DEBUGPRINT2(...)    printer(__VA_ARGS__)
+#define DPRINT(_fmt, ...)   DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG, __VA_ARGS__)
+#define DPRINT1(_fmt)       DEBUGPRINT2(WHERESTR _fmt "\n", WHEREARG)
 
-#define QDPRINT DEBUGPRINT2(WHERESTR "\n", WHEREARG)
+#define QDPRINT             DEBUGPRINT2(WHERESTR "\n", WHEREARG)
 
-#define REV32(x)((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
-#define WRITE(x) x.Write(REV32(x), writer)
-#define WRITEREQ(x) x.ReqWrite(REV32(x), writer)
-#define WRITEAS(x,y) x.Write(REV32(y), writer)
-#define WRITEEMPTY(x) writer.record_write_subheader(REV32(x), 0);
+#define VHDPRINT(_var)       DPRINT(#_var " = %08X",_var)
+#define VSDPRINT(_var)       DPRINT(#_var " = %s",_var)
+#define VDDPRINT(_var)       DPRINT(#_var " = %d",_var)
+
+
+#define REV32(x)            ((#@x & 0x000000FFU) << 24 | (#@x & 0x0000FF00U) << 8 | (#@x & 0x00FF0000U) >> 8 | (#@x & 0xFF000000U) >> 24)
+#define WRITE(x)            x.Write(REV32(x), writer)
+#define WRITEREQ(x)         x.ReqWrite(REV32(x), writer)
+#define WRITEAS(x,y)        x.Write(REV32(y), writer)
+#define WRITEEMPTY(x)       writer.record_write_subheader(REV32(x), 0);

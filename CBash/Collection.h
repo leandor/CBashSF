@@ -139,7 +139,6 @@ class IdenticalToMasterRetriever : public RecordOp
     private:
         EditorID_Map &EditorID_ModFile_Record;
         FormID_Map &FormID_ModFile_Record;
-        const std::vector<ModFile *> &LoadOrder255;
         const UINT8 &MasterIndex;
         boost::unordered_set<Record *> &identical_records;
         std::vector<FormIDResolver *> &Expanders;

@@ -97,7 +97,7 @@ def d(record, expand=False):
 def TestRegressions():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("TestRegressions.esp", IgnoreExisting=True)
+    Current.addMod("TestRegressions.esp", CreateNew=True)
     Current.load()
     newMod = Current.LookupModFile("TestRegressions.esp")
 
@@ -12116,7 +12116,7 @@ def assertSLPD(Current, newMod):
 def TestReadWrite():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("TestRW.esp", IgnoreExisting=True)
+    Current.addMod("TestRW.esp", CreateNew=True)
     Current.load()
     newMod = Current.LookupModFile("TestRW.esp")
 

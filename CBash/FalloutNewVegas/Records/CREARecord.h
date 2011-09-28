@@ -421,7 +421,7 @@ class CREARecord : public FNVRecord //Creature
         OptSimpleSubRecord<FORMID> SCRI; //Script
         UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
         ReqSubRecord<FNVAIDT> AIDT; //AI Data
-        UnorderedSparseArray<FORMID> PKID; //Packages
+        OrderedSparseArray<FORMID> PKID; //Packages
         UnorderedPackedStrings KFFZ; //Animations
         ReqSubRecord<CREADATA> DATA; //Data
         OptSimpleSubRecord<UINT8, 32> RNAM; //Attack reach

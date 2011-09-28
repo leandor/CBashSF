@@ -40,9 +40,8 @@ ModFile::ModFile(Collection *_Parent, STRING filename, STRING modname, const UIN
     TES4.IsLoaded(false);
     TES4.SetParent(this, true);
     ModTime = mtime();
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || !exists())
+    if(Flags.IsNoLoad || Flags.IsCreateNew || !exists())
         {
-        Flags.IsIgnoreExisting = true;
         TES4.IsLoaded(true);
         STRING const _Name = ModName;
         TES4.IsESM(icmps(".esm",_Name + strlen(_Name) - 4) == 0);
@@ -70,10 +69,8 @@ bool ModFile::operator >(ModFile &other)
 time_t ModFile::mtime()
     {
     struct stat buf;
-    if(stat(FileName, &buf) < 0)
-        return 0;
-    else
-        return buf.st_mtime;
+    stat(FileName, &buf);
+    return exists() ? buf.st_mtime : 0;
     }
 
 bool ModFile::exists()
@@ -86,13 +83,13 @@ bool ModFile::Open()
     {
     PROFILE_FUNC
 
-    if(Flags.IsIgnoreExisting || Flags.IsNoLoad || file_map.is_open() || !exists())
+    if(Flags.IsCreateNew || Flags.IsNoLoad || file_map.is_open() || !exists())
         {
-        if(!Flags.IsIgnoreExisting)
+        if(!Flags.IsCreateNew)
             {
-            if(Flags.IsNoLoad)
-                printer("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", ModName);
-            else if(file_map.is_open())
+            //if(Flags.IsNoLoad)
+            //    printer("ModFile::Open: Error - Unable to open mod \"%s\". Loading is explicitly disabled via flags.\n", ModName);
+            if(file_map.is_open())
                 printer("ModFile::Open: Error - Unable to open mod \"%s\". It is already open.\n", ModName);
             else if(!exists())
                 printer("ModFile::Open: Error - Unable to open mod \"%s\". Unable to locate file.\n", ModName);

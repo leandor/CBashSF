@@ -2973,7 +2973,7 @@ SINT32 CREARecord::WriteRecord(FileWriter &writer)
     WRITE(SCRI);
     CNTO.Write(writer);
     WRITE(AIDT);
-    WRITE(PKID);
+    PKID.Write(REV32(PKID), writer, true);
     WRITE(KFFZ);
     WRITE(DATA);
     WRITE(RNAM);

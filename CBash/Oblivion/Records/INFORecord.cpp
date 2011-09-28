@@ -659,7 +659,7 @@ bool INFORecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read
     {
     //Precondition: equals has been run for these records and returned true
     //Check to make sure the info is attached at the same spot
-    if(GetParentRecord()->formID != ((INFORecord *)master)->GetParentRecord()->formID)
+    if(GetParentRecord()->formID != master->GetParentRecord()->formID)
         return false;
     return true;
     }

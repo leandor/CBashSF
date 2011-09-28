@@ -204,7 +204,7 @@ class NPC_Record : public FNVRecord //Non-Player Character
         OptSimpleSubRecord<FORMID> SCRI; //Script
         UnorderedSparseArray<FNVCNTO *> CNTO;  //Items
         OptSubRecord<FNVAIDT> AIDT; //AI Data
-        UnorderedSparseArray<FORMID> PKID; //Packages
+        OrderedSparseArray<FORMID> PKID; //Packages
         OptSimpleSubRecord<FORMID> CNAM; //Class
         OptSubRecord<NPC_DATA> DATA; //Data
         OptSubRecord<NPC_DNAM> DNAM; //Skill Data

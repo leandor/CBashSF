@@ -752,7 +752,7 @@ ModFlags::ModFlags():
     IsTrackNewTypes(false),
     IsIndexLANDs(false),
     IsFixupPlaceables(false),
-    IsIgnoreExisting(false),
+    IsCreateNew(false),
     IsIgnoreAbsentMasters(false),
     LoadedGRUPs(false)
     {
@@ -773,7 +773,7 @@ ModFlags::ModFlags(UINT32 _Flags):
     IsTrackNewTypes((_Flags & fIsTrackNewTypes) != 0),
     IsIndexLANDs((_Flags & fIsIndexLANDs) != 0),
     IsFixupPlaceables((_Flags & fIsFixupPlaceables) != 0),
-    IsIgnoreExisting((_Flags & fIsIgnoreExisting) != 0),
+    IsCreateNew((_Flags & fIsCreateNew) != 0),
     IsIgnoreAbsentMasters((_Flags & fIsIgnoreAbsentMasters) != 0),
     LoadedGRUPs(false)
     {
@@ -820,8 +820,8 @@ UINT32 ModFlags::GetFlags()
         flags |= fIsIndexLANDs;
     if(IsFixupPlaceables)
         flags |= fIsFixupPlaceables;
-    if(IsIgnoreExisting)
-        flags |= fIsIgnoreExisting;
+    if(IsCreateNew)
+        flags |= fIsCreateNew;
     if(IsIgnoreAbsentMasters)
         {
         flags &= ~fIsAddMasters;
@@ -1059,7 +1059,7 @@ UINT32 NonNullStringRecord::GetSize() const
 STRING NonNullStringRecord::GetString()
     {
     if(DiskSize != 0)
-        {    
+        {
         //Have to sanitize the string before letting it be used
         //The string needs a null terminator added, so load it from disk
         STRING nvalue = new char[DiskSize + 1];
@@ -1467,6 +1467,40 @@ bool RawRecord::operator ==(const RawRecord &other) const
 bool RawRecord::operator !=(const RawRecord &other) const
     {
     return !(*this == other);
+    }
+
+bool ReadChunk(unsigned char *&buffer, const UINT32 &buffer_size, void *dest_buffer, const UINT32 &dest_buffer_size, const bool &skip_load)
+    {
+    if(skip_load)
+        {
+        buffer += buffer_size;
+        return false;
+        }
+    #ifdef CBASH_CHUNK_WARN
+        if(buffer_size > dest_buffer_size)
+            {
+            printer("ReadChunk: Warning - Unable to fully parse chunk (%c%c%c%c). "
+                   "Size of chunk (%u) is larger than the size of the subrecord (%u) "
+                   "and will be truncated.\n",
+                   buffer[-6], buffer[-5], buffer[-4], buffer[-3],
+                   buffer_size, dest_buffer_size);
+            CBASH_CHUNK_DEBUG
+            }
+        #ifdef CBASH_CHUNK_LCHECK
+            else if(buffer_size < dest_buffer_size)
+            {
+            printer("ReadChunk: Info - Unable to fully parse chunk (%c%c%c%c). Size "
+                   "of chunk (%u) is less than the size of the subrecord (%u) and any "
+                   "remaining fields have their default value.\n",
+                   buffer[-6], buffer[-5], buffer[-4], buffer[-3],
+                   buffer_size, dest_buffer_size);
+            CBASH_CHUNK_DEBUG
+            }
+        #endif
+    #endif
+    memcpy(dest_buffer, buffer, buffer_size > dest_buffer_size ? dest_buffer_size : buffer_size);
+    buffer += buffer_size;
+    return true;
     }
 
 const UINT32 VATSFunction_Argument[] =

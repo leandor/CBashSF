@@ -408,14 +408,25 @@ bool ACHRRecord::equals(Record *other)
 bool ACHRRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    CELLRecord *parent_cell = (CELLRecord *)GetParentRecord(), *master_cell = (CELLRecord *)((ACHRRecord *)master)->GetParentRecord();
+    CELLRecord *parent_cell = (CELLRecord *)GetParentRecord(), *master_cell = (CELLRecord *)master->GetParentRecord();
+    Record *parent_wrld = parent_cell->GetParentRecord(), *master_wrld = master_cell->GetParentRecord();
     //Check to make sure the parent cell is attached at the same spot
     if(parent_cell->formID != master_cell->formID)
         return false;
-    if(!parent_cell->IsInterior())
+    if(parent_wrld != NULL)
         {
-        if(parent_cell->GetParentRecord()->formID != master_cell->GetParentRecord()->formID)
+        if(master_wrld != NULL)
+            {
+            if(parent_wrld->formID != master_wrld->formID)
+                return false;
+            }
+        else
             return false;
+        }
+    else if(master_wrld != NULL)
+        return false;
+    if(parent_wrld)
+        {
         read_self.Accept((Record *&)parent_cell);
         read_master.Accept((Record *&)master_cell);
         parent_cell->XCLC.Load();

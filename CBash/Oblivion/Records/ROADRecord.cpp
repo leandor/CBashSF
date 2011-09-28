@@ -166,8 +166,8 @@ bool ROADRecord::equals(Record *other)
 bool ROADRecord::deep_equals(Record *master, RecordOp &read_self, RecordOp &read_master, boost::unordered_set<Record *> &identical_records)
     {
     //Precondition: equals has been run for these records and returned true
-    //Check to make sure the parent cell is attached at the same spot
-    if(GetParentRecord()->formID != ((ROADRecord *)master)->GetParentRecord()->formID)
+    //Check to make sure the parent world is attached at the same spot
+    if(GetParentRecord()->formID != master->GetParentRecord()->formID)
         return false;
     return true;
     }

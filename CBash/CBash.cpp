@@ -1285,7 +1285,7 @@ CPPDLLEXTERN SINT32 DeleteRecord(Record *RecordID)
                 //Update the IsWinning flags for all related records
                 ModFile *WinningModfile = NULL;
                 Record *WinningRecord = NULL;
-                
+
                 if(IsKeyedByEditorID)
                     CollectionID->LookupWinningRecord(EditorID, WinningModfile, WinningRecord, true);
                 else

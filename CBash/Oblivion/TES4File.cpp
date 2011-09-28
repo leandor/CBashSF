@@ -125,9 +125,9 @@ SINT32 TES4File::Load(RecordOp &read_parser, RecordOp &indexer, std::vector<Form
         eIgWATR = REV32(WATR) | 0x00001000,
         eIgEFSH = REV32(EFSH) | 0x00001000
         };
-    if(Flags.IsIgnoreExisting || !file_map.is_open() || Flags.LoadedGRUPs)
+    if(Flags.IsNoLoad || Flags.IsCreateNew || !file_map.is_open() || Flags.LoadedGRUPs)
         {
-        if(!Flags.IsIgnoreExisting)
+        if(!(Flags.IsNoLoad || Flags.IsCreateNew))
             {
             if(!file_map.is_open())
                 printer("TES4File::Load: Error - Unable to load mod \"%s\". The mod is not open.\n", ModName);

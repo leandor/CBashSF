@@ -363,7 +363,7 @@ class FormID(object):
            This class should never be instantiated except by class FormID(object)."""
 
         def __init__(self, master, objectID):
-            self.master, self.objectID = GPath(master), objectID
+            self.master, self.objectID = master, objectID
 
         def __hash__(self):
             return hash((str(self.master), self.objectID))
@@ -516,10 +516,10 @@ class FormID(object):
            FormID       = (FormID()        , None)
            Raw FormID   = (int(FormID)     , None)
            Empty FormID = (None            , None)"""
-        self.formID = FormID.EmptyFormID() if master is None else master.formID if isinstance(master, FormID) else FormID.RawFormID(master) if objectID is None else FormID.UnvalidatedFormID(str(master), objectID) if isinstance(master, (basestring, Path)) else None
+        self.formID = FormID.EmptyFormID() if master is None else master.formID if isinstance(master, FormID) else FormID.RawFormID(master) if objectID is None else FormID.UnvalidatedFormID(GPath(master), objectID) if isinstance(master, (basestring, Path)) else None
         if self.formID is None:
             masterstr = _CGetLongIDName(master, objectID, 0)
-            self.formID = FormID.ValidFormID(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else FormID.InvalidFormID(objectID)
+            self.formID = FormID.ValidFormID(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else FormID.InvalidFormID(objectID)
 
     def __hash__(self):
         return hash(self.formID)
@@ -532,6 +532,9 @@ class FormID(object):
     def __ne__(self, other):
         try: return other[1] != self.formID[1] or other[0] != self.formID[0]
         except TypeError: return False
+
+    def __nonzero__(self):
+        return not isinstance(self.formID, (FormID.EmptyFormID, FormID.InvalidFormID))
 
     def __getitem__(self, x):
         return self.formID[0] if x == 0 else self.formID[1]
@@ -595,7 +598,7 @@ class ActorValue(object):
            It must be tested to see if it is safe for use in a particular collection.
            This class should never be instantiated except by class ActorValue(object)."""
         def __init__(self, master, objectID):
-            self.master, self.objectID = GPath(master), objectID
+            self.master, self.objectID = master, objectID
 
         def __hash__(self):
             return hash((str(self.master), self.objectID))
@@ -750,10 +753,10 @@ class ActorValue(object):
            ActorValue        = (ActorValue()    , None)
            Raw ActorValue    = (int(ActorValue) , None)
            Empty ActorValue  = (None            , None))"""
-        self.actorValue = ActorValue.EmptyActorValue() if master is None else master.actorValue if isinstance(master, ActorValue) else ActorValue.RawActorValue(master) if objectID is None else ActorValue.UnvalidatedActorValue(str(master), objectID) if isinstance(master, (basestring, Path)) else ActorValue.RawActorValue(objectID) if objectID < 0x800 else None
+        self.actorValue = ActorValue.EmptyActorValue() if master is None else master.actorValue if isinstance(master, ActorValue) else ActorValue.RawActorValue(master) if objectID is None else ActorValue.UnvalidatedActorValue(GPath(master), objectID) if isinstance(master, (basestring, Path)) else ActorValue.RawActorValue(objectID) if objectID < 0x800 else None
         if self.actorValue is None:
             masterstr = _CGetLongIDName(master, objectID, 0)
-            self.actorValue = ActorValue.ValidActorValue(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else ActorValue.InvalidActorValue(objectID)
+            self.actorValue = ActorValue.ValidActorValue(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else ActorValue.InvalidActorValue(objectID)
 
     def __hash__(self):
         return hash(self.actorValue)
@@ -766,6 +769,9 @@ class ActorValue(object):
     def __ne__(self, other):
         try: return other[1] != self.actorValue[1] or other[0] != self.actorValue[0]
         except TypeError: return False
+
+    def __nonzero__(self):
+        return not isinstance(self.actorValue, (ActorValue.EmptyActorValue, ActorValue.InvalidActorValue))
 
     def __getitem__(self, x):
         return self.actorValue[0] if x == 0 else self.actorValue[1]
@@ -832,7 +838,7 @@ class MGEFCode(object):
            It must be tested to see if it is safe for use in a particular collection.
            This class should never be instantiated except by class MGEFCode(object)."""
         def __init__(self, master, objectID):
-            self.master, self.objectID = GPath(master), objectID
+            self.master, self.objectID = master, objectID
 
         def __hash__(self):
             return hash((str(self.master), self.objectID))
@@ -964,7 +970,7 @@ class MGEFCode(object):
            This class should never be instantiated except by class MGEFCode(object)."""
 
         def __init__(self, shortID):
-            self.shortID = shortID
+            self.shortID = str(shortID) if isinstance(shortID, basestring) else shortID
 
         def __hash__(self):
             return hash((self.shortID, None))
@@ -994,10 +1000,10 @@ class MGEFCode(object):
            Raw MGEFCode       = (int(MGEFCode)   , None)
            Raw MGEFCode       = (string(MGEFCode), None)
            Empty MGEFCode     = (None            , None))"""
-        self.mgefCode = MGEFCode.EmptyMGEFCode() if master is None else master.mgefCode if isinstance(master, MGEFCode) else MGEFCode.RawMGEFCode(master) if objectID is None else MGEFCode.RawMGEFCode(objectID) if isinstance(objectID, basestring) else MGEFCode.UnvalidatedMGEFCode(str(master), objectID) if isinstance(master, (basestring, Path)) else MGEFCode.RawMGEFCode(master, objectID) if objectID < 0x80000000 else None
+        self.mgefCode = MGEFCode.EmptyMGEFCode() if master is None else master.mgefCode if isinstance(master, MGEFCode) else MGEFCode.RawMGEFCode(master) if objectID is None else MGEFCode.RawMGEFCode(objectID) if isinstance(objectID, basestring) else MGEFCode.UnvalidatedMGEFCode(GPath(master), objectID) if isinstance(master, (basestring, Path)) else MGEFCode.RawMGEFCode(master, objectID) if objectID < 0x80000000 else None
         if self.mgefCode is None:
             masterstr = _CGetLongIDName(master, objectID, 1)
-            self.mgefCode = MGEFCode.ValidMGEFCode(masterstr, objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else MGEFCode.InvalidMGEFCode(objectID)
+            self.mgefCode = MGEFCode.ValidMGEFCode(GPath(masterstr), objectID, objectID, _CGetCollectionIDByRecordID(master)) if masterstr else MGEFCode.InvalidMGEFCode(objectID)
 
     def __hash__(self):
         return hash(self.mgefCode)
@@ -1009,6 +1015,9 @@ class MGEFCode(object):
 
     def __ne__(self, other):
         return other[1] != self.mgefCode[1] or other[0] != self.mgefCode[0]
+
+    def __nonzero__(self):
+        return not isinstance(self.mgefCode, (MGEFCode.EmptyMGEFCode, MGEFCode.InvalidMGEFCode))
 
     def __getitem__(self, x):
         return self.mgefCode[0] if x == 0 else self.mgefCode[1]
@@ -1326,9 +1335,10 @@ class CBashLIST_GROUP(object):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0)
         else:
             length = len(nElements)
+            if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements if isinstance(nElements[0], tuple) else ExtractCopyList(nElements))
+            SetCopyList([self._Type(instance._RecordID, FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements)
 
 # Top level Descriptors
 class CBashLIST(object):
@@ -1343,9 +1353,10 @@ class CBashLIST(object):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             length = len(nElements)
+            if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, self._FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements if isinstance(nElements[0], tuple) else ExtractCopyList(nElements))
+            SetCopyList([self._Type(instance._RecordID, self._FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 1))], nElements)
 
 class CBashUNKNOWN_OR_GENERIC(object):
     __slots__ = ['_FieldID','_Type','_ResType']
@@ -1722,9 +1733,10 @@ class CBashLIST_LIST(object):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
         else:
             length = len(nElements)
+            if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))], nElements if isinstance(nElements[0], tuple) else ExtractCopyList(nElements))
+            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, 1))], nElements)
 
 class CBashGeneric_LIST(object):
     __slots__ = ['_ListFieldID','_Type','_ResType']
@@ -1963,9 +1975,10 @@ class CBashLIST_LISTX2(object):
         if nElements is None or not len(nElements): _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
         else:
             length = len(nElements)
+            if not isinstance(nElements[0], tuple): nElements = ExtractCopyList(nElements)
             ##Resizes the list
             _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 0, c_long(length))
-            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))], nElements if isinstance(nElements[0], tuple) else ExtractCopyList(nElements))
+            SetCopyList([self._Type(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, x) for x in range(_CGetFieldAttribute(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, 1))], nElements)
 
 class CBashGeneric_LISTX2(object):
     __slots__ = ['_ListX2FieldID','_Type','_ResType']
@@ -15082,8 +15095,8 @@ class ObCollection:
     def DeleteAllCollections():
         return _CDeleteAllCollections()
 
-    def addMod(self, FileName, MinLoad=True, NoLoad=False, IgnoreExisting=False, Saveable=True, LoadMasters=True, Flags=None):
-##        //IgnoreExisting, Saveable, and LoadMasters are ignored if Flags is set
+    def addMod(self, FileName, MinLoad=True, NoLoad=False, CreateNew=False, Saveable=True, LoadMasters=True, Flags=None):
+##        //CreateNew, Saveable, and LoadMasters are ignored if Flags is set
 ##
 ##        //MinLoad and FullLoad are exclusive
 ##        // If both are set, FullLoad takes priority
@@ -15148,11 +15161,11 @@ class ObCollection:
 ##        fIsTrackNewTypes       = 0x00000100
 ##        fIsIndexLANDs          = 0x00000200
 ##        fIsFixupPlaceables     = 0x00000400
-##        fIsIgnoreExisting      = 0x00000800
+##        fIsCreateNew           = 0x00000800
 ##        fIsIgnoreAbsentMasters = 0x00001000
 ##        fIsSkipAllRecords      = 0x00002000
 
-        if Flags is None: Flags = 0x00000069 | (0x00000800 if IgnoreExisting else 0) | (0x00000010 if Saveable else 0) | (0x00000040 if LoadMasters else 0)
+        if Flags is None: Flags = 0x00000069 | (0x00000800 if CreateNew else 0) | (0x00000010 if Saveable else 0) | (0x00000040 if LoadMasters else 0)
         _CAddMod(self._CollectionID, str(FileName), Flags & ~0x00000003 if NoLoad else ((Flags & ~0x00000002) | 0x00000001) if MinLoad else ((Flags & ~0x00000001) | 0x00000002))
         return None
 

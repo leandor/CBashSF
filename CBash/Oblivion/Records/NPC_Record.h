@@ -95,7 +95,7 @@ class NPC_Record : public Record //Non-Player Character
         OptSimpleSubRecord<FORMID> SCRI; //Script
         UnorderedSparseArray<GENCNTO *> CNTO; //Items
         ReqSubRecord<GENAIDT> AIDT; //AI Data
-        UnorderedSparseArray<FORMID> PKID; //Packages
+        OrderedSparseArray<FORMID> PKID; //Packages
         UnorderedPackedStrings KFFZ; //Animations
         ReqSimpleSubRecord<FORMID> CNAM; //Class
         ReqSubRecord<NPC_DATA> DATA; //Data
