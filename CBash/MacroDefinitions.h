@@ -20,7 +20,6 @@ GPL License and Copyright Notice ============================================
 =============================================================================
 */
 #pragma once
-
 //don't touch
 #ifdef _M_X64
     //#pragma message("Compiling with x64 compatibility")
@@ -182,18 +181,6 @@ GPL License and Copyright Notice ============================================
     extern unsigned long debug_temp2;
     extern unsigned long debug_temp3;
     extern unsigned long debug_temp4;
-#endif
-
-#ifndef MAJOR_VERSION
-    #define MAJOR_VERSION    0
-#endif
-
-#ifndef MINOR_VERSION
-    #define MINOR_VERSION    6
-#endif
-
-#ifndef REVISION_VERSION
-    #define REVISION_VERSION    0
 #endif
 
 #ifndef NULL

@@ -27,6 +27,7 @@ GPL License and Copyright Notice ============================================
 //    //#include <boost/python.hpp>
 //#endif
 #define COMPILING_CBASH
+#include "Version.h"
 #include "CBash.h"
 #include <vector>
 #include <stdarg.h>
