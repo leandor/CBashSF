@@ -125,13 +125,16 @@ STRING DeGhostModName(STRING const ModName)
     {
     STRING NonGhostName = NULL;
     UINT32 NameLength = (UINT32)strlen(ModName) + 1;
-    if(icmps(".ghost",ModName + NameLength - 7) == 0)
+    if(NameLength > 7)
         {
-        NonGhostName = new char[NameLength];
-        strcpy_s(NonGhostName, NameLength, ModName);
-        NonGhostName[NameLength - 7] = 0x00;
-        //printer("DeGhostModName: De-ghosted (%s)(%d) to (%s)(%d)\n", ModName, strlen(ModName), NonGhostName, strlen(NonGhostName));
-        return NonGhostName;
+        if(icmps(".ghost",ModName + NameLength - 7) == 0)
+            {
+            NonGhostName = new char[NameLength];
+            strcpy_s(NonGhostName, NameLength, ModName);
+            NonGhostName[NameLength - 7] = 0x00;
+            //printer("DeGhostModName: De-ghosted (%s)(%d) to (%s)(%d)\n", ModName, strlen(ModName), NonGhostName, strlen(NonGhostName));
+            return NonGhostName;
+            }
         }
     return NULL;
     }
